@@ -243,12 +243,7 @@ const RefundActivity = () => {
                 </Modal>
             )}
             {forceCOD && (
-                <Modal
-                    open={forceCOD}
-                    okText={currentButton ? 'Proceeding' : 'Proceed'}
-                    onOk={() => handleAction('return_completed')}
-                    onCancel={() => setForceCOD(false)}
-                >
+                <Modal open={forceCOD} okText={'Proceed'} onOk={() => handleAction('return_completed')} onCancel={() => setForceCOD(false)}>
                     <p className="text-xl">Do You Want To Proceed With Manual Refund</p>
                 </Modal>
             )}

@@ -22,7 +22,6 @@ const RiderAttendance = () => {
     const { riderAttendance, count, from, to, page, pageSize } = useAppSelector<RiderSlice>((state) => state.riderData)
     const [selectedYear, setSelectedYear] = useState<string>(moment().year().toString())
     const [selectedMonth, setSelectedMonth] = useState<string>(moment().format('MM'))
-    const [isAccessDenied, setIsAccessDenied] = useState<boolean>(false)
     const [isWeek, setIsWeek] = useState<boolean>(false)
 
     const {
@@ -44,9 +43,6 @@ const RiderAttendance = () => {
         if (isSuccess) {
             dispatch(setRidersAttendanceData(riderDataForAttendance?.data?.results || []))
             dispatch(setCount(riderDataForAttendance?.data?.count || 0))
-        }
-        if (riderError && 'status' in riderError && riderError?.status === 403) {
-            setIsAccessDenied(true)
         }
     }, [riderDataForAttendance, isSuccess, dispatch, from, to, page, pageSize, globalFilter])
 
@@ -113,7 +109,7 @@ const RiderAttendance = () => {
 
     const columns = generateColumns(selectedYear, selectedMonth, handleUserData, isWeek, from, to)
 
-    if (isAccessDenied) {
+    if (riderError && 'originalStatus' in riderError && riderError?.originalStatus === 403) {
         return <AccessDenied />
     }
 
