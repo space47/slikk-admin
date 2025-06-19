@@ -235,7 +235,7 @@ const RefundActivity = () => {
                     returnDetails?.log?.some((item) => item?.status?.includes('REFUNDED')))) && (
                 <Modal
                     open={isModalOpen}
-                    okText={currentButton ? 'Proceed' : 'Proceed'}
+                    okText={currentButton ? 'Returning' : 'Return Orders'}
                     onOk={() => handleAction('return_completed')}
                     onCancel={() => setIsModalOpen(false)}
                 >
@@ -245,7 +245,7 @@ const RefundActivity = () => {
             {forceCOD && (
                 <Modal
                     open={forceCOD}
-                    okText={currentButton ? 'Returning....' : 'Return Order'}
+                    okText={currentButton ? 'Proceeding' : 'Proceed'}
                     onOk={() => handleAction('return_completed')}
                     onCancel={() => setForceCOD(false)}
                 >
