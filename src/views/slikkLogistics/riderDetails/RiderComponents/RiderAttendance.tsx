@@ -109,7 +109,7 @@ const RiderAttendance = () => {
 
     const columns = generateColumns(selectedYear, selectedMonth, handleUserData, isWeek, from, to)
 
-    if (riderError && 'status' in riderError && riderError?.status === 403) {
+    if (riderError && 'originalStatus' in riderError && riderError?.originalStatus === 403) {
         return <AccessDenied />
     }
 
