@@ -125,7 +125,7 @@ const RiderDetails = () => {
                             placeholder="select slikk store"
                             options={formattedData}
                             getOptionLabel={(option) => option.label}
-                            getOptionValue={(option) => option.value}
+                            getOptionValue={(option) => option.value as any}
                             className="w-full"
                             onChange={(newVal) => {
                                 setCurrentStoreLocation({
@@ -233,6 +233,7 @@ const RiderDetails = () => {
                             onChange={(e) => setGlobalFilter(e.target.value)}
                         />
                     </div>
+                    <div className="font-bold text-xl mb-5 mt-5">Total Riders : {count}</div>
                     <EasyTable mainData={riderDetails} columns={columns} />
                     <div className="flex justify-between items-center">
                         <Pagination
