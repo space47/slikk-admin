@@ -234,7 +234,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                             }
                         >
                             <div className="font-bold text-md">{activity.status}</div>
-                            <div>{moment(activity.timestamp).format('DD:MM:YYYY hh:mm')}</div>
+                            <div>{moment(activity.timestamp).format('DD:MM:YYYY hh:mm a')}</div>
                         </Timeline.Item>
                     ))
                 )}
