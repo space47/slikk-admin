@@ -3,37 +3,33 @@ import React, { useMemo, useState } from 'react'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
-import { Modal } from 'antd'
-import { IoWarningOutline } from 'react-icons/io5'
 import ClearCache from '@/common/ClearCache'
 import { useDivisionColumns } from './divisionUtils/useDivisionColumns'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 import { DataItem } from './divisionCommon'
 import { Option, pageSizeOptions } from '@/constants/pageUtils.constants'
 import { useDeleteFromCatalog } from '@/commonHooks/useDeleteFromCatalog'
+import { useLocalPaginateData } from '@/commonHooks/useLocalPaginateData'
+import CatalogDeleteModal from '@/common/CatalogDeleteModal'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
 const DivisionTable = () => {
-    const [page, setPage] = useState(1)
-    const [pageSize, setPageSize] = useState(10)
-    const [globalFilter, setGlobalFilter] = useState('')
+    const [globalFilter, setGlobalFilter] = useState<string>('')
     const [deleteModal, setDeleteModal] = useState(false)
     const [idStoreForDelete, setIdStoreForDelete] = useState<string | number | undefined>()
 
     const queryParams = useMemo(() => {
-        const filtervalue = globalFilter ? `&q=${globalFilter}` : ''
-        return `division?dashboard=true${filtervalue}`
+        const filterValue = globalFilter ? `&q=${globalFilter}` : ''
+        return `division?dashboard=true${filterValue}`
     }, [globalFilter])
 
     const { data } = useFetchSingleData<DataItem[]>({ url: queryParams, initialData: [] })
 
-    const filteredData = data?.filter((item) =>
-        Object.values(item).some((val) => (val ? val.toString().toLowerCase().includes(globalFilter.toLowerCase()) : false)),
-    )
-
-    const paginatedData = filteredData?.slice((page - 1) * pageSize, page * pageSize)
-    const totalPages = filteredData ? Math.ceil(filteredData.length / pageSize) : 0
+    const { page, pageSize, paginatedData, setPage, setPageSize, totalPages } = useLocalPaginateData({
+        data,
+        globalFilter,
+    })
 
     const handleDeleteClick = (id: any) => {
         setDeleteModal(true)
@@ -42,10 +38,6 @@ const DivisionTable = () => {
     const columns = useDivisionColumns({ handleDeleteClick })
 
     const { deleteFromCatalog } = useDeleteFromCatalog({ idStoreForDelete, name: 'division', setDeleteModal })
-
-    const handleCloseModal = () => {
-        setDeleteModal(false)
-    }
 
     return (
         <div className="p-3 shadow-xl rounded-xl ">
@@ -95,20 +87,7 @@ const DivisionTable = () => {
             </div>
 
             {deleteModal && (
-                <Modal
-                    title=""
-                    open={deleteModal}
-                    okText="DELETE"
-                    okButtonProps={{
-                        style: { backgroundColor: 'red', borderColor: 'red' },
-                    }}
-                    onOk={deleteFromCatalog}
-                    onCancel={handleCloseModal}
-                >
-                    <div className="italic text-lg flex flex-row items-center justify-start gap-5">
-                        <IoWarningOutline className="text-red-600 text-4xl" /> ARE YOU SURE YOU WANT TO DELETE !!
-                    </div>
-                </Modal>
+                <CatalogDeleteModal deleteModal={deleteModal} setDeleteModal={setDeleteModal} deleteFromCatalog={deleteFromCatalog} />
             )}
         </div>
     )

@@ -4,8 +4,6 @@ import { useNavigate } from 'react-router-dom'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
-import { Modal } from 'antd'
-import { IoWarningOutline } from 'react-icons/io5'
 import { useProductTypeColummns } from './productTypeUtils/useProductTypeColummns'
 import { Dropdown } from '@/components/ui'
 import { useSubCategoryFilter } from '../subCategory/subCategoryUtils/subCategoryFilter'
@@ -17,14 +15,14 @@ import { useGetProductType } from './productTypeUtils/useGetProductTypes'
 import { useDeleteFromCatalog } from '@/commonHooks/useDeleteFromCatalog'
 import { Product_type_common_types } from './ProductTypeCommon'
 import { Option, pageSizeOptions } from '@/constants/pageUtils.constants'
+import CatalogDeleteModal from '@/common/CatalogDeleteModal'
+import { useLocalPaginateData } from '@/commonHooks/useLocalPaginateData'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
 const ProductType = () => {
     const navigate = useNavigate()
     const [data, setData] = useState<Product_type_common_types[]>([])
-    const [page, setPage] = useState(1)
-    const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
     const [deleteModal, setDeleteModal] = useState(false)
     const [idStoreForDelete, setIdStoreForDelete] = useState()
@@ -52,11 +50,10 @@ const ProductType = () => {
         setData(productType.filter((item): item is Product_type_common_types => item !== undefined))
     }, [globalFilter, selectedDivision, selectedCategory, selectedSubCategory, divisions?.divisions])
 
-    const filteredData = data.filter((item) =>
-        Object.values(item).some((val) => (val ? val.toString().toLowerCase().includes(globalFilter.toLowerCase()) : false)),
-    )
-    const paginatedData = filteredData.slice((page - 1) * pageSize, page * pageSize)
-    const totalPages = Math.ceil(filteredData.length / pageSize)
+    const { page, pageSize, paginatedData, setPage, setPageSize, totalPages } = useLocalPaginateData({
+        data,
+        globalFilter,
+    })
 
     const handleDeleteClick = (id: any) => {
         setDeleteModal(true)
@@ -67,7 +64,7 @@ const ProductType = () => {
     const columns = useProductTypeColummns({ handleDeleteClick })
 
     return (
-        <div>
+        <div className="p-2 rounded-xl shadow-xl">
             <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
                 <div className="flex flex-col gap-2 xl:flex-row items-center">
                     <div className="mb-4">
@@ -171,7 +168,7 @@ const ProductType = () => {
                     </Tr>
                 </THead>
                 <TBody>
-                    {paginatedData.map((row: any) => (
+                    {paginatedData?.map((row: any) => (
                         <Tr key={row.id}>
                             {columns.map((col: any) => (
                                 <Td key={col.accessor}>{col.format ? col.format(row[col.accessor]) : row[col.accessor]}</Td>
@@ -181,7 +178,7 @@ const ProductType = () => {
                 </TBody>
             </Table>
             <div className="flex items-center justify-between mt-4">
-                <Pagination currentPage={page} onChange={(page) => setPage(page)} total={totalPages} />
+                <Pagination currentPage={page} total={totalPages} onChange={(page) => setPage(page)} />
                 <div style={{ minWidth: 130 }}>
                     <Select<Option>
                         size="sm"
@@ -193,20 +190,7 @@ const ProductType = () => {
                 </div>
             </div>
             {deleteModal && (
-                <Modal
-                    title=""
-                    open={deleteModal}
-                    okText="DELETE"
-                    okButtonProps={{
-                        style: { backgroundColor: 'red', borderColor: 'red' },
-                    }}
-                    onOk={deleteFromCatalog}
-                    onCancel={() => setDeleteModal(false)}
-                >
-                    <div className="italic text-lg flex flex-row items-center justify-start gap-5">
-                        <IoWarningOutline className="text-red-600 text-4xl" /> ARE YOU SURE YOU WANT TO DELETE !!
-                    </div>
-                </Modal>
+                <CatalogDeleteModal deleteModal={deleteModal} setDeleteModal={setDeleteModal} deleteFromCatalog={deleteFromCatalog} />
             )}
         </div>
     )
