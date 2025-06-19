@@ -4,8 +4,6 @@ import { useNavigate } from 'react-router-dom'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
-import { Modal } from 'antd'
-import { IoWarningOutline } from 'react-icons/io5'
 import { Dropdown } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { useSubCategoryColumns } from './subCategoryUtils/useSubCategoryColumns'
@@ -14,32 +12,31 @@ import { useSubCategoryFilter } from './subCategoryUtils/subCategoryFilter'
 import { SINGLE_SUBCATEGORY_DATA } from '@/store/types/subcategory.types'
 import { useGetSubCategory } from './subCategoryUtils/useGetSubCategory'
 import { useDeleteFromCatalog } from '@/commonHooks/useDeleteFromCatalog'
+import { useLocalPaginateData } from '@/commonHooks/useLocalPaginateData'
+import CatalogDeleteModal from '@/common/CatalogDeleteModal'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
 const Subcategory = () => {
     const navigate = useNavigate()
     const [data, setData] = useState<SINGLE_SUBCATEGORY_DATA[]>([])
-    const [page, setPage] = useState(1)
-    const [pageSize, setPageSize] = useState(10)
-    const [globalFilter, setGlobalFilter] = useState('')
     const [deleteModal, setDeleteModal] = useState(false)
+    const [globalFilter, setGlobalFilter] = useState<string>('')
     const [idStoreForDelete, setIdStoreForDelete] = useState()
     const [selectedDivision, setSelectedDivision] = useState('Select Division')
     const [selectedCategory, setSelectedCategory] = useState('Select Category')
 
     const { subCategories, DivisionArray } = useGetSubCategory({ selectedDivision, selectedCategory })
+
+    const { page, pageSize, paginatedData, setPage, setPageSize, totalPages } = useLocalPaginateData({
+        data,
+        globalFilter,
+    })
+    const categoryArray = useSubCategoryFilter({ selectedDivision })
+
     useEffect(() => {
         setData(subCategories)
     }, [globalFilter, selectedDivision, selectedCategory])
-
-    const filteredData = data?.filter((item) =>
-        Object.values(item).some((val) => (val ? val.toString().toLowerCase().includes(globalFilter.toLowerCase()) : false)),
-    )
-
-    const paginatedData = filteredData?.slice((page - 1) * pageSize, page * pageSize)
-    const totalPages = Math.ceil(filteredData?.length / pageSize)
-    const categoryArray = useSubCategoryFilter({ selectedDivision })
 
     const handleDeleteClick = (id: any) => {
         setDeleteModal(true)
@@ -67,6 +64,7 @@ const Subcategory = () => {
                                 className="border   text-black text-lg font-semibold "
                                 title={selectedDivision}
                                 onSelect={(selectedKey) => {
+                                    setPage(1)
                                     setSelectedCategory('Select Category')
                                     setSelectedDivision(selectedKey)
                                 }}
@@ -131,7 +129,7 @@ const Subcategory = () => {
                     </Tr>
                 </THead>
                 <TBody>
-                    {paginatedData.map((row: any) => (
+                    {paginatedData?.map((row: any) => (
                         <Tr key={row.id}>
                             {columns.map((col: any) => (
                                 <Td key={col.accessor}>{col.format ? col.format(row[col.accessor]) : row[col.accessor]}</Td>
@@ -153,20 +151,7 @@ const Subcategory = () => {
                 </div>
             </div>
             {deleteModal && (
-                <Modal
-                    title=""
-                    open={deleteModal}
-                    okText="DELETE"
-                    okButtonProps={{
-                        style: { backgroundColor: 'red', borderColor: 'red' },
-                    }}
-                    onOk={deleteFromCatalog}
-                    onCancel={() => setDeleteModal(false)}
-                >
-                    <div className="italic text-lg flex flex-row items-center justify-start gap-5">
-                        <IoWarningOutline className="text-red-600 text-4xl" /> ARE YOU SURE YOU WANT TO DELETE !!
-                    </div>
-                </Modal>
+                <CatalogDeleteModal deleteModal={deleteModal} setDeleteModal={setDeleteModal} deleteFromCatalog={deleteFromCatalog} />
             )}
         </div>
     )

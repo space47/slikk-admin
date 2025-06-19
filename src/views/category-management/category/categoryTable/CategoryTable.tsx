@@ -3,8 +3,6 @@ import React, { useState, useMemo } from 'react'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import { useNavigate } from 'react-router-dom'
-import { Modal } from 'antd'
-import { IoWarningOutline } from 'react-icons/io5'
 import { categoryItem, Option, pageSizeOptions } from './categoryCommon'
 import EasyTable from '@/common/EasyTable'
 import { Dropdown } from '@/components/ui'
@@ -14,6 +12,7 @@ import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 import { useAppSelector } from '@/store'
 import { DIVISION_STATE } from '@/store/types/division.types'
 import { useDeleteFromCatalog } from '@/commonHooks/useDeleteFromCatalog'
+import CatalogDeleteModal from '@/common/CatalogDeleteModal'
 
 const CategoryTable = () => {
     const navigate = useNavigate()
@@ -119,20 +118,7 @@ const CategoryTable = () => {
                 </div>
             </div>
             {deleteModal && (
-                <Modal
-                    title=""
-                    open={deleteModal}
-                    okText="DELETE"
-                    okButtonProps={{
-                        style: { backgroundColor: 'red', borderColor: 'red' },
-                    }}
-                    onOk={deleteFromCatalog}
-                    onCancel={() => setDeleteModal(false)}
-                >
-                    <div className="italic text-lg flex flex-row items-center justify-start gap-5">
-                        <IoWarningOutline className="text-red-600 text-4xl" /> ARE YOU SURE YOU WANT TO DELETE !!
-                    </div>
-                </Modal>
+                <CatalogDeleteModal deleteModal={deleteModal} setDeleteModal={setDeleteModal} deleteFromCatalog={deleteFromCatalog} />
             )}
         </div>
     )
