@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -10,80 +10,48 @@ import { BrandTypes } from './brandCommon'
 import { BrandColumns } from './brandUtils/BrandColumns'
 import { Option } from '../catalog/CommonType'
 import { pageSizeOptions } from '../orderlist/commontypes'
+import { useFetchApi } from '@/commonHooks/useFetchApi'
 
 const Brand = () => {
-    const [data, setData] = useState<BrandTypes[]>([])
-    const [totalData, setTotalData] = useState<number>(0)
     const [page, setPage] = useState<number>(1)
     const [pageSize, setPageSize] = useState<number>(10)
     const [globalFilter, setGlobalFilter] = useState<string>('')
     const [brandId, setBrandId] = useState<number>()
-    const [showbrandDelete, setShowBrandDelete] = useState<boolean>(false)
+    const [showBrandDelete, setShowBrandDelete] = useState<boolean>(false)
 
-    const fetchData = async (page: number, pageSize: number) => {
-        try {
-            const filtervalue = globalFilter ? `&q=${encodeURIComponent(globalFilter)}` : ''
-            const response = await axiosInstance.get(`brands?dashboard=true&p=${page}&page_size=${pageSize}${filtervalue}`)
-            const data = response.data.data.results
-            const total = response.data.data.count
-            setData(data)
-            setTotalData(total)
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
-    useEffect(() => {
-        fetchData(page, pageSize)
+    const queryParams = useMemo(() => {
+        const filterValue = globalFilter ? `&q=${encodeURIComponent(globalFilter)}` : ''
+        return `brands?dashboard=true&p=${page}&page_size=${pageSize}${filterValue}`
     }, [page, pageSize, globalFilter])
+
+    const { data, totalData } = useFetchApi<BrandTypes[]>({ url: queryParams })
 
     const handleDeleteBrand = (id: number) => {
         setBrandId(id)
         setShowBrandDelete(true)
     }
 
-    const onSelectChange = (value = 0) => {
-        setPageSize(Number(value))
-    }
-
     const handleSyncBrand = async (name: string) => {
-        notification.info({
-            message: 'SYNC IN PROCESS',
-        })
-        const body = {
-            task_name: 'resize_product_images',
-            brand: name,
-        }
+        notification.info({ message: 'SYNC IN PROCESS' })
+        const body = { task_name: 'resize_product_images', brand: name }
 
         try {
             const response = await axiosInstance.post(`/backend/task/create`, body)
-            notification.success({
-                message: response?.data?.message || 'SYNCED TO Brand',
-            })
+            notification.success({ message: response?.data?.message || 'SYNCED TO Brand' })
         } catch (error: any) {
             console.error(error)
-            notification.success({
-                message: error.response?.data?.message || 'FAILED TO SYNC Brand',
-            })
+            notification.success({ message: error.response?.data?.message || 'FAILED TO SYNC Brand' })
         }
     }
 
     const handleDelete = async () => {
-        const body = {
-            remove_tags: true,
-        }
+        const body = { remove_tags: true }
         try {
-            await axiosInstance.delete(`/brands/${brandId}`, {
-                data: body,
-            })
-            notification.success({
-                message: 'Successfully deleted the brand',
-            })
+            await axiosInstance.delete(`/brands/${brandId}`, { data: body })
+            notification.success({ message: 'Successfully deleted the brand' })
         } catch (error) {
             console.log(error)
-            notification.error({
-                message: 'Failed to Delete Brand',
-            })
+            notification.error({ message: 'Failed to Delete Brand' })
         } finally {
             setShowBrandDelete(false)
         }
@@ -92,7 +60,7 @@ const Brand = () => {
     const columns = BrandColumns({ handleSyncBrand, handleDeleteBrand })
 
     return (
-        <div>
+        <div className="p-2 rounded-xl shadow-xl">
             <div className="mb-4">
                 <input
                     type="text"
@@ -111,12 +79,17 @@ const Brand = () => {
                         isSearchable={false}
                         value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
-                        onChange={(option) => onSelectChange(option?.value)}
+                        onChange={(option) => {
+                            if (option) {
+                                setPage(1)
+                                setPageSize(option?.value)
+                            }
+                        }}
                     />
                 </div>
             </div>
-            {showbrandDelete && (
-                <DialogConfirm IsDelete setIsOpen={setShowBrandDelete} IsOpen={showbrandDelete} onDialogOk={handleDelete} />
+            {showBrandDelete && (
+                <DialogConfirm IsDelete setIsOpen={setShowBrandDelete} IsOpen={showBrandDelete} onDialogOk={handleDelete} />
             )}
         </div>
     )
