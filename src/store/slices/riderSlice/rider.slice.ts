@@ -8,7 +8,7 @@ const initialState: { riderAttendance: RiderAttendanceResults[]; count: number; 
         riderAttendance: [],
         count: 0,
         page: 1,
-        pageSize: 100,
+        pageSize: 3000,
         from: moment().startOf('month').format('YYYY-MM-DD'),
         to: moment().endOf('month').format('YYYY-MM-DD'),
     }
