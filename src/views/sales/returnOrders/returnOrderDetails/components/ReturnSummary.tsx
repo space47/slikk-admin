@@ -1,13 +1,31 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Card from '@/components/ui/Card'
 import { useAppSelector } from '@/store'
 import { ReturnOrderState } from '@/store/types/returnDetails.types'
 import { FaEdit } from 'react-icons/fa'
 import { Button } from '@/components/ui'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { notification } from 'antd'
+import { AxiosError } from 'axios'
+import { useNavigate } from 'react-router-dom'
+
+interface BankDetails {
+    account_number: string
+    beneficiary_name: string
+    ifsc_code: string
+    upi: string
+}
 
 const ReturnSummary = () => {
+    const navigate = useNavigate()
     const returnOrder = useAppSelector<ReturnOrderState>((state) => state.returnOrders)
     const returnDetails = returnOrder.returnOrders
+    const [bankDetails, setBankDetails] = useState<BankDetails>({
+        account_number: '',
+        beneficiary_name: '',
+        ifsc_code: '',
+        upi: '',
+    })
 
     const initialBankDetails = {
         account_number: returnDetails?.user_account_details?.account_details?.account_number || '',
@@ -16,15 +34,45 @@ const ReturnSummary = () => {
         upi: returnDetails?.user_account_details?.upi || '',
     }
 
-    const [bankDetails, setBankDetails] = useState(initialBankDetails)
     const [isEditing, setIsEditing] = useState(false)
+
+    useEffect(() => {
+        setBankDetails(initialBankDetails)
+    }, [returnDetails])
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
         setBankDetails((prev) => ({ ...prev, [name]: value }))
     }
+    const handleSaveBankDetails = async () => {
+        const filteredDetails = Object.entries({
+            beneficiary_name: bankDetails?.beneficiary_name,
+            account_number: bankDetails?.account_number,
+            ifsc_code: bankDetails?.ifsc_code,
+        }).filter(([, value]) => value !== '')
+        const body = {
+            first_name: returnDetails?.user?.first_name || '',
+            last_name: returnDetails?.user?.last_name || '',
+            email: returnDetails?.user?.email || '',
+            bank_details: {
+                upi: bankDetails?.upi,
+                account_details: Object.fromEntries(filteredDetails),
+            },
+        }
 
-    const handleSaveBankDetails = async () => {}
+        try {
+            const response = await axioisInstance.patch(`/dashboard/user/profile/${returnDetails?.user?.mobile}`, body)
+            notification.success({ message: response?.data?.message || 'Successfully Updated' })
+            navigate(0)
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                notification.error({ message: error?.message || 'Something went wrong' })
+            }
+            console.error(error)
+        } finally {
+            setIsEditing(false)
+        }
+    }
 
     return (
         <Card className="mb-6 p-5 rounded-2xl shadow-lg bg-white">
