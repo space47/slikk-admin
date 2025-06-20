@@ -116,17 +116,16 @@ const RefundActivity = () => {
     }
     const triggerApiCall = async () => {
         try {
-            const bodyReturnCompleted: Record<string, any> = {
-                action,
-                reference_id: valueInsideModal.refundId,
-                return_amount: valueInsideModal.refundAmount,
-            }
-            if (forceCOD) {
-                bodyReturnCompleted.cod_force = true
-            }
+            const body =
+                action === 'return_completed'
+                    ? {
+                          action,
+                          reference_id: valueInsideModal.refundId,
+                          return_amount: valueInsideModal.refundAmount,
+                      }
+                    : { action }
 
-            const body = action === 'return_completed' ? bodyReturnCompleted : { action }
-            const response = await axiosInstance.patch(`merchant/return_order/${returnDetails?.return_order_id}`, body)
+            const response = await axiosInstance.patch(`merchant/return_orderss/${returnDetails?.return_order_id}`, body)
             notification.success({ message: response?.data?.message || 'Rider status updated successfully.' })
             setForceCOD(false)
             navigate(0)
@@ -143,6 +142,23 @@ const RefundActivity = () => {
             triggerApiCall()
         }
     }, [triggerAction])
+
+    const handleForceCod = async () => {
+        const body = {
+            action: 'return_completed',
+            reference_id: valueInsideModal.refundId,
+            return_amount: valueInsideModal.refundAmount,
+            cod_force: true,
+        }
+        try {
+            const response = await axiosInstance.patch(`merchant/return_order/${returnDetails?.return_order_id}`, body)
+            notification.success({ message: response?.data?.message || 'Rider status updated successfully.' })
+            setForceCOD(false)
+            navigate(0)
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
     return (
         <Card className="mb-10 flex flex-col">
@@ -243,7 +259,7 @@ const RefundActivity = () => {
                 </Modal>
             )}
             {forceCOD && (
-                <Modal open={forceCOD} okText={'Proceed'} onOk={() => handleAction('return_completed')} onCancel={() => setForceCOD(false)}>
+                <Modal open={forceCOD} okText={'Proceed'} onOk={handleForceCod} onCancel={() => setForceCOD(false)}>
                     <p className="text-xl">Do You Want To Proceed With Manual Refund</p>
                 </Modal>
             )}
