@@ -376,6 +376,13 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/category-management/catalog/CopyAndAdd')),
         authority: [ADMIN, USER],
     },
+    // Tags
+    {
+        key: 'appsCategory.productTags',
+        path: `${APP_PREFIX_PATH}/catalog/productTags`,
+        component: lazy(() => import('@/views/category-management/productTagConfig/productTagTable/productTagTable')),
+        authority: [ADMIN, USER],
+    },
     {
         key: 'appsCategory.subCategory',
         path: `${APP_PREFIX_PATH}/category/subCategory`,
