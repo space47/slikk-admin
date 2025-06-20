@@ -125,7 +125,7 @@ const RefundActivity = () => {
                       }
                     : { action }
 
-            const response = await axiosInstance.patch(`merchant/return_orderss/${returnDetails?.return_order_id}`, body)
+            const response = await axiosInstance.patch(`merchant/return_order/${returnDetails?.return_order_id}`, body)
             notification.success({ message: response?.data?.message || 'Rider status updated successfully.' })
             setForceCOD(false)
             navigate(0)
