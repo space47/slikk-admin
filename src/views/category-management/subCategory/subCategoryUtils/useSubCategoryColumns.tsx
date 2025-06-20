@@ -25,6 +25,7 @@ export const useSubCategoryColumns = ({ handleDeleteClick }: props) => {
             { header: 'Name', accessor: 'name' },
             { header: 'Division', accessor: 'division_name' },
             { header: 'Category', accessor: 'category_name' },
+            { header: 'Product Count', accessor: 'product_count' },
             {
                 header: 'Create Date',
                 accessor: 'create_date',
