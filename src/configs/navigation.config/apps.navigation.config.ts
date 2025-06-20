@@ -400,6 +400,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         subMenu: [],
                     },
                     {
+                        key: 'appsCategory.productTags',
+                        path: `${APP_PREFIX_PATH}/catalog/productTags`,
+                        title: 'Product Tags',
+                        translateKey: 'nav.appsCategory.productTags',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
                         key: 'appsCategory.productFeedback',
                         path: `${APP_PREFIX_PATH}/category/productFeedback`,
                         title: 'Product Feedback',

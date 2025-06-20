@@ -57,7 +57,7 @@ const ReturnSummary = () => {
                                 onChange={handleChange}
                             />
                         ) : (
-                            <span className="font-semibold text-black">{bankDetails.account_number || 'N/A'}</span>
+                            <span className="font-semibold text-black">{initialBankDetails.account_number || 'N/A'}</span>
                         )}
                     </div>
 
@@ -72,7 +72,7 @@ const ReturnSummary = () => {
                                 onChange={handleChange}
                             />
                         ) : (
-                            <span className="font-semibold text-black">{bankDetails.beneficiary_name || 'N/A'}</span>
+                            <span className="font-semibold text-black">{initialBankDetails.beneficiary_name || 'N/A'}</span>
                         )}
                     </div>
 
@@ -87,7 +87,7 @@ const ReturnSummary = () => {
                                 onChange={handleChange}
                             />
                         ) : (
-                            <span className="font-semibold text-black">{bankDetails.ifsc_code || 'N/A'}</span>
+                            <span className="font-semibold text-black">{initialBankDetails.ifsc_code || 'N/A'}</span>
                         )}
                     </div>
 
@@ -102,7 +102,7 @@ const ReturnSummary = () => {
                                 onChange={handleChange}
                             />
                         ) : (
-                            <span className="font-semibold text-black">{bankDetails.upi || 'N/A'}</span>
+                            <span className="font-semibold text-black">{initialBankDetails.upi || 'N/A'}</span>
                         )}
                     </div>
                     {isEditing && (

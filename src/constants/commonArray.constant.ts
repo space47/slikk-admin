@@ -64,3 +64,10 @@ export const CouponTypeArray = [
     { label: 'REFERRAL', value: 'REFERRAL' },
     { label: 'REFEREE', value: 'REFEREE' },
 ]
+
+export const SegmentOptions = () => {
+    return ['Fashion', 'Footwear', 'Beauty & Personal Care', 'Home Decor', 'Accessories', 'Travel and Luggages'].map((segment) => ({
+        label: segment,
+        value: segment,
+    }))
+}
