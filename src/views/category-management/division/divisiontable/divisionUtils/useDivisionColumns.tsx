@@ -71,6 +71,7 @@ export const useDivisionColumns = ({ handleDeleteClick }: props) => {
                 accessor: 'is_try_and_buy',
                 format: (value: any) => (value ? 'Yes' : 'No'),
             },
+            { header: 'Product_count', accessor: 'product_count' },
             { header: 'Last Updated By', accessor: 'last_updated_by' },
 
             {

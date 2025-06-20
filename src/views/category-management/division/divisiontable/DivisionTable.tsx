@@ -20,8 +20,8 @@ const DivisionTable = () => {
     const [idStoreForDelete, setIdStoreForDelete] = useState<string | number | undefined>()
 
     const queryParams = useMemo(() => {
-        const filterValue = globalFilter ? `&q=${globalFilter}` : ''
-        return `division?dashboard=true${filterValue}`
+        const filterValue = globalFilter ? `&name=${globalFilter}` : ''
+        return `division?dashboard=true${encodeURIComponent(filterValue)}`
     }, [globalFilter])
 
     const { data } = useFetchSingleData<DataItem[]>({ url: queryParams, initialData: [] })
