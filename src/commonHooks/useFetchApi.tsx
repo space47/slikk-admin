@@ -6,6 +6,7 @@ import { AxiosError } from 'axios'
 interface Api_Hooks_props<T> {
     url: string
     initialData?: T[]
+    typeOfData?: 'Array' | 'Object'
 }
 
 interface ApiResponse<T> {
@@ -15,7 +16,7 @@ interface ApiResponse<T> {
     } | null
 }
 
-export const useFetchApi = <T,>({ url, initialData = [] }: Api_Hooks_props<T>) => {
+export const useFetchApi = <T,>({ url, initialData = [], typeOfData }: Api_Hooks_props<T>) => {
     const [data, setData] = useState<T[]>(initialData)
     const [totalData, setTotalData] = useState<number>(0)
     const [loading, setLoading] = useState(false)
@@ -24,8 +25,14 @@ export const useFetchApi = <T,>({ url, initialData = [] }: Api_Hooks_props<T>) =
         try {
             setLoading(true)
             const response = await axioisInstance.get<ApiResponse<T>>(url)
-            setData(response.data?.data?.results ?? [])
-            setTotalData(response.data?.data?.count ?? 0)
+            if (typeOfData === 'Object') {
+                const data = response.data
+                const dataArray = Object.values(data) as T[]
+                setData(dataArray)
+            } else {
+                setData(response.data?.data?.results ?? [])
+                setTotalData(response.data?.data?.count ?? 0)
+            }
         } catch (error) {
             if (error instanceof AxiosError) {
                 setResponseStatus(error.response?.status)

@@ -8,6 +8,7 @@ export interface TagsDataTypes {
     is_update_field: boolean
     file_header_name: string
     product_field_name: string
+    domains: Array<string>
 }
 
 export type ProductTagsDataTypes = {
