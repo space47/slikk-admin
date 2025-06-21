@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     getProfileRequest,
     getProfileSuccess,
@@ -14,15 +13,17 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { setUser, signInSuccess } from '../slices/auth'
 import { access } from 'fs'
 
-export const validatePhoneNumber = (mobileNumber: string, typeOfLogin?: string) => async (dispatch: any) => {
+export const validatePhoneNumber = (mobileNumber: string) => async (dispatch: any) => {
     try {
         console.log(loginRequest)
         dispatch({
             type: loginRequest,
         })
 
+        console.log('Calling API')
+
         const { data }: any = await axioisInstance.post('dashboard/login', {
-            type: typeOfLogin === 'whatsApp' ? 'whatsapp' : 'login',
+            type: 'login',
             mobile: mobileNumber,
         })
 
