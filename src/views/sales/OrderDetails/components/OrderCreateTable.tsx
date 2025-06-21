@@ -41,9 +41,9 @@ const OrderCreateTable = ({ data, handleActionClick }: ProductTableProps) => {
             {
                 header: 'Image',
                 accessorKey: 'image',
-                cell: ({ getValue }) => (
+                cell: ({ getValue }: any) => (
                     <div className="flex gap-2">
-                        <img src={getValue().split(',')[0]} alt="Image" className="w-[100px] h-[100px]" />
+                        <img src={getValue().split(',')[0] as string} alt="Image" className="w-[100px] h-[100px]" />
                     </div>
                 ),
             },
