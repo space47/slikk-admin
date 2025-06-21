@@ -14,6 +14,7 @@ export interface SINGLE_DIVISION_DATA {
     create_date: string
     update_date: string
     last_updated_by: string
+    product_count: number | undefined
     categories: {
         id: number
         name: string
@@ -32,6 +33,7 @@ export interface SINGLE_DIVISION_DATA {
         update_date: string
         is_try_and_buy: boolean
         last_updated_by: string
+        product_count: number | undefined
         sub_categories: {
             id: number
             name: string
@@ -50,6 +52,7 @@ export interface SINGLE_DIVISION_DATA {
             update_date: string
             is_try_and_buy: boolean
             last_updated_by: null
+            product_count: number | undefined
             product_types: {
                 id: number
                 name: string
@@ -68,6 +71,7 @@ export interface SINGLE_DIVISION_DATA {
                 is_try_and_buy: boolean
                 sub_category: number
                 last_updated_by: null
+                product_count: number | undefined
             }[]
         }[]
     }[]

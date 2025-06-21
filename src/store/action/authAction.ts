@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     getProfileRequest,
     getProfileSuccess,
@@ -13,84 +14,79 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { setUser, signInSuccess } from '../slices/auth'
 import { access } from 'fs'
 
-export const validatePhoneNumber =
-    (mobileNumber: string) => async (dispatch: any) => {
-        try {
-            console.log(loginRequest)
-            dispatch({
-                type: loginRequest,
-            })
+export const validatePhoneNumber = (mobileNumber: string, typeOfLogin?: string) => async (dispatch: any) => {
+    try {
+        console.log(loginRequest)
+        dispatch({
+            type: loginRequest,
+        })
 
-            console.log('Calling API')
+        const { data }: any = await axioisInstance.post('dashboard/login', {
+            type: typeOfLogin === 'whatsApp' ? 'whatsapp' : 'login',
+            mobile: mobileNumber,
+        })
 
-            const { data }: any = await axioisInstance.post('dashboard/login', {
-                type: 'login',
+        dispatch({
+            type: 'loginSuccess',
+            payload: {
                 mobile: mobileNumber,
-            })
-
-            dispatch({
-                type: 'loginSuccess',
-                payload: {
-                    mobile: mobileNumber,
-                    message: data.message,
-                    signup_done: data.show_profile_page,
-                },
-            })
-        } catch (error: any) {
-            dispatch({
-                type: 'loginFailure',
-                payload: {
-                    mobileNumber,
-                    message: error?.response?.data?.message,
-                },
-            })
-        }
+                message: data.message,
+                signup_done: data.show_profile_page,
+            },
+        })
+    } catch (error: any) {
+        dispatch({
+            type: 'loginFailure',
+            payload: {
+                mobileNumber,
+                message: error?.response?.data?.message,
+            },
+        })
     }
+}
 
-export const validateOTP =
-    (mobileNumber: string, otpCode: string, callBackfn: () => void) =>
-        async (dispatch: any) => {
-            try {
-                dispatch({
-                    type: otpRequest,
-                })
-                console.log('otpRequest')
-                const { data }: any = await axioisInstance.post(`dashboard/login`, {
-                    type: 'verify',
-                    mobile: mobileNumber,
-                    otp: otpCode,
-                })
+export const validateOTP = (mobileNumber: string, otpCode: string, callBackfn: () => void) => async (dispatch: any) => {
+    try {
+        dispatch({
+            type: otpRequest,
+        })
+        console.log('otpRequest')
+        const { data }: any = await axioisInstance.post(`dashboard/login`, {
+            type: 'verify',
+            mobile: mobileNumber,
+            otp: otpCode,
+        })
 
-                localStorage.setItem('accessToken', data.access)
+        localStorage.setItem('accessToken', data.access)
 
-                dispatch({
-                    type: 'otpSuccess',
-                    payload: {
-                        mobileNumber,
-                        message: data.message,
-                        access: data.access,
-                    },
-                })
-                dispatch(signInSuccess(data.access))
-                dispatch(
-                    setUser(
-                        data || {
-                            avatar: '',
-                            userName: 'Anonymous',
-                            authority: ['USER'],
-                            email: '',
-                        },
-                    ),
-                )
-                callBackfn()
-            } catch (error: any) {
-                console.log('Validate OTP Error', error?.response?.data)
-                dispatch({
-                    type: 'otpFailure',
-                    payload: { message: error?.response?.data?.message },
-                })
-            }
-        }
+        dispatch({
+            type: 'otpSuccess',
+            payload: {
+                mobileNumber,
+                message: data.message,
+                access: data.access,
+            },
+        })
+        dispatch(signInSuccess(data.access))
+        dispatch(
+            setUser(
+                data || {
+                    avatar: '',
+                    userName: 'Anonymous',
+                    authority: ['USER'],
+                    email: '',
+                },
+            ),
+        )
+        callBackfn()
+    } catch (error: any) {
+        console.log('Validate OTP Error', error?.response?.data)
+        dispatch({
+            type: 'otpFailure',
+            payload: { message: error?.response?.data?.message },
+        })
+    }
+}
 
 export const clearAuthState = async (dispatch: any) => {
     try {
@@ -127,8 +123,7 @@ export const getProfileData = () => async (dispatch: any) => {
         dispatch({
             type: getProfileRequest,
         })
-        const { data }: any = await axioisInstance
-            .get('dashboard/user/profile');
+        const { data }: any = await axioisInstance.get('dashboard/user/profile')
         console.log('GET PROFILE', data.data)
         dispatch({
             type: 'getProfileSuccess',
