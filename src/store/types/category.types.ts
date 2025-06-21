@@ -18,6 +18,7 @@ export interface SINGLE_CATEGORY_DATA {
     update_date: string
     is_try_and_buy: boolean
     last_updated_by: string
+    product_count: number | undefined
     sub_categories: {
         id: number
         name: string
@@ -36,6 +37,7 @@ export interface SINGLE_CATEGORY_DATA {
         update_date: string
         is_try_and_buy: boolean
         last_updated_by: null
+        product_count: number | undefined
     }[]
 }
 
