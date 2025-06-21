@@ -50,13 +50,15 @@ const RiderDetails = () => {
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
     const [isCheckModal, setIsCheckModal] = useState<boolean>(false)
     const [isCheckOutModal, setIsCheckOutModal] = useState<boolean>(false)
+    const [riderSearchByType, setRiderSearchByType] = useState('name')
     const { data: riders, isSuccess } = ridersService.useRiderDetailsQuery(
         {
             from: from,
             to: To_Date,
             page: page,
             pageSize: pageSize,
-            mobile: globalFilter,
+            mobile: riderSearchByType === 'mobile' ? globalFilter : '',
+            name: riderSearchByType === 'name' ? globalFilter : '',
             isActive: tabSelect === 'checkin' ? 'true' : 'false',
             rider_type: riderType === 'Select Rider Type' ? '' : riderType,
         },
@@ -224,14 +226,34 @@ const RiderDetails = () => {
                         </div>
                     </div>
 
-                    <div className="mb-4 ">
-                        <input
-                            name="filter"
-                            value={globalFilter}
-                            className="rounded-xl"
-                            placeholder="Search by riders name"
-                            onChange={(e) => setGlobalFilter(e.target.value)}
-                        />
+                    <div className="mb-4">
+                        <div className="flex gap-2 items-center  shadow-xl p-2 rounded-xl ">
+                            <div>
+                                <input
+                                    name="filter"
+                                    type="search"
+                                    value={globalFilter}
+                                    className="rounded-xl"
+                                    placeholder="Search by riders name"
+                                    onChange={(e) => setGlobalFilter(e.target.value)}
+                                />
+                            </div>
+                            <div className="bg-gray-200 max-h-[140px] px-1 rounded-lg font-bold text-[15px] ">
+                                <Dropdown
+                                    className="border   text-black text-lg font-semibold "
+                                    title={riderSearchByType}
+                                    onSelect={(selectedKey) => setRiderSearchByType(selectedKey)}
+                                >
+                                    <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide xl:max-h-[600px]  xl:overflow-y-scroll font-bold ">
+                                        {['mobile', 'name']?.map((item, key) => (
+                                            <DropdownItem key={key} eventKey={item} className="h-1">
+                                                {item}
+                                            </DropdownItem>
+                                        ))}
+                                    </div>
+                                </Dropdown>
+                            </div>
+                        </div>
                     </div>
                     <div className="font-bold text-xl mb-5 mt-5">Total Riders : {count}</div>
                     <EasyTable mainData={riderDetails} columns={columns} />
