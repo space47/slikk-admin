@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useMemo, useState, useEffect, useRef } from 'react'
-import { MapContainer, TileLayer, Marker, Popup, useMap, Tooltip } from 'react-leaflet'
+import React, { useMemo, useState, useEffect } from 'react'
+import { MapContainer, TileLayer, Marker, useMap, Tooltip } from 'react-leaflet'
 import * as L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { FaMapMarkerAlt } from 'react-icons/fa'
@@ -20,7 +20,7 @@ L.Marker.prototype.options.icon = DefaultIcon
 
 const officeIcon = L.icon({
     iconUrl: '/img/logo/slikkWare.png',
-    iconSize: [30, 45],
+    iconSize: [20, 35],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],
 })
@@ -113,11 +113,11 @@ const MarkerComponent = ({ markers, currLat, currLong, handleDetails, specificRi
             })}
 
             <Marker position={[currLat, currLong]} icon={officeIcon}>
-                <Tooltip direction="top" offset={[0, -10]} opacity={1} permanent={false}>
+                {/* <Tooltip direction="top" offset={[0, -10]} opacity={1} permanent={false}>
                     <div>
                         <strong>SlikkSync Technologies</strong>
                     </div>
-                </Tooltip>
+                </Tooltip> */}
             </Marker>
 
             <CurrentLocationButton setCenter={() => {}} currLat={currLat} currLong={currLong} />
@@ -134,8 +134,8 @@ const RiderFullMap: React.FC<RiderFullMapProps> = ({ riderDetails, currentStore 
     const [showRiderModal, setShowRiderModal] = useState(false)
     const [mobileData, setMobileData] = useState<number>()
 
-    const latitudes = riderDetails?.map((rider) => parseFloat(rider?.profile?.current_location?.latitude) || 0)
-    const longitudes = riderDetails?.map((rider) => parseFloat(rider?.profile?.current_location?.longitude) || 0)
+    const latitudes = riderDetails?.map((rider) => parseFloat(rider?.profile?.current_location?.latitude || '') || 0)
+    const longitudes = riderDetails?.map((rider) => parseFloat(rider?.profile?.current_location?.longitude || '') || 0)
     const namesOfRiders = riderDetails?.map((rider) => rider?.profile?.first_name)
     const mobileOfRiders = riderDetails?.map((rider) => rider?.profile?.mobile)
     const ifStatusTrue = riderDetails?.map((rider) => rider?.profile?.checked_in_status)
