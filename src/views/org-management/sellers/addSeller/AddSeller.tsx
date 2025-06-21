@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { SELLING_FORM, POC_FORM, ACCOUNT_FORM } from './addCommon'
 import { SellerFormTypes } from '../sellerCommon'
+import { SegmentOptions } from '@/constants/commonArray.constant'
 
 const initialValue: SellerFormTypes = {
     account_holder_name: '',
@@ -38,30 +39,15 @@ const initialValue: SellerFormTypes = {
     warehouse_charge_per_sku: 0,
 }
 
-const SegmentOptions = () => {
-    return ['Fashion', 'Footwear', 'Beauty & Personal Care', 'Home Decor', 'Accessories', 'Travel and Luggages'].map((segment) => ({
-        label: segment,
-        value: segment,
-    }))
-}
-
 const AddSeller = () => {
     const navigate = useNavigate()
-
     const handleSubmit = async (values: SellerFormTypes) => {
-        console.log('handleSubmit')
         if (values.account_number !== values.confirm) {
-            notification.error({
-                message: 'Failure',
-                description: 'Account number does not match',
-            })
+            notification.error({ message: 'Failure!! Account number does not match' })
             return
         }
         if (values.contact_number === values.alternate_contact_number) {
-            notification.error({
-                message: 'Failure',
-                description: 'Alternate Mobile Number Should be different',
-            })
+            notification.error({ message: 'Failure !! Alternate Mobile Number Should be different' })
             return
         }
 
@@ -74,8 +60,6 @@ const AddSeller = () => {
 
         try {
             const response = await axioisInstance.post('merchant/company', formData)
-
-            console.log(response)
             notification.success({
                 message: 'Success',
                 description: response?.data?.message || 'Seller created Successfully',
