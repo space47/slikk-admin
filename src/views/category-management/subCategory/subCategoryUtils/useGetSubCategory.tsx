@@ -16,15 +16,24 @@ export const useGetSubCategory = ({ selectedCategory, selectedDivision }: props)
 
     console.log(categoryArray)
 
-    let subCategories = subCategoryArray?.subcategories
-
     const division = divisions?.divisions?.find((d) => d?.name === selectedDivision)
+
+    console.log('divisions', division)
+
     const category = division?.categories?.find((c) => c?.name === selectedCategory)
-    const divisionThroughCategory = division?.categories?.flatMap((category) =>
-        (category?.sub_categories || []).map((subCat) => subCat?.id),
-    )
-    const divisionCategoryPC = subCategoryArray?.subcategories?.find((sub) => divisionThroughCategory?.includes(sub.id))?.product_count
+    const divisionThroughCategory = division?.categories?.flatMap((category) => category?.sub_categories?.map((subCat) => subCat?.id))
+    console.log('divisionThroughCategory', divisionThroughCategory)
+
+    const divisionCategoryProductCounts = subCategoryArray?.subcategories
+        ?.filter((sub) => divisionThroughCategory?.includes(sub.id))
+        ?.map((sub) => ({
+            id: sub.id,
+            product_count: sub.product_count,
+        }))
+
     const subCategoryProductCount = subCategoryArray?.subcategories?.find((c) => c.category_name === selectedCategory)?.product_count
+
+    let subCategories = []
 
     if (selectedDivision !== 'Select Division' && selectedCategory !== 'Select Category') {
         subCategories =
@@ -37,12 +46,15 @@ export const useGetSubCategory = ({ selectedCategory, selectedDivision }: props)
     } else if (selectedDivision !== 'Select Division') {
         subCategories =
             division?.categories?.flatMap((category) =>
-                (category?.sub_categories || []).map((subCat) => ({
-                    ...subCat,
-                    product_count: divisionCategoryPC,
-                    division_name: selectedDivision,
-                    category_name: category.name,
-                })),
+                (category?.sub_categories || []).map((subCat) => {
+                    const matched = divisionCategoryProductCounts?.find((item) => item.id === subCat.id)
+                    return {
+                        ...subCat,
+                        product_count: matched?.product_count || 0,
+                        division_name: selectedDivision,
+                        category_name: category.name,
+                    }
+                }),
             ) || []
     } else if (selectedCategory !== 'Select Category') {
         subCategories =
