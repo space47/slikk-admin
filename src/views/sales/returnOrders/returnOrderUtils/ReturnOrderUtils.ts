@@ -7,18 +7,18 @@ export const getStatusFilterReturn = (tabSelect: string) => {
             return '&status=ACCEPTED'
 
         case 'pickup_created':
-            return '&status=PICKUP_CREATED'
+            return '&status=PICKUP_CREATED,REVERSE_PICKUP_CREATED'
 
-        case 'reverse_pickup_created':
-            return '&status=REVERSE_PICKUP_CREATED'
+        // case 'reverse_pickup_created':
+        //     return '&status=REVERSE_PICKUP_CREATED'
 
         case 'out_for_pickup':
             return '&status=OUT_FOR_PICKUP'
         case 'rider_assigned':
             return '&status=RIDER_ASSIGNED'
 
-        case 'in_transit':
-            return '&status=IN_TRANSIT'
+        case 'delivered':
+            return '&status=DELIVERED'
 
         case 'refunded':
             return '&status=REFUNDED'
