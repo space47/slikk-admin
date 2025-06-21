@@ -36,7 +36,7 @@ const Subcategory = () => {
 
     useEffect(() => {
         setData(subCategories)
-    }, [globalFilter, selectedDivision, selectedCategory])
+    }, [globalFilter, selectedDivision, selectedCategory, subCategories])
 
     const handleDeleteClick = (id: any) => {
         setDeleteModal(true)

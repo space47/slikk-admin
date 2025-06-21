@@ -13,13 +13,14 @@ const ReturnOrderTabs = ({ tabSelect, handleSelectTab, orderCount }: props) => {
                 {[
                     { label: 'ALL', key: 'all' },
                     { label: 'PICKUP_CREATED', key: 'pickup_created' },
-                    { label: 'REVERSE_PICKUP_CREATED', key: 'reverse_pickup_created' },
-                    { label: 'ACCEPTED', key: 'accepted' },
-                    { label: 'OUT_FOR_PICKUP', key: 'out_for_pickup' },
+                    // { label: 'REVERSE_PICKUP_CREATED', key: 'reverse_pickup_created' },
                     { label: 'RIDER_ASSIGNED', key: 'rider_assigned' },
-                    { label: 'REFUNDED', key: 'refunded' },
+                    { label: 'OUT_FOR_PICKUP', key: 'out_for_pickup' },
+                    { label: 'DELIVERED', key: 'delivered' },
                     { label: 'COMPLETED', key: 'completed' },
+                    { label: 'REFUNDED', key: 'refunded' },
                     { label: 'CANCELLED', key: 'cancelled' },
+                    { label: 'ACCEPTED', key: 'accepted' },
                 ].map((tab) => (
                     <div
                         key={tab.key}
@@ -42,13 +43,14 @@ const ReturnOrderTabs = ({ tabSelect, handleSelectTab, orderCount }: props) => {
                 {[
                     { label: 'ALL', key: 'all' },
                     { label: 'PICKUP_CREATED', key: 'pickup_created' },
-                    { label: 'REVERSE PICKUP CREATED', key: 'reverse_pickup_created' },
-                    { label: 'ACCEPTED', key: 'accepted' },
-                    { label: 'OUT FOR PICKUP', key: 'out_for_pickup' },
-                    { label: 'RIDER ASSIGNED', key: 'rider_assigned' },
-                    { label: 'REFUNDED', key: 'refunded' },
+                    // { label: 'REVERSE_PICKUP_CREATED', key: 'reverse_pickup_created' },
+                    { label: 'RIDER_ASSIGNED', key: 'rider_assigned' },
+                    { label: 'OUT_FOR_PICKUP', key: 'out_for_pickup' },
+                    { label: 'DELIVERED', key: 'delivered' },
                     { label: 'COMPLETED', key: 'completed' },
+                    { label: 'REFUNDED', key: 'refunded' },
                     { label: 'CANCELLED', key: 'cancelled' },
+                    { label: 'ACCEPTED', key: 'accepted' },
                 ].map((tab) => (
                     <div
                         key={tab.key}
