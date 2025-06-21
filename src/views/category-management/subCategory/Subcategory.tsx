@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
@@ -9,7 +9,6 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { useSubCategoryColumns } from './subCategoryUtils/useSubCategoryColumns'
 import { Option, pageSizeOptions } from '@/constants/pageUtils.constants'
 import { useSubCategoryFilter } from './subCategoryUtils/subCategoryFilter'
-import { SINGLE_SUBCATEGORY_DATA } from '@/store/types/subcategory.types'
 import { useGetSubCategory } from './subCategoryUtils/useGetSubCategory'
 import { useDeleteFromCatalog } from '@/commonHooks/useDeleteFromCatalog'
 import { useLocalPaginateData } from '@/commonHooks/useLocalPaginateData'
@@ -19,7 +18,6 @@ const { Tr, Th, Td, THead, TBody } = Table
 
 const Subcategory = () => {
     const navigate = useNavigate()
-    const [data, setData] = useState<SINGLE_SUBCATEGORY_DATA[]>([])
     const [deleteModal, setDeleteModal] = useState(false)
     const [globalFilter, setGlobalFilter] = useState<string>('')
     const [idStoreForDelete, setIdStoreForDelete] = useState()
@@ -29,14 +27,10 @@ const Subcategory = () => {
     const { subCategories, DivisionArray } = useGetSubCategory({ selectedDivision, selectedCategory })
 
     const { page, pageSize, paginatedData, setPage, setPageSize, totalPages } = useLocalPaginateData({
-        data,
+        data: subCategories,
         globalFilter,
     })
     const categoryArray = useSubCategoryFilter({ selectedDivision })
-
-    useEffect(() => {
-        setData(subCategories)
-    }, [globalFilter, selectedDivision, selectedCategory])
 
     const handleDeleteClick = (id: any) => {
         setDeleteModal(true)
