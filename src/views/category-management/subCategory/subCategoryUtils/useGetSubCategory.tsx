@@ -18,11 +18,8 @@ export const useGetSubCategory = ({ selectedCategory, selectedDivision }: props)
 
     const division = divisions?.divisions?.find((d) => d?.name === selectedDivision)
 
-    console.log('divisions', division)
-
     const category = division?.categories?.find((c) => c?.name === selectedCategory)
     const divisionThroughCategory = division?.categories?.flatMap((category) => category?.sub_categories?.map((subCat) => subCat?.id))
-    console.log('divisionThroughCategory', divisionThroughCategory)
 
     const divisionCategoryProductCounts = subCategoryArray?.subcategories
         ?.filter((sub) => divisionThroughCategory?.includes(sub.id))
@@ -31,18 +28,26 @@ export const useGetSubCategory = ({ selectedCategory, selectedDivision }: props)
             product_count: sub.product_count,
         }))
 
-    const subCategoryProductCount = subCategoryArray?.subcategories?.find((c) => c.category_name === selectedCategory)?.product_count
+    const subCategoryProductCount = subCategoryArray?.subcategories
+        ?.filter((c) => c.category_name === selectedCategory)
+        ?.map((sub) => ({
+            id: sub?.id,
+            product_count: sub.product_count,
+        }))
 
     let subCategories = []
 
     if (selectedDivision !== 'Select Division' && selectedCategory !== 'Select Category') {
         subCategories =
-            category?.sub_categories?.map((subCat) => ({
-                ...subCat,
-                product_count: subCategoryProductCount,
-                division_name: selectedDivision,
-                category_name: selectedCategory,
-            })) || []
+            category?.sub_categories?.map((subCat) => {
+                const matched = subCategoryProductCount?.find((item) => item?.id === subCat?.id)
+                return {
+                    ...subCat,
+                    product_count: matched?.product_count,
+                    division_name: selectedDivision,
+                    category_name: selectedCategory,
+                }
+            }) || []
     } else if (selectedDivision !== 'Select Division') {
         subCategories =
             division?.categories?.flatMap((category) =>
@@ -59,12 +64,15 @@ export const useGetSubCategory = ({ selectedCategory, selectedDivision }: props)
     } else if (selectedCategory !== 'Select Category') {
         subCategories =
             divisions?.divisions?.flatMap((division) =>
-                (category?.sub_categories || []).map((subCat) => ({
-                    ...subCat,
-                    product_count: subCategoryProductCount,
-                    division_name: division.name,
-                    category_name: selectedCategory,
-                })),
+                (category?.sub_categories || []).map((subCat) => {
+                    const matched = subCategoryProductCount?.find((item) => item?.id === subCat?.id)
+                    return {
+                        ...subCat,
+                        product_count: matched?.product_count,
+                        division_name: division.name,
+                        category_name: selectedCategory,
+                    }
+                }),
             ) || []
     } else {
         subCategories = subCategoryArray?.subcategories || []
