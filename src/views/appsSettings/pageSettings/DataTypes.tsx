@@ -9,7 +9,7 @@ import { DatePicker } from 'antd'
 import moment from 'moment'
 import { useAppSelector } from '@/store'
 import { DIVISION_STATE } from '@/store/types/division.types'
-import { dataTypeArray, dataTypeValidationArray } from './configurationCommon'
+import { childDataTypeArray, dataTypeArray, dataTypeValidationArray } from './configurationCommon'
 
 interface DataTypesProps {
     handleAddFilter: any
@@ -35,7 +35,7 @@ const DataTypes = ({ handleAddFilter, handleAddFilters, handleRemoveFilter, show
                 needClassName
                 label="Child Data Types"
                 name="extra_info.child_data_type"
-                options={dataTypeArray}
+                options={childDataTypeArray}
                 className="w-2/3"
             />
             {values?.data_type?.type === 'brands' && (

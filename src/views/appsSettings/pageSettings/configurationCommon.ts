@@ -344,6 +344,20 @@ export const dataTypeValidationArray = [
 export const dataTypeArray = [
     { label: 'Default', value: 'Default' },
     { label: 'banner', value: 'banner' },
+    { label: 'nested', value: 'nested' },
+    { label: 'wishlist', value: 'wishlist' },
+    { label: 'purchases', value: 'purchases' },
+    { label: 'searches', value: 'searches' },
+    { label: 'spotlight', value: 'spotlight' },
+    { label: 'products', value: 'products' },
+    { label: 'brands', value: 'brands' },
+    { label: 'post', value: 'post' },
+    { label: 'creator', value: 'creator' },
+    { label: 'Sub categories', value: 'categories' },
+]
+export const childDataTypeArray = [
+    { label: 'Default', value: 'Default' },
+    { label: 'banner', value: 'banner' },
     { label: 'wishlist', value: 'wishlist' },
     { label: 'purchases', value: 'purchases' },
     { label: 'searches', value: 'searches' },
