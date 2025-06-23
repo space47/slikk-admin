@@ -1,7 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Avatar, Card } from '@/components/ui'
+import { Avatar, Card, Input, Tooltip } from '@/components/ui'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { notification } from 'antd'
+import { AxiosError } from 'axios'
 import moment from 'moment'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { FaCheck, FaEdit } from 'react-icons/fa'
+import { MdCancel } from 'react-icons/md'
+import { useNavigate } from 'react-router-dom'
 
 type CustomerInfoFieldProps = {
     title?: string
@@ -22,22 +28,108 @@ interface CustomerProps {
 }
 
 const CustomerData = ({ data }: CustomerProps) => {
+    const navigate = useNavigate()
+    const [isEditing, setIsEditing] = useState(false)
+    const [inputValues, setInputValues] = useState({ first_name: '', last_name: '', email: '' })
+
+    useEffect(() => {
+        setInputValues({
+            first_name: data?.profile?.first_name,
+            last_name: data?.profile?.last_name,
+            email: data?.profile?.email,
+        })
+    }, [data])
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target
+        setInputValues((prev) => ({ ...prev, [name]: value }))
+    }
+
+    const handleSaveUserProfile = async () => {
+        const fields = {
+            first_name: inputValues.first_name || '',
+            last_name: inputValues.last_name || '',
+            email: inputValues.email || '',
+        }
+        const body = Object.fromEntries(Object.entries(fields).filter(([, value]) => value !== ''))
+        try {
+            const response = await axioisInstance.patch(`/dashboard/user/profile/${data?.profile?.mobile}`, body)
+            notification.success({ message: response?.data?.message || 'Successfully Updated' })
+            navigate(0)
+        } catch (error) {
+            console.error(error)
+            if (error instanceof AxiosError) {
+                notification.error({ message: error?.message || 'Failed to Update' })
+            }
+        } finally {
+            setIsEditing(false)
+        }
+    }
+
     return (
         <div className="p-4 sm:p-6 max-w-5xl mx-auto">
             <Card className="bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-4 sm:p-6 border border-gray-200 dark:border-gray-700">
+                <div className="flex justify-end">
+                    {!isEditing && <FaEdit className="cursor-pointer text-xl text-blue-600" onClick={() => setIsEditing(true)} />}
+                    {isEditing && (
+                        <div className="flex gap-3">
+                            <span>
+                                <Tooltip title="Cancel Editing">
+                                    <MdCancel className="cursor-pointer text-2xl text-red-500" onClick={() => setIsEditing(false)} />
+                                </Tooltip>
+                            </span>
+                            <span>
+                                <Tooltip title="Save Changes">
+                                    <FaCheck className="cursor-pointer text-2xl text-green-500" onClick={handleSaveUserProfile} />
+                                </Tooltip>
+                            </span>
+                        </div>
+                    )}
+                </div>
                 <div className="flex flex-col gap-8">
                     {/* Profile Section */}
                     <div className="flex flex-col sm:flex-row sm:items-center items-start gap-4">
                         <Avatar size={90} shape="circle" src={data?.profile?.image} />
-                        <h4 className="text-xl font-semibold text-gray-800 dark:text-white">
-                            {data?.profile?.first_name} {data?.profile?.last_name}
-                        </h4>
+                        {isEditing ? (
+                            <div className="flex flex-col gap-2 mt-5">
+                                <Input
+                                    name="first_name"
+                                    type="text"
+                                    className="rounded-xl"
+                                    placeholder="Enter First Name"
+                                    value={inputValues.first_name}
+                                    onChange={handleInputChange}
+                                />
+                                <Input
+                                    name="last_name"
+                                    type="text"
+                                    className="rounded-xl"
+                                    placeholder="Enter Last Name"
+                                    value={inputValues.last_name}
+                                    onChange={handleInputChange}
+                                />
+                                <Input
+                                    name="email"
+                                    type="text"
+                                    className="rounded-xl"
+                                    placeholder="Enter Email"
+                                    value={inputValues.email}
+                                    onChange={handleInputChange}
+                                />
+                            </div>
+                        ) : (
+                            <>
+                                <h4 className="text-xl font-semibold text-gray-800 dark:text-white">
+                                    {data?.profile?.first_name} {data?.profile?.last_name}
+                                </h4>
+                            </>
+                        )}
                     </div>
 
                     {/* Info Section */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-6">
                         <div className="flex flex-col gap-4">
-                            <CustomerInfoField title="Email" value={data?.profile?.email} />
+                            {!isEditing && <CustomerInfoField title="Email" value={data?.profile?.email} />}
                             <CustomerInfoField title="Phone" value={data?.profile?.mobile} />
                             <CustomerInfoField
                                 title="Date of Birth"
