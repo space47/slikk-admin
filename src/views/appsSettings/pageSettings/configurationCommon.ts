@@ -344,6 +344,7 @@ export const dataTypeValidationArray = [
 export const dataTypeArray = [
     { label: 'Default', value: 'Default' },
     { label: 'banner', value: 'banner' },
+    { label: 'nested', value: 'nested' },
     { label: 'wishlist', value: 'wishlist' },
     { label: 'purchases', value: 'purchases' },
     { label: 'searches', value: 'searches' },

@@ -9,7 +9,7 @@ import { DatePicker } from 'antd'
 import moment from 'moment'
 import { useAppSelector } from '@/store'
 import { DIVISION_STATE } from '@/store/types/division.types'
-import { dataTypeArray, dataTypeValidationArray } from './configurationCommon'
+import { childDataTypeArray, dataTypeArray, dataTypeValidationArray } from './configurationCommon'
 
 interface DataTypesProps {
     handleAddFilter: any
@@ -31,6 +31,15 @@ const DataTypes = ({ handleAddFilter, handleAddFilters, handleRemoveFilter, show
     return (
         <FormContainer className="grid grid-cols-2 gap-3">
             <CommonSelect needClassName label="Data Types" name="data_type.type" options={dataTypeArray} className="w-2/3" />
+            {values?.data_type?.type === 'banner' && (
+                <CommonSelect
+                    needClassName
+                    label="Child Data Types"
+                    name="extra_info.child_data_type"
+                    options={dataTypeArray}
+                    className="w-2/3"
+                />
+            )}
             {values?.data_type?.type === 'brands' && (
                 <>
                     <FormItem label="IS LOGO">
@@ -86,6 +95,9 @@ const DataTypes = ({ handleAddFilter, handleAddFilters, handleRemoveFilter, show
 
             <FormItem label="Filters" className="col-span-1 w-[60%] h-[80%]">
                 <Field type="text" name="data_type.filters" placeholder="Place your header Text" component={Input} min="0" />
+            </FormItem>
+            <FormItem label="Page Size" className="col-span-1 w-[60%] h-[80%]">
+                <Field type="number" name="extra_info.page_size" placeholder="Place Page Size" component={Input} min="0" />
             </FormItem>
 
             <CommonSelect needClassName label="Division Select" options={formattedDivisions} name="division_select" className="w-1/2" />

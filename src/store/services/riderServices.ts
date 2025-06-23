@@ -50,7 +50,7 @@ export const ridersService = RtkQueryService.injectEndpoints({
                 }
 
                 return {
-                    url: `/rider/attendance`,
+                    url: `/rider/attendance?user_type=rider`,
                     method: 'GET',
                     params: parameters,
                 }
@@ -97,7 +97,7 @@ export const ridersService = RtkQueryService.injectEndpoints({
                     parameters.rider_type = params.rider_type
                 }
                 return {
-                    url: `/logistic/riders`,
+                    url: `/logistic/riders?user_type=rider`,
                     method: 'GET',
                     params: parameters,
                 }

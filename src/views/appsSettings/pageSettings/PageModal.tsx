@@ -274,6 +274,8 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                 extra_info: {
                     ...row?.extra_info,
                     ...(row?.extra_info?.timeout ? { timeout: row?.extra_info?.timeout } : {}),
+                    ...(row?.extra_info?.page_size ? { page_size: row?.extra_info?.page_size } : {}),
+                    ...(row?.extra_info?.child_data_type && { child_data_type: row?.extra_info?.child_data_type }),
                 },
                 ...(row?.section_filters ? { section_filters: row?.section_filters } : {}),
                 ...(row?.section_type ? { section_type: row?.section_type } : {}),
