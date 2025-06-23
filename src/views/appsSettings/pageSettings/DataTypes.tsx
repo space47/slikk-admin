@@ -31,12 +31,12 @@ const DataTypes = ({ handleAddFilter, handleAddFilters, handleRemoveFilter, show
     return (
         <FormContainer className="grid grid-cols-2 gap-3">
             <CommonSelect needClassName label="Data Types" name="data_type.type" options={dataTypeArray} className="w-2/3" />
-            {values?.data_type?.type === 'nested' && (
+            {values?.data_type?.type === 'banner' && (
                 <CommonSelect
                     needClassName
                     label="Child Data Types"
                     name="extra_info.child_data_type"
-                    options={dataTypeArray.filter((item) => item?.value !== 'nested')}
+                    options={dataTypeArray}
                     className="w-2/3"
                 />
             )}
