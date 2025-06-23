@@ -21,6 +21,7 @@ export const generateColumns = (year: string, month: string, handleUserData: any
             csvHeader: 'User',
             accessorKey: 'user',
             cell: ({ row }: any) => {
+                console.log('user data in attendance', row?.original?.user)
                 return (
                     <div className="hover:text-green-500 cursor-pointer" onClick={() => handleUserData(row?.original?.user)}>
                         {row.original.user}

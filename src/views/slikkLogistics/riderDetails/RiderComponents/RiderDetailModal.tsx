@@ -103,6 +103,8 @@ const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile, fromDate, toDate }:
         { name: 'Completed', value: riderData?.task_data?.COMPLETED, color: 'green' },
     ]
 
+    console.log('rider_data', riderData)
+
     const columns = [
         {
             header: 'Checkin Date',
