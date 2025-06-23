@@ -13,9 +13,11 @@ import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { textParser } from '@/common/textParser'
 import ProductFormCommon from './productutils/ProductForm'
+import { AxiosError } from 'axios'
 
 const EditProduct = () => {
     const navigate = useNavigate()
+    const { barcode } = useParams()
     const [productData, setProductData] = useState<any>()
     const [allImage, setAllImage] = useState<string[]>([])
     const [allVideo, setAllVideo] = useState<string[]>([])
@@ -27,8 +29,6 @@ const EditProduct = () => {
     const [domainWatcher, setDomainWatcher] = useState<string | string[] | undefined>('')
     const [segmentKeys, setSegmentKeys] = useState<string[] | undefined>([])
     const [segmentOptions, setSegmentOptions] = useState<string[] | undefined>([])
-
-    const { barcode } = useParams()
 
     const fetchUser = async () => {
         try {
@@ -104,11 +104,7 @@ const EditProduct = () => {
             color_code_url = allColor.join(',')
 
         let size_chart_url = allSizeChart?.join(',')
-
-        console.log('image upload start')
         const imageUpload = await handleimage(values.images)
-
-        console.log('image uploaded')
         if (values.images && values.images.length && !imageUpload) {
             console.log('image Upload return', values.images)
             return
@@ -116,34 +112,27 @@ const EditProduct = () => {
             const temp = [img_url, imageUpload]
             img_url = temp.filter((t) => t).join(',')
         }
-
         const colorlink = await handleimage(values.color_code)
-
         if (values.color_code && values.color_code.length && !colorlink) {
             return
         } else if (values.color_code && colorlink) {
             const temp = [color_code_url, colorlink]
             color_code_url = temp.filter((t) => t).join(',')
         }
-
         const videoUpload = await handleVideo(values.video)
-
         if (values.video && values.video.length && !videoUpload) {
             return
         } else if (values.video && videoUpload) {
             const temp = [video_url, videoUpload]
             video_url = temp.filter((t) => t).join(',')
         }
-
         const sizeLink = await handleimage(values.size_chart_image_array)
-
         if (values.size_chart_image_array && values.size_chart_image_array.length && !sizeLink) {
             return
         } else if (values.size_chart_image_array && sizeLink) {
             const temp = [size_chart_url, sizeLink]
             size_chart_url = temp.filter((t) => t).join(',')
         }
-
         const { color_code, size_chart_image_array, images, ...rest } = values
         console.log(color_code, size_chart_image_array, images)
         const formData = Object.fromEntries(
@@ -161,17 +150,12 @@ const EditProduct = () => {
             setShowSpinner(true)
             const response = await axioisInstance.patch(`product/${barcode}`, formData)
             console.log(response)
-            notification.success({
-                message: 'Success',
-                description: response?.data?.message || 'Product Edited Successfully',
-            })
+            notification.success({ message: response?.data?.message || 'Product Edited Successfully' })
             navigate('/app/catalog/products')
         } catch (error: any) {
-            console.error('Error submitting form:', error)
-            notification.error({
-                message: 'Failure',
-                description: error?.response?.data?.message || 'Product not Updated ',
-            })
+            if (error instanceof AxiosError) {
+                notification.error({ message: error?.message || 'Product not Updated ' })
+            }
         } finally {
             setShowSpinner(false)
         }
@@ -182,18 +166,6 @@ const EditProduct = () => {
         }
     }
 
-    if (showSpinner) {
-        return (
-            <div className="flex justify-center items-center h-screen">
-                <Spinner size={40} />
-            </div>
-        )
-    }
-
-    const handleCopyProduct = () => {
-        navigate(`/app/catalog/addCopy/${barcode}`)
-    }
-
     return (
         <div>
             <div className="flex xl:justify-between flex-col gap-2 mb-7 ">
@@ -201,7 +173,7 @@ const EditProduct = () => {
                     EDIT PRODUCT <span className="font-light xl:text-md text-sm ">#{barcode}</span>
                 </h3>
                 <div>
-                    <Button variant="accept" size="sm" onClick={handleCopyProduct}>
+                    <Button variant="accept" size="sm" onClick={() => navigate(`/app/catalog/addCopy/${barcode}`)}>
                         Copy Product
                     </Button>
                 </div>
@@ -237,7 +209,9 @@ const EditProduct = () => {
                                 Reset
                             </Button>
                             <Button variant="solid" type="submit" className="bg-blue-500 text-white">
-                                Submit
+                                <span className="flex gap-2 items-center">
+                                    Submit <span>{showSpinner && <Spinner size={40} />}</span>{' '}
+                                </span>
                             </Button>
                         </FormContainer>
                     </Form>

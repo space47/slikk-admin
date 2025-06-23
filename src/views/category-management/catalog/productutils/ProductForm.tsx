@@ -2,19 +2,20 @@
 import { FormContainer, FormItem, Input, Select } from '@/components/ui'
 import { SegmentOptions } from '@/constants/commonArray.constant'
 import { Field, FieldProps } from 'formik'
-import React from 'react'
+import React, { Dispatch, SetStateAction } from 'react'
 import { PRODUCT_EDIT_COMMON, PRODUCT_EDIT_COMMON_DOWN } from '../ProductCommon'
 import { RichTextEditor } from '@/components/shared'
 import ImageCommonProduct from '../ImageCommonProduct'
 import AddProductImages from '../AddProductImages'
 import { beforeUpload } from '@/common/beforeUpload'
 import { beforeVideoUpload } from '@/common/beforUploadVideo'
+import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 
 interface props {
     isEdit?: boolean
-    companyList: any[]
-    setDomainWatcher: (x: any) => void
-    setCompanyData: (x: any) => void
+    companyList: SINGLE_COMPANY_DATA[]
+    setDomainWatcher: Dispatch<SetStateAction<string | string[] | undefined>>
+    setCompanyData: Dispatch<SetStateAction<number | undefined>>
     values: any
     segmentKeys: string[] | undefined
     handleRemove?: (
@@ -22,15 +23,15 @@ interface props {
         index: number,
         type: 'images' | 'color_code' | 'video' | 'size_chart_image_array',
     ) => void
-    allImage?: any
-    setAllImage?: (x: any) => void
-    allColor?: any
-    setAllColor?: (x: any) => void
-    allVideo?: any
-    setAllVideo?: (x: any) => void
-    allSizeChart?: any
-    setAllSizeChart?: (x: any) => void
-    allName?: any
+    allImage?: string[] | undefined
+    setAllImage?: (x: string[]) => void
+    allColor?: string[] | undefined
+    setAllColor?: (x: string[]) => void
+    allVideo?: string[] | undefined
+    setAllVideo?: (x: string[]) => void
+    allSizeChart?: string[] | undefined
+    setAllSizeChart?: (x: string[]) => void
+    allName?: string[]
 }
 
 const ProductFormCommon = ({
@@ -131,7 +132,7 @@ const ProductFormCommon = ({
                         <>
                             <ImageCommonProduct
                                 label="image"
-                                allName={allImage}
+                                allName={allImage || []}
                                 handleRemove={handleRemove}
                                 name="images"
                                 fieldname="images"
@@ -142,7 +143,7 @@ const ProductFormCommon = ({
                             />
                             <ImageCommonProduct
                                 label="Color Code Thumbnail"
-                                allName={allColor}
+                                allName={allColor || []}
                                 handleRemove={handleRemove}
                                 name="color_code"
                                 fieldname="color_code"
@@ -154,7 +155,7 @@ const ProductFormCommon = ({
                             <ImageCommonProduct
                                 isVideo
                                 label="Video"
-                                allName={allVideo}
+                                allName={allVideo || []}
                                 handleRemove={handleRemove}
                                 name="video"
                                 fieldname="video"
@@ -164,7 +165,7 @@ const ProductFormCommon = ({
                             />
                             <ImageCommonProduct
                                 label="Size Chart Image"
-                                allName={allSizeChart}
+                                allName={allSizeChart || []}
                                 handleRemove={handleRemove}
                                 name="size_chart_image_array"
                                 fieldname="size_chart_image_array"
