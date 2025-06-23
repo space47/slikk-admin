@@ -94,10 +94,12 @@ const AddBanners = () => {
     }
 
     const handleSectionSelect = (value: string) => {
-        const selectHeading = sectionHeadingData.find((item) => item.section_heading === value && item.data_type.type === 'banner')
+        const selectHeading = sectionHeadingData.find(
+            (item) => item.section_heading === value && (item.data_type.type === 'banner' || item.data_type.type === 'nested'),
+        )
 
         const selectHeadingIndex = sectionHeadingData.findIndex(
-            (item) => item.section_heading === value && item.data_type.type === 'banner',
+            (item) => item.section_heading === value && (item.data_type.type === 'banner' || item.data_type.type === 'nested'),
         )
 
         setSelectedSectionHeading({ ...selectHeading, position: selectHeadingIndex } || null)
@@ -156,7 +158,7 @@ const AddBanners = () => {
                                     onSelect={handleSectionSelect}
                                 >
                                     {sectionHeadingData
-                                        ?.filter((item) => item.data_type.type === 'banner')
+                                        ?.filter((item) => item.data_type.type === 'banner' || item.data_type.type === 'nested')
                                         .map((item, key) => {
                                             // console.log('Seaction Heading', item?.section_heading)
                                             return (
@@ -181,7 +183,7 @@ const AddBanners = () => {
                                     data={sectionHeadingData.filter(
                                         (item) =>
                                             item.section_heading === selectedSectionHeading.section_heading &&
-                                            item.data_type.type === 'banner',
+                                            (item.data_type.type === 'banner' || item.data_type.type === 'nested'),
                                     )}
                                 />
                             )}
