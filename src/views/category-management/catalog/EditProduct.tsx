@@ -18,6 +18,7 @@ import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { RichTextEditor } from '@/components/shared'
 import { textParser } from '@/common/textParser'
 import { Product } from './CommonType'
+import { SegmentOptions } from '@/constants/commonArray.constant'
 
 const EditProduct = () => {
     const navigate = useNavigate()
@@ -29,6 +30,8 @@ const EditProduct = () => {
     const [showSpinner, setShowSpinner] = useState(false)
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
     const [companyData, setCompanyData] = useState<number>()
+    const [domainWatcher, setDomainWatcher] = useState<string | string[] | undefined>('')
+    const [segmentKeys, setSegmentKeys] = useState<string[] | undefined>([])
 
     const { barcode } = useParams()
 
@@ -55,13 +58,29 @@ const EditProduct = () => {
         }
     }
 
+    const fetchSegmentByDomain = async () => {
+        const domainParam = Array.isArray(domainWatcher) ? domainWatcher.join(',') : domainWatcher
+
+        try {
+            const res = await axioisInstance.get(`/product-field-configuration?domain=${domainParam}`)
+            const data = Object.keys(res.data)
+            console.log('map of data ', data)
+            setSegmentKeys(data)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
     useEffect(() => {
         fetchUser()
     }, [])
 
+    useEffect(() => {
+        fetchSegmentByDomain()
+    }, [domainWatcher, barcode])
+
     const handleRemoveImage = (e: React.MouseEvent<HTMLButtonElement>, index: number) => {
         e.preventDefault()
-
         const updatedImages = allImage.filter((_, i) => i !== index)
         setAllImage(updatedImages)
     }
@@ -81,8 +100,6 @@ const EditProduct = () => {
         const updatedColor = allColor.filter((_, i) => i !== index)
         setAllColor(updatedColor)
     }
-
-    console.log('pack size', productData?.filter_tags?.packsize?.map((item: any) => item).join(','))
 
     const handleSubmit = async (values: any) => {
         let img_url = allImage.join(','),
@@ -196,15 +213,50 @@ const EditProduct = () => {
                 enableReinitialize
                 initialValues={InitialValues(productData)}
                 // validationSchema={validationSchema}
+
                 onSubmit={handleSubmit}
             >
                 {({ values, touched, errors, resetForm, setFieldValue }) => (
                     <Form className="p-4 w-full shadow-xl rounded-xl" onKeyDown={handleKeyDown}>
-                        <FormContainer>
+                        <Field name="company">
+                            {({ form }: FieldProps<any>) => {
+                                const selectedCompany = companyList.find((option) => option.id === form.values.company)
+
+                                return (
+                                    <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
+                                        <div className="font-semibold">Select Company</div>
+                                        <Select
+                                            className="w-full"
+                                            options={companyList}
+                                            getOptionLabel={(option) => option.name}
+                                            getOptionValue={(option) => option.id}
+                                            value={selectedCompany || null}
+                                            onChange={(newVal) => {
+                                                form.setFieldValue('company', newVal?.id)
+                                                form.setFieldValue('domains', newVal?.segment)
+                                                setDomainWatcher(newVal?.segment)
+                                                setCompanyData(newVal?.id)
+                                            }}
+                                        />
+                                    </div>
+                                )
+                            }}
+                        </Field>
+                        <FormContainer className="mt-2">
                             <div className="grid xl:grid-cols-2 grid-cols-1 gap-4">
                                 {PRODUCT_EDIT_COMMON?.map((item, key) => (
                                     <FormItem key={key} label={item.label} className={item.classname}>
                                         <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                    </FormItem>
+                                ))}
+                                {PRODUCT_EDIT_COMMON_DOWN?.map((item, key) => (
+                                    <FormItem key={key} label={item.label} className={item.classname}>
+                                        <Field
+                                            type={item.type}
+                                            name={item.name}
+                                            placeholder={item.placeholder}
+                                            component={item.component}
+                                        />
                                     </FormItem>
                                 ))}
 
@@ -260,50 +312,47 @@ const EditProduct = () => {
                                     placeholder="Enter Size Chart Image"
                                     setAllName={setAllSizeChart}
                                 />
+                            </div>
 
-                                {PRODUCT_EDIT_COMMON_DOWN?.slice(0, 5).map((item, key) => (
-                                    <FormItem key={key} label={item.label} className={item.classname}>
-                                        <Field
-                                            type={item.type}
-                                            name={item.name}
-                                            placeholder={item.placeholder}
-                                            component={item.component}
-                                        />
-                                    </FormItem>
-                                ))}
-                                <Field name="company">
-                                    {({ form }: FieldProps<any>) => {
-                                        const selectedCompany = companyList.find((option) => option.id === form.values.company)
-
+                            <FormItem asterisk label="Domains" className="col-span-1 w-1/4">
+                                <Field name="domains">
+                                    {({ field, form }: FieldProps) => {
+                                        const fieldValueArray = Array.isArray(field?.value) ? field?.value : field?.value?.split(',')
+                                        const selectedOptions = fieldValueArray?.map((item: any) => {
+                                            const selectedOption = SegmentOptions()?.find((options: any) => {
+                                                return options?.label === item
+                                            })
+                                            return selectedOption
+                                        })
                                         return (
-                                            <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
-                                                <div className="font-semibold">Select Company</div>
-                                                <Select
-                                                    className="w-full"
-                                                    options={companyList}
-                                                    getOptionLabel={(option) => option.name}
-                                                    getOptionValue={(option) => option.id}
-                                                    value={selectedCompany || null}
-                                                    onChange={(newVal) => {
-                                                        form.setFieldValue('company', newVal?.id)
-                                                        setCompanyData(newVal?.id)
-                                                    }}
-                                                />
-                                            </div>
+                                            <Select
+                                                isMulti
+                                                isClearable
+                                                className="w-full"
+                                                options={SegmentOptions()}
+                                                getOptionLabel={(option) => option?.label}
+                                                getOptionValue={(option) => option?.value?.toString()}
+                                                value={selectedOptions}
+                                                onChange={(newVals) => {
+                                                    const selectedValues = newVals?.map((val: any) => val.value) || []
+                                                    setDomainWatcher(selectedValues)
+                                                    form.setFieldValue(`domains`, selectedValues)
+                                                }}
+                                            />
                                         )
                                     }}
                                 </Field>
-                                {PRODUCT_EDIT_COMMON_DOWN?.slice(5).map((item, key) => (
-                                    <FormItem key={key} label={item.label} className={item.classname}>
-                                        <Field
-                                            type={item.type}
-                                            name={item.name}
-                                            placeholder={item.placeholder}
-                                            component={item.component}
-                                        />
-                                    </FormItem>
-                                ))}
-                            </div>
+                            </FormItem>
+
+                            <FormContainer className="grid grid-cols-2 gap-2">
+                                {segmentKeys?.map((item, key) => {
+                                    return (
+                                        <FormItem key={key} label={item} className="">
+                                            <Field type="text" name={item} placeholder={`Enter ${item}`} component={Input} />
+                                        </FormItem>
+                                    )
+                                })}
+                            </FormContainer>
 
                             <FormContainer className="flex justify-end mt-5">
                                 <Button type="reset" className="mr-2" onClick={() => resetForm()}>

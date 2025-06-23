@@ -175,6 +175,28 @@ const AddProduct = () => {
                                         <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
                                 ))}
+                                <Field name="company">
+                                    {({ form }: FieldProps<any>) => {
+                                        const selectedCompany = companyList.find((option) => option.id === form.values.company)
+
+                                        return (
+                                            <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
+                                                <div className="font-semibold">Select Company</div>
+                                                <Select
+                                                    className="w-full"
+                                                    options={companyList}
+                                                    getOptionLabel={(option) => option.name}
+                                                    getOptionValue={(option) => option.id}
+                                                    value={selectedCompany || null}
+                                                    onChange={(newVal) => {
+                                                        form.setFieldValue('company', newVal?.id)
+                                                        setCompanyData(newVal?.id)
+                                                    }}
+                                                />
+                                            </div>
+                                        )
+                                    }}
+                                </Field>
 
                                 <FormItem label="Description" className="col-span-1 w-full">
                                     <Field name="description">
@@ -222,29 +244,6 @@ const AddProduct = () => {
                                         />
                                     </FormItem>
                                 ))}
-
-                                <Field name="company">
-                                    {({ form }: FieldProps<any>) => {
-                                        const selectedCompany = companyList.find((option) => option.id === form.values.company)
-
-                                        return (
-                                            <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
-                                                <div className="font-semibold">Select Company</div>
-                                                <Select
-                                                    className="w-full"
-                                                    options={companyList}
-                                                    getOptionLabel={(option) => option.name}
-                                                    getOptionValue={(option) => option.id}
-                                                    value={selectedCompany || null}
-                                                    onChange={(newVal) => {
-                                                        form.setFieldValue('company', newVal?.id)
-                                                        setCompanyData(newVal?.id)
-                                                    }}
-                                                />
-                                            </div>
-                                        )
-                                    }}
-                                </Field>
 
                                 {PRODUCT_EDIT_COMMON_DOWN.slice(5).map((item, key) => (
                                     <FormItem key={key} label={item.label} className={item.classname}>
