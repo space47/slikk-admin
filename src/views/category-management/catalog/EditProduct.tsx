@@ -1,24 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { FormItem, FormContainer } from '@/components/ui/Form'
-import Input from '@/components/ui/Input'
+import { FormContainer } from '@/components/ui/Form'
 import Button from '@/components/ui/Button'
-import { Field, Form, Formik, FieldProps } from 'formik'
+import { Form, Formik } from 'formik'
 import { useEffect, useState } from 'react'
 import { notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Checkbox, Select, Spinner } from '@/components/ui'
+import { Spinner } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { PRODUCT_EDIT_COMMON, PRODUCT_EDIT_COMMON_DOWN } from './ProductCommon'
-import ImageCommonProduct from './ImageCommonProduct'
 import { handleimage, handleVideo } from './handlingProductImage'
 import { InitialValues } from './EditCommonProduct'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
-import { RichTextEditor } from '@/components/shared'
 import { textParser } from '@/common/textParser'
-import { Product } from './CommonType'
-import { SegmentOptions } from '@/constants/commonArray.constant'
+import ProductFormCommon from './productutils/ProductForm'
 
 const EditProduct = () => {
     const navigate = useNavigate()
@@ -32,23 +26,19 @@ const EditProduct = () => {
     const [companyData, setCompanyData] = useState<number>()
     const [domainWatcher, setDomainWatcher] = useState<string | string[] | undefined>('')
     const [segmentKeys, setSegmentKeys] = useState<string[] | undefined>([])
+    const [segmentOptions, setSegmentOptions] = useState<string[] | undefined>([])
 
     const { barcode } = useParams()
 
     const fetchUser = async () => {
         try {
-            const response = await axioisInstance.get(`product/${barcode}`) //.........................................................
-
+            const response = await axioisInstance.get(`product/${barcode}`)
             const userData = response.data.data
-
             setProductData(userData)
             const colorList = userData.color_code_link ? userData.color_code_link.split(',') : []
             const imageList = userData.image.split(',')
             const videoList = userData.video_link ? userData.video_link.split(',') : []
             const sizeList = userData.size_chart_image ? userData.size_chart_image.split(',') : []
-
-            console.log('object...........', imageList)
-
             setAllImage(imageList)
             setAllVideo(videoList)
             setAllColor(colorList)
@@ -58,13 +48,20 @@ const EditProduct = () => {
         }
     }
 
+    useEffect(() => {
+        if (productData && companyList.length > 0) {
+            const selectedCompany = companyList.find((c) => c.id === productData.company)
+            setSegmentOptions(selectedCompany?.segment?.split(','))
+            setDomainWatcher(selectedCompany?.segment?.split(','))
+        }
+    }, [productData, companyList])
+
     const fetchSegmentByDomain = async () => {
         const domainParam = Array.isArray(domainWatcher) ? domainWatcher.join(',') : domainWatcher
 
         try {
             const res = await axioisInstance.get(`/product-field-configuration?domain=${domainParam}`)
             const data = Object.keys(res.data)
-            console.log('map of data ', data)
             setSegmentKeys(data)
         } catch (error) {
             console.error(error)
@@ -79,26 +76,26 @@ const EditProduct = () => {
         fetchSegmentByDomain()
     }, [domainWatcher, barcode])
 
-    const handleRemoveImage = (e: React.MouseEvent<HTMLButtonElement>, index: number) => {
+    const handleRemove = (
+        e: React.MouseEvent<HTMLButtonElement>,
+        index: number,
+        type: 'images' | 'color_code' | 'video' | 'size_chart_image_array',
+    ) => {
         e.preventDefault()
-        const updatedImages = allImage.filter((_, i) => i !== index)
-        setAllImage(updatedImages)
-    }
-    const handleRemoveVideo = (e: React.MouseEvent<HTMLButtonElement>, index: number) => {
-        e.preventDefault()
-        const updatedVideo = allVideo.filter((_, i) => i !== index)
-        setAllVideo(updatedVideo)
-    }
-    const handleRemoveSizeChart = (e: React.MouseEvent<HTMLButtonElement>, index: number) => {
-        e.preventDefault()
-        const updatedChart = allSizeChart.filter((_, i) => i !== index)
-        setAllSizeChart(updatedChart)
-    }
-
-    const handleRemoveColor = (e: React.MouseEvent<HTMLButtonElement>, index: number) => {
-        e.preventDefault()
-        const updatedColor = allColor.filter((_, i) => i !== index)
-        setAllColor(updatedColor)
+        const setterMap = {
+            images: setAllImage,
+            color_code: setAllColor,
+            video: setAllVideo,
+            size_chart_image_array: setAllSizeChart,
+        }
+        const currentState = {
+            images: allImage,
+            color_code: allColor,
+            video: allVideo,
+            size_chart_image_array: allSizeChart,
+        }
+        const updatedList = currentState[type].filter((_, i) => i !== index)
+        setterMap[type](updatedList)
     }
 
     const handleSubmit = async (values: any) => {
@@ -148,6 +145,7 @@ const EditProduct = () => {
         }
 
         const { color_code, size_chart_image_array, images, ...rest } = values
+        console.log(color_code, size_chart_image_array, images)
         const formData = Object.fromEntries(
             Object.entries({
                 ...rest,
@@ -157,9 +155,8 @@ const EditProduct = () => {
                 video_link: video_url,
                 description: values?.description ?? textParser(values?.description),
                 size_chart_image: size_chart_url,
-            }).filter(([_, value]) => value !== '' && value !== null),
+            }).filter(([, value]) => value !== '' && value !== null),
         )
-        console.log('dormDAta', formData)
         try {
             setShowSpinner(true)
             const response = await axioisInstance.patch(`product/${barcode}`, formData)
@@ -211,157 +208,37 @@ const EditProduct = () => {
             </div>
             <Formik
                 enableReinitialize
-                initialValues={InitialValues(productData)}
+                initialValues={InitialValues(productData, segmentOptions)}
                 // validationSchema={validationSchema}
 
                 onSubmit={handleSubmit}
             >
-                {({ values, touched, errors, resetForm, setFieldValue }) => (
+                {({ values, resetForm }) => (
                     <Form className="p-4 w-full shadow-xl rounded-xl" onKeyDown={handleKeyDown}>
-                        <Field name="company">
-                            {({ form }: FieldProps<any>) => {
-                                const selectedCompany = companyList.find((option) => option.id === form.values.company)
-
-                                return (
-                                    <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
-                                        <div className="font-semibold">Select Company</div>
-                                        <Select
-                                            className="w-full"
-                                            options={companyList}
-                                            getOptionLabel={(option) => option.name}
-                                            getOptionValue={(option) => option.id}
-                                            value={selectedCompany || null}
-                                            onChange={(newVal) => {
-                                                form.setFieldValue('company', newVal?.id)
-                                                form.setFieldValue('domains', newVal?.segment)
-                                                setDomainWatcher(newVal?.segment)
-                                                setCompanyData(newVal?.id)
-                                            }}
-                                        />
-                                    </div>
-                                )
-                            }}
-                        </Field>
-                        <FormContainer className="mt-2">
-                            <div className="grid xl:grid-cols-2 grid-cols-1 gap-4">
-                                {PRODUCT_EDIT_COMMON?.map((item, key) => (
-                                    <FormItem key={key} label={item.label} className={item.classname}>
-                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
-                                    </FormItem>
-                                ))}
-                                {PRODUCT_EDIT_COMMON_DOWN?.map((item, key) => (
-                                    <FormItem key={key} label={item.label} className={item.classname}>
-                                        <Field
-                                            type={item.type}
-                                            name={item.name}
-                                            placeholder={item.placeholder}
-                                            component={item.component}
-                                        />
-                                    </FormItem>
-                                ))}
-
-                                <FormItem label="Description" className="col-span-1 w-full">
-                                    <Field name="description">
-                                        {({ field, form }: FieldProps) => (
-                                            <RichTextEditor value={field.value} onChange={(val) => form.setFieldValue(field.name, val)} />
-                                        )}
-                                    </Field>
-                                </FormItem>
-
-                                <ImageCommonProduct
-                                    label="image"
-                                    allName={allImage}
-                                    handleRemove={handleRemoveImage}
-                                    name="images"
-                                    fieldname="images"
-                                    fileLists={values.images}
-                                    textName="image"
-                                    placeholder="Enter Image Url"
-                                    setAllName={setAllImage}
-                                />
-                                <ImageCommonProduct
-                                    label="Color Code Thumbnail"
-                                    allName={allColor}
-                                    handleRemove={handleRemoveColor}
-                                    name="color_code"
-                                    fieldname="color_code"
-                                    fileLists={values.color_code}
-                                    textName="color_code_link"
-                                    placeholder="Enter color code Url"
-                                    setAllName={setAllColor}
-                                />
-                                <ImageCommonProduct
-                                    isVideo
-                                    label="Video"
-                                    allName={allVideo}
-                                    handleRemove={handleRemoveVideo}
-                                    name="video"
-                                    fieldname="video"
-                                    fileLists={values.video}
-                                    textName="video_link"
-                                    placeholder="Enter Video Url"
-                                />
-                                <ImageCommonProduct
-                                    label="Size Chart Image"
-                                    allName={allSizeChart}
-                                    handleRemove={handleRemoveSizeChart}
-                                    name="size_chart_image_array"
-                                    fieldname="size_chart_image_array"
-                                    fileLists={values.size_chart_image_array}
-                                    textName="size_chart_image"
-                                    placeholder="Enter Size Chart Image"
-                                    setAllName={setAllSizeChart}
-                                />
-                            </div>
-
-                            <FormItem asterisk label="Domains" className="col-span-1 w-1/4">
-                                <Field name="domains">
-                                    {({ field, form }: FieldProps) => {
-                                        const fieldValueArray = Array.isArray(field?.value) ? field?.value : field?.value?.split(',')
-                                        const selectedOptions = fieldValueArray?.map((item: any) => {
-                                            const selectedOption = SegmentOptions()?.find((options: any) => {
-                                                return options?.label === item
-                                            })
-                                            return selectedOption
-                                        })
-                                        return (
-                                            <Select
-                                                isMulti
-                                                isClearable
-                                                className="w-full"
-                                                options={SegmentOptions()}
-                                                getOptionLabel={(option) => option?.label}
-                                                getOptionValue={(option) => option?.value?.toString()}
-                                                value={selectedOptions}
-                                                onChange={(newVals) => {
-                                                    const selectedValues = newVals?.map((val: any) => val.value) || []
-                                                    setDomainWatcher(selectedValues)
-                                                    form.setFieldValue(`domains`, selectedValues)
-                                                }}
-                                            />
-                                        )
-                                    }}
-                                </Field>
-                            </FormItem>
-
-                            <FormContainer className="grid grid-cols-2 gap-2">
-                                {segmentKeys?.map((item, key) => {
-                                    return (
-                                        <FormItem key={key} label={item} className="">
-                                            <Field type="text" name={item} placeholder={`Enter ${item}`} component={Input} />
-                                        </FormItem>
-                                    )
-                                })}
-                            </FormContainer>
-
-                            <FormContainer className="flex justify-end mt-5">
-                                <Button type="reset" className="mr-2" onClick={() => resetForm()}>
-                                    Reset
-                                </Button>
-                                <Button variant="solid" type="submit" className="bg-blue-500 text-white">
-                                    Submit
-                                </Button>
-                            </FormContainer>
+                        <ProductFormCommon
+                            companyList={companyList}
+                            isEdit={true}
+                            setCompanyData={setCompanyData}
+                            setDomainWatcher={setDomainWatcher}
+                            values={values}
+                            segmentKeys={segmentKeys}
+                            handleRemove={handleRemove}
+                            allColor={allColor}
+                            allImage={allImage}
+                            allSizeChart={allSizeChart}
+                            allVideo={allVideo}
+                            setAllColor={setAllColor}
+                            setAllImage={setAllImage}
+                            setAllSizeChart={setAllSizeChart}
+                            setAllVideo={setAllVideo}
+                        />
+                        <FormContainer className="flex justify-end mt-5">
+                            <Button type="reset" className="mr-2" onClick={() => resetForm()}>
+                                Reset
+                            </Button>
+                            <Button variant="solid" type="submit" className="bg-blue-500 text-white">
+                                Submit
+                            </Button>
                         </FormContainer>
                     </Form>
                 )}

@@ -1,102 +1,40 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { FormItem, FormContainer } from '@/components/ui/Form'
-import Input from '@/components/ui/Input'
+import { FormContainer } from '@/components/ui/Form'
 import Button from '@/components/ui/Button'
-import { Field, Form, Formik, FieldProps } from 'formik'
-import { useState } from 'react'
+import { Form, Formik } from 'formik'
+import { useEffect, useState } from 'react'
 import { notification } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { PRODUCT_EDIT_COMMON, PRODUCT_EDIT_COMMON_DOWN, INITIALVALUES } from './ProductCommon'
-import AddProductImages from './AddProductImages'
-import { beforeVideoUpload } from '@/common/beforUploadVideo'
-import { beforeUpload } from '@/common/beforeUpload'
+import { INITIALVALUES } from './ProductCommon'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
-import { Select } from '@/components/ui'
-import { RichTextEditor } from '@/components/shared'
 import { textParser } from '@/common/textParser'
+import { handleimage, handleVideo } from './handlingProductImage'
+import ProductFormCommon from './productutils/ProductForm'
 
 const AddProduct = () => {
-    const [datas, setDatas] = useState()
-    const [imagview, setImageView] = useState<string>('')
-    const [showData, setShowData] = useState(false)
-    const [showImage, setShowImage] = useState(false)
     const navigate = useNavigate()
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
     const [companyData, setCompanyData] = useState<number>()
+    const [domainWatcher, setDomainWatcher] = useState<string | string[] | undefined>('')
+    const [segmentKeys, setSegmentKeys] = useState<string[] | undefined>([])
 
-    const handleimage = async (files: File[]) => {
-        const formData = new FormData()
-
-        files.forEach((file) => {
-            formData.append('file', file)
-        })
-        formData.append('file_type', 'product')
+    const fetchSegmentByDomain = async () => {
+        const domainParam = Array.isArray(domainWatcher) ? domainWatcher.join(',') : domainWatcher
 
         try {
-            console.log(formData.get('file'))
-            const response = await axioisInstance.post('fileupload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-            console.log(response)
-            const newData = response.data.url
-            setImageView(newData)
-            console.log(newData)
-            setShowImage(true)
-
-            notification.success({
-                message: 'Success',
-                description: response?.data?.message || 'Image uploaded successfully',
-            })
-            return newData
-        } catch (error: any) {
-            console.error('Error uploading files:', error)
-            notification.error({
-                message: 'Failure',
-                description: error?.response?.data?.message || 'File Not uploaded',
-            })
-            return 'Error'
+            const res = await axioisInstance.get(`/product-field-configuration?domain=${domainParam}`)
+            const data = Object.keys(res.data)
+            setSegmentKeys(data)
+        } catch (error) {
+            console.error(error)
         }
     }
 
-    const handleVideo = async (files: File[]) => {
-        const formData = new FormData()
-
-        files.forEach((file) => {
-            formData.append('file', file)
-        })
-        formData.append('file_type', 'product')
-
-        try {
-            console.log(formData.get('file'))
-            const response = await axioisInstance.post('fileupload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-            console.log(response)
-            const newData = response.data.url
-            setDatas(newData)
-            setShowData(true)
-
-            notification.success({
-                message: 'Success',
-                description: response?.data?.message || 'Video uploaded successfully',
-            })
-            return newData
-        } catch (error: any) {
-            console.error('Error uploading files:', error)
-            notification.error({
-                message: 'Failure',
-                description: error?.response?.data?.message || 'Video Not uploaded',
-            })
-            return 'Error'
-        }
-    }
+    useEffect(() => {
+        fetchSegmentByDomain()
+    }, [domainWatcher])
 
     const handleImageCheck = async (field: any) => {
         return field && field.length > 0 ? await handleimage(field) : null
@@ -166,105 +104,23 @@ const AddProduct = () => {
                 // validationSchema={validationSchema}
                 onSubmit={handleSubmit}
             >
-                {({ values, touched, errors, resetForm, setFieldValue }) => (
+                {({ values, resetForm }) => (
                     <Form className="p-4 w-full shadow-xl rounded-xl" onKeyDown={handleKeyDown}>
-                        <FormContainer>
-                            <div className="grid xl:grid-cols-2 grid-cols-1 gap-4">
-                                {PRODUCT_EDIT_COMMON.map((item, key) => (
-                                    <FormItem key={key} label={item.label} className={item.classname}>
-                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
-                                    </FormItem>
-                                ))}
-                                <Field name="company">
-                                    {({ form }: FieldProps<any>) => {
-                                        const selectedCompany = companyList.find((option) => option.id === form.values.company)
-
-                                        return (
-                                            <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
-                                                <div className="font-semibold">Select Company</div>
-                                                <Select
-                                                    className="w-full"
-                                                    options={companyList}
-                                                    getOptionLabel={(option) => option.name}
-                                                    getOptionValue={(option) => option.id}
-                                                    value={selectedCompany || null}
-                                                    onChange={(newVal) => {
-                                                        form.setFieldValue('company', newVal?.id)
-                                                        setCompanyData(newVal?.id)
-                                                    }}
-                                                />
-                                            </div>
-                                        )
-                                    }}
-                                </Field>
-
-                                <FormItem label="Description" className="col-span-1 w-full">
-                                    <Field name="description">
-                                        {({ field, form }: FieldProps) => (
-                                            <RichTextEditor value={field.value} onChange={(val) => form.setFieldValue(field.name, val)} />
-                                        )}
-                                    </Field>
-                                </FormItem>
-
-                                <AddProductImages
-                                    label="Image"
-                                    name="image"
-                                    fileList={values.images}
-                                    beforeUpload={beforeUpload}
-                                    fieldNames="images"
-                                />
-                                <AddProductImages
-                                    label="Color Code Thumbnail"
-                                    name="color_code_link"
-                                    fileList={values.color_code}
-                                    beforeUpload={beforeUpload}
-                                    fieldNames="color_code"
-                                />
-                                <AddProductImages
-                                    label="Video"
-                                    name="video_link"
-                                    fileList={values.video}
-                                    beforeUpload={beforeVideoUpload}
-                                    fieldNames="video"
-                                />
-                                <AddProductImages
-                                    label="Size Chart Upload"
-                                    name="size_chart_image"
-                                    fileList={values.size_chart_image_array}
-                                    beforeUpload={beforeUpload}
-                                    fieldNames="size_chart_image_array"
-                                />
-                                {PRODUCT_EDIT_COMMON_DOWN.slice(0, 5).map((item, key) => (
-                                    <FormItem key={key} label={item.label} className={item.classname}>
-                                        <Field
-                                            type={item.type}
-                                            name={item.name}
-                                            placeholder={item.placeholder}
-                                            component={item.component}
-                                        />
-                                    </FormItem>
-                                ))}
-
-                                {PRODUCT_EDIT_COMMON_DOWN.slice(5).map((item, key) => (
-                                    <FormItem key={key} label={item.label} className={item.classname}>
-                                        <Field
-                                            type={item.type}
-                                            name={item.name}
-                                            placeholder={item.placeholder}
-                                            component={item.component}
-                                        />
-                                    </FormItem>
-                                ))}
-                            </div>
-
-                            <FormContainer className="flex justify-end mt-5">
-                                <Button type="reset" className="mr-2" onClick={() => resetForm()}>
-                                    Reset
-                                </Button>
-                                <Button variant="solid" type="submit" className="bg-blue-500 text-white">
-                                    Submit
-                                </Button>
-                            </FormContainer>
+                        <ProductFormCommon
+                            companyList={companyList}
+                            isEdit={false}
+                            setCompanyData={setCompanyData}
+                            setDomainWatcher={setDomainWatcher}
+                            values={values}
+                            segmentKeys={segmentKeys}
+                        />
+                        <FormContainer className="flex justify-end mt-5">
+                            <Button type="reset" className="mr-2" onClick={() => resetForm()}>
+                                Reset
+                            </Button>
+                            <Button variant="solid" type="submit" className="bg-blue-500 text-white">
+                                Submit
+                            </Button>
                         </FormContainer>
                     </Form>
                 )}
