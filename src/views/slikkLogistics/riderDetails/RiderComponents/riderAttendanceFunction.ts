@@ -10,6 +10,8 @@ export const convertToCSV = (data: any[], columns: any[]) => {
                 .map((col) => {
                     if (col.accessorKey === 'user') {
                         return row.user
+                    } else if (col.accessorKey === 'user_name') {
+                        return row.user_name
                     } else {
                         const hasAttendance = row.attendanceData.some(
                             (attendance: any) => moment(attendance.checkin_date).format('YYYY-MM-DD') === col.accessorKey,
