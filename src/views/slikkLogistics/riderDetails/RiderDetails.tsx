@@ -61,6 +61,7 @@ const RiderDetails = () => {
             name: riderSearchByType === 'name' ? globalFilter : '',
             isActive: tabSelect === 'checkin' ? 'true' : 'false',
             rider_type: riderType === 'Select Rider Type' ? '' : riderType,
+            user_type: 'rider',
         },
         { refetchOnMountOrArgChange: true, pollingInterval: 60000 },
     )

@@ -35,6 +35,7 @@ const RiderAttendance = () => {
             page: page,
             pageSize: pageSize,
             to: to || '',
+            user_type: 'rider',
         },
         { refetchOnMountOrArgChange: true },
     )
