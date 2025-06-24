@@ -14,6 +14,7 @@ import { useAppSelector } from '@/store'
 import { ReturnOrderState } from '@/store/types/returnDetails.types'
 import { getButtonAndModalContent } from './returnOrderCommon'
 import ReturnActionActivity from './ReturnActionActivity'
+import { AxiosError } from 'axios'
 
 const RefundActivity = () => {
     const returnOrder = useAppSelector<ReturnOrderState>((state) => state.returnOrders)
@@ -134,6 +135,8 @@ const RefundActivity = () => {
             const errorMessage = error.response?.data?.message || 'There was an error updating the order status. Please try again.'
             notification.error({ message: 'Error', description: errorMessage })
             setForceCOD(true)
+        } finally {
+            setIsModalOpen(false)
         }
     }
 
@@ -156,6 +159,9 @@ const RefundActivity = () => {
             setForceCOD(false)
             navigate(0)
         } catch (error) {
+            if (error instanceof AxiosError) {
+                notification.error({ message: error?.message || 'Failed to Update' })
+            }
             console.error(error)
         }
     }
@@ -224,7 +230,7 @@ const RefundActivity = () => {
                         open={isModalOpen}
                         onOk={() => handleAction('return_completed')}
                         onCancel={() => setIsModalOpen(false)}
-                        okText={currentButton ? 'Returning....' : 'Return Order'}
+                        okText={'Return Order'}
                     >
                         <div className="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-gray-300 pb-2">INPUTS</div>
                         <div className="italic text-lg flex flex-row items-center justify-start gap-5">

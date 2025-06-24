@@ -10,7 +10,7 @@ import moment from 'moment'
 import EasyTable from '@/common/EasyTable'
 import UltimateYearMonthPicker from '@/common/UltimateYearMonthPicker'
 import { generateColumns } from './RiderAttendanceColumns'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { handleDownloadAttendanceCsv } from './riderAttendanceFunction'
 import { FaDownload } from 'react-icons/fa'
 import AccessDenied from '@/views/pages/AccessDenied'
@@ -18,6 +18,7 @@ import AccessDenied from '@/views/pages/AccessDenied'
 const RiderAttendance = () => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
+    const { user_type } = useParams()
     const [globalFilter, setGlobalFilter] = useState('')
     const { riderAttendance, count, from, to, page, pageSize } = useAppSelector<RiderSlice>((state) => state.riderData)
     const [selectedYear, setSelectedYear] = useState<string>(moment().year().toString())
@@ -35,6 +36,7 @@ const RiderAttendance = () => {
             page: page,
             pageSize: pageSize,
             to: to || '',
+            user_type: user_type,
         },
         { refetchOnMountOrArgChange: true },
     )
@@ -104,7 +106,7 @@ const RiderAttendance = () => {
     )
 
     const handleUserData = (mobile: string) => {
-        navigate(`/app/riders/attendance/${mobile}`)
+        navigate(`/app/riders/userAttendance/${mobile}`)
     }
 
     const columns = generateColumns(selectedYear, selectedMonth, handleUserData, isWeek, from, to)
