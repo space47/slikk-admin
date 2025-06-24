@@ -61,6 +61,68 @@ export const HEADERCONFIGARRAY = [
         type: 'text',
     },
 ]
+export const EXPLOREMOREARRAY = [
+    {
+        label: 'explore more Text',
+        name: 'extra_info.explore_more.text',
+        type: 'text',
+    },
+    {
+        label: 'Web explore more Text',
+        name: 'extra_info.explore_more.web_text',
+        type: 'text',
+    },
+    {
+        label: 'explore more Letter Spacing',
+        name: 'extra_info.explore_more.letter_spacing',
+        type: 'number',
+    },
+    {
+        label: 'explore more Web Letter Spacing',
+        name: 'extra_info.explore_more.web_letter_spacing',
+        type: 'number',
+    },
+    {
+        label: 'explore more mobile Font Size',
+        name: 'extra_info.explore_more.font_size',
+        type: 'number',
+    },
+    {
+        label: 'explore more Web Font Size',
+        name: 'extra_info.explore_more.web_font_size',
+        type: 'text',
+    },
+    {
+        label: 'explore more Top Margin',
+        name: 'extra_info.explore_more.bottomMargin',
+        type: 'number',
+    },
+    {
+        label: 'Web explore more Top Margin',
+        name: 'extra_info.explore_more.web_bottomMargin',
+        type: 'number',
+    },
+    {
+        label: 'explore more BG Color',
+        name: 'extra_info.explore_more.background_color',
+        type: 'text',
+    },
+    {
+        label: 'explore more Font Color',
+        name: 'extra_info.explore_more.font_color',
+        type: 'text',
+    },
+    {
+        label: 'explore more redirection url',
+        name: 'extra_info.explore_more.redirection_url',
+        type: 'text',
+    },
+    {
+        label: 'Web explore more redirection url',
+        name: 'extra_info.explore_more.web_redirection_url',
+        type: 'text',
+    },
+]
 
 export const SUBHEADERCONFIGARRAY = [
     // {
@@ -324,6 +386,7 @@ export interface CommonProps {
     showAddFilter: any
     handleAddFilters: any
     handleRemoveFilter: any
+    handleRemoveExploreImage?: any
 }
 
 export const ParallaxConfigArray = [

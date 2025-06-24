@@ -12,7 +12,7 @@ import * as Yup from 'yup'
 import { EditInitialValues } from './pageSettingsUtils/PageSettingEditInitialValues'
 import { DROPDOWNTYPE } from '@/views/category-management/catalog/CommonType'
 import { handleimage } from '@/common/handleImage'
-import { calculateAspectRatio, handleImage, handleVideo } from './pageSettingsUtils/pageEditFunctions'
+import { EditAspectRatios, EditImageUpoads, EditVideoUpload } from './pageSettingsUtils/pageEditFunctions'
 import { usePageEditRemoveFunctions } from './pageSettingsUtils/usePageEditRemoveFunctions'
 
 type modalProps = {
@@ -144,7 +144,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
 
     const handleSubmit = async (row: any) => {
         const componentConfig = {
-            ...Object.fromEntries(Object.entries(row?.component_config || {}).filter(([_, value]) => value !== '')),
+            ...Object.fromEntries(Object.entries(row?.component_config || {}).filter(([, value]) => value !== '')),
             border: row?.border ?? false,
             name: row?.name ?? false,
             name_footer: row?.name_footer ?? false,
@@ -163,29 +163,46 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             : initialValue.mobile_background_lottie
 
         try {
-            console.log('handleSubmit called')
-            const imageUpload = await handleImage(row.background_image_array)
-            const mobileimageUpload = await handleImage(row.mobile_background_array)
-            const footerImageUpload = await handleImage(row.footer_config_image_Array)
-            const headerImageUpload = await handleImage(row.header_config_image_Array)
-            const subHeaderImageUpload = await handleImage(row.sub_header_config_image_Array)
-            const headerIconUpload = await handleImage(row.header_config_icon_Array)
+            const {
+                imageUpload,
+                mobileimageUpload,
+                footerImageUpload,
+                headerImageUpload,
+                subHeaderImageUpload,
+                headerIconUpload,
+                exploreMoreImageUpload,
+            } = await EditImageUpoads(row)
 
-            const footervideoUpload = await handleVideo(row.footer_config_video_Array)
-            const headerVideoUpload = await handleVideo(row.header_config_video_Array)
-            const subHeaderVideoUpload = await handleVideo(row.sub_header_config_video_Array)
-            const backgroundVideoUpload = await handleVideo(row?.background_video_array)
-            const mobileBackgroundVideoUpload = await handleVideo(row?.mobile_background_video_array)
+            const {
+                backgroundVideoUpload,
+                exploreMoreVideoUpload,
+                footervideoUpload,
+                headerVideoUpload,
+                mobileBackgroundVideoUpload,
+                subHeaderVideoUpload,
+            } = await EditVideoUpload(row)
 
             console.log('New Row below')
-            const backgroundImageAspectRatios = await calculateAspectRatio(row.background_image_array)
-            const mobileImageAspectRatios = await calculateAspectRatio(row.mobile_background_array)
-            const headerImageAspectRatios = await calculateAspectRatio(row.header_config_image_Array)
-            const subHeaderImageAspectRatios = await calculateAspectRatio(row.sub_header_config_image_Array)
-            const footerImageAspectRatios = await calculateAspectRatio(row.footer_config_image_Array)
+
+            const {
+                backgroundImageAspectRatios,
+                mobileImageAspectRatios,
+                headerImageAspectRatios,
+                subHeaderImageAspectRatios,
+                footerImageAspectRatios,
+                exploreMoreAspectRatios,
+            } = await EditAspectRatios(row)
+
+            const explore_more_data = {
+                ...row?.extra_info.explore_more,
+                ...(exploreMoreImageUpload ? { image: exploreMoreImageUpload } : {}),
+                ...(exploreMoreAspectRatios?.[0] ? { aspect_ratio: exploreMoreAspectRatios[0] } : {}),
+                ...(exploreMoreVideoUpload ? { video: exploreMoreVideoUpload } : {}),
+            }
+            const explore_more = Object.fromEntries(Object.entries(explore_more_data).filter(([, value]) => value !== ''))
 
             const backgroundConfig = {
-                ...Object.fromEntries(Object.entries(row?.background_config || {}).filter(([_, value]) => value !== '')),
+                ...Object.fromEntries(Object.entries(row?.background_config || {}).filter(([, value]) => value !== '')),
                 ...(imageUpload || row?.background_image ? { background_image: imageUpload || row?.background_image } : {}),
                 ...(mobileimageUpload || row?.mobile_background_image
                     ? { mobile_background_image: mobileimageUpload || row?.mobile_background_image }
@@ -276,6 +293,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                     ...(row?.extra_info?.timeout ? { timeout: row?.extra_info?.timeout } : {}),
                     ...(row?.extra_info?.page_size ? { page_size: row?.extra_info?.page_size } : {}),
                     ...(row?.extra_info?.child_data_type && { child_data_type: row?.extra_info?.child_data_type }),
+                    explore_more: explore_more,
                 },
                 ...(row?.section_filters ? { section_filters: row?.section_filters } : {}),
                 ...(row?.section_type ? { section_type: row?.section_type } : {}),
@@ -306,9 +324,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     const [webSectionBorderShow, setWebSectioBorderShow] = useState(initialValue?.web_section_border)
     const [showSpinner, setShowSpinner] = useState(false)
 
-    const handleRemoveSubImage = (e: any) => {
-        e.preventDefault()
-
+    const handleRemoveSubImage = () => {
         setInitalValue((prev: any) => ({
             ...prev,
             sub_header_config: {
@@ -318,14 +334,25 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
         }))
     }
 
-    const handleRemoveHeaderImage = (e: any) => {
-        e.preventDefault()
-
+    const handleRemoveHeaderImage = () => {
         setInitalValue((prev: any) => ({
             ...prev,
             header_config: {
-                ...prev.header_config,
+                ...(prev.header_config || {}),
                 image: null,
+            },
+        }))
+    }
+    const handleRemoveExploreImage = () => {
+        console.log('clicked explore remove')
+        setInitalValue((prev: any) => ({
+            ...prev,
+            extra_info: {
+                ...prev.extra_info,
+                explore_more: {
+                    ...prev.extra_info.explore_more,
+                    image: '',
+                },
             },
         }))
     }
@@ -415,6 +442,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                     handleAddFilters={handleAddFilters}
                     handleRemoveFilter={handleRemoveFilter}
                     showAddFilter={showAddFilter}
+                    handleRemoveExploreImage={handleRemoveExploreImage}
                 />
             </Modal>
         </>

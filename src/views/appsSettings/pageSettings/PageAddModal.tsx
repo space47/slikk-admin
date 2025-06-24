@@ -169,12 +169,15 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCance
         const headerImageUpload = await handleImage(row.header_config_image_Array)
         const subHeaderImageUpload = await handleImage(row.sub_header_config_image_Array)
         const headerIconUpload = await handleImage(row.header_config_icon_Array)
+        const exploreMoreImageUpload = await handleImage(row.extra_info.explore_more_image_Array)
+
         //videos hanlde
         const footervideoUpload = await handleVideo(row.footer_config_video_Array)
         const headerVideoUpload = await handleVideo(row.header_config_video_Array)
         const subHeaderVideoUpload = await handleVideo(row.sub_header_config_video_Array)
         const backgroundVideoUpload = await handleVideo(row?.background_video_array)
         const mobileBackgroundVideoUpload = await handleVideo(row?.mobile_background_video_array)
+        const exploreMoreVideoUpload = await handleVideo(row?.extra_info.explore_more_video_Array)
 
         const backgroundLottieUpload = await handleimage('product', row?.background_lottie_array)
         const mobileBackgroundLottieUpload = await handleimage('product', row?.mobile_background_lottie_array)
@@ -186,6 +189,15 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCance
         const headerImageAspectRatios = await calculateAspectRatio(row.header_config_image_Array)
         const subHeaderImageAspectRatios = await calculateAspectRatio(row.sub_header_config_image_Array)
         const footerImageAspectRatios = await calculateAspectRatio(row.footer_config_image_Array)
+        const exploreMoreAspectRatios = await calculateAspectRatio(row.extra_info.explore_more_image_Array)
+
+        const explore_more_data = {
+            ...row?.extra_info.explore_more,
+            ...(exploreMoreImageUpload ? { image: exploreMoreImageUpload } : {}),
+            ...(exploreMoreAspectRatios?.[0] ? { aspect_ratio: exploreMoreAspectRatios[0] } : {}),
+            ...(exploreMoreVideoUpload ? { video: exploreMoreVideoUpload } : {}),
+        }
+        const explore_more = Object.fromEntries(Object.entries(explore_more_data).filter(([, value]) => value !== ''))
 
         const backgroundConfig = {
             ...Object.fromEntries(Object.entries(row?.background_config || {}).filter(([_, value]) => value !== '')),
@@ -275,6 +287,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCance
                 ...(row?.extra_info?.timeout ? { timeout: row?.extra_info?.timeout } : {}),
                 ...(row?.extra_info?.page_size ? { page_size: row?.extra_info?.page_size } : {}),
                 ...(row?.extra_info?.child_data_type && { child_data_type: row?.extra_info?.child_data_type }),
+                explore_more: explore_more,
             },
             ...(row?.section_filters ? { section_filters: row?.section_filters } : {}),
             ...(row?.section_type ? { section_type: row?.section_type } : {}),

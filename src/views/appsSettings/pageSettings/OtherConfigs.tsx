@@ -2,7 +2,7 @@
 import { FormContainer, FormItem, Input } from '@/components/ui'
 import React from 'react'
 import CommonSelect from './CommonSelect'
-import { FOOTERCONFIGARRAY, HEADERCONFIGARRAY, SUBHEADERCONFIGARRAY } from './configurationCommon'
+import { EXPLOREMOREARRAY, FOOTERCONFIGARRAY, HEADERCONFIGARRAY, SUBHEADERCONFIGARRAY } from './configurationCommon'
 import { Field } from 'formik'
 import PageEditImage from './PageEditImage'
 import PageAddCommonImage from './PageAddCommonImage'
@@ -25,6 +25,7 @@ interface OtherConfigProps {
     handleRemoveHeaderImage?: any
     handleRemoveSubImage?: any
     handleRemoveImage?: any
+    handleRemoveExploreImage?: any
 }
 
 const OtherConfigs = ({
@@ -34,6 +35,7 @@ const OtherConfigs = ({
     handleRemoveHeaderImage,
     handleRemoveImage,
     handleRemoveSubImage,
+    handleRemoveExploreImage,
 }: OtherConfigProps) => {
     return (
         <FormContainer className="grid grid-cols-2 gap-3">
@@ -108,6 +110,81 @@ const OtherConfigs = ({
                 className="col-span-1 w-1/2"
             />
 
+            {/* explore more */}
+
+            <CommonSelect
+                name="extra_info.explore_more.style"
+                label="Header config Style"
+                options={FontSizeArray}
+                needClassName
+                className="col-span-1 w-1/2"
+            />
+            {EXPLOREMOREARRAY.map((item, key) => (
+                <FormItem asterisk label={item.label} className="w-full" key={key}>
+                    <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} min="0" />
+                </FormItem>
+            ))}
+
+            {editMode ? (
+                <>
+                    <PageEditImage
+                        label="Explore More Image"
+                        rowName={particularRow?.extra_info?.explore_more?.image}
+                        removeName="explore_more_image"
+                        handleRemoveImage={handleRemoveExploreImage}
+                        name="extra_info.explore_more_image_Array"
+                        beforeUpload={beforeUpload}
+                        fileList={values.extra_info.explore_more_image_Array}
+                        fieldName="extra_info.explore_more_image_Array"
+                    />
+                </>
+            ) : (
+                <>
+                    <PageAddCommonImage
+                        label="Explore More Image"
+                        name="extra_info.explore_more_image_Array"
+                        fieldName="extra_info.explore_more_image_Array"
+                        fileList={values.extra_info.explore_more_image_Array}
+                        beforeUpload={beforeUpload}
+                    />
+                </>
+            )}
+
+            {editMode ? (
+                <>
+                    <PageEditVideo
+                        label="Explore More Video"
+                        rowName={particularRow?.extra_info?.explore_more?.video}
+                        removeName="explore_more_video"
+                        // handleRemoveImage={handleRemoveSubImage}
+                        name="extra_info.explore_more_video_Array"
+                        beforeVideoUpload={beforeVideoUpload}
+                        fileList={values.extra_info.explore_more_video_Array}
+                        fieldName="extra_info.explore_more_video_Array"
+                    />
+                </>
+            ) : (
+                <>
+                    <PageAddVideo
+                        label="Explore More video"
+                        name="extra_info.explore_more_video_Array"
+                        fieldName="extra_info.explore_more_video_Array"
+                        fileList={values.extra_info.explore_more_video_Array}
+                        beforeUpload={beforeVideoUpload}
+                    />
+                </>
+            )}
+
+            <CommonSelect
+                name="extra_info.explore_more.position"
+                label="Explore More position"
+                options={ALIGNVALUES}
+                needClassName
+                className="col-span-1 w-1/2"
+            />
+
+            {/* sub header */}
+
             <CommonSelect
                 name="sub_header_config.style"
                 label="Sub-Header config Style"
@@ -115,6 +192,7 @@ const OtherConfigs = ({
                 needClassName
                 className="col-span-1 w-1/2"
             />
+
             {SUBHEADERCONFIGARRAY.map((item, key) => (
                 <FormItem asterisk label={item.label} className="w-full" key={key}>
                     <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} min="0" />

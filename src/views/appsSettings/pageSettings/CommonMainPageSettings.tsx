@@ -68,6 +68,7 @@ const CommonMainPageSettings = ({
     showAddFilter,
     handleAddFilters,
     handleRemoveFilter,
+    handleRemoveExploreImage,
 }: CommonProps) => {
     const TabsArray = [
         { label: 'Component Config', value: 'Component' },
@@ -168,6 +169,7 @@ const CommonMainPageSettings = ({
                                         handleRemoveHeaderImage={handleRemoveHeaderImage}
                                         handleRemoveImage={handleRemoveImage}
                                         handleRemoveSubImage={handleRemoveSubImage}
+                                        handleRemoveExploreImage={handleRemoveExploreImage}
                                     />
                                 </TabContent>
                                 <TabContent value="extra_config">

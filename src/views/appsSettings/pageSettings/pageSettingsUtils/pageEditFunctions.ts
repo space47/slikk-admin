@@ -119,3 +119,59 @@ export const handleVideo = async (files: File[]) => {
         }
     }
 }
+
+export const EditImageUpoads = async (row: any) => {
+    const imageUpload = await handleImage(row.background_image_array)
+    const mobileimageUpload = await handleImage(row.mobile_background_array)
+    const footerImageUpload = await handleImage(row.footer_config_image_Array)
+    const headerImageUpload = await handleImage(row.header_config_image_Array)
+    const subHeaderImageUpload = await handleImage(row.sub_header_config_image_Array)
+    const headerIconUpload = await handleImage(row.header_config_icon_Array)
+    const exploreMoreImageUpload = await handleImage(row.extra_info.explore_more_image_Array)
+
+    return {
+        imageUpload,
+        mobileimageUpload,
+        footerImageUpload,
+        headerImageUpload,
+        subHeaderImageUpload,
+        headerIconUpload,
+        exploreMoreImageUpload,
+    }
+}
+
+export const EditVideoUpload = async (row: any) => {
+    const footervideoUpload = await handleVideo(row.footer_config_video_Array)
+    const headerVideoUpload = await handleVideo(row.header_config_video_Array)
+    const subHeaderVideoUpload = await handleVideo(row.sub_header_config_video_Array)
+    const backgroundVideoUpload = await handleVideo(row?.background_video_array)
+    const mobileBackgroundVideoUpload = await handleVideo(row?.mobile_background_video_array)
+    const exploreMoreVideoUpload = await handleVideo(row?.extra_info.explore_more_video_Array)
+
+    return {
+        footervideoUpload,
+        headerVideoUpload,
+        subHeaderVideoUpload,
+        backgroundVideoUpload,
+        mobileBackgroundVideoUpload,
+        exploreMoreVideoUpload,
+    }
+}
+
+export const EditAspectRatios = async (row: any) => {
+    const backgroundImageAspectRatios = await calculateAspectRatio(row.background_image_array)
+    const mobileImageAspectRatios = await calculateAspectRatio(row.mobile_background_array)
+    const headerImageAspectRatios = await calculateAspectRatio(row.header_config_image_Array)
+    const subHeaderImageAspectRatios = await calculateAspectRatio(row.sub_header_config_image_Array)
+    const footerImageAspectRatios = await calculateAspectRatio(row.footer_config_image_Array)
+    const exploreMoreAspectRatios = await calculateAspectRatio(row.extra_info.explore_more_image_Array)
+
+    return {
+        backgroundImageAspectRatios,
+        mobileImageAspectRatios,
+        headerImageAspectRatios,
+        subHeaderImageAspectRatios,
+        footerImageAspectRatios,
+        exploreMoreAspectRatios,
+    }
+}
