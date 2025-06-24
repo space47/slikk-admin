@@ -156,7 +156,7 @@ const RiderDetails = () => {
                             </Button>
                         </div>
                         <div className="xl:mt-8">
-                            <Button variant="new" size="sm" onClick={() => navigate(`/app/riders/attendance`)}>
+                            <Button variant="new" size="sm" onClick={() => navigate(`/app/riders/attendance/rider`)}>
                                 Attendance
                             </Button>
                         </div>

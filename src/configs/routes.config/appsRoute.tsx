@@ -1148,13 +1148,13 @@ const appsRoute: Routes = [
     },
     {
         key: 'appstryAndBuy.riders',
-        path: `${APP_PREFIX_PATH}/riders/attendance`,
+        path: `${APP_PREFIX_PATH}/riders/attendance/:user_type`,
         component: lazy(() => import('@/views/slikkLogistics/riderDetails/RiderComponents/RiderAttendance')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appstryAndBuy.riders',
-        path: `${APP_PREFIX_PATH}/riders/attendance/:mobile`,
+        path: `${APP_PREFIX_PATH}/riders/userAttendance/:mobile`,
         component: lazy(() => import('@/views/slikkLogistics/riderDetails/RiderComponents/ParticularRiderAttendance')),
         authority: [ADMIN, USER],
     },
@@ -1186,6 +1186,19 @@ const appsRoute: Routes = [
         key: '',
         path: `${APP_PREFIX_PATH}/riderProfile/:mobile`,
         component: lazy(() => import('@/views/slikkLogistics/taskTracking/trackingTaskComponents/RiderProfile')),
+        authority: [ADMIN, USER],
+    },
+    // Picker
+    {
+        key: 'appstryAndBuy.picker',
+        path: `${APP_PREFIX_PATH}/pickerBoard`,
+        component: lazy(() => import('@/views/slikkLogistics/picker/pickerBoard/PickerBoard')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appstryAndBuy.picker',
+        path: `${APP_PREFIX_PATH}/pickerDetails/:mobile`,
+        component: lazy(() => import('@/views/slikkLogistics/picker/pickerDetails/PickerDetails')),
         authority: [ADMIN, USER],
     },
 

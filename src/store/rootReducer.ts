@@ -41,6 +41,7 @@ import datePickerReducer from './slices/datepickersSice/datePicker.slice'
 import returnOrderDataReducer from './slices/returnOrder/returnOrder.slice'
 import shipmentDetailsReducer from './slices/shipemntsSlice/shipments.slice'
 import riderAttendanceReportReducer from './slices/riderSlice/riderAttendanceReport.slice'
+import pickerReducer from './slices/pickerSlice/picker.slice'
 
 export type RootState = CombinedState<{
     authorization: CombinedState<Authorization>
@@ -94,6 +95,7 @@ const staticReducers = {
     returnOrderData: returnOrderDataReducer,
     eventSeries: eventSeriesReducer,
     datePicker: datePickerReducer,
+    picker: pickerReducer,
     shipmentDetails: shipmentDetailsReducer,
     riderAttendanceReport: riderAttendanceReportReducer,
     [remitanceApi.reducerPath]: remitanceApi.reducer,
