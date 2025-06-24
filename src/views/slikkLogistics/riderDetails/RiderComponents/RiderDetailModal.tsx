@@ -42,6 +42,7 @@ const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile, fromDate, toDate }:
         page: page,
         pageSize: pageSize,
         to: toDate ?? to,
+        user_type: 'rider',
     })
 
     useEffect(() => {

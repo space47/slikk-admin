@@ -811,6 +811,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         authority: [ADMIN, USER],
                         subMenu: [],
                     },
+                    {
+                        key: 'appstryAndBuy.picker',
+                        path: `${APP_PREFIX_PATH}/pickerBoard`,
+                        title: 'Picker',
+                        translateKey: 'nav.appstryAndBuy.tryAndBuy',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
                 ],
             },
 

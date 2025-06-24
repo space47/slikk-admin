@@ -21,6 +21,7 @@ import {
 
 const ParticularRiderAttendance = () => {
     const { mobile } = useParams()
+    console.log
     const dispatch = useAppDispatch()
     const { riderAttendanceReport, count, from, to, page, pageSize } = useAppSelector<RiderAttendanceReportSliceType>(
         (state) => state.riderAttendanceReport,

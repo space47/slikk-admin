@@ -61,6 +61,7 @@ const RiderDetails = () => {
             name: riderSearchByType === 'name' ? globalFilter : '',
             isActive: tabSelect === 'checkin' ? 'true' : 'false',
             rider_type: riderType === 'Select Rider Type' ? '' : riderType,
+            user_type: 'rider',
         },
         { refetchOnMountOrArgChange: true, pollingInterval: 60000 },
     )
@@ -155,7 +156,7 @@ const RiderDetails = () => {
                             </Button>
                         </div>
                         <div className="xl:mt-8">
-                            <Button variant="new" size="sm" onClick={() => navigate(`/app/riders/attendance`)}>
+                            <Button variant="new" size="sm" onClick={() => navigate(`/app/riders/attendance/rider`)}>
                                 Attendance
                             </Button>
                         </div>

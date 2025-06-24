@@ -24,7 +24,7 @@ export const ridersService = RtkQueryService.injectEndpoints({
         }),
         riderAttendance: builder.query<
             RiderAttendanceResponseType,
-            { page?: number; pageSize?: number; from?: string; to?: string; mobile?: string | string[] }
+            { page?: number; pageSize?: number; from?: string; to?: string; mobile?: string | string[]; user_type?: string }
         >({
             query: (params) => {
                 const parameters: Record<string, string | string[]> = {}
@@ -48,9 +48,12 @@ export const ridersService = RtkQueryService.injectEndpoints({
                 if (params.mobile) {
                     parameters.mobile = params.mobile
                 }
+                if (params.user_type) {
+                    parameters.user_type = params.user_type
+                }
 
                 return {
-                    url: `/rider/attendance?user_type=rider`,
+                    url: `/rider/attendance`,
                     method: 'GET',
                     params: parameters,
                 }
@@ -68,6 +71,7 @@ export const ridersService = RtkQueryService.injectEndpoints({
                 isActive?: string
                 name?: string
                 rider_type?: string
+                user_type?: string
             }
         >({
             query: (params) => {
@@ -96,8 +100,11 @@ export const ridersService = RtkQueryService.injectEndpoints({
                 if (params.rider_type) {
                     parameters.rider_type = params.rider_type
                 }
+                if (params.user_type) {
+                    parameters.user_type = params.user_type
+                }
                 return {
-                    url: `/logistic/riders?user_type=rider`,
+                    url: `/logistic/riders`,
                     method: 'GET',
                     params: parameters,
                 }
@@ -105,7 +112,16 @@ export const ridersService = RtkQueryService.injectEndpoints({
         }),
         riderProfile: builder.query<
             RiderProfileResponseType,
-            { page?: number; pageSize?: number; from?: string; to?: string; mobile?: string | string[]; isActive?: string; name?: string }
+            {
+                page?: number
+                pageSize?: number
+                from?: string
+                to?: string
+                mobile?: string | string[]
+                isActive?: string
+                name?: string
+                user_type?: string
+            }
         >({
             query: (params) => {
                 const parameters: Record<string, string | string[] | boolean> = {}
@@ -129,6 +145,9 @@ export const ridersService = RtkQueryService.injectEndpoints({
                 }
                 if (params.name) {
                     parameters.name = params.name
+                }
+                if (params.user_type) {
+                    parameters.user_type = params.user_type
                 }
                 return {
                     url: `/rider/profile`,
