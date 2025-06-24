@@ -14,7 +14,7 @@ const initialState: PickerRequiredType = {
     pickerBoardData: [],
     pickerDetailsData: {},
     from: moment().format('YYYY-MM-DD'),
-    to: moment().format('YYYY-MM-DD'),
+    to: moment().add(1, 'day').format('YYYY-MM-DD'),
 }
 
 const pickerSlice = createSlice({
