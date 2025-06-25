@@ -9,8 +9,9 @@ import CommonMainPageSettings from './CommonMainPageSettings'
 import { ProductTable, WebType } from './pageSettings.types'
 import * as Yup from 'yup'
 import { handleimage } from '@/common/handleImage'
-import { calculateAspectRatio, handleImage, handleVideo } from './pageSettingsUtils/pageEditFunctions'
+import { EditAspectRatios, EditImageUpoads, EditVideoUpload } from './pageSettingsUtils/pageEditFunctions'
 import { DROPDOWNARRAY } from '@/views/category-management/catalog/CommonType'
+import { fetchInput, fetchPost } from './pageSettingsUtils/pageEditApi'
 
 type modalProps = {
     isModalOpen: boolean
@@ -23,6 +24,7 @@ type modalProps = {
 }
 
 const PageAddModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, formikRef, setData }) => {
+    const dispatch = useAppDispatch()
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>()
     const [searchInput, setSearchInput] = useState<string>('')
     const [showTable, setShowTable] = useState(false)
@@ -41,12 +43,10 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCance
     const [sectionBorderShow, setSectioBorderShow] = useState('')
     const [webSectionBorderShow, setWebSectioBorderShow] = useState('')
     const [componentOption, setComponentOptions] = useState('')
-
     const [showAddFilter, setShowAddFilter] = useState<number[]>([])
     const [filterId, setFilterId] = useState()
     const [filtersData, setFiltersData] = useState<any[]>([])
 
-    const dispatch = useAppDispatch()
     useEffect(() => {
         dispatch(getAllFiltersAPI())
     }, [])
@@ -62,44 +62,12 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCance
         setShowTable(true)
     }
 
-    const fetchInput = async () => {
-        try {
-            if (searchInput) {
-                const qname =
-                    currentSelectedPage?.value === 'sku'
-                        ? 'sku'
-                        : currentSelectedPage?.value === 'name'
-                          ? 'name'
-                          : currentSelectedPage?.value === 'barcode'
-                            ? 'barcode'
-                            : ''
-                const response = await axioisInstance.get(`/merchant/products?dashboard=true&${qname}=${searchInput}`)
-                const data = response.data.data.results
-                setTableData(data)
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
     useEffect(() => {
-        fetchInput()
+        fetchInput(searchInput, currentSelectedPage, setTableData)
     }, [searchInput])
 
-    const fetchPost = async () => {
-        try {
-            if (postInput) {
-                const response = await axioisInstance.get(`/posts?name=${postInput}`)
-                const data = response.data.data.results
-                setPostTableData(data)
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
     useEffect(() => {
-        fetchPost()
+        fetchPost(postInput, setPostTableData)
     }, [postInput])
 
     const handleAddFilter = () => {
@@ -161,35 +129,34 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCance
             web_name_footer: row?.web_name_footer ?? false,
             web_section_border: row?.web_section_border ?? false,
         }
-        console.log('Mobile file in Add', row?.mobile_background_video_array)
-        console.log('satrt')
-        const imageUpload = await handleImage(row.background_image_array)
-        const mobileimageUpload = await handleImage(row.mobile_background_array)
-        const footerImageUpload = await handleImage(row.footer_config_image_Array)
-        const headerImageUpload = await handleImage(row.header_config_image_Array)
-        const subHeaderImageUpload = await handleImage(row.sub_header_config_image_Array)
-        const headerIconUpload = await handleImage(row.header_config_icon_Array)
-        const exploreMoreImageUpload = await handleImage(row.extra_info.explore_more_image_Array)
-
-        //videos hanlde
-        const footervideoUpload = await handleVideo(row.footer_config_video_Array)
-        const headerVideoUpload = await handleVideo(row.header_config_video_Array)
-        const subHeaderVideoUpload = await handleVideo(row.sub_header_config_video_Array)
-        const backgroundVideoUpload = await handleVideo(row?.background_video_array)
-        const mobileBackgroundVideoUpload = await handleVideo(row?.mobile_background_video_array)
-        const exploreMoreVideoUpload = await handleVideo(row?.extra_info.explore_more_video_Array)
+        const {
+            imageUpload,
+            mobileimageUpload,
+            footerImageUpload,
+            headerImageUpload,
+            subHeaderImageUpload,
+            headerIconUpload,
+            exploreMoreImageUpload,
+        } = await EditImageUpoads(row)
+        const {
+            backgroundVideoUpload,
+            exploreMoreVideoUpload,
+            footervideoUpload,
+            headerVideoUpload,
+            mobileBackgroundVideoUpload,
+            subHeaderVideoUpload,
+        } = await EditVideoUpload(row)
+        const {
+            backgroundImageAspectRatios,
+            mobileImageAspectRatios,
+            headerImageAspectRatios,
+            subHeaderImageAspectRatios,
+            footerImageAspectRatios,
+            exploreMoreAspectRatios,
+        } = await EditAspectRatios(row)
 
         const backgroundLottieUpload = await handleimage('product', row?.background_lottie_array)
         const mobileBackgroundLottieUpload = await handleimage('product', row?.mobile_background_lottie_array)
-
-        console.log('headerIconImage')
-        // Aspect Ratio handles
-        const backgroundImageAspectRatios = await calculateAspectRatio(row.background_image_array)
-        const mobileImageAspectRatios = await calculateAspectRatio(row.mobile_background_array)
-        const headerImageAspectRatios = await calculateAspectRatio(row.header_config_image_Array)
-        const subHeaderImageAspectRatios = await calculateAspectRatio(row.sub_header_config_image_Array)
-        const footerImageAspectRatios = await calculateAspectRatio(row.footer_config_image_Array)
-        const exploreMoreAspectRatios = await calculateAspectRatio(row.extra_info.explore_more_image_Array)
 
         const explore_more_data = {
             ...row?.extra_info.explore_more,
@@ -227,9 +194,6 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCance
                 ? { mobile_background_lottie: mobileBackgroundLottieUpload || row?.mobile_background_lottie }
                 : {}),
         }
-
-        console.log('Start Api')
-        //Fields
         const newRowAdd = {
             ...row,
             ...(imageUpload || row?.background_image ? { background_image: imageUpload || row?.background_image } : {}),
@@ -294,14 +258,9 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCance
             ...(row?.order_count ? { order_count: row?.order_count } : {}),
             ...(row?.min_order_value_for_event_pass ? { min_order_value_for_event_pass: row?.min_order_value_for_event_pass } : {}),
         }
-
-        console.log('End of row')
         const filteredRow = Object.fromEntries(Object.entries(newRowAdd || {}).filter(([_, value]) => value !== undefined))
-
         setData((prevData: WebType[]) => [...prevData, filteredRow])
-
         console.log('Main Data That is to be send in the API', filteredRow)
-        console.log('The row which is set', row)
     }
 
     const [borderForm, setBorderForm] = useState('')

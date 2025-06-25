@@ -18,6 +18,7 @@ import DataTypes from './DataTypes'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import TabContent from '@/components/ui/Tabs/TabContent'
+import ChildComponentConfig from './ChildComponentConfig'
 
 const CommonMainPageSettings = ({
     setComponentOptions,
@@ -74,6 +75,7 @@ const CommonMainPageSettings = ({
         { label: 'Component Config', value: 'Component' },
         { label: 'Background config', value: 'bg_config' },
         { label: 'Other Config', value: 'other_config' },
+        { label: 'Child Comp Config', value: 'child_comp_config' },
         { label: 'Extra Config', value: 'extra_config' },
         { label: 'Data Type Config', value: 'data_type_config' },
     ]
@@ -152,6 +154,16 @@ const CommonMainPageSettings = ({
                                         webFooterAlignForm={webFooterAlignForm}
                                     />
                                 </TabContent>
+
+                                <TabContent value="child_comp_config">
+                                    <ChildComponentConfig
+                                        FontSizeArray={FontSizeArray}
+                                        SECTIONARRAY={SECTIONARRAY}
+                                        setFieldValue={setFieldValue}
+                                        values={values}
+                                    />
+                                </TabContent>
+
                                 <TabContent value="bg_config">
                                     <BackGroundImages
                                         editMode={editMode}
@@ -172,6 +184,7 @@ const CommonMainPageSettings = ({
                                         handleRemoveExploreImage={handleRemoveExploreImage}
                                     />
                                 </TabContent>
+
                                 <TabContent value="extra_config">
                                     <ExtraConfigFileds />
                                 </TabContent>

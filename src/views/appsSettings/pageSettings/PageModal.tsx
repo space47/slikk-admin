@@ -14,6 +14,7 @@ import { DROPDOWNTYPE } from '@/views/category-management/catalog/CommonType'
 import { handleimage } from '@/common/handleImage'
 import { EditAspectRatios, EditImageUpoads, EditVideoUpload } from './pageSettingsUtils/pageEditFunctions'
 import { usePageEditRemoveFunctions } from './pageSettingsUtils/usePageEditRemoveFunctions'
+import { fetchInput, fetchPost } from './pageSettingsUtils/pageEditApi'
 
 type modalProps = {
     isModalOpen: boolean
@@ -97,42 +98,11 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     }
 
     useEffect(() => {
-        const fetchInput = async () => {
-            try {
-                if (searchInput) {
-                    const qname =
-                        currentSelectedPage?.value === 'sku'
-                            ? 'sku'
-                            : currentSelectedPage?.value === 'name'
-                              ? 'name'
-                              : currentSelectedPage?.value === 'barcode'
-                                ? 'barcode'
-                                : ''
-                    const response = await axioisInstance.get(`/merchant/products?dashboard=true&${qname}=${searchInput}`)
-                    const data = response.data.data.results
-                    setTableData(data)
-                }
-            } catch (error) {
-                console.log(error)
-            }
-        }
-        fetchInput()
+        fetchInput(searchInput, currentSelectedPage, setTableData)
     }, [searchInput])
 
     useEffect(() => {
-        const fetchPost = async () => {
-            try {
-                if (postInput) {
-                    const response = await axioisInstance.get(`/posts?name=${postInput}`)
-                    const data = response.data.data.results
-                    setPostTableData(data)
-                }
-            } catch (error) {
-                console.log(error)
-            }
-        }
-
-        fetchPost()
+        fetchPost(postInput, setPostTableData)
     }, [postInput])
 
     const handleSelect = (value: any) => {
@@ -182,8 +152,6 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                 subHeaderVideoUpload,
             } = await EditVideoUpload(row)
 
-            console.log('New Row below')
-
             const {
                 backgroundImageAspectRatios,
                 mobileImageAspectRatios,
@@ -231,8 +199,6 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                     ? { mobile_background_lottie: mobileBackgroundLottieUpload || row?.mobile_background_lottie }
                     : {}),
             }
-
-            console.log('Start New Row')
             const newRow = {
                 ...row,
                 ...(imageUpload || row?.background_image ? { background_image: imageUpload || row?.background_image } : {}),
@@ -302,7 +268,6 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             }
 
             const filteredRow = Object.fromEntries(Object.entries(newRow || {}).filter(([_, value]) => value !== undefined))
-
             setShowSpinner(false)
             setParticularRow(filteredRow)
             console.log('FINAL ADD INSIDE SUBMIT', filteredRow)
@@ -310,9 +275,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             console.error('Error in handleSubmit:', error)
         }
     }
-
     const { handleRemoveImage, handleRemoveVideo } = usePageEditRemoveFunctions({ setInitalValue })
-
     const [componentOption, setComponentOptions] = useState(initialValue.component_type)
     const [borderForm, setBorderForm] = useState(initialValue?.border)
     const [webBorderForm, setWebBorderForm] = useState<boolean>(initialValue?.web_border)
@@ -344,7 +307,6 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
         }))
     }
     const handleRemoveExploreImage = () => {
-        console.log('clicked explore remove')
         setInitalValue((prev: any) => ({
             ...prev,
             extra_info: {
