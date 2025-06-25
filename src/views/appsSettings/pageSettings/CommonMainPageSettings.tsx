@@ -101,7 +101,7 @@ const CommonMainPageSettings = ({
                                 <Field name="component_type">
                                     {({ field, form }: FieldProps<any>) => {
                                         const componentOptions = COMPONENT_CATEGORY_TYPES
-                                        console.log('values are', values)
+                                        console.log('values are', !!values?.extra_info?.child_data_type)
                                         return (
                                             <Select
                                                 field={field}
@@ -123,7 +123,7 @@ const CommonMainPageSettings = ({
 
                         <Tabs defaultValue="tab1">
                             <TabList className="flex items-center justify-center font-bold bg-gray-100 p-2 rounded-2xl ">
-                                {values?.data_type?.type === 'banner' ? (
+                                {!!values?.extra_info?.child_data_type === true ? (
                                     <>
                                         {TabsArray.map((tab, index) => (
                                             <TabNav key={index} value={tab?.value} className="hover:text-green-500">
@@ -167,7 +167,7 @@ const CommonMainPageSettings = ({
                                     />
                                 </TabContent>
 
-                                {values?.data_type.type === 'banner' && (
+                                {!!values?.extra_info?.child_data_type === true && (
                                     <TabContent value="child_comp_config">
                                         <ChildComponentConfig
                                             FontSizeArray={FontSizeArray}
