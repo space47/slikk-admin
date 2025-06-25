@@ -68,8 +68,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     }
 
     const handleRemoveFilter = (index: number) => {
-        const updatedFilters = showAddFilter.filter((_, i) => i !== index)
-        setShowAddFilter(updatedFilters)
+        setShowAddFilter(showAddFilter.filter((_, i) => i !== index))
     }
 
     const handleAddFilters = async (values: any) => {

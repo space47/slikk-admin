@@ -41,7 +41,6 @@ const OtherConfigs = ({
     handleRemoveHeaderImage,
     handleRemoveImage,
     handleRemoveSubImage,
-    handleRemoveExploreImage,
 }: OtherConfigProps) => {
     return (
         <FormContainer className="">
@@ -144,7 +143,7 @@ const OtherConfigs = ({
                 />
                 <CommonSelect
                     name="extra_info.cta_config.alignment"
-                    label="CTA position"
+                    label="CTA Alignment"
                     options={ALIGNVALUES}
                     needClassName
                     className="col-span-1 w-1/2"
