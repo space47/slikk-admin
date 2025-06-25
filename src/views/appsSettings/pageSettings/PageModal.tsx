@@ -133,24 +133,11 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             : initialValue.mobile_background_lottie
 
         try {
-            const {
-                imageUpload,
-                mobileimageUpload,
-                footerImageUpload,
-                headerImageUpload,
-                subHeaderImageUpload,
-                headerIconUpload,
-                exploreMoreImageUpload,
-            } = await EditImageUpoads(row)
+            const { imageUpload, mobileimageUpload, footerImageUpload, headerImageUpload, subHeaderImageUpload, headerIconUpload } =
+                await EditImageUpoads(row)
 
-            const {
-                backgroundVideoUpload,
-                exploreMoreVideoUpload,
-                footervideoUpload,
-                headerVideoUpload,
-                mobileBackgroundVideoUpload,
-                subHeaderVideoUpload,
-            } = await EditVideoUpload(row)
+            const { backgroundVideoUpload, footervideoUpload, headerVideoUpload, mobileBackgroundVideoUpload, subHeaderVideoUpload } =
+                await EditVideoUpload(row)
 
             const {
                 backgroundImageAspectRatios,
@@ -158,16 +145,19 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                 headerImageAspectRatios,
                 subHeaderImageAspectRatios,
                 footerImageAspectRatios,
-                exploreMoreAspectRatios,
             } = await EditAspectRatios(row)
 
-            const explore_more_data = {
-                ...row?.extra_info.explore_more,
-                ...(exploreMoreImageUpload ? { image: exploreMoreImageUpload } : {}),
-                ...(exploreMoreAspectRatios?.[0] ? { aspect_ratio: exploreMoreAspectRatios[0] } : {}),
-                ...(exploreMoreVideoUpload ? { video: exploreMoreVideoUpload } : {}),
+            const cta_config_data = {
+                ...row?.extra_info.cta_config,
             }
-            const explore_more = Object.fromEntries(Object.entries(explore_more_data).filter(([, value]) => value !== ''))
+            const cta_config = Object.fromEntries(Object.entries(cta_config_data).filter(([, value]) => value !== ''))
+
+            const child_component_config_data = {
+                ...row?.extra_info?.child_component_config,
+            }
+            const child_component_config = Object.fromEntries(
+                Object.entries(child_component_config_data).filter(([, value]) => value !== ''),
+            )
 
             const backgroundConfig = {
                 ...Object.fromEntries(Object.entries(row?.background_config || {}).filter(([, value]) => value !== '')),
@@ -259,7 +249,8 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                     ...(row?.extra_info?.timeout ? { timeout: row?.extra_info?.timeout } : {}),
                     ...(row?.extra_info?.page_size ? { page_size: row?.extra_info?.page_size } : {}),
                     ...(row?.extra_info?.child_data_type && { child_data_type: row?.extra_info?.child_data_type }),
-                    explore_more: explore_more,
+                    cta_config: cta_config,
+                    child_component_config: child_component_config,
                 },
                 ...(row?.section_filters ? { section_filters: row?.section_filters } : {}),
                 ...(row?.section_type ? { section_type: row?.section_type } : {}),
@@ -311,8 +302,8 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             ...prev,
             extra_info: {
                 ...prev.extra_info,
-                explore_more: {
-                    ...prev.extra_info.explore_more,
+                cta_config: {
+                    ...prev.extra_info.cta_config,
                     image: '',
                 },
             },

@@ -123,11 +123,23 @@ const CommonMainPageSettings = ({
 
                         <Tabs defaultValue="tab1">
                             <TabList className="flex items-center justify-center font-bold bg-gray-100 p-2 rounded-2xl ">
-                                {TabsArray.map((tab, index) => (
-                                    <TabNav key={index} value={tab?.value} className="hover:text-green-500">
-                                        {tab?.label}
-                                    </TabNav>
-                                ))}
+                                {values?.data_type?.type === 'banner' ? (
+                                    <>
+                                        {TabsArray.map((tab, index) => (
+                                            <TabNav key={index} value={tab?.value} className="hover:text-green-500">
+                                                {tab?.label}
+                                            </TabNav>
+                                        ))}
+                                    </>
+                                ) : (
+                                    <>
+                                        {TabsArray.filter((tab) => tab.value !== 'child_comp_config').map((tab, index) => (
+                                            <TabNav key={index} value={tab?.value} className="hover:text-green-500">
+                                                {tab?.label}
+                                            </TabNav>
+                                        ))}
+                                    </>
+                                )}
                             </TabList>
                             <div className="p-4 mt-5">
                                 <TabContent value="Component">
@@ -155,14 +167,16 @@ const CommonMainPageSettings = ({
                                     />
                                 </TabContent>
 
-                                <TabContent value="child_comp_config">
-                                    <ChildComponentConfig
-                                        FontSizeArray={FontSizeArray}
-                                        SECTIONARRAY={SECTIONARRAY}
-                                        setFieldValue={setFieldValue}
-                                        values={values}
-                                    />
-                                </TabContent>
+                                {values?.data_type.type === 'banner' && (
+                                    <TabContent value="child_comp_config">
+                                        <ChildComponentConfig
+                                            FontSizeArray={FontSizeArray}
+                                            SECTIONARRAY={SECTIONARRAY}
+                                            setFieldValue={setFieldValue}
+                                            values={values}
+                                        />
+                                    </TabContent>
+                                )}
 
                                 <TabContent value="bg_config">
                                     <BackGroundImages

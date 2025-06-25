@@ -11,11 +11,17 @@ import { beforeUpload } from '@/common/beforeUpload'
 import PageEditVideo from './PageEditVideo'
 import { beforeVideoUpload } from '@/common/beforUploadVideo'
 import PageAddVideo from './PageAddVideo'
+
 const FontSizeArray = [
     { label: 'Bold', value: 'bold' },
     { label: 'Regular', value: 'regular' },
     { label: 'Underline', value: 'underline' },
     { label: 'Italic', value: 'italic' },
+]
+const BorderStyleArray = [
+    { label: 'solid', value: 'solid' },
+    { label: 'dotted', value: 'dotted' },
+    { label: 'dashed', value: 'dashed' },
 ]
 
 interface OtherConfigProps {
@@ -113,76 +119,40 @@ const OtherConfigs = ({
                 />
             </div>
 
-            {/* explore more */}
-            <h3 className="mb-3 mt-3">Explore More Config</h3>
+            {/* CTA */}
+            <h3 className="mb-3 mt-3">CTA Config</h3>
             <div className="grid grid-cols-2 gap-3">
                 <CommonSelect
-                    name="extra_info.explore_more.style"
-                    label="Header config Style"
+                    name="extra_info.cta_config.style"
+                    label="CTA config Style"
                     options={FontSizeArray}
                     needClassName
                     className="col-span-1 w-1/2"
                 />
                 {EXPLOREMOREARRAY.map((item, key) => (
-                    <FormItem asterisk label={item.label} className="w-full" key={key}>
+                    <FormItem label={item.label} className="w-full" key={key}>
                         <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} min="0" />
                     </FormItem>
                 ))}
 
-                {editMode ? (
-                    <>
-                        <PageEditImage
-                            label="Explore More Image"
-                            rowName={particularRow?.extra_info?.explore_more?.image}
-                            removeName="explore_more_image"
-                            handleRemoveImage={handleRemoveExploreImage}
-                            name="extra_info.explore_more_image_Array"
-                            beforeUpload={beforeUpload}
-                            fileList={values.extra_info.explore_more_image_Array}
-                            fieldName="extra_info.explore_more_image_Array"
-                        />
-                    </>
-                ) : (
-                    <>
-                        <PageAddCommonImage
-                            label="Explore More Image"
-                            name="extra_info.explore_more_image_Array"
-                            fieldName="extra_info.explore_more_image_Array"
-                            fileList={values.extra_info.explore_more_image_Array}
-                            beforeUpload={beforeUpload}
-                        />
-                    </>
-                )}
-
-                {editMode ? (
-                    <>
-                        <PageEditVideo
-                            label="Explore More Video"
-                            rowName={particularRow?.extra_info?.explore_more?.video}
-                            removeName="explore_more_video"
-                            // handleRemoveImage={handleRemoveSubImage}
-                            name="extra_info.explore_more_video_Array"
-                            beforeVideoUpload={beforeVideoUpload}
-                            fileList={values.extra_info.explore_more_video_Array}
-                            fieldName="extra_info.explore_more_video_Array"
-                        />
-                    </>
-                ) : (
-                    <>
-                        <PageAddVideo
-                            label="Explore More video"
-                            name="extra_info.explore_more_video_Array"
-                            fieldName="extra_info.explore_more_video_Array"
-                            fileList={values.extra_info.explore_more_video_Array}
-                            beforeUpload={beforeVideoUpload}
-                        />
-                    </>
-                )}
-
                 <CommonSelect
-                    name="extra_info.explore_more.position"
-                    label="Explore More position"
+                    name="extra_info.cta_config.position"
+                    label="CTA position"
                     options={ALIGNVALUES}
+                    needClassName
+                    className="col-span-1 w-1/2"
+                />
+                <CommonSelect
+                    name="extra_info.cta_config.alignment"
+                    label="CTA position"
+                    options={ALIGNVALUES}
+                    needClassName
+                    className="col-span-1 w-1/2"
+                />
+                <CommonSelect
+                    name="extra_info.cta_config.borderStyle"
+                    label="CTA Border Style"
+                    options={BorderStyleArray}
                     needClassName
                     className="col-span-1 w-1/2"
                 />
