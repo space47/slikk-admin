@@ -12,8 +12,9 @@ import * as Yup from 'yup'
 import { EditInitialValues } from './pageSettingsUtils/PageSettingEditInitialValues'
 import { DROPDOWNTYPE } from '@/views/category-management/catalog/CommonType'
 import { handleimage } from '@/common/handleImage'
-import { calculateAspectRatio, handleImage, handleVideo } from './pageSettingsUtils/pageEditFunctions'
+import { EditAspectRatios, EditImageUpoads, EditVideoUpload } from './pageSettingsUtils/pageEditFunctions'
 import { usePageEditRemoveFunctions } from './pageSettingsUtils/usePageEditRemoveFunctions'
+import { fetchInput, fetchPost } from './pageSettingsUtils/pageEditApi'
 
 type modalProps = {
     isModalOpen: boolean
@@ -67,8 +68,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     }
 
     const handleRemoveFilter = (index: number) => {
-        const updatedFilters = showAddFilter.filter((_, i) => i !== index)
-        setShowAddFilter(updatedFilters)
+        setShowAddFilter(showAddFilter.filter((_, i) => i !== index))
     }
 
     const handleAddFilters = async (values: any) => {
@@ -97,42 +97,11 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     }
 
     useEffect(() => {
-        const fetchInput = async () => {
-            try {
-                if (searchInput) {
-                    const qname =
-                        currentSelectedPage?.value === 'sku'
-                            ? 'sku'
-                            : currentSelectedPage?.value === 'name'
-                              ? 'name'
-                              : currentSelectedPage?.value === 'barcode'
-                                ? 'barcode'
-                                : ''
-                    const response = await axioisInstance.get(`/merchant/products?dashboard=true&${qname}=${searchInput}`)
-                    const data = response.data.data.results
-                    setTableData(data)
-                }
-            } catch (error) {
-                console.log(error)
-            }
-        }
-        fetchInput()
+        fetchInput(searchInput, currentSelectedPage, setTableData)
     }, [searchInput])
 
     useEffect(() => {
-        const fetchPost = async () => {
-            try {
-                if (postInput) {
-                    const response = await axioisInstance.get(`/posts?name=${postInput}`)
-                    const data = response.data.data.results
-                    setPostTableData(data)
-                }
-            } catch (error) {
-                console.log(error)
-            }
-        }
-
-        fetchPost()
+        fetchPost(postInput, setPostTableData)
     }, [postInput])
 
     const handleSelect = (value: any) => {
@@ -144,7 +113,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
 
     const handleSubmit = async (row: any) => {
         const componentConfig = {
-            ...Object.fromEntries(Object.entries(row?.component_config || {}).filter(([_, value]) => value !== '')),
+            ...Object.fromEntries(Object.entries(row?.component_config || {}).filter(([, value]) => value !== '')),
             border: row?.border ?? false,
             name: row?.name ?? false,
             name_footer: row?.name_footer ?? false,
@@ -163,29 +132,34 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             : initialValue.mobile_background_lottie
 
         try {
-            console.log('handleSubmit called')
-            const imageUpload = await handleImage(row.background_image_array)
-            const mobileimageUpload = await handleImage(row.mobile_background_array)
-            const footerImageUpload = await handleImage(row.footer_config_image_Array)
-            const headerImageUpload = await handleImage(row.header_config_image_Array)
-            const subHeaderImageUpload = await handleImage(row.sub_header_config_image_Array)
-            const headerIconUpload = await handleImage(row.header_config_icon_Array)
+            const { imageUpload, mobileimageUpload, footerImageUpload, headerImageUpload, subHeaderImageUpload, headerIconUpload } =
+                await EditImageUpoads(row)
 
-            const footervideoUpload = await handleVideo(row.footer_config_video_Array)
-            const headerVideoUpload = await handleVideo(row.header_config_video_Array)
-            const subHeaderVideoUpload = await handleVideo(row.sub_header_config_video_Array)
-            const backgroundVideoUpload = await handleVideo(row?.background_video_array)
-            const mobileBackgroundVideoUpload = await handleVideo(row?.mobile_background_video_array)
+            const { backgroundVideoUpload, footervideoUpload, headerVideoUpload, mobileBackgroundVideoUpload, subHeaderVideoUpload } =
+                await EditVideoUpload(row)
 
-            console.log('New Row below')
-            const backgroundImageAspectRatios = await calculateAspectRatio(row.background_image_array)
-            const mobileImageAspectRatios = await calculateAspectRatio(row.mobile_background_array)
-            const headerImageAspectRatios = await calculateAspectRatio(row.header_config_image_Array)
-            const subHeaderImageAspectRatios = await calculateAspectRatio(row.sub_header_config_image_Array)
-            const footerImageAspectRatios = await calculateAspectRatio(row.footer_config_image_Array)
+            const {
+                backgroundImageAspectRatios,
+                mobileImageAspectRatios,
+                headerImageAspectRatios,
+                subHeaderImageAspectRatios,
+                footerImageAspectRatios,
+            } = await EditAspectRatios(row)
+
+            const cta_config_data = {
+                ...row?.extra_info.cta_config,
+            }
+            const cta_config = Object.fromEntries(Object.entries(cta_config_data).filter(([, value]) => value !== ''))
+
+            const child_component_config_data = {
+                ...row?.extra_info?.child_component_config,
+            }
+            const child_component_config = Object.fromEntries(
+                Object.entries(child_component_config_data).filter(([, value]) => value !== ''),
+            )
 
             const backgroundConfig = {
-                ...Object.fromEntries(Object.entries(row?.background_config || {}).filter(([_, value]) => value !== '')),
+                ...Object.fromEntries(Object.entries(row?.background_config || {}).filter(([, value]) => value !== '')),
                 ...(imageUpload || row?.background_image ? { background_image: imageUpload || row?.background_image } : {}),
                 ...(mobileimageUpload || row?.mobile_background_image
                     ? { mobile_background_image: mobileimageUpload || row?.mobile_background_image }
@@ -214,8 +188,6 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                     ? { mobile_background_lottie: mobileBackgroundLottieUpload || row?.mobile_background_lottie }
                     : {}),
             }
-
-            console.log('Start New Row')
             const newRow = {
                 ...row,
                 ...(imageUpload || row?.background_image ? { background_image: imageUpload || row?.background_image } : {}),
@@ -276,6 +248,8 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                     ...(row?.extra_info?.timeout ? { timeout: row?.extra_info?.timeout } : {}),
                     ...(row?.extra_info?.page_size ? { page_size: row?.extra_info?.page_size } : {}),
                     ...(row?.extra_info?.child_data_type && { child_data_type: row?.extra_info?.child_data_type }),
+                    cta_config: cta_config,
+                    child_component_config: child_component_config,
                 },
                 ...(row?.section_filters ? { section_filters: row?.section_filters } : {}),
                 ...(row?.section_type ? { section_type: row?.section_type } : {}),
@@ -284,7 +258,6 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             }
 
             const filteredRow = Object.fromEntries(Object.entries(newRow || {}).filter(([_, value]) => value !== undefined))
-
             setShowSpinner(false)
             setParticularRow(filteredRow)
             console.log('FINAL ADD INSIDE SUBMIT', filteredRow)
@@ -292,9 +265,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             console.error('Error in handleSubmit:', error)
         }
     }
-
     const { handleRemoveImage, handleRemoveVideo } = usePageEditRemoveFunctions({ setInitalValue })
-
     const [componentOption, setComponentOptions] = useState(initialValue.component_type)
     const [borderForm, setBorderForm] = useState(initialValue?.border)
     const [webBorderForm, setWebBorderForm] = useState<boolean>(initialValue?.web_border)
@@ -306,9 +277,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     const [webSectionBorderShow, setWebSectioBorderShow] = useState(initialValue?.web_section_border)
     const [showSpinner, setShowSpinner] = useState(false)
 
-    const handleRemoveSubImage = (e: any) => {
-        e.preventDefault()
-
+    const handleRemoveSubImage = () => {
         setInitalValue((prev: any) => ({
             ...prev,
             sub_header_config: {
@@ -318,14 +287,24 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
         }))
     }
 
-    const handleRemoveHeaderImage = (e: any) => {
-        e.preventDefault()
-
+    const handleRemoveHeaderImage = () => {
         setInitalValue((prev: any) => ({
             ...prev,
             header_config: {
-                ...prev.header_config,
+                ...(prev.header_config || {}),
                 image: null,
+            },
+        }))
+    }
+    const handleRemoveExploreImage = () => {
+        setInitalValue((prev: any) => ({
+            ...prev,
+            extra_info: {
+                ...prev.extra_info,
+                cta_config: {
+                    ...prev.extra_info.cta_config,
+                    image: '',
+                },
             },
         }))
     }
@@ -415,6 +394,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                     handleAddFilters={handleAddFilters}
                     handleRemoveFilter={handleRemoveFilter}
                     showAddFilter={showAddFilter}
+                    handleRemoveExploreImage={handleRemoveExploreImage}
                 />
             </Modal>
         </>

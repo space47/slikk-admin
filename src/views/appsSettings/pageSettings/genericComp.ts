@@ -447,6 +447,452 @@ export const genericComponentArray = [
         placeholder: 'Enter Aspect Ratio',
     },
 ]
+export const ChildComponentArray = [
+    {
+        label: 'Grid',
+        name: 'extra_info.child_component_config.grid',
+        component: { Checkbox },
+        type: 'checkbox',
+        placeholder: 'Enter grid',
+    },
+    {
+        label: 'Cover Flow',
+        name: 'extra_info.child_component_config.coverFlow',
+        component: { Checkbox },
+        type: 'checkbox',
+        placeholder: 'Enter ',
+    },
+    {
+        label: 'Shadow Intensity',
+        name: 'extra_info.child_component_config.shadow_intensity',
+        type: 'number',
+        placeholder: 'Enter Shadow Intensity ',
+    },
+    {
+        label: 'Shadow Color',
+        name: 'extra_info.child_component_config.shadow_color',
+        type: 'text',
+        placeholder: 'Enter Shadow Color ',
+    },
+    {
+        label: 'Carousel AutoPlay',
+        name: 'extra_info.child_component_config.carousel_autoplay',
+        component: { Checkbox },
+        type: 'checkbox',
+        placeholder: 'Enter Autoplay',
+    },
+    // {
+    //     label: 'Section AlignMent',
+    //     name: 'extra_info.child_component_config.section_alignment',
+    //     component: { Input },
+    //     type: 'text',
+    //     placeholder: 'Enter Section Alignment',
+    // },
+    {
+        label: 'Interval',
+        name: 'extra_info.child_component_config.interval',
+        component: { Input },
+        type: 'number',
+        placeholder: 'Enter Interval in secs',
+    },
+    // {
+    //     label: 'Timestamp',
+    //     name: 'extra_info.child_component_config.timestamp',
+    //     component: { Input },
+    //     type: 'Date',
+    //     placeholder: 'Enter Timestamp',
+    // },
+    {
+        label: 'Show Dots',
+        name: 'extra_info.child_component_config.show_dots',
+        component: { Checkbox }, // Updated component to match type
+        type: 'checkbox',
+        placeholder: 'Enter Show Dots',
+    },
+    {
+        label: 'Infinite Loop',
+        name: 'extra_info.child_component_config.infinit_loop',
+        component: { Checkbox }, // Updated component to match type
+        type: 'checkbox',
+        placeholder: 'Enter Infinite Loop',
+    },
+    {
+        label: 'Carousel',
+        name: 'extra_info.child_component_config.carousel',
+        component: { Checkbox },
+        type: 'checkbox',
+        placeholder: 'Enter carousel',
+    },
+    {
+        label: 'Width',
+        name: 'extra_info.child_component_config.width',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Width (e.g., 0.5, 0.25, etc.)',
+    },
+
+    {
+        label: 'Row',
+        name: 'extra_info.child_component_config.row',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Row',
+    },
+    {
+        label: 'Column',
+        name: 'extra_info.child_component_config.column',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Column',
+    },
+    {
+        label: 'Corner Radius',
+        name: 'extra_info.child_component_config.corner_radius',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Corner Radius',
+    },
+    {
+        label: 'Section Corner Radius',
+        name: 'extra_info.child_component_config.section_corner_radius',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Section Corner Radius',
+    },
+    //
+
+    {
+        label: 'Section Top Margin',
+        name: 'extra_info.child_component_config.section_topMargin',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Top Margin (e.g., 0.5, 1, etc.)',
+    },
+    {
+        label: 'Section Bottom Margin',
+        name: 'extra_info.child_component_config.section_bottomMargin',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Bottom Margin (e.g., 0.5, 1, etc.)',
+    },
+    {
+        label: 'Section Left Margin',
+        name: 'extra_info.child_component_config.section_leftMargin',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Left Margin (e.g., 0.5, 1, etc.)',
+    },
+    {
+        label: 'Section Right Margin',
+        name: 'extra_info.child_component_config.section_rightMargin',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Right Margin (e.g., 0.5, 1, etc.)',
+    },
+    {
+        label: 'Section Top Padding',
+        name: 'extra_info.child_component_config.section_topPadding',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Top Padding (e.g., 0.5, 1, etc.)',
+    },
+    {
+        label: 'Section Bottom Padding',
+        name: 'extra_info.child_component_config.section_bottomPadding',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Bottom Padding (e.g., 0.5, 1, etc.)',
+    },
+    {
+        label: 'Section Left Padding',
+        name: 'extra_info.child_component_config.section_leftPadding',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Left Padding (e.g., 0.5, 1, etc.)',
+    },
+    {
+        label: 'Section Right Padding',
+        name: 'extra_info.child_component_config.section_rightPadding',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Right Padding (e.g., 0.5, 1, etc.)',
+    },
+
+    //
+    {
+        label: 'Gap',
+        name: 'extra_info.child_component_config.gap',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter gap',
+    },
+    {
+        label: 'Vertical Gap',
+        name: 'extra_info.child_component_config.vertical_gap',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter gap',
+    },
+    {
+        label: 'Font Size',
+        name: 'extra_info.child_component_config.font_size',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Font Size',
+    },
+    {
+        label: 'Footer Font Size',
+        name: 'extra_info.child_component_config.footer_font_size',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Footer Font Size',
+    },
+    {
+        label: 'Font Color',
+        name: 'extra_info.child_component_config.font_color',
+        type: 'text',
+        component: { Input },
+        placeholder: 'Enter Font Color',
+    },
+    {
+        label: 'Footer Font Color',
+        name: 'extra_info.child_component_config.footer_font_color',
+        type: 'text',
+        component: { Input },
+        placeholder: 'Enter Font Color',
+    },
+    {
+        label: 'Section Margin',
+        name: 'extra_info.child_component_config.section_margin',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter margin',
+    },
+    {
+        label: 'Section Padding',
+        name: 'extra_info.child_component_config.section_padding',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Font Color',
+    },
+    {
+        label: 'Aspect Ratio',
+        name: 'extra_info.child_component_config.aspect_ratio',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Aspect Ratio',
+    },
+
+    // Web Versions below
+    {
+        label: 'Web Grid',
+        name: 'extra_info.child_component_config.web_grid',
+        component: { Checkbox },
+        type: 'checkbox',
+        placeholder: 'Enter Web grid',
+    },
+    {
+        label: 'Web Carousel AutoPlay',
+        name: 'extra_info.child_component_config.web_carousel_autoplay',
+        component: { Checkbox },
+        type: 'checkbox',
+        placeholder: 'Enter Web Autoplay',
+    },
+    {
+        label: 'Web Cover Flow',
+        name: 'extra_info.child_component_config.web_coverFlow',
+        component: { Checkbox },
+        type: 'checkbox',
+        placeholder: 'Enter ',
+    },
+    {
+        label: 'Web Interval',
+        name: 'extra_info.child_component_config.web_interval',
+        component: { Input },
+        type: 'number',
+        placeholder: 'Enter Web Interval in secs',
+    },
+    {
+        label: 'Web Show Dots',
+        name: 'extra_info.child_component_config.web_show_dots',
+        component: { Checkbox }, // Updated component to match type
+        type: 'checkbox',
+        placeholder: 'Enter Web Show Dots',
+    },
+    {
+        label: 'Web Infinite Loop',
+        name: 'extra_info.child_component_config.web_infinit_loop',
+        component: { Checkbox }, // Updated component to match type
+        type: 'checkbox',
+        placeholder: 'Enter Web Infinite Loop',
+    },
+    {
+        label: 'Web Carousel',
+        name: 'extra_info.child_component_config.web_carousel',
+        component: { Checkbox },
+        type: 'checkbox',
+        placeholder: 'Enter Web carousel',
+    },
+    {
+        label: 'Web Width',
+        name: 'extra_info.child_component_config.web_width',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Width (e.g., 0.5, 0.25, etc.)',
+    },
+    {
+        label: 'Web row',
+        name: 'extra_info.child_component_config.web_row',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Row',
+    },
+    {
+        label: 'Web Column',
+        name: 'extra_info.child_component_config.web_column',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Column',
+    },
+    {
+        label: 'Web Corner Radius',
+        name: 'extra_info.child_component_config.web_corner_radius',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Corner Radius',
+    },
+    {
+        label: 'Web Section Corner Radius',
+        name: 'extra_info.child_component_config.web_section_corner_radius',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Section Corner Radius',
+    },
+
+    //
+
+    {
+        label: 'Web Section Top Margin',
+        name: 'extra_info.child_component_config.web_section_topMargin',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Section Top Margin (e.g., 0.5, 1, etc.)',
+    },
+    {
+        label: 'Web Section Bottom Margin',
+        name: 'extra_info.child_component_config.web_section_bottomMargin',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Section Bottom Margin (e.g., 0.5, 1, etc.)',
+    },
+    {
+        label: 'Web Section Left Margin',
+        name: 'extra_info.child_component_config.web_section_leftMargin',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Section Left Margin (e.g., 0.5, 1, etc.)',
+    },
+    {
+        label: 'Web Section Right Margin',
+        name: 'extra_info.child_component_config.web_section_rightMargin',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Section Right Margin (e.g., 0.5, 1, etc.)',
+    },
+    {
+        label: 'Web Section Top Padding',
+        name: 'extra_info.child_component_config.web_section_topPadding',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Section Top Padding (e.g., 0.5, 1, etc.)',
+    },
+    {
+        label: 'Web Section Bottom Padding',
+        name: 'extra_info.child_component_config.web_section_bottomPadding',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Section Bottom Padding (e.g., 0.5, 1, etc.)',
+    },
+    {
+        label: 'Web Section Left Padding',
+        name: 'extra_info.child_component_config.web_section_leftPadding',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Section Left Padding (e.g., 0.5, 1, etc.)',
+    },
+    {
+        label: 'Web Section Right Padding',
+        name: 'extra_info.child_component_config.web_section_rightPadding',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Section Right Padding (e.g., 0.5, 1, etc.)',
+    },
+
+    //
+    {
+        label: 'Web Gap',
+        name: 'extra_info.child_component_config.web_gap',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter web gap',
+    },
+    {
+        label: 'Web Vertical Gap',
+        name: 'extra_info.child_component_config.web_vertical_gap',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter gap',
+    },
+    {
+        label: 'Web Font Size',
+        name: 'extra_info.child_component_config.web_font_size',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Font Size',
+    },
+    {
+        label: 'Web Footer Font Size',
+        name: 'extra_info.child_component_config.web_footer_font_size',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Footer Font Size',
+    },
+    {
+        label: 'Web Font Color',
+        name: 'extra_info.child_component_config.web_font_color',
+        type: 'text',
+        component: { Input },
+        placeholder: 'Enter Web Font Color',
+    },
+    {
+        label: 'Web Footer Font Color',
+        name: 'extra_info.child_component_config.web_footer_font_color',
+        type: 'text',
+        component: { Input },
+        placeholder: 'Enter Web Font Color',
+    },
+    {
+        label: 'Web Section Margin',
+        name: 'extra_info.child_component_config.web_section_margin',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Font Color',
+    },
+    {
+        label: 'Web Section Padding',
+        name: 'extra_info.child_component_config.web_section_padding',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Font Color',
+    },
+    {
+        label: 'Web Aspect Ratio',
+        name: 'extra_info.child_component_config.web_aspect_ratio',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Aspect Ratio',
+    },
+]
 
 export const borrderStyleArray = [
     {
@@ -515,6 +961,77 @@ export const webBorrderStyleArray = [
         placeholder: 'Enter color hexcode',
     },
 ]
+//
+
+export const childBorderStyleArray = [
+    {
+        label: 'BorderWidth',
+        name: 'extra_info.child_component_config.border_width',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Width (eg: 1,2)',
+    },
+    {
+        label: 'Color',
+        name: 'extra_info.child_component_config.border_color',
+        type: 'text',
+        component: { Input },
+        placeholder: 'Enter color hexcode',
+    },
+]
+
+export const ChildSectionBorderStyleArray = [
+    {
+        label: 'Section Border Width',
+        name: 'extra_info.child_component_config.section_border_width',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Width (eg: 1,2)',
+    },
+    {
+        label: 'Section Color',
+        name: 'extra_info.child_component_config.section_border_color',
+        type: 'text',
+        component: { Input },
+        placeholder: 'Enter color hexcode',
+    },
+]
+
+export const ChildWebSectionBorderStyleArray = [
+    {
+        label: 'Web Section Border Width',
+        name: 'extra_info.child_component_config.web_section_border_width',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Width (eg: 1,2)',
+    },
+    {
+        label: 'Web Section Color',
+        name: 'extra_info.child_component_config.web_section_border_color',
+        type: 'text',
+        component: { Input },
+        placeholder: 'Enter color hexcode',
+    },
+]
+
+export const ChildWebBorderStyleArray = [
+    {
+        label: 'Web BorderWidth',
+        name: 'extra_info.child_component_config.web_border_width',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Width (eg: 1,2)',
+    },
+    {
+        label: 'Web Color',
+        name: 'extra_info.child_component_config.web_border_color',
+        type: 'text',
+        component: { Input },
+        placeholder: 'Enter color hexcode',
+    },
+]
+
+//
 
 export const BackGroundArray = [
     { label: 'Background Color', type: 'text', name: 'background_config.background_color', placeholder: 'Place bg color in hex' },
@@ -734,6 +1251,34 @@ export const WebNameFieldArray = [
         label: 'Web Name Bottom Margin',
         type: 'number',
         name: 'component_config.web_name_bottomMargin',
+        placeholder: 'Place Web name bottom margin',
+    },
+]
+export const ChildNameFieldArray = [
+    {
+        label: 'Name Top Margin',
+        type: 'number',
+        name: 'extra_info.child_component_config.name_topMargin',
+        placeholder: 'Place name top margin',
+    },
+    {
+        label: 'Name Bottom Margin',
+        type: 'number',
+        name: 'extra_info.child_component_config.name_bottomMargin',
+        placeholder: 'Place name bottom margin',
+    },
+]
+export const ChildWebNameFieldArray = [
+    {
+        label: 'Web Name Top Margin',
+        type: 'number',
+        name: 'extra_info.child_component_config.web_name_topMargin',
+        placeholder: 'Place Web name top margin',
+    },
+    {
+        label: 'Web Name Bottom Margin',
+        type: 'number',
+        name: 'extra_info.child_component_config.web_name_bottomMargin',
         placeholder: 'Place Web name bottom margin',
     },
 ]
