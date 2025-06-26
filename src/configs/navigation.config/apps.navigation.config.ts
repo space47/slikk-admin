@@ -654,16 +654,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         subMenu: [],
                     },
 
-                    // {
-                    //     key: 'appsAppSettings.groups',
-                    //     path: `${APP_PREFIX_PATH}/appSettings/groups`,
-                    //     title: 'Groups',
-                    //     translateKey: 'nav.appsAppSettings.groups',
-                    //     icon: '',
-                    //     type: NAV_ITEM_TYPE_ITEM,
-                    //     authority: [ADMIN, USER],
-                    //     subMenu: [],
-                    // },
+                    {
+                        key: 'appsAppSettings.newPageSettings',
+                        path: `${APP_PREFIX_PATH}/appSettings/newPageSettings`,
+                        title: 'Page Settings',
+                        translateKey: 'nav.appsAppSettings.newPageSettings',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
                 ],
             },
 
