@@ -39,6 +39,7 @@ const Exchangeorders = () => {
     const [showFilter, setShowFilter] = useState<boolean>(false)
     const [numberClick, setNumberClick] = useState<boolean>(false)
     const [showSpinner, setShowSpinner] = useState<boolean>(false)
+    const [searchOnEnter, setSearchOnEnter] = useState('')
     const previousOrders = useRef<any[]>([])
     const [deliveryTypes, setDeliveryTypes] = useState<Record<string, string>>({})
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
@@ -87,7 +88,7 @@ const Exchangeorders = () => {
 
             return () => clearInterval(interval)
         }
-    }, [page, pageSize, from, to, dropdownStatus, searchInput, paymentType, numberClick, previousOrders])
+    }, [page, pageSize, from, to, dropdownStatus, searchOnEnter, paymentType, numberClick, previousOrders])
 
     useEffect(() => {
         const initialDeliveryTypes: any = {}
@@ -97,6 +98,10 @@ const Exchangeorders = () => {
         setDeliveryTypes(initialDeliveryTypes)
     }, [orders])
 
+    const handleSearchWithIcon = () => {
+        setSearchOnEnter(searchInput)
+    }
+
     if (showSpinner) {
         return <LoadingSpinner />
     }
@@ -105,33 +110,41 @@ const Exchangeorders = () => {
         <div className="p-4 bg-gray-50 rounded-xl">
             <div className="overflow-x-auto scrollbar-hide">
                 <div className="flex flex-col xl:flex-row justify-between lg:flex-row lg:justify-between mb-10 xl:items-center gap-3 md:flex-col sm:flex-col">
-                    <div className="flex gap-1 xl:gap-2  xl:flex-row  ">
-                        <div className="flex justify-start ">
+                    <div className="flex  xl:gap-2  flex-row   gap-3  ">
+                        <div className="flex items-center gap-2 bg-white dark:bg-gray-900 px-3 py-2 rounded-lg shadow-md">
                             <Input
                                 type="search"
                                 name="search"
-                                placeholder="search here"
+                                placeholder="Search here..."
                                 value={searchInput}
-                                className="xl:w-[250px] rounded-[10px] w-[130px] dark:bg-gray-900"
-                                prefix={<HiSearch className="text-xl items-center flex justify-center" />}
+                                className="w-[150px] xl:w-[250px] rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-1 focus:outline-none focus:ring focus:ring-blue-500"
                                 onChange={(e) => setSearchInput(e.target.value)}
+                                onKeyDown={(e: any) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault()
+                                        setSearchOnEnter(e.target.value)
+                                    }
+                                }}
                             />
-                        </div>
-                        <div>
-                            <div className="bg-gray-100 items-center xl:mt-1  xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
-                                <Dropdown
-                                    className=" text-xl text-black bg-gray-200 font-bold  "
-                                    title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
-                                    onSelect={(val) => handleSelect(val, setCurrentSelectedPage)}
-                                >
-                                    {SEARCHOPTIONS_EXCHNAGE?.map((item, key) => {
-                                        return (
-                                            <DropdownItem key={key} eventKey={item.value}>
-                                                <span>{item.label}</span>
-                                            </DropdownItem>
-                                        )
-                                    })}
-                                </Dropdown>
+                            <div className="bg-blue-500 hover:bg-blue-400 p-2 rounded-xl cursor-pointer">
+                                <HiSearch className="text-white  dark:text-gray-400 text-xl" onClick={() => handleSearchWithIcon()} />
+                            </div>
+                            <div className="flex justify-center xl:justify-normal">
+                                <div className="bg-gray-100 flex justify-center font-bold items-center xl:mt-1  xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
+                                    <Dropdown
+                                        className=" text-xl text-black bg-gray-200 font-bold  "
+                                        title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
+                                        onSelect={(e) => handleSelect(e, setCurrentSelectedPage)}
+                                    >
+                                        {SEARCHOPTIONS_EXCHNAGE?.map((item, key) => {
+                                            return (
+                                                <DropdownItem key={key} eventKey={item.value}>
+                                                    <span>{item.label}</span>
+                                                </DropdownItem>
+                                            )
+                                        })}
+                                    </Dropdown>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -7,18 +7,10 @@ type OrderFilterProps = {
     handleFilterClose?: any
     dropdownStatus?: any
     handleDropdownSelect?: any
-    handleFromChange?: any
-    from?: any
-    to?: any
-    handleToChange?: any
     deliveryType?: any
     handleDeliverySelect?: any
     paymentType?: any
     handlePaymentSelect?: any
-    handleDateChange?: any
-    setFrom?: any
-    setTo?: any
-    dispatch?: any
 }
 
 const FilterForwardDelivery = ({

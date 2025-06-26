@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Helper function to get initial values
-export const InitialValues = (productData: any) => ({
+export const InitialValues = (productData: any, segmentOptions: string[] | undefined) => ({
+    domains: segmentOptions,
     company: productData?.company,
     brand_name: productData?.brand,
     name: productData?.name,
@@ -50,7 +52,7 @@ export const InitialValues = (productData: any) => ({
     sunprotection: productData?.sunprotection,
     concious: productData?.concious,
     productHexCode: productData?.productHexCode,
-    packsize: productData?.filter_tags?.packsize?.map((item) => item).join(','),
+    packsize: productData?.filter_tags?.packsize?.map((item: any) => item).join(','),
     size: productData?.filter_tags?.size?.join('/'),
     ingrediants: productData?.ingredients,
     vegnonveg: productData?.vegnonveg,
