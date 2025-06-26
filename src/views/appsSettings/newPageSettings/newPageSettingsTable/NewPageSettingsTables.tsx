@@ -20,18 +20,8 @@ import { DropResult } from 'react-beautiful-dnd'
 const NewPageSettingsTables = () => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
-
     const { pageSettingsData, page, pageSize, count } = useAppSelector<pageSettingsRequiredType>((state) => state.pageSettings)
-
-    const {
-        data: pageSettings,
-        isSuccess,
-        isLoading,
-    } = pageSettingsService.usePageSettingsDataQuery({
-        page,
-        pageSize,
-        // pageId:1
-    })
+    const { data: pageSettings, isSuccess, isLoading } = pageSettingsService.usePageSettingsDataQuery({ page, pageSize })
 
     useEffect(() => {
         if (isSuccess) {

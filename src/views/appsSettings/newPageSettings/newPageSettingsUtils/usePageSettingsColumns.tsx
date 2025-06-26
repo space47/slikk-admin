@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo } from 'react'
-import { FaCopy, FaEdit, FaTrash } from 'react-icons/fa'
+import { FaEdit } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 
 export const usePageSettingsColumns = () => {
@@ -18,21 +18,6 @@ export const usePageSettingsColumns = () => {
                         <FaEdit className="text-xl text-blue-600" />
                     </button>
                 ),
-            },
-            {
-                header: 'Copy',
-                accessorKey: '',
-                cell: ({ row }: any) => {
-                    const copiedRow = { ...row.original }
-                    return (
-                        <button
-                            className="border-none bg-none"
-                            //    onClick={() => handleCopyPage(copiedRow)}
-                        >
-                            <FaCopy className="text-xl text-green-500" />
-                        </button>
-                    )
-                },
             },
             {
                 header: 'Section Heading',
@@ -80,18 +65,18 @@ export const usePageSettingsColumns = () => {
             //           )
             //       },
             //   },
-            {
-                header: 'Delete',
-                accessorKey: '',
-                cell: ({ row }: any) => (
-                    <button
-                        className="border-none bg-none"
-                        //    onClick={() => handleRemoveRow(row.original)}
-                    >
-                        <FaTrash className="text-xl text-red-500" />
-                    </button>
-                ),
-            },
+            // {
+            //     header: 'Delete',
+            //     accessorKey: '',
+            //     cell: ({ row }: any) => (
+            //         <button
+            //             className="border-none bg-none"
+            //             //    onClick={() => handleRemoveRow(row.original)}
+            //         >
+            //             <FaTrash className="text-xl text-red-500" />
+            //         </button>
+            //     ),
+            // },
         ],
         [],
     )
