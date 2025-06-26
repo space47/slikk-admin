@@ -10,7 +10,7 @@ import {
 } from '@tanstack/react-table'
 import moment from 'moment'
 import Button from '@/components/ui/Button'
-import { Table, Pagination, Select, Dropdown } from '@/components/ui'
+import { Table, Pagination, Select, Dropdown, Input } from '@/components/ui'
 import {
     fetchOrders,
     setDropdownStatus,
@@ -37,11 +37,13 @@ import UltimateDatePicker from '@/common/UltimateDateFilter'
 import { DELIVERY_OPTIONS, LOGISTIC_PARTNER, SEARCHOPTIONS } from './DeliveryCommon'
 import { pageSizeOptions } from '../groupNotification/getGroup/groupComnmon'
 import { ForwardDeliveryColumns } from './forwardDeliveryUtils/ForwardDeliveryColumns'
+import { HiSearch } from 'react-icons/hi'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
 const DeliveryOrders = () => {
     const dispatch = useAppDispatch()
+    const [searchOnEnter, setSearchOnEnter] = useState('')
     const { orders, orderCount, page, pageSize, searchInput, deliveryType, from, currentSelectedPage, to, dropdownStatus, paymentType } =
         useAppSelector<OrderState>((state) => state.order)
 
@@ -58,28 +60,19 @@ const DeliveryOrders = () => {
 
             return () => clearInterval(interval)
         }
-    }, [page, pageSize, from, to, dropdownStatus, searchInput, deliveryType, paymentType])
+    }, [page, pageSize, from, to, dropdownStatus, searchOnEnter, deliveryType, paymentType])
+
     const [showFilter, setShowFilter] = useState(false)
-    const [partner, setPartner] = useState<{
-        [key: string]: { value: string; label: string }
-    }>({})
-    const [deliveryChangeType, setDeliveryChangeType] = useState<{
-        [key: string]: { value: string; label: string }
-    }>({})
+    const [partner, setPartner] = useState<{ [key: string]: { value: string; label: string } }>({})
+    const [deliveryChangeType, setDeliveryChangeType] = useState<{ [key: string]: { value: string; label: string } }>({})
 
     const handleCancelTask = async (invoce_id: any) => {
         try {
             await axioisInstance.patch(`logistic/cancel/order/${invoce_id}`)
-            notification.success({
-                message: 'success',
-                description: 'Order successfully cancelled',
-            })
+            notification.success({ message: 'success !! Order successfully cancelled' })
         } catch (error) {
             console.log(error)
-            notification.error({
-                message: 'Failure',
-                description: 'Failed to cancel order',
-            })
+            notification.error({ message: 'Failed to cancel order' })
         }
     }
 
@@ -90,17 +83,8 @@ const DeliveryOrders = () => {
         }
     }
 
-    const handleFromChange = (date: Date | null) => {
-        dispatch(setFrom(date ? moment(date).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD')))
-    }
-
-    const handleToChange = (date: Date | null) => {
-        dispatch(setTo(date ? moment(date).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD')))
-    }
-
     const handlePartnerSelect = (selectedValue: any, row: any) => {
         const selectedLabel = LOGISTIC_PARTNER.find((item) => item.value === selectedValue)?.label || ''
-
         setPartner((prev) => ({
             ...prev,
             [row.id]: { value: selectedValue, label: selectedLabel },
@@ -109,7 +93,6 @@ const DeliveryOrders = () => {
 
     const handleDeliveryChange = (selectedValue: any, row: any) => {
         const selectedLabel = DELIVERY_OPTIONS.find((item) => item.value === selectedValue)?.label || ''
-
         setDeliveryChangeType((prev) => ({
             ...prev,
             [row]: { value: selectedValue, label: selectedLabel },
@@ -131,9 +114,7 @@ const DeliveryOrders = () => {
                 delivery_type: selectedValue,
             }
             const response = await axioisInstance.patch(`/merchant/order/${id}`, body)
-            notification.success({
-                message: response.data.message || 'DELIVERY TYPE UPDATED',
-            })
+            notification.success({ message: response.data.message || 'DELIVERY TYPE UPDATED' })
         } catch (error) {
             console.log(error)
         }
@@ -150,21 +131,17 @@ const DeliveryOrders = () => {
 
     const handleDeliverySelect = (selectedValue: string) => {
         const currentValues = deliveryType?.value ?? []
-
         const updatedValues = currentValues.includes(selectedValue)
             ? currentValues.filter((item) => item !== selectedValue)
             : [...currentValues, selectedValue]
-
         dispatch(setDeliveryType({ ...deliveryType, value: updatedValues }))
     }
 
     const handlePaymentSelect = (selectedValue: string) => {
         const currentValues = paymentType?.value ?? []
-
         const updatedValues = currentValues.includes(selectedValue)
             ? currentValues.filter((item) => item !== selectedValue)
             : [...currentValues, selectedValue]
-
         dispatch(setPaymentType({ ...paymentType, value: updatedValues }))
     }
     const handleCreateTask = async (partner: any, logistic_partner: any, order_id: any) => {
@@ -174,17 +151,10 @@ const DeliveryOrders = () => {
                 delivery_partner: partner?.value ? partner?.value : logistic_partner,
             }
             const response = await axioisInstance.patch(`/merchant/order/${order_id}`, body)
-
-            notification.success({
-                message: 'Success',
-                description: response?.data?.message || 'Created Task Successfully',
-            })
+            notification.success({ message: response?.data?.message || 'Created Task Successfully' })
         } catch (error) {
             console.error(error)
-            notification.error({
-                message: 'Failure',
-                description: 'Failed to create Task',
-            })
+            notification.error({ message: 'Failed to create Task' })
         }
     }
 
@@ -209,36 +179,50 @@ const DeliveryOrders = () => {
         globalFilterFn: fuzzyFilter,
     })
 
+    const handleSearchWithIcon = () => {
+        setSearchOnEnter(searchInput)
+    }
+
     return (
         <div className="bg-gray-50 rounded-xl p-4">
             <div className="flex flex-col xl:flex-row justify-between lg:flex-row lg:justify-between mb-10 items-center gap-4 md:flex-col">
                 <div className="flex gap-2">
-                    <div className="flex justify-start ">
-                        <input
-                            type="search"
-                            name="search"
-                            id=""
-                            placeholder="search here"
-                            value={searchInput}
-                            className="xl:w-[250px] rounded-[10px] w-[130px] dark:bg-gray-900"
-                            onChange={(e) => dispatch(setSearchInput(e.target.value))}
-                        />
-                    </div>
-                    <div>
-                        <div className="bg-gray-100 dark:bg-blue-600 dark:text-white xl:mt-1  xl:text-md text-sm w-auto rounded-md ">
-                            <Dropdown
-                                className=" text-xl text-black bg-gray-200 font-bold "
-                                title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
-                                onSelect={handleSelect}
-                            >
-                                {SEARCHOPTIONS?.map((item, key) => {
-                                    return (
-                                        <DropdownItem key={key} eventKey={item.value}>
-                                            <span>{item.label}</span>
-                                        </DropdownItem>
-                                    )
-                                })}
-                            </Dropdown>
+                    <div className="flex  xl:gap-2  flex-row   gap-3  ">
+                        <div className="flex items-center gap-2 bg-white dark:bg-gray-900 px-3 py-2 rounded-lg shadow-md">
+                            <Input
+                                type="search"
+                                name="search"
+                                placeholder="Search here..."
+                                value={searchInput}
+                                className="w-[150px] xl:w-[250px] rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-1 focus:outline-none focus:ring focus:ring-blue-500"
+                                onChange={(e) => dispatch(setSearchInput(e.target.value))}
+                                onKeyDown={(e: any) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault()
+                                        setSearchOnEnter(e.target.value)
+                                    }
+                                }}
+                            />
+                            <div className="bg-blue-500 hover:bg-blue-400 p-2 rounded-xl cursor-pointer">
+                                <HiSearch className="text-white  dark:text-gray-400 text-xl" onClick={() => handleSearchWithIcon()} />
+                            </div>
+                            <div>
+                                <div className="bg-gray-100 dark:bg-blue-600 dark:text-white xl:mt-1  xl:text-md text-sm w-auto rounded-md ">
+                                    <Dropdown
+                                        className=" text-xl text-black bg-gray-200 font-bold "
+                                        title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
+                                        onSelect={handleSelect}
+                                    >
+                                        {SEARCHOPTIONS?.map((item, key) => {
+                                            return (
+                                                <DropdownItem key={key} eventKey={item.value}>
+                                                    <span>{item.label}</span>
+                                                </DropdownItem>
+                                            )
+                                        })}
+                                    </Dropdown>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -250,8 +234,6 @@ const DeliveryOrders = () => {
                             setFrom={setFrom}
                             to={to}
                             setTo={setTo}
-                            handleFromChange={handleFromChange}
-                            handleToChange={handleToChange}
                             handleDateChange={handleDateChange}
                             dispatch={dispatch}
                         />
@@ -326,18 +308,10 @@ const DeliveryOrders = () => {
                     handleFilterClose={() => setShowFilter(false)}
                     dropdownStatus={dropdownStatus}
                     handleDropdownSelect={handleDropdownSelect}
-                    handleFromChange={handleFromChange}
-                    handleToChange={handleToChange}
-                    from={from}
-                    to={to}
                     deliveryType={deliveryType}
                     handleDeliverySelect={handleDeliverySelect}
                     paymentType={paymentType}
                     handlePaymentSelect={handlePaymentSelect}
-                    handleDateChange={handleDateChange}
-                    setFrom={setFrom}
-                    setTo={setTo}
-                    dispatch={dispatch}
                 />
             )}
         </div>

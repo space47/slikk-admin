@@ -18,6 +18,7 @@ import DataTypes from './DataTypes'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import TabContent from '@/components/ui/Tabs/TabContent'
+import ChildComponentConfig from './ChildComponentConfig'
 
 const CommonMainPageSettings = ({
     setComponentOptions,
@@ -68,11 +69,13 @@ const CommonMainPageSettings = ({
     showAddFilter,
     handleAddFilters,
     handleRemoveFilter,
+    handleRemoveExploreImage,
 }: CommonProps) => {
     const TabsArray = [
         { label: 'Component Config', value: 'Component' },
         { label: 'Background config', value: 'bg_config' },
         { label: 'Other Config', value: 'other_config' },
+        { label: 'Child Comp Config', value: 'child_comp_config' },
         { label: 'Extra Config', value: 'extra_config' },
         { label: 'Data Type Config', value: 'data_type_config' },
     ]
@@ -98,7 +101,7 @@ const CommonMainPageSettings = ({
                                 <Field name="component_type">
                                     {({ field, form }: FieldProps<any>) => {
                                         const componentOptions = COMPONENT_CATEGORY_TYPES
-                                        console.log('values are', values)
+                                        console.log('values are', !!values?.extra_info?.child_data_type)
                                         return (
                                             <Select
                                                 field={field}
@@ -120,11 +123,23 @@ const CommonMainPageSettings = ({
 
                         <Tabs defaultValue="tab1">
                             <TabList className="flex items-center justify-center font-bold bg-gray-100 p-2 rounded-2xl ">
-                                {TabsArray.map((tab, index) => (
-                                    <TabNav key={index} value={tab?.value} className="hover:text-green-500">
-                                        {tab?.label}
-                                    </TabNav>
-                                ))}
+                                {!!values?.extra_info?.child_data_type === true ? (
+                                    <>
+                                        {TabsArray.map((tab, index) => (
+                                            <TabNav key={index} value={tab?.value} className="hover:text-green-500">
+                                                {tab?.label}
+                                            </TabNav>
+                                        ))}
+                                    </>
+                                ) : (
+                                    <>
+                                        {TabsArray.filter((tab) => tab.value !== 'child_comp_config').map((tab, index) => (
+                                            <TabNav key={index} value={tab?.value} className="hover:text-green-500">
+                                                {tab?.label}
+                                            </TabNav>
+                                        ))}
+                                    </>
+                                )}
                             </TabList>
                             <div className="p-4 mt-5">
                                 <TabContent value="Component">
@@ -151,6 +166,18 @@ const CommonMainPageSettings = ({
                                         webFooterAlignForm={webFooterAlignForm}
                                     />
                                 </TabContent>
+
+                                {!!values?.extra_info?.child_data_type === true && (
+                                    <TabContent value="child_comp_config">
+                                        <ChildComponentConfig
+                                            FontSizeArray={FontSizeArray}
+                                            SECTIONARRAY={SECTIONARRAY}
+                                            setFieldValue={setFieldValue}
+                                            values={values}
+                                        />
+                                    </TabContent>
+                                )}
+
                                 <TabContent value="bg_config">
                                     <BackGroundImages
                                         editMode={editMode}
@@ -168,8 +195,10 @@ const CommonMainPageSettings = ({
                                         handleRemoveHeaderImage={handleRemoveHeaderImage}
                                         handleRemoveImage={handleRemoveImage}
                                         handleRemoveSubImage={handleRemoveSubImage}
+                                        handleRemoveExploreImage={handleRemoveExploreImage}
                                     />
                                 </TabContent>
+
                                 <TabContent value="extra_config">
                                     <ExtraConfigFileds />
                                 </TabContent>

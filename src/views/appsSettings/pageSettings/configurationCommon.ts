@@ -61,6 +61,119 @@ export const HEADERCONFIGARRAY = [
         type: 'text',
     },
 ]
+export const EXPLOREMOREARRAY = [
+    {
+        label: 'CTA Text',
+        name: 'extra_info.cta_config.text',
+        type: 'text',
+    },
+    {
+        label: 'CTA Letter Spacing',
+        name: 'extra_info.cta_config.letter_spacing',
+        type: 'number',
+    },
+    {
+        label: 'CTA Web Letter Spacing',
+        name: 'extra_info.cta_config.web_letter_spacing',
+        type: 'number',
+    },
+    {
+        label: 'CTA mobile Font Size',
+        name: 'extra_info.cta_config.font_size',
+        type: 'number',
+    },
+    {
+        label: 'CTA Web Font Size',
+        name: 'extra_info.cta_config.web_font_size',
+        type: 'text',
+    },
+    {
+        label: 'CTA Bottom Margin',
+        name: 'extra_info.cta_config.bottomMargin',
+        type: 'number',
+    },
+    {
+        label: 'Web CTA Bottom Margin',
+        name: 'extra_info.cta_config.web_bottomMargin',
+        type: 'number',
+    },
+    {
+        label: 'CTA Top Margin',
+        name: 'extra_info.cta_config.topMargin',
+        type: 'number',
+    },
+    {
+        label: 'Web CTA Top Margin',
+        name: 'extra_info.cta_config.web_topMargin',
+        type: 'number',
+    },
+    {
+        label: 'CTA BG Color',
+        name: 'extra_info.cta_config.background_color',
+        type: 'text',
+    },
+    {
+        label: 'CTA Font Color',
+        name: 'extra_info.cta_config.font_color',
+        type: 'text',
+    },
+    // ......
+    {
+        label: 'CTA Width',
+        name: 'extra_info.cta_config.width',
+        type: 'number',
+    },
+    {
+        label: 'Web CTA Width',
+        name: 'extra_info.cta_config.web_width',
+        type: 'number',
+    },
+    {
+        label: 'CTA Horizontal Padding ',
+        name: 'extra_info.cta_config.horizontalPadding',
+        type: 'number',
+    },
+    {
+        label: 'Web CTA Horizontal Padding ',
+        name: 'extra_info.cta_config.web_horizontalPadding',
+        type: 'number',
+    },
+    {
+        label: 'CTA vertical Padding ',
+        name: 'extra_info.cta_config.verticalPadding',
+        type: 'number',
+    },
+    {
+        label: 'Web CTA vertical Padding ',
+        name: 'extra_info.cta_config.web_verticalPadding',
+        type: 'number',
+    },
+    {
+        label: 'CTA Corner Radius',
+        name: 'extra_info.cta_config.cornerRadius',
+        type: 'number',
+    },
+    {
+        label: 'Web CTA Corner Radius',
+        name: 'extra_info.cta_config.web_cornerRadius',
+        type: 'number',
+    },
+    {
+        label: 'CTA Border Width',
+        name: 'extra_info.cta_config.borderWidth',
+        type: 'number',
+    },
+    {
+        label: 'Web CTA Border Width',
+        name: 'extra_info.cta_config.web_borderWidth',
+        type: 'number',
+    },
+    {
+        label: 'CTA Border Color',
+        name: 'extra_info.cta_config.borderColor',
+        type: 'text',
+    },
+]
 
 export const SUBHEADERCONFIGARRAY = [
     // {
@@ -324,6 +437,7 @@ export interface CommonProps {
     showAddFilter: any
     handleAddFilters: any
     handleRemoveFilter: any
+    handleRemoveExploreImage?: any
 }
 
 export const ParallaxConfigArray = [

@@ -104,7 +104,10 @@ const ImageCommonProduct = ({
                                                                             />
                                                                         </div>
 
-                                                                        <button onClick={(e) => handleRemove(e, index)} className="ml-2">
+                                                                        <button
+                                                                            onClick={(e) => handleRemove(e, index, name)}
+                                                                            className="ml-2"
+                                                                        >
                                                                             <MdCancel className="text-red-500 text-lg" />
                                                                         </button>
                                                                     </div>
