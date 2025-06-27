@@ -75,12 +75,12 @@ export const ridersService = RtkQueryService.injectEndpoints({
             }
         >({
             query: (params) => {
-                const parameters: Record<string, string | string[] | boolean> = {}
+                const parameters: Record<string, string | string[] | boolean | number> = {}
                 if (params.page) {
-                    parameters.p = params.page?.toString()
+                    parameters.p = params.page
                 }
                 if (params.pageSize) {
-                    parameters.page_size = params.pageSize?.toString()
+                    parameters.page_size = params.pageSize
                 }
                 if (params.from) {
                     parameters.from = params.from

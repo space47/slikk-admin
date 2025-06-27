@@ -37,7 +37,7 @@ const RiderDetails = () => {
         lat: 12.920216,
         long: 77.649326,
     })
-    const [showRideeMap, setShowRiderMap] = useState<boolean>(false)
+    const [showRiderMap, setShowRiderMap] = useState<boolean>(false)
     const { storeResults } = useAppSelector<companyStore>((state) => state.companyStore)
     const [globalFilter, setGlobalFilter] = useState('')
     const [tabSelect, setTabSelect] = useState('checkin')
@@ -56,7 +56,7 @@ const RiderDetails = () => {
             from: from,
             to: To_Date,
             page: page,
-            pageSize: pageSize,
+            pageSize: showRiderMap ? 300 : pageSize,
             mobile: riderSearchByType === 'mobile' ? globalFilter : '',
             name: riderSearchByType === 'name' ? globalFilter : '',
             isActive: tabSelect === 'checkin' ? 'true' : 'false',
@@ -96,6 +96,12 @@ const RiderDetails = () => {
         }
     }
 
+    useEffect(() => {
+        if (showRiderMap) {
+            dispatch(setPageSize(100))
+        }
+    }, [showRiderMap])
+
     const onPaginationChange = (value: number) => {
         dispatch(setPage(value))
     }
@@ -115,7 +121,7 @@ const RiderDetails = () => {
         }
     }
 
-    const columns = RiderColumns({ handleActiveCareer, hanldeProfileClick })
+    const columns = RiderColumns({ handleActiveCareer, hanldeProfileClick, currentStoreLocation })
 
     return (
         <div>
@@ -141,9 +147,9 @@ const RiderDetails = () => {
 
                     <div className="flex flex-col gap-2 xl:flex-row xl:gap-5 items-center">
                         <div onClick={() => setShowRiderMap((prev) => !prev)} className="items-center xl:mt-8 flex gap-1">
-                            <span className="text-xl font-bold cursor-pointer">{showRideeMap ? 'Close Map:' : 'View Map:'}</span>
+                            <span className="text-xl font-bold cursor-pointer">{showRiderMap ? 'Close Map:' : 'View Map:'}</span>
                             <button>
-                                {showRideeMap ? (
+                                {showRiderMap ? (
                                     <FaMapMarkedAlt className="text-4xl text-red-700 " />
                                 ) : (
                                     <FaMapMarkedAlt className="text-4xl text-green-600 " />
@@ -195,7 +201,7 @@ const RiderDetails = () => {
                     </div>
                 </div>
 
-                {showRideeMap && (
+                {showRiderMap && (
                     <div className="xl:w-[90%]  items-center">
                         <div className="text-xl font-bold">Rider Location</div>
                         <div className="flex flex-col gap-3">

@@ -10,6 +10,9 @@ import { notification } from 'antd'
 
 const InventoryBulkUpload = () => {
     const [file, setFile] = useState(null)
+    const [appendLocation, setAppendLocation] = useState(false)
+
+    console.log('append location', appendLocation)
 
     const onFileUpload = (fileList: any) => {
         console.log('File uploaded:', fileList[0])
@@ -25,6 +28,7 @@ const InventoryBulkUpload = () => {
         const data = new FormData()
         data.append('inventory_file', file)
         data.append('company', '1')
+        data.append('append_address', appendLocation ? true : false)
 
         const config = {
             method: 'post',
@@ -71,6 +75,10 @@ const InventoryBulkUpload = () => {
             <div className="flex flex-row w-full space-x-[2%] items-center justify-center">
                 <Button onClick={handleSave}>Save</Button>
                 <Button>Download</Button>
+                <div className="flex gap-2 items-center">
+                    <input type="checkbox" onChange={() => setAppendLocation((prev) => !prev)} />
+                    <span className="font-bold">Append Location</span>
+                </div>
             </div>
         </div>
     )
