@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Dialog from '@/components/ui/Dialog'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { RiderData } from '../RiderDetailsCommon'
@@ -15,6 +15,8 @@ import { useNavigate } from 'react-router-dom'
 import EasyTable from '@/common/EasyTable'
 import { notification } from 'antd'
 import { ImUserCheck } from 'react-icons/im'
+import { useFetchApi } from '@/commonHooks/useFetchApi'
+import { useRiderModalColumns, useRiderModalColumnsForOrders } from '../RiderUtils/useRiderModalColumns'
 
 interface RiderModalProps {
     dialogIsOpen: boolean
@@ -28,7 +30,6 @@ const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile, fromDate, toDate }:
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
     const [riderData, setRiderData] = useState<RiderData>()
-    const [taskData, setTaskData] = useState<TaskData[]>([])
     const { riderAttendance, from, to, page, pageSize } = useAppSelector<RiderSlice>((state) => state.riderData)
 
     const {
@@ -59,24 +60,19 @@ const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile, fromDate, toDate }:
         }
     }, [riderDataForAttendance, isSuccess, dispatch])
 
-    const fetchTaskData = async () => {
-        try {
-            const response = await axioisInstance.get(`/logistic/slikk/task`)
-            const data = response?.data?.data?.results
-            setTaskData(data)
-        } catch (error) {
-            console.error(error)
-        }
-    }
+    const queryParams = useMemo(() => {
+        return `/logistic/slikk/task?runner_mobile=${mobile}&from=${fromDate}&to=${toDate}`
+    }, [mobile, fromDate, toDate])
+
+    const { data: taskData, refetch } = useFetchApi<TaskData>({ url: queryParams })
 
     useEffect(() => {
-        fetchTaskData()
         const intervalId = setInterval(() => {
-            fetchTaskData()
+            refetch()
         }, 60000)
 
         return () => clearInterval(intervalId)
-    }, [dispatch])
+    }, [])
 
     const fetchRiderParticularDetails = async () => {
         try {
@@ -106,43 +102,9 @@ const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile, fromDate, toDate }:
 
     console.log('rider_data', riderData)
 
-    const columns = [
-        {
-            header: 'Checkin Date',
-            accessorKey: 'checkin_date',
-            cell: ({ row }: any) => {
-                return <div>{row.original.checkin_date ?? 'N/A'}</div>
-            },
-        },
-        {
-            header: 'Checkin Time',
-            accessorKey: 'checkin_time',
-            cell: ({ row }: any) => {
-                return <div>{row.original.checkin_time ?? 'N/A'}</div>
-            },
-        },
-        {
-            header: 'Checkout Time',
-            accessorKey: 'checkout_time',
-            cell: ({ row }: any) => {
-                return <div>{row.original.checkout_time ?? 'N/A'}</div>
-            },
-        },
-        {
-            header: 'Active Time',
-            accessorKey: 'active_time',
-            cell: ({ row }: any) => {
-                return <div>{row.original.active_time ?? 'N/A'}mins</div>
-            },
-        },
-        {
-            header: 'Type',
-            accessorKey: 'user_type',
-            cell: ({ row }: any) => {
-                return <div>{row.original.user_type ?? 'N/A'}</div>
-            },
-        },
-    ]
+    const columnsForRiderOrders = useRiderModalColumnsForOrders()
+
+    const columns = useRiderModalColumns()
 
     return (
         <div className="p-2 overflow-scroll">
@@ -214,12 +176,16 @@ const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile, fromDate, toDate }:
                         <div className="flex-1 flex items-center justify-center">
                             <div className="w-full h-64 lg:h-full">
                                 <RiderLocationMap
-                                    taskData={riderTask}
+                                    taskData={riderTask as TaskData}
                                     runnerLat={Number(riderData?.profile?.current_location?.latitude) || 0}
                                     runnerLong={Number(riderData?.profile?.current_location?.longitude) || 0}
                                 />
                             </div>
                         </div>
+                    </div>
+                    <div className="font-bold text-xl mb-6">Order Details</div>
+                    <div className="grid grid-cols-1 ">
+                        <EasyTable overflow mainData={taskData} columns={columnsForRiderOrders} page={page} pageSize={pageSize} />
                     </div>
                     <div className="font-bold text-xl mb-6">Attendance Details</div>
                     <div className="grid grid-cols-1 ">

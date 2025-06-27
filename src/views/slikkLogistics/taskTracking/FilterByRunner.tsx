@@ -31,8 +31,6 @@ const FilterByRunner = ({
 
     const { data: riders, isSuccess } = ridersService.useRiderDetailsQuery(
         {
-            page: 1,
-            pageSize: 100,
             name: globalFilter,
         },
         { refetchOnMountOrArgChange: true },

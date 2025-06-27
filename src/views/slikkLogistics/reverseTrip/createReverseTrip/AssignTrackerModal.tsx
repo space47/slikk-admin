@@ -3,9 +3,9 @@ import React, { useEffect, useState } from 'react'
 import Modal from 'antd/es/modal/Modal'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import Card from '@/components/ui/Card'
-import Avatar from '@/components/ui/Avatar'
 import { notification, Radio } from 'antd'
 import { useNavigate } from 'react-router-dom'
+import { RiMotorbikeFill } from 'react-icons/ri'
 
 type ModalProps = {
     showTaskModal: any
@@ -38,6 +38,7 @@ const AssignTrackerModal = ({ showTaskModal, handleCloseModal, storeTaskId, setS
             console.log('Rider Data:', riderdata)
             setRidersData(riderdata)
         } catch (error) {
+            console.log('here')
             console.log(error)
         }
     }
@@ -104,15 +105,15 @@ const AssignTrackerModal = ({ showTaskModal, handleCloseModal, storeTaskId, setS
                                 {ridersData.map((item, key) => {
                                     return (
                                         <Card key={key} className="w-[350px] mb-4 bg-gray-200">
-                                            <div className="flex items-center gap-2 justify-between">
+                                            <div className="flex items-center gap-2 ">
+                                                <Radio value={item?.mobile} />
                                                 <div className="flex gap-3 items-center">
-                                                    <Avatar shape="circle" src={item?.image} />
+                                                    <RiMotorbikeFill className="text-xl" />
                                                     <div className="flex gap-1">
-                                                        <span className="text-xl font-bold">{item.first_name}</span>
-                                                        <span className="text-xl font-bold">{item.last_name}</span>
+                                                        <span className="text-xl font-bold">{item?.first_name}</span>
+                                                        <span className="text-xl font-bold">{item?.last_name}</span>
                                                     </div>
                                                 </div>
-                                                <Radio value={item.mobile} />
                                             </div>
                                         </Card>
                                     )

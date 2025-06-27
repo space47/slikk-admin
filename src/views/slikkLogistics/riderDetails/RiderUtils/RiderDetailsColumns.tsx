@@ -4,9 +4,21 @@ import { Switch } from 'antd'
 interface RiderColumnsProps {
     handleActiveCareer: (id: number, e: any, checked: boolean, mobile: string, name: string) => void
     hanldeProfileClick: (mobile: string) => void
+    currentStoreLocation: Record<string, number | undefined>
 }
 
-export const RiderColumns = ({ handleActiveCareer, hanldeProfileClick }: RiderColumnsProps) => {
+export const RiderColumns = ({ handleActiveCareer, hanldeProfileClick, currentStoreLocation }: RiderColumnsProps) => {
+    const calculateDistance = (latitude: number, longitude: number, storeLat: number, storeLong: number) => {
+        const dLat = (latitude - (storeLat ?? 0)) * (Math.PI / 180)
+        const dLon = (longitude - (storeLong ?? 0)) * (Math.PI / 180)
+        const rLat1 = (storeLat ?? 0) * (Math.PI / 180)
+        const rLat2 = latitude * (Math.PI / 180)
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(rLat1) * Math.cos(rLat2)
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+        const distance = parseFloat((6371 * c).toFixed(2))
+        return distance
+    }
+
     return [
         {
             header: 'Status',
@@ -50,6 +62,21 @@ export const RiderColumns = ({ handleActiveCareer, hanldeProfileClick }: RiderCo
                         <span>{row?.original?.profile?.last_name}</span>
                     </div>
                 )
+            },
+        },
+        {
+            header: 'Distance From Store',
+            accessorKey: 'profile.current_location',
+            cell: ({ row }: any) => {
+                const currentLatitude = Number(row?.original?.profile?.current_location?.latitude) || 0
+                const currentLong = Number(row?.original?.profile?.current_location?.longitude)
+
+                const storeLat = currentStoreLocation?.lat || 0
+                const storeLong = currentStoreLocation?.long || 0
+
+                const distance = calculateDistance(currentLatitude, currentLong, storeLat, storeLong)
+
+                return <div>{distance || 0} km</div>
             },
         },
         { header: 'Mobile', accessorKey: 'profile.mobile' },
