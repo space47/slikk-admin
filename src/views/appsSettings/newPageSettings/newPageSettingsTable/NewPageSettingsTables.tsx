@@ -1,4 +1,4 @@
-import { Button, Pagination, Select } from '@/components/ui'
+import { Button, Dropdown, Pagination, Select } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { pageSettingsService } from '@/store/services/pageSettingService'
 import {
@@ -7,42 +7,82 @@ import {
     setPage,
     setPageSize,
     setCount,
+    setCurrentPageName,
+    setCurrentSubPageName,
 } from '@/store/slices/pageSettingsSlice/pageSettingsSlice'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usePageSettingsColumns } from '../newPageSettingsUtils/usePageSettingsColumns'
 import { Option, pageSizeOptions } from '@/constants/pageUtils.constants'
 import LoadingSpinner from '@/common/LoadingSpinner'
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import PageDraggavleTable from '../../pageSettings/PageDraggavleTable'
-import { DropResult } from 'react-beautiful-dnd'
+import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import { pageNamesRequiredType, setPageNamesData, setSubPageNamesData } from '@/store/slices/pageSettingsSlice/pageNames.slice'
+import AddPageNameModal from '../../pageSettings/AddPageNameModal'
+import { usePageSettingsFunctions } from '../newPageSettingsUtils/usePageSettingsFunctions'
 
 const NewPageSettingsTables = () => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
-    const { pageSettingsData, page, pageSize, count } = useAppSelector<pageSettingsRequiredType>((state) => state.pageSettings)
-    const { data: pageSettings, isSuccess, isLoading } = pageSettingsService.usePageSettingsDataQuery({ page, pageSize })
+    const [showAddPageModal, setShowAddPageModal] = useState(false)
+    const { pageSettingsData, page, pageSize, count, currentPageName, currentSubPageName } = useAppSelector<pageSettingsRequiredType>(
+        (state) => state.pageSettings,
+    )
+    const { pageForName, pageNamesData, pageSizeForName, subPageNamesData } = useAppSelector<pageNamesRequiredType>(
+        (state) => state.pageNames,
+    )
+    const {
+        data: pageSettings,
+        isSuccess,
+        isLoading,
+    } = pageSettingsService.usePageSettingsDataQuery({
+        page,
+        pageSize,
+        pageId: currentPageName?.value as number,
+        sub_page: currentSubPageName?.value as number,
+    })
+    const { data: pageNames, isSuccess: isPageNamesSuccess } = pageSettingsService.usePageNamesQuery({
+        page: pageForName,
+        pageSize: pageSizeForName,
+    })
+    const { data: SubPageNames, isSuccess: isSubPageNamesSuccess } = pageSettingsService.useSubPageNamesQuery({
+        pageId: currentPageName?.value as number,
+    })
+
+    useEffect(() => {
+        if (isPageNamesSuccess) {
+            dispatch(setPageNamesData(pageNames?.data?.results || []))
+        }
+    }, [dispatch, pageNames, isPageNamesSuccess])
+
+    useEffect(() => {
+        if (isSubPageNamesSuccess) {
+            dispatch(setSubPageNamesData(SubPageNames?.data || []))
+        }
+    }, [dispatch, isSubPageNamesSuccess, currentPageName])
 
     useEffect(() => {
         if (isSuccess) {
             dispatch(setPageSettingsData(pageSettings?.data?.results || []))
             dispatch(setCount(pageSettings?.data?.count || 0))
         }
-    }, [dispatch, pageSettings])
+    }, [dispatch, pageSettings, isSuccess, currentPageName, currentSubPageName])
 
-    const reorderData = (startIndex: number, endIndex: number) => {
-        const newData = [...(pageSettingsData || [])]
-        const [movedRow] = newData.splice(startIndex, 1)
-        newData.splice(endIndex, 0, movedRow)
-        dispatch(setPageSettingsData(newData))
+    const { handleDragEnd, handleSelectPage, handleSelectSubPage, BANNER_PAGE, SUB_PAGE } = usePageSettingsFunctions({
+        pageNamesData,
+        subPageNamesData,
+        pageSettingsData,
+        setCurrentPageName,
+        setCurrentSubPageName,
+        setPageSettingsData,
+    })
+
+    const handleGoToBanner = (sectionHeading: string) => {
+        navigate('/app/appSettings/banners', { state: { var1: currentPageName?.label, var2: sectionHeading } })
     }
 
-    const handleDragEnd = (result: DropResult) => {
-        const { source, destination } = result
-        if (destination) reorderData(source.index, destination.index)
-    }
-
-    const columns = usePageSettingsColumns()
+    const columns = usePageSettingsColumns({ handleGoToBanner })
     const table = useReactTable({ data: pageSettingsData || [], columns, getCoreRowModel: getCoreRowModel() })
 
     if (isLoading) {
@@ -51,9 +91,55 @@ const NewPageSettingsTables = () => {
 
     return (
         <div>
-            <div className="flex justify-end mb-6">
+            <div className="flex justify-between mb-6">
+                <div className="flex gap-3">
+                    <div className="buttons flex gap-3 mb-7">
+                        <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px]">
+                            <Dropdown
+                                className="border bg-gray-200 text-black text-lg font-semibold"
+                                title={currentPageName?.label}
+                                onSelect={handleSelectPage}
+                            >
+                                {BANNER_PAGE?.map((item) => (
+                                    <DropdownItem key={item.value} eventKey={item?.value?.toString()}>
+                                        {item.label}
+                                    </DropdownItem>
+                                ))}
+                                <div
+                                    className="flex items-center justify-center mt-2 bg-gray-50 text-green-600 p-2
+                             hover:bg-gray-100 hover:text-green-500 cursor-pointer"
+                                    onClick={() => setShowAddPageModal(true)}
+                                >
+                                    ADD NEW
+                                </div>
+                            </Dropdown>
+                        </div>
+                    </div>
+                    <div className="buttons flex gap-3 mb-7">
+                        <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px]">
+                            <Dropdown
+                                className="border bg-gray-200 text-black text-lg font-semibold"
+                                title={currentSubPageName?.label}
+                                onSelect={handleSelectSubPage}
+                            >
+                                {SUB_PAGE?.map((item) => (
+                                    <DropdownItem key={item.value} eventKey={item?.value?.toString()}>
+                                        {item.label}
+                                    </DropdownItem>
+                                ))}
+                                {/* <div
+                                className="flex items-center justify-center mt-2 bg-gray-50 text-green-600 p-2
+                             hover:bg-gray-100 hover:text-green-500 cursor-pointer"
+                                onClick={() => setShowAddPageModal(true)}
+                            >
+                                ADD NEW
+                            </div> */}
+                            </Dropdown>
+                        </div>
+                    </div>
+                </div>
                 <Button type="button" variant="new" onClick={() => navigate(`/app/appSettings/newPageSettings/addNew`)}>
-                    Add New
+                    New Page Config
                 </Button>
             </div>
             <div>
@@ -84,6 +170,7 @@ const NewPageSettingsTables = () => {
                     />
                 </div>
             </div>
+            {showAddPageModal && <AddPageNameModal setIsOpen={setShowAddPageModal} dialogIsOpen={showAddPageModal} />}
         </div>
     )
 }

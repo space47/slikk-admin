@@ -3,7 +3,11 @@ import React, { useMemo } from 'react'
 import { FaEdit } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 
-export const usePageSettingsColumns = () => {
+interface props {
+    handleGoToBanner: any
+}
+
+export const usePageSettingsColumns = ({ handleGoToBanner }: props) => {
     const navigate = useNavigate()
     return useMemo(
         () => [
@@ -28,7 +32,7 @@ export const usePageSettingsColumns = () => {
                     return (
                         <div
                             className="w-[180px] text-overflow:ellipsis cursor-pointer hover:text-blue-600"
-                            //onClick={() => handleGoToBanner(currentSelectedPage, sectionHeading)}
+                            onClick={() => handleGoToBanner(sectionHeading)}
                         >
                             {sectionHeading}
                         </div>

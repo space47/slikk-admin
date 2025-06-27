@@ -26,7 +26,7 @@ const NewPageCommonForms = ({ isEdit, values, setFieldValue, initialValue, setIn
     console.log(values, 'values', setFieldValue)
 
     return (
-        <div>
+        <div className="p-2 shadow-xl rounded-xl">
             <FormItem asterisk label="Component Types" className="col-span-1 w-[50%] h-[80%]">
                 <Field name="component_type">
                     {({ field, form }: FieldProps<any>) => {
@@ -61,24 +61,19 @@ const NewPageCommonForms = ({ isEdit, values, setFieldValue, initialValue, setIn
                 })}
             </FormContainer>
             <Tabs>
-                <TabList className="flex items-center justify-center font-bold bg-gray-100 p-2 rounded-2xl mb-10 ">
-                    {!!values?.extra_info?.child_data_type === true ? (
-                        <>
-                            {TabsArray.map((tab, index) => (
-                                <TabNav key={index} value={tab?.value} className="hover:text-green-500">
-                                    {tab?.label}
-                                </TabNav>
-                            ))}
-                        </>
-                    ) : (
-                        <>
-                            {TabsArray.filter((tab) => tab.value !== 'child_comp_config').map((tab, index) => (
-                                <TabNav key={index} value={tab?.value} className="hover:text-green-500">
-                                    {tab?.label}
-                                </TabNav>
-                            ))}
-                        </>
-                    )}
+                <TabList className="flex items-center justify-center gap-4 bg-gray-50 rounded-3xl shadow-md p-3 mb-10">
+                    {(!!values?.extra_info?.child_data_type === true
+                        ? TabsArray
+                        : TabsArray.filter((tab) => tab.value !== 'child_comp_config')
+                    ).map((tab, index) => (
+                        <TabNav
+                            key={index}
+                            value={tab.value}
+                            className="relative px-4 py-2 text-sm sm:text-base font-semibold text-gray-700 rounded-xl transition-all duration-300 hover:text-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-400"
+                        >
+                            {tab.label}
+                        </TabNav>
+                    ))}
                 </TabList>
 
                 <TabContent value="Component">

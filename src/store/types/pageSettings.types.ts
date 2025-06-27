@@ -25,3 +25,25 @@ export interface pageSettingsResponseType {
         results: pageSettingsType[]
     }
 }
+
+export interface pageNameTypes {
+    id: number
+    name: string
+    display_name: string
+    extra_attributes: Record<string, string | number>
+    create_date: string
+    update_date: string
+    last_updated_by: string
+}
+export interface pageNamesResponseType {
+    status: string
+    data: {
+        count: number
+        results: pageNameTypes[]
+    }
+}
+
+export interface subPageResponseTypes {
+    status: string
+    data: pageNameTypes[]
+}

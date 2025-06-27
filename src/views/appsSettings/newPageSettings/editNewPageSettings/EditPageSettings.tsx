@@ -38,7 +38,7 @@ const EditPageSettings = () => {
                                 initialValue={initialValue as pageSettingsType}
                                 setInitialValue={setInitialValue}
                             />
-                            <FormContainer className="flex gap-2 items-center justify-end">
+                            <FormContainer className="flex gap-2 mt-4 items-center justify-end">
                                 <FormItem>
                                     <Button variant="reject" type="button" onClick={() => resetForm()}>
                                         clear

@@ -39,7 +39,9 @@ const AppBanners = () => {
     const [updatedPosition, setUpdatedPosition] = useState<{ [key: number]: number }>({})
     const [sectionFilter, setSectionFilter] = useState<string>('')
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
-    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(var1 !== undefined ? var1 : BANNER_PAGE_NAME[0])
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(
+        var1 !== undefined ? { name: var1, value: var1 } : BANNER_PAGE_NAME[0],
+    )
 
     const DivisionArray =
         divisions?.divisions?.map((item) => {
@@ -55,6 +57,8 @@ const AppBanners = () => {
     //     name: item?.display_name,
     //     value: item?.name,
     // }))
+
+    console.log('var1', var1)
 
     useEffect(() => {
         fetchForSectionHeading(currentSelectedPage)
