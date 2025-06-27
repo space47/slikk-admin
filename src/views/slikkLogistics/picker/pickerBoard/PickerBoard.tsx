@@ -2,17 +2,24 @@ import LoadingSpinner from '@/common/LoadingSpinner'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { pickerService } from '@/store/services/pickerServices'
 import { PickerRequiredType, setPickerBoardData, setFrom, setTo } from '@/store/slices/pickerSlice/picker.slice'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { usePickerColumns } from '../pickerUtils/usePickerColumns'
 import EasyTable from '@/common/EasyTable'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 import moment from 'moment'
 import { Button } from '@/components/ui'
 import { useNavigate } from 'react-router-dom'
+import PickerDetailModal from './pickerComponents/PickerDetailModal'
+import { pickerBoardData } from '@/store/types/picker.types'
+import PickerDetailEditModal from './pickerComponents/PickerDetailEditModal'
 
 const PickerBoard = () => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
+    const [showPickerDetailsModal, setShowPickerDetailsModal] = useState(false)
+    const [showPickerEditModal, setShowPickerEditModal] = useState(false)
+    const [particularMobile, setParticularMobile] = useState<string>('')
+    const [particularRowData, setParticularRowData] = useState<pickerBoardData>()
     const { pickerBoardData, from, to } = useAppSelector<PickerRequiredType>((state) => state.picker)
     const {
         data: boardData,
@@ -36,7 +43,17 @@ const PickerBoard = () => {
         }
     }
 
-    const columns = usePickerColumns()
+    const handleDetailsModal = (mobile: string) => {
+        setParticularMobile(mobile)
+        setShowPickerDetailsModal(true)
+    }
+
+    const handleEditModal = (rowData: pickerBoardData) => {
+        setParticularRowData(rowData)
+        setShowPickerEditModal(true)
+    }
+
+    const columns = usePickerColumns({ handleDetailsModal, handleEditModal })
 
     if (isLoading) {
         return <LoadingSpinner />
@@ -64,6 +81,22 @@ const PickerBoard = () => {
             <div>
                 <EasyTable noPage overflow mainData={pickerBoardData} columns={columns} />
             </div>
+            {showPickerDetailsModal && (
+                <PickerDetailModal
+                    dialogIsOpen={showPickerDetailsModal}
+                    setIsOpen={setShowPickerDetailsModal}
+                    mobile={particularMobile}
+                    from={from}
+                    to={to}
+                />
+            )}
+            {showPickerEditModal && (
+                <PickerDetailEditModal
+                    dialogIsOpen={showPickerEditModal}
+                    setIsOpen={setShowPickerEditModal}
+                    rowDetails={particularRowData as pickerBoardData}
+                />
+            )}
         </div>
     )
 }

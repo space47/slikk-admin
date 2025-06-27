@@ -31,6 +31,7 @@ type EventLog = {
     timestamp: string
     failure_reason?: string
     rto_reason?: string
+    RIDER?: string
 }
 
 type ClientOrderDetails = {

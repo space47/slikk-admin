@@ -33,6 +33,7 @@ const TaskActivity = () => {
                             <div className="flex gap-3">
                                 <span>{moment(activity.timestamp).format('DD:MM:YYYY hh:mm')}</span>{' '}
                                 <span>{activity?.rto_reason ?? ''}</span>
+                                <span>{activity?.RIDER ?? ''}</span>
                             </div>
                         </Timeline.Item>
                     ))

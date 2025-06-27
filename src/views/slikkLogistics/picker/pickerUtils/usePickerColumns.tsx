@@ -1,16 +1,41 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import moment from 'moment'
 import React, { useMemo } from 'react'
+import { FaEdit } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 
-export const usePickerColumns = () => {
+interface props {
+    handleDetailsModal: (x: any) => void
+    handleEditModal: (x: any) => void
+}
+
+export const usePickerColumns = ({ handleDetailsModal, handleEditModal }: props) => {
     const navigate = useNavigate()
     return useMemo(
         () => [
             {
+                header: 'Edit',
+                accessorKey: 'edit',
+                cell: ({ row }: any) => (
+                    <div
+                        className="font-medium text-blue-500 dark:text-white cursor-pointer "
+                        onClick={() => handleEditModal(row?.original)}
+                    >
+                        <FaEdit className="text-xl flex justify-center items-center" />
+                    </div>
+                ),
+            },
+            {
                 header: 'Name',
                 accessorKey: 'name',
-                cell: ({ getValue }: any) => <div className="font-medium text-gray-800 dark:text-white">{getValue()}</div>,
+                cell: ({ getValue, row }: any) => (
+                    <div
+                        className="font-medium text-green-500 dark:text-white cursor-pointer "
+                        onClick={() => handleDetailsModal(row?.original?.mobile as string)}
+                    >
+                        {getValue()}
+                    </div>
+                ),
             },
             {
                 header: 'Mobile',
