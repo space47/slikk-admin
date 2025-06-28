@@ -5,6 +5,7 @@ import {
     getFilteredRowModel,
     getPaginationRowModel,
     getSortedRowModel,
+    PaginationState,
     useReactTable,
 } from '@tanstack/react-table'
 import React, { useState } from 'react'
@@ -23,27 +24,27 @@ interface TABLEPROPS {
 }
 
 const EasyTable = ({ columns, page, pageSize, mainData, noPage, overflow, isNotSort }: TABLEPROPS) => {
-    const [sorting, setSorting] = useState<any[]>([]) // To store the sorting state
+    const [sorting, setSorting] = useState<any[]>([])
 
     const table = useReactTable({
         data: mainData,
         columns,
         state: {
-            sorting, // Pass sorting state
+            sorting,
             pagination: noPage
                 ? undefined
-                : {
-                      pageIndex: page - 1,
+                : ({
+                      pageIndex: (page ? page : 1) - 1,
                       pageSize: pageSize,
-                  },
+                  } as PaginationState),
         },
         onSortingChange: isNotSort ? undefined : setSorting,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
-        getSortedRowModel: getSortedRowModel(), // Enable sorting
+        getSortedRowModel: getSortedRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         manualPagination: isNotSort ? false : true,
-        enableMultiSort: isNotSort ? false : true,
+        // enableMultiSort: isNotSort ? false : true,
     })
 
     return (
