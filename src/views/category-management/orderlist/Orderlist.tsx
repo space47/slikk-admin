@@ -8,7 +8,6 @@ import moment from 'moment'
 import { CHANGE_DELIVERY_OPTIONS, pageSizeOptions, SEARCHOPTIONS, type DropdownStatus, type Order } from './commontypes'
 import { Button, Dropdown, Input, Spinner } from '@/components/ui'
 import { IoMdDownload } from 'react-icons/io'
-import { FaFilter } from 'react-icons/fa'
 import FilterDialogOrder from './filterDialog/FilterDialog'
 import { CiFilter } from 'react-icons/ci'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
@@ -27,6 +26,7 @@ import { useOrderListColumns } from './orderListUtils/OrderListColumns'
 import {
     handleDateChange,
     handleDownload,
+    handleReassignPickerOrder,
     handleSearch,
     handleSearchWithIcon,
     handleSelect,
@@ -267,7 +267,7 @@ const OrderList = () => {
         <div className="p-4 bg-gray-50 rounded-xl">
             <div className="overflow-x-auto scrollbar-hide">
                 <div className="flex flex-col xl:flex-row justify-between lg:flex-row lg:justify-between mb-10 xl:items-center gap-3 md:flex-col sm:flex-col">
-                    <div className="flex  xl:gap-2  flex-row   gap-3  ">
+                    <div className="flex  xl:gap-2  flex-row   gap-3 order-2 xl:order-none md:order-none ">
                         <div className="flex items-center gap-2 bg-white dark:bg-gray-900 px-3 py-2 rounded-lg shadow-md">
                             <Input
                                 type="search"
@@ -310,7 +310,7 @@ const OrderList = () => {
                     </div>
 
                     <div className="xl:flex gap-4 ">
-                        <div className="flex gap-2 items-center justify-center xl:justify-normal">
+                        <div className="gap-2 flex flex-col xl:flex-row md:flex-row items-center justify-center xl:justify-normal">
                             <div>
                                 <UltimateDatePicker
                                     from={from}
@@ -320,18 +320,24 @@ const OrderList = () => {
                                     handleDateChange={(e: [Date | null, Date | null] | null) => handleDateChange(e, setFrom, setTo)}
                                 />
                             </div>
+                            <div className="flex gap-2 items-center">
+                                <div className="xl:mt-7 md:mt-7">
+                                    <Button variant="new" size="sm" onClick={handleReassignPickerOrder}>
+                                        Reassign Picker Orders
+                                    </Button>
+                                </div>
+                                <div className="xl:mt-7 md:mt-7">
+                                    <Button variant="new" size="sm" className="xl:flex gap-2" onClick={() => setShowFilter(true)}>
+                                        <CiFilter className="text-xl font-extrabold hidden xl:block" /> FILTER
+                                    </Button>
 
-                            <div className="xl:mt-7">
-                                <Button variant="new" size="sm" className="hidden xl:flex gap-2" onClick={() => setShowFilter(true)}>
-                                    <CiFilter className="text-xl font-extrabold" /> FILTER
-                                </Button>
-
-                                <Button variant="default" size="sm" className="flex xl:hidden mt-8" onClick={() => setShowFilter(true)}>
-                                    <FaFilter className="text-xl font-extrabold" />
-                                </Button>
+                                    {/* <Button variant="default" size="sm" className="flex xl:hidden mt-8" onClick={() => setShowFilter(true)}>
+                                        <FaFilter className="text-xl font-extrabold" />
+                                    </Button> */}
+                                </div>
                             </div>
                             <div className="flex  md:flex-row items-end justify-end ">
-                                <div className="mt-10 xl:mt-7">
+                                <div className="mt-10 xl:mt-7 md:mt-7">
                                     <button
                                         disabled={isDownloading}
                                         className="bg-gray-700 text-white px-4 py-2 hover:bg-gray-600 rounded-lg mb-2 md:mb-0 md:mr-2  xl:flex xl:gap-1 dark:bg-gray-500 dark:text-white"

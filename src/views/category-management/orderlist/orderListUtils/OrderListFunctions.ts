@@ -5,6 +5,7 @@ import moment from 'moment'
 import { CHANGE_DELIVERY_OPTIONS, SEARCHOPTIONS } from '../commontypes'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
+import { AxiosError } from 'axios'
 
 export const handleDownload = async (
     from: string,
@@ -99,5 +100,17 @@ export const handleDateChange = (dates: [Date | null, Date | null] | null, setFr
     if (dates && dates[0]) {
         setFrom(moment(dates[0]).format('YYYY-MM-DD'))
         setTo(dates[1] ? moment(dates[1]).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'))
+    }
+}
+
+export const handleReassignPickerOrder = async () => {
+    try {
+        const res = await axioisInstance.post(`/merchant/orders`, { action: 'reassign_picker_orders' })
+        notification.success({ message: res?.data?.message || 'Reassign Successfully' })
+    } catch (error) {
+        console.error(error)
+        if (error instanceof AxiosError) {
+            notification.error({ message: error?.message || 'Failed to Reassign' })
+        }
     }
 }

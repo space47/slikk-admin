@@ -55,6 +55,63 @@ export const usePickerColumns = ({ handleDetailsModal, handleEditModal }: props)
                 cell: ({ getValue }: any) => <div className="text-gray-700 dark:text-white">{getValue()}</div>,
             },
             {
+                header: 'CheckIn Date',
+                accessorKey: 'attendance_data',
+                cell: ({ row }: any) => (
+                    <div className="text-gray-700 dark:text-white w-[90px]">
+                        {row?.original?.attendance_data?.length > 0 ? (
+                            <>
+                                {row?.original?.attendance_data?.map((item: any, key: any) => (
+                                    <div key={key} className="flex flex-col">
+                                        {item?.checkin_date}
+                                    </div>
+                                ))}
+                            </>
+                        ) : (
+                            'N/A'
+                        )}
+                    </div>
+                ),
+            },
+            {
+                header: 'CheckIn Time',
+                accessorKey: 'attendance_data',
+                cell: ({ row }: any) => (
+                    <div className="text-gray-700 dark:text-white">
+                        {row?.original?.attendance_data?.length > 0 ? (
+                            <>
+                                {row?.original?.attendance_data?.map((item: any, key: any) => (
+                                    <div key={key} className="flex flex-col">
+                                        {item?.checkin_time}
+                                    </div>
+                                ))}
+                            </>
+                        ) : (
+                            'N/A'
+                        )}
+                    </div>
+                ),
+            },
+            {
+                header: 'CheckOut Time',
+                accessorKey: 'attendance_data',
+                cell: ({ row }: any) => (
+                    <div className="text-gray-700 dark:text-white">
+                        {row?.original?.attendance_data?.length > 0 ? (
+                            <>
+                                {row?.original?.attendance_data?.map((item: any, key: any) => (
+                                    <div key={key} className="flex flex-col">
+                                        {item?.checkout_time}
+                                    </div>
+                                ))}
+                            </>
+                        ) : (
+                            'N/A'
+                        )}
+                    </div>
+                ),
+            },
+            {
                 header: 'Total Items',
                 accessorKey: 'items_picked',
                 cell: ({ getValue }: any) => <div className="text-purple-600 font-bold dark:text-white">{getValue()}</div>,

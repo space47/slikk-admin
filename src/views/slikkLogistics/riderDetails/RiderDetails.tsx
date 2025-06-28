@@ -41,6 +41,7 @@ const RiderDetails = () => {
     const { storeResults } = useAppSelector<companyStore>((state) => state.companyStore)
     const [globalFilter, setGlobalFilter] = useState('')
     const [tabSelect, setTabSelect] = useState('checkin')
+    const [busyTab, setBusyTab] = useState('')
     const [riderType, setRiderType] = useState<string>('Select Rider Type')
     const handleSelectTab = (value: string) => {
         setTabSelect(value)
@@ -62,6 +63,7 @@ const RiderDetails = () => {
             isActive: tabSelect === 'checkin' ? 'true' : 'false',
             rider_type: riderType === 'Select Rider Type' ? '' : riderType,
             user_type: 'rider',
+            rider_status: busyTab ?? '',
         },
         { refetchOnMountOrArgChange: true, pollingInterval: 60000 },
     )
@@ -69,6 +71,10 @@ const RiderDetails = () => {
     useEffect(() => {
         dispatch(fetchCompanyStore())
     }, [dispatch])
+
+    const handleBusyTab = (value: string) => {
+        setBusyTab(value)
+    }
 
     const formattedData = storeResults?.map((item) => ({
         label: item?.name,
@@ -218,20 +224,41 @@ const RiderDetails = () => {
                 )}
 
                 <div className="flex flex-col gap-3">
-                    <div className="flex gap-10 justify-start mb-5">
-                        <div
-                            className={`flex  cursor-pointer ${tabSelect === 'checkin' ? ' border-b-4 border-black text-green-500' : ''}`}
-                            onClick={() => handleSelectTab('checkin')}
-                        >
-                            <span className="text-xl font-bold">Active Riders</span>
-                        </div>
-                        <div
-                            className={`flex   cursor-pointer  ${tabSelect === 'checkout' ? ' border-b-4 border-black text-green-500' : ''}`}
-                            onClick={() => handleSelectTab('checkout')}
-                        >
-                            <span className="text-xl font-bold">In-Active Riders</span>
-                        </div>
+                    <div className="flex gap-6 justify-start mb-6 border-b border-gray-300">
+                        {['checkin', 'checkout'].map((tab) => (
+                            <div
+                                key={tab}
+                                onClick={() => handleSelectTab(tab)}
+                                className={`relative px-4 pb-2 cursor-pointer transition-colors duration-300 
+        ${tabSelect === tab ? 'text-green-600 font-semibold' : 'text-gray-600 hover:text-green-500'}`}
+                            >
+                                <span className="text-lg">{tab === 'checkin' ? 'Active Riders' : 'In-Active Riders'}</span>
+                                {tabSelect === tab && (
+                                    <div className="absolute bottom-0 left-0 w-full h-1 rounded-full bg-green-600 transition-all duration-300" />
+                                )}
+                            </div>
+                        ))}
                     </div>
+
+                    {tabSelect === 'checkin' && (
+                        <div className="flex gap-6 justify-start mb-6 border-b border-gray-300">
+                            {['', 'free', 'busy'].map((tab) => (
+                                <div
+                                    key={tab}
+                                    onClick={() => handleBusyTab(tab)}
+                                    className={`relative px-4 pb-2 cursor-pointer transition-colors duration-300 
+          ${busyTab === tab ? 'text-blue-600 font-semibold' : 'text-gray-600 hover:text-blue-500'}`}
+                                >
+                                    <span className="text-lg">
+                                        {tab === 'free' ? 'Free Riders' : tab === 'busy' ? 'Busy Riders' : 'All'}
+                                    </span>
+                                    {busyTab === tab && (
+                                        <div className="absolute bottom-0 left-0 w-full h-1 rounded-full bg-blue-600 transition-all duration-300" />
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
 
                     <div className="mb-4">
                         <div className="flex gap-2 items-center  shadow-xl p-2 rounded-xl ">
