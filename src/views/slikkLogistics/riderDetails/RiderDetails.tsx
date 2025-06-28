@@ -43,9 +43,6 @@ const RiderDetails = () => {
     const [tabSelect, setTabSelect] = useState('checkin')
     const [busyTab, setBusyTab] = useState('')
     const [riderType, setRiderType] = useState<string>('Select Rider Type')
-    const handleSelectTab = (value: string) => {
-        setTabSelect(value)
-    }
     const [refreshTrigger, setRefreshTrigger] = useState<number>(0)
     const { riderDetails, count, from, page, pageSize, to } = useAppSelector<RiderDetailType>((state) => state.riderDetails)
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
@@ -74,6 +71,10 @@ const RiderDetails = () => {
 
     const handleBusyTab = (value: string) => {
         setBusyTab(value)
+    }
+
+    const handleSelectTab = (value: string) => {
+        setTabSelect(value)
     }
 
     const formattedData = storeResults?.map((item) => ({
@@ -143,8 +144,6 @@ const RiderDetails = () => {
 
         return distance1 - distance2
     })
-
-    console.log('okokokkok', sortedRiderDetails)
 
     const columns = RiderColumns({ handleActiveCareer, hanldeProfileClick, currentStoreLocation })
 
