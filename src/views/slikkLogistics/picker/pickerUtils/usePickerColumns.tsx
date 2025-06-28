@@ -1,16 +1,41 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import moment from 'moment'
 import React, { useMemo } from 'react'
+import { FaEdit } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 
-export const usePickerColumns = () => {
+interface props {
+    handleDetailsModal: (x: any) => void
+    handleEditModal: (x: any) => void
+}
+
+export const usePickerColumns = ({ handleDetailsModal, handleEditModal }: props) => {
     const navigate = useNavigate()
     return useMemo(
         () => [
             {
+                header: 'Edit',
+                accessorKey: 'edit',
+                cell: ({ row }: any) => (
+                    <div
+                        className="font-medium text-blue-500 dark:text-white cursor-pointer "
+                        onClick={() => handleEditModal(row?.original)}
+                    >
+                        <FaEdit className="text-xl flex justify-center items-center" />
+                    </div>
+                ),
+            },
+            {
                 header: 'Name',
                 accessorKey: 'name',
-                cell: ({ getValue }: any) => <div className="font-medium text-gray-800 dark:text-white">{getValue()}</div>,
+                cell: ({ getValue, row }: any) => (
+                    <div
+                        className="font-medium text-green-500 dark:text-white cursor-pointer "
+                        onClick={() => handleDetailsModal(row?.original?.mobile as string)}
+                    >
+                        {getValue()}
+                    </div>
+                ),
             },
             {
                 header: 'Mobile',
@@ -28,6 +53,63 @@ export const usePickerColumns = () => {
                 header: 'Orders Count',
                 accessorKey: 'orders_count',
                 cell: ({ getValue }: any) => <div className="text-gray-700 dark:text-white">{getValue()}</div>,
+            },
+            {
+                header: 'CheckIn Date',
+                accessorKey: 'attendance_data',
+                cell: ({ row }: any) => (
+                    <div className="text-gray-700 dark:text-white w-[90px]">
+                        {row?.original?.attendance_data?.length > 0 ? (
+                            <>
+                                {row?.original?.attendance_data?.map((item: any, key: any) => (
+                                    <div key={key} className="flex flex-col">
+                                        {item?.checkin_date}
+                                    </div>
+                                ))}
+                            </>
+                        ) : (
+                            'N/A'
+                        )}
+                    </div>
+                ),
+            },
+            {
+                header: 'CheckIn Time',
+                accessorKey: 'attendance_data',
+                cell: ({ row }: any) => (
+                    <div className="text-gray-700 dark:text-white">
+                        {row?.original?.attendance_data?.length > 0 ? (
+                            <>
+                                {row?.original?.attendance_data?.map((item: any, key: any) => (
+                                    <div key={key} className="flex flex-col">
+                                        {item?.checkin_time}
+                                    </div>
+                                ))}
+                            </>
+                        ) : (
+                            'N/A'
+                        )}
+                    </div>
+                ),
+            },
+            {
+                header: 'CheckOut Time',
+                accessorKey: 'attendance_data',
+                cell: ({ row }: any) => (
+                    <div className="text-gray-700 dark:text-white">
+                        {row?.original?.attendance_data?.length > 0 ? (
+                            <>
+                                {row?.original?.attendance_data?.map((item: any, key: any) => (
+                                    <div key={key} className="flex flex-col">
+                                        {item?.checkout_time}
+                                    </div>
+                                ))}
+                            </>
+                        ) : (
+                            'N/A'
+                        )}
+                    </div>
+                ),
             },
             {
                 header: 'Total Items',
