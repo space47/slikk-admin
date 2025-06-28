@@ -106,6 +106,7 @@ export const ORDER_STATUS = [
     { name: 'PACKED', value: 'PACKED' },
     { name: 'READY TO SHIP', value: 'READY_TO_SHIP' },
     { name: 'MANIFESTED', value: 'MANIFESTED' },
+    { name: 'DELIVERY_CREATED', value: 'DELIVERY_CREATED' },
     { name: 'SHIPPED', value: 'SHIPPED' },
     { name: 'DELIVERED', value: 'DELIVERED' },
     { name: 'CANCELLED', value: 'CANCELLED' },
