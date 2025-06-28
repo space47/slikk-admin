@@ -14,7 +14,7 @@ export const usePickerColumns = ({ handleDetailsModal, handleEditModal }: props)
     return useMemo(
         () => [
             {
-                header: 'Edit',
+                header: 'Shift Change',
                 accessorKey: 'edit',
                 cell: ({ row }: any) => (
                     <div
