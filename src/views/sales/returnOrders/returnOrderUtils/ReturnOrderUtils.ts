@@ -14,6 +14,8 @@ export const getStatusFilterReturn = (tabSelect: string) => {
 
         case 'out_for_pickup':
             return '&status=OUT_FOR_PICKUP'
+        case 'picked_up':
+            return '&status=PICKED_UP'
         case 'rider_assigned':
             return '&status=RIDER_ASSIGNED'
 

@@ -146,7 +146,7 @@ const Home = () => {
     }
 
     return (
-        <div className="flex flex-col gap-6 p-4">
+        <div className="flex flex-col gap-6  p-2 shadow-xl rounded-xl">
             <div className="flex flex-col xl:flex-row  mb-4 gap-5 ">
                 <div className="w-full xl:mt-6 items-start flex justify-start">
                     <div className="flex flex-col xl:flex-row gap-4 xl:justify-center ">

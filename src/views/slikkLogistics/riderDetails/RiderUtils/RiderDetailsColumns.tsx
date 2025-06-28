@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Switch } from 'antd'
+import moment from 'moment'
+import { useNavigate } from 'react-router-dom'
 
 interface RiderColumnsProps {
     handleActiveCareer: (id: number, e: any, checked: boolean, mobile: string, name: string) => void
@@ -19,6 +21,7 @@ export const calculateDistance = (latitude: number, longitude: number, storeLat:
 }
 
 export const RiderColumns = ({ handleActiveCareer, hanldeProfileClick, currentStoreLocation }: RiderColumnsProps) => {
+    const navigate = useNavigate()
     return [
         {
             header: 'Status',
@@ -79,6 +82,50 @@ export const RiderColumns = ({ handleActiveCareer, hanldeProfileClick, currentSt
                 return <div>{distance || 0} km</div>
             },
         },
+        {
+            header: 'Store to Order Distance',
+            accessorKey: 'recent_task_detail.distance',
+            cell: ({ row }: any) => {
+                return <div>{row?.original?.recent_task_detail?.distance ?? 0} Km</div>
+            },
+        },
+        // {
+        //     header: 'Estimate Time',
+        //     accessorKey: 'recent_task_detail.estimate_time',
+        //     cell: ({ row }: any) => {
+        //         return <div>{row?.original?.recent_task_detail?.estimate_time ?? '-'}</div>
+        //     },
+        // },
+        {
+            header: 'Order',
+            accessorKey: 'recent_task_detail.order_id',
+            cell: ({ row }: any) => {
+                return (
+                    <div
+                        onClick={() => navigate(`/app/orders/${row?.original?.recent_task_detail?.order_id}`)}
+                        className="p-2 cursor-pointer bg-red-500 text-white rounded-xl"
+                    >
+                        {row?.original?.recent_task_detail?.order_id}
+                    </div>
+                )
+            },
+        },
+
+        // {
+        //     header: 'Assigned',
+        //     accessorKey: 'recent_task_detail.assigned_at',
+        //     cell: ({ row }: any) => {
+        //         return <div>{moment(row?.original?.recent_task_detail?.assigned_at).format('YYYY-MM-DD')}</div>
+        //     },
+        // },
+        {
+            header: 'Delivered',
+            accessorKey: 'recent_task_detail.delivered_at',
+            cell: ({ row }: any) => {
+                return <div>{moment(row?.original?.recent_task_detail?.delivered_at).format('YYYY-MM-DD')}</div>
+            },
+        },
+
         { header: 'Mobile', accessorKey: 'profile.mobile' },
         {
             header: 'Checked In',

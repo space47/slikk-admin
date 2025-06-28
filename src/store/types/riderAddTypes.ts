@@ -98,6 +98,13 @@ export type UserProfile = Partial<{
 export type RiderDetails = Partial<{
     profile: UserProfile
     task_data: TaskData
+    recent_task_detail: {
+        assigned_at: string
+        delivered_at: string
+        distance: number
+        estimate_time: string
+        order_id: string
+    }
 }>
 
 export type RiderDetailResponseType = {
