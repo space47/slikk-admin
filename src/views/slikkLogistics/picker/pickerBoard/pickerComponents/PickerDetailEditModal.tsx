@@ -46,7 +46,7 @@ const PickerDetailEditModal = ({ dialogIsOpen, setIsOpen, rowDetails, isEdit }: 
         const body = {
             first_name: values?.first_name,
             last_name: values?.last_name,
-            mobile: mobile,
+            mobile: values?.mobile,
             shift_start_time: values?.shift_start_time,
             shift_end_time: values?.shift_end_time,
         }
@@ -86,8 +86,22 @@ const PickerDetailEditModal = ({ dialogIsOpen, setIsOpen, rowDetails, isEdit }: 
                                         <Field type="text" component={Input} placeholder="Enter Name" name="mobile" />
                                     </FormItem>
                                 </FormContainer>
-                                <FullTimePicker label="SHIFT START" name="shift_start_time" fieldname="shift_start_time" />
-                                <FullTimePicker label="SHIFT END" name="shift_end_time" fieldname="shift_end_time" />
+                                <FormContainer className="grid grid-cols-2 gap-2">
+                                    <FullTimePicker
+                                        needClass
+                                        label="SHIFT START"
+                                        name="shift_start_time"
+                                        fieldname="shift_start_time"
+                                        customClass="w-full"
+                                    />
+                                    <FullTimePicker
+                                        needClass
+                                        label="SHIFT END"
+                                        name="shift_end_time"
+                                        fieldname="shift_end_time"
+                                        customClass="w-full"
+                                    />
+                                </FormContainer>
                                 <FormItem className="flex mt-4">
                                     <Button variant="accept" type="submit">
                                         {isEdit ? 'Edit' : 'Add'}

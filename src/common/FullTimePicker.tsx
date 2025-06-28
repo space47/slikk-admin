@@ -9,9 +9,11 @@ interface Props {
     label: string
     name: string
     fieldname: string
+    needClass?: boolean
+    customClass?: string
 }
 
-const FullTimePicker = ({ label, name, fieldname }: Props) => {
+const FullTimePicker = ({ label, name, fieldname, needClass, customClass }: Props) => {
     return (
         <div>
             <FormItem label={label}>
@@ -19,7 +21,7 @@ const FullTimePicker = ({ label, name, fieldname }: Props) => {
                     {({ field, form }: FieldProps) => (
                         <TimePicker
                             placeholder=""
-                            className="w-1/2"
+                            className={needClass ? customClass : 'w-1/2'}
                             value={field.value ? dayjs(field.value, 'HH:mm:ss') : undefined}
                             onChange={(value) => {
                                 form.setFieldValue(fieldname, value ? value.format('HH:mm:ss') : '')
