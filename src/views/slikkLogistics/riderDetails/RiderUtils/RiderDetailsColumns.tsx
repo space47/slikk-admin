@@ -122,7 +122,7 @@ export const RiderColumns = ({ handleActiveCareer, hanldeProfileClick, currentSt
             header: 'Delivered',
             accessorKey: 'recent_task_detail.delivered_at',
             cell: ({ row }: any) => {
-                return <div>{moment(row?.original?.recent_task_detail?.delivered_at).format('YYYY-MM-DD')}</div>
+                return <div>{moment(row?.original?.recent_task_detail?.delivered_at).format('YYYY-MM-DD HH:mm:ss ')}</div>
             },
         },
 
