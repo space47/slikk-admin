@@ -1,17 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FormItem } from '@/components/ui'
 import { TimePicker } from 'antd'
+import dayjs from 'dayjs'
 import { Field, FieldProps } from 'formik'
-import moment from 'moment'
 import React from 'react'
 
 interface Props {
     label: string
     name: string
     fieldname: string
+    needClass?: boolean
+    customClass?: string
 }
 
-const FullTimePicker = ({ label, name, fieldname }: Props) => {
+const FullTimePicker = ({ label, name, fieldname, needClass, customClass }: Props) => {
     return (
         <div>
             <FormItem label={label}>
@@ -19,8 +21,8 @@ const FullTimePicker = ({ label, name, fieldname }: Props) => {
                     {({ field, form }: FieldProps) => (
                         <TimePicker
                             placeholder=""
-                            className="w-1/2"
-                            value={field.value ? moment(field.value, 'HH:mm:ss') : undefined}
+                            className={needClass ? customClass : 'w-1/2'}
+                            value={field.value ? dayjs(field.value, 'HH:mm:ss') : undefined}
                             onChange={(value) => {
                                 form.setFieldValue(fieldname, value ? value.format('HH:mm:ss') : '')
                             }}

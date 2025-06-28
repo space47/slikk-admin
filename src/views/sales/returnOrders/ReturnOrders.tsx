@@ -136,14 +136,14 @@ const ReturnOrders = () => {
     return (
         <div className="bg-gray-50 rounded-xl p-4">
             <div className="flex flex-col xl:flex-row justify-between lg:flex-row lg:justify-between mb-10 items-center gap-3">
-                <div className="flex  xl:gap-2  xl:flex-row  flex-col gap-3 ">
+                <div className="flex  xl:gap-2  xl:flex-row  flex-col gap-3 order-2 xl:order-none md:order-none ">
                     <div className="flex items-center gap-2 bg-white dark:bg-gray-900 px-3 py-2 rounded-lg shadow-md">
                         <Input
                             type="search"
                             name="search"
                             placeholder="Search here..."
                             value={searchInput}
-                            className="w-[200px] xl:w-[250px] rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-1 focus:outline-none focus:ring focus:ring-blue-500"
+                            className="w-[160px] xl:w-[250px] rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-1 focus:outline-none focus:ring focus:ring-blue-500"
                             onChange={(e) => setSearchInput(e.target.value)}
                             onKeyDown={(e: any) => {
                                 if (e.key === 'Enter') {

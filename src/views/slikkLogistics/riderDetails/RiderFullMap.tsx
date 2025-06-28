@@ -4,7 +4,6 @@ import { MapContainer, TileLayer, Marker, useMap, Tooltip } from 'react-leaflet'
 import * as L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { FaMapMarkerAlt } from 'react-icons/fa'
-import _ from 'lodash'
 import icon from 'leaflet/dist/images/marker-icon.png'
 import iconShadow from 'leaflet/dist/images/marker-shadow.png'
 import 'leaflet.heat'
@@ -75,7 +74,7 @@ interface MarkerComponentProps {
     specificRider?: Record<string, number | undefined>
 }
 
-const MarkerComponent = ({ markers, currLat, currLong, handleDetails, specificRider }: MarkerComponentProps) => {
+const MarkerComponent = ({ markers, currLat, currLong, handleDetails }: MarkerComponentProps) => {
     const map = useMap()
     console.log('specific rider', currLat, currLong)
     useEffect(() => {

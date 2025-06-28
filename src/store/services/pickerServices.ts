@@ -6,15 +6,17 @@ interface PickerBoardTypes {
     from?: string
     to?: string
     mobile?: string
+    checkin_status?: boolean | string
 }
 
 export const pickerService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
         pickerBoardData: builder.query<pickerResponseType, PickerBoardTypes>({
             query: (params) => {
-                const parameters: Record<string, string | string[]> = {}
+                const parameters: Record<string, string | string[] | boolean> = {}
                 if (params.from) parameters.from = params.from.toString()
                 if (params.to) parameters.to = params.to.toString()
+                if (params.checkin_status) parameters.checkin_status = params.checkin_status
                 return {
                     url: `/picker/orders`,
                     method: 'GET',

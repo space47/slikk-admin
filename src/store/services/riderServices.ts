@@ -72,15 +72,16 @@ export const ridersService = RtkQueryService.injectEndpoints({
                 name?: string
                 rider_type?: string
                 user_type?: string
+                rider_status?: string
             }
         >({
             query: (params) => {
-                const parameters: Record<string, string | string[] | boolean> = {}
+                const parameters: Record<string, string | string[] | boolean | number> = {}
                 if (params.page) {
-                    parameters.p = params.page?.toString()
+                    parameters.p = params.page
                 }
                 if (params.pageSize) {
-                    parameters.page_size = params.pageSize?.toString()
+                    parameters.page_size = params.pageSize
                 }
                 if (params.from) {
                     parameters.from = params.from
@@ -102,6 +103,9 @@ export const ridersService = RtkQueryService.injectEndpoints({
                 }
                 if (params.user_type) {
                     parameters.user_type = params.user_type
+                }
+                if (params.rider_status) {
+                    parameters.rider_status = params.rider_status
                 }
                 return {
                     url: `/logistic/riders`,
