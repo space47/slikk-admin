@@ -24,7 +24,7 @@ import {
     setPageSize,
 } from '@/store/slices/riderDetails/riderDetails.slice'
 import { Option, pageSizeOptions } from '../taskTracking/TaskCommonType'
-import { RiderColumns } from './RiderUtils/RiderDetailsColumns'
+import { calculateDistance, RiderColumns } from './RiderUtils/RiderDetailsColumns'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 
 const RiderDetails = () => {
@@ -126,6 +126,25 @@ const RiderDetails = () => {
             dispatch(setTo(dates[1] ? moment(dates[1]).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD')))
         }
     }
+
+    const sortedRiderDetails = [...riderDetails]?.sort((a, b) => {
+        const distance1 = calculateDistance(
+            Number(a.profile?.current_location?.latitude),
+            Number(a.profile?.current_location?.longitude),
+            currentStoreLocation?.lat ?? 0,
+            currentStoreLocation?.long ?? 0,
+        )
+        const distance2 = calculateDistance(
+            Number(b.profile?.current_location?.latitude),
+            Number(b.profile?.current_location?.longitude),
+            currentStoreLocation?.lat ?? 0,
+            currentStoreLocation?.long ?? 0,
+        )
+
+        return distance1 - distance2
+    })
+
+    console.log('okokokkok', sortedRiderDetails)
 
     const columns = RiderColumns({ handleActiveCareer, hanldeProfileClick, currentStoreLocation })
 
@@ -290,7 +309,7 @@ const RiderDetails = () => {
                         </div>
                     </div>
                     <div className="font-bold text-xl mb-5 mt-5">Total Riders : {count}</div>
-                    <EasyTable mainData={riderDetails} columns={columns} />
+                    <EasyTable mainData={sortedRiderDetails} columns={columns} />
                     <div className="flex justify-between items-center">
                         <Pagination
                             pageSize={pageSize}
