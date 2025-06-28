@@ -18,7 +18,7 @@ const initialState: RiderDetailType = {
     riderProfile: [],
     count: 0,
     page: 1,
-    pageSize: 10,
+    pageSize: 200,
     from: moment().format('YYYY-MM-DD'),
     to: moment().format('YYYY-MM-DD'),
 }
