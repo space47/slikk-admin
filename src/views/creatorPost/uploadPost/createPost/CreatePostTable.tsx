@@ -68,6 +68,8 @@ const CreatePostTable = ({ data, handleActionClick }: ProductTableProps) => {
         [],
     )
 
+    console.log('inside barcode table')
+
     const table = useReactTable({
         data,
         columns,
@@ -76,7 +78,7 @@ const CreatePostTable = ({ data, handleActionClick }: ProductTableProps) => {
 
     return (
         <div className="overflow-x-auto overflow-y-scroll scrollbar-hide">
-            <table className="min-w-full bg-white">
+            <table className="min-w-full bg-gray-100">
                 <thead>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id}>

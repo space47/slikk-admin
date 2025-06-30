@@ -75,6 +75,7 @@ export const InitialValuesEdit = (data: pageSettingsType | undefined) => {
         is_active: data?.is_active ?? false,
         component_type: data?.component_type ?? '',
         data_type: data?.data_type ?? '',
+        // data_type?.division_select:data?.extra_info?.divisionForFilter,
         component_config: data?.component_config ?? {},
         background_config: data?.background_config ?? {},
         header_config: data?.header_config ?? {},

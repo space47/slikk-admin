@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Checkbox, FormContainer, FormItem, Input, Select, Tabs } from '@/components/ui'
 import TabList from '@/components/ui/Tabs/TabList'
-import React from 'react'
 import { FormFieldsArray, TabsArray } from './newpageConstants'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import TabContent from '@/components/ui/Tabs/TabContent'
@@ -20,11 +19,23 @@ interface props {
     setFieldValue?: any
     initialValue?: pageSettingsType
     setInitialValue?: any
+    filterId?: string
+    setFilterId?: any
+    setBarcodeData?: any
+    barcodeData?: any
 }
 
-const NewPageCommonForms = ({ isEdit, values, setFieldValue, initialValue, setInitialValue }: props) => {
-    console.log(values, 'values', setFieldValue)
-
+const NewPageCommonForms = ({
+    isEdit,
+    values,
+    setFieldValue,
+    initialValue,
+    setInitialValue,
+    filterId,
+    setFilterId,
+    setBarcodeData,
+    barcodeData,
+}: props) => {
     return (
         <div className="p-2 shadow-xl rounded-xl">
             <FormItem asterisk label="Component Types" className="col-span-1 w-[50%] h-[80%]">
@@ -46,6 +57,7 @@ const NewPageCommonForms = ({ isEdit, values, setFieldValue, initialValue, setIn
                     }}
                 </Field>
             </FormItem>
+
             <FormContainer className="grid grid-cols-2 gap-2">
                 {FormFieldsArray?.map((item, key) => {
                     return (
@@ -99,7 +111,15 @@ const NewPageCommonForms = ({ isEdit, values, setFieldValue, initialValue, setIn
                     <OtherDataConfigs values={values} />
                 </TabContent>
                 <TabContent value="data_type_config">
-                    <DataTypesConfig values={values} />
+                    <DataTypesConfig
+                        isEdit={isEdit}
+                        values={values}
+                        setFilterId={setFilterId}
+                        filterId={filterId}
+                        setFieldValue={setFieldValue}
+                        setBarcodeData={setBarcodeData}
+                        barcodeData={barcodeData}
+                    />
                 </TabContent>
                 <TabContent value="extra_config">
                     <ExtraConfig />

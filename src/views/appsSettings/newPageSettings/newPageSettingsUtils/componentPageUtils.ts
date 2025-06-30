@@ -319,3 +319,45 @@ export const sectionWebBorderArray = (prefix: string) => {
 
 export const componentWebSectionBorderArray = sectionWebBorderArray('component_config')
 export const childWebSectionBorderArray = sectionWebBorderArray('extra_info.child_component_config')
+
+export const borderMainArray = [
+    {
+        label: 'Border Width',
+        key: 'border_width',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Width (eg: 1,2)',
+    },
+    {
+        label: 'Color',
+        key: 'border_color',
+        type: 'text',
+        component: { Input },
+        placeholder: 'Enter color hexcode',
+    },
+]
+
+export const getWebBorderMainArray = (prefix: string) => {
+    return borderMainArray?.map((item) => ({
+        label: `Web ${item?.label}`,
+        name: `${prefix}.web_${item?.key}`,
+        placeholder: item?.placeholder,
+        component: item?.component,
+        type: item?.type,
+    }))
+}
+export const getBorderMainArray = (prefix: string) => {
+    return borderMainArray?.map((item) => ({
+        label: `${item?.label}`,
+        name: `${prefix}.${item?.key}`,
+        placeholder: item?.placeholder,
+        component: item?.component,
+        type: item?.type,
+    }))
+}
+
+export const componentBorderWebData = getWebBorderMainArray('component_config')
+export const childBorderWebData = getWebBorderMainArray('extra_info.child_component_config')
+
+export const componentBorderData = getBorderMainArray('component_config')
+export const childBorderData = getBorderMainArray('extra_info.child_component_config')

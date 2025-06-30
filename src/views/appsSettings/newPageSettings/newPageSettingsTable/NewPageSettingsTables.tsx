@@ -138,9 +138,14 @@ const NewPageSettingsTables = () => {
                         </div>
                     </div>
                 </div>
-                <Button type="button" variant="new" onClick={() => navigate(`/app/appSettings/newPageSettings/addNew`)}>
-                    New Page Config
-                </Button>
+                <div className="flex gap-2">
+                    {/* <Button type="button" variant="new" onClick={() => navigate(`/app/appSettings/newPageSettings/assignSection`)}>
+                        Assign to Section
+                    </Button> */}
+                    <Button type="button" variant="new" onClick={() => navigate(`/app/appSettings/newPageSettings/addNew`)}>
+                        New Section
+                    </Button>
+                </div>
             </div>
             <div>
                 <PageDraggavleTable table={table} handleDragEnd={handleDragEnd} />

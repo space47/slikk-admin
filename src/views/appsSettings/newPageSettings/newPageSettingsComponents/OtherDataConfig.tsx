@@ -42,7 +42,7 @@ const OtherDataConfigs = ({
     handleRemoveSubImage,
 }: OtherConfigProps) => {
     return (
-        <FormContainer className="">
+        <FormContainer className="bg-gray-50">
             <h3 className="mb-3">Header Config</h3>
             <div className="grid grid-cols-2 gap-3">
                 <CommonSelect

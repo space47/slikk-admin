@@ -26,7 +26,7 @@ const BackgroundConfig = ({ editMode = false, initialValue, values, setInitialVa
     const { handleRemoveImage, handleRemoveVideo } = useBgRemoveFunctions(setInitialValue)
 
     return (
-        <FormContainer className="grid grid-cols-2 gap-3">
+        <FormContainer className="grid grid-cols-2 gap-3 bg-gray-50">
             {editMode ? (
                 <PageEditVideo
                     isImage

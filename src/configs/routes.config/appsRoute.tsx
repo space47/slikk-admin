@@ -1005,6 +1005,18 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/appsSettings/newPageSettings/editNewPageSettings/EditPageSettings')),
         authority: [ADMIN, USER],
     },
+    {
+        key: 'appsAppSettings.newPageSettings',
+        path: `${APP_PREFIX_PATH}/appSettings/newPageSettings/assignSection`,
+        component: lazy(() => import('@/views/appsSettings/newPageSettings/assignPageToSection/AssignPageSection')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.newPageSettings',
+        path: `${APP_PREFIX_PATH}/appSettings/newPageSettings/assignSection/:section_id`,
+        component: lazy(() => import('@/views/appsSettings/newPageSettings/assignPageToSection/EditAssignedPage')),
+        authority: [ADMIN, USER],
+    },
     //
     {
         key: 'appsCommuncication.notification',

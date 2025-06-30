@@ -2,8 +2,16 @@
 import React from 'react'
 import HelpTooltip from '@/common/HelpTooltip'
 import {
+    childBorderData,
+    childBorderWebData,
     childConfigFieldsArray,
     childConfigWebFieldsArray,
+    childNameFieldArray,
+    childSectionBorderArray,
+    childWebNameFieldArray,
+    childWebSectionBorderArray,
+    componentBorderData,
+    componentBorderWebData,
     componentConfigFieldsArray,
     componentConfigWebFieldsArray,
     componentNameFieldArray,
@@ -36,8 +44,17 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
     const mainFieldsArray = typeName === 'component_config' ? componentConfigFieldsArray : childConfigFieldsArray
     const mainFieldsWebArray = typeName === 'component_config' ? componentConfigWebFieldsArray : childConfigWebFieldsArray
 
+    const mainBorderArray = typeName === 'component_config' ? componentBorderData : childBorderData
+    const mainBorderWebArray = typeName === 'component_config' ? componentBorderWebData : childBorderWebData
+
+    const mainSectionBorderArray = typeName === 'component_config' ? componentSectionBorderArray : childSectionBorderArray
+    const mainSectionBorderWebArray = typeName === 'component_config' ? componentWebSectionBorderArray : childWebSectionBorderArray
+
+    const mainNameArray = typeName === 'component_config' ? componentNameFieldArray : childNameFieldArray
+    const mainNameWebArray = typeName === 'component_config' ? componentWebNameFieldArray : childWebNameFieldArray
+
     return (
-        <div>
+        <div className="bg-gray-50">
             <div className=" grid grid-cols-2 gap-3 ">
                 <div className="font-bold mt-1 bg-gray-300 px rounded-lg w-1/4 h-1/2 flex items-center justify-center ">
                     <span className="bg-gray-300  rounded-lg ">Mobile Configurations :</span>
@@ -129,13 +146,13 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                                 component={Checkbox}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                     const isChecked = e.target.checked
-                                    setFieldValue('${typeName}.border', isChecked)
+                                    setFieldValue(`${typeName}.border`, isChecked)
                                 }}
                             />
                             {typeValues?.border === true && (
                                 <FormContainer>
                                     <CommonSelect name={`${typeName}.border_style`} label="Border Style" options={BorderStyleArray} />
-                                    {componentConfigFieldsArray.map((item, key) => (
+                                    {mainBorderArray?.map((item, key) => (
                                         <FormItem key={key} label={item.label} className="w-full">
                                             <Field
                                                 type={item.type}
@@ -167,7 +184,7 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                                         label="Section Border Style"
                                         options={borrderStyleArray}
                                     />
-                                    {componentSectionBorderArray?.map((item, key) => (
+                                    {mainSectionBorderArray?.map((item, key) => (
                                         <FormItem key={key} label={item.label} className="w-full">
                                             <Field
                                                 type={item.type}
@@ -199,7 +216,7 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                             <br />
                             {typeValues?.name === true && (
                                 <>
-                                    {componentNameFieldArray?.map((item, key) => (
+                                    {mainNameArray?.map((item, key) => (
                                         <FormItem key={key} label={item.label} className="w-full">
                                             <Field
                                                 type={item.type}
@@ -221,7 +238,7 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                                     component={Checkbox}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                         const isChecked = e.target.checked
-                                        setFieldValue('${typeName}.name_footer', isChecked)
+                                        setFieldValue(`${typeName}.name_footer`, isChecked)
                                     }}
                                 />
 
@@ -301,7 +318,7 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                                 component={Checkbox}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                     const isChecked = e.target.checked
-                                    setFieldValue('${typeName}.web_border', isChecked)
+                                    setFieldValue(`${typeName}.web_border`, isChecked)
                                 }}
                             />{' '}
                             <br />
@@ -313,7 +330,7 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                                         label="Web Border Style"
                                         options={BorderStyleArray}
                                     />
-                                    {componentWebSectionBorderArray.map((item, key) => (
+                                    {mainBorderWebArray.map((item, key) => (
                                         <FormItem key={key} label={item.label} className="w-full">
                                             <Field
                                                 type={item.type}
@@ -336,7 +353,7 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                                 component={Checkbox}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                     const isChecked = e.target.checked
-                                    setFieldValue('${typeName}.web_section_border', isChecked)
+                                    setFieldValue(`${typeName}.web_section_border`, isChecked)
                                 }}
                             />
                             {typeValues?.web_section_border === true && (
@@ -346,7 +363,7 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                                         label="Web Section Border Style"
                                         options={BorderStyleArray}
                                     />
-                                    {componentWebSectionBorderArray?.map((item, key) => (
+                                    {mainSectionBorderWebArray?.map((item, key) => (
                                         <FormItem key={key} label={item.label} className="w-full">
                                             <Field
                                                 type={item.type}
@@ -370,14 +387,14 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                                 component={Checkbox}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                     const isChecked = e.target.checked
-                                    setFieldValue('${typeName}.web_name', isChecked)
+                                    setFieldValue(`${typeName}.web_name`, isChecked)
                                 }}
                             />{' '}
                             <br />
                             <br />
                             {typeValues?.web_name === true && (
                                 <>
-                                    {componentWebNameFieldArray?.map((item, key) => (
+                                    {mainNameWebArray?.map((item, key) => (
                                         <FormItem key={key} label={item.label} className="w-full">
                                             <Field
                                                 type={item.type}
@@ -399,7 +416,7 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                                     component={Checkbox}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                         const isChecked = e.target.checked
-                                        setFieldValue('${typeName}.web_name_footer', isChecked)
+                                        setFieldValue(`${typeName}.web_name_footer`, isChecked)
                                     }}
                                 />
 

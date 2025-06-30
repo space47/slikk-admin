@@ -23,6 +23,7 @@ export const usePageSettingsColumns = ({ handleGoToBanner }: props) => {
                     </button>
                 ),
             },
+
             {
                 header: 'Section Heading',
                 accessorKey: 'section_heading',
@@ -81,6 +82,18 @@ export const usePageSettingsColumns = ({ handleGoToBanner }: props) => {
             //         </button>
             //     ),
             // },
+            {
+                header: 'Edit Assigned Section',
+                accessorKey: '',
+                cell: ({ row }: any) => (
+                    <button
+                        className="border-none bg-none"
+                        onClick={() => navigate(`/app/appSettings/newPageSettings/assignSection/${row?.original?.id}`)}
+                    >
+                        <FaEdit className="text-xl text-red-600" />
+                    </button>
+                ),
+            },
         ],
         [],
     )

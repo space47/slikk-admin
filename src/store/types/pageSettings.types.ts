@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface pageSettingsType {
-    id: number
+    id?: number
     section_heading: string
     display_name: string
     is_active: string

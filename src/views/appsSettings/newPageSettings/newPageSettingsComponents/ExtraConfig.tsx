@@ -8,7 +8,7 @@ import CommonSelect from '../../pageSettings/CommonSelect'
 
 const ExtraConfig = () => {
     return (
-        <FormContainer className="grid grid-cols-2 gap-2">
+        <FormContainer className="grid grid-cols-2 gap-2 bg-gray-50">
             <FormItem label="Timeout" className="mt-4">
                 <Field name="extra_info.timeout">
                     {({ field, form }: FieldProps) => (
