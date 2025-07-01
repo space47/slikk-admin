@@ -6,7 +6,7 @@ import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import moment from 'moment'
 import { CHANGE_DELIVERY_OPTIONS, pageSizeOptions, SEARCHOPTIONS, type DropdownStatus, type Order } from './commontypes'
-import { Button, Dropdown, Input, Spinner } from '@/components/ui'
+import { Button, Dialog, Dropdown, Input, Spinner } from '@/components/ui'
 import { IoMdDownload } from 'react-icons/io'
 import FilterDialogOrder from './filterDialog/FilterDialog'
 import { CiFilter } from 'react-icons/ci'
@@ -62,6 +62,7 @@ const OrderList = () => {
     const [tabSelect, setTabSelect] = useState('all')
     const [isDownloading, setIsDownloading] = useState(false)
     const [showNumberLoading, setShowNumberLoading] = useState(false)
+    const [isReAssign, setIsReAssign] = useState(false)
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
 
     const handleSelectTab = (value: string) => {
@@ -266,15 +267,16 @@ const OrderList = () => {
     return (
         <div className="p-4 bg-gray-50 rounded-xl">
             <div className="overflow-x-auto scrollbar-hide">
-                <div className="flex flex-col xl:flex-row justify-between lg:flex-row lg:justify-between mb-10 xl:items-center gap-3 md:flex-col sm:flex-col">
-                    <div className="flex  xl:gap-2  flex-row   gap-3 order-2 xl:order-none md:order-none ">
-                        <div className="flex items-center gap-2 bg-white dark:bg-gray-900 px-3 py-2 rounded-lg shadow-md">
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mb-10">
+                    {/* Search + Dropdown */}
+                    <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center order-2 lg:order-1 w-full lg:w-auto">
+                        <div className="flex items-center gap-2 bg-white dark:bg-gray-900 px-3 py-2 rounded-lg shadow-md w-full sm:w-auto">
                             <Input
                                 type="search"
                                 name="search"
                                 placeholder="Search here..."
                                 value={searchInput}
-                                className="w-[150px] xl:w-[250px] rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-1 focus:outline-none focus:ring focus:ring-blue-500"
+                                className="w-full sm:w-[180px] xl:w-[250px] rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-1 focus:outline-none focus:ring focus:ring-blue-500"
                                 onChange={(e) => setSearchInput(e.target.value)}
                                 onKeyDown={(e: any) => {
                                     if (e.key === 'Enter') {
@@ -283,87 +285,77 @@ const OrderList = () => {
                                     }
                                 }}
                             />
-                            <div className="bg-blue-500 hover:bg-blue-400 p-2 rounded-xl cursor-pointer">
-                                <HiSearch
-                                    className="text-white  dark:text-gray-400 text-xl"
-                                    onClick={() => handleSearchWithIcon(setSearchOnEnter, searchInput)}
-                                />
+                            <div
+                                className="bg-blue-500 hover:bg-blue-400 p-2 rounded-xl cursor-pointer"
+                                onClick={() => handleSearchWithIcon(setSearchOnEnter, searchInput)}
+                            >
+                                <HiSearch className="text-white text-xl" />
                             </div>
-                            <div className="flex justify-center xl:justify-normal">
-                                <div className="bg-gray-100 flex justify-center font-bold items-center xl:mt-1  xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
-                                    <Dropdown
-                                        className=" text-xl text-black bg-gray-200 font-bold  "
-                                        title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
-                                        onSelect={(e) => handleSelect(e, setCurrentSelectedPage)}
-                                    >
-                                        {SEARCHOPTIONS?.map((item, key) => {
-                                            return (
-                                                <DropdownItem key={key} eventKey={item.value}>
-                                                    <span>{item.label}</span>
-                                                </DropdownItem>
-                                            )
-                                        })}
-                                    </Dropdown>
-                                </div>
+                            <div className="bg-gray-100 dark:bg-blue-600 dark:text-white font-bold text-sm rounded-md">
+                                <Dropdown
+                                    className="text-black bg-gray-200 font-bold"
+                                    title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
+                                    onSelect={(e) => handleSelect(e, setCurrentSelectedPage)}
+                                >
+                                    {SEARCHOPTIONS?.map((item, key) => (
+                                        <DropdownItem key={key} eventKey={item.value}>
+                                            <span>{item.label}</span>
+                                        </DropdownItem>
+                                    ))}
+                                </Dropdown>
                             </div>
                         </div>
                     </div>
 
-                    <div className="xl:flex gap-4 ">
-                        <div className="gap-2 flex flex-col xl:flex-row md:flex-row items-center justify-center xl:justify-normal">
-                            <div>
-                                <UltimateDatePicker
-                                    from={from}
-                                    setFrom={setFrom}
-                                    to={to}
-                                    setTo={setTo}
-                                    handleDateChange={(e: [Date | null, Date | null] | null) => handleDateChange(e, setFrom, setTo)}
-                                />
-                            </div>
-                            <div className="flex gap-2 items-center">
-                                <div className="xl:mt-7 md:mt-7">
-                                    <Button variant="new" size="sm" onClick={handleReassignPickerOrder}>
-                                        Reassign Picker Orders
-                                    </Button>
-                                </div>
-                                <div className="xl:mt-7 md:mt-7">
-                                    <Button variant="new" size="sm" className="xl:flex gap-2" onClick={() => setShowFilter(true)}>
-                                        <CiFilter className="text-xl font-extrabold hidden xl:block" /> FILTER
-                                    </Button>
+                    {/* Right side controls */}
+                    <div className="flex flex-col gap-4 lg:flex-row items-center w-full lg:justify-end order-1 lg:order-2">
+                        {/* Date picker */}
+                        <UltimateDatePicker
+                            from={from}
+                            setFrom={setFrom}
+                            to={to}
+                            setTo={setTo}
+                            handleDateChange={(e: [Date | null, Date | null] | null) => handleDateChange(e, setFrom, setTo)}
+                        />
 
-                                    {/* <Button variant="default" size="sm" className="flex xl:hidden mt-8" onClick={() => setShowFilter(true)}>
-                                        <FaFilter className="text-xl font-extrabold" />
-                                    </Button> */}
-                                </div>
-                            </div>
-                            <div className="flex  md:flex-row items-end justify-end ">
-                                <div className="mt-10 xl:mt-7 md:mt-7">
-                                    <button
-                                        disabled={isDownloading}
-                                        className="bg-gray-700 text-white px-4 py-2 hover:bg-gray-600 rounded-lg mb-2 md:mb-0 md:mr-2  xl:flex xl:gap-1 dark:bg-gray-500 dark:text-white"
-                                        onClick={() =>
-                                            handleDownload(
-                                                from,
-                                                to,
-                                                dropdownStatus,
-                                                deliveryType,
-                                                paymentType,
-                                                currentSelectedPage,
-                                                searchInput,
-                                                setIsDownloading,
-                                            )
-                                        }
-                                    >
-                                        <IoMdDownload className="text-xl md:text-xl font-extrabold hidden xl:flex" />
-                                        <span className="flex gap-1 items-center">
-                                            EXPORT {isDownloading && <Spinner size={20} color="white" />}
-                                        </span>
-                                    </button>
-                                </div>
-                            </div>
+                        {/* Buttons */}
+                        <div className="flex flex-row xl:mt-7   gap-3 items-center">
+                            <Button variant="new" size="sm" onClick={() => setIsReAssign(true)}>
+                                Reassign
+                            </Button>
+
+                            <Button variant="new" size="sm" className="flex gap-2 items-center" onClick={() => setShowFilter(true)}>
+                                <CiFilter className="text-xl font-bold" /> FILTER
+                            </Button>
+                        </div>
+
+                        {/* Download Button */}
+                        <div className="xl:mt-7">
+                            <button
+                                disabled={isDownloading}
+                                className="bg-gray-700 hover:bg-gray-600 dark:bg-gray-500 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+                                onClick={() =>
+                                    handleDownload(
+                                        from,
+                                        to,
+                                        dropdownStatus,
+                                        deliveryType,
+                                        paymentType,
+                                        currentSelectedPage,
+                                        searchInput,
+                                        setIsDownloading,
+                                    )
+                                }
+                            >
+                                <IoMdDownload className="text-xl hidden md:block" />
+                                <span className="flex gap-2 items-center">
+                                    EXPORT {isDownloading && <Spinner size={20} color="white" />}
+                                </span>
+                            </button>
                         </div>
                     </div>
                 </div>
+
                 <TabSelectOrder
                     handleSelectTab={handleSelectTab}
                     tabSelect={tabSelect}
@@ -424,6 +416,20 @@ const OrderList = () => {
             )}
             {soundEnabled && <NotificationSound shouldPlay={soundEnabled} />}
             {pendingSound && <PendingNotification shouldPlay={pendingSound} />}
+            {isReAssign && (
+                <>
+                    <Dialog isOpen={isReAssign} onClose={() => setIsReAssign(false)}>
+                        <div className="flex flex-col justify-center mt-10 gap-3">
+                            <Button variant="new" size="sm" onClick={() => handleReassignPickerOrder('picker')}>
+                                Reassign Picker Orders
+                            </Button>
+                            <Button variant="new" size="sm" onClick={() => handleReassignPickerOrder('partner')}>
+                                Reassign Delivery Partner
+                            </Button>
+                        </div>
+                    </Dialog>
+                </>
+            )}
         </div>
     )
 }

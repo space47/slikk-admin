@@ -103,9 +103,21 @@ export const handleDateChange = (dates: [Date | null, Date | null] | null, setFr
     }
 }
 
-export const handleReassignPickerOrder = async () => {
+export const handleReassignPickerOrder = async (text: string) => {
+    console.log('text is', text)
+    const body: {
+        action?: string
+    } = {}
+
+    if (text === 'picker') {
+        body.action = 'reassign_picker_orders'
+    }
+    if (text === 'partner') {
+        body.action = 'reassign_delivery_partner'
+    }
+
     try {
-        const res = await axioisInstance.post(`/merchant/orders`, { action: 'reassign_picker_orders' })
+        const res = await axioisInstance.post(`/merchant/orders`, body)
         notification.success({ message: res?.data?.message || 'Reassign Successfully' })
     } catch (error) {
         console.error(error)
