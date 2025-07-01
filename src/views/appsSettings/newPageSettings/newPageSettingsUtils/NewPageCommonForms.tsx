@@ -36,6 +36,7 @@ const NewPageCommonForms = ({
     setBarcodeData,
     barcodeData,
 }: props) => {
+    console.log('initial Value in main form', initialValue)
     return (
         <div className="p-2 shadow-xl rounded-xl">
             <FormItem asterisk label="Component Types" className="col-span-1 w-[50%] h-[80%]">
@@ -108,7 +109,12 @@ const NewPageCommonForms = ({
                     <BackgroundConfig values={values} initialValue={initialValue} editMode={isEdit} setInitialValue={setInitialValue} />
                 </TabContent>
                 <TabContent value="other_config">
-                    <OtherDataConfigs values={values} />
+                    <OtherDataConfigs
+                        values={values}
+                        initialValue={initialValue}
+                        editMode={isEdit ? true : false}
+                        setInitialValue={setInitialValue}
+                    />
                 </TabContent>
                 <TabContent value="data_type_config">
                     <DataTypesConfig

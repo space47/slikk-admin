@@ -89,17 +89,17 @@ export const getWebConfigArray = (title: string, prefix: string) => {
     }))
 }
 
-export const HeaderConfigArray = getConfigArray('Header', 'header_config')?.filter((item) => item?.name === 'header_config.topMargin')
+export const HeaderConfigArray = getConfigArray('Header', 'header_config')?.filter((item) => item?.name !== 'header_config.topMargin')
 export const WebHeaderConfigArray = getWebConfigArray('Header', 'header_config')?.filter(
-    (item) => item?.name === 'header_config.web_topMargin',
+    (item) => item?.name !== 'header_config.web_topMargin',
 )
 
 export const SubHeaderConfigArray = getConfigArray('Sub Header', 'sub_header_config')
 export const WebSubHeaderConfigArray = getWebConfigArray('Sub Header', 'sub_header_config')
 
-export const FooterConfigArray = getConfigArray('Footer', 'footer_config')?.filter((item) => item?.name === 'footer_config.bottomMargin')
+export const FooterConfigArray = getConfigArray('Footer', 'footer_config')?.filter((item) => item?.name !== 'footer_config.bottomMargin')
 export const WebFooterConfigArray = getWebConfigArray('Footer', 'footer_config')?.filter(
-    (item) => item?.name === 'footer_config.web_bottomMargin',
+    (item) => item?.name !== 'footer_config.web_bottomMargin',
 )
 
 export const CommonConfigArray = [

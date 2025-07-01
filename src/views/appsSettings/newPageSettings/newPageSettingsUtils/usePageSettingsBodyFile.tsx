@@ -66,10 +66,10 @@ export const PageSettingsBodyFile = async ({ values, initialValue }: props) => {
             ? { mobile_background_video: mobileBackgroundVideoUpload || values?.mobile_background_video }
             : {}),
         ...(backgroundLottieUpload || values?.background_lottie
-            ? { background_lottie: backgroundLottieUpload || values?.background_lottie }
+            ? { background_lottie: backgroundLottieUpload || values?.background_config.background_lottie }
             : {}),
         ...(mobileBackgroundLottieUpload || values?.mobile_background_Lottie
-            ? { mobile_background_lottie: mobileBackgroundLottieUpload || values?.mobile_background_lottie }
+            ? { mobile_background_lottie: mobileBackgroundLottieUpload || values?.background_config.mobile_background_lottie }
             : {}),
     }
 

@@ -6,11 +6,12 @@ import { pageSettingsService } from '@/store/services/pageSettingService'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
 import { companyStore } from '@/store/types/companyStore.types'
 import { pageNameTypes } from '@/store/types/pageSettings.types'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import { AxiosError } from 'axios'
 import { Field, FieldProps, Form, Formik } from 'formik'
 import React, { useEffect, useMemo, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 interface valueProps {
     page: number
@@ -23,6 +24,7 @@ interface valueProps {
 
 const EditAssignedPage = () => {
     const dispatch = useAppDispatch()
+    const navigate = useNavigate()
     const { section_id } = useParams()
     const [pageNamesData, setPageNamesData] = useState<pageNameTypes[] | undefined>([])
     const [subPageNamesData, setSubPageNamesData] = useState<pageNameTypes[] | undefined>([])
@@ -71,7 +73,7 @@ const EditAssignedPage = () => {
             page: values?.page,
             sub_page: values?.sub_page,
             store: values?.store,
-            section: values?.section,
+            // section: values?.section,
             position: values?.position,
             is_active: values?.is_active,
         }
@@ -79,9 +81,9 @@ const EditAssignedPage = () => {
         console.log('body is', body)
 
         try {
-            // const res = await axioisInstance.post(`/page-sections`,body)
-            // notification.success({message: res?.data?.message ||  'Successfully assigned'})
-            // navigate('/app/appSettings/newPageSettings')
+            const res = await axioisInstance.post(`/page-sections/${section_id}`, body)
+            notification.success({ message: res?.data?.message || 'Successfully assigned' })
+            navigate('/app/appSettings/newPageSettings')
         } catch (error) {
             console.error(error)
             if (error instanceof AxiosError) {
@@ -126,7 +128,8 @@ const EditAssignedPage = () => {
                                 <FormItem label="Page">
                                     <Field name="page">
                                         {({ form, field }: FieldProps) => {
-                                            const selectedPage = pageNamesData?.find((option) => option.name === field?.value?.name)
+                                            console.log(field)
+                                            const selectedPage = pageNamesData?.find((option) => option.name === field?.value)
                                             return (
                                                 <div className="flex flex-col gap-1  xl:items-baseline w-full max-w-md">
                                                     <Select
@@ -150,7 +153,7 @@ const EditAssignedPage = () => {
                                 <FormItem label="Sub Page">
                                     <Field name="sub_page">
                                         {({ form, field }: FieldProps) => {
-                                            const selectedPage = subPageNamesData?.find((option) => option.name === field?.value?.name)
+                                            const selectedPage = subPageNamesData?.find((option) => option.name === field?.value)
                                             return (
                                                 <div className="flex flex-col gap-1  xl:items-baseline w-full max-w-md">
                                                     <Select

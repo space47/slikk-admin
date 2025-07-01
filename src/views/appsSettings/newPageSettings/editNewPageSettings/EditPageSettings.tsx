@@ -89,6 +89,8 @@ const EditPageSettings = () => {
         }
         const filteredBody = Object.fromEntries(Object.entries(body || {}).filter(([_, value]) => value !== undefined))
 
+        console.log('filtered body', filteredBody)
+
         try {
             const response = await axioisInstance.patch(`/section/${section_id}`, filteredBody)
             notification.success({ message: response?.data?.message || 'successfully updated' })

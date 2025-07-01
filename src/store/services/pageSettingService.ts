@@ -43,7 +43,7 @@ export const pageSettingsService = RtkQueryService.injectEndpoints({
                 if (params.page) parameters.p = params.page
                 if (params.pageSize) parameters.page_size = params.pageSize
                 if (params.sub_page) parameters.sub_page_id = params.sub_page
-                if (params.pageId) parameters.page = params.pageId
+                if (params.pageId) parameters.page_id = params.pageId
                 return {
                     url: `/subpage`,
                     method: 'GET',

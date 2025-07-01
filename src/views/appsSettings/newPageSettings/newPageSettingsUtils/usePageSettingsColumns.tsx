@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo } from 'react'
 import { FaEdit } from 'react-icons/fa'
+import { MdAssignment } from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
 
 interface props {
@@ -44,12 +45,16 @@ export const usePageSettingsColumns = ({ handleGoToBanner }: props) => {
             {
                 header: 'Background Image',
                 accessorKey: 'background_config.background_image',
-                cell: (info: any) => <img src={info.getValue() as string} alt="" className="object-contain bg-black" />,
+                cell: (info: any) => (
+                    <img src={info.getValue() as string} alt="" className="object-contain bg-black" width={100} height={70} />
+                ),
             },
             {
                 header: 'Mobile Background Image',
                 accessorKey: 'background_config.mobile_background_image',
-                cell: (info: any) => <img src={info.getValue() as string} alt="" className="object-contain bg-black" />,
+                cell: (info: any) => (
+                    <img src={info.getValue() as string} alt="" className="object-contain bg-black" width={100} height={70} />
+                ),
             },
             { header: 'Data Type', accessorKey: 'data_type.type' },
             {
@@ -90,7 +95,7 @@ export const usePageSettingsColumns = ({ handleGoToBanner }: props) => {
                         className="border-none bg-none"
                         onClick={() => navigate(`/app/appSettings/newPageSettings/assignSection/${row?.original?.id}`)}
                     >
-                        <FaEdit className="text-xl text-red-600" />
+                        <MdAssignment className="text-3xl text-red-600" />
                     </button>
                 ),
             },

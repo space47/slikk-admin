@@ -25,22 +25,56 @@ import {
 
 interface OtherConfigProps {
     editMode?: any
-    particularRow?: any
+    initialValue?: any
     values?: any
-    handleRemoveHeaderImage?: any
-    handleRemoveSubImage?: any
-    handleRemoveImage?: any
-    handleRemoveExploreImage?: any
+    // handleRemoveHeaderImage?: any
+    // handleRemoveSubImage?: any
+    // handleRemoveImage?: any
+    // handleRemoveExploreImage?: any
+    setInitialValue: (x: any) => void
 }
 
 const OtherDataConfigs = ({
     editMode,
-    particularRow,
+    initialValue,
     values,
-    handleRemoveHeaderImage,
-    handleRemoveImage,
-    handleRemoveSubImage,
+    setInitialValue,
+    // handleRemoveHeaderImage,
+    // handleRemoveImage,
+    // handleRemoveSubImage,
 }: OtherConfigProps) => {
+    console.log('initial Value in other form', initialValue)
+
+    const handleRemove = (value: string) => {
+        if (value === 'header_image') {
+            setInitialValue({
+                ...initialValue,
+                header_config: {
+                    ...initialValue.header_config,
+                    image: '',
+                },
+            })
+        }
+        if (value === 'sub_image') {
+            setInitialValue({
+                ...initialValue,
+                sub_header_config: {
+                    ...initialValue.sub_header_config,
+                    image: '',
+                },
+            })
+        }
+        if (value === 'footer_image') {
+            setInitialValue({
+                ...initialValue,
+                footer_config: {
+                    ...initialValue.footer_config,
+                    image: '',
+                },
+            })
+        }
+    }
+
     return (
         <FormContainer className="bg-gray-50">
             <h3 className="mb-3">Header Config</h3>
@@ -72,9 +106,9 @@ const OtherDataConfigs = ({
                     <>
                         <PageEditImage
                             label="Header Image"
-                            rowName={particularRow.header_config.image}
+                            rowName={initialValue.header_config.image}
                             removeName="header_image_image"
-                            handleRemoveImage={handleRemoveHeaderImage}
+                            handleRemoveImage={() => handleRemove('header_image')}
                             name="header_config_image_Array"
                             beforeUpload={beforeUpload}
                             fileList={values.header_config_image_Array}
@@ -97,9 +131,9 @@ const OtherDataConfigs = ({
                     <>
                         <PageEditVideo
                             label="header Video"
-                            rowName={particularRow.header_config.video}
+                            rowName={initialValue.header_config.video}
                             removeName="header_video"
-                            // handleRemoveImage={handleRemoveSubImage}
+                            // handleRemoveImage={()=>handleRemove('sub_image')}
                             name="header_config_video_Array"
                             beforeVideoUpload={beforeVideoUpload}
                             fileList={values.header_config_video_Array}
@@ -206,9 +240,9 @@ const OtherDataConfigs = ({
                     <>
                         <PageEditImage
                             label="Sub_Header Image"
-                            rowName={particularRow.sub_header_config.image}
+                            rowName={initialValue.sub_header_config.image}
                             removeName="sub_header_image"
-                            handleRemoveImage={handleRemoveSubImage}
+                            handleRemoveImage={() => handleRemove('sub_image')}
                             name="sub_header_config_image_Array"
                             beforeUpload={beforeUpload}
                             fileList={values.sub_header_config_image_Array}
@@ -231,7 +265,7 @@ const OtherDataConfigs = ({
                     <>
                         <PageEditVideo
                             label="Sub_Header Video"
-                            rowName={particularRow.sub_header_config.video}
+                            rowName={initialValue.sub_header_config.video}
                             removeName="sub_header_video"
                             // handleRemoveImage={handleRemoveSubImage}
                             name="sub_header_config_video_Array"
@@ -283,9 +317,9 @@ const OtherDataConfigs = ({
                     <>
                         <PageEditImage
                             label="Footer Image"
-                            rowName={particularRow.footer_config.image}
+                            rowName={initialValue.footer_config.image}
                             removeName="footer_image"
-                            handleRemoveImage={handleRemoveImage}
+                            handleRemoveImage={() => handleRemove('footer_image')}
                             name="footer_config_image_Array"
                             beforeUpload={beforeUpload}
                             fileList={values.footer_config_image_Array}
@@ -308,7 +342,7 @@ const OtherDataConfigs = ({
                     <>
                         <PageEditVideo
                             label="Footer Video"
-                            rowName={particularRow.footer_config.video}
+                            rowName={initialValue.footer_config.video}
                             removeName="footer_video"
                             // handleRemoveImage={handleRemoveSubImage}
                             name="footer_config_video_Array"
