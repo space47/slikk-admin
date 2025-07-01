@@ -30,13 +30,16 @@ const EditPageSettings = () => {
     const [initialValue, setInitialValue] = useState<pageSettingsType>()
 
     useEffect(() => {
-        setInitialValue(InitialValuesEdit(pageSettingsData) as pageSettingsType)
-        // setFilterId(initialValue?.extra_attributes?.filterIdToFetch)
-        setBarcodeData(initialValue?.data_type?.barcodes)
+        const editedValues = InitialValuesEdit(pageSettingsData) as pageSettingsType
+        const filters = editedValues?.data_type?.filters || []
+        const filterId = filters.find((item: string) => item.includes('filterID_'))?.split('_')[1]
+        const division = filters.find((item: string) => item.includes('division'))?.split('_')[1]
+        setInitialValue({ ...editedValues, division_select: division })
+        setBarcodeData(editedValues?.data_type?.barcodes)
+        setFilterId(filterId)
     }, [pageSettingsData])
 
     const handleSubmit = async (values: any) => {
-        console.log('values are ', values)
         const { componentConfig, backgroundConfig, footerConfig, headerConfig, subHeaderConfig, child_component_config, cta_config } =
             await PageSettingsBodyFile({
                 values,
@@ -56,7 +59,6 @@ const EditPageSettings = () => {
                     ...(values?.extra_info?.page_size ? { page_size: values?.extra_info?.page_size } : {}),
                     ...(values?.extra_info?.child_data_type && { child_data_type: values?.extra_info?.child_data_type }),
                     cta_config: cta_config,
-                    filterIdToFetch: filterId,
                     child_component_config: child_component_config,
                 }).filter(([, value]) => value !== ''),
             ),
@@ -80,7 +82,7 @@ const EditPageSettings = () => {
                       : {}),
                 filters: [
                     ...(values?.division_select ? [`division_${values.division_select}`] : []),
-                    ...(values?.data_type?.filters ?? []), // remove this after extra info is fixed
+                    // ...(values?.data_type?.filters ?? []), // remove this after extra info is fixed
                     ...(filterId ? [`filterID_${filterId}`] : []),
                 ]
                     .filter(Boolean)
@@ -88,9 +90,6 @@ const EditPageSettings = () => {
             },
         }
         const filteredBody = Object.fromEntries(Object.entries(body || {}).filter(([_, value]) => value !== undefined))
-
-        console.log('filtered body', filteredBody)
-
         try {
             const response = await axioisInstance.patch(`/section/${section_id}`, filteredBody)
             notification.success({ message: response?.data?.message || 'successfully updated' })

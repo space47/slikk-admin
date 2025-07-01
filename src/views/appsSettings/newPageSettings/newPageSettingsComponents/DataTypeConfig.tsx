@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Checkbox, FormContainer, FormItem, Input } from '@/components/ui'
+import { Checkbox, FormContainer, FormItem, Input, Select } from '@/components/ui'
 import React from 'react'
 import { Field, FieldProps } from 'formik'
 // import FilterSelect from '@/views/sales/urlShortner/FilterSelect'
@@ -98,13 +98,25 @@ const DataTypesConfig = ({ values, filterId, setFilterId, setFieldValue, setBarc
                     <Field type="number" name="extra_info.page_size" placeholder="Place Page Size" component={Input} min="0" />
                 </FormItem>
 
-                <CommonSelect
-                    needClassName
-                    label="Division Select"
-                    options={formattedDivisions}
-                    name="division_select"
-                    className="w-full"
-                />
+                <FormItem label="Division Select">
+                    <Field name="division_select">
+                        {({ field, form }: FieldProps<any>) => {
+                            console.log('field', field)
+                            return (
+                                <Select
+                                    isClearable
+                                    options={formattedDivisions}
+                                    value={formattedDivisions.find((option) => option.value === field.value)}
+                                    onChange={(option) => {
+                                        const value = option ? option.value : ''
+                                        form.setFieldValue(field.name, value)
+                                    }}
+                                    onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+                                />
+                            )
+                        }}
+                    </Field>
+                </FormItem>
 
                 <div className="mb-4">
                     <ComonFilterSelect isEdit={isEdit ?? false} filterId={filterId} setFilterId={setFilterId} />

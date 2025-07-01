@@ -73,9 +73,9 @@ const AssignPageSection = () => {
         console.log('body is', body)
 
         try {
-            // const res = await axioisInstance.post(`/page-sections`,body)
-            // notification.success({message: res?.data?.message ||  'Successfully assigned'})
-            // navigate('/app/appSettings/newPageSettings')
+            const res = await axioisInstance.post(`/page-sections`, body)
+            notification.success({ message: res?.data?.message || 'Successfully assigned' })
+            navigate('/app/appSettings/newPageSettings')
         } catch (error) {
             console.error(error)
             if (error instanceof AxiosError) {

@@ -22,7 +22,6 @@ interface BGprops {
 }
 
 const BackgroundConfig = ({ editMode = false, initialValue, values, setInitialValue }: BGprops) => {
-    console.log(setInitialValue)
     const { handleRemoveImage, handleRemoveVideo } = useBgRemoveFunctions(setInitialValue)
 
     return (

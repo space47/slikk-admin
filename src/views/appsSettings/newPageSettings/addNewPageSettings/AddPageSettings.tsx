@@ -38,7 +38,6 @@ const AddPageSettings = () => {
                     ...(values?.extra_info?.page_size ? { page_size: values?.extra_info?.page_size } : {}),
                     ...(values?.extra_info?.child_data_type && { child_data_type: values?.extra_info?.child_data_type }),
                     cta_config: cta_config,
-                    filterIdToFetch: filterId,
                     child_component_config: child_component_config,
                 }).filter(([, value]) => value !== ''),
             ),
@@ -63,7 +62,7 @@ const AddPageSettings = () => {
                       : {}),
                 filters: [
                     ...(values?.division_select ? [`division_${values.division_select}`] : []),
-                    ...(values?.data_type?.filters ?? []), // remove this after extra info is fixed
+                    // ...(values?.data_type?.filters ?? []), // remove this after extra info is fixed
                     ...(filterId ? [`filterID_${filterId}`] : []),
                 ]
                     .filter(Boolean)

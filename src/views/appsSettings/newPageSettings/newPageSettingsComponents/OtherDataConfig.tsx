@@ -27,24 +27,10 @@ interface OtherConfigProps {
     editMode?: any
     initialValue?: any
     values?: any
-    // handleRemoveHeaderImage?: any
-    // handleRemoveSubImage?: any
-    // handleRemoveImage?: any
-    // handleRemoveExploreImage?: any
     setInitialValue: (x: any) => void
 }
 
-const OtherDataConfigs = ({
-    editMode,
-    initialValue,
-    values,
-    setInitialValue,
-    // handleRemoveHeaderImage,
-    // handleRemoveImage,
-    // handleRemoveSubImage,
-}: OtherConfigProps) => {
-    console.log('initial Value in other form', initialValue)
-
+const OtherDataConfigs = ({ editMode, initialValue, values, setInitialValue }: OtherConfigProps) => {
     const handleRemove = (value: string) => {
         if (value === 'header_image') {
             setInitialValue({

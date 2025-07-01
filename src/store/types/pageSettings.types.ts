@@ -5,7 +5,7 @@ export interface pageSettingsType {
     display_name: string
     is_active: string
     component_type: string
-    data_type: Record<string, string | number | []>
+    data_type: Record<string, string | number | [] | any>
     component_config: Record<string, string | number>
     background_config: Record<string, string | number | []>
     header_config: Record<string, string | number | []>
@@ -16,6 +16,7 @@ export interface pageSettingsType {
     last_updated_by: string
     created_at: string
     updated_at: string
+    division_select?: string
 }
 
 export interface pageSettingsResponseType {
