@@ -2,13 +2,14 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { useMemo } from 'react'
 import { Product } from '../CommonType'
-import { FaEdit } from 'react-icons/fa'
+import { FaEdit, FaEye } from 'react-icons/fa'
 
 interface props {
     handleOpenModal: (img: any) => void
+    handleViewProducts: (row: any) => void
 }
 
-export const useProductColumns = ({ handleOpenModal }: props) => {
+export const useProductColumns = ({ handleOpenModal, handleViewProducts }: props) => {
     return useMemo<ColumnDef<Product>[]>(
         () => [
             {
@@ -20,6 +21,15 @@ export const useProductColumns = ({ handleOpenModal }: props) => {
                             {' '}
                             <FaEdit className="text-xl text-blue-600" />
                         </a>
+                    </button>
+                ),
+            },
+            {
+                header: 'Edit',
+                accessorKey: '',
+                cell: ({ row }) => (
+                    <button className="border-none bg-none" onClick={() => handleViewProducts(row?.original)}>
+                        <FaEye className="text-xl text-yellow-500" />
                     </button>
                 ),
             },
@@ -46,7 +56,7 @@ export const useProductColumns = ({ handleOpenModal }: props) => {
             {
                 header: 'Image',
                 accessorKey: 'image',
-                cell: ({ getValue, row }: any) => (
+                cell: ({ row }: any) => (
                     <img
                         src={row?.original?.thumbnail.split(',')[0]}
                         alt="Image"

@@ -20,10 +20,12 @@ import { useProductColumns } from './productutils/ProductColumns'
 import { fetchProducts, handleDownload, handleFacebookSync, handleGenerateSiteMap, handleRandomize } from './productutils/productApiCalls'
 import { handleApply, handleProductSelect } from './productutils/productFunction'
 import { HiSearch } from 'react-icons/hi'
+import ProductViewModal from './ProductViewModal'
 
 const Products = () => {
     const navigate = useNavigate()
     const [data, setData] = useState<ProductTypes[]>([])
+    const [rowData, setRowData] = useState<ProductTypes>()
     const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
@@ -41,6 +43,7 @@ const Products = () => {
     const [selectFilterString, setFilterString] = useState('')
     const [searchOnEnter, setSearchOnEnter] = useState('')
     const [showDrawer, setShowDrawer] = useState(false)
+    const [showViewModal, setShowViewModal] = useState(false)
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(ProductFilterArray[0])
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
 
@@ -59,7 +62,12 @@ const Products = () => {
         setShowImageModal(true)
     }
 
-    const columns = useProductColumns({ handleOpenModal })
+    const handleViewProducts = (row: ProductTypes) => {
+        setRowData(row)
+        setShowViewModal(true)
+    }
+
+    const columns = useProductColumns({ handleOpenModal, handleViewProducts })
 
     return (
         <div className="p-4 w-full shadow-xl rounded-xl">
@@ -217,6 +225,7 @@ const Products = () => {
                     onDialogOk={() => handleRandomize(setShowRandomizeDialog)}
                 />
             )}
+            {showViewModal && <ProductViewModal row={rowData as ProductTypes} isOpen={showViewModal} setIsOpen={setShowViewModal} />}
         </div>
     )
 }
