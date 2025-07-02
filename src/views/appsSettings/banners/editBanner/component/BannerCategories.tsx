@@ -146,7 +146,7 @@ const BannerCategories = ({
                                 <Select
                                     isMulti
                                     field={field}
-                                    defaultValue={filteredProductTypes}
+                                    defaultValue={productType?.product_types}
                                     options={productType?.product_types}
                                     getOptionLabel={(option) => option.name}
                                     getOptionValue={(option) => option.id.toString()}
