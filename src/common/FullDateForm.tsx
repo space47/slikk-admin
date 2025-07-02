@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FormItem } from '@/components/ui'
 import { DatePicker } from 'antd'
+import dayjs from 'dayjs'
 import { Field, FieldProps } from 'formik'
-import moment from 'moment'
 import React from 'react'
 
 interface props {
@@ -21,7 +21,7 @@ const FullDateForm = ({ label, name, fieldname }: props) => {
                             showTime
                             placeholder=""
                             className="w-1/2"
-                            value={field.value ? moment(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
+                            value={field.value ? dayjs(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
                             onChange={(value) => {
                                 form.setFieldValue(fieldname, value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
                             }}
