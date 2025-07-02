@@ -37,48 +37,12 @@ const borderStyleArray = [
 interface PageCompProps {
     FontSizeArray: FontSize[]
     SECTIONARRAY: FontSize[]
-    setBorderForm: any
-    borderForm: any
     setFieldValue: any
-    setSectioBorderShow: any
-    sectionBorderShow: any
-    setWebBorderForm: any
-    webBorderForm: any
-    setWebSectioBorderShow: any
-    webSectionBorderShow: any
-    setNameForm: any
-    nameForm: any
-    setFooterAlignForm: any
-    footerAlignForm: any
-    setWebNameForm: any
-    webNameForm: any
-    setWebFooterAlignForm: any
-    webFooterAlignForm: any
     values: any
 }
 
-const PageComponentConfig = ({
-    FontSizeArray,
-    SECTIONARRAY,
-    borderForm,
-    setBorderForm,
-    setFieldValue,
-    setSectioBorderShow,
-    sectionBorderShow,
-    setWebBorderForm,
-    webBorderForm,
-    setWebSectioBorderShow,
-    webSectionBorderShow,
-    setNameForm,
-    nameForm,
-    setFooterAlignForm,
-    footerAlignForm,
-    setWebNameForm,
-    webNameForm,
-    setWebFooterAlignForm,
-    webFooterAlignForm,
-    values,
-}: PageCompProps) => {
+const PageComponentConfig = ({ FontSizeArray, SECTIONARRAY, setFieldValue, values }: PageCompProps) => {
+    console.log('values inside component', values)
     return (
         <div>
             <div className=" grid grid-cols-2 gap-3 ">
@@ -174,19 +138,18 @@ const PageComponentConfig = ({
                         <FormItem label="Border" className="col-span-1 w-1/2">
                             <Field
                                 type="checkbox"
-                                name="border"
+                                name="component_config.border"
                                 placeholder="Enter border"
                                 component={Checkbox}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                     const isChecked = e.target.checked
-                                    setFieldValue('border', isChecked)
-                                    setBorderForm(isChecked)
+                                    setFieldValue('component_config.border', isChecked)
                                 }}
                             />
-                            {borderForm === true && (
+                            {values?.component_config?.border === true && (
                                 <FormContainer>
                                     <CommonSelect name="component_config.border_style" label="Border Style" options={borderStyleArray} />
-                                    {borrderStyleArray.map((item, key) => (
+                                    {borrderStyleArray?.map((item, key) => (
                                         <FormItem key={key} label={item.label} className="w-full">
                                             <Field
                                                 type={item.type}
@@ -204,16 +167,15 @@ const PageComponentConfig = ({
                         <FormItem label="Section Border" className="col-span-1 w-1/2">
                             <Field
                                 type="checkbox"
-                                name="section_border"
+                                name="component_config.section_border"
                                 placeholder="Enter section border"
                                 component={Checkbox}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                     const isChecked = e.target.checked
-                                    setFieldValue('section_border', isChecked)
-                                    setSectioBorderShow(isChecked)
+                                    setFieldValue('component_config.section_border', isChecked)
                                 }}
                             />
-                            {sectionBorderShow === true && (
+                            {values?.component_config?.section_border === true && (
                                 <FormContainer>
                                     <CommonSelect
                                         name="component_config.section_border_style"
@@ -240,18 +202,17 @@ const PageComponentConfig = ({
                         <FormItem label="Name" className="grid grid-cols-2 gap-3 w-full">
                             <Field
                                 type="checkbox"
-                                name="name"
+                                name="component_config.name"
                                 placeholder="Enter name"
                                 component={Checkbox}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                     const isChecked = e.target.checked
-                                    setFieldValue('name', isChecked)
-                                    setNameForm(isChecked)
+                                    setFieldValue('component_config.name', isChecked)
                                 }}
                             />{' '}
                             <br />
                             <br />
-                            {nameForm && (
+                            {values?.component_config?.name && (
                                 <>
                                     {NameFieldArray.map((item, key) => (
                                         <FormItem key={key} label={item.label} className="w-full">
@@ -271,16 +232,15 @@ const PageComponentConfig = ({
                             <FormItem label="Footer" className="w-1/2">
                                 <Field
                                     type="checkbox"
-                                    name="name_footer"
+                                    name="component_config.name_footer"
                                     component={Checkbox}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                         const isChecked = e.target.checked
-                                        setFieldValue('name_footer', isChecked)
-                                        setFooterAlignForm(isChecked)
+                                        setFieldValue('component_config.name_footer', isChecked)
                                     }}
                                 />
 
-                                {footerAlignForm && (
+                                {values?.component_config?.name_footer && (
                                     <>
                                         <FormItem label="Footer Top Margin" className="w-full">
                                             <Field
@@ -357,18 +317,17 @@ const PageComponentConfig = ({
                         <FormItem label="Web Border" className="col-span-1 w-1/2">
                             <Field
                                 type="checkbox"
-                                name="web_border"
+                                name="component_config.web_border"
                                 placeholder="Enter border"
                                 component={Checkbox}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                     const isChecked = e.target.checked
-                                    setFieldValue('web_border', isChecked)
-                                    setWebBorderForm(isChecked)
+                                    setFieldValue('component_config.web_border', isChecked)
                                 }}
                             />{' '}
                             <br />
                             <br />
-                            {webBorderForm === true && (
+                            {values?.component_config?.web_border === true && (
                                 <FormContainer>
                                     <CommonSelect
                                         name="component_config.web_border_style"
@@ -393,16 +352,15 @@ const PageComponentConfig = ({
                         <FormItem label="Web Section Border" className="col-span-1 w-1/2">
                             <Field
                                 type="checkbox"
-                                name="web_section_border"
+                                name="component_config.web_section_border"
                                 placeholder="Enter web section border"
                                 component={Checkbox}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                     const isChecked = e.target.checked
-                                    setFieldValue('web_section_border', isChecked)
-                                    setWebSectioBorderShow(isChecked ? 'yes' : 'no')
+                                    setFieldValue('component_config.web_section_border', isChecked)
                                 }}
                             />
-                            {webSectionBorderShow === 'yes' && (
+                            {values?.component_config?.web_section_border && (
                                 <FormContainer>
                                     <CommonSelect
                                         name="component_config.web_section_border_style"
@@ -429,17 +387,16 @@ const PageComponentConfig = ({
                         <FormItem label="Web Name" className="grid grid-cols-2 gap-3 w-1/2">
                             <Field
                                 type="checkbox"
-                                name="web_name"
+                                name="component_config.web_name"
                                 component={Checkbox}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                     const isChecked = e.target.checked
-                                    setFieldValue('web_name', isChecked)
-                                    setWebNameForm(isChecked)
+                                    setFieldValue('component_config.web_name', isChecked)
                                 }}
                             />{' '}
                             <br />
                             <br />
-                            {webNameForm === true && (
+                            {values?.component_config?.web_name === true && (
                                 <>
                                     {WebNameFieldArray.map((item, key) => (
                                         <FormItem key={key} label={item.label} className="w-full">
@@ -459,16 +416,15 @@ const PageComponentConfig = ({
                             <FormItem label="Web Footer" className="w-full">
                                 <Field
                                     type="checkbox"
-                                    name="web_name_footer"
+                                    name="component_config.web_name_footer"
                                     component={Checkbox}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                         const isChecked = e.target.checked
-                                        setFieldValue('web_name_footer', isChecked)
-                                        setWebFooterAlignForm(isChecked)
+                                        setFieldValue('component_config.web_name_footer', isChecked)
                                     }}
                                 />
 
-                                {webFooterAlignForm && (
+                                {values?.component_config?.web_name_footer && (
                                     <>
                                         <FormItem label="Web Footer Top Margin" className="w-full">
                                             <Field

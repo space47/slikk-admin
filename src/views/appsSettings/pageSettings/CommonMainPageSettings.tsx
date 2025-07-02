@@ -25,22 +25,6 @@ const CommonMainPageSettings = ({
     initialValue,
     formikRef,
     handleSubmit,
-    setBorderForm,
-    borderForm,
-    setSectioBorderShow,
-    sectionBorderShow,
-    setWebBorderForm,
-    webBorderForm,
-    setWebSectioBorderShow,
-    webSectionBorderShow,
-    setNameForm,
-    nameForm,
-    setFooterAlignForm,
-    footerAlignForm,
-    setWebNameForm,
-    webNameForm,
-    setWebFooterAlignForm,
-    webFooterAlignForm,
     searchInput,
     handleSearch,
     currentSelectedPage,
@@ -147,23 +131,7 @@ const CommonMainPageSettings = ({
                                         values={values}
                                         FontSizeArray={FontSizeArray}
                                         SECTIONARRAY={SECTIONARRAY}
-                                        borderForm={borderForm}
-                                        setBorderForm={setBorderForm}
                                         setFieldValue={setFieldValue}
-                                        setSectioBorderShow={setSectioBorderShow}
-                                        sectionBorderShow={sectionBorderShow}
-                                        setWebBorderForm={setWebBorderForm}
-                                        webBorderForm={webBorderForm}
-                                        setWebSectioBorderShow={setWebSectioBorderShow}
-                                        webSectionBorderShow={webSectionBorderShow}
-                                        setNameForm={setNameForm}
-                                        nameForm={nameForm}
-                                        setFooterAlignForm={setFooterAlignForm}
-                                        footerAlignForm={footerAlignForm}
-                                        setWebNameForm={setWebNameForm}
-                                        webNameForm={webNameForm}
-                                        setWebFooterAlignForm={setWebFooterAlignForm}
-                                        webFooterAlignForm={webFooterAlignForm}
                                     />
                                 </TabContent>
 
