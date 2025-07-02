@@ -11,13 +11,13 @@ interface props {
 
 const ProductViewModal = ({ isOpen, row, setIsOpen }: props) => {
     const ProductData = [
-        { name: 'Name', value: row.name },
-        { name: 'SKU', value: row.sku },
-        { name: 'Price', value: `₹${row.mrp}` },
-        { name: 'Category', value: row.category },
-        { name: 'Division', value: row.division },
-        { name: 'Brand', value: row.brand },
-        { name: 'Status', value: row.styles },
+        { name: 'Name', value: row?.name },
+        { name: 'Barcode', value: row?.barcode },
+        { name: 'Price', value: `₹${row?.mrp}` },
+        { name: 'Category', value: row?.category },
+        { name: 'Division', value: row?.division },
+        { name: 'Brand', value: row?.brand },
+        { name: 'Status', value: row?.styles },
     ]
 
     const imageUrl = row?.thumbnail?.split(',')[0] ?? row.image?.split(',')[0]
@@ -32,9 +32,9 @@ const ProductViewModal = ({ isOpen, row, setIsOpen }: props) => {
                     <div className="flex flex-col items-center gap-4 w-full xl:w-1/2">
                         <img src={imageUrl} alt="Product" className="w-52 h-52 object-cover rounded-xl border shadow-md" />
                         <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-xl shadow-sm">
-                            <QRCode value={row.barcode ?? ''} size={100} />
+                            <QRCode value={row?.sku ?? ''} size={100} />
                         </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-300 font-medium">Barcode: {row.barcode}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 font-medium">sku: {row?.sku}</p>
                     </div>
 
                     {/* Product Details */}

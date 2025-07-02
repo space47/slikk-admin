@@ -114,14 +114,6 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     const handleSubmit = async (row: any) => {
         const componentConfig = {
             ...Object.fromEntries(Object.entries(row?.component_config || {}).filter(([, value]) => value !== '')),
-            border: row?.border ?? false,
-            name: row?.name ?? false,
-            name_footer: row?.name_footer ?? false,
-            section_border: row?.section_border ?? false,
-            web_border: row?.web_border ?? false,
-            web_name: row?.web_name ?? false,
-            web_name_footer: row?.web_name_footer ?? false,
-            web_section_border: row?.web_section_border ?? false,
         }
 
         const backgroundLottieUpload = row?.background_lottie_array
@@ -260,6 +252,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             const filteredRow = Object.fromEntries(Object.entries(newRow || {}).filter(([_, value]) => value !== undefined))
             setShowSpinner(false)
             setParticularRow(filteredRow)
+            console.log('xx')
             console.log('FINAL ADD INSIDE SUBMIT', filteredRow)
         } catch (error) {
             console.error('Error in handleSubmit:', error)
