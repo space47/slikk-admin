@@ -156,11 +156,11 @@ const MarkerComponent = ({
                     }
                 >
                     <Popup className="hover:bg-blue-50">
-                        <div onClick={() => navigate(`/app/orders/${marker?.invoice_id}`)} className="cursor-pointer">
+                        <a href={`/app/orders/${marker?.invoice_id}`} target="_blank" rel="noreferrer" className="cursor-pointer">
                             <p>Amount: Rs.{marker.amount}</p>
                             <p>Distance: {marker.distance} km</p>
                             <p>Status: {marker.status} </p>
-                        </div>
+                        </a>
                     </Popup>
                 </Marker>
             ))}

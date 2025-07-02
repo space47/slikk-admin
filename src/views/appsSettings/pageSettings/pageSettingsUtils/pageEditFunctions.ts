@@ -30,7 +30,6 @@ export const calculateAspectRatio = async (files: File[]): Promise<number[]> => 
 }
 
 export const handleImage = async (files: File[]) => {
-    console.log('Images of mobile for checking', files)
     if (!files || files.length === 0) {
         return
     }

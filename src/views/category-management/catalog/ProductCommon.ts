@@ -308,4 +308,5 @@ export type ProductTypes = {
     variants: ProductVariant[]
     sku: string
     filter_to_display_map: any
+    thumbnail?: string
 }
