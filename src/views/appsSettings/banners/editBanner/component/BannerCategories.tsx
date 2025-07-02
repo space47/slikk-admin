@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FormContainer, FormItem, Select } from '@/components/ui'
+import { useAppSelector } from '@/store'
+import { PRODUCTTYPE_STATE } from '@/store/types/productType.types'
 import { Field, FieldProps } from 'formik'
 import React from 'react'
 
@@ -26,6 +28,8 @@ const BannerCategories = ({
     filteredProductTypes,
     filteredSubCategories,
 }: CATEGORYBANNERPROPS) => {
+    const productType = useAppSelector<PRODUCTTYPE_STATE>((state) => state.product_type)
+
     return (
         <div className="grid grid-cols-2 gap-10">
             <FormContainer>
@@ -135,14 +139,15 @@ const BannerCategories = ({
                 <FormItem label="Product Type" className="col-span-1 w-full">
                     <Field name="product_type">
                         {({ field }: FieldProps<any>) => {
+                            console.log('field value for product type', field)
                             const fieldValue = Array.isArray(field.value) ? field.value : []
 
                             return (
                                 <Select
                                     isMulti
                                     field={field}
-                                    defaultValue={filteredProductTypes}
-                                    options={filteredProductTypes}
+                                    defaultValue={productType?.product_types}
+                                    options={productType?.product_types}
                                     getOptionLabel={(option) => option.name}
                                     getOptionValue={(option) => option.id.toString()}
                                     onChange={(newVal) => {
