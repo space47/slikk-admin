@@ -14,9 +14,9 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 interface valueProps {
-    page: number
-    sub_page: number
-    store: number[]
+    page: any
+    sub_page: any
+    store: { id: number; name: string }[]
     section?: number
     position: number
     is_active: boolean
@@ -69,19 +69,19 @@ const EditAssignedPage = () => {
     console.log(pageNamesData, subPageNamesData)
 
     const handleSubmit = async (values: valueProps) => {
+        const subPageComparator = typeof values?.sub_page === 'object' ? values?.sub_page?.name : values?.sub_page
+        const pageComparator = typeof values?.page === 'object' ? values?.page?.name : values?.page
+
         const body = {
-            page: values?.page,
-            sub_page: values?.sub_page,
-            store: values?.store,
-            // section: values?.section,
+            page: pageNamesData?.find((item) => item?.name === pageComparator)?.id,
+            sub_page: subPageNamesData?.find((item) => item?.name === subPageComparator)?.id,
+            store: values?.store?.map((item) => item?.id),
+            section: Number(section_id),
             position: values?.position,
-            is_active: values?.is_active,
+            is_active: values?.is_active ?? false,
         }
-
-        console.log('body is', body)
-
         try {
-            const res = await axioisInstance.post(`/page-sections/${section_id}`, body)
+            const res = await axioisInstance.patch(`/page-sections/${section_id}`, body)
             notification.success({ message: res?.data?.message || 'Successfully assigned' })
             navigate('/app/appSettings/newPageSettings')
         } catch (error) {
@@ -101,8 +101,9 @@ const EditAssignedPage = () => {
                                 <FormItem label="Store">
                                     <Field name="store">
                                         {({ form, field }: FieldProps) => {
+                                            console.log('fields of store', field)
                                             const selectedStores = storeResults.filter((option) =>
-                                                field.value?.some((store: any) => store.code === option.code),
+                                                field.value?.some((store: any) => store?.id === option.id),
                                             )
                                             return (
                                                 <div className="flex flex-col gap-1  xl:items-baseline w-full max-w-md">
@@ -114,8 +115,7 @@ const EditAssignedPage = () => {
                                                         getOptionValue={(option) => option.id}
                                                         value={selectedStores || null}
                                                         onChange={(newVal) => {
-                                                            const selectedStoreValues = newVal ? newVal?.map((item) => item?.id) : []
-                                                            form.setFieldValue('store', selectedStoreValues)
+                                                            form.setFieldValue('store', newVal)
                                                         }}
                                                     />
                                                 </div>
@@ -129,7 +129,11 @@ const EditAssignedPage = () => {
                                     <Field name="page">
                                         {({ form, field }: FieldProps) => {
                                             console.log(field)
-                                            const selectedPage = pageNamesData?.find((option) => option.name === field?.value)
+
+                                            const selectedPage =
+                                                typeof field?.value === 'object'
+                                                    ? pageNamesData?.find((option) => option.name === field?.value?.name)
+                                                    : pageNamesData?.find((option) => option.name === field?.value)
                                             return (
                                                 <div className="flex flex-col gap-1  xl:items-baseline w-full max-w-md">
                                                     <Select
@@ -140,7 +144,7 @@ const EditAssignedPage = () => {
                                                         getOptionValue={(option) => option.id}
                                                         value={selectedPage || null}
                                                         onChange={(newVal) => {
-                                                            form.setFieldValue('page', newVal?.id)
+                                                            form.setFieldValue('page', newVal)
                                                         }}
                                                     />
                                                 </div>
@@ -153,7 +157,10 @@ const EditAssignedPage = () => {
                                 <FormItem label="Sub Page">
                                     <Field name="sub_page">
                                         {({ form, field }: FieldProps) => {
-                                            const selectedPage = subPageNamesData?.find((option) => option.name === field?.value)
+                                            const selectedPage =
+                                                typeof field?.value === 'object'
+                                                    ? subPageNamesData?.find((option) => option.name === field?.value?.name)
+                                                    : subPageNamesData?.find((option) => option.name === field?.value)
                                             return (
                                                 <div className="flex flex-col gap-1  xl:items-baseline w-full max-w-md">
                                                     <Select
@@ -164,7 +171,7 @@ const EditAssignedPage = () => {
                                                         getOptionValue={(option) => option.id}
                                                         value={selectedPage || null}
                                                         onChange={(newVal) => {
-                                                            form.setFieldValue('sub_page', newVal?.id)
+                                                            form.setFieldValue('sub_page', newVal)
                                                         }}
                                                     />
                                                 </div>

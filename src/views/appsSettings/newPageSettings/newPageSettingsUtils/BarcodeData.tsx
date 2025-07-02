@@ -11,7 +11,7 @@ import { fetchInput } from '../../pageSettings/pageSettingsUtils/pageEditApi'
 
 interface props {
     values?: any
-    barcodeData: any
+    barcodeData: string | string[]
     setBarcodeData?: any
     setFieldValue?: any
 }
@@ -19,14 +19,11 @@ interface props {
 const BarcodeData = ({ barcodeData, setBarcodeData, setFieldValue }: props) => {
     const [searchInput, setSearchInput] = useState<string>('')
     const [tableData, setTableData] = useState<ProductTable[]>([])
-
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>()
 
     useEffect(() => {
         fetchInput(searchInput, currentSelectedPage, setTableData)
     }, [searchInput])
-
-    console.log('table data', tableData)
 
     const handleActionClick = (value: any) => {
         const currentBarcodes = typeof barcodeData === 'string' ? barcodeData.split(',') : Array.isArray(barcodeData) ? barcodeData : []
@@ -43,8 +40,6 @@ const BarcodeData = ({ barcodeData, setBarcodeData, setFieldValue }: props) => {
         }
     }
 
-    console.log('yes the barcode data', barcodeData)
-
     return (
         <div>
             <FormContainer className="flex flex-col gap-4 ">
@@ -53,9 +48,7 @@ const BarcodeData = ({ barcodeData, setBarcodeData, setFieldValue }: props) => {
                     <div className="flex justify-start ">
                         <Field
                             type="search"
-                            name="names for search"
-                            id=""
-                            placeholder="search SKU for product"
+                            placeholder="search SKU"
                             value={searchInput}
                             className=" xl:w-[350px] rounded-[10px]"
                             onChange={(e: any) => setSearchInput(e.target.value)}
@@ -77,9 +70,7 @@ const BarcodeData = ({ barcodeData, setBarcodeData, setFieldValue }: props) => {
                         </Dropdown>
                     </div>
                 </div>
-
                 {searchInput && <CreatePostTable data={tableData as any} handleActionClick={handleActionClick} />}
-
                 <FormItem label="Barcodes" className="w-full flex gap-3">
                     <Field
                         type="text"
@@ -88,7 +79,6 @@ const BarcodeData = ({ barcodeData, setBarcodeData, setFieldValue }: props) => {
                         className="w-[50%]"
                         placeholder="Enter product barcode"
                         onChange={(e: any) => {
-                            // If you want to allow manual input as comma-separated values
                             const value = e.target.value
                             setBarcodeData(value.includes(',') ? value.split(',') : [value])
                             setFieldValue('data_type.barcodes', value)

@@ -20,10 +20,10 @@ interface RequiredSections {
 }
 
 interface valueProps {
-    page: number
-    sub_page: number
-    store: number[]
-    section?: number
+    page: any
+    sub_page: any
+    store: { id: number; name: string }[]
+    sections?: number
     position: number
     is_active: boolean
 }
@@ -61,13 +61,16 @@ const AssignPageSection = () => {
     }, [dispatch])
 
     const handleSubmit = async (values: valueProps) => {
+        const subPageComparator = typeof values?.sub_page === 'object' ? values?.sub_page?.name : values?.sub_page
+        const pageComparator = typeof values?.page === 'object' ? values?.page?.name : values?.page
+
         const body = {
-            page: values?.page,
-            sub_page: values?.sub_page,
-            store: values?.store,
-            section: values?.section,
+            page: pageNamesData?.find((item) => item?.name === pageComparator)?.id,
+            sub_page: subPageNamesData?.find((item) => item?.name === subPageComparator)?.id,
+            store: values?.store?.map((item) => item?.id),
+            section: values?.sections,
             position: values?.position,
-            is_active: values?.is_active,
+            is_active: values?.is_active ?? false,
         }
 
         console.log('body is', body)
@@ -95,7 +98,7 @@ const AssignPageSection = () => {
                                     <Field name="store">
                                         {({ form, field }: FieldProps) => {
                                             const selectedStores = storeResults.filter((option) =>
-                                                field.value?.some((store: any) => store.code === option.code),
+                                                field.value?.some((store: any) => store?.id === option.id),
                                             )
                                             return (
                                                 <div className="flex flex-col gap-1  xl:items-baseline w-full max-w-md">
@@ -107,8 +110,7 @@ const AssignPageSection = () => {
                                                         getOptionValue={(option) => option.id}
                                                         value={selectedStores || null}
                                                         onChange={(newVal) => {
-                                                            const selectedStoreValues = newVal ? newVal?.map((item) => item?.id) : []
-                                                            form.setFieldValue('store', selectedStoreValues)
+                                                            form.setFieldValue('store', newVal)
                                                         }}
                                                     />
                                                 </div>
@@ -121,8 +123,12 @@ const AssignPageSection = () => {
                                 <FormItem label="Page">
                                     <Field name="page">
                                         {({ form, field }: FieldProps) => {
-                                            console.log('field is', field)
-                                            const selectedPage = pageNamesData?.find((option) => option.name === field?.value?.name)
+                                            console.log('field items are', field)
+                                            console.log('type of value', typeof field)
+                                            const selectedPage =
+                                                typeof field?.value === 'object'
+                                                    ? pageNamesData?.find((option) => option.name === field?.value?.name)
+                                                    : pageNamesData?.find((option) => option.name === field?.value)
                                             return (
                                                 <div className="flex flex-col gap-1  xl:items-baseline w-full max-w-md">
                                                     <Select
@@ -133,7 +139,7 @@ const AssignPageSection = () => {
                                                         getOptionValue={(option) => option.id}
                                                         value={selectedPage || null}
                                                         onChange={(newVal) => {
-                                                            form.setFieldValue('page', newVal?.id)
+                                                            form.setFieldValue('page', newVal)
                                                         }}
                                                     />
                                                 </div>
@@ -147,7 +153,10 @@ const AssignPageSection = () => {
                                 <FormItem label="Sub Page">
                                     <Field name="sub_page">
                                         {({ form, field }: FieldProps) => {
-                                            const selectedPage = subPageNamesData?.find((option) => option.name === field?.value?.name)
+                                            const selectedPage =
+                                                typeof field?.value === 'object'
+                                                    ? subPageNamesData?.find((option) => option.name === field?.value?.name)
+                                                    : subPageNamesData?.find((option) => option.name === field?.value)
                                             return (
                                                 <div className="flex flex-col gap-1  xl:items-baseline w-full max-w-md">
                                                     <Select
@@ -158,9 +167,7 @@ const AssignPageSection = () => {
                                                         getOptionValue={(option) => option.id}
                                                         value={selectedPage || null}
                                                         onChange={(newVal) => {
-                                                            // const dataValues = newVal
-                                                            console.log('newVal is subPage', newVal)
-                                                            form.setFieldValue('sub_page', newVal?.id)
+                                                            form.setFieldValue('sub_page', newVal)
                                                         }}
                                                     />
                                                 </div>
@@ -175,9 +182,7 @@ const AssignPageSection = () => {
                                     <Field name="sections">
                                         {({ form, field }: FieldProps) => {
                                             console.log('section heading', field)
-                                            const selectedPage = sectionsData?.find(
-                                                (option) => option.section_heading === field?.value?.section_heading,
-                                            )
+                                            const selectedPage = sectionsData?.find((option) => option?.id === field?.value)
                                             return (
                                                 <div className="flex flex-col gap-1  xl:items-baseline w-full max-w-md">
                                                     <Select
@@ -188,8 +193,6 @@ const AssignPageSection = () => {
                                                         getOptionValue={(option) => option.id}
                                                         value={selectedPage || null}
                                                         onChange={(newVal) => {
-                                                            // const dataValues = newVal
-                                                            console.log('newVal is', newVal)
                                                             form.setFieldValue('sections', newVal?.id)
                                                         }}
                                                     />
