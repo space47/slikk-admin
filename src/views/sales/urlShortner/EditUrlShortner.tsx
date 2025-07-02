@@ -297,6 +297,7 @@ const EditUrlShortner = () => {
                                 <FormItem label="Target Page">
                                     <Field name="target_page">
                                         {({ field, form }: FieldProps<any>) => {
+                                            console.log('filter_id', values?.filter_id)
                                             return (
                                                 <Select
                                                     isClearable
@@ -355,6 +356,8 @@ const EditUrlShortner = () => {
                                     handleRemoveFilter={handleRemoveFilter}
                                     sortValue={sortValue}
                                     targetPagevalue={targetPageValue}
+                                    filterValue={values?.filter_id}
+                                    setFilterId={setFilterId}
                                 />
                             )}
 

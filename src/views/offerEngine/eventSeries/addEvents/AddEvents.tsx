@@ -1,7 +1,203 @@
-import React from 'react'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Button, FormContainer } from '@/components/ui'
+import { eventSeriesService } from '@/store/services/eventSeriesService'
+import { Form, Formik } from 'formik'
+import React, { useEffect, useState } from 'react'
+import EventFormCommon from '../eventCommons/EventFormCommon'
+import { notification } from 'antd'
+import { useNavigate } from 'react-router-dom'
+import { handleimage, handleVideo } from '@/views/category-management/catalog/handlingProductImage'
 
 const AddEvents = () => {
-    return <div>AddEvents</div>
+    const navigate = useNavigate()
+    const [currLat, setCurrLat] = useState<number>(12.920216)
+    const [currLong, setCurrLong] = useState<number>(77.649326)
+    const [addEventSeries, addEventResponse] = eventSeriesService.useAddEventSeriesMutation()
+    const initialValue = {
+        is_active: true,
+        is_public: true,
+    }
+
+    const calculateAspectRatio = async (files: File[]): Promise<number[]> => {
+        if (!files || files.length === 0) {
+            return []
+        }
+
+        const aspectRatios: number[] = []
+        for (const file of files) {
+            const image = new Image()
+            const fileURL = URL.createObjectURL(file)
+
+            image.src = fileURL
+
+            await new Promise<void>((resolve) => {
+                image.onload = () => {
+                    aspectRatios.push(image.width / image.height)
+                    URL.revokeObjectURL(fileURL)
+                    resolve()
+                }
+                image.onerror = () => {
+                    URL.revokeObjectURL(fileURL)
+                    resolve()
+                }
+            })
+        }
+        return aspectRatios
+    }
+
+    useEffect(() => {
+        if (addEventResponse?.isSuccess) {
+            notification.success({
+                message: addEventResponse?.data?.success || 'Successfully Added Event',
+            })
+            navigate(-1)
+        }
+    }, [addEventResponse?.isSuccess])
+
+    const handleImageCheck = async (field: any, isVideo?: boolean) => {
+        if (isVideo) {
+            return field && field.length > 0 ? await handleVideo(field) : null
+        }
+        return field && field.length > 0 ? await handleimage(field) : null
+    }
+
+    const handleSubmit = async (values: any) => {
+        console.log(values?.venue)
+        if (/[^a-zA-Z0-9]/.test(values?.code_prefix)) {
+            notification.error({
+                message: 'Code prefix should not contain special characters',
+            })
+            return
+        }
+        try {
+            console.log('here')
+
+            const imageUploadWeb = values.web_image_array?.length ? await handleImageCheck(values.web_image_array) : null
+
+            const imageUploadMobile = values.mobile_image_array?.length ? await handleImageCheck(values.mobile_image_array) : null
+
+            const imageUploadEventVideos = values.event_video_array?.length
+                ? await handleImageCheck(values.event_video_array, true)
+                : (values?.event_video ?? null)
+
+            const imageUploadVenue = values.venue_img_url?.length
+                ? await handleImageCheck(values.venue_img_url)
+                : (values?.venue_image ?? null)
+
+            const imageUploadEventPhotos = values.event_images_array?.length
+                ? await handleImageCheck(values.event_images_array)
+                : (values?.event_image ?? null)
+
+            console.log('2')
+
+            const mobileAspectRatio =
+                values.mobile_image_array?.length > 0
+                    ? await calculateAspectRatio(values.mobile_image_array)
+                    : values?.extra_attributes?.mobile_aspect_ratio || null
+
+            const webAspectRatio =
+                values.web_image_array?.length > 0
+                    ? await calculateAspectRatio(values.web_image_array)
+                    : values?.extra_attributes?.web_aspect_ratio || null
+
+            console.log('x')
+
+            const body = {
+                name: values.name ?? undefined,
+                event_type: values.event_type ?? undefined,
+                description: values.description ?? undefined,
+                image_web: values?.image_web_val || imageUploadWeb || undefined,
+                image_mobile: values?.image_mobile_val || imageUploadMobile || undefined,
+                total_slots: values.total_slots ?? undefined,
+                registration_start_date: values.registration_start_date ?? undefined,
+                registration_end_date: values.registration_end_date ?? undefined,
+                event_start_time: values.event_start_time ?? undefined,
+                event_end_time: values.event_end_time ?? undefined,
+                is_active: values.is_active ?? undefined,
+                is_public: values.is_public ?? undefined,
+                code_prefix: values.code_prefix ?? undefined,
+                latitude: currLat ?? undefined,
+                longitude: currLong ?? undefined,
+                venue: values.venue ?? undefined,
+                terms_and_conditions: values.terms_and_conditions ?? undefined,
+                extra_attributes: {
+                    ...(values?.extra_attributes?.venue_address && { venue_address: values?.extra_attributes.venue_address }),
+                    ...(values?.extra_attributes?.category && { category: values?.extra_attributes.category }),
+                    ...(values?.extra_attributes?.sponsors && { sponsors: values?.extra_attributes.sponsors?.split(',') }),
+                    ...(values?.extra_attributes?.bg_color && { bg_color: values?.extra_attributes.bg_color }),
+                    ...(values?.extra_attributes?.button_color && { button_color: values?.extra_attributes.button_color }),
+                    ...(values?.extra_attributes?.button_font_color && { button_font_color: values?.extra_attributes.button_font_color }),
+                    ...(values?.extra_attributes?.special_instructions && {
+                        special_instructions: values.extra_attributes.special_instructions,
+                    }),
+                    ...(webAspectRatio?.[0] && { web_aspect_ratio: Number(webAspectRatio[0]?.toFixed(2)) }),
+                    ...(mobileAspectRatio?.[0] && { mobile_aspect_ratio: Number(mobileAspectRatio[0]?.toFixed(2)) }),
+                    ...(values?.extra_attributes?.legal_instruction && { legal_instruction: values?.extra_attributes?.legal_instruction }),
+                    ...(values?.extra_attributes?.carousel_auto_scroll && {
+                        carousel_auto_scroll: values?.extra_attributes?.carousel_auto_scroll,
+                    }),
+                    ...(values?.extra_attributes?.time_interval && { time_interval: values?.extra_attributes?.time_interval }),
+                    ...(values?.extra_attributes?.minimum_order_count && {
+                        minimum_order_count: values?.extra_attributes?.minimum_order_count,
+                    }),
+                    ...(imageUploadEventVideos && { event_video: imageUploadEventVideos }),
+                    ...(imageUploadVenue && { venue_img_url: imageUploadVenue }),
+                    ...(imageUploadEventPhotos && { event_photos: imageUploadEventPhotos }),
+                    dummy_registration_count: values?.extra_attributes?.dummy_registration_count ?? 0,
+                    is_return_allowed: values?.extra_attributes?.is_return_allowed ?? false,
+                    ...(values?.extra_attributes?.min_order_value_for_event_pass && {
+                        min_order_value_for_event_pass: values?.extra_attributes?.min_order_value_for_event_pass,
+                    }),
+                },
+            }
+
+            const body2 = Object.fromEntries(Object.entries(body).filter(([_, v]) => v !== undefined && v !== ''))
+            console.log('body2', body2)
+            await addEventSeries(body2 as any)
+                .unwrap()
+                .then(() => {})
+                .catch(() => {
+                    notification.error({
+                        message: 'Failed to add Event',
+                    })
+                })
+
+            // const res = await axioisInstance.post(`/dashboard/promotion/events`, body)
+            // notification.success({
+            //     message: res?.data?.message || 'Successfully Added Event',
+            // })
+        } catch (err) {
+            console.error('Submission Error:', err)
+            notification.error({
+                message: 'Something went wrong while preparing the submission.',
+            })
+        }
+    }
+
+    return (
+        <div className="p-4 shadow-lg rounded-xl bg-white dark:bg-gray-900">
+            <h3 className="mb-5 from-neutral-900 font-semibold">Add New Event</h3>
+            <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
+                {({ values }) => (
+                    <Form className="w-full">
+                        <EventFormCommon
+                            setCurrLat={setCurrLat}
+                            setCurrLong={setCurrLong}
+                            currLat={currLat}
+                            currLong={currLong}
+                            values={values}
+                        />
+                        {/* Form */}
+                        <FormContainer className="mt-5">
+                            <Button variant="accept" type="submit">
+                                Submit
+                            </Button>
+                        </FormContainer>
+                    </Form>
+                )}
+            </Formik>
+        </div>
+    )
 }
 
 export default AddEvents

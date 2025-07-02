@@ -11,6 +11,7 @@ import Spinner from '@/components/ui/Spinner'
 import UploaderComponent from './UploaderComponent/UploaderComponent'
 import { beforeUpload } from '@/common/beforeUpload'
 import { beforeVideoUpload } from '@/common/beforUploadVideo'
+import { handleimage } from '@/common/handleImage'
 
 const Uploader = () => {
     const [finalImage, setFinalImage] = useState('')
@@ -26,38 +27,13 @@ const Uploader = () => {
         { label: 'Color Link', value: finalColorLink },
     ]
 
-    const handleimage = async (files: File[]) => {
-        const formData = new FormData()
-        files.forEach((file) => {
-            formData.append('file', file)
-        })
-        formData.append('file_type', 'product')
-
-        try {
-            console.log(formData.get('file'))
-            const response = await axioisInstance.post('fileupload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-            const newData = response.data.url
-            return newData
-        } catch (error: any) {
-            console.error('Error uploading files:', error)
-            notification.error({
-                message: 'Failure',
-                description: error?.response?.data?.message || 'File Not uploaded',
-            })
-            return 'Error'
-        }
-    }
-
     const handleVideo = async (files: File[]) => {
         const formData = new FormData()
         files.forEach((file) => {
             formData.append('file', file)
         })
         formData.append('file_type', 'product')
+        formData.append('compression_service', 'slikk')
 
         try {
             console.log(formData.get('file'))
@@ -80,7 +56,7 @@ const Uploader = () => {
     }
 
     const handleImageCheck = async (field: any) => {
-        return field && field.length > 0 ? await handleimage(field) : null
+        return field && field.length > 0 ? await handleimage('product', field) : null
     }
     const handleVideoCheck = async (field: any) => {
         return field && field.length > 0 ? await handleVideo(field) : null

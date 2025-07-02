@@ -10,7 +10,7 @@ import moment from 'moment'
 import EasyTable from '@/common/EasyTable'
 import UltimateYearMonthPicker from '@/common/UltimateYearMonthPicker'
 import { generateColumns } from './RiderAttendanceColumns'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { handleDownloadAttendanceCsv } from './riderAttendanceFunction'
 import { FaDownload } from 'react-icons/fa'
 import AccessDenied from '@/views/pages/AccessDenied'
@@ -18,11 +18,11 @@ import AccessDenied from '@/views/pages/AccessDenied'
 const RiderAttendance = () => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
+    const { user_type } = useParams()
     const [globalFilter, setGlobalFilter] = useState('')
     const { riderAttendance, count, from, to, page, pageSize } = useAppSelector<RiderSlice>((state) => state.riderData)
     const [selectedYear, setSelectedYear] = useState<string>(moment().year().toString())
     const [selectedMonth, setSelectedMonth] = useState<string>(moment().format('MM'))
-    const [isAccessDenied, setIsAccessDenied] = useState<boolean>(false)
     const [isWeek, setIsWeek] = useState<boolean>(false)
 
     const {
@@ -36,6 +36,7 @@ const RiderAttendance = () => {
             page: page,
             pageSize: pageSize,
             to: to || '',
+            user_type: user_type,
         },
         { refetchOnMountOrArgChange: true },
     )
@@ -44,9 +45,6 @@ const RiderAttendance = () => {
         if (isSuccess) {
             dispatch(setRidersAttendanceData(riderDataForAttendance?.data?.results || []))
             dispatch(setCount(riderDataForAttendance?.data?.count || 0))
-        }
-        if (riderError && 'status' in riderError && riderError?.status === 403) {
-            setIsAccessDenied(true)
         }
     }, [riderDataForAttendance, isSuccess, dispatch, from, to, page, pageSize, globalFilter])
 
@@ -64,7 +62,7 @@ const RiderAttendance = () => {
 
     const groupedRiderAttendance = riderAttendance.reduce(
         (acc, curr) => {
-            const existingUser = acc.find((item) => item.user === curr.user)
+            const existingUser = acc.find((item) => item.user === curr.user?.mobile)
 
             if (existingUser) {
                 existingUser.attendanceData.push({
@@ -76,13 +74,14 @@ const RiderAttendance = () => {
                     distance_covered: curr.distance_covered,
                     latitude: curr.latitude,
                     longitude: curr.longitude,
-                    other_data: curr.other_data,
+                    other_data: curr.other_order_data,
                     update_date: curr.update_date,
                     user_type: curr.user_type,
                 })
             } else {
                 acc.push({
-                    user: curr.user || '',
+                    user_name: `${curr?.user?.first_name} ${curr?.user?.last_name}`,
+                    user: curr.user?.mobile || '',
                     attendanceData: [
                         {
                             id: curr.id,
@@ -93,7 +92,7 @@ const RiderAttendance = () => {
                             distance_covered: curr.distance_covered,
                             latitude: curr.latitude,
                             longitude: curr.longitude,
-                            other_data: curr.other_data,
+                            other_data: curr.other_order_data,
                             update_date: curr.update_date,
                             user_type: curr.user_type,
                         },
@@ -103,17 +102,19 @@ const RiderAttendance = () => {
 
             return acc
         },
-        [] as { user: string; attendanceData: any[] }[],
+        [] as { user_name: string; user: string; attendanceData: any[] }[],
     )
 
     const handleUserData = (mobile: string) => {
-        navigate(`/app/riders/attendance/${mobile}`)
+        navigate(`/app/riders/userAttendance/${mobile}`)
     }
 
     const columns = generateColumns(selectedYear, selectedMonth, handleUserData, isWeek, from, to)
 
-    if (isAccessDenied) {
-        return <AccessDenied />
+    if (riderError && 'originalStatus' in riderError) {
+        if (riderError?.originalStatus === 403) {
+            return <AccessDenied />
+        }
     }
 
     return (

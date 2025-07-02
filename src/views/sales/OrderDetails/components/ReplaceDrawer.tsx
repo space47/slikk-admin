@@ -35,7 +35,7 @@ const ReplaceDrawer = ({ dialogIsOpen, onDialogClose, handleSubmit, id, invoice_
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>()
     const [productData, setProductData] = useState('')
     const [showBelowData, setShowBelowData] = useState(false)
-    const [productTableData, setProductTableData] = useState()
+    const [productTableData, setProductTableData] = useState<any>()
 
     const fetchInput = async () => {
         try {
@@ -106,76 +106,82 @@ const ReplaceDrawer = ({ dialogIsOpen, onDialogClose, handleSubmit, id, invoice_
 
     return (
         <div>
-            <Dialog isOpen={dialogIsOpen} onClose={onDialogClose} onRequestClose={onDialogClose} width={1000}>
-                <h5 className="mb-4">Replace Order Item Here</h5>
-                <div className="flex flex-col xl:gap-4 gap-1 ">
-                    <div className="text-xl">Barcode</div>
-                    <div className="flex gap-10">
-                        <div className="flex justify-start ">
-                            <input
-                                type="search"
-                                name="search"
-                                id=""
-                                placeholder="search SKU for product"
-                                value={searchInput}
-                                className=" xl:w-[250px] rounded-[10px] w-[180px]"
-                                onChange={handleSearch}
-                            />
-                        </div>
-                        <div className="bg-gray-200 rounded-[10px] font-bold xl:text-lg text-md items-center ">
-                            <Dropdown
-                                className=" text-xl text-black bg-gray-200 font-bold "
-                                title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
-                                onSelect={handleSelect}
+            <Dialog isOpen={dialogIsOpen} onClose={onDialogClose} onRequestClose={onDialogClose} width={800}>
+                <div className="overflow-hidden">
+                    <div className="flex justify-between over">
+                        <h5 className="mb-4">Replace Order Item Here</h5>
+                        <div className="mt-16">
+                            <button
+                                className="flex justify-end items-end bg-red-500 text-white px-3 py-2 rounded-md"
+                                onClick={handleAPIforReplace}
                             >
-                                {DROPDOWNARRAY?.map((item, key) => {
-                                    return (
-                                        <DropdownItem key={key} eventKey={item.value}>
-                                            <span>{item.label}</span>
-                                        </DropdownItem>
-                                    )
-                                })}
-                            </Dropdown>
+                                Replace
+                            </button>
                         </div>
                     </div>
-
-                    <div className=" overflow-scroll scrollbar-hide h-[300px]">
-                        {showTable && searchInput && <OrderCreateTable data={tableData} handleActionClick={handleActionClick} />}
-                    </div>
-                    {showBelowData && (
-                        <>
-                            <div className="flex gap-1 items-center mt-4 justify-center">
-                                <div>
-                                    <img
-                                        src={productTableData?.image.split(',')[0].trim()}
-                                        alt="img"
-                                        className="px-4 py-2 border"
-                                        style={{ width: '200px', height: '200px' }}
-                                    />
-                                </div>
-                                <div className="flex flex-col gap-2">
-                                    <div className="px-4 py-2 border">
-                                        {' '}
-                                        <span className="font-bold">SKU:</span> {productTableData?.sku}
-                                    </div>
-                                    <div className="px-4 py-2 border">
-                                        <span className="font-bold">Barcode: </span>
-                                        {productTableData?.barcode}
-                                    </div>
-
-                                    <div className="px-4 py-2 border">
-                                        <span className="font-bold">Brand:</span> {productTableData?.brand}
-                                    </div>
-                                </div>
+                    <div className="flex flex-col xl:gap-1 gap-1  ">
+                        <div className="text-xl">Barcode</div>
+                        <div className="flex gap-10">
+                            <div className="flex justify-start ">
+                                <input
+                                    type="search"
+                                    name="search"
+                                    id=""
+                                    placeholder="search SKU for product"
+                                    value={searchInput}
+                                    className=" xl:w-[250px] rounded-[10px] w-[180px]"
+                                    onChange={handleSearch}
+                                />
                             </div>
-                        </>
-                    )}
-                </div>
+                            <div className="bg-gray-200 rounded-[10px] font-bold xl:text-lg text-md items-center ">
+                                <Dropdown
+                                    className=" text-xl text-black bg-gray-200 font-bold "
+                                    title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
+                                    onSelect={handleSelect}
+                                >
+                                    {DROPDOWNARRAY?.map((item, key) => {
+                                        return (
+                                            <DropdownItem key={key} eventKey={item.value}>
+                                                <span>{item.label}</span>
+                                            </DropdownItem>
+                                        )
+                                    })}
+                                </Dropdown>
+                            </div>
+                        </div>
+                        <br />
+                        {showBelowData && (
+                            <>
+                                <div className="flex gap-1 items-center  justify-center overflow-scroll scrollbar-hide">
+                                    <div>
+                                        <img
+                                            src={productTableData?.image.split(',')[0].trim()}
+                                            alt="img"
+                                            className="px-4 py-2 border"
+                                            style={{ width: '200px', height: '200px' }}
+                                        />
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <div className="px-4 py-2 border">
+                                            {' '}
+                                            <span className="font-bold">SKU:</span> {productTableData?.sku}
+                                        </div>
+                                        <div className="px-4 py-2 border">
+                                            <span className="font-bold">Barcode: </span>
+                                            {productTableData?.barcode}
+                                        </div>
 
-                <div className="mt-10">
-                    <button className="flex justify-end items-end bg-red-500 text-white px-3 py-2 rounded-md" onClick={handleAPIforReplace}>
-                        Replace
-                    </button>
+                                        <div className="px-4 py-2 border">
+                                            <span className="font-bold">Brand:</span> {productTableData?.brand}
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                        )}
+                        <div className=" overflow-scroll scrollbar-hide h-[300px]">
+                            {showTable && searchInput && <OrderCreateTable data={tableData as any} handleActionClick={handleActionClick} />}
+                        </div>
+                    </div>
                 </div>
             </Dialog>
         </div>

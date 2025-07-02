@@ -14,13 +14,15 @@ import CartPaymentSummary from './componentsHomes/CartPaymentSummary'
 import CartShipping from './componentsHomes/CartShipping'
 import CartTabs from './componentsHomes/CartTabs'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
+import CustomerReferral from './componentsHomes/CustomerReferral'
+import CustomerEvents from './componentsHomes/CustomerEvents'
 
 const CustomerAnalytics = () => {
     const [blockUser, setBlockUser] = useState(false)
     const dispatch = useAppDispatch()
     const { mobile } = useParams<{ mobile: string }>()
 
-    const { customerData } = useAppSelector<OrderSummaryTYPE>((state) => state.userSummary)
+    const { customerData, errorMessage } = useAppSelector<OrderSummaryTYPE>((state) => state.userSummary)
 
     useEffect(() => {
         if (mobile) {
@@ -28,7 +30,7 @@ const CustomerAnalytics = () => {
         }
     }, [dispatch])
 
-    console.log('DATA', customerData)
+    console.log('DATA', errorMessage)
 
     const handleBlockUser = async () => {
         const body = {
@@ -56,45 +58,59 @@ const CustomerAnalytics = () => {
     }
 
     return (
-        <div className="p-6 bg-gray-50 min-h-screen dark:bg-gray-800 dark:text-white">
-            <div className="flex justify-between">
-                <h1 className="text-3xl font-extrabold text-gray-800 mb-8">Customer Analytics</h1>
-                <div>
-                    <Button variant="new" size="sm" onClick={() => setBlockUser(true)}>
-                        Block User
-                    </Button>
-                </div>
+        <div className="p-4 sm:p-6 bg-gray-50 min-h-screen dark:bg-gray-800 dark:text-white">
+            {/* Header Section */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-800 dark:text-white">Customer Analytics</h1>
+                <Button variant="new" size="sm" onClick={() => setBlockUser(true)}>
+                    Block User
+                </Button>
             </div>
-            <div className="flex justify-between w-full gap-4">
-                <div className="w-1/2">
+
+            {/* Customer & Summary Section */}
+            <div className="flex flex-col lg:flex-row w-full gap-6 mt-6">
+                <div className="w-full lg:w-1/2">
                     {customerData ? <CustomerData data={customerData} /> : <p className="text-gray-500">Loading data...</p>}
                 </div>
-                <div className="flex flex-col gap-2 w-full">
+
+                <div className="w-full flex flex-col gap-4">
                     <CartPaymentSummary />
                     <CartShipping />
                 </div>
             </div>
 
-            <br />
-            <div className="font-bold text-xl">Cart Details:</div>
-            {customerData?.cart !== null ? (
-                <>
-                    <div className="bg-white p-5 mt-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
+            {/* Cart Section */}
+
+            {Array.isArray(customerData?.event) && customerData.event.length > 0 && (
+                <div>
+                    <CustomerEvents customerEvents={customerData?.event || []} />
+                </div>
+            )}
+
+            {customerData?.referral && (
+                <div>
+                    <CustomerReferral referralData={customerData.referral} />
+                </div>
+            )}
+
+            <div className="mt-10">
+                <div className="font-bold text-xl sm:text-2xl mb-4">Cart Details:</div>
+                {customerData?.cart !== null ? (
+                    <div className="bg-white dark:bg-gray-700 p-4 sm:p-5 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
                         <CartHome />
                     </div>
-                </>
-            ) : (
-                <>
-                    <div className="text-xl font-bold flex items-center justify-center mt-5 ">No Cart Available 😔</div>
-                </>
-            )}
-            <br />
-            <div className="mt-10">
-                <div className="flex flex-col gap-4">
-                    <h2 className="font-bold text-2xl">Transaction History</h2>
-                    <CartTabs />
-                </div>
+                ) : (
+                    <div className="text-lg sm:text-xl font-bold flex items-center justify-center mt-5">No Cart Available 😔</div>
+                )}
             </div>
+
+            {/* Transaction Section */}
+            <div className="mt-10">
+                <h2 className="font-bold text-2xl mb-4">Transaction History</h2>
+                <CartTabs />
+            </div>
+
+            {/* Block User Modal */}
             {blockUser && (
                 <BlockUserModal
                     dialogIsOpen={blockUser}

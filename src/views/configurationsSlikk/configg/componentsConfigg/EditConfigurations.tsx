@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import { ConfigInterface, EDITFIELDSARRAY } from './commonConfigTypes'
 import { Field, Form, Formik } from 'formik'
-import { Button, FormContainer, FormItem, Input } from '@/components/ui'
+import { Button, Checkbox, FormContainer, FormItem, Input } from '@/components/ui'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate, useParams } from 'react-router-dom'
 import { notification } from 'antd'
@@ -12,7 +12,8 @@ import { handleimage } from '@/common/handleImage'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { FILTER_STATE } from '@/store/types/filters.types'
-import RenderFields, { renderFields } from './RenderLogic'
+import RenderFields from './RenderLogic'
+import { USER_PROFILE_DATA } from '@/store/types/company.types'
 
 const EditConfigurations = () => {
     const navigate = useNavigate()
@@ -49,10 +50,10 @@ const EditConfigurations = () => {
             }
             if (_.isPlainObject(obj)) {
                 const entries = await Promise.all(
-                    Object.entries(obj).map(async ([key, val]) => {
+                    Object.entries(obj).map(async ([key, val]: any) => {
                         console.log('Value is......', val)
                         const value = /^[0-9]+$/.test(val) ? Number(val) : val === 'true' ? true : val === 'false' ? false : val
-                        console.log('Values to check is  nnumber', value)
+                        console.log('Values to check is  number', value)
                         if (key.toLowerCase().includes('image') && Array.isArray(val)) {
                             const processedImage = await handleimage('product', val)
                             return [key, processedImage]
@@ -94,7 +95,7 @@ const EditConfigurations = () => {
     }
 
     return (
-        <div className="w-full">
+        <div className="w-full shadow-xl p-4 rounded-xl">
             <Formik
                 enableReinitialize
                 initialValues={
@@ -121,21 +122,13 @@ const EditConfigurations = () => {
                                 </FormItem>
                             ))}
                             <FormItem label="Last Updated By" className="col-span-1 w-1/2">
-                                <Field
-                                    type="text"
-                                    name="last_updated_by"
-                                    placeholder="Enter updated by"
-                                    component={Input}
-                                    // value={selectedCompany?.mobile}
-                                    disabled
-                                />
+                                <Field disabled type="text" name="last_updated_by" placeholder="Enter updated by" component={Input} />
                             </FormItem>
                             <FormItem label="Is Active" className="col-span-1 w-1/2">
-                                <Field type="checkbox" name="is_active" placeholder="Enter updated by" component={Input} />
+                                <Field type="checkbox" name="is_active" placeholder="Enter updated by" component={Checkbox} />
                             </FormItem>
 
                             <FormContainer className="grid grid-cols-1 gap-10">
-                                {/* {renderFields(values.value, 'value', setFieldValue, editableKeys, setEditableKeys, filters)} */}
                                 <RenderFields
                                     obj={values.value}
                                     parentKey="value"

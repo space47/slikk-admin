@@ -1,12 +1,5 @@
-import { message } from 'antd'
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const HEADERCONFIGARRAY = [
-    // {
-    //     label: 'Header Style',
-    //     name: 'header_config.style',
-    //     type: 'text',
-    // },
     {
         label: 'Header Text',
         name: 'header_config.text',
@@ -65,6 +58,119 @@ export const HEADERCONFIGARRAY = [
     {
         label: 'Web Header redirection url',
         name: 'header_config.web_redirection_url',
+        type: 'text',
+    },
+]
+export const EXPLOREMOREARRAY = [
+    {
+        label: 'CTA Text',
+        name: 'extra_info.cta_config.text',
+        type: 'text',
+    },
+    {
+        label: 'CTA Letter Spacing',
+        name: 'extra_info.cta_config.letter_spacing',
+        type: 'number',
+    },
+    {
+        label: 'CTA Web Letter Spacing',
+        name: 'extra_info.cta_config.web_letter_spacing',
+        type: 'number',
+    },
+    {
+        label: 'CTA mobile Font Size',
+        name: 'extra_info.cta_config.font_size',
+        type: 'number',
+    },
+    {
+        label: 'CTA Web Font Size',
+        name: 'extra_info.cta_config.web_font_size',
+        type: 'text',
+    },
+    {
+        label: 'CTA Bottom Margin',
+        name: 'extra_info.cta_config.bottomMargin',
+        type: 'number',
+    },
+    {
+        label: 'Web CTA Bottom Margin',
+        name: 'extra_info.cta_config.web_bottomMargin',
+        type: 'number',
+    },
+    {
+        label: 'CTA Top Margin',
+        name: 'extra_info.cta_config.topMargin',
+        type: 'number',
+    },
+    {
+        label: 'Web CTA Top Margin',
+        name: 'extra_info.cta_config.web_topMargin',
+        type: 'number',
+    },
+    {
+        label: 'CTA BG Color',
+        name: 'extra_info.cta_config.background_color',
+        type: 'text',
+    },
+    {
+        label: 'CTA Font Color',
+        name: 'extra_info.cta_config.font_color',
+        type: 'text',
+    },
+    // ......
+    {
+        label: 'CTA Width',
+        name: 'extra_info.cta_config.width',
+        type: 'number',
+    },
+    {
+        label: 'Web CTA Width',
+        name: 'extra_info.cta_config.web_width',
+        type: 'number',
+    },
+    {
+        label: 'CTA Horizontal Padding ',
+        name: 'extra_info.cta_config.horizontalPadding',
+        type: 'number',
+    },
+    {
+        label: 'Web CTA Horizontal Padding ',
+        name: 'extra_info.cta_config.web_horizontalPadding',
+        type: 'number',
+    },
+    {
+        label: 'CTA vertical Padding ',
+        name: 'extra_info.cta_config.verticalPadding',
+        type: 'number',
+    },
+    {
+        label: 'Web CTA vertical Padding ',
+        name: 'extra_info.cta_config.web_verticalPadding',
+        type: 'number',
+    },
+    {
+        label: 'CTA Corner Radius',
+        name: 'extra_info.cta_config.cornerRadius',
+        type: 'number',
+    },
+    {
+        label: 'Web CTA Corner Radius',
+        name: 'extra_info.cta_config.web_cornerRadius',
+        type: 'number',
+    },
+    {
+        label: 'CTA Border Width',
+        name: 'extra_info.cta_config.borderWidth',
+        type: 'number',
+    },
+    {
+        label: 'Web CTA Border Width',
+        name: 'extra_info.cta_config.web_borderWidth',
+        type: 'number',
+    },
+    {
+        label: 'CTA Border Color',
+        name: 'extra_info.cta_config.borderColor',
         type: 'text',
     },
 ]
@@ -331,6 +437,7 @@ export interface CommonProps {
     showAddFilter: any
     handleAddFilters: any
     handleRemoveFilter: any
+    handleRemoveExploreImage?: any
 }
 
 export const ParallaxConfigArray = [
@@ -341,4 +448,45 @@ export const ParallaxConfigArray = [
     { label: 'Max Opacity', name: 'component_config.carousel_maxOpacity', type: 'number', message: 'Range between 0 -1' },
     { label: 'Min Scale', name: 'component_config.carousel_minScale', type: 'number', message: 'Range between 0 -1' },
     { label: 'Max Scale', name: 'component_config.carousel_maxScale', type: 'number', message: 'Range between 0 -1' },
+]
+
+export const dataTypeValidationArray = [
+    { name: 'data_type.start_date', label: 'Start Date' },
+    { name: 'data_type.end_date', label: 'End Date' },
+]
+
+export const dataTypeArray = [
+    { label: 'Default', value: 'Default' },
+    { label: 'banner', value: 'banner' },
+    { label: 'nested', value: 'nested' },
+    { label: 'wishlist', value: 'wishlist' },
+    { label: 'purchases', value: 'purchases' },
+    { label: 'searches', value: 'searches' },
+    { label: 'spotlight', value: 'spotlight' },
+    { label: 'products', value: 'products' },
+    { label: 'brands', value: 'brands' },
+    { label: 'post', value: 'post' },
+    { label: 'creator', value: 'creator' },
+    { label: 'Sub categories', value: 'categories' },
+]
+
+export const SectionTypeArray = [
+    { label: 'Generic', value: 'generic' },
+    { label: 'Personalized', value: 'personalized' },
+]
+
+export const SECTIONARRAY = [
+    { label: 'Flex Start', value: 'flex-start' },
+    { label: 'Flex End', value: 'flex-end' },
+    { label: 'Center', value: 'center' },
+    { label: 'Space Between', value: 'space-between' },
+    { label: 'Space Around', value: 'space-around' },
+    { label: 'Space Evenly', value: 'space-evenly' },
+]
+
+export const FontSizeArray = [
+    { label: 'Bold', value: 'bold' },
+    { label: 'Regular', value: 'regular' },
+    { label: 'Underline', value: 'underline' },
+    { label: 'Italic', value: 'italic' },
 ]

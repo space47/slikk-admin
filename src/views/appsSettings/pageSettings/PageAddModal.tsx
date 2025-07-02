@@ -7,9 +7,11 @@ import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import CommonMainPageSettings from './CommonMainPageSettings'
 import { ProductTable, WebType } from './pageSettings.types'
-// import { handleVideo } from '@/common/handleVideo'
 import * as Yup from 'yup'
-import { values } from 'lodash'
+import { handleimage } from '@/common/handleImage'
+import { EditAspectRatios, EditImageUpoads, EditVideoUpload } from './pageSettingsUtils/pageEditFunctions'
+import { DROPDOWNARRAY } from '@/views/category-management/catalog/CommonType'
+import { fetchInput, fetchPost } from './pageSettingsUtils/pageEditApi'
 
 type modalProps = {
     isModalOpen: boolean
@@ -21,13 +23,8 @@ type modalProps = {
     setData: (data: any) => void
 }
 
-const DROPDOWNARRAY = [
-    { label: 'Name', value: 'name' },
-    { label: 'SKU', value: 'sku' },
-    { label: 'Barcode', value: 'barcode' },
-]
-
-const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handleOk, handleCancel, formikRef, data, setData }) => {
+const PageAddModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, formikRef, setData }) => {
+    const dispatch = useAppDispatch()
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>()
     const [searchInput, setSearchInput] = useState<string>('')
     const [showTable, setShowTable] = useState(false)
@@ -46,18 +43,15 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
     const [sectionBorderShow, setSectioBorderShow] = useState('')
     const [webSectionBorderShow, setWebSectioBorderShow] = useState('')
     const [componentOption, setComponentOptions] = useState('')
-
     const [showAddFilter, setShowAddFilter] = useState<number[]>([])
     const [filterId, setFilterId] = useState()
-    const [filtersData, setFiltersData] = useState([])
+    const [filtersData, setFiltersData] = useState<any[]>([])
 
-    const dispatch = useAppDispatch()
     useEffect(() => {
         dispatch(getAllFiltersAPI())
     }, [])
 
     const initialValue = {}
-    const [selectedType, setSelectedType] = useState('')
 
     const validationSchema = Yup.object().shape({
         section_heading: Yup.string().required('Section Header is required'),
@@ -68,45 +62,12 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         setShowTable(true)
     }
 
-    const fetchInput = async () => {
-        try {
-            if (searchInput) {
-                const qname =
-                    currentSelectedPage?.value === 'sku'
-                        ? 'sku'
-                        : currentSelectedPage?.value === 'name'
-                          ? 'name'
-                          : currentSelectedPage?.value === 'barcode'
-                            ? 'barcode'
-                            : ''
-                const response = await axioisInstance.get(`/merchant/products?dashboard=true&${qname}=${searchInput}`)
-                const data = response.data.data.results
-                setTableData(data)
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
     useEffect(() => {
-        fetchInput()
+        fetchInput(searchInput, currentSelectedPage, setTableData)
     }, [searchInput])
 
-    const fetchPost = async () => {
-        try {
-            if (postInput) {
-                // const qname = currentSelectedPage?.value === 'sku' ? 'sku' : 'name'
-                const response = await axioisInstance.get(`/posts?name=${postInput}`)
-                const data = response.data.data.results
-                setPostTableData(data)
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
     useEffect(() => {
-        fetchPost()
+        fetchPost(postInput, setPostTableData)
     }, [postInput])
 
     const handleAddFilter = () => {
@@ -118,9 +79,9 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         setShowAddFilter(updatedFilters)
     }
 
-    const handleAddFilters = async (values) => {
+    const handleAddFilters = async (values: any) => {
         const newFilterData = showAddFilter.map((_, index) => values.filtersAdd[index] || [])
-        setFiltersData((prev) => {
+        setFiltersData((prev: any) => {
             const updatedFilters = [...prev, newFilterData]
             const lastElement = updatedFilters.at(-1)
             sendFilterData(lastElement)
@@ -128,7 +89,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         })
     }
 
-    const sendFilterData = async (filterData) => {
+    const sendFilterData = async (filterData: string | number) => {
         try {
             const response = await axioisInstance.post(`/product/search/criteria`, { filter_data: filterData })
             setFilterId(response.data?.data?.id)
@@ -144,123 +105,15 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
     }
 
     const handleActionClick = (value: any) => {
-        console.log('Barcode', value)
         setProductData((prev) => (prev ? [...prev, value] : [value]))
         setShowTable(false)
         setSearchInput('')
     }
 
-    const handleimage = async (files: File[]) => {
-        if (!files || files.length === 0) {
-            return
-        }
-        const formData = new FormData()
-        for (const file of files) {
-            const image = new Image()
-            const fileURL = URL.createObjectURL(file)
-            image.src = fileURL
-            await new Promise<void>((resolve) => {
-                image.onload = () => {
-                    console.log('Image width:', image.width, 'Image height:', image.height)
-                    URL.revokeObjectURL(fileURL)
-                    resolve()
-                }
-            })
-
-            formData.append('file', file)
-        }
-        formData.append('file_type', 'banners')
-        try {
-            const response = await axioisInstance.post('fileupload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-
-            const newData = response.data.url
-            notification.success({
-                message: 'Success',
-                description: response?.data?.message || 'Image uploaded successfully',
-            })
-
-            return newData
-        } catch (error: any) {
-            console.error('Error uploading files:', error)
-            notification.error({
-                message: 'Upload Failed',
-                description: error?.response?.data?.message || 'Image upload failed',
-            })
-
-            return ''
-        }
-    }
     const handleSelect = (value: any) => {
         const selected = DROPDOWNARRAY.find((item) => item.value === value)
         if (selected) {
             setCurrentSelectedPage(selected)
-        }
-    }
-
-    const calculateAspectRatio = async (files: File[]): Promise<number[]> => {
-        if (!files || files.length === 0) {
-            return []
-        }
-
-        const aspectRatios: number[] = []
-        for (const file of files) {
-            const image = new Image()
-            const fileURL = URL.createObjectURL(file)
-
-            image.src = fileURL
-
-            await new Promise<void>((resolve) => {
-                image.onload = () => {
-                    aspectRatios.push(image.width / image.height)
-                    URL.revokeObjectURL(fileURL)
-                    resolve()
-                }
-                image.onerror = () => {
-                    URL.revokeObjectURL(fileURL)
-                    resolve()
-                }
-            })
-        }
-        return aspectRatios
-    }
-
-    const handleVideo = async (files: File[]) => {
-        if (files) {
-            const formData = new FormData()
-
-            files.forEach((file) => {
-                formData.append('file', file)
-            })
-            formData.append('file_type', 'product')
-            notification.info({
-                message: 'Video Upload In Process',
-            })
-
-            try {
-                console.log(formData.get('file'))
-                const response = await axioisInstance.post('fileupload', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                })
-                console.log(response)
-                notification.success({
-                    message: 'Video Updated',
-                })
-                const newData = response.data.url
-                return newData
-            } catch (error: any) {
-                console.error('Error uploading files:', error)
-                notification.error({
-                    message: 'Failure',
-                    description: error?.response?.data?.message || 'Video Not uploaded',
-                })
-                return 'Error'
-            }
         }
     }
 
@@ -276,72 +129,66 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
             web_name_footer: row?.web_name_footer ?? false,
             web_section_border: row?.web_section_border ?? false,
         }
-        console.log('Mobile file in Add', row?.mobile_background_video_array)
-        console.log('satrt')
-        const imageUpload = await handleimage(row.background_image_array)
-        const mobileimageUpload = await handleimage(row.mobile_background_array)
-        const footerImageUpload = await handleimage(row.footer_config_image_Array)
-        const headerImageUpload = await handleimage(row.header_config_image_Array)
-        const subHeaderImageUpload = await handleimage(row.sub_header_config_image_Array)
-        const headerIconUpload = await handleimage(row.header_config_icon_Array)
-        //videos hanlde
-        const footervideoUpload = await handleVideo(row.footer_config_video_Array)
-        const headerVideoUpload = await handleVideo(row.header_config_video_Array)
-        const subHeaderVideoUpload = await handleVideo(row.sub_header_config_video_Array)
-        const backgroundVideoUpload = await handleVideo(row?.background_video_array)
-        const mobileBackgroundVideoUpload = await handleVideo(row?.mobile_background_video_array)
+        const { imageUpload, mobileimageUpload, footerImageUpload, headerImageUpload, subHeaderImageUpload, headerIconUpload } =
+            await EditImageUpoads(row)
+        const { backgroundVideoUpload, footervideoUpload, headerVideoUpload, mobileBackgroundVideoUpload, subHeaderVideoUpload } =
+            await EditVideoUpload(row)
+        const {
+            backgroundImageAspectRatios,
+            mobileImageAspectRatios,
+            headerImageAspectRatios,
+            subHeaderImageAspectRatios,
+            footerImageAspectRatios,
+        } = await EditAspectRatios(row)
 
-        const backgroundLottieUpload = await handleimage(row?.background_lottie_array)
-        const mobileBackgroundLottieUpload = await handleimage(row?.mobile_background_lottie_array)
+        const backgroundLottieUpload = await handleimage('product', row?.background_lottie_array)
+        const mobileBackgroundLottieUpload = await handleimage('product', row?.mobile_background_lottie_array)
 
-        console.log('headerIconImage')
-        // Aspect Ratio handles
-        const backgroundImageAspectRatios = await calculateAspectRatio(row.background_image_array)
-        const mobileImageAspectRatios = await calculateAspectRatio(row.mobile_background_array)
-        const headerImageAspectRatios = await calculateAspectRatio(row.header_config_image_Array)
-        const subHeaderImageAspectRatios = await calculateAspectRatio(row.sub_header_config_image_Array)
-        const footerImageAspectRatios = await calculateAspectRatio(row.footer_config_image_Array)
+        const cta_config_data = {
+            ...row?.extra_info.cta_config,
+        }
+        const cta_config = Object.fromEntries(Object.entries(cta_config_data).filter(([, value]) => value !== ''))
 
-        console.log('Start Api')
-        //Fields
-        const newRowAdd = {
-            ...row,
+        const child_component_config_data = {
+            ...row?.extra_info?.child_component_config,
+        }
+        const child_component_config = Object.fromEntries(Object.entries(child_component_config_data).filter(([, value]) => value !== ''))
 
+        const backgroundConfig = {
+            ...Object.fromEntries(Object.entries(row?.background_config || {}).filter(([_, value]) => value !== '')),
             ...(imageUpload || row?.background_image ? { background_image: imageUpload || row?.background_image } : {}),
             ...(mobileimageUpload || row?.mobile_background_image
                 ? { mobile_background_image: mobileimageUpload || row?.mobile_background_image }
                 : {}),
-            background_config: {
-                ...row?.background_config,
-                ...(imageUpload || row?.background_image ? { background_image: imageUpload || row?.background_image } : {}),
-                ...(mobileimageUpload || row?.mobile_background_image
-                    ? { mobile_background_image: mobileimageUpload || row?.mobile_background_image }
-                    : {}),
-                ...(row?.background_config?.background_image_aspect_ratio
-                    ? { background_image_aspect_ratio: row.background_config.background_image_aspect_ratio }
-                    : backgroundImageAspectRatios[0]
-                      ? { background_image_aspect_ratio: backgroundImageAspectRatios[0] }
-                      : {}),
+            ...(row?.background_config?.background_image_aspect_ratio
+                ? { background_image_aspect_ratio: row.background_config.background_image_aspect_ratio }
+                : backgroundImageAspectRatios[0]
+                  ? { background_image_aspect_ratio: backgroundImageAspectRatios[0] }
+                  : {}),
 
-                ...(row?.background_config?.mobile_image_aspect_ratio
-                    ? { mobile_image_aspect_ratio: row.background_config.mobile_image_aspect_ratio }
-                    : mobileImageAspectRatios[0]
-                      ? { mobile_image_aspect_ratio: mobileImageAspectRatios[0] }
-                      : {}),
-
-                ...(backgroundVideoUpload || row?.background_video
-                    ? { background_video: backgroundVideoUpload || row?.background_video }
-                    : {}),
-                ...(mobileBackgroundVideoUpload || row?.mobile_background_video
-                    ? { mobile_background_video: mobileBackgroundVideoUpload || row?.mobile_background_video }
-                    : {}),
-                ...(backgroundLottieUpload || row?.background_lottie
-                    ? { background_lottie: backgroundLottieUpload || row?.background_lottie }
-                    : {}),
-                ...(mobileBackgroundLottieUpload || row?.mobile_background_Lottie
-                    ? { mobile_background_lottie: mobileBackgroundLottieUpload || row?.mobile_background_lottie }
-                    : {}),
-            },
+            ...(row?.background_config?.mobile_image_aspect_ratio
+                ? { mobile_image_aspect_ratio: row.background_config.mobile_image_aspect_ratio }
+                : mobileImageAspectRatios[0]
+                  ? { mobile_image_aspect_ratio: mobileImageAspectRatios[0] }
+                  : {}),
+            ...(backgroundVideoUpload || row?.background_video ? { background_video: backgroundVideoUpload || row?.background_video } : {}),
+            ...(mobileBackgroundVideoUpload || row?.mobile_background_video
+                ? { mobile_background_video: mobileBackgroundVideoUpload || row?.mobile_background_video }
+                : {}),
+            ...(backgroundLottieUpload || row?.background_lottie
+                ? { background_lottie: backgroundLottieUpload || row?.background_lottie }
+                : {}),
+            ...(mobileBackgroundLottieUpload || row?.mobile_background_Lottie
+                ? { mobile_background_lottie: mobileBackgroundLottieUpload || row?.mobile_background_lottie }
+                : {}),
+        }
+        const newRowAdd = {
+            ...row,
+            ...(imageUpload || row?.background_image ? { background_image: imageUpload || row?.background_image } : {}),
+            ...(mobileimageUpload || row?.mobile_background_image
+                ? { mobile_background_image: mobileimageUpload || row?.mobile_background_image }
+                : {}),
+            background_config: backgroundConfig,
             footer_config: {
                 ...row?.footer_config,
                 ...(footerImageUpload ? { image: footerImageUpload } : {}),
@@ -390,19 +237,19 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
             extra_info: {
                 ...row?.extra_info,
                 ...(row?.extra_info?.timeout ? { timeout: row?.extra_info?.timeout } : {}),
+                ...(row?.extra_info?.page_size ? { page_size: row?.extra_info?.page_size } : {}),
+                ...(row?.extra_info?.child_data_type && { child_data_type: row?.extra_info?.child_data_type }),
+                cta_config: cta_config,
+                child_component_config: child_component_config,
             },
             ...(row?.section_filters ? { section_filters: row?.section_filters } : {}),
             ...(row?.section_type ? { section_type: row?.section_type } : {}),
+            ...(row?.order_count ? { order_count: row?.order_count } : {}),
+            ...(row?.min_order_value_for_event_pass ? { min_order_value_for_event_pass: row?.min_order_value_for_event_pass } : {}),
         }
-
-        console.log('End of row')
         const filteredRow = Object.fromEntries(Object.entries(newRowAdd || {}).filter(([_, value]) => value !== undefined))
-
         setData((prevData: WebType[]) => [...prevData, filteredRow])
-        setSelectedType('')
-
         console.log('Main Data That is to be send in the API', filteredRow)
-        console.log('The row which is set', row)
     }
 
     const [borderForm, setBorderForm] = useState('')

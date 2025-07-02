@@ -87,14 +87,41 @@ type Profile = {
     image: string
 }
 
+export type ReferralEntry = {
+    user: string | null
+    status: string
+    mobile: string
+    earned: number
+}
+
+export type ReferralData = {
+    referral_code: string
+    referral_count: number
+    referral_data: ReferralEntry[]
+    total_earned: number
+    total_pending: number
+    total_redeemed: number
+}
+
+export type CustomerEventData = {
+    event_code: string
+    order: string
+    other_conditions_accepted: boolean
+    status: string
+    terms_and_conditions_accepted: boolean
+}
+
 type Data = {
     orders: Order
     cart: Cart
     profile: Profile
+    event: CustomerEventData[]
+    referral: ReferralData
 }
 
 export type OrderSummaryTYPE = {
     customerData: Data | undefined
     loading: boolean
     message: string
+    errorMessage?: string
 }

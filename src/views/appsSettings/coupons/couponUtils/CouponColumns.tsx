@@ -1,18 +1,42 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Button } from '@/components/ui'
 import moment from 'moment'
 import { useMemo } from 'react'
+import { FaEdit, FaTrash } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 
-export const CouponCoulumns = () => {
+interface props {
+    handleDeleteCoupon: any
+}
+
+export const CouponCoulumns = ({ handleDeleteCoupon }: props) => {
     const navigate = useNavigate()
     return useMemo(() => {
         return [
+            {
+                header: 'Edit',
+                accessorKey: 'code',
+                cell: ({ getValue }: any) => {
+                    return (
+                        <Button onClick={() => navigate(`/app/appSettings/coupons/${getValue()}`)} className="bg-none border-none">
+                            <FaEdit className="text-xl text-blue-600 items-center flex justify-center" />
+                        </Button>
+                    )
+                },
+            },
+            {
+                header: 'Delete',
+                accessorKey: 'code',
+                cell: ({ getValue }: any) => {
+                    return (
+                        <div onClick={() => handleDeleteCoupon(getValue())}>
+                            <FaTrash className="text-xl text-red-600 items-center flex justify-center" />
+                        </div>
+                    )
+                },
+            },
             { header: 'Code', accessorKey: 'code' },
-            // {
-            //     header: 'Image',
-            //     accessorKey: 'image',
-            //     cell: ({ row }: any) => (row?.original?.image ? <img src={row?.original?.image} alt="coupon" width="50" /> : 'N/A'),
-            // },
+
             {
                 header: 'Users',
                 accessorKey: 'user',
@@ -125,18 +149,6 @@ export const CouponCoulumns = () => {
             //     accessorKey: 'update_date',
             //     cell: ({ row }: any) => moment(row.original?.update_date).format || 'N/A',
             // },
-            // {
-            //     header: 'Edit',
-
-            //     accessorKey: 'code',
-            //     cell: ({ getValue }) => {
-            //         return (
-            //             <Button onClick={() => handleActionClick(getValue())} className="bg-none border-none">
-            //                 <FaEdit className="text-xl text-blue-600 items-center flex justify-center" />
-            //             </Button>
-            //         )
-            //     },
-            // }
         ]
     }, [])
 }

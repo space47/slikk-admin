@@ -22,6 +22,7 @@ export type SalesOrderDetailsResponse = {
     dateTime?: number
     latitude: number
     longitude: number
+    distance: number
     payment?: {
         amount: number
         mode: string
@@ -52,7 +53,7 @@ export type SalesOrderDetailsResponse = {
     }
 
     logistic_partner: any
-    order_items?: {
+    order_items: {
         barcode: string
         brand: string
         name: string
@@ -94,6 +95,8 @@ export type SalesOrderDetailsResponse = {
     return_order: RETURNORDER[]
     tracking_url: string
     utm_params: any
+    other_charges_data?: any
+    reference_return?: string | number | undefined
 }
 
 export type ShippingInfoProps = {
@@ -114,4 +117,11 @@ export type ShippingInfoProps = {
     logistic_partner: any
     delivery_type: string
     setShowRiderModal: (x: boolean) => void
+}
+
+export const scheduleSlots: any = {
+    '1': { start: '10:00 AM', end: '01:00 PM' },
+    '2': { start: '01:00 PM', end: '04:00 PM' },
+    '3': { start: '04:00 PM', end: '07:00 PM' },
+    '4': { start: '07:00 PM', end: '10:00 PM' },
 }

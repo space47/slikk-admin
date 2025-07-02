@@ -1,0 +1,82 @@
+import { useAppSelector } from '@/store'
+import { CATEGORY_STATE } from '@/store/types/category.types'
+import { DIVISION_STATE } from '@/store/types/division.types'
+import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
+
+interface props {
+    selectedDivision: string
+    selectedCategory: string
+}
+
+export const useGetSubCategory = ({ selectedCategory, selectedDivision }: props) => {
+    const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
+    const categoryArray = useAppSelector<CATEGORY_STATE>((state) => state.category)
+    const DivisionArray = divisions?.divisions?.map((item) => item?.name)
+    const subCategoryArray = useAppSelector<SUBCATEGORY_STATE>((state) => state.subCategory)
+
+    console.log(categoryArray)
+
+    const division = divisions?.divisions?.find((d) => d?.name === selectedDivision)
+
+    const category = division?.categories?.find((c) => c?.name === selectedCategory)
+    const divisionThroughCategory = division?.categories?.flatMap((category) => category?.sub_categories?.map((subCat) => subCat?.id))
+
+    const divisionCategoryProductCounts = subCategoryArray?.subcategories
+        ?.filter((sub) => divisionThroughCategory?.includes(sub.id))
+        ?.map((sub) => ({
+            id: sub.id,
+            product_count: sub.product_count,
+        }))
+
+    const subCategoryProductCount = subCategoryArray?.subcategories
+        ?.filter((c) => c.category_name === selectedCategory)
+        ?.map((sub) => ({
+            id: sub?.id,
+            product_count: sub.product_count,
+        }))
+
+    let subCategories = []
+
+    if (selectedDivision !== 'Select Division' && selectedCategory !== 'Select Category') {
+        subCategories =
+            category?.sub_categories?.map((subCat) => {
+                const matched = subCategoryProductCount?.find((item) => item?.id === subCat?.id)
+                return {
+                    ...subCat,
+                    product_count: matched?.product_count,
+                    division_name: selectedDivision,
+                    category_name: selectedCategory,
+                }
+            }) || []
+    } else if (selectedDivision !== 'Select Division') {
+        subCategories =
+            division?.categories?.flatMap((category) =>
+                (category?.sub_categories || []).map((subCat) => {
+                    const matched = divisionCategoryProductCounts?.find((item) => item.id === subCat.id)
+                    return {
+                        ...subCat,
+                        product_count: matched?.product_count || 0,
+                        division_name: selectedDivision,
+                        category_name: category.name,
+                    }
+                }),
+            ) || []
+    } else if (selectedCategory !== 'Select Category') {
+        subCategories =
+            divisions?.divisions?.flatMap((division) =>
+                (category?.sub_categories || []).map((subCat) => {
+                    const matched = subCategoryProductCount?.find((item) => item?.id === subCat?.id)
+                    return {
+                        ...subCat,
+                        product_count: matched?.product_count,
+                        division_name: division.name,
+                        category_name: selectedCategory,
+                    }
+                }),
+            ) || []
+    } else {
+        subCategories = subCategoryArray?.subcategories || []
+    }
+
+    return { subCategories, DivisionArray }
+}

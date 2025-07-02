@@ -11,6 +11,10 @@ import { ProductTable } from './pageSettings.types'
 import * as Yup from 'yup'
 import { EditInitialValues } from './pageSettingsUtils/PageSettingEditInitialValues'
 import { DROPDOWNTYPE } from '@/views/category-management/catalog/CommonType'
+import { handleimage } from '@/common/handleImage'
+import { EditAspectRatios, EditImageUpoads, EditVideoUpload } from './pageSettingsUtils/pageEditFunctions'
+import { usePageEditRemoveFunctions } from './pageSettingsUtils/usePageEditRemoveFunctions'
+import { fetchInput, fetchPost } from './pageSettingsUtils/pageEditApi'
 
 type modalProps = {
     isModalOpen: boolean
@@ -22,19 +26,12 @@ type modalProps = {
     setParticularRow: (data: any) => void
 }
 
-const DROPDOWNARRAY = [
-    { label: 'Name', value: 'name' },
-    { label: 'SKU', value: 'sku' },
-    { label: 'Barcode', value: 'barcode' },
-]
-
 const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, formikRef, particularRow, setParticularRow }) => {
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>()
     const [searchInput, setSearchInput] = useState<string>('')
     const [showTable, setShowTable] = useState(false)
     const [tableData, setTableData] = useState<ProductTable[]>([])
     const [productData, setProductData] = useState(particularRow.data_type.barcodes)
-    // posts....................
     const [postInput, setPOstInput] = useState('')
     const [showPostTable, setShowPostTable] = useState(false)
     const [postTableData, setPostTableData] = useState([])
@@ -45,13 +42,9 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                 : [particularRow.data_type.posts]
             : [],
     ])
-
-    const [showSectionFilters, setShowSectionFilters] = useState(particularRow?.is_section_clickable)
     const [showAddFilter, setShowAddFilter] = useState<number[]>([])
     const [filterId, setFilterId] = useState()
     const [filtersData, setFiltersData] = useState<any[]>([])
-
-    console.log('showSection Clickable', showSectionFilters)
 
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
 
@@ -75,8 +68,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     }
 
     const handleRemoveFilter = (index: number) => {
-        const updatedFilters = showAddFilter.filter((_, i) => i !== index)
-        setShowAddFilter(updatedFilters)
+        setShowAddFilter(showAddFilter.filter((_, i) => i !== index))
     }
 
     const handleAddFilters = async (values: any) => {
@@ -104,45 +96,12 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
         }
     }
 
-    const fetchInput = async () => {
-        try {
-            if (searchInput) {
-                const qname =
-                    currentSelectedPage?.value === 'sku'
-                        ? 'sku'
-                        : currentSelectedPage?.value === 'name'
-                          ? 'name'
-                          : currentSelectedPage?.value === 'barcode'
-                            ? 'barcode'
-                            : ''
-                const response = await axioisInstance.get(`/merchant/products?dashboard=true&${qname}=${searchInput}`)
-                const data = response.data.data.results
-                setTableData(data)
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
     useEffect(() => {
-        fetchInput()
+        fetchInput(searchInput, currentSelectedPage, setTableData)
     }, [searchInput])
 
-    const fetchPost = async () => {
-        try {
-            if (postInput) {
-                // const qname = currentSelectedPage?.value === 'sku' ? 'sku' : 'name'
-                const response = await axioisInstance.get(`/posts?name=${postInput}`)
-                const data = response.data.data.results
-                setPostTableData(data)
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
     useEffect(() => {
-        fetchPost()
+        fetchPost(postInput, setPostTableData)
     }, [postInput])
 
     const handleSelect = (value: any) => {
@@ -152,130 +111,9 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
         }
     }
 
-    const calculateAspectRatio = async (files: File[]): Promise<number[]> => {
-        if (!files || files.length === 0) {
-            return []
-        }
-
-        const aspectRatios: number[] = []
-        for (const file of files) {
-            const image = new Image()
-            const fileURL = URL.createObjectURL(file)
-
-            image.src = fileURL
-
-            await new Promise<void>((resolve) => {
-                image.onload = () => {
-                    aspectRatios.push(image.width / image.height)
-                    URL.revokeObjectURL(fileURL)
-                    resolve()
-                }
-                image.onerror = () => {
-                    URL.revokeObjectURL(fileURL)
-                    resolve()
-                }
-            })
-        }
-        return aspectRatios
-    }
-
-    const handleimage = async (files: File[]) => {
-        console.log('Images of mobile for checking', files)
-        if (!files || files.length === 0) {
-            return
-        }
-
-        const formData = new FormData()
-
-        for (const file of files) {
-            const image = new Image()
-            const fileURL = URL.createObjectURL(file)
-
-            image.src = fileURL
-
-            await new Promise<void>((resolve) => {
-                image.onload = () => {
-                    console.log('Image width:', image.width, 'Image height:', image.height)
-                    URL.revokeObjectURL(fileURL)
-                    resolve()
-                }
-            })
-
-            formData.append('file', file)
-        }
-
-        formData.append('file_type', 'banners')
-
-        try {
-            notification.info({
-                message: 'Image Upload in process',
-            })
-            const response = await axioisInstance.post('fileupload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-
-            const newData = response.data.url
-            notification.success({
-                message: 'Success',
-                description: response?.data?.message || 'Image uploaded successfully',
-            })
-
-            return newData
-        } catch (error: any) {
-            console.error('Error uploading files:', error)
-            notification.error({
-                message: 'Upload Failed',
-                description: error?.response?.data?.message || 'Image upload failed',
-            })
-
-            return ''
-        }
-    }
-
-    const handleVideo = async (files: File[]) => {
-        if (files) {
-            const formData = new FormData()
-
-            files.forEach((file) => {
-                formData.append('file', file)
-            })
-            formData.append('file_type', 'product')
-
-            notification.info({
-                message: 'Video Upload In Process',
-            })
-            try {
-                setShowSpinner(true)
-                console.log(formData.get('file'))
-                const response = await axioisInstance.post('fileupload', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                })
-                console.log(response)
-                notification.success({
-                    message: 'Video Updated',
-                })
-                const newData = response.data.url
-                return newData
-            } catch (error: any) {
-                console.error('Error uploading files:', error)
-                notification.error({
-                    message: 'Failure',
-                    description: error?.response?.data?.message || 'Video Not uploaded',
-                })
-                return 'Error'
-            } finally {
-                setShowSpinner(false)
-            }
-        }
-    }
-
     const handleSubmit = async (row: any) => {
         const componentConfig = {
-            ...Object.fromEntries(Object.entries(row?.component_config || {}).filter(([_, value]) => value !== '')),
+            ...Object.fromEntries(Object.entries(row?.component_config || {}).filter(([, value]) => value !== '')),
             border: row?.border ?? false,
             name: row?.name ?? false,
             name_footer: row?.name_footer ?? false,
@@ -286,68 +124,77 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             web_section_border: row?.web_section_border ?? false,
         }
 
+        const backgroundLottieUpload = row?.background_lottie_array
+            ? await handleimage('product', row?.background_lottie_array)
+            : initialValue.background_lottie
+        const mobileBackgroundLottieUpload = row?.mobile_background_lottie_array
+            ? await handleimage('product', row?.mobile_background_lottie_array)
+            : initialValue.mobile_background_lottie
+
         try {
-            console.log('handleSubmit called')
-            const imageUpload = await handleimage(row.background_image_array)
-            const mobileimageUpload = await handleimage(row.mobile_background_array)
-            const footerImageUpload = await handleimage(row.footer_config_image_Array)
-            const headerImageUpload = await handleimage(row.header_config_image_Array)
-            const subHeaderImageUpload = await handleimage(row.sub_header_config_image_Array)
-            const headerIconUpload = await handleimage(row.header_config_icon_Array)
+            const { imageUpload, mobileimageUpload, footerImageUpload, headerImageUpload, subHeaderImageUpload, headerIconUpload } =
+                await EditImageUpoads(row)
 
-            const backgroundLottieUpload = await handleimage(row?.background_lottie_array)
-            const mobileBackgroundLottieUpload = await handleimage(row?.mobile_background_lottie_array)
+            const { backgroundVideoUpload, footervideoUpload, headerVideoUpload, mobileBackgroundVideoUpload, subHeaderVideoUpload } =
+                await EditVideoUpload(row)
 
-            const footervideoUpload = await handleVideo(row.footer_config_video_Array)
-            const headerVideoUpload = await handleVideo(row.header_config_video_Array)
-            const subHeaderVideoUpload = await handleVideo(row.sub_header_config_video_Array)
-            const backgroundVideoUpload = await handleVideo(row?.background_video_array)
-            const mobileBackgroundVideoUpload = await handleVideo(row?.mobile_background_video_array)
+            const {
+                backgroundImageAspectRatios,
+                mobileImageAspectRatios,
+                headerImageAspectRatios,
+                subHeaderImageAspectRatios,
+                footerImageAspectRatios,
+            } = await EditAspectRatios(row)
 
-            console.log('New Row below')
-            const backgroundImageAspectRatios = await calculateAspectRatio(row.background_image_array)
-            const mobileImageAspectRatios = await calculateAspectRatio(row.mobile_background_array)
-            const headerImageAspectRatios = await calculateAspectRatio(row.header_config_image_Array)
-            const subHeaderImageAspectRatios = await calculateAspectRatio(row.sub_header_config_image_Array)
-            const footerImageAspectRatios = await calculateAspectRatio(row.footer_config_image_Array)
+            const cta_config_data = {
+                ...row?.extra_info.cta_config,
+            }
+            const cta_config = Object.fromEntries(Object.entries(cta_config_data).filter(([, value]) => value !== ''))
 
-            console.log('Start New Row')
+            const child_component_config_data = {
+                ...row?.extra_info?.child_component_config,
+            }
+            const child_component_config = Object.fromEntries(
+                Object.entries(child_component_config_data).filter(([, value]) => value !== ''),
+            )
+
+            const backgroundConfig = {
+                ...Object.fromEntries(Object.entries(row?.background_config || {}).filter(([, value]) => value !== '')),
+                ...(imageUpload || row?.background_image ? { background_image: imageUpload || row?.background_image } : {}),
+                ...(mobileimageUpload || row?.mobile_background_image
+                    ? { mobile_background_image: mobileimageUpload || row?.mobile_background_image }
+                    : {}),
+                ...(row?.background_config?.background_image_aspect_ratio
+                    ? { background_image_aspect_ratio: row.background_config.background_image_aspect_ratio }
+                    : backgroundImageAspectRatios[0]
+                      ? { background_image_aspect_ratio: backgroundImageAspectRatios[0] }
+                      : {}),
+
+                ...(row?.background_config?.mobile_image_aspect_ratio
+                    ? { mobile_image_aspect_ratio: row.background_config.mobile_image_aspect_ratio }
+                    : mobileImageAspectRatios[0]
+                      ? { mobile_image_aspect_ratio: mobileImageAspectRatios[0] }
+                      : {}),
+                ...(backgroundVideoUpload || row?.background_video
+                    ? { background_video: backgroundVideoUpload || row?.background_video }
+                    : {}),
+                ...(mobileBackgroundVideoUpload || row?.mobile_background_video
+                    ? { mobile_background_video: mobileBackgroundVideoUpload || row?.mobile_background_video }
+                    : {}),
+                ...(backgroundLottieUpload || row?.background_lottie
+                    ? { background_lottie: backgroundLottieUpload || row?.background_lottie }
+                    : {}),
+                ...(mobileBackgroundLottieUpload || row?.mobile_background_Lottie
+                    ? { mobile_background_lottie: mobileBackgroundLottieUpload || row?.mobile_background_lottie }
+                    : {}),
+            }
             const newRow = {
                 ...row,
                 ...(imageUpload || row?.background_image ? { background_image: imageUpload || row?.background_image } : {}),
                 ...(mobileimageUpload || row?.mobile_background_image
                     ? { mobile_background_image: mobileimageUpload || row?.mobile_background_image }
                     : {}),
-                background_config: {
-                    ...row?.background_config,
-                    ...(imageUpload || row?.background_image ? { background_image: imageUpload || row?.background_image } : {}),
-                    ...(mobileimageUpload || row?.mobile_background_image
-                        ? { mobile_background_image: mobileimageUpload || row?.mobile_background_image }
-                        : {}),
-                    ...(row?.background_config?.background_image_aspect_ratio
-                        ? { background_image_aspect_ratio: row.background_config.background_image_aspect_ratio }
-                        : backgroundImageAspectRatios[0]
-                          ? { background_image_aspect_ratio: backgroundImageAspectRatios[0] }
-                          : {}),
-
-                    ...(row?.background_config?.mobile_image_aspect_ratio
-                        ? { mobile_image_aspect_ratio: row.background_config.mobile_image_aspect_ratio }
-                        : mobileImageAspectRatios[0]
-                          ? { mobile_image_aspect_ratio: mobileImageAspectRatios[0] }
-                          : {}),
-                    ...(backgroundVideoUpload || row?.background_video
-                        ? { background_video: backgroundVideoUpload || row?.background_video }
-                        : {}),
-                    ...(mobileBackgroundVideoUpload || row?.mobile_background_video
-                        ? { mobile_background_video: mobileBackgroundVideoUpload || row?.mobile_background_video }
-                        : {}),
-                    ...(backgroundLottieUpload || row?.background_lottie
-                        ? { background_lottie: backgroundLottieUpload || row?.background_lottie }
-                        : {}),
-                    ...(mobileBackgroundLottieUpload || row?.mobile_background_Lottie
-                        ? { mobile_background_lottie: mobileBackgroundLottieUpload || row?.mobile_background_lottie }
-                        : {}),
-                },
+                background_config: backgroundConfig,
                 footer_config: {
                     ...row?.footer_config,
                     ...(footerImageUpload ? { image: footerImageUpload } : {}),
@@ -399,77 +246,26 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                 extra_info: {
                     ...row?.extra_info,
                     ...(row?.extra_info?.timeout ? { timeout: row?.extra_info?.timeout } : {}),
+                    ...(row?.extra_info?.page_size ? { page_size: row?.extra_info?.page_size } : {}),
+                    ...(row?.extra_info?.child_data_type && { child_data_type: row?.extra_info?.child_data_type }),
+                    cta_config: cta_config,
+                    child_component_config: child_component_config,
                 },
                 ...(row?.section_filters ? { section_filters: row?.section_filters } : {}),
                 ...(row?.section_type ? { section_type: row?.section_type } : {}),
                 ...(row?.order_count ? { order_count: row?.order_count } : {}),
+                ...(row?.min_order_value_for_event_pass ? { min_order_value_for_event_pass: row?.min_order_value_for_event_pass } : {}),
             }
 
             const filteredRow = Object.fromEntries(Object.entries(newRow || {}).filter(([_, value]) => value !== undefined))
-
             setShowSpinner(false)
             setParticularRow(filteredRow)
-            console.log('Barecode THAT HAS BEEN UPDATED', newRow.data_type.barcodes)
             console.log('FINAL ADD INSIDE SUBMIT', filteredRow)
         } catch (error) {
             console.error('Error in handleSubmit:', error)
         }
     }
-
-    const handleRemoveImage = (val: string) => {
-        if (val === 'background_image') {
-            setInitalValue((prev: any) => ({
-                ...prev,
-                background_image: null,
-                background_config: {
-                    ...prev.background_config,
-                    background_image: null,
-                },
-            }))
-        } else if (val === 'mobile_background_image') {
-            console.log('Remive mobile Bg')
-            setInitalValue((prev: any) => ({
-                ...prev,
-                mobile_background_image: null,
-                background_config: {
-                    ...prev.background_config,
-                    mobile_background_image: null,
-                },
-            }))
-        }
-    }
-    const handleRemoveVideo = (val: string) => {
-        if (val === 'background_video') {
-            setInitalValue((prev: any) => ({
-                ...prev,
-                background_video: null,
-            }))
-        } else if (val === 'mobile_background_video') {
-            setInitalValue((prev: any) => ({
-                ...prev,
-                mobile_background_video: null,
-            }))
-        } else if (val === 'background_lottie') {
-            setInitalValue((prev: any) => ({
-                ...prev,
-                background_lottie: null,
-                background_config: {
-                    ...prev.background_config,
-                    background_lottie: null,
-                },
-            }))
-        } else if (val === 'mobile_background_lottie') {
-            setInitalValue((prev: any) => ({
-                ...prev,
-                mobile_background_lottie: null,
-                background_config: {
-                    ...prev.background_config,
-                    mobile_background_lottie: null,
-                },
-            }))
-        }
-    }
-
+    const { handleRemoveImage, handleRemoveVideo } = usePageEditRemoveFunctions({ setInitalValue })
     const [componentOption, setComponentOptions] = useState(initialValue.component_type)
     const [borderForm, setBorderForm] = useState(initialValue?.border)
     const [webBorderForm, setWebBorderForm] = useState<boolean>(initialValue?.web_border)
@@ -481,9 +277,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     const [webSectionBorderShow, setWebSectioBorderShow] = useState(initialValue?.web_section_border)
     const [showSpinner, setShowSpinner] = useState(false)
 
-    const handleRemoveSubImage = (e: any) => {
-        e.preventDefault()
-
+    const handleRemoveSubImage = () => {
         setInitalValue((prev: any) => ({
             ...prev,
             sub_header_config: {
@@ -493,14 +287,24 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
         }))
     }
 
-    const handleRemoveHeaderImage = (e: any) => {
-        e.preventDefault()
-
+    const handleRemoveHeaderImage = () => {
         setInitalValue((prev: any) => ({
             ...prev,
             header_config: {
-                ...prev.header_config,
+                ...(prev.header_config || {}),
                 image: null,
+            },
+        }))
+    }
+    const handleRemoveExploreImage = () => {
+        setInitalValue((prev: any) => ({
+            ...prev,
+            extra_info: {
+                ...prev.extra_info,
+                cta_config: {
+                    ...prev.extra_info.cta_config,
+                    image: '',
+                },
             },
         }))
     }
@@ -511,7 +315,6 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
         setSearchInput('')
     }
 
-    // POSTS...............
     const handlePOSTSearch = (e: any) => {
         setPOstInput(e.target.value)
         setShowPostTable(true)
@@ -591,6 +394,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                     handleAddFilters={handleAddFilters}
                     handleRemoveFilter={handleRemoveFilter}
                     showAddFilter={showAddFilter}
+                    handleRemoveExploreImage={handleRemoveExploreImage}
                 />
             </Modal>
         </>

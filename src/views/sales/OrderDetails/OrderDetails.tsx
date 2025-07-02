@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react'
-// import classNames from 'classnames'
-// import Tag from '@/components/ui/Tag'
 import Loading from '@/components/shared/Loading'
 import Container from '@/components/shared/Container'
 import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
@@ -19,7 +17,7 @@ import ReturnOrderDrawer from './components/ReturnOrderDrawer'
 import CancelModal from './components/CancelModal'
 import { FaDownload } from 'react-icons/fa'
 import { notification } from 'antd'
-import { SalesOrderDetailsResponse } from './orderList.common'
+import { SalesOrderDetailsResponse, scheduleSlots } from './orderList.common'
 import { Button, Dialog } from '@/components/ui'
 import TrackModal from '@/views/slikkLogistics/taskTracking/TrackModal'
 import OrderPickerSummary from './components/OrderPickersummary'
@@ -27,13 +25,6 @@ import OrderMap from './OrderMap'
 import UtmModal from './components/UtmModal'
 import TwoPointMap from './components/TwoPointMap'
 // import { string } from 'yup'
-
-const scheduleSlots: any = {
-    '1': { start: '10:00 AM', end: '01:00 PM' },
-    '2': { start: '01:00 PM', end: '04:00 PM' },
-    '3': { start: '04:00 PM', end: '07:00 PM' },
-    '4': { start: '07:00 PM', end: '10:00 PM' },
-}
 
 const OrderDetails = () => {
     const [loading, setLoading] = useState(true)
@@ -95,9 +86,7 @@ const OrderDetails = () => {
     const handleDownload = async () => {
         try {
             const response = await axioisInstance.get(`/user/order/invoice/${invoice_id}`)
-
             const downloadablePDF = response.data?.data
-
             const link = document.createElement('a')
             link.href = downloadablePDF
             link.download = `invoice-${invoice_id}.pdf`
@@ -140,6 +129,27 @@ const OrderDetails = () => {
         setShowRiderData(false)
     }
 
+    const ReturnOrderList = ({ title, items }: { title: string; items: any[] }) => {
+        if (!items || items.length === 0) return null
+
+        return (
+            <div className="flex flex-col xl:flex-row gap-2 items-center">
+                <span className="text-gray-700">{title}:</span>
+                <div className="flex flex-wrap gap-2">
+                    {items.map((item, key) => (
+                        <a
+                            key={key}
+                            href={`/app/returnOrders/${item.return_order_id}`}
+                            className="text-blue-600 hover:underline hover:text-blue-800 transition duration-200"
+                        >
+                            {item.return_order_id}
+                        </a>
+                    ))}
+                </div>
+            </div>
+        )
+    }
+
     return (
         <Container className="p-4 xl:px-10 overflow-scroll scrollbar-hide ">
             <Loading loading={loading}>
@@ -167,13 +177,7 @@ const OrderDetails = () => {
                                                     </div>
                                                 </>
                                             ) : (
-                                                <>
-                                                    <div>
-                                                        {/* <Button variant="accept" size="sm" onClick={() => setShowUTMModal(true)}>
-                                                            ADD TICKET
-                                                        </Button> */}
-                                                    </div>
-                                                </>
+                                                <></>
                                             )}
                                         </span>
                                     </div>
@@ -237,20 +241,16 @@ const OrderDetails = () => {
                                     )}
                                 </div>
                                 {data.return_order.length > 0 && (
-                                    <div className="flex flex-col xl:flex-row gap-2 items-center">
-                                        <span className="text-gray-700">Return Orders:</span>
-                                        <div className="flex flex-wrap gap-2">
-                                            {data.return_order.map((item, key) => (
-                                                <a
-                                                    key={key}
-                                                    href={`/app/returnOrders/${item.return_order_id}`}
-                                                    className="text-blue-600 hover:underline hover:text-blue-800 transition duration-200"
-                                                >
-                                                    {item.return_order_id}
-                                                </a>
-                                            ))}
-                                        </div>
-                                    </div>
+                                    <>
+                                        <ReturnOrderList
+                                            title="Return Orders"
+                                            items={data.return_order.filter((item) => item?.status !== 'ACCEPTED')}
+                                        />
+                                        <ReturnOrderList
+                                            title="UnFullfilled Orders"
+                                            items={data.return_order.filter((item) => item?.status === 'ACCEPTED')}
+                                        />
+                                    </>
                                 )}
                                 {data?.reference_return && (
                                     <div>
@@ -304,6 +304,7 @@ const OrderDetails = () => {
                                             store={data.store}
                                             location_url={data.location_url}
                                             delivery_type={data.delivery_type}
+                                            distance={data?.distance}
                                         />
                                     </div>
                                     <div className="bg-white shadow-lg p-6 rounded-lg dark:bg-gray-900">

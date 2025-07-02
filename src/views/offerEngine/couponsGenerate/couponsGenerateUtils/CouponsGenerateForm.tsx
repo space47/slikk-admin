@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormContainer, FormItem, Input, Tooltip, Upload } from '@/components/ui'
+import { Checkbox, FormContainer, FormItem, Input, Tooltip, Upload } from '@/components/ui'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 import { Field, FieldProps } from 'formik'
 import React from 'react'
 import { AutoGenerateType, NumericTypeArray } from './CouponsGenerateCommon'
 import { DatePicker } from 'antd'
-import moment from 'moment'
 
 import { beforeUpload } from '@/common/beforeUpload'
 import { CiCircleQuestion } from 'react-icons/ci'
+import dayjs from 'dayjs'
 
 interface Props {
     formattedOptions: any[]
@@ -16,6 +16,7 @@ interface Props {
 }
 
 const CouponsGenerateForm = ({ formattedOptions, values }: Props) => {
+    console.log('formatted Options', formattedOptions)
     return (
         <FormContainer className="grid grid-cols-2 gap-4">
             <CommonSelect options={formattedOptions} name="coupon_series" label="Select Series" />
@@ -55,10 +56,10 @@ const CouponsGenerateForm = ({ formattedOptions, values }: Props) => {
                 <Field type="number" min="0" name="coupons_count" component={Input} />
             </FormItem>
             <FormItem label="Unique User Code">
-                <Field type="checkbox" name="unique_user_code" component={Input} />
+                <Field type="checkbox" name="unique_user_code" component={Checkbox} />
             </FormItem>
             <FormItem label="Auto Generate Code">
-                <Field type="checkbox" name="auto_generate_code" component={Input} />
+                <Field type="checkbox" name="auto_generate_code" component={Checkbox} />
             </FormItem>
 
             {values.auto_generate_code ? (
@@ -92,7 +93,7 @@ const CouponsGenerateForm = ({ formattedOptions, values }: Props) => {
                         <DatePicker
                             showTime
                             placeholder=""
-                            value={field.value ? moment(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
+                            value={field.value ? dayjs(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
                             onChange={(value) => {
                                 form.setFieldValue('valid_to', value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
                             }}

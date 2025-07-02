@@ -6,6 +6,14 @@ import { FaEdit, FaSave, FaTimes, FaTrash } from 'react-icons/fa'
 
 const isDashboard = import.meta.env.VITE_IS_DASHBOARD !== 'brand'
 
+const getowner = (own: any) => {
+    if (own === true) {
+        return 'Yes'
+    } else {
+        return 'No'
+    }
+}
+
 export const InwardColumns = () => {
     return useMemo(
         () => [
@@ -68,7 +76,7 @@ export const InwardColumns = () => {
             {
                 header: 'Slikk Owned',
                 accessorKey: 'slikk_owned',
-                cell: (info) => (info.getValue() ? 'YES' : 'NO'),
+                cell: (info) => getowner(info.getValue()),
             },
             {
                 header: 'Total QTY',

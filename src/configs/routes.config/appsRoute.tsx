@@ -376,6 +376,13 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/category-management/catalog/CopyAndAdd')),
         authority: [ADMIN, USER],
     },
+    // Tags
+    {
+        key: 'appsCategory.productTags',
+        path: `${APP_PREFIX_PATH}/catalog/productTags`,
+        component: lazy(() => import('@/views/category-management/productTagConfig/productTagTable/productTagTable')),
+        authority: [ADMIN, USER],
+    },
     {
         key: 'appsCategory.subCategory',
         path: `${APP_PREFIX_PATH}/category/subCategory`,
@@ -883,6 +890,24 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsAppSettings.eventSeries',
+        path: `${APP_PREFIX_PATH}/appSettings/eventSeries/addEvent`,
+        component: lazy(() => import('@/views/offerEngine/eventSeries/addEvents/AddEvents')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.eventSeries',
+        path: `${APP_PREFIX_PATH}/appSettings/eventSeries/:id`,
+        component: lazy(() => import('@/views/offerEngine/eventSeries/editEvents/EditEvents')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.eventSeries',
+        path: `${APP_PREFIX_PATH}/appSettings/eventSeries/details/:id`,
+        component: lazy(() => import('@/views/offerEngine/eventSeries/eventList/eventDetails/EventListDetails')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsAppSettings.banners',
         path: `${APP_PREFIX_PATH}/appSettings/banners/`,
         component: lazy(() => import('@/views/appsSettings/banners/AppBanners')),
@@ -961,6 +986,38 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/appsSettings/seoSettings/createSeoSettings/CreateSeoSettings')),
         authority: [ADMIN, USER],
     },
+    // new Page Settings
+    {
+        key: 'appsAppSettings.newPageSettings',
+        path: `${APP_PREFIX_PATH}/appSettings/newPageSettings`,
+        component: lazy(() => import('@/views/appsSettings/newPageSettings/newPageSettingsTable/NewPageSettingsTables')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.newPageSettings',
+        path: `${APP_PREFIX_PATH}/appSettings/newPageSettings/addNew`,
+        component: lazy(() => import('@/views/appsSettings/newPageSettings/addNewPageSettings/AddPageSettings')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.newPageSettings',
+        path: `${APP_PREFIX_PATH}/appSettings/newPageSettings/edit/:section_id`,
+        component: lazy(() => import('@/views/appsSettings/newPageSettings/editNewPageSettings/EditPageSettings')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.newPageSettings',
+        path: `${APP_PREFIX_PATH}/appSettings/newPageSettings/assignSection`,
+        component: lazy(() => import('@/views/appsSettings/newPageSettings/assignPageToSection/AssignPageSection')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.newPageSettings',
+        path: `${APP_PREFIX_PATH}/appSettings/newPageSettings/assignSection/:section_id`,
+        component: lazy(() => import('@/views/appsSettings/newPageSettings/assignPageToSection/EditAssignedPage')),
+        authority: [ADMIN, USER],
+    },
+    //
     {
         key: 'appsCommuncication.notification',
         path: `${APP_PREFIX_PATH}/appSettings/addNotification`,
@@ -1123,13 +1180,13 @@ const appsRoute: Routes = [
     },
     {
         key: 'appstryAndBuy.riders',
-        path: `${APP_PREFIX_PATH}/riders/attendance`,
+        path: `${APP_PREFIX_PATH}/riders/attendance/:user_type`,
         component: lazy(() => import('@/views/slikkLogistics/riderDetails/RiderComponents/RiderAttendance')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appstryAndBuy.riders',
-        path: `${APP_PREFIX_PATH}/riders/attendance/:mobile`,
+        path: `${APP_PREFIX_PATH}/riders/userAttendance/:mobile`,
         component: lazy(() => import('@/views/slikkLogistics/riderDetails/RiderComponents/ParticularRiderAttendance')),
         authority: [ADMIN, USER],
     },
@@ -1161,6 +1218,19 @@ const appsRoute: Routes = [
         key: '',
         path: `${APP_PREFIX_PATH}/riderProfile/:mobile`,
         component: lazy(() => import('@/views/slikkLogistics/taskTracking/trackingTaskComponents/RiderProfile')),
+        authority: [ADMIN, USER],
+    },
+    // Picker
+    {
+        key: 'appstryAndBuy.picker',
+        path: `${APP_PREFIX_PATH}/pickerBoard`,
+        component: lazy(() => import('@/views/slikkLogistics/picker/pickerBoard/PickerBoard')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appstryAndBuy.picker',
+        path: `${APP_PREFIX_PATH}/pickerDetails/:mobile`,
+        component: lazy(() => import('@/views/slikkLogistics/picker/pickerDetails/PickerDetails')),
         authority: [ADMIN, USER],
     },
 

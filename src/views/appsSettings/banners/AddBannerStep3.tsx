@@ -13,6 +13,9 @@ import DateAndTimePicker from '@/common/DateAndTime'
 import moment from 'moment'
 import { Field } from 'formik'
 import BannerDateSelector from './BannerDateSelector'
+import { CATEGORY_STATE } from '@/store/types/category.types'
+import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
+import { PRODUCTTYPE_STATE } from '@/store/types/productType.types'
 
 function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBannerFormData }: any) {
     const [bannerForm, setBannerFormData] = useState<BANNER_UPLOAD_DATA[]>(completeBannerFormData)
@@ -110,14 +113,40 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
-    const [filteredCategories, setFilteredCategories] = useState<string[]>([])
-    const [filteredSubCategories, setFilteredSubCategories] = useState<string[]>([])
-    const [filteredProductTypes, setFilteredProductTypes] = useState<string[]>([])
+
     const [sortOrder, setSortOrder] = useState<string | undefined>('')
     const [fromDateAndTime, setFromDateAndTime] = useState('')
     const [toDateAndTime, setToDateAndTime] = useState('')
 
-    console.log('Here the filtered categories form add banner', filteredCategories)
+    const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
+    const subCategory = useAppSelector<SUBCATEGORY_STATE>((state) => state.subCategory)
+    const product_type = useAppSelector<PRODUCTTYPE_STATE>((state) => state.product_type)
+
+    let filteredCategories = category.categories
+
+    console.log('BannerForm division', bannerForm[index]['division'])
+    if (bannerForm[index]['division']) {
+        filteredCategories = category.categories.filter((cat) => {
+            return bannerForm[index]['division'].map((item) => item?.name).some((div: any) => div === cat.division_name)
+        })
+    }
+
+    let filteredSubCategories = subCategory.subcategories
+
+    if (bannerForm[index]['category']) {
+        filteredSubCategories = subCategory.subcategories.filter((subCat) => {
+            return bannerForm[index]['category'].map((item) => item?.name).some((div: any) => div === subCat.category_name)
+        })
+    }
+
+    let filteredProductTypes = product_type.product_types
+    if (bannerForm[index]['sub_category']) {
+        filteredProductTypes = product_type.product_types.filter((prodType) => {
+            return bannerForm[index]['sub_category'].map((item) => item?.name).some((div: any) => div === prodType.sub_category_name)
+        })
+    }
+
+    console.log('filteredCategories', filteredCategories)
 
     const handleFromTimeChange = (value: any) => {
         console.log('HandleTimeChange', value)
@@ -278,13 +307,8 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                     options={divisions.divisions}
                     getOptionLabel={(option) => option?.name}
                     getOptionValue={(option) => option.id.toString()}
-                    onChange={(newVal, actionMeta) => {
+                    onChange={(newVal) => {
                         console.log('DAGA ', bannerForm[index]['division'])
-                        const selectedCategories = newVal ? newVal.map((division) => division.categories).flat() : []
-                        handleMultiSelect('category', '')
-                        handleMultiSelect('sub_category', '')
-                        handleMultiSelect('product_type', '')
-                        setFilteredCategories(selectedCategories)
                         handleMultiSelect('division', newVal)
                     }}
                 />
@@ -300,10 +324,6 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                     getOptionValue={(option) => option.id.toString()}
                     onChange={(newVal, actionMeta) => {
                         console.log(newVal, actionMeta)
-                        const selectedSubCategories = newVal ? newVal.map((category) => category.sub_categories).flat() : []
-                        handleMultiSelect('sub_category', '')
-                        handleMultiSelect('product_type', '')
-                        setFilteredSubCategories(selectedSubCategories)
                         handleMultiSelect('category', newVal)
                     }}
                 />
@@ -319,9 +339,6 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                     getOptionValue={(option) => option.id.toString()}
                     onChange={(newVal, actionMeta) => {
                         console.log(newVal, actionMeta)
-                        const selectedProductTypes = newVal ? newVal.map((subCategory) => subCategory.product_types).flat() : []
-                        handleMultiSelect('product_type', '')
-                        setFilteredProductTypes(selectedProductTypes)
                         handleMultiSelect('sub_category', newVal)
                     }}
                 />

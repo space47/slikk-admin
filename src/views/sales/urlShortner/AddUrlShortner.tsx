@@ -21,10 +21,9 @@ const AddUrlShortner = () => {
     const base_url = import.meta.env.VITE_WEBSITE_URL
     const [shortUrlData, setShortUrlData] = useState('')
     const [showGeneratedUrl, setShowGeneratedUrl] = useState(false)
-    const [filterShow, setFilterShow] = useState(false)
     const [showAddFilter, setShowAddFilter] = useState<number[]>([])
     const [filterId, setFilterId] = useState()
-    const [filtersData, setFiltersData] = useState([])
+    const [filtersData, setFiltersData] = useState<any[]>([])
 
     const handleAddFilter = () => {
         setShowAddFilter([...showAddFilter, showAddFilter.length])
@@ -35,30 +34,32 @@ const AddUrlShortner = () => {
         setShowAddFilter(updatedFilters)
     }
 
-    const handleAddFilters = async (values) => {
-        const newFilterData = showAddFilter.map((_, index) => values.filtersAdd[index] || [])
-        setFiltersData((prev) => {
-            const updatedFilters = [...prev, newFilterData]
-            const lastElement = updatedFilters.at(-1)
-            sendFilterData(lastElement)
-            return updatedFilters
-        })
-    }
+    // const handleAddFilters = async (values) => {
+    //     const newFilterData = showAddFilter.map((_, index) => values.filtersAdd[index] || [])
+    //     setFiltersData((prev: any) => {
+    //         const updatedFilters = [...prev, newFilterData]
+    //         const lastElement = updatedFilters.at(-1)
+    //         sendFilterData(lastElement)
+    //         return updatedFilters
+    //     })
+    // }
 
-    const sendFilterData = async (filterData) => {
-        try {
-            const response = await axioisInstance.post(`/product/search/criteria`, { filter_data: filterData })
-            setFilterId(response.data?.data?.id)
-            notification.success({
-                message: 'Filter Id Added',
-            })
-        } catch (error) {
-            notification.error({
-                message: 'Failed to Add Filter ID',
-            })
-            console.error(error)
-        }
-    }
+    // const sendFilterData = async (filterData: number) => {
+    //     try {
+    //         const response = await axioisInstance.post(`/product/search/criteria`, { filter_data: filterData })
+    //         setFilterId(response.data?.data?.id)
+    //         notification.success({
+    //             message: 'Filter Id Added',
+    //         })
+    //         console.log('here')
+    //     } catch (error) {
+    //         console.log('error', error)
+    //         notification.error({
+    //             message: 'Failed to Add Filter ID',
+    //         })
+    //         console.error(error)
+    //     }
+    // }
 
     const handleSubmit = async (values: any) => {
         const filters = [
@@ -141,7 +142,6 @@ const AddUrlShortner = () => {
     const handleFilterChange = (e: any, setFieldValue: any) => {
         const isChecked = e.target.checked
         setFieldValue('select_filter', isChecked)
-        setFilterShow(isChecked)
 
         if (isChecked) {
             URLARRAY.slice(1).forEach((item) => setFieldValue(item.name, ''))
@@ -220,17 +220,17 @@ const AddUrlShortner = () => {
                                 <Field
                                     type="checkbox"
                                     name="select_filter"
-                                    component={Input}
+                                    component={Checkbox}
                                     onChange={(e) => handleFilterChange(e, setFieldValue)}
                                 />
                             </FormItem>
 
-                            {filterShow && (
+                            {values?.select_filter && (
                                 <FilterSelect
                                     handleAddFilter={handleAddFilter}
                                     showAddFilter={showAddFilter}
-                                    handleAddFilters={handleAddFilters}
                                     handleRemoveFilter={handleRemoveFilter}
+                                    setFilterId={setFilterId}
                                 />
                             )}
 

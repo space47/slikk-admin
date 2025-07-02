@@ -16,6 +16,11 @@ import { pageSizeOptions } from '@/views/category-management/orderlist/commontyp
 import AccessDenied from '@/views/pages/AccessDenied'
 import { useLocation } from 'react-router-dom'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
+import DialogConfirm from '@/common/DialogConfirm'
+import { AxiosError } from 'axios'
+import { notification } from 'antd'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import moment from 'moment'
 
 const AppCoupons = () => {
     // const navigate = useNavigate()
@@ -26,6 +31,8 @@ const AppCoupons = () => {
     const [couponCodeFilter, setCouponCodeFilter] = useState('')
     const [activateMobileButton, setActivateMobileButton] = useState('')
     const [activateCodeButton, setActivateCodeButton] = useState('')
+    const [couponCode, setCouponCode] = useState<string>('')
+    const [deleteModal, setDeleteModal] = useState<boolean>(false)
 
     const { coupon, count, page, pageSize } = useAppSelector<CoupunInitialStateType>((state) => state.coupon)
     const {
@@ -55,7 +62,7 @@ const AppCoupons = () => {
             dispatch(setCount(couponsData?.data?.count))
         }
         if (isSuccess && activateCodeButton) {
-            dispatch(setCouponData([couponsData?.data]))
+            dispatch(setCouponData([couponsData?.data as any]))
         }
     }, [
         isSuccess,
@@ -74,7 +81,27 @@ const AppCoupons = () => {
     const hanldeSearchFuntionCode = () => {
         setActivateCodeButton(couponCodeFilter)
     }
-    const columns = CouponCoulumns()
+
+    const handleDeleteCoupon = (code: string) => {
+        setCouponCode(code)
+        setDeleteModal(true)
+    }
+
+    const columns = CouponCoulumns({ handleDeleteCoupon })
+
+    const hanldeDelete = async () => {
+        const body = {
+            expiry_date: moment().format('YYYY-MM-DD'),
+        }
+        try {
+            const res = await axioisInstance.patch(`merchant/coupon?coupon_code=${couponCode}`, body)
+            notification.success({ message: res?.data?.data?.message })
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                notification.error({ message: error?.message })
+            }
+        }
+    }
 
     if (isError && error && 'status' in error && error.status === 403) {
         return <AccessDenied />
@@ -166,6 +193,15 @@ const AppCoupons = () => {
                                 </div>
                             </div>
                         </div>
+                    )}
+                    {deleteModal && (
+                        <DialogConfirm
+                            IsDelete
+                            IsOpen={deleteModal}
+                            setIsOpen={setDeleteModal}
+                            headingName="Delete Modal"
+                            onDialogOk={hanldeDelete}
+                        />
                     )}
                 </>
             )}

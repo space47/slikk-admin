@@ -14,6 +14,7 @@ import { useAppSelector } from '@/store'
 import { ReturnOrderState } from '@/store/types/returnDetails.types'
 import { getButtonAndModalContent } from './returnOrderCommon'
 import ReturnActionActivity from './ReturnActionActivity'
+import { AxiosError } from 'axios'
 
 const RefundActivity = () => {
     const returnOrder = useAppSelector<ReturnOrderState>((state) => state.returnOrders)
@@ -21,10 +22,7 @@ const RefundActivity = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [action, setAction] = useState('')
     const [triggerPickedUpGenerate, setTriggerPickedUpGenerate] = useState<boolean>(false)
-    const [valueInsideModal, setValueInsideModal] = useState({
-        refundAmount: '',
-        refundId: '',
-    })
+    const [valueInsideModal, setValueInsideModal] = useState({ refundAmount: '', refundId: '' })
     const [triggerAction, setTriggerAction] = useState(false)
     const [modalContent, setModalContent] = useState<string>()
     const navigate = useNavigate()
@@ -35,17 +33,16 @@ const RefundActivity = () => {
     const { buttonText, modalContent: content } = getButtonAndModalContent(
         returnDetails?.log?.[returnDetails.log.length - 1]?.status || '',
         returnDetails?.return_order_delivery.find((item) => item?.state !== 'CANCELLED')?.partner,
-        returnDetails?.log,
+        returnDetails?.log as any[],
     )
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
-        setValueInsideModal((prev) => ({
-            ...prev,
-            [name]: value,
-        }))
+        setValueInsideModal((prev) => ({ ...prev, [name]: value }))
     }
 
     const [currentButton, setCurrentButton] = useState(false)
+    const [forceCOD, setForceCOD] = useState(false)
+
     const handlePICKUPGenerate = () => {
         setAction('create_reverse_pickup')
         setTriggerPickedUpGenerate(true)
@@ -130,17 +127,16 @@ const RefundActivity = () => {
                     : { action }
 
             const response = await axiosInstance.patch(`merchant/return_order/${returnDetails?.return_order_id}`, body)
-
-            notification.success({
-                message: 'Success',
-                description: response?.data?.message || 'Rider status updated successfully.',
-            })
+            notification.success({ message: response?.data?.message || 'Rider status updated successfully.' })
+            setForceCOD(false)
             navigate(0)
         } catch (error: any) {
             console.error(error)
             const errorMessage = error.response?.data?.message || 'There was an error updating the order status. Please try again.'
             notification.error({ message: 'Error', description: errorMessage })
-            navigate(0)
+            setForceCOD(true)
+        } finally {
+            setIsModalOpen(false)
         }
     }
 
@@ -149,6 +145,26 @@ const RefundActivity = () => {
             triggerApiCall()
         }
     }, [triggerAction])
+
+    const handleForceCod = async () => {
+        const body = {
+            action: 'return_completed',
+            reference_id: valueInsideModal.refundId,
+            return_amount: valueInsideModal.refundAmount,
+            cod_force: true,
+        }
+        try {
+            const response = await axiosInstance.patch(`merchant/return_order/${returnDetails?.return_order_id}`, body)
+            notification.success({ message: response?.data?.message || 'Rider status updated successfully.' })
+            setForceCOD(false)
+            navigate(0)
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                notification.error({ message: error?.message || 'Failed to Update' })
+            }
+            console.error(error)
+        }
+    }
 
     return (
         <Card className="mb-10 flex flex-col">
@@ -214,7 +230,7 @@ const RefundActivity = () => {
                         open={isModalOpen}
                         onOk={() => handleAction('return_completed')}
                         onCancel={() => setIsModalOpen(false)}
-                        okText={currentButton ? 'Returning....' : 'Return Order'}
+                        okText={'Return Order'}
                     >
                         <div className="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-gray-300 pb-2">INPUTS</div>
                         <div className="italic text-lg flex flex-row items-center justify-start gap-5">
@@ -241,11 +257,16 @@ const RefundActivity = () => {
                     returnDetails?.log?.some((item) => item?.status?.includes('REFUNDED')))) && (
                 <Modal
                     open={isModalOpen}
+                    okText={currentButton ? 'Returning' : 'Return Orders'}
                     onOk={() => handleAction('return_completed')}
                     onCancel={() => setIsModalOpen(false)}
-                    okText={currentButton ? 'Returning....' : 'Return Order'}
                 >
                     <p className="text-xl">Complete Return Order</p>
+                </Modal>
+            )}
+            {forceCOD && (
+                <Modal open={forceCOD} okText={'Proceed'} onOk={handleForceCod} onCancel={() => setForceCOD(false)}>
+                    <p className="text-xl">Do You Want To Proceed With Manual Refund</p>
                 </Modal>
             )}
         </Card>

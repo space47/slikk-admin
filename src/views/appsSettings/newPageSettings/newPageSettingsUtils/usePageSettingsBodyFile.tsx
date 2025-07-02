@@ -1,0 +1,115 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { handleimage } from '@/common/handleImage'
+import { EditAspectRatios, EditImageUpoads, EditVideoUpload } from '../../pageSettings/pageSettingsUtils/pageEditFunctions'
+
+interface props {
+    values?: any
+    initialValue?: any
+}
+
+export const PageSettingsBodyFile = async ({ values, initialValue }: props) => {
+    const componentConfig = {
+        ...Object.fromEntries(Object.entries(values?.component_config || {}).filter(([, value]) => value !== '')),
+    }
+
+    const backgroundLottieUpload = values?.background_lottie_array
+        ? await handleimage('product', values?.background_lottie_array)
+        : initialValue?.background_lottie
+    const mobileBackgroundLottieUpload = values?.mobile_background_lottie_array
+        ? await handleimage('product', values?.mobile_background_lottie_array)
+        : initialValue?.mobile_background_lottie
+
+    const { imageUpload, mobileimageUpload, footerImageUpload, headerImageUpload, subHeaderImageUpload, headerIconUpload } =
+        await EditImageUpoads(values)
+
+    const { backgroundVideoUpload, footervideoUpload, headerVideoUpload, mobileBackgroundVideoUpload, subHeaderVideoUpload } =
+        await EditVideoUpload(values)
+
+    const {
+        backgroundImageAspectRatios,
+        mobileImageAspectRatios,
+        headerImageAspectRatios,
+        subHeaderImageAspectRatios,
+        footerImageAspectRatios,
+    } = await EditAspectRatios(values)
+
+    const cta_config_data = {
+        ...values?.extra_info.cta_config,
+    }
+    const cta_config = Object.fromEntries(Object.entries(cta_config_data).filter(([, value]) => value !== ''))
+
+    const child_component_config_data = {
+        ...values?.extra_info?.child_component_config,
+    }
+    const child_component_config = Object.fromEntries(Object.entries(child_component_config_data).filter(([, value]) => value !== ''))
+    const backgroundConfig = {
+        ...Object.fromEntries(Object.entries(values?.background_config || {}).filter(([, value]) => value !== '')),
+        ...(imageUpload || values?.background_image ? { background_image: imageUpload || values?.background_image } : {}),
+        ...(mobileimageUpload || values?.mobile_background_image
+            ? { mobile_background_image: mobileimageUpload || values?.mobile_background_image }
+            : {}),
+        ...(values?.background_config?.background_image_aspect_ratio
+            ? { background_image_aspect_ratio: values.background_config.background_image_aspect_ratio }
+            : backgroundImageAspectRatios[0]
+              ? { background_image_aspect_ratio: backgroundImageAspectRatios[0] }
+              : {}),
+
+        ...(values?.background_config?.mobile_image_aspect_ratio
+            ? { mobile_image_aspect_ratio: values.background_config.mobile_image_aspect_ratio }
+            : mobileImageAspectRatios[0]
+              ? { mobile_image_aspect_ratio: mobileImageAspectRatios[0] }
+              : {}),
+        ...(backgroundVideoUpload || values?.background_video
+            ? { background_video: backgroundVideoUpload || values?.background_video }
+            : {}),
+        ...(mobileBackgroundVideoUpload || values?.mobile_background_video
+            ? { mobile_background_video: mobileBackgroundVideoUpload || values?.mobile_background_video }
+            : {}),
+        ...(backgroundLottieUpload || values?.background_lottie
+            ? { background_lottie: backgroundLottieUpload || values?.background_config.background_lottie }
+            : {}),
+        ...(mobileBackgroundLottieUpload || values?.mobile_background_Lottie
+            ? { mobile_background_lottie: mobileBackgroundLottieUpload || values?.background_config.mobile_background_lottie }
+            : {}),
+    }
+
+    const footerConfig = Object.fromEntries(
+        Object.entries({
+            ...values?.footer_config,
+            ...(footerImageUpload ? { image: footerImageUpload } : {}),
+            ...(footerImageAspectRatios?.[0] ? { aspect_ratio: footerImageAspectRatios[0] } : {}),
+            ...(footervideoUpload ? { video: footervideoUpload } : {}),
+        }).filter(([, value]) => value !== ''),
+    )
+    const headerConfig = Object.fromEntries(
+        Object.entries({
+            ...values?.header_config,
+            ...(headerIconUpload ? { icon: headerIconUpload } : {}),
+            ...(headerImageUpload ? { image: headerImageUpload } : {}),
+            ...(headerImageAspectRatios?.[0] ? { aspect_ratio: headerImageAspectRatios[0] } : {}),
+            ...(headerVideoUpload ? { video: headerVideoUpload } : {}),
+        }).filter(([, value]) => value !== ''),
+    )
+    const subHeaderConfig = Object.fromEntries(
+        Object.entries({
+            ...values?.sub_header_config,
+            ...(subHeaderImageUpload ? { image: subHeaderImageUpload } : {}),
+            ...(subHeaderImageAspectRatios?.[0] ? { aspect_ratio: subHeaderImageAspectRatios[0] } : {}),
+            ...(subHeaderVideoUpload ? { video: subHeaderVideoUpload } : {}),
+        }).filter(([, value]) => value !== ''),
+    )
+    const extraInfo = Object.fromEntries(
+        Object.entries({
+            extra_info: {
+                ...values?.extra_info,
+                ...(values?.extra_info?.timeout ? { timeout: values?.extra_info?.timeout } : {}),
+                ...(values?.extra_info?.page_size ? { page_size: values?.extra_info?.page_size } : {}),
+                ...(values?.extra_info?.child_data_type && { child_data_type: values?.extra_info?.child_data_type }),
+                cta_config: cta_config,
+                child_component_config: child_component_config,
+            },
+        }).filter(([, value]) => value !== ''),
+    )
+
+    return { componentConfig, backgroundConfig, footerConfig, headerConfig, subHeaderConfig, extraInfo, cta_config, child_component_config }
+}

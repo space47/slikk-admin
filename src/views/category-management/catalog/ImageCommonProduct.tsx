@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormContainer, FormItem, Upload } from '@/components/ui'
+import { FormContainer, Upload } from '@/components/ui'
 import { Field, FieldProps } from 'formik'
 import React from 'react'
 import { MdCancel } from 'react-icons/md'
-import Product from './CommonType'
 import { beforeUpload } from '@/common/beforeUpload'
 import { beforeVideoUpload } from '@/common/beforUploadVideo'
 import { Input } from 'antd'
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 
 interface ImageofProductProps {
     label: string
@@ -18,6 +18,8 @@ interface ImageofProductProps {
     textName: string
     placeholder: string
     isVideo?: boolean
+    delimiter?: string
+    setAllName?: (x: any) => void
 }
 
 const ImageCommonProduct = ({
@@ -30,57 +32,113 @@ const ImageCommonProduct = ({
     textName,
     placeholder,
     isVideo,
+    delimiter = ',',
+    setAllName,
 }: ImageofProductProps) => {
+    const getTextValues = (form: any) => {
+        const textValue = form.values[textName] || ''
+        return textValue.split(delimiter).map((item: string) => item.trim())
+    }
+
+    const updateTextField = (form: any, index: number, value: string) => {
+        const textValues = getTextValues(form)
+        textValues[index] = value
+        form.setFieldValue(textName, textValues.join(delimiter + ' '))
+    }
+
+    const handleDragEnd = (result: any, form: any) => {
+        if (!result.destination || !setAllName) return
+
+        const items = Array.from(allName)
+        const textValues = getTextValues(form)
+
+        const [reorderedItem] = items.splice(result.source.index, 1)
+        items.splice(result.destination.index, 0, reorderedItem)
+
+        const [reorderedText] = textValues.splice(result.source.index, 1)
+        textValues.splice(result.destination.index, 0, reorderedText)
+
+        setAllName(items)
+        form.setFieldValue(textName, textValues.join(delimiter + ' '))
+    }
+
     return (
-        <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 overflow-scroll scrollbar-hide ">
+        <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 p-4">
             {label}
-            <FormContainer className=" mt-5 w-full ">
-                {/* DIV */}
+            <FormContainer className="mt-5 w-full">
+                <Field name={name}>
+                    {({ form }: FieldProps) => {
+                        const textValues = getTextValues(form)
 
-                <div className="overflow-x-scroll w-[350px] scrollbar-hide flex justify-center">
-                    <div className="image w-[80%] min-h-[100px] h-auto mt-5 flex gap-3 items-center">
-                        {allName && allName.length > 0 ? (
-                            allName?.map(
-                                (img, index) =>
-                                    img && (
-                                        <div key={index} className="flex flex-col gap-3">
-                                            <img src={img} alt="img" className="w-[100px]" />
+                        return (
+                            <DragDropContext onDragEnd={(result) => handleDragEnd(result, form)}>
+                                <Droppable droppableId="images">
+                                    {(provided) => (
+                                        <div {...provided.droppableProps} ref={provided.innerRef} className="w-full space-y-4">
+                                            {allName && allName.length > 0 ? (
+                                                allName.map(
+                                                    (img, index) =>
+                                                        img && (
+                                                            <Draggable key={index} draggableId={`img-${index}`} index={index}>
+                                                                {(provided) => (
+                                                                    <div
+                                                                        ref={provided.innerRef}
+                                                                        {...provided.draggableProps}
+                                                                        {...provided.dragHandleProps}
+                                                                        className="flex items-center gap-3 p-3 bg-white rounded-lg shadow"
+                                                                    >
+                                                                        <img
+                                                                            src={img}
+                                                                            alt="img"
+                                                                            className="w-[100px] h-[100px] object-cover rounded"
+                                                                        />
 
-                                            <button className=" mb-5" onClick={(e) => handleRemove(e, index)}>
-                                                <MdCancel className="text-red-500 bg-none text-lg" />
-                                            </button>
+                                                                        <div className="flex-grow">
+                                                                            <Input
+                                                                                value={textValues[index] || ''}
+                                                                                placeholder={placeholder}
+                                                                                onChange={(e) =>
+                                                                                    updateTextField(form, index, e.target.value)
+                                                                                }
+                                                                                className="w-full"
+                                                                            />
+                                                                        </div>
+
+                                                                        <button onClick={(e) => handleRemove(e, index)} className="ml-2">
+                                                                            <MdCancel className="text-red-500 text-lg" />
+                                                                        </button>
+                                                                    </div>
+                                                                )}
+                                                            </Draggable>
+                                                        ),
+                                                )
+                                            ) : (
+                                                <p className="text-center py-4">No images</p>
+                                            )}
+                                            {provided.placeholder}
                                         </div>
-                                    ),
-                            )
-                        ) : (
-                            <p>No image</p>
-                        )}
-                    </div>
-                </div>
+                                    )}
+                                </Droppable>
+                            </DragDropContext>
+                        )
+                    }}
+                </Field>
 
-                <FormItem label="" className="grid grid-rows-2">
+                <div className="mt-4">
                     <Field name={name}>
-                        {({ form }: FieldProps<Product>) => (
-                            <>
-                                <Upload
-                                    multiple
-                                    className="flex justify-center"
-                                    beforeUpload={isVideo ? beforeVideoUpload : beforeUpload}
-                                    fileList={fileLists}
-                                    onChange={(files) => form.setFieldValue(fieldname, files)}
-                                    onFileRemove={(files) => form.setFieldValue(fieldname, files)}
-                                />
-                            </>
+                        {({ form }: FieldProps) => (
+                            <Upload
+                                multiple
+                                className="flex justify-center"
+                                beforeUpload={isVideo ? beforeVideoUpload : beforeUpload}
+                                fileList={fileLists}
+                                onChange={(files) => form.setFieldValue(fieldname, files)}
+                                onFileRemove={(files) => form.setFieldValue(fieldname, files)}
+                            />
                         )}
                     </Field>
-                </FormItem>
-
-                <br />
-                <br />
+                </div>
             </FormContainer>
-            <FormItem label="" className="col-span-1 w-[80%]">
-                <Field type="text" name={textName} placeholder={placeholder} component={Input} />
-            </FormItem>
         </FormContainer>
     )
 }

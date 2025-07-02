@@ -14,6 +14,7 @@ interface DATEPROPS {
     setFrom: any
     setTo: any
     handleDateChange: any
+    forEvent?: boolean
 }
 
 const PREVIOUSARRAY = [
@@ -26,7 +27,7 @@ const PREVIOUSARRAY = [
     { label: 'CUSTOM ', value: 'CUSTOM' },
 ]
 
-const UltimateDatePicker = ({ setFrom, setTo, handleDateChange }: DATEPROPS) => {
+const UltimatePersistDatePicker = ({ setFrom, setTo, handleDateChange, forEvent }: DATEPROPS) => {
     const dispatch = useDispatch()
     const { selectedOption } = useSelector((state: RootState) => state.datePicker)
     const [showingDatePicker, setShowingDatePicker] = useState(false)
@@ -36,40 +37,33 @@ const UltimateDatePicker = ({ setFrom, setTo, handleDateChange }: DATEPROPS) => 
         let startDate: string | undefined
         let endDate: string | undefined
 
-        switch (value) {
-            case 'TODAY':
-                startDate = moment().format('YYYY-MM-DD')
-                endDate = startDate
-                setShowingDatePicker(false)
-                break
-            case 'YESTERDAY':
-                startDate = moment().subtract(1, 'days').format('YYYY-MM-DD')
-                endDate = startDate
-                setShowingDatePicker(false)
-                break
-            case 'CURRENT WEEK':
-                startDate = moment().startOf('isoWeek').format('YYYY-MM-DD')
-                endDate = moment().endOf('isoWeek').format('YYYY-MM-DD')
-                setShowingDatePicker(false)
-                break
-            case 'LAST WEEK':
-                startDate = moment().subtract(1, 'week').startOf('isoWeek').format('YYYY-MM-DD')
-                endDate = moment().subtract(1, 'week').endOf('isoWeek').format('YYYY-MM-DD')
-                setShowingDatePicker(false)
-                break
-            case 'CURRENT MONTH':
-                startDate = moment().startOf('month').format('YYYY-MM-DD')
-                endDate = moment().endOf('month').format('YYYY-MM-DD')
-                setShowingDatePicker(false)
-                break
-            case 'LAST MONTH':
-                startDate = moment().subtract(1, 'month').startOf('month').format('YYYY-MM-DD')
-                endDate = moment().subtract(1, 'month').endOf('month').format('YYYY-MM-DD')
-                setShowingDatePicker(false)
-                break
-            case 'CUSTOM':
-                setShowingDatePicker(true)
-                return
+        if (value === 'TODAY') {
+            startDate = moment().format('YYYY-MM-DD')
+            endDate = startDate
+            setShowingDatePicker(false)
+        } else if (value === 'YESTERDAY') {
+            startDate = moment().subtract(1, 'days').format('YYYY-MM-DD')
+            endDate = startDate
+            setShowingDatePicker(false)
+        } else if (value === 'CURRENT WEEK') {
+            startDate = moment().startOf('isoWeek').format('YYYY-MM-DD')
+            endDate = moment().endOf('isoWeek').format('YYYY-MM-DD')
+            setShowingDatePicker(false)
+        } else if (value === 'LAST WEEK') {
+            startDate = moment().subtract(1, 'week').startOf('isoWeek').format('YYYY-MM-DD')
+            endDate = moment().subtract(1, 'week').endOf('isoWeek').format('YYYY-MM-DD')
+            setShowingDatePicker(false)
+        } else if (value === 'CURRENT MONTH') {
+            startDate = moment().startOf('month').format('YYYY-MM-DD')
+            endDate = moment().endOf('month').format('YYYY-MM-DD')
+            setShowingDatePicker(false)
+        } else if (value === 'LAST MONTH') {
+            startDate = moment().subtract(1, 'month').startOf('month').format('YYYY-MM-DD')
+            endDate = moment().subtract(1, 'month').endOf('month').format('YYYY-MM-DD')
+            setShowingDatePicker(false)
+        } else if (value === 'CUSTOM') {
+            setShowingDatePicker(true)
+            return
         }
 
         if (startDate && endDate) {
@@ -84,6 +78,8 @@ const UltimateDatePicker = ({ setFrom, setTo, handleDateChange }: DATEPROPS) => 
         }
     }, [selectedOption])
 
+    const filteredOptions = forEvent ? PREVIOUSARRAY.filter((item) => item.value !== 'TODAY' && item.value !== 'YESTERDAY') : PREVIOUSARRAY
+
     return (
         <div className="flex gap-1 items-center xl:mr-10">
             <div className="border w-auto rounded-md h-auto font-bold mt-8 bg-black text-white flex justify-center">
@@ -92,7 +88,7 @@ const UltimateDatePicker = ({ setFrom, setTo, handleDateChange }: DATEPROPS) => 
                     title={selectedOption}
                     onSelect={(value) => handleSelect(value.toString())}
                 >
-                    {PREVIOUSARRAY.map((item) => (
+                    {filteredOptions.map((item) => (
                         <DropdownItem key={item.value} eventKey={item.value}>
                             <span>{item.label}</span>
                         </DropdownItem>
@@ -110,4 +106,4 @@ const UltimateDatePicker = ({ setFrom, setTo, handleDateChange }: DATEPROPS) => 
     )
 }
 
-export default UltimateDatePicker
+export default UltimatePersistDatePicker

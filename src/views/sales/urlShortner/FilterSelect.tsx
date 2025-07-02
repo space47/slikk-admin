@@ -9,14 +9,18 @@ import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { MdCancel } from 'react-icons/md'
 import { MAXMINARRAY, OFFARRAY } from '../groupNotification/sendNotification/sendNotify.common'
+import ComonFilterSelect from '@/common/ComonFilterSelect'
 
 interface FILTERPROPS {
-    handleAddFilter: any
-    showAddFilter: any
-    handleRemoveFilter: any
-    handleAddFilters: any
+    handleAddFilter?: any
+    showAddFilter?: any
+    handleRemoveFilter?: any
+    handleAddFilters?: any
     sortValue?: any
     targetPagevalue?: any
+    filterValue?: any
+    setFilterId?: any
+    isPageSettings?: boolean
 }
 
 const DISCOUNTOPTIONS = [
@@ -33,6 +37,7 @@ export const targetPageArray = [
     { label: 'order', value: 'order' },
     { label: 'cart', value: 'cart' },
     { label: 'home', value: 'home' },
+    { label: 'events', value: 'events' },
     { label: 'signIn', value: 'signIn' },
     { label: 'otpVerification', value: 'otpVerification' },
     { label: 'homeTabs', value: 'homeTabs' },
@@ -69,68 +74,77 @@ export const targetPageArray = [
 ]
 
 const FilterSelect = ({
+    sortValue,
+    filterValue,
+    setFilterId,
+    isPageSettings,
     handleAddFilter,
     showAddFilter,
     handleRemoveFilter,
     handleAddFilters,
-    sortValue,
-    targetPagevalue,
 }: FILTERPROPS) => {
-    const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
     const dispatch = useAppDispatch()
+    const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
     useEffect(() => {
         dispatch(getAllFiltersAPI())
-    }, [])
+    }, [dispatch])
     return (
         <div>
-            {' '}
-            <FormItem label="SEARCH STRINGS">
-                <FormContainer className="items-center mt-4">
-                    <button onClick={handleAddFilter} type="button">
-                        <IoMdAddCircle className="text-3xl text-green-500" />
-                    </button>
-                </FormContainer>
+            {isPageSettings ? (
+                <>
+                    <FormItem label="SEARCH STRINGS">
+                        <FormContainer className="items-center mt-4">
+                            <button onClick={handleAddFilter} type="button">
+                                <IoMdAddCircle className="text-3xl text-green-500" />
+                            </button>
+                        </FormContainer>
 
-                {showAddFilter.map((_, index: any) => (
-                    <FormItem key={index} className="flex  gap-2">
-                        <div className="flex gap-3 items-center">
-                            <Field name={`filtersAdd[${index}]`} key={index}>
-                                {({ field, form }: FieldProps<any>) => (
-                                    <Select
-                                        isMulti
-                                        placeholder={`Filter Tags ${index + 1}`}
-                                        options={filters.filters}
-                                        getOptionLabel={(option) => option.label}
-                                        getOptionValue={(option) => option.value}
-                                        onChange={(newVal) => {
-                                            const newValues = newVal ? newVal.map((val) => val.value) : []
-                                            form.setFieldValue(field.name, newValues)
-                                        }}
-                                        className="w-3/4"
-                                    />
-                                )}
-                            </Field>
-                            <div className="">
-                                <button type="button" className="" onClick={() => handleRemoveFilter(index)}>
-                                    <MdCancel className="text-xl text-red-500" />
-                                </button>
-                            </div>
-                        </div>
+                        {showAddFilter.map((_, index: any) => (
+                            <FormItem key={index} className="flex  gap-2">
+                                <div className="flex gap-3 items-center">
+                                    <Field name={`filtersAdd[${index}]`} key={index}>
+                                        {({ field, form }: FieldProps<any>) => (
+                                            <Select
+                                                isMulti
+                                                placeholder={`Filter Tags ${index + 1}`}
+                                                options={filters.filters}
+                                                getOptionLabel={(option) => option.label}
+                                                getOptionValue={(option) => option.value}
+                                                onChange={(newVal) => {
+                                                    const newValues = newVal ? newVal.map((val) => val.value) : []
+                                                    form.setFieldValue(field.name, newValues)
+                                                }}
+                                                className="w-3/4"
+                                            />
+                                        )}
+                                    </Field>
+                                    <div className="">
+                                        <button type="button" className="" onClick={() => handleRemoveFilter(index)}>
+                                            <MdCancel className="text-xl text-red-500" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </FormItem>
+                        ))}
+
+                        {showAddFilter.length > 0 && (
+                            <>
+                                <Field>
+                                    {({ form }: FieldProps<any>) => (
+                                        <Button variant="new" onClick={() => handleAddFilters(form.values)} type="button">
+                                            Search Strings
+                                        </Button>
+                                    )}
+                                </Field>
+                            </>
+                        )}
                     </FormItem>
-                ))}
-
-                {showAddFilter.length > 0 && (
-                    <>
-                        <Field>
-                            {({ form }: FieldProps<any>) => (
-                                <Button variant="new" onClick={() => handleAddFilters(form.values)} type="button">
-                                    Search Strings
-                                </Button>
-                            )}
-                        </Field>
-                    </>
-                )}
-            </FormItem>
+                </>
+            ) : (
+                <div className="mb-4">
+                    <ComonFilterSelect isEdit filterId={filterValue} setFilterId={setFilterId} />
+                </div>
+            )}
             <FormContainer className="flex gap-3 flex-col xl:flex-row">
                 {MAXMINARRAY.map((item, key) => (
                     <FormItem key={key} label={item.label} className="w-full xl:w-2/3">

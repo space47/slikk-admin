@@ -1,9 +1,9 @@
 import React from 'react'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
-import moment from 'moment'
+import dayjs, { Dayjs } from 'dayjs'
 import { renderTimeViewClock } from '@mui/x-date-pickers/timeViewRenderers'
 
 interface DateAndTimePickerProps {
@@ -15,23 +15,23 @@ interface DateAndTimePickerProps {
 }
 
 export default function DateAndTimePicker({ fromDate, toDate, setFromDateAndTime, setToDateAndTime, shortSpace }: DateAndTimePickerProps) {
-    const parsedFromDate = fromDate ? moment(fromDate) : moment()
-    const parsedToDate = toDate ? moment(toDate) : moment()
+    const parsedFromDate = fromDate ? dayjs(fromDate) : dayjs()
+    const parsedToDate = toDate ? dayjs(toDate) : dayjs()
 
-    const handleFromTimeChange = (value: any) => {
+    const handleFromTimeChange = (value: Dayjs | null) => {
         if (value) {
-            setFromDateAndTime(moment(value).format('YYYY-MM-DD HH:mm:ss'))
+            setFromDateAndTime(value.format('YYYY-MM-DD HH:mm:ss'))
         }
     }
 
-    const handleToTimeChange = (value: any) => {
+    const handleToTimeChange = (value: Dayjs | null) => {
         if (value) {
-            setToDateAndTime(moment(value).format('YYYY-MM-DD HH:mm:ss'))
+            setToDateAndTime(value.format('YYYY-MM-DD HH:mm:ss'))
         }
     }
 
     return (
-        <LocalizationProvider dateAdapter={AdapterMoment}>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DemoContainer components={['DateTimePicker', 'DateTimePicker']}>
                 <div className={shortSpace ? `flex gap-4` : 'flex justify-between'}>
                     <DateTimePicker

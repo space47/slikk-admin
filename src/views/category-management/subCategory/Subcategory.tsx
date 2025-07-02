@@ -1,204 +1,113 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from 'react'
-import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import moment from 'moment'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
-import Button from '@/components/ui/Button'
-import { FaEdit, FaTrash } from 'react-icons/fa'
-import { Modal } from 'antd'
-import { IoWarningOutline } from 'react-icons/io5'
-
-type Product = {
-    id: number
-    name: string
-    sub_category_name: string
-    title: string
-    description: string
-    image: string
-    footer: string | null
-    quick_filter_tags: string
-    position: number
-    gender: string
-    is_active: boolean
-    create_date: string
-    update_date: string
-    is_try_and_buy: boolean
-    sub_category: number
-    last_updated_by: string | null
-}
-
-type Option = {
-    value: number
-    label: string
-}
+import { Dropdown } from '@/components/ui'
+import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import { useSubCategoryColumns } from './subCategoryUtils/useSubCategoryColumns'
+import { Option, pageSizeOptions } from '@/constants/pageUtils.constants'
+import { useSubCategoryFilter } from './subCategoryUtils/subCategoryFilter'
+import { useGetSubCategory } from './subCategoryUtils/useGetSubCategory'
+import { useDeleteFromCatalog } from '@/commonHooks/useDeleteFromCatalog'
+import { useLocalPaginateData } from '@/commonHooks/useLocalPaginateData'
+import CatalogDeleteModal from '@/common/CatalogDeleteModal'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
-const pageSizeOptions = [
-    { value: 10, label: '10 / page' },
-    { value: 25, label: '25 / page' },
-    { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
-]
-
 const Subcategory = () => {
-    const [data, setData] = useState<Product[]>([])
-    const [totalData, setTotalData] = useState(0)
-    const [page, setPage] = useState(1)
-    const [pageSize, setPageSize] = useState(10)
-    const [globalFilter, setGlobalFilter] = useState('')
-    const [deleteModal, setDeleteModal] = useState(false)
-    const [idStoreForDelete, setIdStoreForDelete] = useState()
-
-    const fetchData = async () => {
-        try {
-            const filtervalue = globalFilter ? `&q=${globalFilter}` : ''
-            const response = await axiosInstance.get(`sub-category?dashboard=true${filtervalue}`)
-            const data = response.data.data
-            const total = data.length
-            setData(data)
-            setTotalData(total)
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
-    useEffect(() => {
-        fetchData()
-    }, [globalFilter])
-
-    // Apply global filter
-    const filteredData = data.filter((item) =>
-        Object.values(item).some((val) => (val ? val.toString().toLowerCase().includes(globalFilter.toLowerCase()) : false)),
-    )
-
-    // Paginate filtered data
-    const paginatedData = filteredData.slice((page - 1) * pageSize, page * pageSize)
-    const totalPages = Math.ceil(filteredData.length / pageSize)
-
-    const columns = [
-        {
-            header: 'Edit',
-            accessor: 'id',
-            format: (value) => (
-                <button className="border-none bg-none">
-                    <a href={`/app/category/subCategory/${value}`}>
-                        {' '}
-                        <FaEdit className="text-xl text-blue-600" />
-                    </a>
-                </button>
-            ),
-        },
-        { header: 'Name', accessor: 'name' },
-        {
-            header: 'Create Date',
-            accessor: 'create_date',
-            format: (value: any) => moment(value).format('YYYY-MM-DD'),
-        },
-        { header: 'Title', accessor: 'title' },
-        { header: 'Description', accessor: 'description' },
-        {
-            header: 'Image',
-            accessor: 'image',
-            format: (value: any) => <img src={value} alt="product" width="50" />,
-        },
-        {
-            header: 'Footer',
-            accessorKey: 'footer',
-            cell: (info) => {
-                return (
-                    <div className="w-[200px] h-[70px] overflow-hidden">
-                        <div
-                            className="text-ellipsis whitespace-wrap line-clamp-3 overflow-hidden"
-                            dangerouslySetInnerHTML={{ __html: info.getValue() as string }}
-                        />
-                    </div>
-                )
-            },
-        },
-        { header: 'Quick Filter Tags', accessor: 'quick_filter_tags' },
-        { header: 'Position', accessor: 'position' },
-        { header: 'Gender', accessor: 'gender' },
-        {
-            header: 'Active',
-            accessor: 'is_active',
-            format: (value: any) => (value ? 'Yes' : 'No'),
-        },
-        {
-            header: 'Update Date',
-            accessor: 'update_date',
-            format: (value: any) => moment(value).format('YYYY-MM-DD'),
-        },
-        {
-            header: 'Try and Buy',
-            accessor: 'is_try_and_buy',
-            format: (value: any) => (value ? 'Yes' : 'No'),
-        },
-        { header: 'Last Updated By', accessor: 'last_updated_by' },
-
-        {
-            header: 'Delete',
-            accessor: 'id',
-            format: (value) => (
-                <button onClick={() => handleDeleteClick(value)} className="border-none bg-none">
-                    <FaTrash className="text-xl text-red-600" />
-                </button>
-            ),
-        },
-    ]
-
     const navigate = useNavigate()
+    const [deleteModal, setDeleteModal] = useState(false)
+    const [globalFilter, setGlobalFilter] = useState<string>('')
+    const [idStoreForDelete, setIdStoreForDelete] = useState()
+    const [selectedDivision, setSelectedDivision] = useState('Select Division')
+    const [selectedCategory, setSelectedCategory] = useState('Select Category')
 
-    // const handleActionClick = (id: any) => {
-    //     navigate(`/app/category/subCategory/${id}`)
-    // }
+    const { subCategories, DivisionArray } = useGetSubCategory({ selectedDivision, selectedCategory })
 
-    const handleSeller = () => {
-        navigate('/app/category/subCategory/addNew')
-    }
+    const { page, pageSize, paginatedData, setPage, setPageSize, totalPages } = useLocalPaginateData({
+        data: subCategories,
+        globalFilter,
+    })
+    const categoryArray = useSubCategoryFilter({ selectedDivision })
 
     const handleDeleteClick = (id: any) => {
-        console.log('DELETE', id)
         setDeleteModal(true)
         setIdStoreForDelete(id)
     }
-
-    const deleteUser = async () => {
-        try {
-            const body = {
-                id: idStoreForDelete,
-            }
-            await axiosInstance.delete(`sub-category`, {
-                data: body,
-            })
-            setDeleteModal(false)
-            navigate(0)
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    const handleCloseModal = () => {
-        setDeleteModal(false)
-    }
+    const { deleteFromCatalog } = useDeleteFromCatalog({ idStoreForDelete, name: 'sub-category', setDeleteModal })
+    const columns = useSubCategoryColumns({ handleDeleteClick })
 
     return (
-        <div>
+        <div className="p-2 rounded-xl shadow-xl">
             <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
-                <div className="mb-4">
-                    <input
-                        type="text"
-                        placeholder="Search here"
-                        value={globalFilter}
-                        onChange={(e) => setGlobalFilter(e.target.value)}
-                        className="p-2 border rounded"
-                    />
+                <div className="flex flex-col gap-2 xl:flex-row items-center">
+                    <div className="mb-4">
+                        <input
+                            type="text"
+                            placeholder="Search here"
+                            value={globalFilter}
+                            className="p-2 border rounded"
+                            onChange={(e) => setGlobalFilter(e.target.value)}
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <div className="bg-gray-200 max-h-[140px] px-1 rounded-lg font-bold text-[15px]">
+                            <Dropdown
+                                className="border   text-black text-lg font-semibold "
+                                title={selectedDivision}
+                                onSelect={(selectedKey) => {
+                                    setPage(1)
+                                    setSelectedCategory('Select Category')
+                                    setSelectedDivision(selectedKey)
+                                }}
+                            >
+                                <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide xl:max-h-[600px]  xl:overflow-y-scroll font-bold ">
+                                    {DivisionArray?.map((item, key) => (
+                                        <DropdownItem key={key} eventKey={item} className="h-1">
+                                            {item}
+                                        </DropdownItem>
+                                    ))}
+                                </div>
+                                <div
+                                    className="flex mt-3 justify-center items-center rounded-lg cursor-pointer text-white bg-red-500 hover:bg-red-400"
+                                    onClick={() => setSelectedDivision('Select Division')}
+                                >
+                                    Clear
+                                </div>
+                            </Dropdown>
+                        </div>
+                    </div>
+                    <div className="mb-4">
+                        <div className="bg-gray-200 max-h-[140px] px-1 rounded-lg font-bold text-[15px]">
+                            <Dropdown
+                                className="border   text-black text-lg font-semibold "
+                                title={selectedCategory}
+                                onSelect={(selectedKey) => setSelectedCategory(selectedKey)}
+                            >
+                                <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide xl:max-h-[600px]  xl:overflow-y-scroll font-bold ">
+                                    {categoryArray?.map((item, key) => (
+                                        <DropdownItem key={key} eventKey={item} className="h-1">
+                                            {item}
+                                        </DropdownItem>
+                                    ))}
+                                </div>
+                                <div
+                                    className="flex mt-3 justify-center items-center rounded-lg cursor-pointer text-white bg-red-500 hover:bg-red-400"
+                                    onClick={() => setSelectedCategory('Select Category')}
+                                >
+                                    Clear
+                                </div>
+                            </Dropdown>
+                        </div>
+                    </div>
                 </div>
                 <div className="flex items-end justify-end mb-4 order-first xl:order-1">
-                    <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={handleSeller}>
+                    <button
+                        className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
+                        onClick={() => navigate('/app/category/subCategory/addNew')}
+                    >
                         ADD NEW SUB_CATEGORY
                     </button>{' '}
                     <br />
@@ -214,9 +123,9 @@ const Subcategory = () => {
                     </Tr>
                 </THead>
                 <TBody>
-                    {paginatedData.map((row) => (
+                    {paginatedData?.map((row: any) => (
                         <Tr key={row.id}>
-                            {columns.map((col) => (
+                            {columns.map((col: any) => (
                                 <Td key={col.accessor}>{col.format ? col.format(row[col.accessor]) : row[col.accessor]}</Td>
                             ))}
                         </Tr>
@@ -236,20 +145,7 @@ const Subcategory = () => {
                 </div>
             </div>
             {deleteModal && (
-                <Modal
-                    title=""
-                    open={deleteModal}
-                    onOk={deleteUser}
-                    onCancel={handleCloseModal}
-                    okText="DELETE"
-                    okButtonProps={{
-                        style: { backgroundColor: 'red', borderColor: 'red' },
-                    }}
-                >
-                    <div className="italic text-lg flex flex-row items-center justify-start gap-5">
-                        <IoWarningOutline className="text-red-600 text-4xl" /> ARE YOU SURE YOU WANT TO DELETE !!
-                    </div>
-                </Modal>
+                <CatalogDeleteModal deleteModal={deleteModal} setDeleteModal={setDeleteModal} deleteFromCatalog={deleteFromCatalog} />
             )}
         </div>
     )

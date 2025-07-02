@@ -1,257 +1,107 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useLocation, useNavigate } from 'react-router-dom'
-import moment from 'moment'
-import { BANNERMODEL } from './BannerCommon'
-import { FaEdit, FaSync, FaTrash } from 'react-icons/fa'
-import { Modal, notification } from 'antd'
-import { IoWarningOutline } from 'react-icons/io5'
+import { BANNER_MODEL } from './BannerCommon'
+import { notification } from 'antd'
 import EasyTable from '@/common/EasyTable'
-import { Button, Dropdown, Input } from '@/components/ui'
-import { BANNER_PAGE_NAME } from '@/common/banner'
+import { Button, Dropdown } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import _ from 'lodash'
-import { MdCancel } from 'react-icons/md'
 import BulkEditModal from './BulkEditModal'
-
-type Option = {
-    value: number
-    label: string
-}
-
-const pageSizeOptions = [
-    { value: 10, label: '10 / page' },
-    { value: 25, label: '25 / page' },
-    { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
-]
+import { BANNER_PAGE_NAME } from '@/common/banner'
+import { useBannerColumns } from './bannerUtils/BannerColumns'
+import { Option } from '@/views/org-management/sellers/sellerCommon'
+import { pageSizeOptions } from '@/views/category-management/orderlist/commontypes'
+import { useAppSelector } from '@/store'
+import { DIVISION_STATE } from '@/store/types/division.types'
+import { useFetchApi } from '@/commonHooks/useFetchApi'
+import DeleteBannerModal from './editBanner/component/DeleteBannerModal'
+import { fetchForSectionHeading } from './bannerUtils/bannerFunctions'
 
 const AppBanners = () => {
     const navigate = useNavigate()
     const location = useLocation()
     const { var1, var2 } = location.state || {}
-    const [data, setData] = useState<BANNERMODEL[]>([])
-    const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
-    const [globalFilter, setGlobalFilter] = useState('')
+    const [globalFilter, setGlobalFilter] = useState<string>('')
     const [showDeleteModal, setShowDeleteModal] = useState(false)
-    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(var1 ? var1 : BANNER_PAGE_NAME[0])
     const [sectionHeadingArray, setSectionHeadingArray] = useState<any[]>()
-    const [isSectionheading, setIsSectionheading] = useState(false)
+    const [isSectionHeading, setIsSectionHeading] = useState(false)
     const [selectedHeading, setSelectedHeading] = useState(var2 ? var2 : 'Select Section')
-    const [bannerid, setBannerid] = useState<number>()
+    const [selectedDivision, setSelectedDivision] = useState('Select Division')
+    const [bannerId, setBannerId] = useState<number>()
     const [bannerIdStore, setBannerIdStore] = useState<any[]>([])
-    const [showBannerEditButton, setShowBannerIdButton] = useState(false)
     const [showBulkEditModal, setShowBulkEditModal] = useState(false)
-    const [updatedPosition, setUpdatedPosition] = useState<{
-        [key: number]: number
-    }>({})
-    const [isSelectAllBanner, setIsSelectAllBanner] = useState(false)
+    const [updatedPosition, setUpdatedPosition] = useState<{ [key: number]: number }>({})
     const [sectionFilter, setSectionFilter] = useState<string>('')
+    const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(
+        var1 !== undefined ? { name: var1, value: var1 } : BANNER_PAGE_NAME[0],
+    )
 
-    console.log('var1', var1, 'var2', var2)
+    const DivisionArray =
+        divisions?.divisions?.map((item) => {
+            return { name: item?.name, value: item?.name }
+        }) || []
 
-    const fetchData = async (page: number, pageSize: number, filter: string) => {
-        let sectionHeading = ''
-        if (var2) {
-            sectionHeading = `&section_heading=${var2}`
-        }
-        if (isSectionheading && selectedHeading !== 'Select Section') {
-            sectionHeading = `&section_heading=${selectedHeading}`
-        }
-        try {
-            const response = await axiosInstance.get(
-                `/banners?p=${page}&page_size=${pageSize}&name=${filter}&page=${currentSelectedPage.value}${sectionHeading}`,
-            )
-            const data = response.data.data.results
+    //NOTE: FOR FETCHING PAGE NAMES Dynamically.......will fix it later
+    // useEffect(() => {
+    //     fetchPageSettings(setPageNames, setCurrentSelectedPage)
+    // }, [])
 
-            const total = response.data.data.count
-            setData(data)
+    // const BANNER_PAGE_NAME = pageNames?.map((item) => ({
+    //     name: item?.display_name,
+    //     value: item?.name,
+    // }))
 
-            setTotalData(total)
-
-            const count = response.data.data.count
-            setData(data)
-            setTotalData(count)
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
-    const fetchForSectionHeading = async () => {
-        try {
-            const response = await axiosInstance.get(`/banners?data_type=section_heading`)
-            const data = response.data.data
-
-            setSectionHeadingArray(data)
-        } catch (error) {
-            console.log(error)
-        }
-    }
+    console.log('var1', var1)
 
     useEffect(() => {
-        fetchForSectionHeading()
+        fetchForSectionHeading(currentSelectedPage)
+            .then((data) => {
+                setSectionHeadingArray(data)
+            })
+            .catch((error) => {
+                console.error('Error fetching section headings:', error)
+            })
     }, [currentSelectedPage])
 
-    useEffect(() => {
-        fetchData(page, pageSize, globalFilter)
-    }, [page, pageSize, globalFilter, currentSelectedPage, selectedHeading])
+    const queryURL = useMemo(() => {
+        let sectionHeading = ''
+        if (var2) {
+            sectionHeading = `&section_heading=${encodeURIComponent(var2)}`
+        }
+        if (isSectionHeading && selectedHeading !== 'Select Section') {
+            sectionHeading = `&section_heading=${encodeURIComponent(selectedHeading)}`
+        }
+        const divisionFilter = selectedDivision !== 'Select Division' ? `&division=${encodeURIComponent(selectedDivision)}` : ''
+        return `/banners?p=${page}&page_size=${pageSize}&name=${globalFilter}&page=${currentSelectedPage.value}${sectionHeading}${divisionFilter}`
+    }, [page, pageSize, globalFilter, currentSelectedPage, selectedHeading, selectedDivision, var2, isSectionHeading])
 
+    const { data, totalData, responseStatus } = useFetchApi<BANNER_MODEL>({ url: queryURL })
     const filteredSectionHeadings = _.uniq(sectionHeadingArray)?.filter((item) => item.toLowerCase().includes(sectionFilter.toLowerCase()))
 
-    console.log('section filters', filteredSectionHeadings)
+    console.log('response Status', responseStatus)
 
     const handleSectionHeading = (selectedKey: string) => {
         setSelectedHeading(selectedKey)
-        setIsSectionheading(true)
+        setIsSectionHeading(true)
     }
 
-    const handleSelectAllBanners = (e) => {
+    const handleSelectAllBanners = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.checked) {
             const allIds = data.map((banner) => banner.id)
             setBannerIdStore(allIds)
-            setIsSelectAllBanner(true)
-            setShowBannerIdButton(true)
         } else {
-            handleSelectEmptyBanners()
+            setBannerIdStore([])
         }
     }
 
-    const handleSelectEmptyBanners = () => {
-        setIsSelectAllBanner(false)
-        setBannerIdStore([])
-        setShowBannerIdButton(false)
-    }
-
-    const columns = useMemo(
-        () => [
-            {
-                header: (
-                    <div className="flex flex-col gap-2 items-center justify-center">
-                        <input
-                            type="checkbox"
-                            name="selectAll"
-                            checked={data.length > 0 && bannerIdStore.length === data.length}
-                            onChange={handleSelectAllBanners}
-                        />
-                    </div>
-                ),
-                accessorKey: 'id',
-                cell: ({ row }) => {
-                    const bannerId = row.original.id
-                    return (
-                        <div className="flex items-center justify-center">
-                            <input
-                                type="checkbox"
-                                name="bannerId"
-                                checked={bannerIdStore.includes(bannerId)}
-                                onChange={(e) => handleSelectBannerId(bannerId, e.target.checked)}
-                            />
-                        </div>
-                    )
-                },
-            },
-            {
-                header: 'Edit',
-                accessorKey: 'id',
-                cell: ({ row }) => (
-                    <button className="border-none bg-none">
-                        <a href={`/app/appSettings/banners/${row.original.id}`} target="_blank" rel="noreferrer">
-                            <FaEdit className="text-xl text-blue-600" />
-                        </a>
-                    </button>
-                ),
-            },
-            { header: 'Name', accessorKey: 'name' },
-            {
-                header: 'Position',
-                accessorKey: 'position',
-                cell: ({ getValue, row }) => {
-                    const stockId = row.original.id
-                    const position = updatedPosition[stockId] ?? row.original.position
-                    return (
-                        <div className="flex gap-1 items-center">
-                            <input
-                                className="w-[60px] "
-                                type="number"
-                                min={0}
-                                value={position}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        handleUpdate(row.original.id, row.original.position)
-                                    }
-                                }}
-                                onChange={(e) => handleQuantityChange(stockId, Number(e.target.value))}
-                            />
-                            <div>
-                                <button
-                                    className="px-4 py-2 bg-none text-xl rounded font-bold text-green-600"
-                                    onClick={() => handleUpdate(row.original.id, row.original.position)}
-                                >
-                                    <FaSync />
-                                </button>
-                            </div>
-                        </div>
-                    )
-                },
-            },
-            { header: 'Section Heading', accessorKey: 'section_heading' },
-            {
-                header: 'Brand Name',
-                accessorKey: 'brand',
-                cell: (info: any) => info.row.original.brand.map((item: any, key: number) => <div key={key}>{item.name}</div>),
-            },
-            {
-                header: 'DIVISION Name',
-                accessorKey: 'division',
-                cell: (info: any) => info.row.original.division.map((item: any, key: number) => <div key={key}>{item.name}</div>),
-            },
-
-            {
-                header: 'Image (WEB)',
-                accessorKey: 'image_web',
-                cell: (info) =>
-                    info.getValue() ? (
-                        <img src={info.getValue()?.split(',')[0]} alt="" className=" object-contain w-[100px] h-[100xp] " />
-                    ) : (
-                        ''
-                    ),
-            },
-            {
-                header: 'Image (Mobile)',
-                accessorKey: 'image_mobile',
-                cell: (info) =>
-                    info.getValue() ? <img src={info.getValue()?.split(',')[0]} alt="" className=" object-contain w-[100px]  " /> : '',
-            },
-            {
-                header: 'From Update',
-                accessorKey: 'from_date',
-                cell: ({ getValue }) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
-            },
-            {
-                header: 'To Update',
-                accessorKey: 'to_date',
-                cell: ({ getValue }) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
-            },
-            {
-                header: 'Delete',
-                accessorKey: 'id',
-                cell: ({ row }) => (
-                    <button onClick={() => handleDeleteClick(row.original.id)} className="border-none bg-none">
-                        <FaTrash className="text-xl text-red-500" />
-                    </button>
-                ),
-            },
-        ],
-        [bannerIdStore, updatedPosition],
-    )
-
     const handleSelectBannerId = (id: number, isChecked: boolean) => {
-        setShowBannerIdButton(true)
         setBannerIdStore((prev) => {
             if (isChecked) {
                 return [...prev, id]
@@ -268,24 +118,16 @@ const AppBanners = () => {
         }))
     }
 
-    console.log('Banner_Id', bannerIdStore)
-
     const handleUpdate = async (id: any, position: any) => {
         const positionData = updatedPosition[id] ?? null
-        console.log('position data is', positionData, 'for the id', id)
-
         const body = {
             position: positionData ?? position,
             banner_id: id,
         }
-
-        console.log('bdou is', body)
-
         try {
             const response = await axiosInstance.patch(`/banners`, body)
             notification.success({
-                message: 'SUCCESS',
-                description: response?.data?.message || 'UPDATE SUCCESS',
+                message: response?.data?.message || 'UPDATE SUCCESS',
             })
         } catch (error) {
             console.error(error)
@@ -299,65 +141,38 @@ const AppBanners = () => {
 
     const handleDeleteClick = (id: number) => {
         setShowDeleteModal(true)
-        setBannerid(id)
+        setBannerId(id)
     }
 
-    const handleCloseModal = () => {
-        setShowDeleteModal(false)
-    }
-
-    const onSelectChange = (value = 0) => {
-        setPageSize(Number(value))
-    }
-
-    const handleBanner = () => {
-        navigate('/app/appSettings/banners/addNew')
-    }
-
-    const deleteBanner = async () => {
-        const formData = {
-            banner_id: bannerid,
-        }
-        console.log('data', formData)
-        try {
-            const response = await axiosInstance.delete(`/banners`, {
-                data: formData,
-            })
-            notification.success({
-                message: 'Success',
-                description: response?.data?.message || 'User has benn Successfully deleted',
-            })
-        } catch (error) {
-            console.log(error)
-            notification.error({
-                message: 'Failure',
-                description: 'Unable to delete',
-            })
-        }
-
-        setShowDeleteModal(false)
-    }
-
-    const handleBulkEditModal = () => {
-        setShowBulkEditModal(true)
-    }
+    const columns = useBannerColumns({
+        data,
+        bannerIdStore,
+        updatedPosition,
+        handleSelectAllBanners,
+        handleSelectBannerId,
+        handleUpdate,
+        handleQuantityChange,
+        handleDeleteClick,
+    })
 
     return (
-        <div>
+        <div className="shadow-md p-4 bg-gray-50 rounded-lg">
             <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
-                <div className="mb-4 flex gap-2">
-                    <input
-                        type="text"
-                        placeholder="Search by name"
-                        value={globalFilter}
-                        className="p-2 border rounded"
-                        onChange={(e) => setGlobalFilter(e.target.value)}
-                    />
-                    <div className="flex gap-2">
-                        <div className="bg-gray-200 px-1 rounded-lg font-bold text-[15px]">
+                <div className="mb-4 flex gap-2 flex-col xl:flex-row ">
+                    <div className="flex justify-center xl:justify-normal">
+                        <input
+                            type="text"
+                            placeholder="Search by name"
+                            value={globalFilter}
+                            className="p-2 border rounded"
+                            onChange={(e) => setGlobalFilter(e.target.value)}
+                        />
+                    </div>
+                    <div className="flex gap-2 flex-col xl:flex-row">
+                        <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px]">
                             <Dropdown
                                 className="border bg-gray-200 text-black text-lg font-semibold"
-                                title={currentSelectedPage.name}
+                                title={currentSelectedPage?.name}
                                 onSelect={handleSelectPage}
                             >
                                 {BANNER_PAGE_NAME.map((item) => (
@@ -383,7 +198,7 @@ const AppBanners = () => {
                                         onChange={(e) => setSectionFilter(e.target.value)}
                                     />
                                 </div>
-                                <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide xl:h-[600px] xl:overflow-y-scroll font-bold ">
+                                <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide xl:h-[400px] xl:overflow-y-scroll font-bold ">
                                     {filteredSectionHeadings?.map((item, key) => (
                                         <DropdownItem key={key} eventKey={item} className="h-1">
                                             {item}
@@ -398,6 +213,29 @@ const AppBanners = () => {
                                 </div>
                             </Dropdown>
                         </div>
+                        <div className="bg-gray-200 h-auto scrollbar-hide px-1 rounded-lg font-bold text-[15px]">
+                            <Dropdown
+                                className="border   text-black text-lg font-semibold "
+                                title={selectedDivision}
+                                onSelect={(e) => {
+                                    setSelectedDivision(e)
+                                }}
+                            >
+                                <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide xl:h-[150px] xl:overflow-y-scroll font-bold ">
+                                    {DivisionArray?.map((item, key) => (
+                                        <DropdownItem key={key} eventKey={item.value} className="h-1">
+                                            {item.name}
+                                        </DropdownItem>
+                                    ))}
+                                </div>
+                                <div
+                                    className="flex mt-3 justify-center items-center rounded-lg cursor-pointer text-white bg-red-500 hover:bg-red-400"
+                                    onClick={() => setSelectedDivision('Select Division')}
+                                >
+                                    Clear
+                                </div>
+                            </Dropdown>
+                        </div>
                     </div>
                 </div>
 
@@ -405,14 +243,19 @@ const AppBanners = () => {
                     <div className="mb-2">
                         {bannerIdStore.length > 0 && (
                             <div className="flex gap-2 items-center">
-                                <Button variant="new" size="sm" onClick={handleBulkEditModal}>
+                                <Button variant="new" size="sm" onClick={() => setShowBulkEditModal(true)}>
                                     Bulk Edit
                                 </Button>
                             </div>
                         )}
                     </div>
                     <div className="flex items-end justify-end mb-2 gap-2">
-                        <button className="bg-black text-white px-5 py-2 rounded-md hover:bg-gray-700" onClick={handleBanner}>
+                        <button
+                            className="bg-black text-white px-5 py-2 rounded-md hover:bg-gray-700"
+                            onClick={() => {
+                                navigate('/app/appSettings/banners/addNew')
+                            }}
+                        >
                             ADD NEW BANNER
                         </button>
                     </div>
@@ -427,26 +270,16 @@ const AppBanners = () => {
                         isSearchable={false}
                         value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
-                        onChange={(option) => onSelectChange(option?.value)}
+                        onChange={(option) => {
+                            if (option) {
+                                setPage(1)
+                                setPageSize(option?.value)
+                            }
+                        }}
                     />
                 </div>
             </div>
-            {showDeleteModal && (
-                <Modal
-                    title=""
-                    open={showDeleteModal}
-                    onOk={deleteBanner}
-                    onCancel={handleCloseModal}
-                    okText="DELETE"
-                    okButtonProps={{
-                        style: { backgroundColor: 'red', borderColor: 'red' },
-                    }}
-                >
-                    <div className="italic text-lg flex flex-row items-center justify-start gap-5">
-                        <IoWarningOutline className="text-red-600 text-4xl" /> ARE YOU SURE YOU WANT TO DELETE THE BANNER Id: {bannerid} !!
-                    </div>
-                </Modal>
-            )}
+            {showDeleteModal && <DeleteBannerModal isOpen={showDeleteModal} setIsOpen={setShowDeleteModal} bannerId={bannerId!} />}
             {showBulkEditModal && (
                 <BulkEditModal dialogIsOpen={showBulkEditModal} setIsOpen={setShowBulkEditModal} bannerIdStore={bannerIdStore} />
             )}

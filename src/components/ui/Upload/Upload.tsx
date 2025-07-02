@@ -9,6 +9,7 @@ import Notification from '../Notification/Notification'
 import toast from '../toast/toast'
 import type { CommonProps } from '../@types/common'
 import type { ReactNode, ChangeEvent, MouseEvent } from 'react'
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd'
 
 export interface UploadProps extends CommonProps {
     accept?: string
@@ -171,6 +172,17 @@ const Upload = forwardRef<HTMLDivElement, UploadProps>((props, ref) => {
         }
     }, [draggable])
 
+    const handleDragEnd = (result: DropResult) => {
+        if (!result.destination) return
+
+        const items = Array.from(files)
+        const [reorderedItem] = items.splice(result.source.index, 1)
+        items.splice(result.destination.index, 0, reorderedItem)
+
+        setFiles(items)
+        onChange?.(items, files)
+    }
+
     const draggableProp = {
         onDragLeave: handleDragLeave,
         onDragOver: handleDragOver,
@@ -181,26 +193,18 @@ const Upload = forwardRef<HTMLDivElement, UploadProps>((props, ref) => {
 
     const uploadClass = classNames(
         'upload',
-        draggable && `upload-draggable`,
+        draggable && `upload-draggable mx-10`,
         draggable && !disabled && `hover:${draggableEventFeedbackClass}`,
         draggable && disabled && 'disabled',
         dragOver && draggableEventFeedbackClass,
         className,
     )
 
-    const uploadInputClass = classNames(
-        'upload-input',
-        draggable && `draggable`,
-    )
+    const uploadInputClass = classNames('upload-input', draggable && `draggable`)
 
     return (
         <>
-            <div
-                ref={ref}
-                className={uploadClass}
-                {...(draggable ? draggableProp : { onClick: triggerUpload })}
-                {...rest}
-            >
+            <div ref={ref} className={uploadClass} {...(draggable ? draggableProp : { onClick: triggerUpload })} {...rest}>
                 <input
                     ref={fileInputField}
                     className={uploadInputClass}
@@ -218,16 +222,26 @@ const Upload = forwardRef<HTMLDivElement, UploadProps>((props, ref) => {
             </div>
             {tip}
             {showList && (
-                <div className="upload-file-list">
-                    {files.map((file, index) => (
-                        <FileItem key={file.name + index} file={file}>
-                            <CloseButton
-                                className="upload-file-remove"
-                                onClick={() => removeFile(index)}
-                            />
-                        </FileItem>
-                    ))}
-                </div>
+                <DragDropContext onDragEnd={handleDragEnd}>
+                    <Droppable droppableId="files" type="group">
+                        {(provided) => (
+                            <div className="upload-file-list" {...provided.droppableProps} ref={provided.innerRef}>
+                                {files.map((file, index) => (
+                                    <Draggable key={file.name + index} draggableId={file.name + index} index={index}>
+                                        {(provided) => (
+                                            <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                                                <FileItem file={file}>
+                                                    <CloseButton className="upload-file-remove" onClick={() => removeFile(index)} />
+                                                </FileItem>
+                                            </div>
+                                        )}
+                                    </Draggable>
+                                ))}
+                                {provided.placeholder}
+                            </div>
+                        )}
+                    </Droppable>
+                </DragDropContext>
             )}
         </>
     )

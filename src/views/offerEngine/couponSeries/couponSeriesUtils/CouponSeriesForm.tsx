@@ -3,11 +3,11 @@ import { Checkbox, FormContainer, FormItem, Input, Select, Tooltip, Upload } fro
 import { Field, FieldProps, Form } from 'formik'
 import { RichTextEditor } from '@/components/shared'
 import { DatePicker } from 'antd'
-import moment from 'moment'
 import { beforeUpload } from '@/common/beforeUpload'
 import { COUPON_SERIES_FORM } from '../couponSeriesCommon'
 import ComonFilterSelect from '@/common/ComonFilterSelect'
 import { CiCircleQuestion } from 'react-icons/ci'
+import dayjs from 'dayjs'
 
 interface CouponProps {
     values: any
@@ -37,7 +37,7 @@ const CouponSeriesForm = ({ values, setFieldValue, setFilterId, filterValue }: C
     return (
         <Form className="">
             <FormContainer>
-                <FormContainer className="grid grid-cols-2 gap-10">
+                <FormContainer className="grid grid-cols-1 xl:grid-cols-2 gap-10 ">
                     {COUPON_SERIES_FORM.slice(0, 5).map((item, key) => (
                         <FormItem key={key} className={item.classname}>
                             <div className="flex gap-2">
@@ -73,7 +73,7 @@ const CouponSeriesForm = ({ values, setFieldValue, setFilterId, filterValue }: C
                                     showTime
                                     className="w-full"
                                     placeholder=""
-                                    value={field.value ? moment(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
+                                    value={field.value ? dayjs(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
                                     onChange={(value) => {
                                         form.setFieldValue('valid_from', value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
                                     }}
@@ -88,7 +88,7 @@ const CouponSeriesForm = ({ values, setFieldValue, setFilterId, filterValue }: C
                                     showTime
                                     className="w-full"
                                     placeholder=""
-                                    value={field.value ? moment(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
+                                    value={field.value ? dayjs(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
                                     onChange={(value) => {
                                         form.setFieldValue('valid_to', value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
                                     }}

@@ -29,8 +29,9 @@ const renderEditableCell = (
             type="text"
             defaultValue={value || ''}
             className="w-full border rounded p-1"
-            onChange={(e) => onChange(e, field)}
+            min={0}
             onKeyDown={onKeyDown}
+            onChange={(e) => onChange(e, field)}
         />
     )
 }
@@ -148,7 +149,7 @@ const InwardMaterialModule = ({ setRefreshTrigger, shipmentDetails }: props) => 
     }
 
     const handleAddItem = () => {
-        const { sku, barcode, boxCount } = formData
+        const { sku, barcode } = formData
         const searchField = currentSelectedSearch.value
         const searchValue = searchField === 'sku' ? sku : barcode
 
@@ -156,18 +157,40 @@ const InwardMaterialModule = ({ setRefreshTrigger, shipmentDetails }: props) => 
             notification.warning({ message: `Please enter a ${currentSelectedSearch.label}` })
             return
         }
+        const existingShipmentItem = shipmentDetails?.shipment_items?.find(
+            (item: ShipmentItem) =>
+                (searchField === 'sku' && item.sku === searchValue) || (searchField === 'barcode' && item.barcode === searchValue),
+        )
 
-        const existingItemIndex = shipmentData.findIndex((item) => item[searchField as keyof ShipmentItem] === searchValue)
-        if (existingItemIndex >= 0) {
-            const updatedData: any = [...shipmentData]
-            updatedData[existingItemIndex] = {
-                ...updatedData[existingItemIndex],
-                quantity_received: (updatedData[existingItemIndex].quantity_received || 0) + 1,
-                ...(boxCount && { boxCount }),
+        const existingSkuWiseItemIndex = skuWiseData.findIndex(
+            (item) => (searchField === 'sku' && item.sku === searchValue) || (searchField === 'barcode' && item.barcode === searchValue),
+        )
+
+        if (existingShipmentItem) {
+            const newItem: ShipmentItem = {
+                ...existingShipmentItem,
+                id: `new-${Date.now()}`,
+                quantity_sent: (existingShipmentItem.quantity_sent || 0) + 1,
+                quantity_received: (existingShipmentItem.quantity_received || 0) + 1,
+                create_date: new Date().toISOString(),
             }
-            setShipmentData(updatedData)
-            notification.success({ message: `Updated quantity for ${searchValue}` })
+            setSkuWiseData([newItem])
+            notification.success({
+                message: `Added item from existing shipment: ${searchValue}`,
+            })
+        } else if (existingSkuWiseItemIndex >= 0) {
+            const updatedData = [...skuWiseData]
+            updatedData[existingSkuWiseItemIndex] = {
+                ...updatedData[existingSkuWiseItemIndex],
+                quantity_sent: (updatedData[existingSkuWiseItemIndex].quantity_sent || 0) + 1,
+                quantity_received: (updatedData[existingSkuWiseItemIndex].quantity_received || 0) + 1,
+            }
+            setSkuWiseData(updatedData)
+            notification.success({
+                message: `Updated quantity for ${searchField}: ${searchValue}`,
+            })
         } else {
+            // Add new item
             const newItem: ShipmentItem = {
                 id: `new-${Date.now()}`,
                 barcode: searchField === 'barcode' ? searchValue : '',
@@ -181,6 +204,7 @@ const InwardMaterialModule = ({ setRefreshTrigger, shipmentDetails }: props) => 
                 message: `Added new item: ${searchValue}`,
             })
         }
+
         setFormData((prev) => ({ ...prev, [searchField]: '' }))
     }
 
@@ -193,7 +217,7 @@ const InwardMaterialModule = ({ setRefreshTrigger, shipmentDetails }: props) => 
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
-        setFormData((prevData: any) => ({ ...prevData, [name]: value }))
+        setFormData((prevData: any) => ({ ...prevData, [name]: value.trim() }))
     }
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -358,7 +382,7 @@ const InwardMaterialModule = ({ setRefreshTrigger, shipmentDetails }: props) => 
     }
 
     return (
-        <div className="p-4 flex flex-col gap-6">
+        <div className="p-4 flex flex-col gap-6 shadow-lg rounded-xl">
             <div>
                 <div className="mb-4">
                     <label className="block text-gray-700">Box Number</label>
@@ -380,7 +404,7 @@ const InwardMaterialModule = ({ setRefreshTrigger, shipmentDetails }: props) => 
                                     name={currentSelectedSearch.value}
                                     type="search"
                                     placeholder={`Enter ${currentSelectedSearch.label}`}
-                                    className="w-full border border-gray-300 rounded p-2"
+                                    className="w-[170px] xl:w-full border border-gray-300 rounded p-2"
                                     value={formData[currentSelectedSearch.value as keyof typeof formData]}
                                     onChange={handleInputChange}
                                     onKeyDown={handleKeyDown}

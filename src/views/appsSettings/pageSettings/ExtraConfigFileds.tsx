@@ -5,6 +5,7 @@ import { Field } from 'formik'
 import { DatePicker } from 'antd'
 import moment from 'moment'
 import CommonSelect from './CommonSelect'
+import dayjs from 'dayjs'
 
 const TimerPositionArray = [
     {
@@ -34,7 +35,7 @@ const ExtraConfigFileds = () => {
                         <DatePicker
                             showTime
                             placeholder=""
-                            value={field.value ? moment(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
+                            value={field.value ? dayjs(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
                             onChange={(value) => {
                                 form.setFieldValue('extra_info.timeout', value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
                             }}
@@ -44,7 +45,7 @@ const ExtraConfigFileds = () => {
                 </Field>
             </FormItem>
             {TimeFieldsArray.slice(0, 3).map((item, key) => (
-                <FormItem asterisk label={item.label} className="col-span-1 w-[60%] h-[80%]" key={key}>
+                <FormItem asterisk label={item.label} className="w-full" key={key}>
                     <Field
                         type={item.type}
                         name={item.name}
@@ -62,7 +63,7 @@ const ExtraConfigFileds = () => {
                 className="col-span-1 w-1/2"
             />
             {TimeFieldsArray.slice(3).map((item, key) => (
-                <FormItem asterisk label={item.label} className="col-span-1 w-[60%] h-[80%]" key={key}>
+                <FormItem asterisk label={item.label} className="w-full" key={key}>
                     <Field
                         type={item.type}
                         name={item.name}

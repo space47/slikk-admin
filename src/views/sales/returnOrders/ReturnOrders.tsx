@@ -43,8 +43,10 @@ const ReturnOrders = () => {
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
     const [locationDetails, setLocationDetails] = useState<LocationReturnType[]>([])
     const [isDownloading, setIsDownloading] = useState(false)
+    const [showNumberLoading, setShowNumberLoading] = useState(false)
 
     const handleSelectTab = (value: string) => {
+        setShowNumberLoading(true)
         setTabSelect(value)
     }
 
@@ -65,6 +67,8 @@ const ReturnOrders = () => {
             setOrderCount(orderCount)
         } catch (error) {
             console.error(error)
+        } finally {
+            setShowNumberLoading(false)
         }
     }
     useEffect(() => {
@@ -228,7 +232,11 @@ const ReturnOrders = () => {
             </div>
 
             <br />
-            <ReturnOrderTabs handleSelectTab={handleSelectTab} tabSelect={tabSelect} orderCount={orderCount} />
+            <ReturnOrderTabs
+                handleSelectTab={handleSelectTab}
+                tabSelect={tabSelect}
+                orderCount={showNumberLoading ? `...` : `${orderCount}`}
+            />
             <br />
             <div className="border p-2 border-gray-300 rounded-md hidden xl:block">
                 <EasyTable mainData={orders} columns={columns} page={page} pageSize={pageSize} />

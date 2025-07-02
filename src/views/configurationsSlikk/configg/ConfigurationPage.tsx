@@ -1,89 +1,56 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Card } from '@/components/ui'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { Card, Input } from '@/components/ui'
 import React, { useEffect, useState } from 'react'
-// import { useNavigate } from 'react-router-dom'
 import { ConfigInterface } from './componentsConfigg/commonConfigTypes'
 import moment from 'moment'
 import { FaEdit } from 'react-icons/fa'
-import _ from 'lodash'
 import AccessDenied from '@/views/pages/AccessDenied'
 import LoadingSpinner from '@/common/LoadingSpinner'
+import { useFetchApi } from '@/commonHooks/useFetchApi'
+import { renderValue } from './componentsConfigg/ConfigurationRender'
 
 const ConfigurationPage = () => {
-    const [configurationData, setConfigurationData] = useState<ConfigInterface[]>([])
-    const [showSpinner, setShowSpinner] = useState(false)
-    const [accessDenied, setAccessDenied] = useState(false)
-    // const navigate = useNavigate()
+    const [searchConfig, setSearchConfig] = useState('')
+    const [filteredData, setFilteredData] = useState<ConfigInterface[]>([])
 
-    const fetchConfigurationApi = async () => {
-        try {
-            setShowSpinner(true)
-            const response = await axioisInstance.get(`/app/configuration?p=1&page_size=100`)
-            const apiData = response.data?.data
-            setConfigurationData(apiData?.results)
-            setShowSpinner(false)
-        } catch (error: any) {
-            if (error.response && error.response.status === 403) {
-                setAccessDenied(true)
-            }
-            console.log(error)
-        }
-    }
+    const {
+        data: configurationData,
+        loading: showSpinner,
+        responseStatus,
+    } = useFetchApi<ConfigInterface>({
+        url: '/app/configuration?p=1&page_size=100',
+        initialData: [],
+    })
 
     useEffect(() => {
-        fetchConfigurationApi()
-    }, [])
-
-    const renderValue = (value: any) => {
-        if (_.isPlainObject(value)) {
-            return (
-                <div className="flex flex-col h-36 overflow-y-auto bg-gray-100 p-3 rounded-lg shadow-inner scrollbar-hide">
-                    {Object.entries(value).map(([key, val]: [string, any]) => (
-                        <div key={key} className="text-sm text-gray-700 space-y-1">
-                            <strong className="text-gray-500">{key}:</strong>{' '}
-                            {typeof val === 'object' && val !== null ? (
-                                Array.isArray(val) ? (
-                                    <span className="text-indigo-600">[{val.join(', ')}]</span>
-                                ) : (
-                                    <span className="text-indigo-600">{JSON.stringify(val)}</span>
-                                )
-                            ) : (
-                                <span className="text-indigo-600">{val}</span>
-                            )}
-                        </div>
-                    ))}
-                </div>
-            )
-        } else if (_.isArray(value)) {
-            return (
-                <div className="flex flex-col h-36 overflow-y-auto bg-gray-100 p-3 rounded-lg shadow-inner scrollbar-hide">
-                    {value.map((item, index) => (
-                        <div key={index} className="text-sm text-gray-700 space-y-1">
-                            <span className="text-indigo-600">{JSON.stringify(item)}</span>
-                        </div>
-                    ))}
-                </div>
-            )
+        if (searchConfig.trim() !== '') {
+            const filteredData = configurationData.filter((item) => item.name.toLowerCase().includes(searchConfig.toLowerCase()))
+            setFilteredData(filteredData)
+        } else if (!searchConfig.trim()) {
+            setFilteredData(configurationData)
         }
-        return <span className="text-indigo-600">{value}</span>
-    }
+    }, [searchConfig, configurationData])
 
-    // const handleEditConfiguration = (id: number | string) => {
-    //     navigate(`/app/configurations/edit/${id}`)
-    // }
     if (showSpinner) {
         return <LoadingSpinner />
     }
-
-    if (accessDenied) {
+    if (responseStatus === '403') {
         return <AccessDenied />
     }
 
     return (
         <div className="flex flex-col gap-6 p-8  min-h-screen">
+            <div className="flex mb-4">
+                <Input
+                    type="search"
+                    value={searchConfig}
+                    placeholder="Search Configuration by Name"
+                    className="w-1/2 max-w-md mb-6 rounded-xl"
+                    onChange={(e) => setSearchConfig(e.target.value)}
+                />
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                {configurationData
+                {filteredData
                     ?.sort(function (a: any, b: any) {
                         return a?.id - b?.id
                     })
@@ -98,10 +65,7 @@ const ConfigurationPage = () => {
                                         Id:<span className="text-red-600">{item?.id}</span>
                                     </span>
                                     <a href={`/app/configurations/edit/${item?.id}`} target="_blank" rel="noreferrer">
-                                        <FaEdit
-                                            className="cursor-pointer text-blue-500"
-                                            // onClick={() => handleEditConfiguration(item?.id)}
-                                        />
+                                        <FaEdit className="cursor-pointer text-blue-500" />
                                     </a>
                                 </div>
                                 <div className="text-lg font-medium text-gray-700">

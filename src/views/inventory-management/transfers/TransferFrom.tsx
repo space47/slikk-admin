@@ -28,7 +28,7 @@ const TransferFrom = ({ storeResults, values }: props) => {
                             <DatePicker
                                 showTime
                                 placeholder=""
-                                value={field.value ? moment(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
+                                value={field.value ? dayjs(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
                                 onChange={(value) => {
                                     form.setFieldValue('date_received', value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
                                 }}
