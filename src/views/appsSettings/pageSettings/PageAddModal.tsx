@@ -127,14 +127,6 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCance
     const handleSubmit = async (row: any) => {
         const componentConfig = {
             ...Object.fromEntries(Object.entries(row?.component_config || {}).filter(([_, value]) => value !== '')),
-            border: row?.border ?? false,
-            name: row?.name ?? false,
-            name_footer: row?.name_footer ?? false,
-            section_border: row?.section_border ?? false,
-            web_border: row?.web_border ?? false,
-            web_name: row?.web_name ?? false,
-            web_name_footer: row?.web_name_footer ?? false,
-            web_section_border: row?.web_section_border ?? false,
         }
         const imageUpload = await handleImage(row.background_image_array)
         const mobileimageUpload = await handleImage(row.mobile_background_array)
@@ -166,19 +158,21 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCance
         console.log('New Row below 2')
 
         const cta_config_data = {
-            ...row?.extra_info.cta_config,
+            ...(row?.extra_info?.cta_config || {}),
         }
+
         const cta_config = Object.fromEntries(Object.entries(cta_config_data).filter(([, value]) => value !== ''))
 
         const child_component_config_data = {
-            ...row?.extra_info?.child_component_config,
+            ...(row?.extra_info?.child_component_config || {}),
         }
+
         const child_component_config = Object.fromEntries(Object.entries(child_component_config_data).filter(([, value]) => value !== ''))
 
         console.log('here before bg')
 
         const backgroundConfig = {
-            ...Object.fromEntries(Object.entries(row?.background_config || {}).filter(([_, value]) => value !== '')),
+            ...Object.fromEntries(Object.entries(row?.background_config || {})?.filter(([_, value]) => value !== '')),
             ...(imageUpload || row?.background_image ? { background_image: imageUpload || row?.background_image } : {}),
             ...(mobileimageUpload || row?.mobile_background_image
                 ? { mobile_background_image: mobileimageUpload || row?.mobile_background_image }
@@ -271,7 +265,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCance
             ...(row?.order_count ? { order_count: row?.order_count } : {}),
             ...(row?.min_order_value_for_event_pass ? { min_order_value_for_event_pass: row?.min_order_value_for_event_pass } : {}),
         }
-        const filteredRow = Object.fromEntries(Object.entries(newRowAdd || {}).filter(([_, value]) => value !== undefined))
+        const filteredRow = Object.fromEntries(Object.entries(newRowAdd || {})?.filter(([_, value]) => value !== undefined))
         setData((prevData: WebType[]) => [...prevData, filteredRow])
         console.log('Main Data That is to be send in the API', filteredRow)
     }
