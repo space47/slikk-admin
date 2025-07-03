@@ -24,6 +24,7 @@ import OrderPickerSummary from './components/OrderPickersummary'
 import OrderMap from './OrderMap'
 import UtmModal from './components/UtmModal'
 import TwoPointMap from './components/TwoPointMap'
+import OrdersRiderActivity from './components/OrdersRiderActivity'
 // import { string } from 'yup'
 
 const OrderDetails = () => {
@@ -36,6 +37,7 @@ const OrderDetails = () => {
     const navigate = useNavigate()
     const [showRiderData, setShowRiderData] = useState(false)
     const { invoice_id } = useParams()
+    const [taskData, setTaskData] = useState<any>()
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -53,6 +55,30 @@ const OrderDetails = () => {
 
         fetchOrders()
     }, [invoice_id])
+
+    const fetchTableData = async () => {
+        try {
+            const response = await axioisInstance.get(`/logistic/slikk/task?task_id=${data?.logistic?.task_id}`)
+            const dat = response.data.data
+            setTaskData(dat)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    useEffect(() => {
+        if (data?.logistic?.task_id) {
+            fetchTableData()
+            const intervalId = setInterval(() => {
+                fetchTableData()
+            }, 60000)
+
+            return () => clearInterval(intervalId)
+        }
+    }, [data?.logistic?.task_id])
+
+    console.log('ssdsdsdsds', data?.logistic?.task_id)
+    console.log('ssdsdsdsds 22', taskData)
 
     const handlemarkAsPaid = async () => {
         try {
@@ -336,7 +362,7 @@ const OrderDetails = () => {
                                     </div>
                                 </div>
                                 {/* "" */}
-                                <div className={'flex xl:justify-between flex-col xl:flex-row '}>
+                                <div className={'flex xl:justify-between gap-3 flex-col xl:flex-row '}>
                                     <div className="mt-6">
                                         <Activity
                                             mainData={data}
@@ -347,6 +373,9 @@ const OrderDetails = () => {
                                             invoice_id={data.invoice_id}
                                             delivery_type={data.delivery_type}
                                         />
+                                    </div>
+                                    <div className="mt-6">
+                                        <OrdersRiderActivity eventLogs={taskData} />
                                     </div>
 
                                     <div className="xl:w-[1000px] mt-10">
@@ -360,7 +389,9 @@ const OrderDetails = () => {
                                                 />
                                             </>
                                         )}
-                                        {data?.logistic?.partner === 'Slikk' && <OrderMap task_id={data?.logistic?.task_id} />}
+                                        {data?.logistic?.partner === 'Slikk' && (
+                                            <OrderMap task_id={data?.logistic?.task_id} taskData={taskData} />
+                                        )}
                                         {data?.logistic?.partner !== 'Slikk' && (
                                             <div style={{ width: '100%', height: '600px' }}>
                                                 <iframe
