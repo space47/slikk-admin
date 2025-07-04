@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Loading from '@/components/shared/Loading'
 import Container from '@/components/shared/Container'
 import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
@@ -25,11 +25,11 @@ import OrderMap from './OrderMap'
 import UtmModal from './components/UtmModal'
 import TwoPointMap from './components/TwoPointMap'
 import OrdersRiderActivity from './components/OrdersRiderActivity'
+import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
+import { commonDownload } from '@/common/commonDownload'
 // import { string } from 'yup'
 
 const OrderDetails = () => {
-    const [loading, setLoading] = useState(true)
-    const [data, setData] = useState<SalesOrderDetailsResponse>()
     const [returnOrderDrawer, setReturnOrderDrawer] = useState(false)
     const [showCancelModal, setShowCancelModal] = useState(false)
     const [showUTMModal, setShowUTMModal] = useState(false)
@@ -39,22 +39,10 @@ const OrderDetails = () => {
     const { invoice_id } = useParams()
     const [taskData, setTaskData] = useState<any>()
 
-    useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                const response = await axioisInstance.get(`merchant/order/${invoice_id}`)
-
-                const ordersData = response.data?.data || []
-                setLoading(false)
-
-                setData(ordersData)
-            } catch (error) {
-                console.log(error)
-            }
-        }
-
-        fetchOrders()
+    const queryOrders = useMemo(() => {
+        return `merchant/order/${invoice_id}`
     }, [invoice_id])
+    const { data: data, loading } = useFetchSingleData<SalesOrderDetailsResponse>({ url: queryOrders })
 
     const fetchTableData = async () => {
         try {
@@ -77,16 +65,10 @@ const OrderDetails = () => {
         }
     }, [data?.logistic?.task_id])
 
-    console.log('ssdsdsdsds', data?.logistic?.task_id)
-    console.log('ssdsdsdsds 22', taskData)
-
     const handlemarkAsPaid = async () => {
         try {
             const response = await axioisInstance.post(`/user/order/${invoice_id}/payment/status`)
-
-            notification.success({
-                message: response.data.message || 'Successfully markded as Paid',
-            })
+            notification.success({ message: response.data.message || 'Successfully markded as Paid' })
             navigate(0)
         } catch (error) {
             console.log(error)
@@ -95,14 +77,9 @@ const OrderDetails = () => {
 
     const handlePODAction = async () => {
         try {
-            const body = {
-                action: 'MARK_POD_COMPLETE',
-            }
+            const body = { action: 'MARK_POD_COMPLETE' }
             const response = await axioisInstance.patch(`/merchant/order/${invoice_id}`, body)
-
-            notification.success({
-                message: response.data.message || 'POD COMPLETED SUCCESSFULLY',
-            })
+            notification.success({ message: response.data.message || 'POD COMPLETED SUCCESSFULLY' })
             navigate(0)
         } catch (error) {
             console.log(error)
@@ -112,32 +89,20 @@ const OrderDetails = () => {
     const handleDownload = async () => {
         try {
             const response = await axioisInstance.get(`/user/order/invoice/${invoice_id}`)
-            const downloadablePDF = response.data?.data
-            const link = document.createElement('a')
-            link.href = downloadablePDF
-            link.download = `invoice-${invoice_id}.pdf`
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
+            commonDownload(response, `invoice-${invoice_id}.pdf`)
         } catch (error) {
             console.log(error)
         }
     }
 
     const handleConvert = async () => {
-        const body = {
-            action: 'EXCHANGE_TO_RETURN',
-        }
+        const body = { action: 'EXCHANGE_TO_RETURN' }
         try {
             const response = await axioisInstance.patch(`/merchant/order/${invoice_id}`, body)
-            notification.success({
-                message: response?.data?.message || 'Successfully converted',
-            })
+            notification.success({ message: response?.data?.message || 'Successfully converted' })
         } catch (error) {
             console.log(error)
-            notification.error({
-                message: 'Failed to Convert',
-            })
+            notification.error({ message: 'Failed to Convert' })
         } finally {
             setShowCancelExchangeModal(false)
         }
