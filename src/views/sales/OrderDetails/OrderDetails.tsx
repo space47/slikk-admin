@@ -422,10 +422,13 @@ const OrderDetails = () => {
                             )}
                             {showRiderData && (
                                 <TrackModal
+                                    isOrder
                                     showTaskModal={showRiderData}
                                     setShowAssignModal={setShowRiderData}
-                                    storeTaskId={data?.logistic?.task_id}
+                                    taskId={data?.logistic?.task_id}
                                     handleCloseModal={handleCloseTrackModal}
+                                    storeLat={data?.latitude}
+                                    storeLong={data?.longitude}
                                 />
                             )}
                             {showUTMModal && <UtmModal isOpen={showUTMModal} setIsOpen={setShowUTMModal} orderData={data} />}

@@ -20,7 +20,6 @@ type RiderProfile = {
     email: string
     mobile: string
     image: string
-
     business_email: string | null
 }
 
