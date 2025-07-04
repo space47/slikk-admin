@@ -26,7 +26,7 @@ const TaskTracking = () => {
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
     const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
     const [showAssignModal, setShowAssignModal] = useState(false)
-    const [storeTaskId, setStoreTaskId] = useState<string | number>()
+    const [storeTaskId, setStoreTaskId] = useState<TaskDetails>()
     const [accessDenied, setAccessDenied] = useState(false)
     const navigate = useNavigate()
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
@@ -83,11 +83,11 @@ const TaskTracking = () => {
 
     const totalPages = Math.ceil(totalData / pageSize)
 
-    const handleAssignClick = <T extends string | number>(task_id: T) => {
+    const handleAssignClick = (task_id: TaskDetails) => {
         setShowAssignModal(true)
         setStoreTaskId(task_id)
     }
-    const handleReAssignClick = <T extends string | number>(task_id: T) => {
+    const handleReAssignClick = (task_id: TaskDetails) => {
         setShowAssignModal(true)
         setStoreTaskId(task_id)
     }
@@ -262,7 +262,7 @@ const TaskTracking = () => {
                 <TrackModal
                     showTaskModal={showAssignModal}
                     handleCloseModal={handleCloseModal}
-                    storeTaskId={storeTaskId ?? 0}
+                    storeData={storeTaskId!}
                     setShowAssignModal={setShowAssignModal}
                 />
             )}
@@ -270,7 +270,7 @@ const TaskTracking = () => {
                 <FilterByRunner
                     showTaskModal={showFilterByRunner}
                     handleCloseModal={handleCloseFilterModal}
-                    storeTaskId={storeTaskId ?? 0}
+                    storeTaskId={storeTaskId?.task_id ?? 0}
                     particularMobileOfRunner={particularMobileOfRunner}
                     SetParticularMobileOfRunner={SetParticularMobileOfRunner}
                 />

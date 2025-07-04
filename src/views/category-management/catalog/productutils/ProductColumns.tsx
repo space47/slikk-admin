@@ -56,14 +56,19 @@ export const useProductColumns = ({ handleOpenModal, handleViewProducts }: props
             {
                 header: 'Image',
                 accessorKey: 'image',
-                cell: ({ row }: any) => (
-                    <img
-                        src={row?.original?.thumbnail.split(',')[0]}
-                        alt="Image"
-                        className="w-24 h-20 object-cover cursor-pointer"
-                        onClick={() => handleOpenModal(row.original.image)}
-                    />
-                ),
+                cell: ({ row }: any) => {
+                    const imageUrl = row?.original?.thumbnail ? row?.original?.thumbnail.split(',')[0] : row?.original?.image.split(',')[0]
+                    return (
+                        <>
+                            <img
+                                src={imageUrl}
+                                alt="Image"
+                                className="w-24 h-20 object-cover cursor-pointer"
+                                onClick={() => handleOpenModal(row.original.image)}
+                            />
+                        </>
+                    )
+                },
             },
             {
                 header: 'Price',

@@ -3,10 +3,7 @@ import { SalesOrderDetailsResponse } from '../orderList.common'
 
 export const LOGISTIC_PARTNER = [
     { value: 'porter', label: 'PORTER' },
-    { value: 'shiprocket', label: 'SHIPROCKET' },
-    { value: 'shadowfax', label: 'SHADOWFAX' },
     { value: 'slikk', label: 'SLIKK' },
-    { value: 'pidge', label: 'PIDGE' },
 ]
 
 export type Payment = {

@@ -53,6 +53,7 @@ const Seller = () => {
     const [searchOnEnter, setSearchOnEnter] = useState('')
 
     useEffect(() => {
+        const abortController = new AbortController()
         const fetchData = async () => {
             try {
                 let filterParam = ''
@@ -85,9 +86,17 @@ const Seller = () => {
             }
         }
         fetchData()
-    }, [page, pageSize, selectedCompany.id, searchOnEnter])
+
+        return () => {
+            abortController.abort()
+        }
+    }, [page, pageSize, selectedCompany.id, searchOnEnter, currentSelectedPage])
 
     const paginatedData = data?.slice((page - 1) * pageSize, page * pageSize)
+
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>, setSearchOnEnter: any) => {
+        setSearchOnEnter(e.target.value)
+    }
 
     const columns = useMemo<ColumnDef<User>[]>(
         () => [
@@ -123,10 +132,6 @@ const Seller = () => {
         ],
         [],
     )
-
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>, setSearchOnEnter: any) => {
-        setSearchOnEnter(e.target.value)
-    }
 
     return (
         <div>

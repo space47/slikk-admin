@@ -319,6 +319,12 @@ const CommonMainPageSettings = ({
                                 />
                             </FormItem>
                         </FormContainer>
+                        <FormItem label="Product Filter" className="col-span-1 w-[60%] h-[80%]">
+                            <Field type="checkbox" name="extra_info.is_product_filter" placeholder="" component={Checkbox} />
+                        </FormItem>
+                        <FormItem label="Accent Color" className="col-span-1 w-[60%] h-[80%]">
+                            <Field type="text" name="extra_info.accent_color" placeholder="" component={Input} />
+                        </FormItem>
                         <FormItem label="Is Section Clickable" className="col-span-1 w-[60%] h-[80%]">
                             <Field type="checkbox" name="is_section_clickable" placeholder="" component={Checkbox} />
                         </FormItem>
