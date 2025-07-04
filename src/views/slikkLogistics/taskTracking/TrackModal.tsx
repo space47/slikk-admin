@@ -9,16 +9,32 @@ import { RiderDetailType, setRiderDetails } from '@/store/slices/riderDetails/ri
 import { useAppDispatch, useAppSelector } from '@/store'
 import { ridersService } from '@/store/services/riderServices'
 import { RiMotorbikeFill } from 'react-icons/ri'
+import { TaskDetails } from './TaskCommonType'
+import { calculateDistance } from '../riderDetails/RiderUtils/RiderDetailsColumns'
 
 type ModalProps = {
     showTaskModal: boolean
     handleCloseModal: (x: any) => void
-    storeTaskId: number | string
+    storeData?: TaskDetails
     setShowAssignModal: (x: boolean) => void
     isReturn?: boolean
+    isOrder?: boolean
+    taskId?: number | string
+    storeLat?: number
+    storeLong?: number
 }
 
-const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssignModal, isReturn }: ModalProps) => {
+const TrackModal = ({
+    showTaskModal,
+    handleCloseModal,
+    storeData,
+    setShowAssignModal,
+    isReturn,
+    isOrder,
+    taskId,
+    storeLat,
+    storeLong,
+}: ModalProps) => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
     // const [ridersData, setRidersData] = useState<RiderProfile[]>([])
@@ -56,7 +72,9 @@ const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssig
                 rider_mobile: selectedRiderMobile,
             }
 
-            const response = await axioisInstance.patch(`logistic/slikk/task/${storeTaskId}`, riderBody)
+            const field = isOrder ? taskId : storeData?.task_id
+
+            const response = await axioisInstance.patch(`logistic/slikk/task/${field}`, riderBody)
             notification.success({
                 message: 'SUCCESS',
                 description: `Rider with moblie ${selectedRiderMobile} is assigned`,
@@ -112,15 +130,34 @@ const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssig
                         <div className="details overflow-y-scroll scrollbar-hide h-[340px] xl:h-[500px]">
                             <Radio.Group value={selectedRiderMobile} onChange={handleRiderSelection}>
                                 {riderDataArray?.map((item, key) => {
+                                    const latitude = isOrder ? storeLat : storeData?.pickup_details?.latitude
+                                    const longitude = isOrder ? storeLong : storeData?.pickup_details?.longitude
+
+                                    const distanceFromStore = calculateDistance(
+                                        Number(item?.profile?.current_location?.latitude),
+                                        Number(item?.profile?.current_location?.longitude),
+                                        latitude,
+                                        longitude,
+                                    )
+
+                                    console.log('distance from store', distanceFromStore)
+
+                                    const isFree = item?.rider_status == false
+
                                     return (
-                                        <Card key={key} className="w-[350px] mb-4 bg-gray-200">
+                                        <Card key={key} className={`${isFree == true ? 'bg-green-300' : 'bg-red-300'} w-[380px] mb-4`}>
                                             <div className="flex items-center gap-2 ">
                                                 <Radio value={item?.profile?.mobile} />
-                                                <div className="flex gap-3 items-center">
+                                                <div className="flex gap-3 items-center ">
                                                     <RiMotorbikeFill className="text-xl" />
-                                                    <div className="flex gap-1">
-                                                        <span className="text-xl font-bold">{item?.profile?.first_name}</span>
-                                                        <span className="text-xl font-bold">{item?.profile?.last_name}</span>
+                                                    <div className="flex flex-col">
+                                                        <div className="flex gap-1">
+                                                            <span className="text-xl font-bold">{item?.profile?.first_name}</span>
+                                                            <span className="text-xl font-bold">{item?.profile?.last_name}</span>
+                                                            <span className="text-sm mt-1 font-semibold">
+                                                                {latitude && <>({distanceFromStore}KM)</>}
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>

@@ -9,7 +9,6 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { BANNER_FIELDS_TYPE, getInitialBannerValue } from './EditCommon'
 import { BANNER_MODEL } from '../BannerCommon'
 import { useAppDispatch, useAppSelector } from '@/store'
-import { DIVISION_STATE } from '@/store/types/division.types'
 import { BRAND_STATE } from '@/store/types/brand.types'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
@@ -30,6 +29,7 @@ import FullDateForm from '@/common/FullDateForm'
 
 const EditBanner = () => {
     const { id } = useParams()
+    const navigate = useNavigate()
     const [webImagview, setWebImageView] = useState<string[]>([])
     const [mobileImagview, setMobileImageView] = useState<string[]>([])
     const [weblottieview, setWeblottieView] = useState<string[]>([])
@@ -38,13 +38,8 @@ const EditBanner = () => {
     const [mobileVideoview, setMobileVideoView] = useState<string[]>([])
     const [sectionBGweb, setSectionBGweb] = useState<string[]>([])
     const [sectionBGmobile, setSectionBGmobile] = useState<string[]>([])
-    const navigate = useNavigate()
-    const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
-    const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const [showSpinner, setShowSpinner] = useState(false)
-    const [filteredCategories, setFilteredCategories] = useState([])
-    const [filteredSubCategories, setFilteredSubCategories] = useState([])
-    const [filteredProductTypes, setFilteredProductTypes] = useState([])
+    const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
 
     const validationSchema = Yup.object().shape({
         min_off: Yup.number().max(Yup.ref('max_off'), 'min_off must be less than or equal to max_off'),
@@ -290,9 +285,6 @@ const EditBanner = () => {
                                 beforeUpload={beforeUpload}
                                 fileList={values.section_background_web_array}
                             />
-
-                            {/* MOBILE................................... */}
-
                             <div>Section BG Mobile</div>
                             <ImageComponent
                                 imageView={sectionBGmobile}
@@ -302,22 +294,8 @@ const EditBanner = () => {
                                 beforeUpload={beforeUpload}
                                 fileList={values.section_background_mobile_array}
                             />
-
-                            {/* ...................................................................... */}
                             <FormContainer className="">
-                                <BannerCategories
-                                    initialValue={getInitialBannerValue(bannerData)}
-                                    options={divisions.divisions}
-                                    setFieldValue={setFieldValue}
-                                    filteredCategories={filteredCategories}
-                                    filteredProductTypes={filteredProductTypes}
-                                    filteredSubCategories={filteredSubCategories}
-                                    setFilteredCategories={setFilteredCategories}
-                                    setFilteredProductTypes={setFilteredProductTypes}
-                                    setFilteredSubCategories={setFilteredSubCategories}
-                                />
-                                {/* BRAND   */}
-
+                                <BannerCategories setFieldValue={setFieldValue} />
                                 <SectionsComponent
                                     needClassName
                                     name="brand"

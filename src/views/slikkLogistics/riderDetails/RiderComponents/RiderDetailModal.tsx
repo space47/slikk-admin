@@ -22,8 +22,8 @@ interface RiderModalProps {
     dialogIsOpen: boolean
     setIsOpen: (x: boolean) => void
     mobile: string | string[]
-    fromDate: string
-    toDate: string
+    fromDate?: string
+    toDate?: string
 }
 
 const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile, fromDate, toDate }: RiderModalProps) => {

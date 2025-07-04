@@ -5,6 +5,7 @@ import { Product } from './Activity'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { Dropdown } from '@/components/ui'
 import { FaRupeeSign } from 'react-icons/fa'
+import { LOGISTIC_PARTNER } from './activityCommon'
 
 const { Option } = Select
 
@@ -154,14 +155,6 @@ export const CustomModal2: React.FC<props2> = ({
     partner,
     isButtonClick,
 }) => {
-    const LOGISTIC_PARTNER = [
-        { value: 'porter', label: 'PORTER' },
-        { value: 'shiprocket', label: 'SHIPROCKET' },
-        { value: 'shadowfax', label: 'SHADOWFAX' },
-        { value: 'slikk', label: 'SLIKK' },
-        { value: 'pidge', label: 'PIDGE' },
-    ]
-
     return (
         <Modal
             title=""
@@ -203,7 +196,7 @@ export const CustomModal2: React.FC<props2> = ({
                                 onSelect={(value) => handlePartnerSelect(value)}
                             >
                                 <div className="max-h-60 overflow-y-auto">
-                                    {LOGISTIC_PARTNER.map((item, key) => (
+                                    {LOGISTIC_PARTNER?.map((item, key) => (
                                         <DropdownItem
                                             key={key}
                                             eventKey={item.value}

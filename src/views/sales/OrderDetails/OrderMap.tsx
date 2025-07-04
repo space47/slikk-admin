@@ -11,6 +11,7 @@ import { MdFullscreen } from 'react-icons/md'
 
 interface props {
     task_id: string
+    taskData: any
 }
 
 const customIcon = (iconUrl: string) =>
@@ -120,31 +121,10 @@ const FullScreenMap = ({ mapCenter, taskData, style = { height: '70vh', width: '
     )
 }
 
-const OrderMap = ({ task_id }: props) => {
+const OrderMap = ({ task_id, taskData }: props) => {
     const [mapCenter, setMapCenter] = useState<[number, number] | null>(null)
     const [waypoints, setWaypoints] = useState<[number, number][]>([])
     // const { taskData } = useAppSelector<TASKDETAILS>((state) => state.taskData)
-
-    const [taskData, setTaskData] = useState<any>()
-
-    const fetchTableData = async () => {
-        try {
-            const response = await axioisInstance.get(`/logistic/slikk/task?task_id=${task_id}`)
-            const data = response.data.data
-            setTaskData(data)
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
-    useEffect(() => {
-        fetchTableData()
-        const intervalId = setInterval(() => {
-            fetchTableData()
-        }, 60000)
-
-        return () => clearInterval(intervalId)
-    }, [task_id])
 
     const [polyLine, setPolyLine] = useState('')
     const [sourceLatLong, setSourceLatLong] = useState<[number, number]>([0, 0])

@@ -11,7 +11,6 @@ import { Button, Dropdown, Pagination, Select } from '@/components/ui'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 import { FaMapMarkedAlt } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
-import { IoIosRefresh } from 'react-icons/io'
 import RiderCheckinModal from './RiderCheckinModal'
 import { ridersService } from '@/store/services/riderServices'
 import {
@@ -43,7 +42,6 @@ const RiderDetails = () => {
     const [tabSelect, setTabSelect] = useState('checkin')
     const [busyTab, setBusyTab] = useState('')
     const [riderType, setRiderType] = useState<string>('Select Rider Type')
-    const [refreshTrigger, setRefreshTrigger] = useState<number>(0)
     const { riderDetails, count, from, page, pageSize, to } = useAppSelector<RiderDetailType>((state) => state.riderDetails)
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
     const [isCheckModal, setIsCheckModal] = useState<boolean>(false)
@@ -90,7 +88,7 @@ const RiderDetails = () => {
             dispatch(setRiderDetails(riders.data?.results || []))
             dispatch(setCount(riders.data?.count || 0))
         }
-    }, [riders, isSuccess, dispatch, from, to, page, pageSize, globalFilter, currentStoreLocation, refreshTrigger, tabSelect, riderType])
+    }, [riders, isSuccess, dispatch, from, to, page, pageSize, globalFilter, currentStoreLocation, tabSelect, riderType])
 
     const handleActiveCareer = (id: number, e: any, checked: boolean, mobile: string, name: string) => {
         setMobileForParticularRider(mobile)
@@ -228,15 +226,7 @@ const RiderDetails = () => {
                 {showRiderMap && (
                     <div className="xl:w-[90%]  items-center">
                         <div className="text-xl font-bold">Rider Location</div>
-                        <div className="flex flex-col gap-3">
-                            <div className="flex justify-end">
-                                <div>
-                                    <button onClick={() => setRefreshTrigger((prev) => prev + 1)}>
-                                        <IoIosRefresh className="text-2xl font-extrabold" />
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        <div className="flex flex-col gap-3"></div>
                         <RiderFullMap riderDetails={riderDetails || []} currentStore={currentStoreLocation} />
                     </div>
                 )}

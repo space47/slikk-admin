@@ -15,6 +15,7 @@ import EasyTable from '@/common/EasyTable'
 import { ReverseDeliveryColumns } from './reverseDeliveryUtils/ReverseDeliveryColumns'
 import { HiSearch } from 'react-icons/hi'
 import CommonDropdown from '@/common/commonDropdown'
+import { LOGISTIC_PARTNER } from '../DeliveryOrders/DeliveryCommon'
 
 interface ReturnDropdownStatus {
     value: string[]
@@ -28,13 +29,6 @@ const pageSizeOptions = [
     { value: 100, label: '100 / page' },
 ]
 
-const LOGISTIC_PARTNER = [
-    { value: 'porter', label: 'PORTER' },
-    { value: 'shiprocket', label: 'SHIPROCKET' },
-    { value: 'shadowfax', label: 'SHADOWFAX' },
-    { value: 'slikk', label: 'SLIKK' },
-    { value: 'pidge', label: 'PIDGE' },
-]
 const SEARCHOPTIONS = [
     { label: 'RETURN ID', value: 'return_order_id' },
     { label: 'INVOICE', value: 'invoice_id' },
@@ -124,7 +118,7 @@ const ReverseDelivery = () => {
     }
 
     const handlePartnerSelect = (selectedValue: any, row: any) => {
-        const selectedLabel = LOGISTIC_PARTNER.find((item) => item.value === selectedValue)?.label || ''
+        const selectedLabel = LOGISTIC_PARTNER?.find((item) => item.value === selectedValue)?.label || ''
 
         setPartner((prev) => ({
             ...prev,

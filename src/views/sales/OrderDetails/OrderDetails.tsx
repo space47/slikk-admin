@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Loading from '@/components/shared/Loading'
 import Container from '@/components/shared/Container'
 import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
@@ -24,11 +24,12 @@ import OrderPickerSummary from './components/OrderPickersummary'
 import OrderMap from './OrderMap'
 import UtmModal from './components/UtmModal'
 import TwoPointMap from './components/TwoPointMap'
+import OrdersRiderActivity from './components/OrdersRiderActivity'
+import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
+import { commonDownload } from '@/common/commonDownload'
 // import { string } from 'yup'
 
 const OrderDetails = () => {
-    const [loading, setLoading] = useState(true)
-    const [data, setData] = useState<SalesOrderDetailsResponse>()
     const [returnOrderDrawer, setReturnOrderDrawer] = useState(false)
     const [showCancelModal, setShowCancelModal] = useState(false)
     const [showUTMModal, setShowUTMModal] = useState(false)
@@ -36,31 +37,38 @@ const OrderDetails = () => {
     const navigate = useNavigate()
     const [showRiderData, setShowRiderData] = useState(false)
     const { invoice_id } = useParams()
+    const [taskData, setTaskData] = useState<any>()
+
+    const queryOrders = useMemo(() => {
+        return `merchant/order/${invoice_id}`
+    }, [invoice_id])
+    const { data: data, loading } = useFetchSingleData<SalesOrderDetailsResponse>({ url: queryOrders })
+
+    const fetchTableData = async () => {
+        try {
+            const response = await axioisInstance.get(`/logistic/slikk/task?task_id=${data?.logistic?.task_id}`)
+            const dat = response.data.data
+            setTaskData(dat)
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
     useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                const response = await axioisInstance.get(`merchant/order/${invoice_id}`)
+        if (data?.logistic?.task_id) {
+            fetchTableData()
+            const intervalId = setInterval(() => {
+                fetchTableData()
+            }, 60000)
 
-                const ordersData = response.data?.data || []
-                setLoading(false)
-
-                setData(ordersData)
-            } catch (error) {
-                console.log(error)
-            }
+            return () => clearInterval(intervalId)
         }
-
-        fetchOrders()
-    }, [invoice_id])
+    }, [data?.logistic?.task_id])
 
     const handlemarkAsPaid = async () => {
         try {
             const response = await axioisInstance.post(`/user/order/${invoice_id}/payment/status`)
-
-            notification.success({
-                message: response.data.message || 'Successfully markded as Paid',
-            })
+            notification.success({ message: response.data.message || 'Successfully markded as Paid' })
             navigate(0)
         } catch (error) {
             console.log(error)
@@ -69,14 +77,9 @@ const OrderDetails = () => {
 
     const handlePODAction = async () => {
         try {
-            const body = {
-                action: 'MARK_POD_COMPLETE',
-            }
+            const body = { action: 'MARK_POD_COMPLETE' }
             const response = await axioisInstance.patch(`/merchant/order/${invoice_id}`, body)
-
-            notification.success({
-                message: response.data.message || 'POD COMPLETED SUCCESSFULLY',
-            })
+            notification.success({ message: response.data.message || 'POD COMPLETED SUCCESSFULLY' })
             navigate(0)
         } catch (error) {
             console.log(error)
@@ -86,32 +89,20 @@ const OrderDetails = () => {
     const handleDownload = async () => {
         try {
             const response = await axioisInstance.get(`/user/order/invoice/${invoice_id}`)
-            const downloadablePDF = response.data?.data
-            const link = document.createElement('a')
-            link.href = downloadablePDF
-            link.download = `invoice-${invoice_id}.pdf`
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
+            commonDownload(response, `invoice-${invoice_id}.pdf`)
         } catch (error) {
             console.log(error)
         }
     }
 
     const handleConvert = async () => {
-        const body = {
-            action: 'EXCHANGE_TO_RETURN',
-        }
+        const body = { action: 'EXCHANGE_TO_RETURN' }
         try {
             const response = await axioisInstance.patch(`/merchant/order/${invoice_id}`, body)
-            notification.success({
-                message: response?.data?.message || 'Successfully converted',
-            })
+            notification.success({ message: response?.data?.message || 'Successfully converted' })
         } catch (error) {
             console.log(error)
-            notification.error({
-                message: 'Failed to Convert',
-            })
+            notification.error({ message: 'Failed to Convert' })
         } finally {
             setShowCancelExchangeModal(false)
         }
@@ -336,7 +327,7 @@ const OrderDetails = () => {
                                     </div>
                                 </div>
                                 {/* "" */}
-                                <div className={'flex xl:justify-between flex-col xl:flex-row '}>
+                                <div className={'flex xl:justify-between gap-3 flex-col xl:flex-row '}>
                                     <div className="mt-6">
                                         <Activity
                                             mainData={data}
@@ -347,6 +338,9 @@ const OrderDetails = () => {
                                             invoice_id={data.invoice_id}
                                             delivery_type={data.delivery_type}
                                         />
+                                    </div>
+                                    <div className="mt-6">
+                                        <OrdersRiderActivity eventLogs={taskData} />
                                     </div>
 
                                     <div className="xl:w-[1000px] mt-10">
@@ -360,7 +354,9 @@ const OrderDetails = () => {
                                                 />
                                             </>
                                         )}
-                                        {data?.logistic?.partner === 'Slikk' && <OrderMap task_id={data?.logistic?.task_id} />}
+                                        {data?.logistic?.partner === 'Slikk' && (
+                                            <OrderMap task_id={data?.logistic?.task_id} taskData={taskData} />
+                                        )}
                                         {data?.logistic?.partner !== 'Slikk' && (
                                             <div style={{ width: '100%', height: '600px' }}>
                                                 <iframe
@@ -426,10 +422,13 @@ const OrderDetails = () => {
                             )}
                             {showRiderData && (
                                 <TrackModal
+                                    isOrder
                                     showTaskModal={showRiderData}
                                     setShowAssignModal={setShowRiderData}
-                                    storeTaskId={data?.logistic?.task_id}
+                                    taskId={data?.logistic?.task_id}
                                     handleCloseModal={handleCloseTrackModal}
+                                    storeLat={data?.latitude}
+                                    storeLong={data?.longitude}
                                 />
                             )}
                             {showUTMModal && <UtmModal isOpen={showUTMModal} setIsOpen={setShowUTMModal} orderData={data} />}

@@ -82,7 +82,7 @@ const BrandAccounting = () => {
                 },
             )
 
-            commonDownload(response, `${selectedCompany?.name}-${from}-to-${to}`)
+            commonDownload(response, `${selectedCompany?.name}-${from}-to-${to}.csv`)
         } catch (error) {
             console.error('Error downloading CSV:', error)
         }
