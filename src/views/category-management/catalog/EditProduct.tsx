@@ -156,7 +156,7 @@ const EditProduct = () => {
             const response = await axioisInstance.patch(`product/${barcode}`, formData)
             console.log(response)
             notification.success({ message: response?.data?.message || 'Product Edited Successfully' })
-            navigate('/app/catalog/products')
+            navigate(-1)
         } catch (error: any) {
             if (error instanceof AxiosError) {
                 notification.error({ message: error?.message || 'Product not Updated ' })
