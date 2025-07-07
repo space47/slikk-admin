@@ -32,6 +32,8 @@ interface props {
     allSizeChart?: string[] | undefined
     setAllSizeChart?: (x: string[]) => void
     allName?: string[]
+    initialValues?: any
+    setFieldValue?: any
 }
 
 const ProductFormCommon = ({
@@ -49,6 +51,7 @@ const ProductFormCommon = ({
     setAllColor,
     setAllImage,
     setAllSizeChart,
+    initialValues,
 }: props) => {
     return (
         <div>
@@ -119,14 +122,18 @@ const ProductFormCommon = ({
                             <Field type={item.type} name={item.name} placeholder={item.placeholder} component={item.component} />
                         </FormItem>
                     ))}
-
-                    <FormItem label="Description" className="col-span-1 w-full">
-                        <Field name="description">
-                            {({ field, form }: FieldProps) => (
-                                <RichTextEditor value={field.value} onChange={(val) => form.setFieldValue(field.name, val)} />
-                            )}
-                        </Field>
-                    </FormItem>
+                    {initialValues?.description &&
+                        Object.entries(initialValues?.description)?.map(([key]) => {
+                            return (
+                                <FormItem key={key} label={key} className="col-span-1 w-full">
+                                    <Field name={`description.${key}`}>
+                                        {({ field, form }: FieldProps) => (
+                                            <RichTextEditor value={field.value} onChange={(val) => form.setFieldValue(field.name, val)} />
+                                        )}
+                                    </Field>
+                                </FormItem>
+                            )
+                        })}
 
                     {isEdit ? (
                         <>
@@ -219,6 +226,28 @@ const ProductFormCommon = ({
                         )
                     })}
                 </FormContainer>
+                {initialValues?.filter_tags && (
+                    <>
+                        {Object.entries(initialValues.filter_tags).map(([key, value], index) => {
+                            const joinedValue = Array.isArray(value) ? value.join(', ') : value
+
+                            return (
+                                <FormItem key={index} label={key} className="col-span-1 w-full">
+                                    <Field name={key}>
+                                        {({ field, form }: FieldProps) => (
+                                            <Input
+                                                {...field}
+                                                placeholder={key}
+                                                value={field.value || joinedValue}
+                                                onChange={(e) => form.setFieldValue(key, e.target.value)}
+                                            />
+                                        )}
+                                    </Field>
+                                </FormItem>
+                            )
+                        })}
+                    </>
+                )}
             </FormContainer>
         </div>
     )
