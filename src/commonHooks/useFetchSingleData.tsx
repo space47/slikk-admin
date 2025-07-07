@@ -41,7 +41,7 @@ export const useFetchSingleData = <T,>({ url, initialData, onErrorStatus, pollin
 
             return () => clearInterval(intervalId)
         }
-    }, [url, pollingInterval, fetchData])
+    }, [url, pollingInterval])
 
     return { data, loading, responseStatus, setData, refetch: fetchData, pollingInterval }
 }
