@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { fetchReturnOrders } from '@/store/slices/returnOrderDetails/returnOrderDetails'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { useParams } from 'react-router-dom'
@@ -12,12 +12,19 @@ import ReturnUserInfo from './components/ReturnUserInfo'
 import ReturnRunnerDetails from './components/ReturnRunnerDetails'
 import RefundActivity from './components/RefundActivity'
 import OrderMap from '../../OrderDetails/OrderMap'
+import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 
 const ReturnOrderDetails = () => {
     const { return_order_id } = useParams()
     const dispatch = useAppDispatch()
     const returnOrder = useAppSelector<ReturnOrderState>((state) => state.returnOrders)
     const returnDetails = returnOrder?.returnOrders
+
+    const query = useMemo(() => {
+        return `/logistic/slikk/task?task_id=${returnDetails?.return_order_delivery[0]?.task_id}`
+    }, [returnDetails?.return_order_delivery])
+
+    const { data: taskData } = useFetchSingleData<any>({ url: query, pollingInterval: 60000 })
 
     useEffect(() => {
         dispatch(fetchReturnOrders(return_order_id))
@@ -92,7 +99,7 @@ const ReturnOrderDetails = () => {
                                     )}
                                     {returnDetails?.return_order_delivery[0]?.partner === 'Slikk' && (
                                         <div className="xl:w-[800px]">
-                                            <OrderMap task_id={returnDetails?.return_order_delivery[0]?.task_id} />
+                                            <OrderMap task_id={returnDetails?.return_order_delivery[0]?.task_id} taskData={taskData} />
                                         </div>
                                     )}
                                     {returnDetails?.return_order_delivery[0]?.partner !== 'Slikk' && (

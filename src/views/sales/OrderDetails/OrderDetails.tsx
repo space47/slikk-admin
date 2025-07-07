@@ -30,40 +30,24 @@ import { commonDownload } from '@/common/commonDownload'
 // import { string } from 'yup'
 
 const OrderDetails = () => {
+    const navigate = useNavigate()
+    const { invoice_id } = useParams()
     const [returnOrderDrawer, setReturnOrderDrawer] = useState(false)
     const [showCancelModal, setShowCancelModal] = useState(false)
     const [showUTMModal, setShowUTMModal] = useState(false)
     const [showCancelExchangeModal, setShowCancelExchangeModal] = useState(false)
-    const navigate = useNavigate()
     const [showRiderData, setShowRiderData] = useState(false)
-    const { invoice_id } = useParams()
-    const [taskData, setTaskData] = useState<any>()
 
     const queryOrders = useMemo(() => {
         return `merchant/order/${invoice_id}`
     }, [invoice_id])
     const { data: data, loading } = useFetchSingleData<SalesOrderDetailsResponse>({ url: queryOrders })
 
-    const fetchTableData = async () => {
-        try {
-            const response = await axioisInstance.get(`/logistic/slikk/task?task_id=${data?.logistic?.task_id}`)
-            const dat = response.data.data
-            setTaskData(dat)
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
-    useEffect(() => {
-        if (data?.logistic?.task_id) {
-            fetchTableData()
-            const intervalId = setInterval(() => {
-                fetchTableData()
-            }, 60000)
-
-            return () => clearInterval(intervalId)
-        }
+    const query = useMemo(() => {
+        return `/logistic/slikk/task?task_id=${data?.logistic?.task_id}`
     }, [data?.logistic?.task_id])
+
+    const { data: taskData } = useFetchSingleData<any>({ url: query, pollingInterval: 60000 })
 
     const handlemarkAsPaid = async () => {
         try {
