@@ -52,7 +52,7 @@ export const useFetchApi = <T,>({ url, initialData = [], typeOfData, pollingInte
 
             return () => clearInterval(intervalId)
         }
-    }, [url, pollingInterval, fetchData])
+    }, [url, pollingInterval])
 
     return { data, loading, setData, totalData, setTotalData, responseStatus, refetch: fetchData, pollingInterval }
 }

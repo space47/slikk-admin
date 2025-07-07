@@ -51,7 +51,6 @@ const AddProduct = () => {
     }
 
     const handleSubmit = async (values: any) => {
-        const parsedDescription = values?.description ?? textParser(values?.description)
         const imageUpload = await handleImageCheck(values.images)
         const colorlink = await handleImageCheck(values.color_code)
         const videoUpload = await handleVideoCheck(values.video)
@@ -67,14 +66,18 @@ const AddProduct = () => {
             image: imageShow,
             size_chart_image: sizeShow,
             company: companyData,
-            description: parsedDescription,
+            description: {
+                ...values?.description,
+                description: textParser(values?.description?.description),
+            },
             colorfamily: values.colorfamily,
             video_link: videoShow,
         }
         console.log('body  of add', formData)
+        const filteredBody = Object.fromEntries(Object.entries(formData).filter(([, v]) => v != null && v !== '' && v !== undefined))
 
         try {
-            const response = await axioisInstance.post('product/add', formData)
+            const response = await axioisInstance.post('product/add', filteredBody)
             console.log(response)
             notification.success({
                 message: 'Success',

@@ -142,10 +142,15 @@ const EditProduct = () => {
                 image: img_url,
                 company: companyData,
                 video_link: video_url,
-                description: values?.description ?? textParser(values?.description),
+                description: {
+                    ...values?.description,
+                    description: textParser(values?.description?.description),
+                },
                 size_chart_image: size_chart_url,
-            }).filter(([, value]) => value !== '' && value !== null),
+            }).filter(([, value]) => value !== '' && value !== null && value !== undefined),
         )
+
+        console.log('formdata us', formData)
         try {
             setShowSpinner(true)
             const response = await axioisInstance.patch(`product/${barcode}`, formData)
@@ -203,6 +208,7 @@ const EditProduct = () => {
                             setAllImage={setAllImage}
                             setAllSizeChart={setAllSizeChart}
                             setAllVideo={setAllVideo}
+                            initialValues={InitialValues(productData, segmentOptions)}
                         />
                         <FormContainer className="flex justify-end mt-5">
                             <Button type="reset" className="mr-2" onClick={() => resetForm()}>
