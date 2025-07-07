@@ -6,7 +6,6 @@ import Button from '@/components/ui/Button'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
-import moment from 'moment'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { FaEdit } from 'react-icons/fa'
@@ -115,11 +114,11 @@ const Seller = () => {
                 accessorKey: 'image',
                 cell: ({ getValue }) => <img src={getValue() as string} alt="User" className="w-12 h-12 object-cover" />,
             },
-            {
-                header: 'Date Joined',
-                accessorKey: 'date_joined',
-                cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
-            },
+            // {
+            //     header: 'Date Joined',
+            //     accessorKey: 'date_joined',
+            //     cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
+            // },
             {
                 header: 'Edit',
                 accessorKey: '',

@@ -1,5 +1,5 @@
 // hooks/useFetchConfigurations.ts
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { AxiosError } from 'axios'
 
@@ -7,6 +7,7 @@ interface Api_Hooks_props<T> {
     url: string
     initialData?: T[]
     typeOfData?: 'Array' | 'Object'
+    pollingInterval?: number
 }
 
 interface ApiResponse<T> {
@@ -16,12 +17,12 @@ interface ApiResponse<T> {
     } | null
 }
 
-export const useFetchApi = <T,>({ url, initialData = [], typeOfData }: Api_Hooks_props<T>) => {
+export const useFetchApi = <T,>({ url, initialData = [], typeOfData, pollingInterval }: Api_Hooks_props<T>) => {
     const [data, setData] = useState<T[]>(initialData)
     const [totalData, setTotalData] = useState<number>(0)
     const [loading, setLoading] = useState(false)
     const [responseStatus, setResponseStatus] = useState<string | number>()
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             setLoading(true)
             const response = await axioisInstance.get<ApiResponse<T>>(url)
@@ -40,11 +41,18 @@ export const useFetchApi = <T,>({ url, initialData = [], typeOfData }: Api_Hooks
         } finally {
             setLoading(false)
         }
-    }
+    }, [url, typeOfData])
 
     useEffect(() => {
         fetchData()
-    }, [url])
+        if (pollingInterval) {
+            const intervalId = setInterval(() => {
+                fetchData()
+            }, pollingInterval)
 
-    return { data, loading, setData, totalData, setTotalData, responseStatus, refetch: fetchData }
+            return () => clearInterval(intervalId)
+        }
+    }, [url, pollingInterval, fetchData])
+
+    return { data, loading, setData, totalData, setTotalData, responseStatus, refetch: fetchData, pollingInterval }
 }

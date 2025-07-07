@@ -1,5 +1,5 @@
 // hooks/useFetchSingleData.ts
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { AxiosError } from 'axios'
 
@@ -7,14 +7,15 @@ interface useFetchSingleDataProps<T> {
     url: string
     initialData?: T
     onErrorStatus?: (status: number) => void
+    pollingInterval?: number
 }
 
-export const useFetchSingleData = <T,>({ url, initialData, onErrorStatus }: useFetchSingleDataProps<T>) => {
+export const useFetchSingleData = <T,>({ url, initialData, onErrorStatus, pollingInterval }: useFetchSingleDataProps<T>) => {
     const [data, setData] = useState<T | undefined>(initialData)
     const [loading, setLoading] = useState(false)
     const [responseStatus, setResponseStatus] = useState<number | string>()
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             setLoading(true)
             const response = await axiosInstance.get<{ data: T }>(url)
@@ -29,11 +30,18 @@ export const useFetchSingleData = <T,>({ url, initialData, onErrorStatus }: useF
         } finally {
             setLoading(false)
         }
-    }
+    }, [url, onErrorStatus])
 
     useEffect(() => {
         fetchData()
-    }, [url])
+        if (pollingInterval) {
+            const intervalId = setInterval(() => {
+                fetchData()
+            }, pollingInterval)
 
-    return { data, loading, responseStatus, setData, refetch: fetchData }
+            return () => clearInterval(intervalId)
+        }
+    }, [url, pollingInterval, fetchData])
+
+    return { data, loading, responseStatus, setData, refetch: fetchData, pollingInterval }
 }
