@@ -51,12 +51,12 @@ const TransferModule = () => {
         let queryParam = ''
         if (currentSelectedPage.value === 'barcode') {
             console.log('Case 1')
-            queryParam = `barcode=${globalFilter?.trim()}`
+            queryParam = `barcode=${encodeURIComponent(globalFilter?.trim())}`
         } else if (currentSelectedPage.value === 'sku') {
             console.log('Case 2')
-            queryParam = `sku_exact=${globalFilter?.trim()}`
+            queryParam = `sku_exact=${encodeURIComponent(globalFilter?.trim())}`
         } else if (currentSelectedPage.value === 'name' && dataForName) {
-            queryParam = `barcode=${dataForName}`
+            queryParam = `barcode=${encodeURIComponent(dataForName)}`
         }
         let companyParam = ''
         if (companyCode) {
@@ -291,9 +291,9 @@ const TransferModule = () => {
             const handleCamera = async () => {
                 let qrParam = ''
                 if (qrResult) {
-                    qrParam = `sku_exact=${qrResult}`
+                    qrParam = `sku_exact=${encodeURIComponent(qrResult)}`
                 }
-                console.log('only if qrResult', qrResult)
+                console.log('only if (qrResult)', qrResult)
                 try {
                     const response = await axioisInstance.get(`/merchant/products?${qrParam}`)
                     const product = response?.data?.data?.results?.[0]
