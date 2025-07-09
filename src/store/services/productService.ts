@@ -17,7 +17,9 @@ export const productService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
         productData: builder.query<ProductResponseType, productDataTypes>({
             query: (params) => {
-                const parameters: Record<string, any> = {}
+                const parameters: Record<string, any> = {
+                    dashboard: true,
+                }
                 if (params.page) parameters.p = params.page
                 if (params.pageSize) parameters.page_size = params.pageSize
                 if (params.globalFilter && params.currentSelectedPage?.value) {
@@ -25,7 +27,7 @@ export const productService = RtkQueryService.injectEndpoints({
                 }
 
                 return {
-                    url: `/merchant/products?dashboard=true${params.typeFetch}`,
+                    url: `/merchant/products?${params.typeFetch}`,
                     method: 'GET',
                     params: parameters,
                 }
