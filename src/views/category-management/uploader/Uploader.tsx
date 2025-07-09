@@ -12,6 +12,7 @@ import UploaderComponent from './UploaderComponent/UploaderComponent'
 import { beforeUpload } from '@/common/beforeUpload'
 import { beforeVideoUpload } from '@/common/beforUploadVideo'
 import { handleimage } from '@/common/handleImage'
+import FilterIdGenerateModal from './UploaderComponent/FilterIdGenerateModal'
 
 const Uploader = () => {
     const [finalImage, setFinalImage] = useState('')
@@ -19,6 +20,7 @@ const Uploader = () => {
     const [finalColorLink, setFinalColorLink] = useState('')
     const [finalSizeChart, setFinalSizeChart] = useState('')
     const [showLoading, setShowLoading] = useState(false)
+    const [showFilterIdModal, setShowFilterIdModal] = useState(false)
 
     const DataArrays = [
         { label: 'Image', value: finalImage },
@@ -101,7 +103,15 @@ const Uploader = () => {
 
     return (
         <div>
-            <div className="text-xl mb-2 font-bold">Upload to Generate Links</div>
+            <div className="text-xl mb-2 font-bold flex justify-between">
+                Generate Links
+                <span>
+                    <Button variant="accept" size="sm" onClick={() => setShowFilterIdModal(true)}>
+                        Generate Filter Id
+                    </Button>
+                </span>
+            </div>
+
             <Formik enableReinitialize initialValues={INITIALVALUES} onSubmit={handleSubmit}>
                 {({ values, resetForm }) => (
                     <Form className="w-full shadow-xl p-4 rounded-xl">
@@ -110,28 +120,28 @@ const Uploader = () => {
                                 name="image"
                                 label="IMAGE"
                                 fieldname="images"
-                                fileList={values.images}
+                                fileList={values.images as File[]}
                                 beforeFileUpload={beforeUpload}
                             />
                             <UploaderComponent
                                 name="color_code"
                                 label="COLOR CODE THUMBNAIL"
                                 fieldname="color_code"
-                                fileList={values.color_code}
+                                fileList={values.color_code as File[]}
                                 beforeFileUpload={beforeUpload}
                             />
                             <UploaderComponent
                                 name="sizeChart"
                                 label="SIZE CHART"
                                 fieldname="sizeChartArray"
-                                fileList={values.sizeChartArray}
+                                fileList={values.sizeChartArray as File[]}
                                 beforeFileUpload={beforeUpload}
                             />
                             <UploaderComponent
                                 name="video_link"
                                 label="VIDEO"
                                 fieldname="video"
-                                fileList={values.video}
+                                fileList={values.video as File[]}
                                 beforeFileUpload={beforeVideoUpload}
                             />
                             <FormContainer className="flex justify-end mt-5">
@@ -173,6 +183,7 @@ const Uploader = () => {
                     <Spinner size="40px" />
                 </div>
             )}
+            {showFilterIdModal && <FilterIdGenerateModal isOpen={showFilterIdModal} setIsOpen={setShowFilterIdModal} />}
         </div>
     )
 }

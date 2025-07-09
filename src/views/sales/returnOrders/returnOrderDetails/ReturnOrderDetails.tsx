@@ -13,6 +13,7 @@ import ReturnRunnerDetails from './components/ReturnRunnerDetails'
 import RefundActivity from './components/RefundActivity'
 import OrderMap from '../../OrderDetails/OrderMap'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
+import OrdersRiderActivity from '../../OrderDetails/components/OrdersRiderActivity'
 
 const ReturnOrderDetails = () => {
     const { return_order_id } = useParams()
@@ -21,10 +22,11 @@ const ReturnOrderDetails = () => {
     const returnDetails = returnOrder?.returnOrders
 
     const query = useMemo(() => {
+        if (!returnDetails?.return_order_delivery) return null
         return `/logistic/slikk/task?task_id=${returnDetails?.return_order_delivery[0]?.task_id}`
     }, [returnDetails?.return_order_delivery])
 
-    const { data: taskData } = useFetchSingleData<any>({ url: query, pollingInterval: 60000 })
+    const { data: taskData } = useFetchSingleData<any>({ url: query || '', pollingInterval: query ? 60000 : undefined })
 
     useEffect(() => {
         dispatch(fetchReturnOrders(return_order_id))
@@ -115,6 +117,11 @@ const ReturnOrderDetails = () => {
                             )}
                         </div>
                     </div>
+                    {taskData?.event_logs?.length > 0 && (
+                        <div className="mt-6">
+                            <OrdersRiderActivity eventLogs={taskData} />
+                        </div>
+                    )}
                 </div>
                 <div className="flex flex-col bg-gray-100 p-4 rounded-lg shadow-md gap-5 w-full xl:w-1/3 dark:bg-gray-900">
                     <ReturnUserInfo />

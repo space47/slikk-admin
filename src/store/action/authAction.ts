@@ -12,6 +12,7 @@ import { clearCookies } from '@/common/cookies'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { setUser, signInSuccess } from '../slices/auth'
 import { access } from 'fs'
+import { notification } from 'antd'
 
 export const validatePhoneNumber = (mobileNumber: string) => async (dispatch: any) => {
     try {
@@ -36,6 +37,7 @@ export const validatePhoneNumber = (mobileNumber: string) => async (dispatch: an
             },
         })
     } catch (error: any) {
+        console.log(error)
         dispatch({
             type: 'loginFailure',
             payload: {
@@ -43,6 +45,7 @@ export const validatePhoneNumber = (mobileNumber: string) => async (dispatch: an
                 message: error?.response?.data?.message,
             },
         })
+        notification.error({ message: error?.response?.data?.message || 'User Not Found' })
     }
 }
 
@@ -86,6 +89,7 @@ export const validateOTP = (mobileNumber: string, otpCode: string, callBackfn: (
             type: 'otpFailure',
             payload: { message: error?.response?.data?.message },
         })
+        notification.error({ message: error?.response?.data?.message || 'OTP Verification Failed' })
     }
 }
 

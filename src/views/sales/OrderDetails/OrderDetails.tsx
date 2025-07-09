@@ -44,10 +44,14 @@ const OrderDetails = () => {
     const { data: data, loading } = useFetchSingleData<SalesOrderDetailsResponse>({ url: queryOrders })
 
     const query = useMemo(() => {
-        return `/logistic/slikk/task?task_id=${data?.logistic?.task_id}`
+        if (!data?.logistic?.task_id) return null
+        return `/logistic/slikk/task?task_id=${data.logistic.task_id}`
     }, [data?.logistic?.task_id])
 
-    const { data: taskData } = useFetchSingleData<any>({ url: query, pollingInterval: 60000 })
+    const { data: taskData } = useFetchSingleData<any>({
+        url: query || '',
+        pollingInterval: query ? 60000 : undefined,
+    })
 
     const handlemarkAsPaid = async () => {
         try {
@@ -323,9 +327,11 @@ const OrderDetails = () => {
                                             delivery_type={data.delivery_type}
                                         />
                                     </div>
-                                    <div className="mt-6">
-                                        <OrdersRiderActivity eventLogs={taskData} />
-                                    </div>
+                                    {data?.logistic && (
+                                        <div className="mt-6">
+                                            <OrdersRiderActivity eventLogs={taskData} />
+                                        </div>
+                                    )}
 
                                     <div className="xl:w-[1000px] mt-10">
                                         {data?.logistic === null && (

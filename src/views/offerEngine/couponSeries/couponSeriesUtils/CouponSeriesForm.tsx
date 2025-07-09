@@ -5,7 +5,7 @@ import { RichTextEditor } from '@/components/shared'
 import { DatePicker } from 'antd'
 import { beforeUpload } from '@/common/beforeUpload'
 import { COUPON_SERIES_FORM } from '../couponSeriesCommon'
-import ComonFilterSelect from '@/common/ComonFilterSelect'
+import CommonFilterSelect from '@/common/ComonFilterSelect'
 import { CiCircleQuestion } from 'react-icons/ci'
 import dayjs from 'dayjs'
 
@@ -160,7 +160,7 @@ const CouponSeriesForm = ({ values, setFieldValue, setFilterId, filterValue }: C
                     </FormItem>
 
                     <div>
-                        <ComonFilterSelect filterId={filterValue} setFilterId={setFilterId} />
+                        <CommonFilterSelect filterId={filterValue} setFilterId={setFilterId} />
                     </div>
 
                     {COUPON_SERIES_FORM.slice(5).map((item, key) => (
