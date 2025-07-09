@@ -29,6 +29,7 @@ const EditProduct = () => {
     const [domainWatcher, setDomainWatcher] = useState<string | string[] | undefined>('')
     const [segmentKeys, setSegmentKeys] = useState<string[] | undefined>([])
     const [segmentOptions, setSegmentOptions] = useState<string[] | undefined>([])
+    const [isCopy, setIsCopy] = useState(false)
 
     const fetchUser = async () => {
         try {
@@ -53,6 +54,7 @@ const EditProduct = () => {
             const selectedCompany = companyList.find((c) => c.id === productData.company)
             setSegmentOptions(selectedCompany?.segment?.split(','))
             setDomainWatcher(selectedCompany?.segment?.split(','))
+            setCompanyData(selectedCompany?.id)
         }
     }, [productData, companyList])
 
@@ -153,13 +155,16 @@ const EditProduct = () => {
         console.log('formdata us', formData)
         try {
             setShowSpinner(true)
-            const response = await axioisInstance.patch(`product/${barcode}`, formData)
+
+            const response = isCopy
+                ? await axioisInstance.post(`product/add`, formData)
+                : await axioisInstance.patch(`product/${barcode}`, formData)
             console.log(response)
-            notification.success({ message: response?.data?.message || 'Product Edited Successfully' })
+            notification.success({ message: response?.data?.message || `Product ${isCopy ? 'Added' : 'Edited'} Successfully` })
             navigate(-1)
         } catch (error: any) {
             if (error instanceof AxiosError) {
-                notification.error({ message: error?.message || 'Product not Updated ' })
+                notification.error({ message: error?.response?.data?.message || `Failed to ${isCopy ? 'Add' : 'Edit'}` })
             }
         } finally {
             setShowSpinner(false)
@@ -174,13 +179,15 @@ const EditProduct = () => {
     return (
         <div>
             <div className="flex xl:justify-between flex-col gap-2 mb-7 ">
-                <h3 className="mb-5 text-neutral-900">
-                    EDIT PRODUCT <span className="font-light xl:text-md text-sm ">#{barcode}</span>
-                </h3>
-                <div>
-                    <Button variant="accept" size="sm" onClick={() => navigate(`/app/catalog/addCopy/${barcode}`)}>
-                        Copy Product
-                    </Button>
+                <div className="flex justify-between">
+                    <h3 className="mb-5 text-neutral-900">
+                        {isCopy ? 'ADD PRODUCT' : ' EDIT PRODUCT'} <span className="font-light xl:text-md text-sm ">#{barcode}</span>
+                    </h3>
+                    <div>
+                        <Button variant={isCopy ? 'reject' : 'accept'} size="sm" onClick={() => setIsCopy((prev) => !prev)}>
+                            {isCopy ? 'Back' : 'Copy Product'}
+                        </Button>
+                    </div>
                 </div>
             </div>
             <Formik
