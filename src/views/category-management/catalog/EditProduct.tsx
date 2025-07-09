@@ -216,7 +216,7 @@ const EditProduct = () => {
                             </Button>
                             <Button variant="solid" type="submit" className="bg-blue-500 text-white">
                                 <span className="flex gap-2 items-center">
-                                    Submit <span>{showSpinner && <Spinner size={40} />}</span>{' '}
+                                    Submit <span>{showSpinner && <Spinner size={20} color="#ffffff" />}</span>{' '}
                                 </span>
                             </Button>
                         </FormContainer>

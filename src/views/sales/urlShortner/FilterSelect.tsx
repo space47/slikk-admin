@@ -9,7 +9,7 @@ import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { MdCancel } from 'react-icons/md'
 import { MAXMINARRAY, OFFARRAY } from '../groupNotification/sendNotification/sendNotify.common'
-import ComonFilterSelect from '@/common/ComonFilterSelect'
+import CommonFilterSelect from '@/common/ComonFilterSelect'
 
 interface FILTERPROPS {
     handleAddFilter?: any
@@ -142,7 +142,7 @@ const FilterSelect = ({
                 </>
             ) : (
                 <div className="mb-4">
-                    <ComonFilterSelect isEdit filterId={filterValue} setFilterId={setFilterId} />
+                    <CommonFilterSelect isEdit filterId={filterValue} setFilterId={setFilterId} />
                 </div>
             )}
             <FormContainer className="flex gap-3 flex-col xl:flex-row">
