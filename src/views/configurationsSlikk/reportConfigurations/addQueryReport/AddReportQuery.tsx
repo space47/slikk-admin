@@ -96,7 +96,7 @@ const AddReportQuery = () => {
         } catch (error: any) {
             console.error('Error during API call:', error.message || error)
             notification.error({
-                message: error?.message || 'Failed to add query',
+                message: error?.response?.data?.message || 'Failed to add query',
             })
         }
     }
@@ -204,77 +204,87 @@ const AddReportQuery = () => {
                             <FormItem asterisk label="Required Fields" className="col-span-1 w-full lg:w-[60%] mb-4">
                                 <FieldArray name="required_fields">
                                     {({ push, remove }) => (
-                                        <div>
-                                            {values.required_fields.map((item, index) => (
-                                                <div key={index} className="flex space-x-4 mt-2 items-center">
+                                        <div className="space-y-5">
+                                            {values.required_fields?.map((item, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="grid grid-cols-1 md:grid-cols-10 gap-4 items-center bg-gray-50 p-4 rounded-lg shadow-sm "
+                                                >
                                                     <Field
                                                         name={`required_fields[${index}].position`}
-                                                        placeholder="position"
+                                                        placeholder="Position"
                                                         component={Input}
-                                                        className="w-1/3"
                                                         type="number"
+                                                        className="md:col-span-2 w-full"
                                                     />
                                                     <Field
                                                         name={`required_fields[${index}].key`}
                                                         placeholder="Key"
                                                         component={Input}
-                                                        className="w-1/2"
+                                                        className="md:col-span-3 w-full"
                                                     />
                                                     <Field name={`required_fields[${index}].dataType`}>
-                                                        {({ field, form }: FieldProps) => (
+                                                        {({ field, form }: any) => (
                                                             <Select
+                                                                className="md:col-span-2 w-full"
                                                                 placeholder="Select dataType"
                                                                 options={reportQueryNames}
                                                                 value={reportQueryNames.find((option) => option.value === field.value)}
                                                                 onChange={(option) => form.setFieldValue(field.name, option?.value)}
-                                                                className="w-1/3"
                                                             />
                                                         )}
                                                     </Field>
                                                     <Field name={`required_fields[${index}].value`}>
-                                                        {({ field }: FieldProps) => {
+                                                        {({ field }: any) => {
                                                             const dataType = values.required_fields[index].dataType
                                                             return (
                                                                 <Input
                                                                     type={dataType === 'Date' ? 'date' : 'text'}
                                                                     placeholder={dataType === 'Date' ? 'Select date' : 'Enter value'}
                                                                     {...field}
-                                                                    className="w-1/3"
+                                                                    className="md:col-span-3 w-full"
                                                                 />
                                                             )
                                                         }}
                                                     </Field>
                                                     <Field
                                                         name={`required_fields[${index}].prefix`}
-                                                        placeholder="Enter Prefix"
+                                                        placeholder="Prefix"
                                                         component={Input}
-                                                        className="w-1/3"
+                                                        className="md:col-span-2 w-full"
                                                     />
                                                     <Field
                                                         name={`required_fields[${index}].suffix`}
-                                                        placeholder="Enter Suffix"
+                                                        placeholder="Suffix"
                                                         component={Input}
-                                                        className="w-1/3"
+                                                        className="md:col-span-2 w-full"
                                                     />
-                                                    <button
-                                                        type="button"
-                                                        className="text-red-600 hover:text-red-800 transition"
-                                                        onClick={() => remove(index)}
-                                                    >
-                                                        <MdCancel className="text-2xl" />
-                                                    </button>
+                                                    <div className="md:col-span-1 flex justify-end">
+                                                        <button type="button" onClick={() => remove(index)}>
+                                                            <MdCancel className="text-xl text-red-600 hover:scale-110 transition-transform" />
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             ))}
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    push({ position: '', key: '', value: '', dataType: 'String', prefix: '', suffix: '' })
-                                                }
-                                                className="mt-3 flex items-center text-green-600 hover:text-green-800 transition"
-                                            >
-                                                <IoIosAddCircle className="text-2xl mr-1" />
-                                                Add Required Field
-                                            </button>
+                                            <div className="flex justify-start">
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        push({
+                                                            position: '',
+                                                            key: '',
+                                                            value: '',
+                                                            dataType: 'String',
+                                                            prefix: '',
+                                                            suffix: '',
+                                                        })
+                                                    }
+                                                    className="flex items-center space-x-2 text-green-600 hover:text-green-800 transition-colors"
+                                                >
+                                                    <IoIosAddCircle className="text-2xl" />
+                                                    <span className="font-medium">Add Field</span>
+                                                </button>
+                                            </div>
                                         </div>
                                     )}
                                 </FieldArray>
