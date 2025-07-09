@@ -2,6 +2,7 @@ import React from 'react'
 import { ProductTypes } from './ProductCommon'
 import { Dialog } from '@/components/ui'
 import QRCode from 'react-qr-code'
+// import { BsFillPrinterFill } from 'react-icons/bs'
 
 interface props {
     isOpen: boolean
@@ -17,7 +18,6 @@ const ProductViewModal = ({ isOpen, row, setIsOpen }: props) => {
         { name: 'Category', value: row?.category },
         { name: 'Division', value: row?.division },
         { name: 'Brand', value: row?.brand },
-        { name: 'Status', value: row?.styles },
     ]
 
     const imageUrl = row?.thumbnail?.split(',')[0] ?? row.image?.split(',')[0]
@@ -46,6 +46,12 @@ const ProductViewModal = ({ isOpen, row, setIsOpen }: props) => {
                                 </p>
                             </div>
                         ))}
+                        {/* <p className="flex gap-2">
+                            <span className="font-semibold">Print:</span>{' '}
+                            <span>
+                                <BsFillPrinterFill className="text-xl text-blue-500 cursor-pointer" />
+                            </span>
+                        </p> */}
                     </div>
                 </div>
             </div>
