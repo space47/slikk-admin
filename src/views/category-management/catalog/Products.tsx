@@ -59,7 +59,7 @@ const Products = () => {
             page,
             pageSize,
             typeFetch,
-            globalFilter,
+            globalFilter: encodeURIComponent(globalFilter!),
             currentSelectedPage,
         },
         { refetchOnMountOrArgChange: true },
