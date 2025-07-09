@@ -3,6 +3,7 @@ import { ColumnDef } from '@tanstack/react-table'
 import { useMemo } from 'react'
 import { Product } from '../CommonType'
 import { FaEdit, FaEye } from 'react-icons/fa'
+import { useNavigate } from 'react-router-dom'
 
 interface props {
     handleOpenModal: (img: any) => void
@@ -10,17 +11,18 @@ interface props {
 }
 
 export const useProductColumns = ({ handleOpenModal, handleViewProducts }: props) => {
+    const navigate = useNavigate()
     return useMemo<ColumnDef<Product>[]>(
         () => [
             {
                 header: 'Edit',
                 accessorKey: '',
                 cell: ({ row }) => (
-                    <button className="border-none bg-none">
-                        <a href={`/app/catalog/products/${row.original.barcode}`} target="_blank" rel="noreferrer">
+                    <button className="border-none bg-none" onClick={() => navigate(`/app/catalog/products/${row.original.barcode}`)}>
+                        {/* <a href={`/app/catalog/products/${row.original.barcode}`} target="_blank" rel="noreferrer">
                             {' '}
-                            <FaEdit className="text-xl text-blue-600" />
-                        </a>
+                            </a> */}
+                        <FaEdit className="text-xl text-blue-600" />
                     </button>
                 ),
             },

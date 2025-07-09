@@ -9,7 +9,7 @@ import ImageMODAL from '@/common/ImageModal'
 import { FaFacebook, FaFilter } from 'react-icons/fa'
 import EasyTable from '@/common/EasyTable'
 import ProductFilterNest from './ProductFilter'
-import { useAppSelector } from '@/store'
+import { useAppDispatch, useAppSelector } from '@/store'
 import DialogConfirm from '@/common/DialogConfirm'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { Dropdown, Input } from '@/components/ui'
@@ -17,19 +17,25 @@ import { ProductTypes, ProductFilterArray } from './ProductCommon'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { Option, pageSizeOptions } from './CommonType'
 import { useProductColumns } from './productutils/ProductColumns'
-import { fetchProducts, handleDownload, handleFacebookSync, handleGenerateSiteMap, handleRandomize } from './productutils/productApiCalls'
-import { handleApply, handleProductSelect } from './productutils/productFunction'
-import { HiSearch } from 'react-icons/hi'
+import { handleDownload, handleFacebookSync, handleGenerateSiteMap, handleRandomize } from './productutils/productApiCalls'
 import ProductViewModal from './ProductViewModal'
+import { productService } from '@/store/services/productService'
+import {
+    productRequiredType,
+    setProductData,
+    setCurrentSelectedPage,
+    setPage,
+    setPageSize,
+    setTypeFetch,
+    setGlobalFilter,
+    setCount,
+} from '@/store/slices/productData/productData.slice'
+import LoadingSpinner from '@/common/LoadingSpinner'
 
 const Products = () => {
+    const dispatch = useAppDispatch()
     const navigate = useNavigate()
-    const [data, setData] = useState<ProductTypes[]>([])
     const [rowData, setRowData] = useState<ProductTypes>()
-    const [totalData, setTotalData] = useState(0)
-    const [page, setPage] = useState(1)
-    const [pageSize, setPageSize] = useState(10)
-    const [globalFilter, setGlobalFilter] = useState('')
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularROwImage] = useState<any>([])
     const [divisionList, setDivisionList] = useState<string[]>([])
@@ -37,25 +43,34 @@ const Products = () => {
     const [subCategoryList, setSubCategoryList] = useState([])
     const [productTypeList, setProductTypeList] = useState([])
     const [brandList, setBrandList] = useState([])
-    const [typeFetch, setTypeFetch] = useState('')
     const [showFacebookDialog, setShowFacebookDialog] = useState(false)
     const [showRandomizeDialog, setShowRandomizeDialog] = useState(false)
     const [selectFilterString, setFilterString] = useState('')
-    const [searchOnEnter, setSearchOnEnter] = useState('')
     const [showDrawer, setShowDrawer] = useState(false)
     const [showViewModal, setShowViewModal] = useState(false)
-    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(ProductFilterArray[0])
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
 
-    const fetchData = async () => {
-        const { data, total } = await fetchProducts(page, pageSize, typeFetch, globalFilter, currentSelectedPage)
-        setData(data)
-        setTotalData(total)
-    }
+    const { productData, count, currentSelectedPage, page, pageSize, typeFetch, globalFilter } = useAppSelector<productRequiredType>(
+        (state) => state.product,
+    )
+
+    const { data, isSuccess, isLoading } = productService.useProductDataQuery(
+        {
+            page,
+            pageSize,
+            typeFetch,
+            globalFilter: encodeURIComponent(globalFilter!),
+            currentSelectedPage,
+        },
+        { refetchOnMountOrArgChange: true },
+    )
 
     useEffect(() => {
-        fetchData()
-    }, [page, pageSize, typeFetch, searchOnEnter])
+        if (isSuccess) {
+            dispatch(setProductData(data?.data?.results || []))
+            dispatch(setCount(data?.data?.count || 0))
+        }
+    }, [dispatch, isSuccess, data])
 
     const handleOpenModal = (img: any) => {
         setParticularROwImage(img)
@@ -67,7 +82,44 @@ const Products = () => {
         setShowViewModal(true)
     }
 
+    const handleProductSelect = (value: any) => {
+        const selected = ProductFilterArray.find((item) => item.value === value)
+        if (selected) {
+            dispatch(setCurrentSelectedPage(selected))
+        }
+    }
+
+    const handleApply = () => {
+        let query = ''
+        if (brandList?.length > 0 && !selectFilterString) {
+            const brandIds = brandList.join(',')
+            if (query) query += '&'
+            query += `brand=${encodeURIComponent(brandIds)}`
+        }
+        if (selectFilterString && brandList?.length === 0) {
+            console.log('selected filter string', selectFilterString)
+            query += `${selectFilterString}`
+        }
+        if (selectFilterString && brandList?.length > 0) {
+            const brandIds = brandList.join(',')
+            const data = selectFilterString
+                ?.split('=')
+                ?.filter((item) => item !== 'brand')
+                ?.join('')
+            if (selectFilterString.includes('brand')) {
+                query += `brand=${encodeURIComponent(brandIds)},${data},`
+            } else {
+                query += `${selectFilterString}&brand=${encodeURIComponent(brandIds)}`
+            }
+        }
+        dispatch(setTypeFetch(query))
+        setShowDrawer(false)
+    }
+
     const columns = useProductColumns({ handleOpenModal, handleViewProducts })
+    if (isLoading) {
+        return <LoadingSpinner />
+    }
 
     return (
         <div className="p-4 w-full shadow-xl rounded-xl">
@@ -80,22 +132,17 @@ const Products = () => {
                             placeholder="Search here..."
                             value={globalFilter}
                             className="w-[150px] xl:w-[250px] rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-1 focus:outline-none focus:ring focus:ring-blue-500"
-                            onChange={(e) => setGlobalFilter(e.target.value)}
-                            onKeyDown={(e: any) => {
-                                if (e.key === 'Enter') {
-                                    e.preventDefault()
-                                    setSearchOnEnter(e.target.value)
-                                }
+                            onChange={(e) => {
+                                dispatch(setPage(1))
+                                dispatch(setGlobalFilter(e.target.value))
                             }}
                         />
-                        <div className="bg-blue-500 hover:bg-blue-400 p-2 rounded-xl cursor-pointer">
-                            <HiSearch className="text-white  dark:text-gray-400 text-xl" onClick={() => setSearchOnEnter(globalFilter)} />
-                        </div>
+
                         <div className="bg-gray-100 xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white font-bold">
                             <Dropdown
                                 className="text-black bg-gray-200 font-bold px-4 py-2 rounded-md"
                                 title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
-                                onSelect={(val) => handleProductSelect(val, setCurrentSelectedPage)}
+                                onSelect={(val) => handleProductSelect(val)}
                             >
                                 {ProductFilterArray?.map((item, key) => (
                                     <DropdownItem key={key} eventKey={item.value}>
@@ -129,7 +176,7 @@ const Products = () => {
                         </button>
                         <button
                             className="bg-green-500 text-white px-4 py-2 xl:flex items-center gap-2  hover:bg-green-400 rounded-lg font-bold"
-                            onClick={() => handleDownload(currentSelectedPage, globalFilter, typeFetch)}
+                            onClick={() => handleDownload(currentSelectedPage, globalFilter!, typeFetch)}
                         >
                             <IoMdDownload className="text-xl" /> Export
                         </button>
@@ -151,22 +198,23 @@ const Products = () => {
                         >
                             <FaFilter className="text-md" />
                         </Button>
-                        <button
+                        <Button
+                            variant="new"
                             className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-700 w-full md:w-auto text-center font-bold"
                             onClick={() => navigate('/app/catalog/products/addNew')}
                         >
-                            + Product
-                        </button>
+                            Add
+                        </Button>
                     </div>
                 </div>
             </div>
 
             <div className="mt-10">
-                <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
+                <EasyTable mainData={productData} columns={columns} page={page} pageSize={pageSize} />
             </div>
             {
                 <div className="flex items-center justify-between mt-4">
-                    <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={(page) => setPage(page)} />
+                    <Pagination pageSize={pageSize} currentPage={page} total={count} onChange={(page) => dispatch(setPage(page))} />
                     <div style={{ minWidth: 130 }}>
                         <Select<Option>
                             size="sm"
@@ -174,8 +222,8 @@ const Products = () => {
                             value={pageSizeOptions.find((option) => option.value === pageSize)}
                             options={pageSizeOptions}
                             onChange={(option) => {
-                                setPage(1)
-                                setPageSize(Number(option?.value))
+                                dispatch(setPage(1))
+                                dispatch(setPageSize(Number(option?.value)))
                             }}
                         />
                     </div>
@@ -192,7 +240,7 @@ const Products = () => {
                 <ProductFilterNest
                     showDrawer={showDrawer}
                     handleCloseDrawer={() => setShowDrawer(false)}
-                    handleApply={() => handleApply(brandList, selectFilterString, setShowDrawer, setTypeFetch)}
+                    handleApply={handleApply}
                     subCategoryList={subCategoryList}
                     divisionList={divisionList}
                     categroyList={categoryList}
