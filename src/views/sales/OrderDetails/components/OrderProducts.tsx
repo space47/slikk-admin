@@ -50,7 +50,7 @@ const ProductColumn = ({ row, status }: productProps) => {
     const [particularRowImage, setParticularROwImage] = useState('')
 
     const segregatedNames = (value: string) => {
-        return value?.replace(/\s+/g, '-')
+        return encodeURIComponent(value?.replace(/\s+/g, '-'))
     }
 
     const handleImageView = (img: string) => {

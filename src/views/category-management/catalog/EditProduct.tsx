@@ -156,7 +156,7 @@ const EditProduct = () => {
             const response = await axioisInstance.patch(`product/${barcode}`, formData)
             console.log(response)
             notification.success({ message: response?.data?.message || 'Product Edited Successfully' })
-            navigate('/app/catalog/products')
+            navigate(-1)
         } catch (error: any) {
             if (error instanceof AxiosError) {
                 notification.error({ message: error?.message || 'Product not Updated ' })
@@ -216,7 +216,7 @@ const EditProduct = () => {
                             </Button>
                             <Button variant="solid" type="submit" className="bg-blue-500 text-white">
                                 <span className="flex gap-2 items-center">
-                                    Submit <span>{showSpinner && <Spinner size={40} />}</span>{' '}
+                                    Submit <span>{showSpinner && <Spinner size={20} color="#ffffff" />}</span>{' '}
                                 </span>
                             </Button>
                         </FormContainer>

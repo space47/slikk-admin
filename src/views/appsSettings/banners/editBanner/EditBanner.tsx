@@ -207,7 +207,7 @@ const EditBanner = () => {
                                         <ErrorMessage name={item.name} component="div" className="text-red-500 text-sm mt-1" />
                                     </FormItem>
                                 ))}
-                                <BannerFilterTags label="Tags" name="tags" />
+
                                 <FullDateForm label="From Date" name="from_date" fieldname="from_date" />
                                 <FullDateForm label="To Date" name="to_date" fieldname="to_date" />
                             </FormContainer>
@@ -305,7 +305,7 @@ const EditBanner = () => {
                                     options={brands.brands}
                                     fieldValues="brand"
                                 />
-
+                                <BannerFilterTags label="Tags" name="tags" />
                                 <BannerFilterTags label="Quick Filter Tags" name="quick_filter_tags" />
                             </FormContainer>
 
