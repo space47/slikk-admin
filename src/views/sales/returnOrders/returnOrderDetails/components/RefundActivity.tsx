@@ -15,6 +15,7 @@ import { ReturnOrderState } from '@/store/types/returnDetails.types'
 import { getButtonAndModalContent } from './returnOrderCommon'
 import ReturnActionActivity from './ReturnActionActivity'
 import { AxiosError } from 'axios'
+import { Input } from '@/components/ui'
 
 const RefundActivity = () => {
     const returnOrder = useAppSelector<ReturnOrderState>((state) => state.returnOrders)
@@ -42,11 +43,16 @@ const RefundActivity = () => {
 
     const [currentButton, setCurrentButton] = useState(false)
     const [forceCOD, setForceCOD] = useState(false)
+    const [packetsValue, setPacketsValue] = useState('')
+    const [packetsContainer, setPacketsContainer] = useState<string[]>([])
+    // const packetIdArray = returnOrder?.returnOrders?.packet_ids || ['r1456', 'r1234', 'r4444']
+    const packetIdArray = ['r1456', 'r1234', 'r4444', '5531r', 'ss334']
 
     const handlePICKUPGenerate = () => {
         setAction('create_reverse_pickup')
         setTriggerPickedUpGenerate(true)
     }
+
     useEffect(() => {
         if (triggerPickedUpGenerate) {
             const sendApiRequest = async () => {
@@ -166,6 +172,22 @@ const RefundActivity = () => {
         }
     }
 
+    const handlePacketsCount = (e: any) => {
+        if (e.key === 'Enter') {
+            if (packetsContainer.includes(e.target.value)) {
+                notification.warning({ message: 'Packet Already scanned' })
+            } else if (packetIdArray.includes(e.target.value)) {
+                setPacketsContainer((prev) => [...prev, e.target.value])
+                setPacketsValue('')
+            } else {
+                notification.error({ message: 'No packet Id' })
+            }
+        }
+    }
+
+    const isPickedUp = returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'PICKED_UP'
+    const equalNumber = packetsContainer?.length === packetIdArray.length
+
     return (
         <Card className="mb-10 flex flex-col">
             <h5 className="mb-4">Activity</h5>
@@ -197,8 +219,31 @@ const RefundActivity = () => {
                 )}
             </Timeline>
             {/* buttons........................................................................................................ */}
+
+            <div className="mt-5 mb-5">
+                {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'PICKED_UP' && (
+                    <>
+                        <div className="grid grid-cols-3 mb-3 gap-3">
+                            {
+                                <div>
+                                    Packed: ({packetsContainer?.length} / {packetIdArray?.length})
+                                </div>
+                            }
+                        </div>
+                        <div>
+                            <Input
+                                placeholder="Scan Packet Ids"
+                                value={packetsValue}
+                                onChange={(e) => setPacketsValue(e.target.value)}
+                                onKeyDown={handlePacketsCount}
+                            />
+                        </div>
+                    </>
+                )}
+            </div>
+
             {buttonText && returnDetails?.status && returnDetails.status !== 'CANCELLED' && returnDetails.status !== 'ACCEPTED' && (
-                <Button variant="solid" onClick={() => showModal(content)}>
+                <Button variant="solid" onClick={() => showModal(content)} disabled={isPickedUp && !equalNumber}>
                     {buttonText}
                 </Button>
             )}

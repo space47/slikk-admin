@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BANNER_UPLOAD_DATA } from '@/common/banner'
 import { Button, FormItem, Select, Upload } from '@/components/ui'
-import { useAppSelector } from '@/store'
+import { useAppDispatch, useAppSelector } from '@/store'
 import { DIVISION_STATE } from '@/store/types/division.types'
 import React, { useEffect, useState } from 'react'
 import { FaWindowClose } from 'react-icons/fa'
@@ -16,6 +16,8 @@ import BannerDateSelector from './BannerDateSelector'
 import { CATEGORY_STATE } from '@/store/types/category.types'
 import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
 import { PRODUCTTYPE_STATE } from '@/store/types/productType.types'
+import { pageSettingsService } from '@/store/services/pageSettingService'
+import { pageNameTypes } from '@/store/types/pageSettings.types'
 
 function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBannerFormData }: any) {
     const [bannerForm, setBannerFormData] = useState<BANNER_UPLOAD_DATA[]>(completeBannerFormData)
@@ -110,9 +112,20 @@ function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBan
 export default AddBannerStep3
 
 const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputChange }: any) => {
+    const dispatch = useAppDispatch()
+    const [subPageNamesData, setSubPageNamesData] = useState<pageNameTypes[] | undefined>([])
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
+    const { data: SubPageNames, isSuccess: isSubPageNamesSuccess } = pageSettingsService.useSubPageNamesQuery({ page: 1, pageSize: 100 })
+
+    useEffect(() => {
+        if (isSubPageNamesSuccess) {
+            setSubPageNamesData(SubPageNames?.data || [])
+        }
+    }, [dispatch, isSubPageNamesSuccess])
+
+    console.log('sussssss', subPageNamesData)
 
     const [sortOrder, setSortOrder] = useState<string | undefined>('')
     const [fromDateAndTime, setFromDateAndTime] = useState('')
@@ -173,10 +186,6 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
         }
         setBannerForm(updatedBannerForm)
     }
-
-    console.log('Fillfillters', filters)
-    console.log('BBBrand', brands)
-
     const handleChange = (e: any) => {
         const { name, value, type, checked } = e.target
 
@@ -405,6 +414,22 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                             handleMultiSelect(
                                 'tags',
                                 newVal?.map((val) => val.value),
+                            )
+                        }}
+                    />
+                </div>
+                <div className="flex flex-col">
+                    <div>Sub Page</div>
+                    <Select
+                        isMulti
+                        options={subPageNamesData}
+                        getOptionLabel={(option) => option.name}
+                        getOptionValue={(option) => option.id}
+                        onChange={(newVal, actionMeta) => {
+                            console.log(newVal, actionMeta)
+                            handleMultiSelect(
+                                'sub_page',
+                                newVal?.map((val) => val.id),
                             )
                         }}
                     />

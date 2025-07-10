@@ -64,4 +64,5 @@ export interface BANNER_MODEL {
     position: number | null
     lottie_web: string
     lottie_mobile: string
+    sub_page?: any
 }

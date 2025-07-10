@@ -97,6 +97,7 @@ export interface ReturnOrder {
     tracking_url: string | null
     logistic_partner: string | null
     log: any[]
+    packet_ids: string[]
     return_type: string
     create_date: string
     update_date: string

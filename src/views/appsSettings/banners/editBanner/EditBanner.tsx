@@ -26,6 +26,9 @@ import BannerFilterTags from './component/BannerFilterTags'
 import { ImageHandlerBanners, MediaType } from './component/bannerFunctions'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 import FullDateForm from '@/common/FullDateForm'
+import CommonSelect from '../../pageSettings/CommonSelect'
+import { pageSettingsService } from '@/store/services/pageSettingService'
+import { pageNameTypes } from '@/store/types/pageSettings.types'
 
 const EditBanner = () => {
     const { id } = useParams()
@@ -40,6 +43,15 @@ const EditBanner = () => {
     const [sectionBGmobile, setSectionBGmobile] = useState<string[]>([])
     const [showSpinner, setShowSpinner] = useState(false)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
+    const [subPageNamesData, setSubPageNamesData] = useState<pageNameTypes[] | undefined>([])
+
+    const { data: SubPageNames, isSuccess: isSubPageNamesSuccess } = pageSettingsService.useSubPageNamesQuery({ page: 1, pageSize: 100 })
+
+    useEffect(() => {
+        if (isSubPageNamesSuccess) {
+            setSubPageNamesData(SubPageNames?.data || [])
+        }
+    }, [isSubPageNamesSuccess])
 
     const validationSchema = Yup.object().shape({
         min_off: Yup.number().max(Yup.ref('max_off'), 'min_off must be less than or equal to max_off'),
@@ -307,6 +319,7 @@ const EditBanner = () => {
                                 />
                                 <BannerFilterTags label="Tags" name="tags" />
                                 <BannerFilterTags label="Quick Filter Tags" name="quick_filter_tags" />
+                                <CommonSelect needClassName className="w-1/2" name="sub_page" label="Sub Page" options={subPageNamesData} />
                             </FormContainer>
 
                             <FormContainer>
