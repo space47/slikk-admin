@@ -2,7 +2,6 @@ import { FormContainer, FormItem, Input, Upload } from '@/components/ui'
 import React from 'react'
 import { BrandShipentForms } from './brandShipmentsCommon'
 import { Field, FieldProps } from 'formik'
-import FullDateForm from '@/common/FullDateForm'
 import { IoDocumentTextOutline } from 'react-icons/io5'
 import { beforeUpload } from '@/common/beforeUpload'
 import { RichTextEditor } from '@/components/shared'
@@ -23,21 +22,25 @@ const BrandFormFirst = ({ isEdit, values }: props) => {
                     <Field type={item.type} name={item?.name} placeholder={`Place ${item.label}`} component={Input} />
                 </FormItem>
             ))}
-            {/* <FullDateForm fieldname="dispatch_date" label="Dispatch Date" name="dispatch_date" /> */}
             <FormItem label="Dispatch Date">
                 <Field name="dispatch_date">
-                    {({ field, form }: FieldProps) => (
-                        <DatePicker
-                            placeholder=""
-                            className="w-1/2"
-                            value={field.value ? dayjs(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
-                            onChange={(value) => {
-                                form.setFieldValue('dispatch_date', value ? value.format('YYYY-MM-DD') : '')
-                            }}
-                        />
-                    )}
+                    {({ field, form }: FieldProps) => {
+                        const dateValue = field.value ? dayjs(field.value) : null
+
+                        return (
+                            <DatePicker
+                                placeholder=""
+                                className="w-1/2"
+                                value={dateValue && dateValue.isValid() ? dateValue : null}
+                                onChange={(value) => {
+                                    form.setFieldValue('dispatch_date', value ? value.format('YYYY-MM-DD') : '')
+                                }}
+                            />
+                        )
+                    }}
                 </Field>
             </FormItem>
+
             <FormItem label="Upload Supporting Document"></FormItem>
             <FormContainer className=" mt-5 w-full bg-blue-100 p-4 rounded-xl ">
                 {isEdit && values?.document && (
