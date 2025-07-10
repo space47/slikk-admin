@@ -194,7 +194,7 @@ const CommonMainPageSettings = ({
                                             id=""
                                             placeholder="search SKU for product"
                                             value={searchInput}
-                                            className=" xl:w-[550px] rounded-[10px]"
+                                            className=" xl:w-[350px] rounded-[10px]"
                                             onChange={handleSearch}
                                         />
                                     </div>
