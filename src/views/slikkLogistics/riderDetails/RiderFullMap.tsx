@@ -76,7 +76,6 @@ interface MarkerComponentProps {
 
 const MarkerComponent = ({ markers, currLat, currLong, handleDetails }: MarkerComponentProps) => {
     const map = useMap()
-    console.log('specific rider', currLat, currLong)
     useEffect(() => {
         map.setView([currLat, currLong])
     }, [currLat, currLong, map])
@@ -111,13 +110,7 @@ const MarkerComponent = ({ markers, currLat, currLong, handleDetails }: MarkerCo
                 )
             })}
 
-            <Marker position={[currLat, currLong]} icon={officeIcon}>
-                {/* <Tooltip direction="top" offset={[0, -10]} opacity={1} permanent={false}>
-                    <div>
-                        <strong>SlikkSync Technologies</strong>
-                    </div>
-                </Tooltip> */}
-            </Marker>
+            <Marker position={[currLat, currLong]} icon={officeIcon}></Marker>
 
             <CurrentLocationButton setCenter={() => {}} currLat={currLat} currLong={currLong} />
         </div>
@@ -210,7 +203,7 @@ const RiderFullMap: React.FC<RiderFullMapProps> = ({ riderDetails, currentStore 
             </div>
             {showRiderModal && (
                 <div style={{ position: 'relative', zIndex: 2000 }}>
-                    <RiderDetailModal dialogIsOpen={showRiderModal} setIsOpen={setShowRiderModal} mobile={mobileData} />
+                    <RiderDetailModal dialogIsOpen={showRiderModal} setIsOpen={setShowRiderModal} mobile={mobileData as any} />
                 </div>
             )}
         </div>

@@ -97,6 +97,10 @@ export const useOrderListColumns = ({
                 },
             },
             { header: 'Order Count', accessorKey: 'user_order_count' },
+            { header: 'Total Items', accessorKey: 'order_items.length' },
+            { header: 'Payment Mode', accessorKey: 'payment.mode' },
+            { header: 'Distance', accessorKey: 'distance', cell: ({ getValue }: any) => <span>{getValue()} km</span> },
+            { header: 'Payment Status', accessorKey: 'payment.status' },
             { header: 'Device Type', accessorKey: 'device_type' },
             { header: 'Customer Name', accessorKey: 'user.name' },
             {
@@ -166,10 +170,7 @@ export const useOrderListColumns = ({
                 },
             },
             { header: 'Picker Name', accessorKey: 'picker.name' },
-            { header: 'Distance', accessorKey: 'distance', cell: ({ getValue }: any) => <span>{getValue()} km</span> },
-            { header: 'Payment Mode', accessorKey: 'payment.mode' },
-            { header: 'Payment Status', accessorKey: 'payment.status' },
-            { header: 'Total Items', accessorKey: 'order_items.length' },
+
             { header: 'Order Total', accessorKey: 'payment.amount' },
             {
                 header: 'Last Update',

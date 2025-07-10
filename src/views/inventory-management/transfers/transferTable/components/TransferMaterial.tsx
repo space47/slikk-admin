@@ -51,12 +51,12 @@ const TransferModule = () => {
         let queryParam = ''
         if (currentSelectedPage.value === 'barcode') {
             console.log('Case 1')
-            queryParam = `barcode=${globalFilter?.trim()}`
+            queryParam = `barcode=${encodeURIComponent(globalFilter?.trim())}`
         } else if (currentSelectedPage.value === 'sku') {
             console.log('Case 2')
-            queryParam = `sku_exact=${globalFilter?.trim()}`
+            queryParam = `sku_exact=${encodeURIComponent(globalFilter?.trim())}`
         } else if (currentSelectedPage.value === 'name' && dataForName) {
-            queryParam = `barcode=${dataForName}`
+            queryParam = `barcode=${encodeURIComponent(dataForName)}`
         }
         let companyParam = ''
         if (companyCode) {
@@ -68,14 +68,14 @@ const TransferModule = () => {
             const product = response?.data?.data?.results?.[0]
             console.log('product is', product?.image_high_res?.split(',')[0])
             if (product?.sku) {
-                handleAddOrUpdateRow(product.sku, product?.brand, product?.image_high_res?.split(','))
+                handleAddOrUpdateRow(product.sku, product?.brand, product?.image_high_res?.split(','), product?.company)
             } else {
                 console.error('No product found, adding entry with globalFilter.')
-                handleAddOrUpdateRow(globalFilter, '', '')
+                handleAddOrUpdateRow(globalFilter, '', '', '')
             }
         } catch (error) {
             console.error(error)
-            handleAddOrUpdateRow(globalFilter, '', '')
+            handleAddOrUpdateRow(globalFilter, '', '', '')
         }
         setQrResult('')
         setGlobalFilter('')
@@ -89,19 +89,19 @@ const TransferModule = () => {
             const product = response?.data?.data?.results?.[0]
 
             if (product?.sku) {
-                handleAddOrUpdateRow(product.sku, product?.brand, product?.image_high_res?.split(','))
+                handleAddOrUpdateRow(product.sku, product?.brand, product?.image_high_res?.split(','), product?.company)
             } else {
                 console.error('No product found, adding entry with globalFilter.')
-                handleAddOrUpdateRow(globalFilter, '', '')
+                handleAddOrUpdateRow(globalFilter, '', '', '')
                 if (isCamera) {
-                    handleAddOrUpdateRow(qrResult, '', '')
+                    handleAddOrUpdateRow(qrResult, '', '', '')
                 }
             }
         } catch (error) {
             console.error(error)
-            handleAddOrUpdateRow(globalFilter, '', '')
+            handleAddOrUpdateRow(globalFilter, '', '', '')
             if (isCamera) {
-                handleAddOrUpdateRow(qrResult, '', '')
+                handleAddOrUpdateRow(qrResult, '', '', '')
             }
         } finally {
             setDataForName('')
@@ -117,8 +117,15 @@ const TransferModule = () => {
         }
     }, [currentSelectedPage?.value, globalFilter])
 
-    const handleAddOrUpdateRow = (sku: string, brand: string, image: string) => {
-        console.log('sku is', sku, brand, image)
+    const handleAddOrUpdateRow = (sku: string, brand: string, image: string, company: string | number) => {
+        if (!companyCode) {
+            notification.error({ message: 'Company should be added to proceed' })
+            return
+        }
+
+        const companyFromApi = companyList?.find((item) => item?.id === company)
+        const companyFromSelect = companyList?.find((item) => item?.id === companyCode)
+
         if (!sku) return
         const existingRowIndex = skuWiseData.findIndex((item) => item.sku?.trim() === sku?.trim())
 
@@ -129,6 +136,7 @@ const TransferModule = () => {
                 ...existingRow,
                 brand: brand || existingRow.brand,
                 image: image ?? existingRow.image ?? 'N/A',
+                company: companyFromApi?.name || companyFromSelect?.name || existingRow.company || 'N/A',
                 quantity_returned: (existingRow.quantity_returned || 0) + 1,
                 location: existingRow.location.includes(locationInput) ? existingRow.location : `${existingRow.location}/${locationInput}`,
             }
@@ -141,6 +149,7 @@ const TransferModule = () => {
                 brand: brand || '',
                 quantity_returned: 1,
                 image: image ?? 'N/A',
+                company: companyFromApi?.name || companyFromSelect?.name || 'N/A',
                 location: locationInput,
             }
             const updatedData = [newRow, ...skuWiseData]
@@ -159,6 +168,7 @@ const TransferModule = () => {
         () => [
             { header: 'SKU', accessorKey: 'sku' },
             { header: 'Brand', accessorKey: 'brand' },
+            { header: 'Company', accessorKey: 'company' },
             {
                 header: 'Image',
                 accessorKey: 'image',
@@ -281,24 +291,24 @@ const TransferModule = () => {
             const handleCamera = async () => {
                 let qrParam = ''
                 if (qrResult) {
-                    qrParam = `sku_exact=${qrResult}`
+                    qrParam = `sku_exact=${encodeURIComponent(qrResult)}`
                 }
-                console.log('only if qrResult', qrResult)
+                console.log('only if (qrResult)', qrResult)
                 try {
                     const response = await axioisInstance.get(`/merchant/products?${qrParam}`)
                     const product = response?.data?.data?.results?.[0]
 
                     if (product?.sku) {
                         console.log('here in sku', product?.sku)
-                        handleAddOrUpdateRow(product.sku, product?.brand, product?.image)
+                        handleAddOrUpdateRow(product.sku, product?.brand, product?.image, product?.company)
                     } else {
                         console.log('here in else', qrResult)
-                        handleAddOrUpdateRow(qrResult, '', '')
+                        handleAddOrUpdateRow(qrResult, '', '', '')
                     }
                     setIsCamera(false)
                     window.scrollBy({ top: 300, behavior: 'smooth' })
                 } catch (error) {
-                    handleAddOrUpdateRow(qrResult, '', '')
+                    handleAddOrUpdateRow(qrResult, '', '', '')
                 }
                 setIsCamera(false)
                 setQrResult('')

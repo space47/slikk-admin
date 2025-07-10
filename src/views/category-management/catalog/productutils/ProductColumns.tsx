@@ -2,24 +2,36 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { useMemo } from 'react'
 import { Product } from '../CommonType'
-import { FaEdit } from 'react-icons/fa'
+import { FaEdit, FaEye } from 'react-icons/fa'
+import { useNavigate } from 'react-router-dom'
 
 interface props {
     handleOpenModal: (img: any) => void
+    handleViewProducts: (row: any) => void
 }
 
-export const useProductColumns = ({ handleOpenModal }: props) => {
+export const useProductColumns = ({ handleOpenModal, handleViewProducts }: props) => {
+    const navigate = useNavigate()
     return useMemo<ColumnDef<Product>[]>(
         () => [
             {
                 header: 'Edit',
                 accessorKey: '',
                 cell: ({ row }) => (
-                    <button className="border-none bg-none">
-                        <a href={`/app/catalog/products/${row.original.barcode}`} target="_blank" rel="noreferrer">
+                    <button className="border-none bg-none" onClick={() => navigate(`/app/catalog/products/${row.original.barcode}`)}>
+                        {/* <a href={`/app/catalog/products/${row.original.barcode}`} target="_blank" rel="noreferrer">
                             {' '}
-                            <FaEdit className="text-xl text-blue-600" />
-                        </a>
+                            </a> */}
+                        <FaEdit className="text-xl text-blue-600" />
+                    </button>
+                ),
+            },
+            {
+                header: 'Edit',
+                accessorKey: '',
+                cell: ({ row }) => (
+                    <button className="border-none bg-none" onClick={() => handleViewProducts(row?.original)}>
+                        <FaEye className="text-xl text-yellow-500" />
                     </button>
                 ),
             },
@@ -46,14 +58,19 @@ export const useProductColumns = ({ handleOpenModal }: props) => {
             {
                 header: 'Image',
                 accessorKey: 'image',
-                cell: ({ getValue, row }: any) => (
-                    <img
-                        src={row?.original?.thumbnail.split(',')[0]}
-                        alt="Image"
-                        className="w-24 h-20 object-cover cursor-pointer"
-                        onClick={() => handleOpenModal(row.original.image)}
-                    />
-                ),
+                cell: ({ row }: any) => {
+                    const imageUrl = row?.original?.thumbnail ? row?.original?.thumbnail.split(',')[0] : row?.original?.image.split(',')[0]
+                    return (
+                        <>
+                            <img
+                                src={imageUrl}
+                                alt="Image"
+                                className="w-24 h-20 object-cover cursor-pointer"
+                                onClick={() => handleOpenModal(row.original.image)}
+                            />
+                        </>
+                    )
+                },
             },
             {
                 header: 'Price',

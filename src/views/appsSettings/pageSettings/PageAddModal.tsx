@@ -9,7 +9,14 @@ import CommonMainPageSettings from './CommonMainPageSettings'
 import { ProductTable, WebType } from './pageSettings.types'
 import * as Yup from 'yup'
 import { handleimage } from '@/common/handleImage'
-import { EditAspectRatios, EditImageUpoads, EditVideoUpload } from './pageSettingsUtils/pageEditFunctions'
+import {
+    calculateAspectRatio,
+    EditAspectRatios,
+    EditImageUpoads,
+    EditVideoUpload,
+    handleImage,
+    handleVideo,
+} from './pageSettingsUtils/pageEditFunctions'
 import { DROPDOWNARRAY } from '@/views/category-management/catalog/CommonType'
 import { fetchInput, fetchPost } from './pageSettingsUtils/pageEditApi'
 
@@ -120,42 +127,52 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCance
     const handleSubmit = async (row: any) => {
         const componentConfig = {
             ...Object.fromEntries(Object.entries(row?.component_config || {}).filter(([_, value]) => value !== '')),
-            border: row?.border ?? false,
-            name: row?.name ?? false,
-            name_footer: row?.name_footer ?? false,
-            section_border: row?.section_border ?? false,
-            web_border: row?.web_border ?? false,
-            web_name: row?.web_name ?? false,
-            web_name_footer: row?.web_name_footer ?? false,
-            web_section_border: row?.web_section_border ?? false,
         }
-        const { imageUpload, mobileimageUpload, footerImageUpload, headerImageUpload, subHeaderImageUpload, headerIconUpload } =
-            await EditImageUpoads(row)
-        const { backgroundVideoUpload, footervideoUpload, headerVideoUpload, mobileBackgroundVideoUpload, subHeaderVideoUpload } =
-            await EditVideoUpload(row)
-        const {
-            backgroundImageAspectRatios,
-            mobileImageAspectRatios,
-            headerImageAspectRatios,
-            subHeaderImageAspectRatios,
-            footerImageAspectRatios,
-        } = await EditAspectRatios(row)
+        const imageUpload = await handleImage(row.background_image_array)
+        const mobileimageUpload = await handleImage(row.mobile_background_array)
+        const footerImageUpload = await handleImage(row.footer_config_image_Array)
+        const headerImageUpload = await handleImage(row.header_config_image_Array)
+        const subHeaderImageUpload = await handleImage(row.sub_header_config_image_Array)
+        const headerIconUpload = await handleImage(row.header_config_icon_Array)
 
-        const backgroundLottieUpload = await handleimage('product', row?.background_lottie_array)
-        const mobileBackgroundLottieUpload = await handleimage('product', row?.mobile_background_lottie_array)
+        const footervideoUpload = await handleVideo(row.footer_config_video_Array)
+        const headerVideoUpload = await handleVideo(row.header_config_video_Array)
+        const subHeaderVideoUpload = await handleVideo(row.sub_header_config_video_Array)
+        const backgroundVideoUpload = await handleVideo(row?.background_video_array)
+        const mobileBackgroundVideoUpload = await handleVideo(row?.mobile_background_video_array)
+
+        console.log('New Row below')
+        const backgroundImageAspectRatios = await calculateAspectRatio(row.background_image_array)
+        const mobileImageAspectRatios = await calculateAspectRatio(row.mobile_background_array)
+        const headerImageAspectRatios = await calculateAspectRatio(row.header_config_image_Array)
+        const subHeaderImageAspectRatios = await calculateAspectRatio(row.sub_header_config_image_Array)
+        const footerImageAspectRatios = await calculateAspectRatio(row.footer_config_image_Array)
+
+        console.log('New Row below xxx')
+
+        const backgroundLottieUpload = row?.background_lottie_array ? await handleimage('product', row?.background_lottie_array) : ''
+        const mobileBackgroundLottieUpload = row?.mobile_background_lottie_array
+            ? await handleimage('product', row?.mobile_background_lottie_array)
+            : ''
+
+        console.log('New Row below 2')
 
         const cta_config_data = {
-            ...row?.extra_info.cta_config,
+            ...(row?.extra_info?.cta_config || {}),
         }
+
         const cta_config = Object.fromEntries(Object.entries(cta_config_data).filter(([, value]) => value !== ''))
 
         const child_component_config_data = {
-            ...row?.extra_info?.child_component_config,
+            ...(row?.extra_info?.child_component_config || {}),
         }
+
         const child_component_config = Object.fromEntries(Object.entries(child_component_config_data).filter(([, value]) => value !== ''))
 
+        console.log('here before bg')
+
         const backgroundConfig = {
-            ...Object.fromEntries(Object.entries(row?.background_config || {}).filter(([_, value]) => value !== '')),
+            ...Object.fromEntries(Object.entries(row?.background_config || {})?.filter(([_, value]) => value !== '')),
             ...(imageUpload || row?.background_image ? { background_image: imageUpload || row?.background_image } : {}),
             ...(mobileimageUpload || row?.mobile_background_image
                 ? { mobile_background_image: mobileimageUpload || row?.mobile_background_image }
@@ -182,6 +199,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCance
                 ? { mobile_background_lottie: mobileBackgroundLottieUpload || row?.mobile_background_lottie }
                 : {}),
         }
+        console.log('here before row')
         const newRowAdd = {
             ...row,
             ...(imageUpload || row?.background_image ? { background_image: imageUpload || row?.background_image } : {}),
@@ -247,7 +265,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCance
             ...(row?.order_count ? { order_count: row?.order_count } : {}),
             ...(row?.min_order_value_for_event_pass ? { min_order_value_for_event_pass: row?.min_order_value_for_event_pass } : {}),
         }
-        const filteredRow = Object.fromEntries(Object.entries(newRowAdd || {}).filter(([_, value]) => value !== undefined))
+        const filteredRow = Object.fromEntries(Object.entries(newRowAdd || {})?.filter(([_, value]) => value !== undefined))
         setData((prevData: WebType[]) => [...prevData, filteredRow])
         console.log('Main Data That is to be send in the API', filteredRow)
     }

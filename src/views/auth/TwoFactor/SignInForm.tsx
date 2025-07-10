@@ -12,8 +12,7 @@ import { useState } from 'react'
 import SignIn from '../SignIn/SignIn'
 import { useAppSelector } from '@/store'
 
-const phoneRegExp =
-    /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
+const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
 interface SignInFormProps extends CommonProps {
     disableSubmit?: boolean
@@ -61,21 +60,12 @@ const SignInForm = (props: SignInFormProps) => {
                             onSignIn(values)
                         }}
                     >
-                        {({
-                            touched,
-                            errors,
-                            isSubmitting,
-                            isValid,
-                            isValidating,
-                        }) => (
+                        {({ touched, errors, isSubmitting, isValid, isValidating }) => (
                             <Form>
                                 <FormContainer>
                                     <FormItem
                                         label="Mobile Number"
-                                        invalid={
-                                            (errors.mobileNumber &&
-                                                touched.mobileNumber) as boolean
-                                        }
+                                        invalid={(errors.mobileNumber && touched.mobileNumber) as boolean}
                                         errorMessage={errors.mobileNumber}
                                     >
                                         <Field
@@ -93,15 +83,9 @@ const SignInForm = (props: SignInFormProps) => {
                                         type="submit"
                                         className="bg-black"
                                         //disabled={isValidating}
-                                        disabled={
-                                            Array.isArray(errors) ||
-                                            Object.values(errors).toString() !=
-                                                ''
-                                        }
+                                        disabled={Array.isArray(errors) || Object.values(errors).toString() != ''}
                                     >
-                                        {selector.loading
-                                            ? 'Signing in...'
-                                            : 'Send OTP'}
+                                        {selector.loading ? 'Signing in...' : 'Send OTP'}
                                     </Button>
                                 </FormContainer>
                             </Form>

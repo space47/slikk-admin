@@ -4,8 +4,8 @@ import { TaskDetails } from '../TaskCommonType'
 import { MdAssignment, MdAssignmentLate } from 'react-icons/md'
 
 interface columnProps {
-    handleAssignClick: <T extends string | number>(task_id: T) => void
-    handleReAssignClick: <T extends string | number>(task_id: T) => void
+    handleAssignClick: (task_id: TaskDetails) => void
+    handleReAssignClick: (task_id: TaskDetails) => void
     handleTaskDetailopen: (task_id: string | number) => void
     handleRiderProfile: (mobile: string | number) => void
 }
@@ -20,12 +20,12 @@ export const TaskTrackingColumns = ({ handleAssignClick, handleReAssignClick, ha
                     return (
                         <div>
                             {row.status == 'CREATED' && (
-                                <button className="bg-none border-none" onClick={() => handleAssignClick(row.task_id)}>
+                                <button className="bg-none border-none" onClick={() => handleAssignClick(row)}>
                                     <MdAssignment className="text-3xl text-yellow-500" />
                                 </button>
                             )}
                             {row.status !== 'CREATED' && (
-                                <button className="bg-none border-none" onClick={() => handleReAssignClick(row.task_id)}>
+                                <button className="bg-none border-none" onClick={() => handleReAssignClick(row)}>
                                     <MdAssignmentLate className="text-3xl text-red-500" />
                                 </button>
                             )}

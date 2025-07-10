@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useRef, useState } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet'
 import L from 'leaflet'
@@ -5,12 +6,12 @@ import 'leaflet/dist/leaflet.css'
 import { FaMapMarkerAlt } from 'react-icons/fa'
 import polyline from '@mapbox/polyline'
 import axios from 'axios'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { BsFullscreenExit } from 'react-icons/bs'
 import { MdFullscreen } from 'react-icons/md'
 
 interface props {
     task_id: string
+    taskData: any
 }
 
 const customIcon = (iconUrl: string) =>
@@ -120,32 +121,8 @@ const FullScreenMap = ({ mapCenter, taskData, style = { height: '70vh', width: '
     )
 }
 
-const OrderMap = ({ task_id }: props) => {
+const OrderMap = ({ taskData }: props) => {
     const [mapCenter, setMapCenter] = useState<[number, number] | null>(null)
-    const [waypoints, setWaypoints] = useState<[number, number][]>([])
-    // const { taskData } = useAppSelector<TASKDETAILS>((state) => state.taskData)
-
-    const [taskData, setTaskData] = useState<any>()
-
-    const fetchTableData = async () => {
-        try {
-            const response = await axioisInstance.get(`/logistic/slikk/task?task_id=${task_id}`)
-            const data = response.data.data
-            setTaskData(data)
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
-    useEffect(() => {
-        fetchTableData()
-        const intervalId = setInterval(() => {
-            fetchTableData()
-        }, 60000)
-
-        return () => clearInterval(intervalId)
-    }, [task_id])
-
     const [polyLine, setPolyLine] = useState('')
     const [sourceLatLong, setSourceLatLong] = useState<[number, number]>([0, 0])
     const [destinationLatLong, setDestinationLatLong] = useState<[number, number]>([0, 0])
@@ -185,8 +162,6 @@ const OrderMap = ({ task_id }: props) => {
             const origin: [number, number] = [taskData?.pickup_details?.latitude, taskData?.pickup_details?.longitude]
             const destination: [number, number] = [taskData?.drop_details?.latitude, taskData?.drop_details?.longitude]
             setMapCenter(origin)
-            setWaypoints([origin, destination])
-
             setSourceLatLong(origin)
             setDestinationLatLong(destination)
         }
@@ -196,9 +171,8 @@ const OrderMap = ({ task_id }: props) => {
         return <p className="flex justify-between items-center h-screen">Loading map...</p>
     }
 
-    const CurrentLocationButton = ({ setCenter }: { setCenter: React.Dispatch<React.SetStateAction<[number, number]>> }) => {
+    const CurrentLocationButton = () => {
         const map = useMap()
-
         const handleClick = () => {
             map.setView([12.9014, 77.65122], 13)
         }
@@ -259,7 +233,7 @@ const OrderMap = ({ task_id }: props) => {
                     )}
 
                     <Polyline positions={decodedPolyline} color="blue" />
-                    <CurrentLocationButton setCenter={() => {}} />
+                    <CurrentLocationButton />
                     <FullScreenMap mapCenter={mapCenter} taskData={taskData} decodedPolyline={decodedPolyline} />
                 </MapContainer>
             </div>

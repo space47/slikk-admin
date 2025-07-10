@@ -73,7 +73,7 @@ export const fetchOrders = createAsyncThunk('orders/fetchOrders', async (_, { ge
             )
         } else if (currentSelectedPage.value === 'runner_mobile' && searchInput) {
             response = await axioisInstance.get(
-                `/merchant/orders?runner_mobile=${searchInput}${statusQuery}&p=${page}&page_size=${pageSize}${deliveryStatus}${paymentStatus}`,
+                `/merchant/orders?runner_phone=${searchInput}${statusQuery}&p=${page}&page_size=${pageSize}${deliveryStatus}${paymentStatus}`,
             )
         } else if (!searchInput) {
             response = await axioisInstance.get(

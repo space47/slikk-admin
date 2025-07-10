@@ -25,22 +25,6 @@ const CommonMainPageSettings = ({
     initialValue,
     formikRef,
     handleSubmit,
-    setBorderForm,
-    borderForm,
-    setSectioBorderShow,
-    sectionBorderShow,
-    setWebBorderForm,
-    webBorderForm,
-    setWebSectioBorderShow,
-    webSectionBorderShow,
-    setNameForm,
-    nameForm,
-    setFooterAlignForm,
-    footerAlignForm,
-    setWebNameForm,
-    webNameForm,
-    setWebFooterAlignForm,
-    webFooterAlignForm,
     searchInput,
     handleSearch,
     currentSelectedPage,
@@ -147,23 +131,7 @@ const CommonMainPageSettings = ({
                                         values={values}
                                         FontSizeArray={FontSizeArray}
                                         SECTIONARRAY={SECTIONARRAY}
-                                        borderForm={borderForm}
-                                        setBorderForm={setBorderForm}
                                         setFieldValue={setFieldValue}
-                                        setSectioBorderShow={setSectioBorderShow}
-                                        sectionBorderShow={sectionBorderShow}
-                                        setWebBorderForm={setWebBorderForm}
-                                        webBorderForm={webBorderForm}
-                                        setWebSectioBorderShow={setWebSectioBorderShow}
-                                        webSectionBorderShow={webSectionBorderShow}
-                                        setNameForm={setNameForm}
-                                        nameForm={nameForm}
-                                        setFooterAlignForm={setFooterAlignForm}
-                                        footerAlignForm={footerAlignForm}
-                                        setWebNameForm={setWebNameForm}
-                                        webNameForm={webNameForm}
-                                        setWebFooterAlignForm={setWebFooterAlignForm}
-                                        webFooterAlignForm={webFooterAlignForm}
                                     />
                                 </TabContent>
 
@@ -226,7 +194,7 @@ const CommonMainPageSettings = ({
                                             id=""
                                             placeholder="search SKU for product"
                                             value={searchInput}
-                                            className=" xl:w-[550px] rounded-[10px]"
+                                            className=" xl:w-[350px] rounded-[10px]"
                                             onChange={handleSearch}
                                         />
                                     </div>
@@ -351,6 +319,12 @@ const CommonMainPageSettings = ({
                                 />
                             </FormItem>
                         </FormContainer>
+                        <FormItem label="Product Filter" className="col-span-1 w-[60%] h-[80%]">
+                            <Field type="checkbox" name="extra_info.is_product_filter" placeholder="" component={Checkbox} />
+                        </FormItem>
+                        <FormItem label="Accent Color" className="col-span-1 w-[60%] h-[80%]">
+                            <Field type="text" name="extra_info.accent_color" placeholder="" component={Input} />
+                        </FormItem>
                         <FormItem label="Is Section Clickable" className="col-span-1 w-[60%] h-[80%]">
                             <Field type="checkbox" name="is_section_clickable" placeholder="" component={Checkbox} />
                         </FormItem>

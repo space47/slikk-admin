@@ -105,6 +105,7 @@ export type RiderDetails = Partial<{
         estimate_time: string
         order_id: string
     }
+    rider_status: boolean
 }>
 
 export type RiderDetailResponseType = {

@@ -1,31 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FormContainer, FormItem, Select } from '@/components/ui'
+import { useAppSelector } from '@/store'
+// import { CATEGORY_STATE } from '@/store/types/category.types'
+import { DIVISION_STATE } from '@/store/types/division.types'
+import { PRODUCTTYPE_STATE } from '@/store/types/productType.types'
 import { Field, FieldProps } from 'formik'
 import React from 'react'
 
 interface CATEGORYBANNERPROPS {
-    initialValue: any
-    options: any
     setFieldValue: any
-    setFilteredCategories: any
-    filteredCategories: any
-    setFilteredSubCategories: any
-    filteredSubCategories: any
-    setFilteredProductTypes: any
-    filteredProductTypes: any
 }
 
-const BannerCategories = ({
-    initialValue,
-    options,
-    setFieldValue,
-    setFilteredCategories,
-    setFilteredProductTypes,
-    setFilteredSubCategories,
-    filteredCategories,
-    filteredProductTypes,
-    filteredSubCategories,
-}: CATEGORYBANNERPROPS) => {
+const BannerCategories = ({ setFieldValue }: CATEGORYBANNERPROPS) => {
+    const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
+    // const categories = useAppSelector<CATEGORY_STATE>((state)=>state.category)
+    const productType = useAppSelector<PRODUCTTYPE_STATE>((state) => state.product_type)
+
     return (
         <div className="grid grid-cols-2 gap-10">
             <FormContainer>
@@ -33,30 +23,19 @@ const BannerCategories = ({
                     <Field name="division">
                         {({ field }: FieldProps) => {
                             const fieldValue = Array.isArray(field.value) ? field.value : []
+                            const selectedIds = fieldValue.map((item) => item.id)
+                            const selectedOption = divisions.divisions?.filter((item) => selectedIds.includes(item.id)) || []
 
                             return (
                                 <Select
                                     isMulti
                                     field={field}
-                                    defaultValue={initialValue.division.filter((option) =>
-                                        fieldValue.some((item) => item.name === option.name),
-                                    )}
-                                    options={options} //divisions.divisions
+                                    value={selectedOption}
+                                    options={divisions.divisions}
                                     getOptionLabel={(option) => option.name}
                                     getOptionValue={(option) => option.id.toString()}
                                     onChange={(newVal) => {
-                                        setFieldValue('division', newVal ? newVal : [])
-
-                                        // Get selected division's categories
-                                        const selectedDivision = newVal ? newVal.map((division) => division.categories).flat() : []
-
-                                        // Reset category, sub-category, and product type fields
-                                        setFieldValue('category', [])
-                                        setFieldValue('sub_category', [])
-                                        setFieldValue('product_type', [])
-
-                                        // Update the filtered categories
-                                        setFilteredCategories(selectedDivision)
+                                        setFieldValue('division', newVal)
                                     }}
                                 />
                             )
@@ -64,31 +43,30 @@ const BannerCategories = ({
                     </Field>
                 </FormItem>
             </FormContainer>
-
-            {/* CATEGORY ...................................... */}
             <FormContainer>
                 <FormItem label="Category" className="col-span-1 w-full">
                     <Field name="category">
-                        {({ field }: FieldProps<any>) => {
+                        {({ field, form }: FieldProps<any>) => {
                             const fieldValue = Array.isArray(field.value) ? field.value : []
+                            const selectedCategoryIds = fieldValue.map((item) => item.id)
+                            const selectedDivisions = form.values.division || []
+                            const selectedDivisionIds = selectedDivisions.map((div: any) => div.id)
+                            const filteredCategories =
+                                divisions.divisions
+                                    ?.filter((div) => selectedDivisionIds.includes(div.id))
+                                    ?.map((div) => div.categories || [])
+                                    ?.flat() || []
 
+                            const selectedOption = filteredCategories.filter((cat) => selectedCategoryIds.includes(cat.id))
                             return (
                                 <Select
                                     isMulti
-                                    field={field}
-                                    defaultValue={filteredCategories}
-                                    options={filteredCategories} // Use the filtered categories here
+                                    value={selectedOption}
+                                    options={filteredCategories}
                                     getOptionLabel={(option) => option.name}
                                     getOptionValue={(option) => option.id.toString()}
                                     onChange={(newVal) => {
-                                        setFieldValue('category', newVal ? newVal : [])
-
-                                        const selectedSubCategories = newVal ? newVal.map((category) => category.sub_categories).flat() : []
-
-                                        setFieldValue('sub_category', [])
-                                        setFieldValue('product_type', [])
-
-                                        setFilteredSubCategories(selectedSubCategories)
+                                        form.setFieldValue('category', newVal || [])
                                     }}
                                 />
                             )
@@ -96,32 +74,33 @@ const BannerCategories = ({
                     </Field>
                 </FormItem>
             </FormContainer>
-
-            {/* SUB-CATEGORY ...................................... */}
             <FormContainer>
                 <FormItem label="Sub-Category" className="col-span-1 w-full">
                     <Field name="sub_category">
-                        {({ field }: FieldProps<any>) => {
+                        {({ field, form }: FieldProps<any>) => {
                             const fieldValue = Array.isArray(field.value) ? field.value : []
+                            const selectedSubCategoriesId = fieldValue.map((item) => item.id) || []
+                            const selectedCategories = form.values.category || []
+                            const categoryId = selectedCategories?.map((item: any) => item?.id)
+                            const filteredSubCategories =
+                                divisions.divisions
+                                    ?.flatMap((div) => div.categories || [])
+                                    ?.filter((item) => categoryId?.includes(item?.id))
+                                    ?.flatMap((item) => item?.sub_categories) || []
+
+                            const selectedOption = filteredSubCategories.filter((cat) => {
+                                return selectedSubCategoriesId.includes(cat.id)
+                            })
 
                             return (
                                 <Select
                                     isMulti
-                                    field={field}
-                                    defaultValue={filteredSubCategories}
+                                    value={selectedOption}
                                     options={filteredSubCategories}
                                     getOptionLabel={(option) => option.name}
                                     getOptionValue={(option) => option.id.toString()}
                                     onChange={(newVal) => {
-                                        setFieldValue('sub_category', newVal ? newVal : [])
-
-                                        const selectedProductTypes = newVal
-                                            ? newVal.map((sub_category) => sub_category.product_types).flat()
-                                            : []
-
-                                        setFieldValue('product_type', [])
-
-                                        setFilteredProductTypes(selectedProductTypes)
+                                        form.setFieldValue('sub_category', newVal || [])
                                     }}
                                 />
                             )
@@ -129,20 +108,16 @@ const BannerCategories = ({
                     </Field>
                 </FormItem>
             </FormContainer>
-
-            {/* PRODUCT TYPE ...................................... */}
             <FormContainer>
                 <FormItem label="Product Type" className="col-span-1 w-full">
                     <Field name="product_type">
                         {({ field }: FieldProps<any>) => {
-                            const fieldValue = Array.isArray(field.value) ? field.value : []
-
                             return (
                                 <Select
                                     isMulti
                                     field={field}
-                                    defaultValue={filteredProductTypes}
-                                    options={filteredProductTypes}
+                                    defaultValue={productType?.product_types}
+                                    options={productType?.product_types}
                                     getOptionLabel={(option) => option.name}
                                     getOptionValue={(option) => option.id.toString()}
                                     onChange={(newVal) => {

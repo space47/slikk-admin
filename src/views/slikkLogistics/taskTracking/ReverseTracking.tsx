@@ -26,7 +26,7 @@ const TaskTracking = () => {
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
     const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
     const [showAssignModal, setShowAssignModal] = useState(false)
-    const [storeTaskId, setStoreTaskId] = useState<string | number>()
+    const [storeTaskId, setStoreTaskId] = useState<TaskDetails>()
     const [accessDenied, setAccessDenied] = useState(false)
     const navigate = useNavigate()
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
@@ -41,6 +41,7 @@ const TaskTracking = () => {
             let searchData = ''
             let deliveryType = ''
             let fromDate = ''
+
             const filterRunnerName = particularMobileOfRunner ? `&runner_mobile=${particularMobileOfRunner}` : ''
 
             if (currentSelectedPage.value === 'client_order_id' && globalFilter) {
@@ -74,17 +75,19 @@ const TaskTracking = () => {
         }
     }
 
+    console.log('data of results', data)
+
     useEffect(() => {
         fetchData()
     }, [from, to, particularMobileOfRunner, globalFilter, currentStatus, page, pageSize])
 
     const totalPages = Math.ceil(totalData / pageSize)
 
-    const handleAssignClick = <T extends string | number>(task_id: T) => {
+    const handleAssignClick = (task_id: TaskDetails) => {
         setShowAssignModal(true)
         setStoreTaskId(task_id)
     }
-    const handleReAssignClick = <T extends string | number>(task_id: T) => {
+    const handleReAssignClick = (task_id: TaskDetails) => {
         setShowAssignModal(true)
         setStoreTaskId(task_id)
     }
@@ -142,7 +145,7 @@ const TaskTracking = () => {
     return (
         <div className="px-2 sm:px-4">
             {/* Search and Filter Section */}
-            <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4 mb-7 ">
+            <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4 mb-7">
                 {/* Left Side - Search and Dropdowns */}
                 <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto xl:mt-9">
                     {/* Search Input */}
@@ -201,8 +204,6 @@ const TaskTracking = () => {
                         </div>
                     </div>
                 </div>
-
-                {/* Right Side - Filter Button and Date Picker */}
                 <div className="flex flex-col xl:flex-row gap-2 xl:align-top">
                     <div className=" items-center xl:mt-9 md:mt-9 ">
                         <Button variant="new" size="sm" onClick={() => handleFilterRunner()}>
@@ -259,9 +260,10 @@ const TaskTracking = () => {
             {/* Modals */}
             {showAssignModal && (
                 <TrackModal
+                    isReturn
                     showTaskModal={showAssignModal}
                     handleCloseModal={handleCloseModal}
-                    storeTaskId={storeTaskId ?? 0}
+                    storeData={storeTaskId!}
                     setShowAssignModal={setShowAssignModal}
                 />
             )}
@@ -269,7 +271,7 @@ const TaskTracking = () => {
                 <FilterByRunner
                     showTaskModal={showFilterByRunner}
                     handleCloseModal={handleCloseFilterModal}
-                    storeTaskId={storeTaskId ?? 0}
+                    storeTaskId={storeTaskId?.task_id ?? 0}
                     particularMobileOfRunner={particularMobileOfRunner}
                     SetParticularMobileOfRunner={SetParticularMobileOfRunner}
                 />

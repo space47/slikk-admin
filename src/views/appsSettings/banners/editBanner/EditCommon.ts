@@ -1,6 +1,6 @@
 import Input from '@/components/ui/Input'
 import Checkbox from '@/components/ui/Checkbox'
-import { BANNERMODEL } from '../BannerCommon'
+import { BANNER_MODEL } from '../BannerCommon'
 
 export const BANNER_FIELDS_TYPE = [
     {
@@ -93,15 +93,6 @@ export const BANNER_FIELDS_TYPE = [
         placeholder: 'Place your Upto Off',
         component: { Input },
         status: 'uptooff',
-    },
-    {
-        label: 'Tags',
-        classname: 'col-span-1 w-full',
-        type: 'text',
-        name: 'tags_input',
-        placeholder: 'Place your Tags',
-        component: { Input },
-        status: 'tags',
     },
     {
         label: 'Footer',
@@ -249,7 +240,7 @@ export const BANNER_FIELDS_TYPE = [
     },
 ]
 
-export const getInitialBannerValue = (bannerData: BANNERMODEL | undefined) => ({
+export const getInitialBannerValue = (bannerData: BANNER_MODEL | undefined) => ({
     id: bannerData?.id || 0,
     name: bannerData?.name || '',
     section_heading: bannerData?.section_heading || '',

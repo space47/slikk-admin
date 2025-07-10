@@ -6,7 +6,7 @@ import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import moment from 'moment'
 import { CHANGE_DELIVERY_OPTIONS, pageSizeOptions, SEARCHOPTIONS, type DropdownStatus, type Order } from './commontypes'
-import { Button, Dialog, Dropdown, Input, Spinner } from '@/components/ui'
+import { Button, Dropdown, Input, Spinner } from '@/components/ui'
 import { IoMdDownload } from 'react-icons/io'
 import FilterDialogOrder from './filterDialog/FilterDialog'
 import { CiFilter } from 'react-icons/ci'
@@ -26,7 +26,6 @@ import { useOrderListColumns } from './orderListUtils/OrderListColumns'
 import {
     handleDateChange,
     handleDownload,
-    handleReassignPickerOrder,
     handleSearch,
     handleSearchWithIcon,
     handleSelect,
@@ -34,6 +33,7 @@ import {
     onSelectChange,
 } from './orderListUtils/OrderListFunctions'
 import { getStatusFilter } from './orderListUtils/OrderListUtils'
+import OrderReAssignModal from './orderListUtils/OrderReAssignModal'
 
 const OrderList = () => {
     const location = useLocation()
@@ -416,20 +416,7 @@ const OrderList = () => {
             )}
             {soundEnabled && <NotificationSound shouldPlay={soundEnabled} />}
             {pendingSound && <PendingNotification shouldPlay={pendingSound} />}
-            {isReAssign && (
-                <>
-                    <Dialog isOpen={isReAssign} onClose={() => setIsReAssign(false)}>
-                        <div className="flex flex-col justify-center mt-10 gap-3">
-                            <Button variant="new" size="sm" onClick={() => handleReassignPickerOrder('picker')}>
-                                Reassign Picker Orders
-                            </Button>
-                            <Button variant="new" size="sm" onClick={() => handleReassignPickerOrder('partner')}>
-                                Reassign Delivery Partner
-                            </Button>
-                        </div>
-                    </Dialog>
-                </>
-            )}
+            {isReAssign && <OrderReAssignModal isReAssign={isReAssign} setIsReAssign={setIsReAssign} />}
         </div>
     )
 }
