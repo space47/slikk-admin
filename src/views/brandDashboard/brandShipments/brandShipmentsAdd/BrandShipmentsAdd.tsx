@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, FormContainer, Progress, Spinner, Steps } from '@/components/ui'
+import { Button, FormContainer, Spinner, Steps } from '@/components/ui'
 import { Form, Formik } from 'formik'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -18,7 +18,7 @@ const BrandShipmentsAdd = () => {
     const [currentStep, setCurrentStep] = useState(0)
     const selectedCompany = useAppSelector<USER_PROFILE_DATA>((store) => store.company)
     const [showSpinner, setShowSpinner] = useState(false)
-    const [shipmentItemsCount, setShipmentItemsCount] = useState(0)
+    // const [shipmentItemsCount, setShipmentItemsCount] = useState(0)
 
     const handleSubmit = async (values: any) => {
         try {
@@ -61,7 +61,7 @@ const BrandShipmentsAdd = () => {
                     notification.success({
                         message: 'CSV uploaded successfully',
                     })
-                    // navigate(-1)
+                    navigate(-1)
                 } catch (csvError) {
                     notification.error({
                         message: 'Failed to upload CSV',
@@ -70,32 +70,6 @@ const BrandShipmentsAdd = () => {
                 } finally {
                     setShowSpinner(false)
                 }
-
-                const checkForItemCount = async () => {
-                    const intervalId = setInterval(async () => {
-                        try {
-                            const response = await axioisInstance.get(`/product-shipment?view=detail&id=${shipmentId}`)
-                            const data = response?.data?.data?.results[0]
-                            setShipmentItemsCount(data?.upload_count)
-
-                            if (!data?.in_progress) {
-                                clearInterval(intervalId)
-                                notification.success({
-                                    message: 'CSV processing completed',
-                                })
-                            }
-                        } catch (err) {
-                            console.error(err)
-                            clearInterval(intervalId)
-                            notification.error({
-                                message: 'Error while checking CSV processing status',
-                            })
-                        }
-                    }, 10000)
-                    return () => clearInterval(intervalId)
-                }
-
-                checkForItemCount()
             }
 
             return { id: shipmentId }
@@ -182,10 +156,10 @@ const BrandShipmentsAdd = () => {
                                 </Button>
                             </FormContainer>
                         )}
-                        <div className="mb-10 mt-10">
+                        {/* <div className="mb-10 mt-10">
                             <div className="text-xl font-bold mb-2">Items Uploaded</div>
                             {shipmentItemsCount > 0 && <Progress percent={(shipmentItemsCount / values?.items_count) * 100} />}
-                        </div>
+                        </div> */}
                         <FormContainer className="flex justify-end">
                             {currentStep === 2 && (
                                 <div className="flex">
