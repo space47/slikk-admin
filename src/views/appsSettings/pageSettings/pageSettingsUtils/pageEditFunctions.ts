@@ -119,7 +119,7 @@ export const handleVideo = async (files: File[]) => {
     }
 }
 
-export const EditImageUpoads = async (row: any) => {
+export const EditImageUploads = async (row: any) => {
     const imageUpload = await handleImage(row.background_image_array)
     const mobileimageUpload = await handleImage(row.mobile_background_array)
     const footerImageUpload = await handleImage(row.footer_config_image_Array)

@@ -96,7 +96,7 @@ const EditPageSettings = () => {
         } catch (error) {
             console.error(error)
             if (error instanceof AxiosError) {
-                notification.error({ message: error?.message || 'failed to add' })
+                notification.error({ message: error?.response?.data?.message || 'Failed to Edit' })
             }
         }
     }

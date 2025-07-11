@@ -5,9 +5,9 @@ export const TabsArray = [
     { label: 'Component Config', value: 'Component' },
     { label: 'Background config', value: 'bg_config' },
     { label: 'Other Config', value: 'other_config' },
-    { label: 'Child Comp Config', value: 'child_comp_config' },
     { label: 'Extra Config', value: 'extra_config' },
     { label: 'Data Type Config', value: 'data_type_config' },
+    { label: 'Child Comp Config', value: 'child_comp_config' },
 ]
 
 export interface FontSize {

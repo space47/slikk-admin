@@ -15,23 +15,25 @@ import { useNavigate } from 'react-router-dom'
 import { usePageSettingsColumns } from '../newPageSettingsUtils/usePageSettingsColumns'
 import { Option, pageSizeOptions } from '@/constants/pageUtils.constants'
 import LoadingSpinner from '@/common/LoadingSpinner'
-import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
-import PageDraggavleTable from '../../pageSettings/PageDraggavleTable'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { pageNamesRequiredType, setPageNamesData, setSubPageNamesData } from '@/store/slices/pageSettingsSlice/pageNames.slice'
 import AddPageNameModal from '../../pageSettings/AddPageNameModal'
 import { usePageSettingsFunctions } from '../newPageSettingsUtils/usePageSettingsFunctions'
+import EasyTable from '@/common/EasyTable'
 
 const NewPageSettingsTables = () => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
     const [showAddPageModal, setShowAddPageModal] = useState(false)
+
     const { pageSettingsData, page, pageSize, count, currentPageName, currentSubPageName } = useAppSelector<pageSettingsRequiredType>(
         (state) => state.pageSettings,
     )
+
     const { pageForName, pageNamesData, pageSizeForName, subPageNamesData } = useAppSelector<pageNamesRequiredType>(
         (state) => state.pageNames,
     )
+
     const {
         data: pageSettings,
         isSuccess,
@@ -42,13 +44,37 @@ const NewPageSettingsTables = () => {
         pageId: currentPageName?.value as number,
         sub_page: currentSubPageName?.value as number,
     })
+
     const { data: pageNames, isSuccess: isPageNamesSuccess } = pageSettingsService.usePageNamesQuery({
         page: pageForName,
         pageSize: pageSizeForName,
     })
+
     const { data: SubPageNames, isSuccess: isSubPageNamesSuccess } = pageSettingsService.useSubPageNamesQuery({
         pageId: currentPageName?.value as number,
     })
+
+    useEffect(() => {
+        if (currentPageName) {
+            sessionStorage.setItem('currentPageName', JSON.stringify(currentPageName))
+        }
+        if (currentSubPageName) {
+            sessionStorage.setItem('currentSubPageName', JSON.stringify(currentSubPageName))
+        }
+    }, [currentPageName, currentSubPageName])
+
+    useEffect(() => {
+        const storedPageName = sessionStorage.getItem('currentPageName')
+        const storedSubPageName = sessionStorage.getItem('currentSubPageName')
+
+        if (storedPageName) {
+            dispatch(setCurrentPageName(JSON.parse(storedPageName)))
+        }
+
+        if (storedSubPageName) {
+            dispatch(setCurrentSubPageName(JSON.parse(storedSubPageName)))
+        }
+    }, [dispatch])
 
     useEffect(() => {
         if (isPageNamesSuccess) {
@@ -60,7 +86,7 @@ const NewPageSettingsTables = () => {
         if (isSubPageNamesSuccess) {
             dispatch(setSubPageNamesData(SubPageNames?.data || []))
         }
-    }, [dispatch, isSubPageNamesSuccess, currentPageName])
+    }, [dispatch, SubPageNames, isSubPageNamesSuccess])
 
     useEffect(() => {
         if (isSuccess) {
@@ -69,7 +95,7 @@ const NewPageSettingsTables = () => {
         }
     }, [dispatch, pageSettings, isSuccess, currentPageName, currentSubPageName])
 
-    const { handleDragEnd, handleSelectPage, handleSelectSubPage, BANNER_PAGE, SUB_PAGE } = usePageSettingsFunctions({
+    const { handleSelectPage, handleSelectSubPage, BANNER_PAGE, SUB_PAGE } = usePageSettingsFunctions({
         pageNamesData,
         subPageNamesData,
         pageSettingsData,
@@ -83,8 +109,6 @@ const NewPageSettingsTables = () => {
     }
 
     const columns = usePageSettingsColumns({ handleGoToBanner })
-    const table = useReactTable({ data: pageSettingsData || [], columns, getCoreRowModel: getCoreRowModel() })
-
     if (isLoading) {
         return <LoadingSpinner />
     }
@@ -127,28 +151,18 @@ const NewPageSettingsTables = () => {
                                         {item.label}
                                     </DropdownItem>
                                 ))}
-                                {/* <div
-                                className="flex items-center justify-center mt-2 bg-gray-50 text-green-600 p-2
-                             hover:bg-gray-100 hover:text-green-500 cursor-pointer"
-                                onClick={() => setShowAddPageModal(true)}
-                            >
-                                ADD NEW
-                            </div> */}
                             </Dropdown>
                         </div>
                     </div>
                 </div>
                 <div className="flex gap-2">
-                    {/* <Button type="button" variant="new" onClick={() => navigate(`/app/appSettings/newPageSettings/assignSection`)}>
-                        Assign to Section
-                    </Button> */}
                     <Button type="button" variant="new" onClick={() => navigate(`/app/appSettings/newPageSettings/addNew`)}>
                         New Section
                     </Button>
                 </div>
             </div>
             <div>
-                <PageDraggavleTable table={table} handleDragEnd={handleDragEnd} />
+                <EasyTable overflow mainData={pageSettingsData || []} columns={columns} page={page} pageSize={pageSize} />
             </div>
             <div className="flex justify-between mt-10">
                 <div>

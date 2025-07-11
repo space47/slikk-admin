@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { handleimage } from '@/common/handleImage'
-import { EditAspectRatios, EditImageUpoads, EditVideoUpload } from '../../pageSettings/pageSettingsUtils/pageEditFunctions'
+import { EditAspectRatios, EditImageUploads, EditVideoUpload } from '../../pageSettings/pageSettingsUtils/pageEditFunctions'
 
 interface props {
     values?: any
@@ -20,7 +20,7 @@ export const PageSettingsBodyFile = async ({ values, initialValue }: props) => {
         : initialValue?.mobile_background_lottie
 
     const { imageUpload, mobileimageUpload, footerImageUpload, headerImageUpload, subHeaderImageUpload, headerIconUpload } =
-        await EditImageUpoads(values)
+        await EditImageUploads(values)
 
     const { backgroundVideoUpload, footervideoUpload, headerVideoUpload, mobileBackgroundVideoUpload, subHeaderVideoUpload } =
         await EditVideoUpload(values)

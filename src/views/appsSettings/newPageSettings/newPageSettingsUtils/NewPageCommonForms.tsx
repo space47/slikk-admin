@@ -97,14 +97,7 @@ const NewPageCommonForms = ({
                         typeValues={values?.component_config}
                     />
                 </TabContent>
-                <TabContent value="child_comp_config">
-                    <ComponentConfig
-                        setFieldValue={setFieldValue}
-                        values={values}
-                        typeName="extra_info.child_component_config"
-                        typeValues={values?.extra_info?.child_component_config}
-                    />
-                </TabContent>
+
                 <TabContent value="bg_config">
                     <BackgroundConfig values={values} initialValue={initialValue} editMode={isEdit} setInitialValue={setInitialValue} />
                 </TabContent>
@@ -125,6 +118,14 @@ const NewPageCommonForms = ({
                         setFieldValue={setFieldValue}
                         setBarcodeData={setBarcodeData}
                         barcodeData={barcodeData}
+                    />
+                </TabContent>
+                <TabContent value="child_comp_config">
+                    <ComponentConfig
+                        setFieldValue={setFieldValue}
+                        values={values}
+                        typeName="extra_info.child_component_config"
+                        typeValues={values?.extra_info?.child_component_config}
                     />
                 </TabContent>
                 <TabContent value="extra_config">
