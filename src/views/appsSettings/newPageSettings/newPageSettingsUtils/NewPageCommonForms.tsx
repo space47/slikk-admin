@@ -73,6 +73,16 @@ const NewPageCommonForms = ({
                     )
                 })}
             </FormContainer>
+
+            <FormContainer>
+                <FormItem label="Product Filter" className="col-span-1 w-[60%] h-[80%]">
+                    <Field type="checkbox" name="extra_info.is_product_filter" placeholder="" component={Checkbox} />
+                </FormItem>
+                <FormItem label="Is Section Active" className="col-span-1 w-[60%] h-[80%]">
+                    <Field type="checkbox" name="is_section_active" placeholder="" component={Checkbox} />
+                </FormItem>
+            </FormContainer>
+
             <Tabs>
                 <TabList className="flex items-center justify-center gap-4 bg-gray-50 rounded-3xl shadow-md p-3 mb-10">
                     {(!!values?.extra_info?.child_data_type === true

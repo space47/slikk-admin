@@ -20,11 +20,13 @@ import { pageNamesRequiredType, setPageNamesData, setSubPageNamesData } from '@/
 import AddPageNameModal from '../../pageSettings/AddPageNameModal'
 import { usePageSettingsFunctions } from '../newPageSettingsUtils/usePageSettingsFunctions'
 import EasyTable from '@/common/EasyTable'
+import AddSubPageNameModal from '../newPageSettingsUtils/AddSubPageModal'
 
 const NewPageSettingsTables = () => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
     const [showAddPageModal, setShowAddPageModal] = useState(false)
+    const [showAddSubPageModal, setShowAddSubPageModal] = useState(false)
 
     const { pageSettingsData, page, pageSize, count, currentPageName, currentSubPageName } = useAppSelector<pageSettingsRequiredType>(
         (state) => state.pageSettings,
@@ -115,9 +117,10 @@ const NewPageSettingsTables = () => {
 
     return (
         <div>
-            <div className="flex justify-between mb-6">
+            <div className="flex flex-col gap-2 items-center xl:items-start xl:flex-row xl:justify-between mb-6">
                 <div className="flex gap-3">
-                    <div className="buttons flex gap-3 mb-7">
+                    <div className=" gap-3 mb-7">
+                        <div className="font-bold">Pages</div>
                         <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px]">
                             <Dropdown
                                 className="border bg-gray-200 text-black text-lg font-semibold"
@@ -139,11 +142,12 @@ const NewPageSettingsTables = () => {
                             </Dropdown>
                         </div>
                     </div>
-                    <div className="buttons flex gap-3 mb-7">
+                    <div className=" gap-3 mb-7">
+                        <div className="font-bold">Sub Pages</div>
                         <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px]">
                             <Dropdown
                                 className="border bg-gray-200 text-black text-lg font-semibold"
-                                title={currentSubPageName?.label}
+                                title={currentSubPageName?.label || 'SELECT'}
                                 onSelect={handleSelectSubPage}
                             >
                                 {SUB_PAGE?.map((item) => (
@@ -151,6 +155,13 @@ const NewPageSettingsTables = () => {
                                         {item.label}
                                     </DropdownItem>
                                 ))}
+                                <div
+                                    className="flex items-center justify-center mt-2 bg-gray-50 text-green-600 p-2
+                             hover:bg-gray-100 hover:text-green-500 cursor-pointer"
+                                    onClick={() => setShowAddSubPageModal(true)}
+                                >
+                                    ADD NEW
+                                </div>
                             </Dropdown>
                         </div>
                     </div>
@@ -190,6 +201,7 @@ const NewPageSettingsTables = () => {
                 </div>
             </div>
             {showAddPageModal && <AddPageNameModal setIsOpen={setShowAddPageModal} dialogIsOpen={showAddPageModal} />}
+            {showAddSubPageModal && <AddSubPageNameModal setIsOpen={setShowAddSubPageModal} dialogIsOpen={showAddSubPageModal} />}
         </div>
     )
 }

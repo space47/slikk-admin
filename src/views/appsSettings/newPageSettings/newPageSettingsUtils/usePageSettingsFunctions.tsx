@@ -48,7 +48,7 @@ export const usePageSettingsFunctions = ({
         if (!eventKey) return
         const selected = SUB_PAGE?.find((item) => item.value?.toString() === eventKey)
         if (selected) {
-            dispatch(setCurrentSubPageName({ label: selected.label || '', value: selected.value || null }))
+            dispatch(setCurrentSubPageName({ label: selected.label || 'SELECT', value: selected.value || null }))
         }
     }
 

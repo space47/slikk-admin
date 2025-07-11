@@ -128,6 +128,23 @@ const DataTypesConfig = ({ values, filterId, setFilterId, setFieldValue, setBarc
                 <FormItem label="Post" className="col-span-1 w-full h-[80%]">
                     <Field type="text" name="data_type.posts" placeholder="Place Posts" component={Input} min="0" />
                 </FormItem>
+
+                <FormItem label="Order Count" className="w-full">
+                    <Field type="number" name="order_count" placeholder="Enter order count" component={Input} min="0" />
+                </FormItem>
+                <FormItem label="Min Order Value for Event Pass" className="w-full">
+                    <Field
+                        type="number"
+                        name="extra_info.min_order_value_for_event_pass"
+                        placeholder="Enter min order value for event pass"
+                        component={Input}
+                        min="0"
+                    />
+                </FormItem>
+
+                <FormItem label="Accent Color" className="col-span-1 w-full">
+                    <Field type="text" name="extra_info.accent_color" placeholder="" component={Input} />
+                </FormItem>
             </FormContainer>
             <div>
                 <div className="p-2 ">
