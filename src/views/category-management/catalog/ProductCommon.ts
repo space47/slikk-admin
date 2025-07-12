@@ -309,4 +309,15 @@ export type ProductTypes = {
     sku: string
     filter_to_display_map: any
     thumbnail?: string
+    size?: string
+    skid?: string
+    color?: string
 }
+
+export const DescriptionFields = [
+    { name: 'description.description', label: 'Descriptions' },
+    { name: 'description.about', label: 'About' },
+    { name: 'description.use_cases', label: 'Use Cases' },
+    { name: 'description.includes', label: 'Includes' },
+    { name: 'description.other_info', label: 'Other Info' },
+]
