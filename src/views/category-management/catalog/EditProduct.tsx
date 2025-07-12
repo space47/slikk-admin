@@ -136,14 +136,6 @@ const EditProduct = () => {
             size_chart_url = temp.filter((t) => t).join(',')
         }
 
-        const descriptionVal =
-            typeof values?.description?.description === 'string'
-                ? {
-                      ...values?.description,
-                      description: textParser(values?.description?.description),
-                  }
-                : ''
-
         const { color_code, size_chart_image_array, images, ...rest } = values
         console.log(color_code, size_chart_image_array, images)
         const formData = Object.fromEntries(
@@ -153,7 +145,11 @@ const EditProduct = () => {
                 image: img_url,
                 company: companyData,
                 video_link: video_url,
-                description: descriptionVal,
+                description: textParser(values?.description.description || ''),
+                about: textParser(values?.description.about || ''),
+                use_cases: textParser(values?.description.use_cases || ''),
+                includes: textParser(values?.description.includes || ''),
+                other_info: textParser(values?.description.other_info || ''),
                 size_chart_image: size_chart_url,
             }).filter(([, value]) => value !== '' && value !== null && value !== undefined),
         )
@@ -161,7 +157,6 @@ const EditProduct = () => {
         console.log('formdata us', formData)
         try {
             setShowSpinner(true)
-
             const response = isCopy
                 ? await axioisInstance.post(`product/add`, formData)
                 : await axioisInstance.patch(`product/${barcode}`, formData)

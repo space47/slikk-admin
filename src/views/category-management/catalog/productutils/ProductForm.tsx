@@ -3,7 +3,7 @@ import { FormContainer, FormItem, Input, Select } from '@/components/ui'
 import { SegmentOptions } from '@/constants/commonArray.constant'
 import { Field, FieldProps } from 'formik'
 import React, { Dispatch, SetStateAction } from 'react'
-import { PRODUCT_EDIT_COMMON, PRODUCT_EDIT_COMMON_DOWN } from '../ProductCommon'
+import { DescriptionFields, PRODUCT_EDIT_COMMON, PRODUCT_EDIT_COMMON_DOWN } from '../ProductCommon'
 import { RichTextEditor } from '@/components/shared'
 import ImageCommonProduct from '../ImageCommonProduct'
 import AddProductImages from '../AddProductImages'
@@ -122,7 +122,7 @@ const ProductFormCommon = ({
                             <Field type={item.type} name={item.name} placeholder={item.placeholder} component={item.component} />
                         </FormItem>
                     ))}
-                    {initialValues?.description &&
+                    {/* {initialValues?.description &&
                         Object.entries(initialValues?.description)?.map(([key]) => {
                             return (
                                 <FormItem key={key} label={key} className="col-span-1 w-full">
@@ -133,7 +133,17 @@ const ProductFormCommon = ({
                                     </Field>
                                 </FormItem>
                             )
-                        })}
+                        })} */}
+
+                    {DescriptionFields?.map((item, key) => (
+                        <FormItem key={key} label={item?.label} className="col-span-1 w-full">
+                            <Field name={item?.name}>
+                                {({ field, form }: FieldProps) => (
+                                    <RichTextEditor value={field.value} onChange={(val) => form.setFieldValue(field.name, val)} />
+                                )}
+                            </Field>
+                        </FormItem>
+                    ))}
 
                     {isEdit ? (
                         <>
