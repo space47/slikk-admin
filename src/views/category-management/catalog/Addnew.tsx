@@ -60,23 +60,19 @@ const AddProduct = () => {
         const videoShow = fileShow(videoUpload, values.video_link)
         const sizeShow = fileShow(sizeUpload, values.size_chart_image_array)
 
-        const descriptionVal =
-            typeof values?.description?.description === 'string'
-                ? {
-                      ...values?.description,
-                      description: textParser(values?.description?.description),
-                  }
-                : ''
-
         const formData = {
             ...values,
             color_code_link: colorlink ? colorlink : values.color_code_link,
             image: imageShow,
             size_chart_image: sizeShow,
             company: companyData,
-            description: descriptionVal,
             colorfamily: values.colorfamily,
             video_link: videoShow,
+            description: textParser(values?.description.description || ''),
+            about: textParser(values?.description.about || ''),
+            use_cases: textParser(values?.description.use_cases || ''),
+            includes: textParser(values?.description.includes || ''),
+            other_info: textParser(values?.description.other_info || ''),
         }
         console.log('body  of add', formData)
         const filteredBody = Object.fromEntries(Object.entries(formData).filter(([, v]) => v != null && v !== '' && v !== undefined))
