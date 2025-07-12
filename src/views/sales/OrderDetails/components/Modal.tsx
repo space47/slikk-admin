@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
 import { Modal, Select } from 'antd'
-import { Product } from './Activity'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-import { Dropdown } from '@/components/ui'
+import { Dropdown, Input } from '@/components/ui'
 import { FaRupeeSign } from 'react-icons/fa'
-import { LOGISTIC_PARTNER } from './activityCommon'
+import { LOGISTIC_PARTNER, Product } from './activityCommon'
 
 const { Option } = Select
 
@@ -25,6 +24,8 @@ type Props = {
     errorMessage?: string
     handleReject: () => void
     isButtonClick?: boolean
+    bagsCount: string
+    setBagsCount: (x: string) => void
 }
 
 export const CustomModal: React.FC<Props> = ({
@@ -41,6 +42,8 @@ export const CustomModal: React.FC<Props> = ({
     errorMessage,
     handleReject,
     isButtonClick,
+    bagsCount,
+    setBagsCount,
 }) => {
     return (
         <Modal
@@ -70,19 +73,30 @@ export const CustomModal: React.FC<Props> = ({
             onCancel={handleCancel}
         >
             <p className="text-lg font-bold mb-4">{modalContent}</p>
-            <div className="flex flex-col gap-4 mb-6 p-4 bg-white shadow-md rounded-lg">
-                <div className="flex items-center text-[20px] font-semibold gap-2">
-                    <span>Invoice Id:</span>
-                    <span className="text-white bg-red-600 flex items-center justify-center px-2  rounded-[10px] font-semibold cursor-pointer">
-                        {invoice_id}
-                    </span>
-                </div>
-                <div className="flex gap-2 items-center text-[16px] font-semibold">
-                    <span>Total Amount:</span>
-                    <div className="flex items-center">
-                        <FaRupeeSign className="text-green-600 " />
-                        <span className="font-normal text-gray-700">{payment?.amount}</span>
+            <div className="">
+                <div className="flex flex-col gap-4 mb-6 p-4 bg-white shadow-md rounded-lg">
+                    <div className="flex items-center text-[20px] font-semibold gap-2">
+                        <span>Invoice Id:</span>
+                        <span className="text-white bg-red-600 flex items-center justify-center px-2  rounded-[10px] font-semibold cursor-pointer">
+                            {invoice_id}
+                        </span>
                     </div>
+                    <div className="flex gap-2 items-center text-[16px] font-semibold">
+                        <span>Total Amount:</span>
+                        <div className="flex items-center">
+                            <FaRupeeSign className="text-green-600 " />
+                            <span className="font-normal text-gray-700">{payment?.amount}</span>
+                        </div>
+                    </div>
+                </div>
+                <div className="flex flex-col gap-2 justify-end">
+                    <span>Bags Count</span>
+                    <Input
+                        value={bagsCount}
+                        className="w-3/4 rounded-xl"
+                        placeholder="Enter Bags Count"
+                        onChange={(e) => setBagsCount(e.target.value)}
+                    />
                 </div>
             </div>
             {product && product.length > 0 && (
@@ -129,11 +143,6 @@ export const CustomModal: React.FC<Props> = ({
     )
 }
 
-type LOGISTIC = {
-    order: number
-    partner: string
-}
-
 type props2 = {
     isModalOpen: boolean
     handlePack: () => void
@@ -143,6 +152,8 @@ type props2 = {
     partner: any
     status: any
     isButtonClick?: any
+    binNumber: string
+    setBinNumber: (x: string) => void
 }
 
 export const CustomModal2: React.FC<props2> = ({
@@ -154,6 +165,8 @@ export const CustomModal2: React.FC<props2> = ({
     handlePartnerSelect,
     partner,
     isButtonClick,
+    binNumber,
+    setBinNumber,
 }) => {
     return (
         <Modal
@@ -169,6 +182,7 @@ export const CustomModal2: React.FC<props2> = ({
                     color: '#FFFFFF',
                     borderRadius: '8px',
                 },
+                disabled: !binNumber,
             }}
             cancelButtonProps={{
                 className: 'font-bold',
@@ -182,33 +196,46 @@ export const CustomModal2: React.FC<props2> = ({
             onOk={handlePack}
             onCancel={handleClose}
         >
-            <div className="flex flex-col justify-center items-center">
-                <p className="text-lg font-semibold mb-4">{modalContent}</p>
+            <div
+                className="flex flex-col items-center justify-center min-w-[22rem] px-6 py-8 
+                bg-white/60 backdrop-blur-md rounded-2xl shadow-2xl"
+            >
+                <p className="mb-6 text-xl font-semibold text-gray-800 text-center">{modalContent}</p>
+                <span className="mb-8 inline-block rounded-full bg-green-100 px-4 py-1 text-sm font-semibold text-green-700 shadow-sm">
+                    Delivery Partner
+                </span>
+                <label className="mb-6 flex w-full flex-col items-start gap-2">
+                    <span className="text-sm font-medium text-gray-700">Bin Number</span>
+                    <Input
+                        value={binNumber}
+                        placeholder="Enter Bin Number"
+                        className="w-full rounded-xl border border-gray-300 bg-white/80 px-4 py-2 text-base
+                        shadow-inner transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                        onChange={(e) => setBinNumber(e.target.value)}
+                    />
+                </label>
+                <div className="flex w-full flex-col items-center gap-4">
+                    <span className="text-base font-semibold text-gray-800">Select Delivery Partner</span>
 
-                <div className="flex flex-col gap-5 justify-center items-center">
-                    <div className="text-center text-lg font-bold text-green-600">Delivery Partner</div>
-                    <div className="flex flex-col gap-2 justify-center items-center w-[250px] p-4 rounded-lg">
-                        <span className="font-bold text-lg">Select Delivery Partner:</span>
-                        <div className="border border-gray-300 w-[150px] rounded-lg">
-                            <Dropdown
-                                className="w-[150px] text-xl text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm font-bold items-center flex justify-center"
-                                title={partner || 'SELECT_PARTNER'}
-                                onSelect={(value) => handlePartnerSelect(value)}
-                            >
-                                <div className="max-h-60 overflow-y-auto">
-                                    {LOGISTIC_PARTNER?.map((item, key) => (
-                                        <DropdownItem
-                                            key={key}
-                                            eventKey={item.value}
-                                            className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer"
-                                        >
-                                            <span className="font-bold">{item.label}</span>
-                                        </DropdownItem>
-                                    ))}
-                                </div>
-                            </Dropdown>
+                    <Dropdown
+                        className="relative w-full rounded-xl bg-gray-50 text-gray-900 shadow-sm
+                 transition focus-within:ring-2 focus-within:ring-indigo-400"
+                        title={partner || 'SELECT_PARTNER'}
+                        onSelect={handlePartnerSelect}
+                    >
+                        <div className="max-h-64 overflow-y-auto rounded-xl bg-white/90 shadow-md">
+                            {LOGISTIC_PARTNER?.map(({ value, label }) => (
+                                <DropdownItem
+                                    key={value}
+                                    eventKey={value}
+                                    className="block px-4 py-2 text-left text-sm font-medium text-gray-800 
+                       transition hover:bg-indigo-50 hover:text-indigo-600 active:bg-indigo-100"
+                                >
+                                    {label}
+                                </DropdownItem>
+                            ))}
                         </div>
-                    </div>
+                    </Dropdown>
                 </div>
             </div>
         </Modal>

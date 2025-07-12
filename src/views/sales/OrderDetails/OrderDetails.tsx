@@ -49,6 +49,10 @@ const OrderDetails = () => {
     }, [data?.logistic?.task_id])
 
     const { data: taskData } = useFetchSingleData<any>({
+        url: query!,
+        pollingInterval: query ? 60000 : undefined,
+    })
+    const { data: taskData } = useFetchSingleData<any>({
         url: query || '',
         pollingInterval: query ? 60000 : undefined,
     })
