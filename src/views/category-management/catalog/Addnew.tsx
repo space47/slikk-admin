@@ -60,16 +60,21 @@ const AddProduct = () => {
         const videoShow = fileShow(videoUpload, values.video_link)
         const sizeShow = fileShow(sizeUpload, values.size_chart_image_array)
 
+        const descriptionVal =
+            typeof values?.description?.description === 'string'
+                ? {
+                      ...values?.description,
+                      description: textParser(values?.description?.description),
+                  }
+                : ''
+
         const formData = {
             ...values,
             color_code_link: colorlink ? colorlink : values.color_code_link,
             image: imageShow,
             size_chart_image: sizeShow,
             company: companyData,
-            description: {
-                ...values?.description,
-                description: textParser(values?.description?.description),
-            },
+            description: descriptionVal,
             colorfamily: values.colorfamily,
             video_link: videoShow,
         }

@@ -135,6 +135,15 @@ const EditProduct = () => {
             const temp = [size_chart_url, sizeLink]
             size_chart_url = temp.filter((t) => t).join(',')
         }
+
+        const descriptionVal =
+            typeof values?.description?.description === 'string'
+                ? {
+                      ...values?.description,
+                      description: textParser(values?.description?.description),
+                  }
+                : ''
+
         const { color_code, size_chart_image_array, images, ...rest } = values
         console.log(color_code, size_chart_image_array, images)
         const formData = Object.fromEntries(
@@ -144,10 +153,7 @@ const EditProduct = () => {
                 image: img_url,
                 company: companyData,
                 video_link: video_url,
-                description: {
-                    ...values?.description,
-                    description: textParser(values?.description?.description),
-                },
+                description: descriptionVal,
                 size_chart_image: size_chart_url,
             }).filter(([, value]) => value !== '' && value !== null && value !== undefined),
         )
