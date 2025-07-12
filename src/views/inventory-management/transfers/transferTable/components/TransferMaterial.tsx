@@ -51,12 +51,12 @@ const TransferModule = () => {
         let queryParam = ''
         if (currentSelectedPage.value === 'barcode') {
             console.log('Case 1')
-            queryParam = `barcode=${encodeURIComponent(globalFilter?.trim())}`
+            queryParam = `barcode_exact=${encodeURIComponent(globalFilter?.trim())}`
         } else if (currentSelectedPage.value === 'sku') {
             console.log('Case 2')
             queryParam = `sku_exact=${encodeURIComponent(globalFilter?.trim())}`
         } else if (currentSelectedPage.value === 'name' && dataForName) {
-            queryParam = `barcode=${encodeURIComponent(dataForName)}`
+            queryParam = `name=${encodeURIComponent(dataForName)}`
         }
         let companyParam = ''
         if (companyCode) {

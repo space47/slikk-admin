@@ -30,7 +30,6 @@ const EditGdn = () => {
         dispatch(fetchCompanyStore())
     }, [dispatch])
 
-    console.log('docs', docsView)
     const navigate = useNavigate()
 
     const fetchData = async () => {
@@ -48,8 +47,6 @@ const EditGdn = () => {
     useEffect(() => {
         fetchData()
     }, [selectedCompany])
-
-    console.log('Datas', datas)
 
     const initialValue = {
         document_number: datas?.document_number || '',
@@ -149,38 +146,39 @@ const EditGdn = () => {
         const docsShow = await processUpload(handleUpload, values.files, values.document)
         const imageShow = await processUpload(handleimage, values.image, values.images)
 
-        console.log('Doocs', docsShow)
-        console.log('Imgs', imageShow)
+        const validDocumentNumber = values?.document_number === document_number ? '' : values?.document_number
 
-        const formData = {
-            ...(values?.document_number && { document_number: values.document_number }),
-            ...(companyData && { company: companyData }),
-            ...(values?.document_date && { document_date: moment(values.document_date).format('YYYY-MM-DD') }),
-            ...(values?.dispatched_by && { dispatched_by: values.dispatched_by }),
-            ...(values?.origin_address && { origin_address: values.origin_address }),
-            ...(values?.delivery_address && { delivery_address: values.delivery_address }),
-            ...(values?.total_sku && { total_sku: values.total_sku }),
-            ...(values?.total_quantity && { total_quantity: values.total_quantity }),
-            ...(docsShow && { document: docsShow }),
-            ...(imageShow && { images: imageShow }),
+        const body = {
+            document_number: validDocumentNumber,
+            company: companyData || '',
+            document_date: moment(values.document_date).format('YYYY-MM-DD') || '',
+            dispatched_by: values.dispatched_by || '',
+            origin_address: values.origin_address || '',
+            delivery_address: values.delivery_address || '',
+            total_sku: values.total_sku || '',
+            total_quantity: values.total_quantity || '',
+            document: docsShow || '',
+            images: imageShow || '',
         }
 
-        console.log('formDaata', formData)
+        const filteredBody = Object.fromEntries(Object.entries(body).filter(([, value]) => value !== ''))
+
+        console.log('formDaata', filteredBody)
 
         try {
-            const response = await axioisInstance.patch(`/goods/dispatch/${datas?.id}`, formData)
-
+            const response = await axioisInstance.patch(`/goods/dispatch/${datas?.id}`, filteredBody)
             console.log(response)
             notification.success({
                 message: 'Success',
-                description: response?.data?.message || 'GRN created Successfully',
+                description: response?.data?.message || 'GDN created Successfully',
             })
             navigate('/app/goods/gdn')
         } catch (error: any) {
             console.error('Error submitting form:', error)
             notification.error({
                 message: 'Failure',
-                description: error?.response?.data?.message || 'GRN not created ',
+                description:
+                    error?.response?.data?.message || error?.response?.data?.data?.message || error?.data?.message || 'GRN not created ',
             })
         }
     }
