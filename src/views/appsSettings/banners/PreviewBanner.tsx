@@ -207,14 +207,24 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                 section_heading: selectedSection?.section_heading,
                 image_web: webImageUpload || '',
                 image_mobile: mobileImageUpload || '',
+                redirection_url:
+                    banner.is_custom === true
+                        ? `s/${banner.pageName}${banner.subPageName ? `/${banner.subPageName}` : ''}`
+                        : (banner?.redirection_url ?? null),
                 extra_attributes: {
                     video_web: webVideoUpload ?? '',
                     video_mobile: mobileVideoUpload ?? '',
                     web_aspect_ratio: banner?.web_aspect_ratio ?? (webAspectratio?.[0] ? Number(webAspectratio[0]?.toFixed(2)) : null),
                     mobile_aspect_ratio:
                         banner?.mobile_aspect_ratio ?? (mobileAspectratio?.[0] ? Number(mobileAspectratio[0]?.toFixed(2)) : null),
-                    web_redirection_url: banner?.web_redirection_url ?? null,
-                    mobile_redirection_url: banner?.mobile_redirection_url ?? null,
+                    web_redirection_url:
+                        banner.is_custom === true
+                            ? `s/${banner.pageName}${banner.subPageName ? `/${banner.subPageName}` : ''}`
+                            : (banner?.web_redirection_url ?? null),
+                    mobile_redirection_url:
+                        banner.is_custom === true
+                            ? `s/${banner.pageName}${banner.subPageName ? `/${banner.subPageName}` : ''}`
+                            : (banner?.web_redirection_url ?? null),
                     max_off: banner?.maxoff ?? null,
                     min_off: banner?.minoff ?? null,
                     lottie_web: webLottieUpload ?? '',
@@ -226,21 +236,21 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
 
             console.log('Data to send', data)
 
-            await axioisInstance
-                .post('banners', data)
-                .then((res) => {
-                    notification.success({
-                        message: 'Successfully uploaded banner ' + (index + 1) || res?.data?.message,
-                    })
-                })
-                .then(() => navigate('/app/appSettings/banners'))
+            // await axioisInstance
+            //     .post('banners', data)
+            //     .then((res) => {
+            //         notification.success({
+            //             message: 'Successfully uploaded banner ' + (index + 1) || res?.data?.message,
+            //         })
+            //     })
+            //     .then(() => navigate('/app/appSettings/banners'))
 
-                .catch((err) => {
-                    notification.error({
-                        message: 'Error when creating banner ' + (index + 1),
-                        description: err?.response?.data?.message || 'Error in banner api',
-                    })
-                })
+            //     .catch((err) => {
+            //         notification.error({
+            //             message: 'Error when creating banner ' + (index + 1),
+            //             description: err?.response?.data?.message || 'Error in banner api',
+            //         })
+            //     })
         })
     }
 

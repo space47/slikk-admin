@@ -3,6 +3,7 @@ type BannerField = {
     defVal: string | number | boolean
     placeHolder: string
     label: string
+    idDisable?: boolean
 }
 
 type BannerFields = {
@@ -75,18 +76,21 @@ export const ADD_BANNER_BASIC_FIELDS: BannerFields = {
         label: 'Url',
         type: 'text',
         defVal: '',
+        idDisable: true,
         placeHolder: 'Enter Redirection URL',
     },
     web_redirection_url: {
         label: 'Web Redirection Url',
         type: 'text',
         defVal: '',
+        idDisable: true,
         placeHolder: 'Enter Redirection URL',
     },
     mobile_redirection_url: {
         label: 'Mobile Redirection Url',
         type: 'text',
         defVal: '',
+        idDisable: true,
         placeHolder: 'Enter Redirection URL',
     },
     // from_date: {
@@ -106,5 +110,11 @@ export const ADD_BANNER_BASIC_FIELDS: BannerFields = {
         type: 'checkbox',
         defVal: true,
         placeHolder: 'is_clickable',
+    },
+    is_custom: {
+        label: '',
+        type: 'checkbox',
+        defVal: false,
+        placeHolder: 'is_custom',
     },
 }

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BANNER_UPLOAD_DATA } from '@/common/banner'
-import { Button, FormItem, Select, Upload } from '@/components/ui'
+import { Button, Select, Upload } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { DIVISION_STATE } from '@/store/types/division.types'
 import React, { useEffect, useState } from 'react'
@@ -8,10 +8,8 @@ import { FaWindowClose } from 'react-icons/fa'
 import { ADD_BANNER_BASIC_FIELDS } from './generalFields'
 import { BRAND_STATE } from '@/store/types/brand.types'
 import { FILTER_STATE } from '@/store/types/filters.types'
-import { DatePicker, notification } from 'antd'
-import DateAndTimePicker from '@/common/DateAndTime'
+import { notification } from 'antd'
 import moment from 'moment'
-import { Field } from 'formik'
 import BannerDateSelector from './BannerDateSelector'
 import { CATEGORY_STATE } from '@/store/types/category.types'
 import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
@@ -125,12 +123,6 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
         }
     }, [dispatch, isSubPageNamesSuccess])
 
-    console.log('sussssss', subPageNamesData)
-
-    const [sortOrder, setSortOrder] = useState<string | undefined>('')
-    const [fromDateAndTime, setFromDateAndTime] = useState('')
-    const [toDateAndTime, setToDateAndTime] = useState('')
-
     const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
     const subCategory = useAppSelector<SUBCATEGORY_STATE>((state) => state.subCategory)
     const product_type = useAppSelector<PRODUCTTYPE_STATE>((state) => state.product_type)
@@ -140,7 +132,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
     console.log('BannerForm division', bannerForm[index]['division'])
     if (bannerForm[index]['division']) {
         filteredCategories = category.categories.filter((cat) => {
-            return bannerForm[index]['division'].map((item) => item?.name).some((div: any) => div === cat.division_name)
+            return bannerForm[index]['division'].map((item: any) => item?.name).some((div: any) => div === cat.division_name)
         })
     }
 
@@ -148,14 +140,14 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
 
     if (bannerForm[index]['category']) {
         filteredSubCategories = subCategory.subcategories.filter((subCat) => {
-            return bannerForm[index]['category'].map((item) => item?.name).some((div: any) => div === subCat.category_name)
+            return bannerForm[index]['category'].map((item: any) => item?.name).some((div: any) => div === subCat.category_name)
         })
     }
 
     let filteredProductTypes = product_type.product_types
     if (bannerForm[index]['sub_category']) {
         filteredProductTypes = product_type.product_types.filter((prodType) => {
-            return bannerForm[index]['sub_category'].map((item) => item?.name).some((div: any) => div === prodType.sub_category_name)
+            return bannerForm[index]['sub_category'].map((item: any) => item?.name).some((div: any) => div === prodType.sub_category_name)
         })
     }
 
@@ -164,8 +156,6 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
     const handleFromTimeChange = (value: any) => {
         console.log('HandleTimeChange', value)
         const formattedValue = moment(value).format('YYYY-MM-DD HH:mm:ss')
-        setFromDateAndTime(formattedValue)
-
         const updatedBannerForm = [...bannerForm]
         updatedBannerForm[index] = {
             ...updatedBannerForm[index],
@@ -176,7 +166,6 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
 
     const handleToTimeChange = (value: any) => {
         const formattedValue = moment(value).format('YYYY-MM-DD HH:mm:ss')
-        setToDateAndTime(formattedValue)
 
         // Update the bannerForm with to_date
         const updatedBannerForm = [...bannerForm]
@@ -281,7 +270,8 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                             <div className="la">{ADD_BANNER_BASIC_FIELDS[field].label}</div>
                             <input
                                 name={field}
-                                className="border p-2 rounded-xl"
+                                disabled={bannerForm[index]?.is_custom ? ADD_BANNER_BASIC_FIELDS[field].idDisable : false}
+                                className="border p-2 rounded-xl disabled:cursor-not-allowed"
                                 type={ADD_BANNER_BASIC_FIELDS[field].type}
                                 placeholder={ADD_BANNER_BASIC_FIELDS[field].placeHolder}
                                 onChange={handleChange}
@@ -291,11 +281,35 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                         </div>
                     </div>
                 ))}
+                {bannerForm[index]?.is_custom && (
+                    <>
+                        <div className="flex flex-col mb-2">
+                            <label className="font-semibold">Page Name</label>
+                            <input
+                                name="pageName"
+                                className="border p-2 rounded-xl"
+                                placeholder="Enter Page Name"
+                                onChange={handleChange}
+                                defaultValue={bannerForm[index]?.pageName ?? ''}
+                            />
+                        </div>
+                        <div className="flex flex-col mb-2">
+                            <label className="font-semibold">Sub Page Name</label>
+                            <input
+                                name="subPageName"
+                                className="border p-2 rounded-xl"
+                                placeholder="Enter Sub Page Name"
+                                onChange={handleChange}
+                                defaultValue={bannerForm[index]?.subPageName ?? ''}
+                            />
+                        </div>
+                    </>
+                )}
             </form>
 
             <div className="grid grid-cols-4 gap-3">
                 <BannerDateSelector
-                    handleTimeChange={(value) => {
+                    handleTimeChange={(value: any) => {
                         handleFromTimeChange(value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
                     }}
                     valueDate={bannerForm[index]?.from_date}
@@ -447,8 +461,6 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                         getOptionLabel={(option) => option.label}
                         getOptionValue={(option) => option.value}
                         onChange={(selectedOption) => {
-                            console.log(selectedOption)
-                            setSortOrder(selectedOption?.value)
                             handleMultiSelect('tags', [selectedOption?.value])
                         }}
                     />
