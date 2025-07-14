@@ -33,12 +33,12 @@ export const USER_EDIT_FROM = [
         type: 'email',
         component: Input,
     },
-    {
-        label: 'Business Email',
-        name: 'business_email',
-        className: 'col-span-1 w-3/4',
-        placeholder: 'Enter your Business Email ',
-        type: 'email',
-        component: Input,
-    },
+    // {
+    //     label: 'Business Email',
+    //     name: 'business_email',
+    //     className: 'col-span-1 w-3/4',
+    //     placeholder: 'Enter your Business Email ',
+    //     type: 'email',
+    //     component: Input,
+    // },
 ]
