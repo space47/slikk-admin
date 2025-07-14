@@ -19,6 +19,7 @@ import BadRequest from '@/views/pages/BadRequest/BadRequest'
 import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
 import { PRODUCTTYPE_STATE } from '@/store/types/productType.types'
 import ReportCustomQuery from './ReportCustomQuery'
+import { notification } from 'antd'
 
 const reportQueryArray = [
     { label: 'Date', value: 'Date' },
@@ -235,6 +236,7 @@ const ReportAnalytics = () => {
     }
 
     const handleDownloadCsv = async (queryName: any) => {
+        notification.info({ message: 'Download ing Progress' })
         let reportParameters = ''
         if (currentValues?.required_fields) {
             reportParameters = currentValues.required_fields
@@ -258,6 +260,7 @@ const ReportAnalytics = () => {
             link.click()
             document.body.removeChild(link)
             window.URL.revokeObjectURL(url)
+            notification.success({ message: 'Downloaded Successfully' })
         } catch (error) {
             console.log(error)
         }

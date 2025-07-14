@@ -66,12 +66,13 @@ const AddProduct = () => {
             image: imageShow,
             size_chart_image: sizeShow,
             company: companyData,
-            description: {
-                ...values?.description,
-                description: textParser(values?.description?.description),
-            },
             colorfamily: values.colorfamily,
             video_link: videoShow,
+            description: textParser(values?.description.description || ''),
+            about: textParser(values?.description.about || ''),
+            use_cases: textParser(values?.description.use_cases || ''),
+            includes: textParser(values?.description.includes || ''),
+            other_info: textParser(values?.description.other_info || ''),
         }
         console.log('body  of add', formData)
         const filteredBody = Object.fromEntries(Object.entries(formData).filter(([, v]) => v != null && v !== '' && v !== undefined))
