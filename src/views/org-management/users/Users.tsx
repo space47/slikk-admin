@@ -114,11 +114,6 @@ const Seller = () => {
                 accessorKey: 'image',
                 cell: ({ getValue }) => <img src={getValue() as string} alt="User" className="w-12 h-12 object-cover" />,
             },
-            // {
-            //     header: 'Date Joined',
-            //     accessorKey: 'date_joined',
-            //     cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
-            // },
             {
                 header: 'Edit',
                 accessorKey: '',
