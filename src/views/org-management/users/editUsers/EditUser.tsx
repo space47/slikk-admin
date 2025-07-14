@@ -16,6 +16,7 @@ import CardComponent from './cardComponents/CardComponent'
 import { Spinner } from '@/components/ui'
 import AccessDenied from '@/views/pages/AccessDenied'
 import StoreAssignComponent from '../StoreAssignComponent'
+import { AxiosError } from 'axios'
 
 type FormModel = {
     first_name: string
@@ -391,20 +392,23 @@ const BrandUserEdit = () => {
     }
 
     const handleSubmit = async (values: any) => {
-        const groupIds = addedGroups.map((item) => item.id)
-        const permissionIds = addedPermissions.map((item) => item.id)
-        const company_ids = addedCompany ? addedCompany.map((item) => item.id) : []
+        console.log('values are', values)
         const bodyData = {
-            ...values,
-            action: 'add',
-            company_id: `${company_ids.join(',')}`,
-            group_id: `${groupIds.join(',')}`,
-            permission_id: `${permissionIds.join(',')}`,
+            first_name: values?.first_name,
+            last_name: values?.last_name,
+            email: values?.email,
         }
-        navigate(`/app/users`)
-        notification.success({
-            message: 'User has been successfully updated',
-        })
+        try {
+            const res = await axioisInstance.patch(`/dashboard/user/profile/${mobile}`, bodyData)
+            notification.success({ message: res?.data?.data?.message || 'User has been successfully updated' })
+            // navigate(`/app/users`)
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                notification.error({
+                    message: error?.response?.data?.message || error?.response?.data?.data?.message || 'Failed to update',
+                })
+            }
+        }
     }
 
     const handleSelectAllCompany = (e) => {
