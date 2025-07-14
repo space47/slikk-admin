@@ -4,6 +4,7 @@ import { OrderSummaryTYPE } from '@/store/types/orderUserSummary.types'
 import { PaymentInfo, PaymentType } from '@/views/sales/OrderDetails/components/PaymentSummary'
 import moment from 'moment'
 import React from 'react'
+import { NumericFormat } from 'react-number-format'
 
 const CartPaymentSummary = () => {
     const { customerData } = useAppSelector<OrderSummaryTYPE>((state) => state.userSummary)
@@ -37,6 +38,21 @@ const CartPaymentSummary = () => {
                         )}
                         <PaymentType label="Time" value={moment(cartItems?.create_date).format('MM/DD/YYYY hh:mm:ss a')} />
                         <PaymentInfo label="Tax" value={cartItems?.tax} />
+                        {cartItems?.other_charges_data &&
+                            Object.entries(cartItems.other_charges_data).map(([label, value]) => (
+                                <li key={label} className="flex items-center justify-between mb-3">
+                                    <span>{label}</span>
+                                    <span className="font-semibold">
+                                        <NumericFormat
+                                            displayType="text"
+                                            value={(Math.round((value as number) * 100) / 100).toFixed(2)}
+                                            prefix="Rs."
+                                            thousandSeparator={true}
+                                        />
+                                    </span>
+                                </li>
+                            ))}
+
                         <hr className="mb-3" />
                         <PaymentInfo isLast label="Total" value={cartItems?.amount} />
                     </ul>

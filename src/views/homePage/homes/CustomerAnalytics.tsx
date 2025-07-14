@@ -14,15 +14,13 @@ import CartPaymentSummary from './componentsHomes/CartPaymentSummary'
 import CartShipping from './componentsHomes/CartShipping'
 import CartTabs from './componentsHomes/CartTabs'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
-import CustomerReferral from './componentsHomes/CustomerReferral'
-import CustomerEvents from './componentsHomes/CustomerEvents'
 
 const CustomerAnalytics = () => {
     const [blockUser, setBlockUser] = useState(false)
     const dispatch = useAppDispatch()
     const { mobile } = useParams<{ mobile: string }>()
 
-    const { customerData, errorMessage } = useAppSelector<OrderSummaryTYPE>((state) => state.userSummary)
+    const { customerData } = useAppSelector<OrderSummaryTYPE>((state) => state.userSummary)
 
     useEffect(() => {
         if (mobile) {
@@ -30,29 +28,18 @@ const CustomerAnalytics = () => {
         }
     }, [dispatch])
 
-    console.log('DATA', errorMessage)
-
     const handleBlockUser = async () => {
-        const body = {
-            mobile: mobile,
-        }
+        const body = { mobile: mobile }
         try {
             const response = await axioisInstance.post(`/merchant/user/block`, body)
-            notification.success({
-                message: response?.data?.message || 'Successfully blacklisted user',
-            })
+            notification.success({ message: response?.data?.message || 'Successfully blacklisted user' })
         } catch (error: any) {
-            notification.error({
-                message: error?.response?.data?.message || error?.response?.data?.data.message || 'Failed to block User',
-            })
+            notification.error({ message: error?.response?.data?.message || error?.response?.data?.data.message || 'Failed to block User' })
             console.log(error)
         } finally {
             setBlockUser(false)
         }
     }
-
-    console.log('mobile us', mobile)
-
     if (mobile == 'null') {
         return <NotFoundData />
     }
@@ -66,51 +53,37 @@ const CustomerAnalytics = () => {
                     Block User
                 </Button>
             </div>
-
-            {/* Customer & Summary Section */}
-            <div className="flex flex-col lg:flex-row w-full gap-6 mt-6">
-                <div className="w-full lg:w-1/2">
+            <div className="flex flex-col lg:flex-row w-full gap-6 mt-6 ">
+                <div className="w-full lg:w-1/2 ">
                     {customerData ? <CustomerData data={customerData} /> : <p className="text-gray-500">Loading data...</p>}
                 </div>
-
-                <div className="w-full flex flex-col gap-4">
-                    <CartPaymentSummary />
-                    <CartShipping />
-                </div>
-            </div>
-
-            {/* Cart Section */}
-
-            {Array.isArray(customerData?.event) && customerData.event.length > 0 && (
-                <div>
-                    <CustomerEvents customerEvents={customerData?.event || []} />
-                </div>
-            )}
-
-            {customerData?.referral && (
-                <div>
-                    <CustomerReferral referralData={customerData.referral} />
-                </div>
-            )}
-
-            <div className="mt-10">
-                <div className="font-bold text-xl sm:text-2xl mb-4">Cart Details:</div>
-                {customerData?.cart !== null ? (
-                    <div className="bg-white dark:bg-gray-700 p-4 sm:p-5 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
-                        <CartHome />
+                <div className="w-full lg:w-1/2 flex flex-col ">
+                    <div className="flex gap-2 xl:flex-row xl:justify-between flex-col ">
+                        <div className="w-full xl:w-1/2">
+                            <CartPaymentSummary />
+                        </div>
+                        <div className="w-full xl:w-1/2">
+                            <CartShipping />
+                        </div>
                     </div>
-                ) : (
-                    <div className="text-lg sm:text-xl font-bold flex items-center justify-center mt-5">No Cart Available 😔</div>
-                )}
+
+                    {/* scrollable cart details */}
+                    <div className="flex-1 mt-1 overflow-y-auto pr-2">
+                        {(customerData?.cart?.cartItems ?? []).length > 0 ? (
+                            <div className="bg-white dark:bg-gray-700 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
+                                <CartHome />
+                            </div>
+                        ) : (
+                            <div className="text-lg sm:text-xl font-bold flex items-center justify-center mt-5">No Cart Available 😔</div>
+                        )}
+                    </div>
+                </div>
             </div>
 
-            {/* Transaction Section */}
             <div className="mt-10">
-                <h2 className="font-bold text-2xl mb-4">Transaction History</h2>
-                <CartTabs />
+                <h2 className="font-bold text-2xl mb-4">Activities</h2>
+                <CartTabs customerData={customerData} />
             </div>
-
-            {/* Block User Modal */}
             {blockUser && (
                 <BlockUserModal
                     dialogIsOpen={blockUser}
