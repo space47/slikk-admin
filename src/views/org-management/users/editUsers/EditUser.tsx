@@ -401,7 +401,7 @@ const BrandUserEdit = () => {
         try {
             const res = await axioisInstance.patch(`/dashboard/user/profile/${mobile}`, bodyData)
             notification.success({ message: res?.data?.data?.message || 'User has been successfully updated' })
-            // navigate(`/app/users`)
+            navigate(`/app/users`)
         } catch (error) {
             if (error instanceof AxiosError) {
                 notification.error({
