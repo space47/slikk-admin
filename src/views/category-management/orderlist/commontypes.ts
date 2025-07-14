@@ -138,6 +138,8 @@ export const PAYMENTOPTIONS = [
     { label: 'COD', value: 'COD' },
     { label: 'ONLINE', value: 'ONLINE' },
     { label: 'POD', value: 'POD' },
+    { label: 'POD_CREATED', value: 'POD_CREATED' },
+    { label: 'POD_PAID', value: 'POD_PAID' },
 ]
 
 export const CHANGE_DELIVERY_OPTIONS = [

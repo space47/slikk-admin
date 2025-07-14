@@ -154,7 +154,7 @@ const ReportAnalytics = () => {
             reportParameters = values.required_fields
                 .map((field: { key: string; value: any; prefix?: string; suffix?: string; dataType?: string; position?: number }) => {
                     const { key, value = '', prefix = '', suffix = '', dataType } = field
-                    console.log('value are', value)
+                    console.log('value are in the array', value)
                     console.log('Field is', key)
                     if (dataType === 'MultiSelect' && Array.isArray(value)) {
                         console.log('value for muktiselect ', value)
@@ -180,9 +180,15 @@ const ReportAnalytics = () => {
                         return `${key}=`
                     }
 
-                    const transformedValue = !['Date', 'Number', 'Boolean'].includes(dataType!)
+                    let transformedValue = !['Date', 'Number', 'Boolean'].includes(dataType!)
                         ? `${prefix.toUpperCase()}${value.toString().toUpperCase()}${suffix.toUpperCase()}`
                         : `${prefix.toUpperCase()}${value}${suffix.toUpperCase()}`
+
+                    if (key === 'store_code') {
+                        transformedValue = !['Date', 'Number', 'Boolean'].includes(dataType!)
+                            ? `${prefix}${value.toString()}${suffix}`
+                            : `${prefix}${value}${suffix}`
+                    }
 
                     console.log('Transformed value is ', transformedValue)
 
