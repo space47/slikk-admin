@@ -46,7 +46,7 @@ const RefundActivity = () => {
     const [packetsValue, setPacketsValue] = useState('')
     const [packetsContainer, setPacketsContainer] = useState<string[]>([])
     // const packetIdArray = returnOrder?.returnOrders?.packet_ids || ['r1456', 'r1234', 'r4444']
-    const packetIdArray = ['r1456', 'r1234', 'r4444', '5531r', 'ss334']
+    const packetIdArray = ['1', '2', '3', '4', '5']
 
     const handlePICKUPGenerate = () => {
         setAction('create_reverse_pickup')

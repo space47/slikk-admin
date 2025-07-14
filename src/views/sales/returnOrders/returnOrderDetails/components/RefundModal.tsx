@@ -199,7 +199,9 @@ export const DeliveredModal: React.FC<props5> = ({ isModalOpen, handleDelivered,
             onCancel={handleClose}
         >
             <p className="text-lg mb-4">{modalContent}</p>
-            <h1 className="text-2xl font-semibold">Your Item is Delivered</h1>
+            <h1 className="text-xl font-semibold">
+                Are you sure you want to mark as <span className="font-bold text-red-700">Delivered</span> for the current number of packets
+            </h1>
         </Modal>
     )
 }
