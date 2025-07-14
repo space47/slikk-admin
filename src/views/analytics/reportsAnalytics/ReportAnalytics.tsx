@@ -19,6 +19,7 @@ import BadRequest from '@/views/pages/BadRequest/BadRequest'
 import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
 import { PRODUCTTYPE_STATE } from '@/store/types/productType.types'
 import ReportCustomQuery from './ReportCustomQuery'
+import { notification } from 'antd'
 
 const reportQueryArray = [
     { label: 'Date', value: 'Date' },
@@ -153,7 +154,7 @@ const ReportAnalytics = () => {
             reportParameters = values.required_fields
                 .map((field: { key: string; value: any; prefix?: string; suffix?: string; dataType?: string; position?: number }) => {
                     const { key, value = '', prefix = '', suffix = '', dataType } = field
-                    console.log('value are', value)
+                    console.log('value are in the array', value)
                     console.log('Field is', key)
                     if (dataType === 'MultiSelect' && Array.isArray(value)) {
                         console.log('value for muktiselect ', value)
@@ -179,9 +180,15 @@ const ReportAnalytics = () => {
                         return `${key}=`
                     }
 
-                    const transformedValue = !['Date', 'Number', 'Boolean'].includes(dataType!)
+                    let transformedValue = !['Date', 'Number', 'Boolean'].includes(dataType!)
                         ? `${prefix.toUpperCase()}${value.toString().toUpperCase()}${suffix.toUpperCase()}`
                         : `${prefix.toUpperCase()}${value}${suffix.toUpperCase()}`
+
+                    if (key === 'store_code') {
+                        transformedValue = !['Date', 'Number', 'Boolean'].includes(dataType!)
+                            ? `${prefix}${value.toString()}${suffix}`
+                            : `${prefix}${value}${suffix}`
+                    }
 
                     console.log('Transformed value is ', transformedValue)
 
@@ -235,6 +242,7 @@ const ReportAnalytics = () => {
     }
 
     const handleDownloadCsv = async (queryName: any) => {
+        notification.info({ message: 'Download ing Progress' })
         let reportParameters = ''
         if (currentValues?.required_fields) {
             reportParameters = currentValues.required_fields
@@ -243,7 +251,7 @@ const ReportAnalytics = () => {
         }
         try {
             const response = await axioisInstance.get(
-                `/query/execute/${storeName}?${reportParameters}&download=true&query_name=${queryName}`,
+                `/query/execute/${storeName}?${encodeURIComponent(reportParameters)}&download=true&query_name=${encodeURIComponent(queryName)}`,
                 {
                     responseType: 'blob',
                 },
@@ -258,6 +266,7 @@ const ReportAnalytics = () => {
             link.click()
             document.body.removeChild(link)
             window.URL.revokeObjectURL(url)
+            notification.success({ message: 'Downloaded Successfully' })
         } catch (error) {
             console.log(error)
         }

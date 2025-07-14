@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 import { Product } from '../CommonType'
 import { FaEdit, FaEye } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
+import moment from 'moment'
 
 interface props {
     handleOpenModal: (img: any) => void
@@ -27,7 +28,7 @@ export const useProductColumns = ({ handleOpenModal, handleViewProducts }: props
                 ),
             },
             {
-                header: 'Edit',
+                header: 'View',
                 accessorKey: '',
                 cell: ({ row }) => (
                     <button className="border-none bg-none" onClick={() => handleViewProducts(row?.original)}>
@@ -38,6 +39,11 @@ export const useProductColumns = ({ handleOpenModal, handleViewProducts }: props
             {
                 header: 'SKU',
                 accessorKey: 'sku',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'SKID',
+                accessorKey: 'skid',
                 cell: (info) => info.getValue(),
             },
             {
@@ -125,6 +131,20 @@ export const useProductColumns = ({ handleOpenModal, handleViewProducts }: props
                 header: 'SIZE',
                 accessorKey: 'size',
                 cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Create Date',
+                accessorKey: 'create_date',
+                cell: (info) => {
+                    return <div>{moment(info.getValue() as string).format('YYYY-MM-DD HH:mm:ss')}</div>
+                },
+            },
+            {
+                header: 'Return Amount',
+                accessorKey: 'return_amount',
+                cell: (info) => {
+                    return <div>{moment(info.getValue() as string).format('YYYY-MM-DD HH:mm:ss')}</div>
+                },
             },
         ],
         [],

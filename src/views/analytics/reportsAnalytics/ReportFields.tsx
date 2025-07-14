@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, FormContainer, FormItem, Input, Select } from '@/components/ui'
+import { useAppDispatch, useAppSelector } from '@/store'
+import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
+import { companyStore } from '@/store/types/companyStore.types'
 import { Field, FieldArray, FieldProps } from 'formik'
 import React, { useEffect, useState } from 'react'
 
@@ -12,6 +15,12 @@ interface ReportFieldsProps {
 
 const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: ReportFieldsProps) => {
     const [showInfo, setShowInfo] = useState(false)
+    const dispatch = useAppDispatch()
+    const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
+
+    useEffect(() => {
+        dispatch(fetchCompanyStore())
+    }, [dispatch])
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -30,106 +39,131 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
                 <FieldArray name="required_fields">
                     {() => (
                         <div>
-                            {values?.map((item: any, index: number) => (
-                                <div key={index} className="flex flex-col sm:flex-row sm:space-x-4 mt-2 items-center rounded-lg px-4 py-2">
-                                    <Field
-                                        name={`required_fields[${index}].position`}
-                                        placeholder="Key"
-                                        component={Input}
-                                        className="w-full sm:w-2/3 hidden"
-                                        type="number"
-                                    />
-                                    <Field
-                                        name={`required_fields[${index}].key`}
-                                        placeholder="Key"
-                                        component={Input}
-                                        className="w-full sm:w-2/3"
-                                    />
-                                    <Field name={`required_fields[${index}].dataType`}>
-                                        {({ field, form }: FieldProps) => (
-                                            <Select
-                                                isDisabled
-                                                className="w-full"
-                                                placeholder="Select dataType"
-                                                options={reportQueryArray}
-                                                value={reportQueryArray.find((option) => option.value === field.value)}
-                                                onChange={(option) => form.setFieldValue(field.name, option?.value)}
-                                            />
-                                        )}
-                                    </Field>
-                                    <Field name={`required_fields[${index}].value`}>
-                                        {({ field, form }: FieldProps) => {
-                                            const { dataType, key } = values[index]
-                                            const options = optionDataMap[key]
+                            {values?.map((item: any, index: number) => {
+                                return (
+                                    <div
+                                        key={index}
+                                        className="flex flex-col sm:flex-row sm:space-x-4 mt-2 items-center rounded-lg px-4 py-2"
+                                    >
+                                        <Field
+                                            name={`required_fields[${index}].position`}
+                                            placeholder="Key"
+                                            component={Input}
+                                            className="w-full sm:w-2/3 hidden"
+                                            type="number"
+                                        />
+                                        <Field
+                                            name={`required_fields[${index}].key`}
+                                            placeholder="Key"
+                                            component={Input}
+                                            className="w-full sm:w-2/3"
+                                        />
+                                        <Field name={`required_fields[${index}].dataType`}>
+                                            {({ field, form }: FieldProps) => (
+                                                <Select
+                                                    isDisabled
+                                                    className="w-full"
+                                                    placeholder="Select dataType"
+                                                    options={reportQueryArray}
+                                                    value={reportQueryArray.find((option) => option.value === field.value)}
+                                                    onChange={(option) => form.setFieldValue(field.name, option?.value)}
+                                                />
+                                            )}
+                                        </Field>
+                                        <Field name={`required_fields[${index}].value`}>
+                                            {({ field, form }: FieldProps) => {
+                                                const { dataType, key } = values[index]
+                                                console.log('key', key, 'data type', key)
+                                                const options = optionDataMap[key]
 
-                                            if (dataType === 'Select' && options) {
-                                                const selectedOption = options.find(
-                                                    (option: any) => option.name?.toLowerCase() === field.value?.toLowerCase(),
-                                                )
+                                                if (dataType === 'Select' && options) {
+                                                    const selectedOption = options.find(
+                                                        (option: any) => option.name?.toLowerCase() === field.value?.toLowerCase(),
+                                                    )
 
-                                                return (
-                                                    <div className="w-full">
+                                                    return (
+                                                        <div className="w-full">
+                                                            <Select
+                                                                isClearable
+                                                                className="w-full"
+                                                                {...field}
+                                                                options={options}
+                                                                getOptionLabel={(option) => option?.name}
+                                                                getOptionValue={(option) => option?.id?.toString()}
+                                                                value={selectedOption || null}
+                                                                onChange={(newVal) => {
+                                                                    form.setFieldValue(`required_fields[${index}].value`, newVal?.name)
+                                                                }}
+                                                            />
+                                                            {showInfo && (
+                                                                <p className="mt-2 text-sm text-yellow-500">Leave empty to select all</p>
+                                                            )}
+                                                        </div>
+                                                    )
+                                                }
+
+                                                if (dataType === 'Select' && key === 'store_code') {
+                                                    console.log('field value', field?.value)
+
+                                                    return (
+                                                        <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
+                                                            <Select
+                                                                className="w-full"
+                                                                options={storeResults}
+                                                                getOptionLabel={(option) => option.code}
+                                                                getOptionValue={(option) => option.code}
+                                                                onChange={(newVal) => {
+                                                                    console.log('new val is', newVal?.code)
+                                                                    form.setFieldValue(`required_fields[${index}].value`, newVal?.code)
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    )
+                                                }
+
+                                                if (dataType === 'MultiSelect' && options) {
+                                                    const fieldValueArray = Array.isArray(field?.value)
+                                                        ? field?.value
+                                                        : field?.value.split(',')
+
+                                                    const selectedOptions = fieldValueArray.map((item: any) => {
+                                                        const selectedOption = options?.find((options: any) => {
+                                                            return options?.name.toLowerCase() === item.toLowerCase()
+                                                        })
+                                                        return selectedOption
+                                                    })
+
+                                                    return (
                                                         <Select
+                                                            isMulti
                                                             isClearable
                                                             className="w-full"
                                                             {...field}
                                                             options={options}
                                                             getOptionLabel={(option) => option?.name}
                                                             getOptionValue={(option) => option?.id?.toString()}
-                                                            value={selectedOption || null}
-                                                            onChange={(newVal) => {
-                                                                form.setFieldValue(`required_fields[${index}].value`, newVal?.name)
+                                                            value={selectedOptions}
+                                                            onChange={(newVals) => {
+                                                                const selectedValues = newVals?.map((val: any) => val.name) || []
+                                                                form.setFieldValue(`required_fields[${index}].value`, selectedValues)
                                                             }}
                                                         />
-                                                        {showInfo && (
-                                                            <p className="mt-2 text-sm text-yellow-500">Leave empty to select all</p>
-                                                        )}
-                                                    </div>
-                                                )
-                                            }
-
-                                            if (dataType === 'MultiSelect' && options) {
-                                                const fieldValueArray = Array.isArray(field?.value) ? field?.value : field?.value.split(',')
-
-                                                const selectedOptions = fieldValueArray.map((item: any) => {
-                                                    const selectedOption = options?.find((options: any) => {
-                                                        return options?.name.toLowerCase() === item.toLowerCase()
-                                                    })
-                                                    return selectedOption
-                                                })
+                                                    )
+                                                }
 
                                                 return (
-                                                    <Select
-                                                        isMulti
-                                                        isClearable
-                                                        className="w-full"
+                                                    <Input
+                                                        type={dataType === 'Date' ? 'date' : 'text'}
+                                                        placeholder={dataType === 'Date' ? 'Select date' : 'Enter value'}
                                                         {...field}
-                                                        options={options}
-                                                        getOptionLabel={(option) => option?.name}
-                                                        getOptionValue={(option) => option?.id?.toString()}
-                                                        value={selectedOptions}
-                                                        onChange={(newVals) => {
-                                                            console.log('multiselect values', newVals)
-                                                            const selectedValues = newVals?.map((val: any) => val.name) || []
-
-                                                            form.setFieldValue(`required_fields[${index}].value`, selectedValues)
-                                                        }}
+                                                        className="w-full"
                                                     />
                                                 )
-                                            }
-
-                                            return (
-                                                <Input
-                                                    type={dataType === 'Date' ? 'date' : 'text'}
-                                                    placeholder={dataType === 'Date' ? 'Select date' : 'Enter value'}
-                                                    {...field}
-                                                    className="w-full"
-                                                />
-                                            )
-                                        }}
-                                    </Field>
-                                </div>
-                            ))}
+                                            }}
+                                        </Field>
+                                    </div>
+                                )
+                            })}
                         </div>
                     )}
                 </FieldArray>
