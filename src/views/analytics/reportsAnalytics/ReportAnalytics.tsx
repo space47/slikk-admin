@@ -245,7 +245,7 @@ const ReportAnalytics = () => {
         }
         try {
             const response = await axioisInstance.get(
-                `/query/execute/${storeName}?${reportParameters}&download=true&query_name=${queryName}`,
+                `/query/execute/${storeName}?${encodeURIComponent(reportParameters)}&download=true&query_name=${encodeURIComponent(queryName)}`,
                 {
                     responseType: 'blob',
                 },
