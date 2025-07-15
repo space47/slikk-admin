@@ -1,22 +1,46 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import RtkQueryService from '@/services/RtkQueryService'
-import { pageNamesResponseType, pageSettingsResponseType, subPageResponseTypes } from '../types/pageSettings.types'
+import {
+    mainPageSettingsResponseTypes,
+    pageNamesResponseType,
+    pageSettingsResponseType,
+    subPageResponseTypes,
+} from '../types/pageSettings.types'
 
 interface PageSettingsDataTypes {
     page?: number
     pageSize?: number
-    sub_page?: number
-    pageId?: number
+    sub_page?: number | string
+    pageId?: number | string
+    store_code?: number[]
+    section_id?: number
 }
 
 export const pageSettingsService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
-        pageSettingsData: builder.query<pageSettingsResponseType, PageSettingsDataTypes>({
+        mainPageSettings: builder.query<mainPageSettingsResponseTypes, PageSettingsDataTypes>({
             query: (params) => {
-                const parameters: Record<string, number | string[]> = {}
+                const parameters: Record<string, number | any> = {}
                 if (params.page) parameters.p = params.page
                 if (params.pageSize) parameters.page_size = params.pageSize
                 if (params.pageId) parameters.page = params.pageId
                 if (params.sub_page) parameters.sub_page = params.sub_page
+                if (params.store_code) parameters.store_code = params.store_code
+                return {
+                    url: `/page-sections`,
+                    method: 'GET',
+                    params: parameters,
+                }
+            },
+        }),
+        pageSettingsData: builder.query<pageSettingsResponseType, PageSettingsDataTypes>({
+            query: (params) => {
+                const parameters: Record<string, number | string[] | any> = {}
+                if (params.page) parameters.p = params.page
+                if (params.pageSize) parameters.page_size = params.pageSize
+                if (params.pageId) parameters.page = params.pageId
+                if (params.sub_page) parameters.sub_page = params.sub_page
+                if (params.section_id) parameters.section_id = params.section_id
                 return {
                     url: `/section`,
                     method: 'GET',
@@ -26,7 +50,7 @@ export const pageSettingsService = RtkQueryService.injectEndpoints({
         }),
         pageNames: builder.query<pageNamesResponseType, PageSettingsDataTypes>({
             query: (params) => {
-                const parameters: Record<string, number | string[]> = {}
+                const parameters: Record<string, number | any> = {}
                 if (params.page) parameters.p = params.page
                 if (params.pageSize) parameters.page_size = params.pageSize
                 if (params.pageId) parameters.page = params.pageId
@@ -39,11 +63,11 @@ export const pageSettingsService = RtkQueryService.injectEndpoints({
         }),
         subPageNames: builder.query<subPageResponseTypes, PageSettingsDataTypes>({
             query: (params) => {
-                const parameters: Record<string, number | string[]> = {}
+                const parameters: Record<string, number | any> = {}
                 if (params.page) parameters.p = params.page
                 if (params.pageSize) parameters.page_size = params.pageSize
                 if (params.sub_page) parameters.sub_page_id = params.sub_page
-                if (params.pageId) parameters.page = params.pageId
+                if (params.pageId) parameters.page_id = params.pageId
                 return {
                     url: `/subpage`,
                     method: 'GET',

@@ -48,3 +48,38 @@ export interface subPageResponseTypes {
     status: string
     data: pageNameTypes[]
 }
+
+export interface mainPageSettings {
+    id: number
+    page: string
+    sub_page: string
+    section: {
+        id: number
+        section_heading: string
+        display_name: string
+        is_active: boolean
+    }
+    store: {
+        id: number
+        code: string
+        name: string
+        is_fulfillment_center: boolean
+    }[]
+    last_updated_by: {
+        name: string
+        mobile: string
+        email: string
+    }
+    is_active: boolean
+    position: number
+    create_date: string
+    update_date: string
+}
+
+export interface mainPageSettingsResponseTypes {
+    status: string
+    data: {
+        count: number
+        results: mainPageSettings[]
+    }
+}

@@ -995,6 +995,12 @@ const appsRoute: Routes = [
     },
     {
         key: 'appsAppSettings.newPageSettings',
+        path: `${APP_PREFIX_PATH}/appSettings/sections/:id`,
+        component: lazy(() => import('@/views/appsSettings/newPageSettings/newPageSettingsTable/SectionsTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.newPageSettings',
         path: `${APP_PREFIX_PATH}/appSettings/newPageSettings/addNew`,
         component: lazy(() => import('@/views/appsSettings/newPageSettings/addNewPageSettings/AddPageSettings')),
         authority: [ADMIN, USER],

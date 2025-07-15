@@ -1,16 +1,7 @@
 import { Button, Dropdown, Pagination, Select } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { pageSettingsService } from '@/store/services/pageSettingService'
-import {
-    pageSettingsRequiredType,
-    setPageSettingsData,
-    setPage,
-    setPageSize,
-    setCount,
-    setCurrentPageName,
-    setCurrentSubPageName,
-} from '@/store/slices/pageSettingsSlice/pageSettingsSlice'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usePageSettingsColumns } from '../newPageSettingsUtils/usePageSettingsColumns'
 import { Option, pageSizeOptions } from '@/constants/pageUtils.constants'
@@ -21,30 +12,56 @@ import AddPageNameModal from '../../pageSettings/AddPageNameModal'
 import { usePageSettingsFunctions } from '../newPageSettingsUtils/usePageSettingsFunctions'
 import EasyTable from '@/common/EasyTable'
 import AddSubPageNameModal from '../newPageSettingsUtils/AddSubPageModal'
+import {
+    mainPageSettingsRequiredType,
+    setMainPageSettingsData,
+    setCount,
+    setPage,
+    setPageSize,
+    setCurrentPageName,
+    setCurrentSubPageName,
+} from '@/store/slices/mainPageSettings/mainPageSettingsSlice'
+import { AxiosError } from 'axios'
+import { notification } from 'antd'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 const NewPageSettingsTables = () => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
+    const [updatedPosition, setUpdatedPosition] = useState<{ [key: number]: number }>({})
+    const positionRef = useRef<{ [key: number]: HTMLInputElement | null }>({})
     const [showAddPageModal, setShowAddPageModal] = useState(false)
     const [showAddSubPageModal, setShowAddSubPageModal] = useState(false)
 
-    const { pageSettingsData, page, pageSize, count, currentPageName, currentSubPageName } = useAppSelector<pageSettingsRequiredType>(
-        (state) => state.pageSettings,
-    )
+    useEffect(() => {
+        const storedPageName = sessionStorage.getItem('currentPageName')
+        const storedSubPageName = sessionStorage.getItem('currentSubPageName')
+
+        if (storedPageName) {
+            dispatch(setCurrentPageName(JSON.parse(storedPageName)))
+        }
+
+        if (storedSubPageName) {
+            dispatch(setCurrentSubPageName(JSON.parse(storedSubPageName)))
+        }
+    }, [dispatch])
+
+    const { mainPageSettingsData, page, pageSize, count, currentPageName, currentSubPageName } =
+        useAppSelector<mainPageSettingsRequiredType>((state) => state.pageSettingsMain)
 
     const { pageForName, pageNamesData, pageSizeForName, subPageNamesData } = useAppSelector<pageNamesRequiredType>(
         (state) => state.pageNames,
     )
 
     const {
-        data: pageSettings,
+        data: pageSettingsMain,
         isSuccess,
         isLoading,
-    } = pageSettingsService.usePageSettingsDataQuery({
+    } = pageSettingsService.useMainPageSettingsQuery({
         page,
         pageSize,
-        pageId: currentPageName?.value as number,
-        sub_page: currentSubPageName?.value as number,
+        pageId: currentPageName?.label,
+        sub_page: currentSubPageName?.label,
     })
 
     const { data: pageNames, isSuccess: isPageNamesSuccess } = pageSettingsService.usePageNamesQuery({
@@ -70,11 +87,11 @@ const NewPageSettingsTables = () => {
         const storedSubPageName = sessionStorage.getItem('currentSubPageName')
 
         if (storedPageName) {
-            dispatch(setCurrentPageName(JSON.parse(storedPageName)))
+            setCurrentPageName(JSON.parse(storedPageName))
         }
 
         if (storedSubPageName) {
-            dispatch(setCurrentSubPageName(JSON.parse(storedSubPageName)))
+            setCurrentSubPageName(JSON.parse(storedSubPageName))
         }
     }, [dispatch])
 
@@ -92,25 +109,49 @@ const NewPageSettingsTables = () => {
 
     useEffect(() => {
         if (isSuccess) {
-            dispatch(setPageSettingsData(pageSettings?.data?.results || []))
-            dispatch(setCount(pageSettings?.data?.count || 0))
+            dispatch(setMainPageSettingsData(pageSettingsMain?.data?.results || []))
+            dispatch(setCount(pageSettingsMain?.data?.count || 0))
         }
-    }, [dispatch, pageSettings, isSuccess, currentPageName, currentSubPageName])
+    }, [dispatch, pageSettingsMain, isSuccess, currentPageName, currentSubPageName])
 
     const { handleSelectPage, handleSelectSubPage, BANNER_PAGE, SUB_PAGE } = usePageSettingsFunctions({
         pageNamesData,
         subPageNamesData,
-        pageSettingsData,
+        mainPageSettingsData,
         setCurrentPageName,
         setCurrentSubPageName,
-        setPageSettingsData,
+        setMainPageSettingsData,
     })
+
+    const handlePositionChange = (id: number, newQuantity: number) => {
+        setUpdatedPosition((prevQuantity) => {
+            if (prevQuantity[id] === newQuantity) return prevQuantity
+            return { ...prevQuantity, [id]: newQuantity }
+        })
+        setTimeout(() => {
+            positionRef.current[id]?.focus()
+        }, 0)
+    }
+
+    const handleUpdate = async (e: React.KeyboardEvent<HTMLInputElement>, id: number) => {
+        if (e.key === 'Enter') {
+            e.preventDefault()
+            try {
+                const res = await axioisInstance.patch(`/page-sections/${id}`, { position: updatedPosition[id] })
+                notification.success({ message: res?.data?.data?.message || 'Failed to update position' })
+            } catch (error) {
+                if (error instanceof AxiosError) {
+                    notification.error(error?.response?.data?.message || 'Failed to update position')
+                }
+            }
+        }
+    }
 
     const handleGoToBanner = (sectionHeading: string) => {
         navigate('/app/appSettings/banners', { state: { var1: currentPageName?.label, var2: sectionHeading } })
     }
 
-    const columns = usePageSettingsColumns({ handleGoToBanner })
+    const columns = usePageSettingsColumns({ handleGoToBanner, positionRef, handlePositionChange, updatedPosition, handleUpdate })
     if (isLoading) {
         return <LoadingSpinner />
     }
@@ -173,7 +214,7 @@ const NewPageSettingsTables = () => {
                 </div>
             </div>
             <div>
-                <EasyTable overflow mainData={pageSettingsData || []} columns={columns} page={page} pageSize={pageSize} />
+                <EasyTable overflow mainData={mainPageSettingsData || []} columns={columns} page={page} pageSize={pageSize} />
             </div>
             <div className="flex justify-between mt-10">
                 <div>

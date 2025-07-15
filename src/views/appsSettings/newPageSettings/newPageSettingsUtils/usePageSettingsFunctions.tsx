@@ -1,32 +1,21 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAppDispatch } from '@/store'
-import { pageNameTypes, pageSettingsType } from '@/store/types/pageSettings.types'
+import { mainPageSettings, pageNameTypes } from '@/store/types/pageSettings.types'
 import { ActionCreatorWithPayload } from '@reduxjs/toolkit'
 import { DropResult } from 'react-beautiful-dnd'
 
 interface props {
-    pageSettingsData: pageSettingsType[] | undefined
-    setPageSettingsData: ActionCreatorWithPayload<pageSettingsType[], 'pageSettings/setPageSettingsData'>
+    mainPageSettingsData: mainPageSettings[] | undefined
+    setMainPageSettingsData: ActionCreatorWithPayload<mainPageSettings[], 'pageSettingsMain/setMainPageSettingsData'>
     pageNamesData: pageNameTypes[] | undefined
     subPageNamesData: pageNameTypes[] | undefined
-    setCurrentPageName: ActionCreatorWithPayload<
-        {
-            label: string
-            value: number | null
-        },
-        'pageSettings/setCurrentPageName'
-    >
-    setCurrentSubPageName: ActionCreatorWithPayload<
-        {
-            label: string
-            value: number | null
-        },
-        'pageSettings/setCurrentSubPageName'
-    >
+    setCurrentPageName: any
+    setCurrentSubPageName: any
 }
 
 export const usePageSettingsFunctions = ({
-    pageSettingsData,
-    setPageSettingsData,
+    mainPageSettingsData,
+    setMainPageSettingsData,
     pageNamesData,
     subPageNamesData,
     setCurrentPageName,
@@ -53,10 +42,10 @@ export const usePageSettingsFunctions = ({
     }
 
     const reorderData = (startIndex: number, endIndex: number) => {
-        const newData = [...(pageSettingsData || [])]
+        const newData = [...(mainPageSettingsData || [])]
         const [movedRow] = newData.splice(startIndex, 1)
         newData.splice(endIndex, 0, movedRow)
-        dispatch(setPageSettingsData(newData))
+        dispatch(setMainPageSettingsData(newData))
     }
 
     const handleDragEnd = (result: DropResult) => {
