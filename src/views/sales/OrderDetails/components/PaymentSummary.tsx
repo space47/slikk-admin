@@ -26,6 +26,8 @@ type PaymentSummaryProps = {
     status: string
     handlePODAction: any
     mainData: any
+    order_id: string
+    gateway_transaction_id: string
 }
 
 export const PaymentInfo = ({ label, value, isLast }: PaymentInfoProps) => {
@@ -66,8 +68,10 @@ const PaymentSummary = ({
     status,
     handlePODAction,
     mainData,
+    order_id,
+    gateway_transaction_id,
 }: PaymentSummaryProps) => {
-    console.log('Data of the Data', data)
+    console.log('Data of the Data', order_id)
     return (
         <Card className="mb-4">
             <div className="flex justify-between items-center xl:items-baseline">
@@ -131,6 +135,8 @@ const PaymentSummary = ({
                 )}
                 <PaymentType label="Time" value={moment(data?.transaction_time).format('MM/DD/YYYY hh:mm:ss a')} />
                 <PaymentInfo label="Tax" value={tax} />
+                <PaymentType label="Id" value={order_id} />
+                <PaymentType label="Transaction Id" value={gateway_transaction_id} />
                 <hr className="mb-3" />
                 <PaymentInfo isLast label="Total" value={data?.amount} />
             </ul>

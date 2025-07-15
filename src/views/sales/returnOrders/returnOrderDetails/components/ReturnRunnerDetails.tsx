@@ -2,42 +2,17 @@ import Card from '@/components/ui/Card'
 // import Avatar from '@/components/ui/Avatar'
 import { useAppSelector } from '@/store'
 import { ReturnOrderState } from '@/store/types/returnDetails.types'
-import { Avatar, Dropdown } from '@/components/ui'
-import { LOGISTIC_PARTNER } from '@/views/sales/OrderDetails/components/activityCommon'
-import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import { Avatar, Button } from '@/components/ui'
 import { useState } from 'react'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { notification } from 'antd'
 import { FaUserAlt } from 'react-icons/fa'
 import { HiLocationMarker, HiPhone } from 'react-icons/hi'
-import { useNavigate } from 'react-router-dom'
+import TrackModal from '@/views/slikkLogistics/taskTracking/TrackModal'
 
 const ReturnRunnerDetails = () => {
-    const navigate = useNavigate()
-    const [partnerChange, setPartnerChange] = useState<string>('')
     const returnOrder = useAppSelector<ReturnOrderState>((state) => state.returnOrders)
     const returnProducts = returnOrder?.returnOrders?.return_order_delivery?.find((item) => item?.state !== 'CANCELLED')
-    const return_Partner = returnProducts?.partner
-
-    const handleDeliveryChange = async (value: string) => {
-        console.log('value for it', value)
-        const body = {
-            action: 'create_reverse_pickup',
-            re_create: 'yes',
-            logistic_partner: value,
-        }
-        try {
-            const response = await axioisInstance.patch(`merchant/return_order/${returnOrder?.returnOrders?.return_order_id}`, body)
-            notification.success({
-                message: 'Success',
-                description: response?.data?.message || 'Created Task Successfully',
-            })
-            setPartnerChange(value)
-            navigate(0)
-        } catch (error) {
-            console.error(error)
-        }
-    }
+    const [showRiderModal, setShowRiderModal] = useState(false)
+    const returnDetails = returnOrder?.returnOrders
 
     return (
         <Card className="card">
@@ -80,27 +55,22 @@ const ReturnRunnerDetails = () => {
                     </span>
                 </div>
                 <div className="flex gap-2 items-center">
-                    <div> Change Partner: </div>
-                    <div className="w-auto bg-slate-200 rounded-lg">
-                        <Dropdown
-                            className="w-full px-1 py-1 text-xl text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm font-bold"
-                            title={partnerChange !== '' ? partnerChange : (return_Partner ?? 'SELECT')}
-                            onSelect={(value) => handleDeliveryChange(value)}
-                        >
-                            <div className="max-h-60 overflow-y-auto">
-                                {LOGISTIC_PARTNER.map((item, key) => (
-                                    <DropdownItem
-                                        key={key}
-                                        eventKey={item.value}
-                                        className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer"
-                                    >
-                                        <span>{item.label}</span>
-                                    </DropdownItem>
-                                ))}
-                            </div>
-                        </Dropdown>
+                    <div className="mt-5">
+                        <Button variant="new" size="sm" onClick={() => setShowRiderModal(true)}>
+                            Assign Rider
+                        </Button>
                     </div>
                 </div>
+                {showRiderModal && (
+                    <TrackModal
+                        isReturn
+                        isOrder
+                        handleCloseModal={() => setShowRiderModal(false)}
+                        showTaskModal={showRiderModal}
+                        setShowAssignModal={setShowRiderModal}
+                        taskId={returnDetails?.return_order_delivery[0]?.task_id}
+                    />
+                )}
             </div>
         </Card>
     )
