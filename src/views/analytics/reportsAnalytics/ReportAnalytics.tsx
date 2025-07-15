@@ -53,7 +53,6 @@ const ReportAnalytics = () => {
     const [reportValue, setReportValue] = useState()
     const [isCustomQuery, setIsCustomQuery] = useState(false)
 
-    console.log('Sub Category Data', productTypeData)
     const fetchReportApi = async () => {
         try {
             setShowSpinner(true)
@@ -106,7 +105,8 @@ const ReportAnalytics = () => {
                 required_fields: Object.entries(data?.required_fields || {})
                     ?.reverse()
                     ?.map(([key, fullValue]) => {
-                        const [position, dataType, valueArray, prefix, suffix] = fullValue || []
+                        console.log('full value', fullValue)
+                        const [position, dataType, valueArray, prefix, suffix] = Array.isArray(fullValue) ? fullValue : []
                         let transformedValue = valueArray
 
                         if (key === 'start_date') {
@@ -154,8 +154,8 @@ const ReportAnalytics = () => {
             reportParameters = values.required_fields
                 .map((field: { key: string; value: any; prefix?: string; suffix?: string; dataType?: string; position?: number }) => {
                     const { key, value = '', prefix = '', suffix = '', dataType } = field
-                    console.log('value are in the array', value)
-                    console.log('Field is', key)
+                    const val = encodeURIComponent(value)
+
                     if (dataType === 'MultiSelect' && Array.isArray(value)) {
                         console.log('value for muktiselect ', value)
                         if (value.length === 0 || value[0] === '') {
@@ -164,10 +164,11 @@ const ReportAnalytics = () => {
 
                         const formattedValues = value.map((item: any) => {
                             console.log('Items is', item)
+                            const itemsEncoded = encodeURIComponent(item)
                             const transformedValue = item
                                 ? !['Date', 'Number', 'Boolean'].includes(dataType!)
-                                    ? `${prefix.toUpperCase()}${item.toString().toUpperCase()}${suffix.toUpperCase()}`
-                                    : `${prefix.toUpperCase()}${item}${suffix.toUpperCase()}`
+                                    ? `${prefix.toUpperCase()}${itemsEncoded.toString().toUpperCase()}${suffix.toUpperCase()}`
+                                    : `${prefix.toUpperCase()}${itemsEncoded}${suffix.toUpperCase()}`
                                 : ''
 
                             return `'${transformedValue}'`
@@ -181,17 +182,14 @@ const ReportAnalytics = () => {
                     }
 
                     let transformedValue = !['Date', 'Number', 'Boolean'].includes(dataType!)
-                        ? `${prefix.toUpperCase()}${value.toString().toUpperCase()}${suffix.toUpperCase()}`
-                        : `${prefix.toUpperCase()}${value}${suffix.toUpperCase()}`
+                        ? `${prefix.toUpperCase()}${val.toString().toUpperCase()}${suffix.toUpperCase()}`
+                        : `${prefix.toUpperCase()}${val}${suffix.toUpperCase()}`
 
                     if (key === 'store_code') {
                         transformedValue = !['Date', 'Number', 'Boolean'].includes(dataType!)
-                            ? `${prefix}${value.toString()}${suffix}`
-                            : `${prefix}${value}${suffix}`
+                            ? `${prefix}${val.toString()}${suffix}`
+                            : `${prefix}${val}${suffix}`
                     }
-
-                    console.log('Transformed value is ', transformedValue)
-
                     return `${key}=${transformedValue}`
                 })
                 .filter(Boolean)
@@ -205,12 +203,8 @@ const ReportAnalytics = () => {
             const data = response?.data?.data
 
             const tab = Object.keys(data).map((key) => {
-                return {
-                    key,
-                    data: data[key],
-                }
+                return { key, data: data[key] }
             })
-
             setDynamicReportTable(tab)
             setShowTable(true)
         } catch (error: any) {
@@ -251,7 +245,7 @@ const ReportAnalytics = () => {
         }
         try {
             const response = await axioisInstance.get(
-                `/query/execute/${storeName}?${encodeURIComponent(reportParameters)}&download=true&query_name=${encodeURIComponent(queryName)}`,
+                `/query/execute/${storeName}?${reportParameters}&download=true&query_name=${queryName}`,
                 {
                     responseType: 'blob',
                 },

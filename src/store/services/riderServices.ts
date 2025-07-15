@@ -18,6 +18,7 @@ export const ridersService = RtkQueryService.injectEndpoints({
                         service_longitude: params.service_longitude,
                         shift_start_time: params.shift_start_time,
                         shift_end_time: params.shift_end_time,
+                        is_active: params.is_active,
                     },
                 }
             },

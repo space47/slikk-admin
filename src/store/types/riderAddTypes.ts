@@ -9,6 +9,7 @@ export type RiderAddTypes = {
     service_longitude?: number
     shift_start_time?: string
     shift_end_time?: string
+    is_active?: boolean
 }
 
 type UserType = {
