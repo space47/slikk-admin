@@ -12,6 +12,7 @@ import { RiderAddTypes } from '@/store/types/riderAddTypes'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { RiderDetailType, setRiderProfile } from '@/store/slices/riderDetails/riderDetails.slice'
+import { GenericCommonTypes } from '@/common/allTypesCommon'
 
 const AddRider = () => {
     const navigate = useNavigate()
@@ -20,6 +21,7 @@ const AddRider = () => {
     const [currLong, setCurrLong] = useState<number>(77.649326)
     const [selectedRider, setSelectedRider] = useState<string | number>()
     const [ridersData, riderDataResponse] = ridersService.useAddRidersMutation()
+    const [editRiders, riderEditResponse] = ridersService.useEditRidersMutation()
     const { riderProfile } = useAppSelector<RiderDetailType>((state) => state.riderDetails)
     const [isAddRider, setIsAddRider] = useState(false)
 
@@ -44,6 +46,8 @@ const AddRider = () => {
         shift_end_time: selectedRider && !isAddRider ? riderProfile[0]?.shift_end_time : '',
         rider_type: selectedRider && !isAddRider ? riderProfile[0]?.rider_type : '',
         is_active: selectedRider && !isAddRider ? riderProfile[0]?.is_active : false,
+        lat: riderProfile[0]?.service_latitude,
+        long: riderProfile[0]?.service_longitude,
     }
 
     useEffect(() => {
@@ -53,7 +57,13 @@ const AddRider = () => {
             })
             navigate(-1)
         }
-    }, [riderDataResponse?.isSuccess])
+        if (riderEditResponse?.isSuccess) {
+            notification.success({
+                message: riderEditResponse?.data?.success || 'Successfully Updated Rider',
+            })
+            // navigate(-1)
+        }
+    }, [riderDataResponse, riderEditResponse])
 
     useEffect(() => {
         setCurrLat(riderProfile[0]?.service_latitude)
@@ -61,35 +71,53 @@ const AddRider = () => {
     }, [riders, selectedRider, riderProfile])
 
     const handleSubmit = (values: RiderAddTypes) => {
+        if (!values?.mobile) {
+            notification.error({ message: 'Mobile is required' })
+        }
         if (values?.mobile) {
-            ridersData({
-                mobile: values?.mobile,
-                first_name: selectedRider && !isAddRider ? riderProfile[0].user?.first_name : values?.first_name,
-                last_name: values?.last_name,
-                rider_type: values?.rider_type,
-                service_latitude: currLat,
-                service_longitude: currLong,
-                shift_start_time: values?.shift_start_time,
-                shift_end_time: values?.shift_end_time,
-                is_active: values?.is_active || false,
-            })
-                .then(() => {})
-                .catch(() => {
-                    notification.error({
-                        message: 'Failed to add Rider',
-                    })
+            if (isAddRider) {
+                ridersData({
+                    mobile: values?.mobile,
+                    first_name: selectedRider && !isAddRider ? riderProfile[0].user?.first_name : values?.first_name,
+                    last_name: values?.last_name,
+                    rider_type: values?.rider_type,
+                    service_latitude: currLat,
+                    service_longitude: currLong,
+                    shift_start_time: values?.shift_start_time,
+                    shift_end_time: values?.shift_end_time,
+                    is_active: values?.is_active || false,
                 })
+                    .then(() => {})
+                    .catch(() => {
+                        notification.error({
+                            message: 'Failed to add Rider',
+                        })
+                    })
+            } else {
+                editRiders({
+                    mobile: values?.mobile,
+                    first_name: selectedRider && !isAddRider ? riderProfile[0].user?.first_name : values?.first_name,
+                    last_name: values?.last_name,
+                    rider_type: values?.rider_type,
+                    service_latitude: currLat,
+                    service_longitude: currLong,
+                    shift_start_time: values?.shift_start_time,
+                    shift_end_time: values?.shift_end_time,
+                    is_active: values?.is_active || false,
+                })
+                    .then(() => {})
+                    .catch(() => {
+                        notification.error({
+                            message: 'Failed to add Rider',
+                        })
+                    })
+            }
         }
     }
 
     return (
         <div>
-            <Formik
-                enableReinitialize
-                initialValues={initialValue}
-                // validationSchema={validationSchema}
-                onSubmit={handleSubmit}
-            >
+            <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                 {() => (
                     <Form className="w-full mx-auto p-6 bg-white rounded-lg shadow-md">
                         <FormContainer>
@@ -178,6 +206,24 @@ const AddRider = () => {
                             </FormContainer>
                             <div className="mt-8">
                                 <div className="text-xl font-bold mb-4 text-gray-700">ADD RIDER LOCATION</div>
+                                <div>
+                                    <div className="grid grid-cols-2 gap-2 mb-6">
+                                        <Input
+                                            name="lat"
+                                            type="number"
+                                            value={currLat}
+                                            placeholder="Enter latitude"
+                                            onChange={(e: GenericCommonTypes['InputEvent']) => setCurrLat(Number(e.target.value))}
+                                        />
+                                        <Input
+                                            name="long"
+                                            type="number"
+                                            value={currLong}
+                                            placeholder="Enter longitude"
+                                            onChange={(e: GenericCommonTypes['InputEvent']) => setCurrLong(Number(e.target.value))}
+                                        />
+                                    </div>
+                                </div>
                                 <AddRiderMap
                                     setMarkLat={setCurrLat ?? 0}
                                     setMarkLong={setCurrLong ?? 0}

@@ -226,7 +226,7 @@ const AddStore = () => {
 
     return (
         <div>
-            <div className="text-xl mb-10">Add SubCategory</div>
+            <div className="text-xl mb-10 font-bold">Add New Store</div>
             <Formik
                 enableReinitialize
                 initialValues={initialValue}
