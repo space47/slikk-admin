@@ -23,11 +23,13 @@ export type SalesOrderDetailsResponse = {
     latitude: number
     longitude: number
     distance: number
+    order_id: string
     payment?: {
         amount: number
         mode: string
         transaction_time: string
         status: string
+        gateway_transaction_id: string
     }
     coupon_discount: string
     delivery: string
