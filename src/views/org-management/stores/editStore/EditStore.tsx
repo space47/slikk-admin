@@ -281,7 +281,7 @@ const EditCustomerProfile = () => {
 
     return (
         <div>
-            <div className="text-xl mb-10 font-bold">Add Fullfillment Center</div>
+            <div className="text-xl mb-10 font-bold">Edit Fullfillment Center</div>
             <Formik
                 enableReinitialize
                 initialValues={initialValue}
