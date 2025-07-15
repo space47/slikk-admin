@@ -23,6 +23,44 @@ export const ridersService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
+        editRiders: builder.mutation<{ success: string }, RiderAddTypes>({
+            query: (params) => {
+                const parameters: Record<string, string | number | boolean> = {}
+                if (params.mobile) {
+                    parameters.mobile = params.mobile
+                }
+                if (params.first_name) {
+                    parameters.first_name = params.first_name
+                }
+                if (params.last_name) {
+                    parameters.last_name = params.last_name
+                }
+                if (params.rider_type) {
+                    parameters.rider_type = params.rider_type
+                }
+                if (params.service_latitude) {
+                    parameters.service_latitude = params.service_latitude
+                }
+                if (params.service_longitude) {
+                    parameters.service_longitude = params.service_longitude
+                }
+                if (params.shift_start_time) {
+                    parameters.shift_start_time = params.shift_start_time
+                }
+                if (params.shift_end_time) {
+                    parameters.shift_end_time = params.shift_end_time
+                }
+                if (typeof params.is_active === 'boolean') {
+                    parameters.is_active = params.is_active
+                }
+
+                return {
+                    url: `/rider/profile/${params.mobile}`,
+                    method: 'PATCH',
+                    body: parameters,
+                }
+            },
+        }),
         riderAttendance: builder.query<
             RiderAttendanceResponseType,
             { page?: number; pageSize?: number; from?: string; to?: string; mobile?: string | string[]; user_type?: string }
