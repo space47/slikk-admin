@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, FormContainer, FormItem, Input, Select } from '@/components/ui'
+import { Button, Checkbox, FormContainer, FormItem, Input, Select } from '@/components/ui'
 // import { ridersService } from '@/store/services/riderServices'
 import { Field, FieldProps, Form, Formik } from 'formik'
 import React, { useEffect, useState } from 'react'
@@ -43,6 +43,7 @@ const AddRider = () => {
         shift_start_time: selectedRider && !isAddRider ? riderProfile[0]?.shift_start_time : '',
         shift_end_time: selectedRider && !isAddRider ? riderProfile[0]?.shift_end_time : '',
         rider_type: selectedRider && !isAddRider ? riderProfile[0]?.rider_type : '',
+        is_active: selectedRider && !isAddRider ? riderProfile[0]?.is_active : false,
     }
 
     useEffect(() => {
@@ -70,6 +71,7 @@ const AddRider = () => {
                 service_longitude: currLong,
                 shift_start_time: values?.shift_start_time,
                 shift_end_time: values?.shift_end_time,
+                is_active: values?.is_active || false,
             })
                 .then(() => {})
                 .catch(() => {
@@ -143,9 +145,9 @@ const AddRider = () => {
                                             type={item.type}
                                             name={item.name}
                                             placeholder={`Enter ${item?.label}`}
-                                            component={Input}
+                                            component={item.type === 'checkbox' ? Checkbox : Input}
                                             maxLength={item?.name === 'mobile' ? 10 : undefined}
-                                            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full"
                                         />
                                     </FormItem>
                                 ))}

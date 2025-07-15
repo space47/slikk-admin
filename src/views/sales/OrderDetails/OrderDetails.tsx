@@ -307,6 +307,8 @@ const OrderDetails = () => {
                                             status={data.status}
                                             mainData={data}
                                             handlePODAction={handlePODAction}
+                                            order_id={data.order_id}
+                                            gateway_transaction_id={data?.payment?.gateway_transaction_id || 'N/A'}
                                         />
                                     </div>
 
