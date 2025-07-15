@@ -9,7 +9,7 @@ import { companyStore } from '@/store/types/companyStore.types'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
 import { Button, Dropdown, Pagination, Select } from '@/components/ui'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
-import { FaMapMarkedAlt } from 'react-icons/fa'
+import { FaDownload, FaMapMarkedAlt } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import RiderCheckinModal from './RiderCheckinModal'
 import { ridersService } from '@/store/services/riderServices'
@@ -142,6 +142,48 @@ const RiderDetails = () => {
 
         return distance1 - distance2
     })
+
+    const columnsForCsv = [
+        { header: 'Name', accessorKey: 'name' },
+        { header: 'Mobile', accessorKey: 'mobile' },
+        { header: 'Latitude', accessorKey: 'latitude' },
+        { header: 'Longitude', accessorKey: 'longitude' },
+    ]
+
+    const convertToCSV = (data: any[], columns: any[]) => {
+        const header = columns.map((col) => col.header).join(',')
+        const rows = data
+            .map((row) => {
+                return columns
+                    .map((col) => {
+                        if (col.accessorKey === 'name') {
+                            return `${row?.profile?.first_name} ${row?.profile?.last_name}`
+                        } else if (col.accessorKey === 'mobile') {
+                            return row.profile?.mobile
+                        } else if (col.accessorKey === 'latitude') {
+                            return row?.profile?.current_location?.latitude
+                        } else if (col.accessorKey === 'longitude') {
+                            return row?.profile?.current_location?.longitude
+                        } else {
+                            return ''
+                        }
+                    })
+                    .join(',')
+            })
+            .join('\n')
+        return `${header}\n${rows}`
+    }
+
+    const handleDownloadRiderCsv = () => {
+        const csvData = convertToCSV(sortedRiderDetails, columnsForCsv)
+        const blob = new Blob([csvData], { type: 'text/csv' })
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `riderData.csv`
+        a.click()
+        window.URL.revokeObjectURL(url)
+    }
 
     const columns = RiderColumns({ handleActiveCareer, hanldeProfileClick, currentStoreLocation })
 
@@ -297,7 +339,12 @@ const RiderDetails = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="font-bold text-xl mb-5 mt-5">Total Riders : {count}</div>
+                    <div className="flex justify-between items-center">
+                        <div className="font-bold text-xl mb-5 mt-5">Total Riders : {count}</div>
+                        <div onClick={handleDownloadRiderCsv}>
+                            <FaDownload className="text-xl cursor-pointer" />
+                        </div>
+                    </div>
                     <EasyTable mainData={sortedRiderDetails} columns={columns} />
                     <div className="flex justify-between items-center">
                         <Pagination
