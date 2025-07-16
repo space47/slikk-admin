@@ -32,15 +32,15 @@ import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import PageDraggavleTable from '../../pageSettings/PageDraggavleTable'
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { GenericCommonTypes } from '@/common/allTypesCommon'
 
 const NewPageSettingsTables = () => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
-    const [updatedPosition, setUpdatedPosition] = useState<{ [key: number]: number }>({})
     const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
-    const positionRef = useRef<{ [key: number]: HTMLInputElement | null }>({})
     const [showAddPageModal, setShowAddPageModal] = useState(false)
     const [showAddSubPageModal, setShowAddSubPageModal] = useState(false)
+    const [pageIdStore, setPageIdStore] = useState<number[]>([])
 
     useEffect(() => {
         dispatch(fetchCompanyStore())
@@ -50,13 +50,8 @@ const NewPageSettingsTables = () => {
         const storedPageName = sessionStorage.getItem('currentPageName')
         const storedSubPageName = sessionStorage.getItem('currentSubPageName')
 
-        if (storedPageName) {
-            dispatch(setCurrentPageName(JSON.parse(storedPageName)))
-        }
-
-        if (storedSubPageName) {
-            dispatch(setCurrentSubPageName(JSON.parse(storedSubPageName)))
-        }
+        if (storedPageName) dispatch(setCurrentPageName(JSON.parse(storedPageName)))
+        if (storedSubPageName) dispatch(setCurrentSubPageName(JSON.parse(storedSubPageName)))
     }, [dispatch])
 
     const { mainPageSettingsData, page, pageSize, count, currentPageName, currentSubPageName, storeCode, isActive } =
@@ -89,24 +84,16 @@ const NewPageSettingsTables = () => {
     })
 
     useEffect(() => {
-        if (currentPageName) {
-            sessionStorage.setItem('currentPageName', JSON.stringify(currentPageName))
-        }
-        if (currentSubPageName) {
-            sessionStorage.setItem('currentSubPageName', JSON.stringify(currentSubPageName))
-        }
+        if (currentPageName) sessionStorage.setItem('currentPageName', JSON.stringify(currentPageName))
+        if (currentSubPageName) sessionStorage.setItem('currentSubPageName', JSON.stringify(currentSubPageName))
     }, [currentPageName, currentSubPageName])
 
     useEffect(() => {
-        if (isPageNamesSuccess) {
-            dispatch(setPageNamesData(pageNames?.data?.results || []))
-        }
+        if (isPageNamesSuccess) dispatch(setPageNamesData(pageNames?.data?.results || []))
     }, [dispatch, pageNames, isPageNamesSuccess])
 
     useEffect(() => {
-        if (isSubPageNamesSuccess) {
-            dispatch(setSubPageNamesData(SubPageNames?.data || []))
-        }
+        if (isSubPageNamesSuccess) dispatch(setSubPageNamesData(SubPageNames?.data || []))
     }, [dispatch, SubPageNames, isSubPageNamesSuccess])
 
     useEffect(() => {
@@ -125,43 +112,16 @@ const NewPageSettingsTables = () => {
         setMainPageSettingsData,
     })
 
-    const handlePositionChange = (id: number, newQuantity: number) => {
-        setUpdatedPosition((prevQuantity) => {
-            if (prevQuantity[id] === newQuantity) return prevQuantity
-            return { ...prevQuantity, [id]: newQuantity }
-        })
-        setTimeout(() => {
-            positionRef.current[id]?.focus()
-        }, 0)
-    }
-
-    const handleUpdate = async (e: React.KeyboardEvent<HTMLInputElement>, id: number) => {
-        if (e.key === 'Enter') {
-            e.preventDefault()
-            try {
-                const res = await axioisInstance.patch(`/page-sections/${id}`, { position: updatedPosition[id] })
-                notification.success({ message: res?.data?.data?.message || 'Updated position' })
-            } catch (error) {
-                if (error instanceof AxiosError) {
-                    notification.error(error?.response?.data?.message || 'Failed to update position')
-                }
-            }
-        }
-    }
-
     const handleGoToBanner = (sectionHeading: string) => {
         navigate('/app/appSettings/banners', { state: { var1: currentPageName?.label, var2: sectionHeading } })
     }
 
     const handlePageUpdate = async () => {
         const allRowsData = table.getRowModel().rows
-        console.log(allRowsData)
-
         const body = allRowsData?.map((item) => ({
             id: item?.original?.id,
             position: (page! - 1) * pageSize! + item.index + 1,
         }))
-        console.log('object', body)
         try {
             const res = await axioisInstance.post('/page-section-bulk/update', body)
             notification.success({ message: res.data?.data?.message || 'Updated bulk position' })
@@ -171,14 +131,52 @@ const NewPageSettingsTables = () => {
             }
         }
     }
+    const handleMarkInactive = async () => {
+        const body = pageIdStore?.map((item) => ({
+            id: item,
+            is_active: false,
+        }))
+        try {
+            const res = await axioisInstance.post('/page-section-bulk/update', body)
+            notification.success({ message: res.data?.data?.message || 'Made inactive' })
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                notification.error({ message: error?.response?.data?.message || 'Failed to make inactive' })
+            }
+        }
+    }
 
-    const columns = usePageSettingsColumns({ handleGoToBanner, positionRef, handlePositionChange, updatedPosition, handleUpdate })
+    const handleSelectAllBanners = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.checked) {
+            const allIds = mainPageSettingsData?.map((item) => item?.id)
+            console.log('all ids are', allIds)
+            setPageIdStore(allIds)
+        } else {
+            setPageIdStore([])
+        }
+    }
 
-    const table = useReactTable({
-        data: mainPageSettingsData,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
+    const handleSelectPageId = (id: number, isChecked: boolean) => {
+        setPageIdStore((prev) => {
+            if (isChecked) {
+                return [...prev, id]
+            } else {
+                return prev.filter((item) => item !== id)
+            }
+        })
+    }
+
+    const columns = usePageSettingsColumns({
+        handleGoToBanner,
+        mainPageSettingsData,
+        pageIdStore,
+        handleSelectAllBanners,
+        handleSelectPageId,
     })
+
+    console.log('page data', pageIdStore)
+
+    const table = useReactTable({ data: mainPageSettingsData, columns, getCoreRowModel: getCoreRowModel() })
 
     if (isLoading) {
         return <LoadingSpinner />
@@ -190,7 +188,7 @@ const NewPageSettingsTables = () => {
                 <div className="flex gap-3">
                     <div className=" gap-3 mb-7">
                         <div className="font-bold">Pages</div>
-                        <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px]">
+                        <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px] mt-1">
                             <Dropdown
                                 className="border bg-gray-200 text-black text-lg font-semibold"
                                 title={currentPageName?.label}
@@ -213,7 +211,7 @@ const NewPageSettingsTables = () => {
                     </div>
                     <div className=" gap-3 mb-7">
                         <div className="font-bold">Sub Pages</div>
-                        <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px]">
+                        <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px] mt-1">
                             <Dropdown
                                 className="border bg-gray-200 text-black text-lg font-semibold"
                                 title={currentSubPageName?.label || 'SELECT'}
@@ -225,6 +223,20 @@ const NewPageSettingsTables = () => {
                                     </DropdownItem>
                                 ))}
                                 <div
+                                    className="flex items-center justify-center mt-2 bg-gray-50 text-red-600 p-2
+                             hover:bg-gray-100 hover:text-red-500 cursor-pointer"
+                                    onClick={() =>
+                                        dispatch(
+                                            setCurrentSubPageName({
+                                                label: '',
+                                                value: null,
+                                            }),
+                                        )
+                                    }
+                                >
+                                    Clear
+                                </div>
+                                <div
                                     className="flex items-center justify-center mt-2 bg-gray-50 text-green-600 p-2
                              hover:bg-gray-100 hover:text-green-500 cursor-pointer"
                                     onClick={() => setShowAddSubPageModal(true)}
@@ -235,7 +247,7 @@ const NewPageSettingsTables = () => {
                         </div>
                     </div>
                     <div>
-                        <div>Select Store</div>
+                        <div className="font-bold">Select Store</div>
                         <Select
                             isMulti
                             className="w-full"
@@ -249,12 +261,33 @@ const NewPageSettingsTables = () => {
                         />
                     </div>
                 </div>
-                <div className="flex gap-2">
-                    <Button type="button" variant="accept" onClick={handlePageUpdate}>
+                <div className="grid grid-cols-2 gap-2 xl:flex ">
+                    {pageIdStore.length > 0 && (
+                        <Button type="button" variant="new" size="sm" onClick={handleMarkInactive}>
+                            Mark Inactive
+                        </Button>
+                    )}
+                    <Button type="button" variant="new" size="sm" onClick={handlePageUpdate}>
                         Update Page
                     </Button>
-                    <Button type="button" variant="new" onClick={() => navigate(`/app/appSettings/newPageSettings/addNew`)}>
+                    <Button type="button" variant="new" size="sm" onClick={() => navigate(`/app/appSettings/newPageSettings/addNew`)}>
                         New Section
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="new"
+                        size="sm"
+                        onClick={() =>
+                            navigate(`/app/appSettings/newPageSettings/assignSection`, {
+                                state: {
+                                    pageState: currentPageName?.label,
+                                    subPageState: currentSubPageName?.label,
+                                    storeState: storeCode,
+                                },
+                            })
+                        }
+                    >
+                        New Page Section
                     </Button>
                 </div>
             </div>

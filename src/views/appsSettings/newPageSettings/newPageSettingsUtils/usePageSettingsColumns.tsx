@@ -8,16 +8,48 @@ import { useNavigate } from 'react-router-dom'
 
 interface props {
     handleGoToBanner: any
-    positionRef: any
-    handlePositionChange: any
-    updatedPosition: any
-    handleUpdate: any
+    mainPageSettingsData: any
+    pageIdStore: any
+    handleSelectAllBanners: any
+    handleSelectPageId: any
 }
 
-export const usePageSettingsColumns = ({ handleGoToBanner, positionRef, handlePositionChange, updatedPosition, handleUpdate }: props) => {
+export const usePageSettingsColumns = ({
+    handleGoToBanner,
+    mainPageSettingsData,
+    pageIdStore,
+    handleSelectAllBanners,
+    handleSelectPageId,
+}: props) => {
     const navigate = useNavigate()
     return useMemo(
         () => [
+            {
+                header: (
+                    <div className="flex flex-col gap-2 items-center justify-center">
+                        <input
+                            type="checkbox"
+                            name="selectAll"
+                            checked={mainPageSettingsData?.length > 0 && pageIdStore?.length === mainPageSettingsData?.length}
+                            onChange={handleSelectAllBanners}
+                        />
+                    </div>
+                ),
+                accessorKey: 'id',
+                cell: ({ row }: { row: { original: any } }) => {
+                    const pageId = row.original.id
+                    return (
+                        <div className="flex items-center justify-center">
+                            <input
+                                type="checkbox"
+                                name="pageId"
+                                checked={pageIdStore.includes(pageId)}
+                                onChange={(e) => handleSelectPageId(pageId, e.target.checked)}
+                            />
+                        </div>
+                    )
+                },
+            },
             {
                 header: 'Edit',
                 accessorKey: '',
@@ -116,6 +148,6 @@ export const usePageSettingsColumns = ({ handleGoToBanner, positionRef, handlePo
                 ),
             },
         ],
-        [positionRef, updatedPosition],
+        [mainPageSettingsData, pageIdStore],
     )
 }
