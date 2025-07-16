@@ -24,6 +24,7 @@ const AddPageSettings = () => {
             await PageSettingsBodyFile({
                 values,
             })
+        console.log('here')
         const body = {
             ...values,
             component_config: componentConfig,
@@ -37,6 +38,7 @@ const AddPageSettings = () => {
                     ...(values?.extra_info?.timeout ? { timeout: values?.extra_info?.timeout } : {}),
                     ...(values?.extra_info?.page_size ? { page_size: values?.extra_info?.page_size } : {}),
                     ...(values?.extra_info?.child_data_type && { child_data_type: values?.extra_info?.child_data_type }),
+                    ...(values?.extra_info?.is_product_filter && { is_product_filter: values?.extra_info?.is_product_filter }),
                     cta_config: cta_config,
                     child_component_config: child_component_config,
                 }).filter(([, value]) => value !== ''),
@@ -70,6 +72,8 @@ const AddPageSettings = () => {
             },
         }
         const filteredBody = Object.fromEntries(Object.entries(body || {}).filter(([, value]) => value !== undefined))
+
+        console.log('filtered body', filteredBody)
 
         try {
             const response = await axioisInstance.post(`/section`, filteredBody)

@@ -78,9 +78,6 @@ const NewPageCommonForms = ({
                 <FormItem label="Product Filter" className="col-span-1 w-[60%] h-[80%]">
                     <Field type="checkbox" name="extra_info.is_product_filter" placeholder="" component={Checkbox} />
                 </FormItem>
-                <FormItem label="Is Section Active" className="col-span-1 w-[60%] h-[80%]">
-                    <Field type="checkbox" name="is_section_active" placeholder="" component={Checkbox} />
-                </FormItem>
             </FormContainer>
 
             <Tabs>

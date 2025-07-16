@@ -75,6 +75,7 @@ const EditPageSettings = () => {
                     : {}),
                 ...(!(values?.data_type?.validation > 0) && values?.data_type?.end_date ? { end_date: values?.data_type?.end_date } : {}),
                 ...(values?.data_type?.validation > 0 ? { duration: values?.data_type?.validation } : {}),
+                ...(values?.extra_info?.is_product_filter && { is_product_filter: values?.extra_info?.is_product_filter }),
                 ...(Array.isArray(barcodeData)
                     ? { barcodes: barcodeData.join(',') }
                     : values?.data_type?.barcodes
