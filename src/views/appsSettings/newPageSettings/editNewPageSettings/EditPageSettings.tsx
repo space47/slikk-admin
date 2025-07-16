@@ -5,18 +5,21 @@ import { Button, FormContainer, FormItem } from '@/components/ui'
 import { pageSettingsType } from '@/store/types/pageSettings.types'
 import { Form, Formik } from 'formik'
 import React, { useEffect, useMemo, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import { InitialValuesEdit } from '../newPageSettingsUtils/newpageConstants'
 import NewPageCommonForms from '../newPageSettingsUtils/NewPageCommonForms'
 import { PageSettingsBodyFile } from '../newPageSettingsUtils/usePageSettingsBodyFile'
 import { AxiosError } from 'axios'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { useFetchApi } from '@/commonHooks/useFetchApi'
 
 const EditPageSettings = () => {
     const { section_id } = useParams()
     const [filterId, setFilterId] = useState<any>()
     const [barcodeData, setBarcodeData] = useState<any>()
+    const location = useLocation()
+    const { pageState } = location.state || {}
 
     const queryParams =
         useMemo(() => {
@@ -29,12 +32,24 @@ const EditPageSettings = () => {
     const { data: pageSettingsData } = useFetchSingleData<pageSettingsType>({ url: queryParams })
     const [initialValue, setInitialValue] = useState<pageSettingsType>()
 
+    const query = useMemo(() => {
+        let page = ''
+        if (pageState) {
+            page = pageState
+        }
+        return `banners?p=1&page_size=1000&page=${page}`
+    }, [])
+
+    const { data: bannerDetails } = useFetchApi<any>({ url: query })
+
+    const bannerData = bannerDetails?.filter((item) => pageSettingsData?.banners?.includes(item.id))
+
     useEffect(() => {
         const editedValues = InitialValuesEdit(pageSettingsData) as pageSettingsType
         const filters = editedValues?.data_type?.filters || []
         const filterId = filters.find((item: string) => item.includes('filterID_'))?.split('_')[1]
         const division = filters.find((item: string) => item.includes('division'))?.split('_')[1]
-        setInitialValue({ ...editedValues, division_select: division })
+        setInitialValue({ ...editedValues, division_select: division, banners: bannerData })
         setBarcodeData(editedValues?.data_type?.barcodes)
         setFilterId(filterId)
     }, [pageSettingsData])
@@ -47,6 +62,7 @@ const EditPageSettings = () => {
             })
         const body = {
             ...values,
+            banners: values?.banners?.map((item: any) => item?.id),
             component_config: componentConfig,
             background_config: backgroundConfig,
             footer_config: footerConfig,
@@ -63,7 +79,6 @@ const EditPageSettings = () => {
                     child_component_config: child_component_config,
                 }).filter(([, value]) => value !== ''),
             ),
-            banners: [],
             data_type: {
                 ...(() => {
                     const { start_date, end_date, validation, ...rest } = values?.data_type || {}
@@ -108,6 +123,7 @@ const EditPageSettings = () => {
                     return (
                         <Form>
                             <NewPageCommonForms
+                                bannerDetails={bannerDetails}
                                 isEdit
                                 values={values}
                                 initialValue={initialValue as pageSettingsType}

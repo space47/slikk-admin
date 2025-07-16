@@ -4,6 +4,7 @@ export interface pageSettingsType {
     section_heading: string
     display_name: string
     is_active: string
+    banners: any[]
     component_type: string
     data_type: Record<string, string | number | [] | any>
     component_config: Record<string, string | number>

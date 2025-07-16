@@ -1,18 +1,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, FormContainer, FormItem } from '@/components/ui'
 import { Form, Formik } from 'formik'
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import NewPageCommonForms from '../newPageSettingsUtils/NewPageCommonForms'
 import { PageSettingsBodyFile } from '../newPageSettingsUtils/usePageSettingsBodyFile'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { AxiosError } from 'axios'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useFetchApi } from '@/commonHooks/useFetchApi'
 
 const AddPageSettings = () => {
     const navigate = useNavigate()
     const [filterId, setFilterId] = useState<any>()
     const [barcodeData, setBarcodeData] = useState<any>()
+    const location = useLocation()
+    const { pageState } = location.state || {}
+
+    const query = useMemo(() => {
+        let page = ''
+        if (pageState) {
+            page = pageState
+        }
+        return `banners?p=1&page_size=1000&page=${page}`
+    }, [])
+
+    const { data: bannerDetails } = useFetchApi<any>({ url: query })
 
     const handleSubmit = async (values: any) => {
         if (!values?.section_heading) {
@@ -29,6 +42,7 @@ const AddPageSettings = () => {
         console.log('here')
         const body = {
             ...values,
+            banners: values?.banners?.map((item: any) => item?.id),
             component_config: componentConfig,
             background_config: backgroundConfig,
             footer_config: footerConfig,
@@ -46,7 +60,7 @@ const AddPageSettings = () => {
                     child_component_config: child_component_config,
                 }).filter(([, value]) => value !== ''),
             ),
-            banners: [],
+
             data_type: {
                 ...(() => {
                     const { start_date, end_date, validation, ...rest } = values?.data_type || {}
@@ -97,6 +111,7 @@ const AddPageSettings = () => {
                         <Form>
                             <div className="text-xl mb-2">1. Create New Sections</div>
                             <NewPageCommonForms
+                                bannerDetails={bannerDetails}
                                 values={values}
                                 setFilterId={setFilterId}
                                 filterId={filterId}

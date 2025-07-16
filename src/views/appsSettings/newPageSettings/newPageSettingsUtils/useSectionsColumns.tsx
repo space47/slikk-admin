@@ -12,18 +12,18 @@ export const useSectionsColumns = () => {
     const navigate = useNavigate()
     return useMemo(
         () => [
-            {
-                header: 'Edit',
-                accessorKey: '',
-                cell: ({ row }: any) => (
-                    <button
-                        className="border-none bg-none"
-                        onClick={() => navigate(`/app/appSettings/newPageSettings/edit/${row?.original?.id}`)}
-                    >
-                        <FaEdit className="text-xl text-blue-600" />
-                    </button>
-                ),
-            },
+            // {
+            //     header: 'Edit',
+            //     accessorKey: '',
+            //     cell: ({ row }: any) => (
+            //         <button
+            //             className="border-none bg-none"
+            //             onClick={() => navigate(`/app/appSettings/newPageSettings/edit/${row?.original?.id}`)}
+            //         >
+            //             <FaEdit className="text-xl text-blue-600" />
+            //         </button>
+            //     ),
+            // },
 
             {
                 header: 'Section Heading',

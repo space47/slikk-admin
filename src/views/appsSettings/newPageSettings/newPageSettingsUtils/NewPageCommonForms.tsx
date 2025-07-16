@@ -23,6 +23,7 @@ interface props {
     setFilterId?: any
     setBarcodeData?: any
     barcodeData?: any
+    bannerDetails: any[]
 }
 
 const NewPageCommonForms = ({
@@ -35,6 +36,7 @@ const NewPageCommonForms = ({
     setFilterId,
     setBarcodeData,
     barcodeData,
+    bannerDetails,
 }: props) => {
     console.log('initial Value in main form', initialValue)
     return (
@@ -60,6 +62,30 @@ const NewPageCommonForms = ({
             </FormItem>
 
             <FormContainer className="grid grid-cols-2 gap-2">
+                <FormItem label="Banners">
+                    <Field name="banners">
+                        {({ form, field }: FieldProps) => {
+                            const selectedStores = bannerDetails?.filter((option) =>
+                                field?.value?.some((store: any) => store?.id === option.id),
+                            )
+                            return (
+                                <div className="flex flex-col gap-1  xl:items-baseline w-full max-w-md">
+                                    <Select
+                                        isMulti
+                                        className="w-full"
+                                        options={bannerDetails}
+                                        getOptionLabel={(option) => option.name}
+                                        getOptionValue={(option) => option.id}
+                                        value={selectedStores || null}
+                                        onChange={(newVal) => {
+                                            form.setFieldValue(field.name, newVal)
+                                        }}
+                                    />
+                                </div>
+                            )
+                        }}
+                    </Field>
+                </FormItem>
                 {FormFieldsArray?.map((item, key) => {
                     return (
                         <FormItem key={key} label={item?.label}>

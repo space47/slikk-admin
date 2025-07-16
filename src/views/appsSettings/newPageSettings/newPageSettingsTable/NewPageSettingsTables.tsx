@@ -167,6 +167,7 @@ const NewPageSettingsTables = () => {
     }
 
     const columns = usePageSettingsColumns({
+        currentPageName,
         handleGoToBanner,
         mainPageSettingsData,
         pageIdStore,
@@ -270,7 +271,18 @@ const NewPageSettingsTables = () => {
                     <Button type="button" variant="new" size="sm" onClick={handlePageUpdate}>
                         Update Page
                     </Button>
-                    <Button type="button" variant="new" size="sm" onClick={() => navigate(`/app/appSettings/newPageSettings/addNew`)}>
+                    <Button
+                        type="button"
+                        variant="new"
+                        size="sm"
+                        onClick={() =>
+                            navigate(`/app/appSettings/newPageSettings/addNew`, {
+                                state: {
+                                    pageState: currentPageName?.label,
+                                },
+                            })
+                        }
+                    >
                         New Section
                     </Button>
                     {/* <Button

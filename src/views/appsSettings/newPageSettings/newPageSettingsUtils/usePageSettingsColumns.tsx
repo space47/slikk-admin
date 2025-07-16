@@ -12,6 +12,12 @@ interface props {
     pageIdStore: any
     handleSelectAllBanners: any
     handleSelectPageId: any
+    currentPageName?:
+        | {
+              label: string
+              value: number | null
+          }
+        | undefined
 }
 
 export const usePageSettingsColumns = ({
@@ -20,6 +26,7 @@ export const usePageSettingsColumns = ({
     pageIdStore,
     handleSelectAllBanners,
     handleSelectPageId,
+    currentPageName,
 }: props) => {
     const navigate = useNavigate()
     return useMemo(
@@ -56,7 +63,13 @@ export const usePageSettingsColumns = ({
                 cell: ({ row }: any) => (
                     <button
                         className="border-none bg-none"
-                        onClick={() => navigate(`/app/appSettings/newPageSettings/edit/${row?.original?.section?.id}`)}
+                        onClick={() =>
+                            navigate(`/app/appSettings/newPageSettings/edit/${row?.original?.section?.id}`, {
+                                state: {
+                                    pageState: currentPageName?.label,
+                                },
+                            })
+                        }
                     >
                         <Tooltip title="Edit the section related to this page sections">
                             <FaEdit className="text-xl text-blue-600" />
