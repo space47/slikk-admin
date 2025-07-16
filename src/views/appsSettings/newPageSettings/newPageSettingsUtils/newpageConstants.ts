@@ -68,7 +68,7 @@ export const ALIGNVALUES = [
     },
 ]
 
-export const InitialValuesEdit = (data: pageSettingsType | undefined, bannerData: any[]) => {
+export const InitialValuesEdit = (data: pageSettingsType | undefined) => {
     return {
         section_heading: data?.section_heading ?? '',
         display_name: data?.display_name ?? '',
@@ -86,7 +86,6 @@ export const InitialValuesEdit = (data: pageSettingsType | undefined, bannerData
         last_updated_by: data?.last_updated_by ?? '',
         created_at: data?.created_at ?? '',
         updated_at: data?.updated_at ?? '',
-        banners: bannerData,
     }
 }
 
