@@ -42,9 +42,9 @@ const EditPageSettings = () => {
 
     const { data: bannerDetails } = useFetchApi<any>({ url: query })
 
-    const bannerData = bannerDetails?.filter((item) => pageSettingsData?.banners?.includes(item.id))
-
     useEffect(() => {
+        const bannerData = bannerDetails?.filter((item) => pageSettingsData?.banners?.includes(item.id))
+        console.log('banner data', bannerData)
         const editedValues = InitialValuesEdit(pageSettingsData) as pageSettingsType
         const filters = editedValues?.data_type?.filters || []
         const filterId = filters.find((item: string) => item.includes('filterID_'))?.split('_')[1]
@@ -52,7 +52,7 @@ const EditPageSettings = () => {
         setInitialValue({ ...editedValues, division_select: division, banners: bannerData })
         setBarcodeData(editedValues?.data_type?.barcodes)
         setFilterId(filterId)
-    }, [pageSettingsData])
+    }, [pageSettingsData, bannerDetails])
 
     const handleSubmit = async (values: any) => {
         const { componentConfig, backgroundConfig, footerConfig, headerConfig, subHeaderConfig, child_component_config, cta_config } =
