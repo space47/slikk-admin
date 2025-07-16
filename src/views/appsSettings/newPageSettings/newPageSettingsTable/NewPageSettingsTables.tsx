@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, Dropdown, Pagination, Select } from '@/components/ui'
+import { Button, Dropdown, Pagination, Select, Tabs } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { pageSettingsService } from '@/store/services/pageSettingService'
 import React, { useEffect, useRef, useState } from 'react'
@@ -22,12 +22,15 @@ import {
     setCurrentPageName,
     setCurrentSubPageName,
     setStoreCode,
+    setIsActive,
 } from '@/store/slices/mainPageSettings/mainPageSettingsSlice'
 import { AxiosError } from 'axios'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { companyStore } from '@/store/types/companyStore.types'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
+import TabList from '@/components/ui/Tabs/TabList'
+import TabNav from '@/components/ui/Tabs/TabNav'
 
 const NewPageSettingsTables = () => {
     const navigate = useNavigate()
@@ -55,7 +58,7 @@ const NewPageSettingsTables = () => {
         }
     }, [dispatch])
 
-    const { mainPageSettingsData, page, pageSize, count, currentPageName, currentSubPageName, storeCode } =
+    const { mainPageSettingsData, page, pageSize, count, currentPageName, currentSubPageName, storeCode, isActive } =
         useAppSelector<mainPageSettingsRequiredType>((state) => state.pageSettingsMain)
 
     const { pageForName, pageNamesData, pageSizeForName, subPageNamesData } = useAppSelector<pageNamesRequiredType>(
@@ -71,7 +74,8 @@ const NewPageSettingsTables = () => {
         pageSize,
         pageId: currentPageName?.label,
         sub_page: currentSubPageName?.label,
-        store_code: storeCode?.map((item) => item.id),
+        store_code: storeCode?.map((item) => item.id) || [],
+        is_active: isActive || 'true',
     })
 
     const { data: pageNames, isSuccess: isPageNamesSuccess } = pageSettingsService.usePageNamesQuery({
@@ -161,6 +165,8 @@ const NewPageSettingsTables = () => {
         navigate('/app/appSettings/banners', { state: { var1: currentPageName?.label, var2: sectionHeading } })
     }
 
+    console.log('is active', isActive)
+
     const columns = usePageSettingsColumns({ handleGoToBanner, positionRef, handlePositionChange, updatedPosition, handleUpdate })
     if (isLoading) {
         return <LoadingSpinner />
@@ -236,6 +242,25 @@ const NewPageSettingsTables = () => {
                         New Section
                     </Button>
                 </div>
+            </div>
+            <div>
+                {/* Tabs */}
+                <Tabs value="true" onChange={(e: string) => dispatch(setIsActive(e))}>
+                    <TabList className="flex items-center justify-start gap-4 bg-gray-50  shadow-md p-3 mb-10">
+                        <TabNav
+                            value="true"
+                            className="relative px-4 py-2 text-sm sm:text-base font-semibold text-gray-700 rounded-xl transition-all duration-300 hover:text-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-400"
+                        >
+                            Active
+                        </TabNav>
+                        <TabNav
+                            value="false"
+                            className="relative px-4 py-2 text-sm sm:text-base font-semibold text-gray-700 rounded-xl transition-all duration-300 hover:text-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-400"
+                        >
+                            InActive
+                        </TabNav>
+                    </TabList>
+                </Tabs>
             </div>
             <div>
                 <EasyTable overflow mainData={mainPageSettingsData || []} columns={columns} page={page} pageSize={pageSize} />

@@ -13,6 +13,7 @@ export interface mainPageSettingsRequiredType {
         value: number | null
     }
     storeCode?: { id: number; code: string; name: string }[]
+    isActive?: string
 }
 
 const initialState: mainPageSettingsRequiredType = {
@@ -23,6 +24,7 @@ const initialState: mainPageSettingsRequiredType = {
     currentPageName: { label: 'Home', value: 1 },
     currentSubPageName: { label: '', value: null },
     storeCode: [],
+    isActive: 'true',
 }
 
 const pageSettingsSliceMain = createSlice({
@@ -31,6 +33,9 @@ const pageSettingsSliceMain = createSlice({
     reducers: {
         setMainPageSettingsData: (state, action: PayloadAction<mainPageSettings[]>) => {
             state.mainPageSettingsData = action.payload
+        },
+        setIsActive: (state, action: PayloadAction<string>) => {
+            state.isActive = action.payload
         },
         setCount: (state, action: PayloadAction<number>) => {
             state.count = action.payload
@@ -53,6 +58,14 @@ const pageSettingsSliceMain = createSlice({
     },
 })
 
-export const { setMainPageSettingsData, setPage, setPageSize, setCount, setCurrentPageName, setCurrentSubPageName, setStoreCode } =
-    pageSettingsSliceMain.actions
+export const {
+    setMainPageSettingsData,
+    setPage,
+    setPageSize,
+    setCount,
+    setCurrentPageName,
+    setCurrentSubPageName,
+    setStoreCode,
+    setIsActive,
+} = pageSettingsSliceMain.actions
 export default pageSettingsSliceMain.reducer
