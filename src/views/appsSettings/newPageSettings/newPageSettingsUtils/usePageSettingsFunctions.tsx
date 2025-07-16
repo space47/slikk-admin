@@ -42,6 +42,7 @@ export const usePageSettingsFunctions = ({
     }
 
     const reorderData = (startIndex: number, endIndex: number) => {
+        console.log('here in reorder')
         const newData = [...(mainPageSettingsData || [])]
         const [movedRow] = newData.splice(startIndex, 1)
         newData.splice(endIndex, 0, movedRow)
@@ -49,6 +50,7 @@ export const usePageSettingsFunctions = ({
     }
 
     const handleDragEnd = (result: DropResult) => {
+        console.log('here in end')
         const { source, destination } = result
         if (destination) reorderData(source.index, destination.index)
     }

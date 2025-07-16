@@ -31,6 +31,8 @@ import { companyStore } from '@/store/types/companyStore.types'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
+import PageDraggavleTable from '../../pageSettings/PageDraggavleTable'
+import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
 
 const NewPageSettingsTables = () => {
     const navigate = useNavigate()
@@ -97,19 +99,6 @@ const NewPageSettingsTables = () => {
     }, [currentPageName, currentSubPageName])
 
     useEffect(() => {
-        const storedPageName = sessionStorage.getItem('currentPageName')
-        const storedSubPageName = sessionStorage.getItem('currentSubPageName')
-
-        if (storedPageName) {
-            setCurrentPageName(JSON.parse(storedPageName))
-        }
-
-        if (storedSubPageName) {
-            setCurrentSubPageName(JSON.parse(storedSubPageName))
-        }
-    }, [dispatch])
-
-    useEffect(() => {
         if (isPageNamesSuccess) {
             dispatch(setPageNamesData(pageNames?.data?.results || []))
         }
@@ -126,9 +115,9 @@ const NewPageSettingsTables = () => {
             dispatch(setMainPageSettingsData(pageSettingsMain?.data?.results || []))
             dispatch(setCount(pageSettingsMain?.data?.count || 0))
         }
-    }, [dispatch, pageSettingsMain, isSuccess, currentPageName, currentSubPageName])
+    }, [dispatch, isSuccess, currentPageName, currentSubPageName])
 
-    const { handleSelectPage, handleSelectSubPage, BANNER_PAGE, SUB_PAGE } = usePageSettingsFunctions({
+    const { handleSelectPage, handleSelectSubPage, BANNER_PAGE, SUB_PAGE, handleDragEnd } = usePageSettingsFunctions({
         pageNamesData,
         subPageNamesData,
         mainPageSettingsData,
@@ -165,9 +154,16 @@ const NewPageSettingsTables = () => {
         navigate('/app/appSettings/banners', { state: { var1: currentPageName?.label, var2: sectionHeading } })
     }
 
-    console.log('is active', isActive)
-
     const columns = usePageSettingsColumns({ handleGoToBanner, positionRef, handlePositionChange, updatedPosition, handleUpdate })
+
+    const sortedData = [...mainPageSettingsData].sort((a, b) => a.position - b.position)
+
+    const table = useReactTable({
+        data: sortedData,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+    })
+
     if (isLoading) {
         return <LoadingSpinner />
     }
@@ -262,8 +258,11 @@ const NewPageSettingsTables = () => {
                     </TabList>
                 </Tabs>
             </div>
-            <div>
+            {/* <div>
                 <EasyTable overflow mainData={mainPageSettingsData || []} columns={columns} page={page} pageSize={pageSize} />
+            </div> */}
+            <div className="border border-gray-200 p-2 rounded-lg">
+                <PageDraggavleTable table={table} handleDragEnd={handleDragEnd} />
             </div>
             <div className="flex justify-between mt-10">
                 <div>
