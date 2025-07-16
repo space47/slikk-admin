@@ -260,7 +260,7 @@ const NewPageSettingsTables = () => {
             </div>
             <div>
                 {/* Tabs */}
-                <Tabs onChange={(e: string) => dispatch(setIsActive(e))}>
+                <Tabs defaultValue="true" onChange={(e: string) => dispatch(setIsActive(e))}>
                     <TabList className="flex items-center justify-start gap-4 bg-gray-50  shadow-md p-3 mb-10">
                         <TabNav
                             value="true"
