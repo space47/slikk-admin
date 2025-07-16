@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { handleimage } from '@/common/handleImage'
-import { EditAspectRatios, EditImageUploads, EditVideoUpload } from '../../pageSettings/pageSettingsUtils/pageEditFunctions'
+import { calculateAspectRatio, handleImage, handleVideo } from '../../pageSettings/pageSettingsUtils/pageEditFunctions'
 
 interface props {
     values?: any
@@ -19,22 +19,27 @@ export const PageSettingsBodyFile = async ({ values, initialValue }: props) => {
         ? await handleimage('product', values?.mobile_background_lottie_array)
         : initialValue?.mobile_background_lottie
 
-    const { imageUpload, mobileimageUpload, footerImageUpload, headerImageUpload, subHeaderImageUpload, headerIconUpload } =
-        await EditImageUploads(values)
+    const footervideoUpload = (await handleVideo(values?.footer_config_video_Array)) || ''
+    const headerVideoUpload = (await handleVideo(values?.header_config_video_Array)) || ''
+    const subHeaderVideoUpload = (await handleVideo(values?.sub_header_config_video_Array)) || ''
+    const backgroundVideoUpload = (await handleVideo(values?.background_video_array)) || ''
+    const mobileBackgroundVideoUpload = (await handleVideo(values?.mobile_background_video_array)) || ''
 
-    const { backgroundVideoUpload, footervideoUpload, headerVideoUpload, mobileBackgroundVideoUpload, subHeaderVideoUpload } =
-        await EditVideoUpload(values)
+    const imageUpload = (await handleImage(values?.background_image_array)) || ''
+    const mobileimageUpload = (await handleImage(values?.mobile_background_array)) || ''
+    const footerImageUpload = (await handleImage(values?.footer_config_image_Array)) || ''
+    const headerImageUpload = (await handleImage(values?.header_config_image_Array)) || ''
+    const subHeaderImageUpload = (await handleImage(values?.sub_header_config_image_Array)) || ''
+    const headerIconUpload = (await handleImage(values?.header_config_icon_Array)) || ''
 
-    const {
-        backgroundImageAspectRatios,
-        mobileImageAspectRatios,
-        headerImageAspectRatios,
-        subHeaderImageAspectRatios,
-        footerImageAspectRatios,
-    } = await EditAspectRatios(values)
+    const backgroundImageAspectRatios = (await calculateAspectRatio(values?.background_image_array)) || ''
+    const mobileImageAspectRatios = (await calculateAspectRatio(values?.mobile_background_array)) || ''
+    const headerImageAspectRatios = (await calculateAspectRatio(values?.header_config_image_Array)) || ''
+    const subHeaderImageAspectRatios = (await calculateAspectRatio(values?.sub_header_config_image_Array)) || ''
+    const footerImageAspectRatios = (await calculateAspectRatio(values?.footer_config_image_Array)) || ''
 
     const cta_config_data = {
-        ...values?.extra_info.cta_config,
+        ...values?.extra_info?.cta_config,
     }
     const cta_config = Object.fromEntries(Object.entries(cta_config_data).filter(([, value]) => value !== ''))
 
@@ -72,6 +77,8 @@ export const PageSettingsBodyFile = async ({ values, initialValue }: props) => {
             ? { mobile_background_lottie: mobileBackgroundLottieUpload || values?.background_config.mobile_background_lottie }
             : {}),
     }
+
+    console.log('6th')
 
     const footerConfig = Object.fromEntries(
         Object.entries({

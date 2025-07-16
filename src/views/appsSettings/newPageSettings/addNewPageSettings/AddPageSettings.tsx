@@ -20,6 +20,8 @@ const AddPageSettings = () => {
             return
         }
 
+        console.log('here 0')
+
         const { componentConfig, backgroundConfig, footerConfig, headerConfig, subHeaderConfig, child_component_config, cta_config } =
             await PageSettingsBodyFile({
                 values,
@@ -32,13 +34,14 @@ const AddPageSettings = () => {
             footer_config: footerConfig,
             header_config: headerConfig,
             sub_header_config: subHeaderConfig,
-            extra_attributes: Object.fromEntries(
+            extra_info: Object.fromEntries(
                 Object.entries({
                     ...values?.extra_info,
+                    is_product_filter: values?.extra_info?.is_product_filter || false,
                     ...(values?.extra_info?.timeout ? { timeout: values?.extra_info?.timeout } : {}),
                     ...(values?.extra_info?.page_size ? { page_size: values?.extra_info?.page_size } : {}),
                     ...(values?.extra_info?.child_data_type && { child_data_type: values?.extra_info?.child_data_type }),
-                    ...(values?.extra_info?.is_product_filter && { is_product_filter: values?.extra_info?.is_product_filter }),
+                    ...(values?.extra_info?.is_product_filter ? { is_product_filter: values.extra_info.is_product_filter } : {}),
                     cta_config: cta_config,
                     child_component_config: child_component_config,
                 }).filter(([, value]) => value !== ''),

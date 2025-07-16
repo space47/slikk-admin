@@ -52,12 +52,13 @@ const EditPageSettings = () => {
             footer_config: footerConfig,
             header_config: headerConfig,
             sub_header_config: subHeaderConfig,
-            extra_attributes: Object.fromEntries(
+            extra_info: Object.fromEntries(
                 Object.entries({
                     ...values?.extra_info,
                     ...(values?.extra_info?.timeout ? { timeout: values?.extra_info?.timeout } : {}),
                     ...(values?.extra_info?.page_size ? { page_size: values?.extra_info?.page_size } : {}),
                     ...(values?.extra_info?.child_data_type && { child_data_type: values?.extra_info?.child_data_type }),
+                    is_product_filter: values?.extra_info?.is_product_filter || false,
                     cta_config: cta_config,
                     child_component_config: child_component_config,
                 }).filter(([, value]) => value !== ''),
@@ -75,7 +76,6 @@ const EditPageSettings = () => {
                     : {}),
                 ...(!(values?.data_type?.validation > 0) && values?.data_type?.end_date ? { end_date: values?.data_type?.end_date } : {}),
                 ...(values?.data_type?.validation > 0 ? { duration: values?.data_type?.validation } : {}),
-                ...(values?.extra_info?.is_product_filter && { is_product_filter: values?.extra_info?.is_product_filter }),
                 ...(Array.isArray(barcodeData)
                     ? { barcodes: barcodeData.join(',') }
                     : values?.data_type?.barcodes
