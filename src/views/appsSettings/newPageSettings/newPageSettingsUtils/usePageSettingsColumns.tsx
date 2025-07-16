@@ -49,24 +49,23 @@ export const usePageSettingsColumns = ({ handleGoToBanner, positionRef, handlePo
                     )
                 },
             },
-            {
-                header: 'Position',
-                accessorKey: 'position',
-                cell: ({ row }: any) => {
-                    const index = row.original?.id
-
-                    return (
-                        <input
-                            ref={(el) => (positionRef.current[index] = el)}
-                            className="w-[70px] rounded-xl"
-                            type="number"
-                            value={updatedPosition[index] ?? row.original.position}
-                            onChange={(e) => handlePositionChange(index, Number(e.target.value))}
-                            onKeyDown={(e) => handleUpdate(e, row?.original?.id)}
-                        />
-                    )
-                },
-            },
+            // {
+            //     header: 'Position',
+            //     accessorKey: 'position',
+            //     cell: ({ row }: any) => {
+            //         const index = row.original?.id
+            //         return (
+            //             <input
+            //                 ref={(el) => (positionRef.current[index] = el)}
+            //                 className="w-[70px] rounded-xl"
+            //                 type="number"
+            //                 value={updatedPosition[index] ?? row.original.position}
+            //                 onChange={(e) => handlePositionChange(index, Number(e.target.value))}
+            //                 onKeyDown={(e) => handleUpdate(e, row?.original?.id)}
+            //             />
+            //         )
+            //     },
+            // },
             {
                 header: 'Display Name',
                 accessorKey: 'display_name',

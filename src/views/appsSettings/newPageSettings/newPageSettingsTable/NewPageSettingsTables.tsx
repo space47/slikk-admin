@@ -11,7 +11,6 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { pageNamesRequiredType, setPageNamesData, setSubPageNamesData } from '@/store/slices/pageSettingsSlice/pageNames.slice'
 import AddPageNameModal from '../../pageSettings/AddPageNameModal'
 import { usePageSettingsFunctions } from '../newPageSettingsUtils/usePageSettingsFunctions'
-import EasyTable from '@/common/EasyTable'
 import AddSubPageNameModal from '../newPageSettingsUtils/AddSubPageModal'
 import {
     mainPageSettingsRequiredType,
@@ -112,10 +111,12 @@ const NewPageSettingsTables = () => {
 
     useEffect(() => {
         if (isSuccess) {
-            dispatch(setMainPageSettingsData(pageSettingsMain?.data?.results || []))
+            dispatch(setMainPageSettingsData(pageSettingsMain?.data?.results.slice()?.sort((a, b) => a.position - b.position) || []))
             dispatch(setCount(pageSettingsMain?.data?.count || 0))
         }
-    }, [dispatch, isSuccess, currentPageName, currentSubPageName])
+    }, [dispatch, isSuccess, pageSettingsMain, currentPageName, currentSubPageName])
+
+    console.log('is updated mainPageSettings', mainPageSettingsData)
 
     const { handleSelectPage, handleSelectSubPage, BANNER_PAGE, SUB_PAGE, handleDragEnd } = usePageSettingsFunctions({
         pageNamesData,
@@ -141,7 +142,7 @@ const NewPageSettingsTables = () => {
             e.preventDefault()
             try {
                 const res = await axioisInstance.patch(`/page-sections/${id}`, { position: updatedPosition[id] })
-                notification.success({ message: res?.data?.data?.message || 'Failed to update position' })
+                notification.success({ message: res?.data?.data?.message || 'Updated position' })
             } catch (error) {
                 if (error instanceof AxiosError) {
                     notification.error(error?.response?.data?.message || 'Failed to update position')
@@ -154,12 +155,29 @@ const NewPageSettingsTables = () => {
         navigate('/app/appSettings/banners', { state: { var1: currentPageName?.label, var2: sectionHeading } })
     }
 
+    const handlePageUpdate = async () => {
+        const allRowsData = table.getRowModel().rows
+        console.log(allRowsData)
+
+        const body = allRowsData?.map((item) => ({
+            id: item?.original?.id,
+            position: (page! - 1) * pageSize! + item.index + 1,
+        }))
+        console.log('object', body)
+        try {
+            const res = await axioisInstance.post('/page-section-bulk/update', body)
+            notification.success({ message: res.data?.data?.message || 'Updated bulk position' })
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                notification.error({ message: error?.response?.data?.message || 'Failed to update position' })
+            }
+        }
+    }
+
     const columns = usePageSettingsColumns({ handleGoToBanner, positionRef, handlePositionChange, updatedPosition, handleUpdate })
 
-    const sortedData = [...mainPageSettingsData].sort((a, b) => a.position - b.position)
-
     const table = useReactTable({
-        data: sortedData,
+        data: mainPageSettingsData,
         columns,
         getCoreRowModel: getCoreRowModel(),
     })
@@ -234,6 +252,9 @@ const NewPageSettingsTables = () => {
                     </div>
                 </div>
                 <div className="flex gap-2">
+                    <Button type="button" variant="accept" onClick={handlePageUpdate}>
+                        Update Page
+                    </Button>
                     <Button type="button" variant="new" onClick={() => navigate(`/app/appSettings/newPageSettings/addNew`)}>
                         New Section
                     </Button>
@@ -258,9 +279,6 @@ const NewPageSettingsTables = () => {
                     </TabList>
                 </Tabs>
             </div>
-            {/* <div>
-                <EasyTable overflow mainData={mainPageSettingsData || []} columns={columns} page={page} pageSize={pageSize} />
-            </div> */}
             <div className="border border-gray-200 p-2 rounded-lg">
                 <PageDraggavleTable table={table} handleDragEnd={handleDragEnd} />
             </div>
