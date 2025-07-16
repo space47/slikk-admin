@@ -69,25 +69,64 @@ const EditAssignedPage = () => {
     console.log(pageNamesData, subPageNamesData)
 
     const handleSubmit = async (values: valueProps) => {
-        const subPageComparator = typeof values?.sub_page === 'object' ? values?.sub_page?.name : values?.sub_page
-        const pageComparator = typeof values?.page === 'object' ? values?.page?.name : values?.page
-
-        const body = {
-            page: pageNamesData?.find((item) => item?.name === pageComparator)?.id,
-            sub_page: subPageNamesData?.find((item) => item?.name === subPageComparator)?.id,
-            store: values?.store?.map((item) => item?.id),
-            section: Number(section_id),
-            position: values?.position,
-            is_active: values?.is_active ?? false,
+        const changedFields: Partial<valueProps> = {}
+        if (JSON.stringify(values.page) !== JSON.stringify(initialValue.page)) {
+            changedFields.page = values.page
         }
+
+        if (JSON.stringify(values.sub_page) !== JSON.stringify(initialValue.sub_page)) {
+            changedFields.sub_page = values.sub_page
+        }
+
+        if (JSON.stringify(values.store) !== JSON.stringify(initialValue.store)) {
+            changedFields.store = values.store
+        }
+
+        if (values.position !== initialValue.position) {
+            changedFields.position = values.position
+        }
+
+        if (values.is_active !== initialValue.is_active) {
+            changedFields.is_active = values.is_active
+        }
+        if (Object.keys(changedFields).length === 0) {
+            notification.info({ message: 'No changes were made' })
+            return
+        }
+        const subPageComparator = typeof changedFields?.sub_page === 'object' ? changedFields?.sub_page?.name : changedFields?.sub_page
+        const pageComparator = typeof changedFields?.page === 'object' ? changedFields?.page?.name : changedFields?.page
+
+        const body: any = {
+            section: Number(section_id),
+        }
+        if (changedFields.page !== undefined) {
+            body.page = pageNamesData?.find((item) => item?.name === pageComparator)?.id
+        }
+
+        if (changedFields.sub_page !== undefined) {
+            body.sub_page = subPageNamesData?.find((item) => item?.name === subPageComparator)?.id
+        }
+
+        if (changedFields.store !== undefined) {
+            body.store = changedFields.store?.map((item) => item?.id)
+        }
+
+        if (changedFields.position !== undefined) {
+            body.position = changedFields.position
+        }
+
+        if (changedFields.is_active !== undefined) {
+            body.is_active = changedFields.is_active
+        }
+
         try {
             const res = await axioisInstance.patch(`/page-sections/${section_id}`, body)
-            notification.success({ message: res?.data?.message || 'Successfully assigned' })
+            notification.success({ message: res?.data?.message || 'Successfully updated' })
             navigate('/app/appSettings/newPageSettings')
         } catch (error) {
             console.error(error)
             if (error instanceof AxiosError) {
-                notification.error({ message: 'Failed to assign' })
+                notification.error({ message: 'Failed to update' })
             }
         }
     }

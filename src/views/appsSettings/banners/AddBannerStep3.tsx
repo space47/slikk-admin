@@ -16,6 +16,8 @@ import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
 import { PRODUCTTYPE_STATE } from '@/store/types/productType.types'
 import { pageSettingsService } from '@/store/services/pageSettingService'
 import { pageNameTypes } from '@/store/types/pageSettings.types'
+import { companyStore } from '@/store/types/companyStore.types'
+import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
 
 function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBannerFormData }: any) {
     const [bannerForm, setBannerFormData] = useState<BANNER_UPLOAD_DATA[]>(completeBannerFormData)
@@ -53,7 +55,7 @@ function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBan
 
     const handlePreviewClicked = () => {
         const formValid = bannerForm?.map((formData) => {
-            if (formData?.from_date && formData.to_date && formData?.name) {
+            if (formData?.from_date && formData.to_date && formData?.name && formData.sub_page.length > 0 && formData.store.length > 0) {
                 return true
             }
             return false
@@ -64,7 +66,7 @@ function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBan
             setCurrentStep(4)
         } else {
             notification.error({
-                message: 'Please check Banner form data to_date, from_date or name',
+                message: 'Please check Banner form data to_date, from_date , name, sub page and store',
             })
         }
     }
@@ -116,6 +118,12 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
     const { data: SubPageNames, isSuccess: isSubPageNamesSuccess } = pageSettingsService.useSubPageNamesQuery({ page: 1, pageSize: 100 })
+
+    const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
+
+    useEffect(() => {
+        dispatch(fetchCompanyStore())
+    }, [dispatch])
 
     useEffect(() => {
         if (isSubPageNamesSuccess) {
@@ -465,6 +473,23 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                         }}
                     />
                 </div>
+                <div className="flex flex-col">
+                    <div>Store</div>
+                    <Select
+                        isMulti
+                        options={storeResults}
+                        getOptionLabel={(option) => option.code}
+                        getOptionValue={(option) => option.id}
+                        onChange={(newVal, actionMeta) => {
+                            console.log(newVal, actionMeta)
+                            handleMultiSelect(
+                                'store',
+                                newVal?.map((val) => val.id),
+                            )
+                        }}
+                    />
+                </div>
+                <div></div>
             </div>
         </div>
     )

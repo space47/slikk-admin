@@ -236,21 +236,21 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
 
             console.log('Data to send', data)
 
-            // await axioisInstance
-            //     .post('banners', data)
-            //     .then((res) => {
-            //         notification.success({
-            //             message: 'Successfully uploaded banner ' + (index + 1) || res?.data?.message,
-            //         })
-            //     })
-            //     .then(() => navigate('/app/appSettings/banners'))
+            await axioisInstance
+                .post('banners', data)
+                .then((res) => {
+                    notification.success({
+                        message: 'Successfully uploaded banner ' + (index + 1) || res?.data?.message,
+                    })
+                })
+                .then(() => navigate('/app/appSettings/banners'))
 
-            //     .catch((err) => {
-            //         notification.error({
-            //             message: 'Error when creating banner ' + (index + 1),
-            //             description: err?.response?.data?.message || 'Error in banner api',
-            //         })
-            //     })
+                .catch((err) => {
+                    notification.error({
+                        message: 'Error when creating banner ' + (index + 1),
+                        description: err?.response?.data?.message || 'Error in banner api',
+                    })
+                })
         })
     }
 
