@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Tooltip } from '@/components/ui'
 import moment from 'moment'
 import React, { useMemo } from 'react'
 import { FaEdit } from 'react-icons/fa'
@@ -25,7 +26,9 @@ export const usePageSettingsColumns = ({ handleGoToBanner, positionRef, handlePo
                         className="border-none bg-none"
                         onClick={() => navigate(`/app/appSettings/newPageSettings/edit/${row?.original?.section?.id}`)}
                     >
-                        <FaEdit className="text-xl text-blue-600" />
+                        <Tooltip title="Edit the section related to this page sections">
+                            <FaEdit className="text-xl text-blue-600" />
+                        </Tooltip>
                     </button>
                 ),
             },
@@ -41,7 +44,7 @@ export const usePageSettingsColumns = ({ handleGoToBanner, positionRef, handlePo
                             className="w-[180px] text-overflow:ellipsis cursor-pointer hover:text-blue-600"
                             onClick={() => handleGoToBanner(sectionHeading)}
                         >
-                            {sectionHeading}
+                            <Tooltip title="Go to Banners with the section heading">{sectionHeading}</Tooltip>
                         </div>
                     )
                 },
@@ -75,7 +78,7 @@ export const usePageSettingsColumns = ({ handleGoToBanner, positionRef, handlePo
                             className="w-[180px] text-overflow:ellipsis cursor-pointer hover:text-blue-600"
                             onClick={() => navigate(`/app/appSettings/sections/${row?.original?.section?.id}`)}
                         >
-                            {display}
+                            <Tooltip title="Go to the particular section related to this page section">{display}</Tooltip>
                         </div>
                     )
                 },

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, Dropdown, Pagination, Select } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { pageSettingsService } from '@/store/services/pageSettingService'
@@ -20,18 +21,26 @@ import {
     setPageSize,
     setCurrentPageName,
     setCurrentSubPageName,
+    setStoreCode,
 } from '@/store/slices/mainPageSettings/mainPageSettingsSlice'
 import { AxiosError } from 'axios'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { companyStore } from '@/store/types/companyStore.types'
+import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
 
 const NewPageSettingsTables = () => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
     const [updatedPosition, setUpdatedPosition] = useState<{ [key: number]: number }>({})
+    const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
     const positionRef = useRef<{ [key: number]: HTMLInputElement | null }>({})
     const [showAddPageModal, setShowAddPageModal] = useState(false)
     const [showAddSubPageModal, setShowAddSubPageModal] = useState(false)
+
+    useEffect(() => {
+        dispatch(fetchCompanyStore())
+    }, [dispatch])
 
     useEffect(() => {
         const storedPageName = sessionStorage.getItem('currentPageName')
@@ -46,7 +55,7 @@ const NewPageSettingsTables = () => {
         }
     }, [dispatch])
 
-    const { mainPageSettingsData, page, pageSize, count, currentPageName, currentSubPageName } =
+    const { mainPageSettingsData, page, pageSize, count, currentPageName, currentSubPageName, storeCode } =
         useAppSelector<mainPageSettingsRequiredType>((state) => state.pageSettingsMain)
 
     const { pageForName, pageNamesData, pageSizeForName, subPageNamesData } = useAppSelector<pageNamesRequiredType>(
@@ -62,6 +71,7 @@ const NewPageSettingsTables = () => {
         pageSize,
         pageId: currentPageName?.label,
         sub_page: currentSubPageName?.label,
+        store_code: storeCode?.map((item) => item.id),
     })
 
     const { data: pageNames, isSuccess: isPageNamesSuccess } = pageSettingsService.usePageNamesQuery({
@@ -157,7 +167,7 @@ const NewPageSettingsTables = () => {
     }
 
     return (
-        <div>
+        <div className="p-4 shadow-xl rounded-xl">
             <div className="flex flex-col gap-2 items-center xl:items-start xl:flex-row xl:justify-between mb-6">
                 <div className="flex gap-3">
                     <div className=" gap-3 mb-7">
@@ -205,6 +215,20 @@ const NewPageSettingsTables = () => {
                                 </div>
                             </Dropdown>
                         </div>
+                    </div>
+                    <div>
+                        <div>Select Store</div>
+                        <Select
+                            isMulti
+                            className="w-full"
+                            options={storeResults}
+                            getOptionLabel={(option) => option.code}
+                            getOptionValue={(option) => option.id}
+                            value={storeCode || null}
+                            onChange={(newVal: any) => {
+                                dispatch(setStoreCode(newVal))
+                            }}
+                        />
                     </div>
                 </div>
                 <div className="flex gap-2">

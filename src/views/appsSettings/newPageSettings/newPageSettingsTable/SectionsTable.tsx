@@ -32,7 +32,7 @@ const SectionsTable = () => {
     return (
         <div className="p-4 shadow-lg rounded-xl flex flex-col gap-4">
             <div className="flex justify-between items-center">
-                <div className="text-xl font-bold">Sections Date</div>
+                <div className="text-xl font-bold">Sections List</div>
 
                 <div className="flex gap-2">
                     <Button type="button" variant="new" onClick={() => navigate(`/app/appSettings/newPageSettings/addNew`)}>
