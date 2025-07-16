@@ -116,8 +116,6 @@ const NewPageSettingsTables = () => {
         }
     }, [dispatch, isSuccess, pageSettingsMain, currentPageName, currentSubPageName])
 
-    console.log('is updated mainPageSettings', mainPageSettingsData)
-
     const { handleSelectPage, handleSelectSubPage, BANNER_PAGE, SUB_PAGE, handleDragEnd } = usePageSettingsFunctions({
         pageNamesData,
         subPageNamesData,
@@ -262,7 +260,7 @@ const NewPageSettingsTables = () => {
             </div>
             <div>
                 {/* Tabs */}
-                <Tabs value="true" onChange={(e: string) => dispatch(setIsActive(e))}>
+                <Tabs onChange={(e: string) => dispatch(setIsActive(e))}>
                     <TabList className="flex items-center justify-start gap-4 bg-gray-50  shadow-md p-3 mb-10">
                         <TabNav
                             value="true"
