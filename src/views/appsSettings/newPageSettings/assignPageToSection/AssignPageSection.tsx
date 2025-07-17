@@ -66,7 +66,7 @@ const AssignPageSection = () => {
         const body = {
             page: pageNamesData?.find((item) => item?.name === pageComparator)?.id,
             sub_page: subPageNamesData?.find((item) => item?.name === subPageComparator)?.id,
-            store: values?.store?.map((item) => item?.id),
+            store: values?.store?.map((item) => item?.id) || [],
             section: values?.sections,
             position: values?.position,
             is_active: values?.is_active ?? false,

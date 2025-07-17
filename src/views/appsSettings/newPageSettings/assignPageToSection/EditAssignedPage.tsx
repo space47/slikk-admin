@@ -108,7 +108,7 @@ const EditAssignedPage = () => {
         }
 
         if (changedFields.store !== undefined) {
-            body.store = changedFields.store?.map((item) => item?.id)
+            body.store = changedFields.store?.map((item) => item?.id) || []
         }
 
         if (changedFields.position !== undefined) {

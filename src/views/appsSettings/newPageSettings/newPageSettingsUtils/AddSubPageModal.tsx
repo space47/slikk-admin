@@ -8,6 +8,7 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { Select } from '@/components/ui'
 import { pageSettingsService } from '@/store/services/pageSettingService'
 import { pageNameTypes } from '@/store/types/pageSettings.types'
+import { useNavigate } from 'react-router-dom'
 
 interface props {
     dialogIsOpen: boolean
@@ -17,6 +18,7 @@ interface props {
 const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: props) => {
     const [inputValue, setInputvalue] = useState('')
     const [pageNamesData, setPageNamesData] = useState<pageNameTypes[] | undefined>([])
+    const navigate = useNavigate()
 
     const [pageValue, setPageValue] = useState<any>()
 
@@ -46,6 +48,7 @@ const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: props) => {
             notification.success({
                 message: response?.data?.message || 'Successfully added a new sub page',
             })
+            navigate(0)
         } catch (error: any) {
             console.error(error)
             notification.error({

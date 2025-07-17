@@ -482,10 +482,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                         getOptionValue={(option) => option.id}
                         onChange={(newVal, actionMeta) => {
                             console.log(newVal, actionMeta)
-                            handleMultiSelect(
-                                'store',
-                                newVal?.map((val) => val.id),
-                            )
+                            handleMultiSelect('store', newVal?.map((val) => val.id) || [])
                         }}
                     />
                 </div>
