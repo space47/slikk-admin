@@ -207,10 +207,7 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                 section_heading: selectedSection?.section_heading,
                 image_web: webImageUpload || '',
                 image_mobile: mobileImageUpload || '',
-                redirection_url:
-                    banner.is_custom === true
-                        ? `s/${banner.pageName}${banner.subPageName ? `/${banner.subPageName}` : ''}`
-                        : (banner?.redirection_url ?? null),
+                redirection_url: banner?.redirection_url || '',
                 extra_attributes: {
                     video_web: webVideoUpload ?? '',
                     video_mobile: mobileVideoUpload ?? '',

@@ -55,7 +55,7 @@ function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBan
 
     const handlePreviewClicked = () => {
         const formValid = bannerForm?.map((formData) => {
-            if (formData?.from_date && formData.to_date && formData?.name && formData.sub_page.length > 0) {
+            if (formData?.from_date && formData.to_date && formData?.name && formData?.sub_page) {
                 return true
             }
             return false
@@ -315,7 +315,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                 )}
             </form>
 
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid xl:grid-cols-8 grid-cols-2  gap-3">
                 <BannerDateSelector
                     handleTimeChange={(value: any) => {
                         handleFromTimeChange(value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
@@ -330,6 +330,37 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                     valueDate={bannerForm[index]?.to_date}
                     label="End Date"
                 />
+
+                <div className="flex flex-col">
+                    <div>Sub Page</div>
+                    <Select
+                        isMulti
+                        options={subPageNamesData}
+                        getOptionLabel={(option) => option.name}
+                        getOptionValue={(option) => option.id}
+                        onChange={(newVal, actionMeta) => {
+                            console.log(newVal, actionMeta)
+                            handleMultiSelect(
+                                'sub_page',
+                                newVal?.map((val) => val.id),
+                            )
+                        }}
+                    />
+                </div>
+
+                <div className="flex flex-col">
+                    <div>Store</div>
+                    <Select
+                        isMulti
+                        options={storeResults}
+                        getOptionLabel={(option) => option.code}
+                        getOptionValue={(option) => option.id}
+                        onChange={(newVal, actionMeta) => {
+                            console.log(newVal, actionMeta)
+                            handleMultiSelect('store', newVal?.map((val) => val.id) || [])
+                        }}
+                    />
+                </div>
 
                 <div className="flex flex-col">
                     <div>Division</div>
@@ -440,22 +471,6 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                         }}
                     />
                 </div>
-                <div className="flex flex-col">
-                    <div>Sub Page</div>
-                    <Select
-                        isMulti
-                        options={subPageNamesData}
-                        getOptionLabel={(option) => option.name}
-                        getOptionValue={(option) => option.id}
-                        onChange={(newVal, actionMeta) => {
-                            console.log(newVal, actionMeta)
-                            handleMultiSelect(
-                                'sub_page',
-                                newVal?.map((val) => val.id),
-                            )
-                        }}
-                    />
-                </div>
 
                 <div className="flex flex-col">
                     <div>Sort By</div>
@@ -473,19 +488,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                         }}
                     />
                 </div>
-                <div className="flex flex-col">
-                    <div>Store</div>
-                    <Select
-                        isMulti
-                        options={storeResults}
-                        getOptionLabel={(option) => option.code}
-                        getOptionValue={(option) => option.id}
-                        onChange={(newVal, actionMeta) => {
-                            console.log(newVal, actionMeta)
-                            handleMultiSelect('store', newVal?.map((val) => val.id) || [])
-                        }}
-                    />
-                </div>
+
                 <div></div>
             </div>
         </div>
