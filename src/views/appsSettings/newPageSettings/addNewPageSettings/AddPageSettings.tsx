@@ -42,7 +42,7 @@ const AddPageSettings = () => {
         console.log('here')
         const body = {
             ...values,
-            banners: values?.banners?.map((item: any) => item?.id),
+            banners: values?.banners?.map((item: any) => item?.id) || [],
             component_config: componentConfig,
             background_config: backgroundConfig,
             footer_config: footerConfig,
