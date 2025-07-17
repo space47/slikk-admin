@@ -74,7 +74,7 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
 
                 {typeValues?.carousel && (
                     <FormItem label="Dot Inside" className="w-full">
-                        <Field type="checkbox" name={`${typeName}.extra_config.dots_inside` as string} component={Checkbox} />
+                        <Field type="checkbox" name={`extra_info.dots_inside` as string} component={Checkbox} />
                     </FormItem>
                 )}
 
@@ -420,11 +420,7 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                             <br />
                             {typeValues?.web_carousel && (
                                 <FormItem label="Web Dot Inside" className="w-full">
-                                    <Field
-                                        type="checkbox"
-                                        name={`${typeName}.extra_config.web_dots_inside` as string}
-                                        component={Checkbox}
-                                    />
+                                    <Field type="checkbox" name={`extra_info.web_dots_inside` as string} component={Checkbox} />
                                 </FormItem>
                             )}
                             {typeValues?.web_name === true && (

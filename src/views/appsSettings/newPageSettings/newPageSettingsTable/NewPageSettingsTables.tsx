@@ -33,6 +33,7 @@ import TabNav from '@/components/ui/Tabs/TabNav'
 import PageDraggavleTable from '../../pageSettings/PageDraggavleTable'
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { GenericCommonTypes } from '@/common/allTypesCommon'
+import ClearCache from '@/common/ClearCache'
 
 const NewPageSettingsTables = () => {
     const navigate = useNavigate()
@@ -268,6 +269,9 @@ const NewPageSettingsTables = () => {
                             Mark Inactive
                         </Button>
                     )}
+                    <div>
+                        <ClearCache cacheKey="sections" />
+                    </div>
                     <Button type="button" variant="new" size="sm" onClick={handlePageUpdate}>
                         Update Page
                     </Button>
