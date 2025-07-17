@@ -55,7 +55,7 @@ function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBan
 
     const handlePreviewClicked = () => {
         const formValid = bannerForm?.map((formData) => {
-            if (formData?.from_date && formData.to_date && formData?.name && formData.sub_page.length > 0 && formData.store.length > 0) {
+            if (formData?.from_date && formData.to_date && formData?.name && formData.sub_page.length > 0) {
                 return true
             }
             return false
