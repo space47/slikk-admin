@@ -67,6 +67,7 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                             name={item.name as string}
                             component={item?.type === 'checkbox' ? Checkbox : Input}
                             min="0"
+                            step={0.01}
                         />
                     </FormItem>
                 ))}
@@ -101,7 +102,13 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                                         <HelpTooltip message={item.message} />
                                     </span>
                                 </div>
-                                <Field type={item.type} name={item.name} placeholder={`Enter ${item.label} with ${item.message}`} min="0" />
+                                <Field
+                                    type={item.type}
+                                    name={item.name}
+                                    placeholder={`Enter ${item.label} with ${item.message}`}
+                                    min="0"
+                                    step={0.01}
+                                />
                             </FormItem>
                         ))}
                     </>
@@ -159,6 +166,7 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                                                 name={item.name}
                                                 component={item?.type === 'checkbox' ? Checkbox : Input}
                                                 min="0"
+                                                step={0.01}
                                             />
                                         </FormItem>
                                     ))}
@@ -192,6 +200,7 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                                                 placeholder={item.placeholder}
                                                 component={item?.type === 'checkbox' ? Checkbox : Input}
                                                 min="0"
+                                                step={0.01}
                                             />
                                         </FormItem>
                                     ))}
@@ -224,6 +233,7 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                                                 placeholder={item.placeholder}
                                                 component={item?.type === 'checkbox' ? Checkbox : Input}
                                                 min="0"
+                                                step={0.01}
                                             />
                                         </FormItem>
                                     ))}
@@ -251,6 +261,7 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                                                 placeholder="Enter Footer Top Margin"
                                                 component={Input}
                                                 min="0"
+                                                step={0.01}
                                             />
                                         </FormItem>
 
@@ -276,7 +287,13 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
 
                 {mainFieldsWebArray?.map((item, key) => (
                     <FormItem key={key} label={item.label} className="w-">
-                        <Field type={item.type} name={item.name} component={item?.type === 'checkbox' ? Checkbox : Input} min="0" />
+                        <Field
+                            type={item.type}
+                            name={item.name}
+                            component={item?.type === 'checkbox' ? Checkbox : Input}
+                            min="0"
+                            step={0.01}
+                        />
                     </FormItem>
                 ))}
                 <CommonSelect
@@ -338,6 +355,7 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                                                 placeholder={item.placeholder}
                                                 component={item?.type === 'checkbox' ? Checkbox : Input}
                                                 min="0"
+                                                step={0.01}
                                             />
                                         </FormItem>
                                     ))}
@@ -371,6 +389,7 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                                                 placeholder={item.placeholder}
                                                 component={item?.type === 'checkbox' ? Checkbox : Input}
                                                 min="0"
+                                                step={0.01}
                                             />
                                         </FormItem>
                                     ))}
@@ -402,6 +421,7 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                                                 placeholder={item.placeholder}
                                                 component={item?.type === 'checkbox' ? Checkbox : Input}
                                                 min="0"
+                                                step={0.01}
                                             />
                                         </FormItem>
                                     ))}
@@ -429,6 +449,7 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                                                 placeholder="Enter Web Footer Top Margin"
                                                 component={Input}
                                                 min="0"
+                                                step={0.01}
                                             />
                                         </FormItem>
                                         <CommonSelect

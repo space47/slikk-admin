@@ -32,6 +32,7 @@ const ExtraConfig = () => {
                         placeholder={`Enter ${item.label}`}
                         component={item?.type === 'checkbox' ? Checkbox : Input}
                         min="0"
+                        step={0.01}
                     />
                 </FormItem>
             ))}
@@ -50,6 +51,7 @@ const ExtraConfig = () => {
                         placeholder={`Enter ${item.label}`}
                         component={item?.type === 'checkbox' ? Checkbox : Input}
                         min="0"
+                        step={0.01}
                     />
                 </FormItem>
             ))}

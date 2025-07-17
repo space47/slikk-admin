@@ -84,6 +84,7 @@ const DataTypesConfig = ({ values, filterId, setFilterId, setFieldValue, setBarc
                             name="data_type.validation"
                             component={Input}
                             min="0"
+                            step={0.01}
                         />
                     </FormItem>
                 )}
@@ -95,7 +96,7 @@ const DataTypesConfig = ({ values, filterId, setFilterId, setFieldValue, setBarc
                     className="w-full"
                 />
                 <FormItem label="Page Size" className="col-span-1 w-full h-[80%]">
-                    <Field type="number" name="extra_info.page_size" placeholder="Place Page Size" component={Input} min="0" />
+                    <Field type="number" name="extra_info.page_size" placeholder="Place Page Size" component={Input} min="0" step={0.01} />
                 </FormItem>
 
                 <FormItem label="Division Select">
@@ -123,14 +124,14 @@ const DataTypesConfig = ({ values, filterId, setFilterId, setFieldValue, setBarc
                 </div>
 
                 <FormItem label="Data Count" className="col-span-1 w-full h-[80%]">
-                    <Field type="number" name="data_type.data_count" placeholder="Place Data Count" component={Input} min="0" />
+                    <Field type="number" name="data_type.data_count" placeholder="Place Data Count" component={Input} min="0" step={0.01} />
                 </FormItem>
                 <FormItem label="Post" className="col-span-1 w-full h-[80%]">
-                    <Field type="text" name="data_type.posts" placeholder="Place Posts" component={Input} min="0" />
+                    <Field type="text" name="data_type.posts" placeholder="Place Posts" component={Input} min="0" step={0.01} />
                 </FormItem>
 
                 <FormItem label="Order Count" className="w-full">
-                    <Field type="number" name="order_count" placeholder="Enter order count" component={Input} min="0" />
+                    <Field type="number" name="order_count" placeholder="Enter order count" component={Input} min="0" step={0.01} />
                 </FormItem>
                 <FormItem label="Min Order Value for Event Pass" className="w-full">
                     <Field
@@ -139,6 +140,7 @@ const DataTypesConfig = ({ values, filterId, setFilterId, setFieldValue, setBarc
                         placeholder="Enter min order value for event pass"
                         component={Input}
                         min="0"
+                        step={0.01}
                     />
                 </FormItem>
 

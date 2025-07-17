@@ -74,17 +74,38 @@ const OtherDataConfigs = ({ editMode, initialValue, values, setInitialValue }: O
                 />
                 {HeaderConfigArray?.map((item, key) => (
                     <FormItem key={key} asterisk label={item.label} className="w-full">
-                        <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} min="0" />
+                        <Field
+                            type={item.type}
+                            name={item.name}
+                            placeholder={`Enter ${item.label}`}
+                            component={Input}
+                            min="0"
+                            step={0.01}
+                        />
                     </FormItem>
                 ))}
                 {WebHeaderConfigArray?.map((item, key) => (
                     <FormItem key={key} asterisk label={item.label} className="w-full">
-                        <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} min="0" />
+                        <Field
+                            type={item.type}
+                            name={item.name}
+                            placeholder={`Enter ${item.label}`}
+                            component={Input}
+                            min="0"
+                            step={0.01}
+                        />
                     </FormItem>
                 ))}
                 {HeaderCommonConfigArray?.map((item, key) => (
                     <FormItem key={key} asterisk label={item.label} className="w-full">
-                        <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} min="0" />
+                        <Field
+                            type={item.type}
+                            name={item.name}
+                            placeholder={`Enter ${item.label}`}
+                            component={Input}
+                            min="0"
+                            step={0.01}
+                        />
                     </FormItem>
                 ))}
 
@@ -159,7 +180,14 @@ const OtherDataConfigs = ({ editMode, initialValue, values, setInitialValue }: O
                 />
                 {CtaArray.map((item, key) => (
                     <FormItem key={key} label={item.label} className="w-full">
-                        <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} min="0" />
+                        <Field
+                            type={item.type}
+                            name={item.name}
+                            placeholder={`Enter ${item.label}`}
+                            component={Input}
+                            min="0"
+                            step={0.01}
+                        />
                     </FormItem>
                 ))}
 
@@ -201,17 +229,38 @@ const OtherDataConfigs = ({ editMode, initialValue, values, setInitialValue }: O
 
                 {SubHeaderConfigArray.map((item, key) => (
                     <FormItem key={key} asterisk label={item.label} className="w-full">
-                        <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} min="0" />
+                        <Field
+                            type={item.type}
+                            name={item.name}
+                            placeholder={`Enter ${item.label}`}
+                            component={Input}
+                            min="0"
+                            step={0.01}
+                        />
                     </FormItem>
                 ))}
                 {WebSubHeaderConfigArray.map((item, key) => (
                     <FormItem key={key} asterisk label={item.label} className="w-full">
-                        <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} min="0" />
+                        <Field
+                            type={item.type}
+                            name={item.name}
+                            placeholder={`Enter ${item.label}`}
+                            component={Input}
+                            min="0"
+                            step={0.01}
+                        />
                     </FormItem>
                 ))}
                 {SubHeaderCommonConfigArray.map((item, key) => (
                     <FormItem key={key} asterisk label={item.label} className="w-full">
-                        <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} min="0" />
+                        <Field
+                            type={item.type}
+                            name={item.name}
+                            placeholder={`Enter ${item.label}`}
+                            component={Input}
+                            min="0"
+                            step={0.01}
+                        />
                     </FormItem>
                 ))}
                 <CommonSelect
@@ -285,17 +334,38 @@ const OtherDataConfigs = ({ editMode, initialValue, values, setInitialValue }: O
                 />
                 {FooterConfigArray.map((item, key) => (
                     <FormItem key={key} asterisk label={item.label} className="w-full">
-                        <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} min="0" />
+                        <Field
+                            type={item.type}
+                            name={item.name}
+                            placeholder={`Enter ${item.label}`}
+                            component={Input}
+                            min="0"
+                            step={0.01}
+                        />
                     </FormItem>
                 ))}
                 {WebFooterConfigArray.map((item, key) => (
                     <FormItem key={key} asterisk label={item.label} className="w-full">
-                        <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} min="0" />
+                        <Field
+                            type={item.type}
+                            name={item.name}
+                            placeholder={`Enter ${item.label}`}
+                            component={Input}
+                            min="0"
+                            step={0.01}
+                        />
                     </FormItem>
                 ))}
                 {FooterCommonConfigArray.map((item, key) => (
                     <FormItem key={key} asterisk label={item.label} className="w-full">
-                        <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} min="0" />
+                        <Field
+                            type={item.type}
+                            name={item.name}
+                            placeholder={`Enter ${item.label}`}
+                            component={Input}
+                            min="0"
+                            step={0.01}
+                        />
                     </FormItem>
                 ))}
 

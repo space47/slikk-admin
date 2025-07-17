@@ -27,7 +27,7 @@ const BannerSelect = ({ bannerData, isOpen, setFieldValues, setIsOpen, values }:
         if (isOpen) {
             const selected = bannerData.filter((b) => values?.banners?.map((item: any) => item?.id).includes(b.id))
             setSelectedBanners(selected)
-            setSearch('') // reset search on open
+            setSearch('')
         }
     }, [isOpen, bannerData, values?.banners])
 

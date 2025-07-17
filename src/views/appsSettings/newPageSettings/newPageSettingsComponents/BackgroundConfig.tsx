@@ -181,6 +181,7 @@ const BackgroundConfig = ({ editMode = false, initialValue, values, setInitialVa
                         placeholder={item.placeholder}
                         component={item?.type === 'checkbox' ? Checkbox : Input}
                         min="0"
+                        step={0.01}
                     />
                 </FormItem>
             ))}
@@ -192,6 +193,7 @@ const BackgroundConfig = ({ editMode = false, initialValue, values, setInitialVa
                         placeholder={item.placeholder}
                         component={item?.type === 'checkbox' ? Checkbox : Input}
                         min="0"
+                        step={0.01}
                     />
                 </FormItem>
             ))}
@@ -203,6 +205,7 @@ const BackgroundConfig = ({ editMode = false, initialValue, values, setInitialVa
                         placeholder={item.placeholder}
                         component={item?.type === 'checkbox' ? Checkbox : Input}
                         min="0"
+                        step={0.01}
                     />
                 </FormItem>
             ))}
