@@ -9,22 +9,17 @@ interface props {
     initialValue?: any
 }
 
-const handleVideo = async (files: File[]) => {
+export const handleVideo = async (files: File[]) => {
     notification.info({
         message: 'Video Upload In Process',
     })
-    console.log('file is', files)
     if (files.length > 0) {
-        console.log('abc')
-        console.log(typeof files)
         try {
             const formData = new FormData()
-            console.log(files[0])
             formData.append('file', files[0])
             formData.append('file_type', 'product')
             formData.append('compression_service', 'slikk')
 
-            console.log('formdata is', formData.get('file'))
             const response = await axioisInstance.post('fileupload', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
@@ -120,8 +115,6 @@ export const PageSettingsBodyFile = async ({ values, initialValue }: props) => {
             ? { mobile_background_lottie: mobileBackgroundLottieUpload || values?.background_config.mobile_background_lottie }
             : {}),
     }
-
-    console.log('6th')
 
     const footerConfig = Object.fromEntries(
         Object.entries({

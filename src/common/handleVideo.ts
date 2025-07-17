@@ -9,6 +9,7 @@ export const handleVideo = async (files: File[]) => {
             formData.append(`file[${index}]`, file)
         })
         formData.append('file_type', 'product')
+        formData.append('compression_service', 'slikk')
 
         try {
             console.log('Uploading video files:', files)

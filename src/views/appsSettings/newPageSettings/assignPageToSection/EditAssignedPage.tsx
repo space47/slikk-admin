@@ -26,32 +26,37 @@ const EditAssignedPage = () => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
     const { section_id } = useParams()
+
     const [pageNamesData, setPageNamesData] = useState<pageNameTypes[] | undefined>([])
     const [subPageNamesData, setSubPageNamesData] = useState<pageNameTypes[] | undefined>([])
+    const [selectedPageName, setSelectedPageName] = useState<string | undefined>(undefined)
 
     const { data: pageNames, isSuccess: isPageNamesSuccess } = pageSettingsService.usePageNamesQuery({
         page: 1,
         pageSize: 100,
     })
-    const { data: SubPageNames, isSuccess: isSubPageNamesSuccess } = pageSettingsService.useSubPageNamesQuery({})
+
+    const { data: SubPageNames, isSuccess: isSubPageNamesSuccess } = pageSettingsService.useSubPageNamesQuery({
+        page: 1,
+        pageSize: 500,
+        pageName: selectedPageName ?? '',
+    })
 
     useEffect(() => {
         if (isPageNamesSuccess) {
             setPageNamesData(pageNames?.data?.results || [])
         }
-    }, [dispatch, pageNames, isPageNamesSuccess])
+    }, [pageNames, isPageNamesSuccess])
 
     useEffect(() => {
         if (isSubPageNamesSuccess) {
             setSubPageNamesData(SubPageNames?.data || [])
         }
-    }, [dispatch, isSubPageNamesSuccess])
+    }, [SubPageNames, isSubPageNamesSuccess])
 
     const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
 
-    const query = useMemo(() => {
-        return `/page-sections?section_id=${section_id}`
-    }, [section_id])
+    const query = useMemo(() => `/page-sections?section_id=${section_id}`, [section_id])
     const { data } = useFetchApi<any>({ url: query })
 
     useEffect(() => {
@@ -66,180 +71,144 @@ const EditAssignedPage = () => {
         store: data[0]?.store?.map(({ code, id }: { code: string; id: number }) => ({ code, id })) || [],
     }
 
-    console.log(pageNamesData, subPageNamesData)
-
     const handleSubmit = async (values: valueProps) => {
-        const changedFields: Partial<valueProps> = {}
-        if (JSON.stringify(values.page) !== JSON.stringify(initialValue.page)) {
-            changedFields.page = values.page
-        }
+        const subPageComparator = typeof values?.sub_page === 'object' ? values?.sub_page?.name : values?.sub_page
+        const pageComparator = typeof values?.page === 'object' ? values?.page?.name : values?.page
 
-        if (JSON.stringify(values.sub_page) !== JSON.stringify(initialValue.sub_page)) {
-            changedFields.sub_page = values.sub_page
-        }
-
-        if (JSON.stringify(values.store) !== JSON.stringify(initialValue.store)) {
-            changedFields.store = values.store
-        }
-
-        if (values.position !== initialValue.position) {
-            changedFields.position = values.position
-        }
-
-        if (values.is_active !== initialValue.is_active) {
-            changedFields.is_active = values.is_active
-        }
-        if (Object.keys(changedFields).length === 0) {
-            notification.info({ message: 'No changes were made' })
-            return
-        }
-        const subPageComparator = typeof changedFields?.sub_page === 'object' ? changedFields?.sub_page?.name : changedFields?.sub_page
-        const pageComparator = typeof changedFields?.page === 'object' ? changedFields?.page?.name : changedFields?.page
-
-        const body: any = {
+        const body = {
+            page: pageNamesData?.find((item) => item?.name === pageComparator)?.id,
+            sub_page: subPageNamesData?.find((item) => item?.name === subPageComparator)?.id,
+            store: values?.store?.map((item) => item?.id),
             section: Number(section_id),
+            position: values?.position,
+            is_active: values?.is_active ?? false,
         }
-        if (changedFields.page !== undefined) {
-            body.page = pageNamesData?.find((item) => item?.name === pageComparator)?.id
-        }
-
-        if (changedFields.sub_page !== undefined) {
-            body.sub_page = subPageNamesData?.find((item) => item?.name === subPageComparator)?.id
-        }
-
-        if (changedFields.store !== undefined) {
-            body.store = changedFields.store?.map((item) => item?.id) || []
-        }
-
-        if (changedFields.position !== undefined) {
-            body.position = changedFields.position
-        }
-
-        if (changedFields.is_active !== undefined) {
-            body.is_active = changedFields.is_active
-        }
-
         try {
             const res = await axioisInstance.patch(`/page-sections/${section_id}`, body)
-            notification.success({ message: res?.data?.message || 'Successfully updated' })
+            notification.success({ message: res?.data?.message || 'Successfully assigned' })
             navigate('/app/appSettings/newPageSettings')
         } catch (error) {
             console.error(error)
             if (error instanceof AxiosError) {
-                notification.error({ message: 'Failed to update' })
+                notification.error({ message: 'Failed to assign' })
             }
         }
     }
+
     return (
         <div>
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
-                {({ resetForm }) => {
-                    return (
-                        <Form>
-                            <FormContainer>
-                                <FormItem label="Store">
-                                    <Field name="store">
-                                        {({ form, field }: FieldProps) => {
-                                            console.log('fields of store', field)
-                                            const selectedStores = storeResults.filter((option) =>
-                                                field.value?.some((store: any) => store?.id === option.id),
-                                            )
-                                            return (
-                                                <div className="flex flex-col gap-1  xl:items-baseline w-full max-w-md">
-                                                    <Select
-                                                        isMulti
-                                                        className="w-full"
-                                                        options={storeResults}
-                                                        getOptionLabel={(option) => option.code}
-                                                        getOptionValue={(option) => option.id}
-                                                        value={selectedStores || null}
-                                                        onChange={(newVal) => {
-                                                            form.setFieldValue('store', newVal)
-                                                        }}
-                                                    />
-                                                </div>
-                                            )
-                                        }}
-                                    </Field>
-                                </FormItem>
-                            </FormContainer>
-                            <FormContainer>
-                                <FormItem label="Page">
-                                    <Field name="page">
-                                        {({ form, field }: FieldProps) => {
-                                            console.log(field)
-
-                                            const selectedPage =
-                                                typeof field?.value === 'object'
-                                                    ? pageNamesData?.find((option) => option.name === field?.value?.name)
-                                                    : pageNamesData?.find((option) => option.name === field?.value)
-                                            return (
-                                                <div className="flex flex-col gap-1  xl:items-baseline w-full max-w-md">
-                                                    <Select
-                                                        isClearable
-                                                        className="w-full"
-                                                        options={pageNamesData}
-                                                        getOptionLabel={(option) => option.name}
-                                                        getOptionValue={(option) => option.id}
-                                                        value={selectedPage || null}
-                                                        onChange={(newVal) => {
-                                                            form.setFieldValue('page', newVal)
-                                                        }}
-                                                    />
-                                                </div>
-                                            )
-                                        }}
-                                    </Field>
-                                </FormItem>
-                            </FormContainer>
-                            <FormContainer>
-                                <FormItem label="Sub Page">
-                                    <Field name="sub_page">
-                                        {({ form, field }: FieldProps) => {
-                                            const selectedPage =
-                                                typeof field?.value === 'object'
-                                                    ? subPageNamesData?.find((option) => option.name === field?.value?.name)
-                                                    : subPageNamesData?.find((option) => option.name === field?.value)
-                                            return (
-                                                <div className="flex flex-col gap-1  xl:items-baseline w-full max-w-md">
-                                                    <Select
-                                                        isClearable
-                                                        className="w-full"
-                                                        options={subPageNamesData}
-                                                        getOptionLabel={(option) => option.name}
-                                                        getOptionValue={(option) => option.id}
-                                                        value={selectedPage || null}
-                                                        onChange={(newVal) => {
-                                                            form.setFieldValue('sub_page', newVal)
-                                                        }}
-                                                    />
-                                                </div>
-                                            )
-                                        }}
-                                    </Field>
-                                </FormItem>
-                            </FormContainer>
-
-                            <FormItem label="position">
-                                <Field type="number" min="0" name="position" placeholder="Enter Position" component={Input} />
+                {({ resetForm }) => (
+                    <Form>
+                        <FormContainer>
+                            <FormItem label="Store">
+                                <Field name="store">
+                                    {({ form, field }: FieldProps) => {
+                                        const selectedStores = storeResults.filter((option) =>
+                                            field.value?.some((store: any) => store?.id === option.id),
+                                        )
+                                        return (
+                                            <div className="flex flex-col gap-1 w-full max-w-md">
+                                                <Select
+                                                    isMulti
+                                                    className="w-full"
+                                                    options={storeResults}
+                                                    getOptionLabel={(option) => option.code}
+                                                    getOptionValue={(option) => option.id}
+                                                    value={selectedStores || null}
+                                                    onChange={(newVal) => {
+                                                        form.setFieldValue('store', newVal)
+                                                    }}
+                                                />
+                                            </div>
+                                        )
+                                    }}
+                                </Field>
                             </FormItem>
-                            <FormItem label="Is Active">
-                                <Field type="checkbox" min="0" name="is_active" placeholder="Enter Position" component={Checkbox} />
-                            </FormItem>
+                        </FormContainer>
 
-                            <FormContainer className="flex gap-2 mt-4 items-center justify-end">
-                                <FormItem>
-                                    <Button variant="reject" type="button" onClick={() => resetForm()}>
-                                        clear
-                                    </Button>
-                                </FormItem>
-                                <FormItem>
-                                    <Button variant="accept">Assign</Button>
-                                </FormItem>
-                            </FormContainer>
-                        </Form>
-                    )
-                }}
+                        <FormContainer>
+                            <FormItem label="Page">
+                                <Field name="page">
+                                    {({ form, field }: FieldProps) => {
+                                        const selectedPage =
+                                            typeof field?.value === 'object'
+                                                ? pageNamesData?.find((option) => option.name === field?.value?.name)
+                                                : pageNamesData?.find((option) => option.name === field?.value)
+
+                                        return (
+                                            <div className="flex flex-col gap-1 w-full max-w-md">
+                                                <Select
+                                                    isClearable
+                                                    className="w-full"
+                                                    options={pageNamesData}
+                                                    getOptionLabel={(option) => option.name}
+                                                    getOptionValue={(option) => option.id}
+                                                    value={selectedPage || null}
+                                                    onChange={(newVal) => {
+                                                        form.setFieldValue('page', newVal)
+                                                        const name = typeof newVal === 'object' ? newVal?.name : newVal
+                                                        setSelectedPageName(name)
+                                                    }}
+                                                />
+                                            </div>
+                                        )
+                                    }}
+                                </Field>
+                            </FormItem>
+                        </FormContainer>
+
+                        <FormContainer>
+                            <FormItem label="Sub Page">
+                                <Field name="sub_page">
+                                    {({ form, field }: FieldProps) => {
+                                        const selectedSubPage =
+                                            typeof field?.value === 'object'
+                                                ? subPageNamesData?.find((option) => option.name === field?.value?.name)
+                                                : subPageNamesData?.find((option) => option.name === field?.value)
+
+                                        return (
+                                            <div className="flex flex-col gap-1 w-full max-w-md">
+                                                <Select
+                                                    isClearable
+                                                    className="w-full"
+                                                    options={subPageNamesData}
+                                                    getOptionLabel={(option) => option.name}
+                                                    getOptionValue={(option) => option.id}
+                                                    value={selectedSubPage || null}
+                                                    onChange={(newVal) => {
+                                                        form.setFieldValue('sub_page', newVal)
+                                                    }}
+                                                />
+                                            </div>
+                                        )
+                                    }}
+                                </Field>
+                            </FormItem>
+                        </FormContainer>
+
+                        <FormItem label="Position">
+                            <Field type="number" min="0" name="position" placeholder="Enter Position" component={Input} />
+                        </FormItem>
+
+                        <FormItem label="Is Active">
+                            <Field type="checkbox" name="is_active" component={Checkbox} />
+                        </FormItem>
+
+                        <FormContainer className="flex gap-2 mt-4 items-center justify-end">
+                            <FormItem>
+                                <Button variant="reject" type="button" onClick={() => resetForm()}>
+                                    Clear
+                                </Button>
+                            </FormItem>
+                            <FormItem>
+                                <Button variant="accept" type="submit">
+                                    Assign
+                                </Button>
+                            </FormItem>
+                        </FormContainer>
+                    </Form>
+                )}
             </Formik>
         </div>
     )

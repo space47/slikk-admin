@@ -64,7 +64,7 @@ const AddBanners = () => {
         if (!currentSelectedPage) return
 
         try {
-            const response = await axioisInstance.get(`/page-sections?page=${currentSelectedPage.value}`)
+            const response = await axioisInstance.get(`/page-sections?p=1&page_size=500&page=${currentSelectedPage.value}`)
             const responsedata = response.data.data.results
             setSectionHeadingData(responsedata?.map((item) => item?.section))
             console.log('API call successful')

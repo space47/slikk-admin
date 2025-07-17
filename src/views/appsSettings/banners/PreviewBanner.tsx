@@ -117,6 +117,7 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
             formData.append('file', files)
 
             formData.append('file_type', 'product')
+            formData.append('compression_service', 'slikk')
 
             notification.info({
                 message: 'Video Upload In Process',

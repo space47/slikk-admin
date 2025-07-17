@@ -35,32 +35,42 @@ const AssignPageSection = () => {
     const { pageState, subPageState, storeState } = location.state || {}
     const [pageNamesData, setPageNamesData] = useState<pageNameTypes[] | undefined>([])
     const [subPageNamesData, setSubPageNamesData] = useState<pageNameTypes[] | undefined>([])
+    const [selectedPageName, setSelectedPageName] = useState<string | undefined>(undefined)
+
     const { data: sectionsData } = useFetchApi<RequiredSections>({ url: `/section` })
 
     const { data: pageNames, isSuccess: isPageNamesSuccess } = pageSettingsService.usePageNamesQuery({
         page: 1,
-        pageSize: 100,
+        pageSize: 500,
     })
-    const { data: SubPageNames, isSuccess: isSubPageNamesSuccess } = pageSettingsService.useSubPageNamesQuery({})
+
+    const { data: SubPageNames, isSuccess: isSubPageNamesSuccess } = pageSettingsService.useSubPageNamesQuery({
+        page: 1,
+        pageSize: 500,
+        pageName: selectedPageName ? selectedPageName : pageState,
+    })
 
     useEffect(() => {
         if (isPageNamesSuccess) {
             setPageNamesData(pageNames?.data?.results || [])
         }
-    }, [dispatch, pageNames, isPageNamesSuccess])
+    }, [pageNames, isPageNamesSuccess])
 
     useEffect(() => {
         if (isSubPageNamesSuccess) {
             setSubPageNamesData(SubPageNames?.data || [])
         }
-    }, [dispatch, isSubPageNamesSuccess])
+    }, [isSubPageNamesSuccess, SubPageNames])
 
     const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
 
     const initialState = {
-        page: pageState ? pageState : '',
-        sub_page: subPageState ? subPageState : '',
-        store: storeState ? storeState : [],
+        page: pageState || '',
+        sub_page: subPageState || '',
+        store: storeState || [],
+        sections: undefined,
+        position: 0,
+        is_active: false,
     }
 
     useEffect(() => {
@@ -93,13 +103,15 @@ const AssignPageSection = () => {
             }
         }
     }
+
     return (
         <div>
             <Formik enableReinitialize initialValues={initialState as valueProps} onSubmit={handleSubmit}>
-                {({ resetForm }) => {
+                {({ resetForm, values }) => {
                     return (
-                        <Form className="p-3 rounded-xl shadow-xl ">
+                        <Form className="p-3 rounded-xl shadow-xl">
                             <div className="text-xl mb-2">2. Assign Sections</div>
+
                             <FormContainer>
                                 <FormItem label="Store">
                                     <Field name="store">
@@ -108,7 +120,7 @@ const AssignPageSection = () => {
                                                 field.value?.some((store: any) => store?.id === option.id),
                                             )
                                             return (
-                                                <div className="flex flex-col gap-1  xl:items-baseline w-full max-w-md">
+                                                <div className="flex flex-col gap-1 w-full max-w-md">
                                                     <Select
                                                         isMulti
                                                         className="w-full"
@@ -126,18 +138,17 @@ const AssignPageSection = () => {
                                     </Field>
                                 </FormItem>
                             </FormContainer>
+
                             <FormContainer>
                                 <FormItem label="Page">
                                     <Field name="page">
                                         {({ form, field }: FieldProps) => {
-                                            console.log('field items are', field)
-                                            console.log('type of value', typeof field)
                                             const selectedPage =
                                                 typeof field?.value === 'object'
                                                     ? pageNamesData?.find((option) => option.name === field?.value?.name)
                                                     : pageNamesData?.find((option) => option.name === field?.value)
                                             return (
-                                                <div className="flex flex-col gap-1  xl:items-baseline w-full max-w-md">
+                                                <div className="flex flex-col gap-1 w-full max-w-md">
                                                     <Select
                                                         isClearable
                                                         className="w-full"
@@ -147,6 +158,8 @@ const AssignPageSection = () => {
                                                         value={selectedPage || null}
                                                         onChange={(newVal) => {
                                                             form.setFieldValue('page', newVal)
+                                                            const name = typeof newVal === 'object' ? newVal?.name : newVal
+                                                            setSelectedPageName(name)
                                                         }}
                                                     />
                                                 </div>
@@ -160,19 +173,19 @@ const AssignPageSection = () => {
                                 <FormItem label="Sub Page">
                                     <Field name="sub_page">
                                         {({ form, field }: FieldProps) => {
-                                            const selectedPage =
+                                            const selectedSubPage =
                                                 typeof field?.value === 'object'
                                                     ? subPageNamesData?.find((option) => option.name === field?.value?.name)
                                                     : subPageNamesData?.find((option) => option.name === field?.value)
                                             return (
-                                                <div className="flex flex-col gap-1  xl:items-baseline w-full max-w-md">
+                                                <div className="flex flex-col gap-1 w-full max-w-md">
                                                     <Select
                                                         isClearable
                                                         className="w-full"
                                                         options={subPageNamesData}
                                                         getOptionLabel={(option) => option.name}
                                                         getOptionValue={(option) => option.id}
-                                                        value={selectedPage || null}
+                                                        value={selectedSubPage || null}
                                                         onChange={(newVal) => {
                                                             form.setFieldValue('sub_page', newVal)
                                                         }}
@@ -188,17 +201,16 @@ const AssignPageSection = () => {
                                 <FormItem label="Sections">
                                     <Field name="sections">
                                         {({ form, field }: FieldProps) => {
-                                            console.log('section heading', field)
-                                            const selectedPage = sectionsData?.find((option) => option?.id === field?.value)
+                                            const selectedSection = sectionsData?.find((option) => option?.id === field?.value)
                                             return (
-                                                <div className="flex flex-col gap-1  xl:items-baseline w-full max-w-md">
+                                                <div className="flex flex-col gap-1 w-full max-w-md">
                                                     <Select
                                                         isClearable
                                                         className="w-full"
                                                         options={sectionsData}
                                                         getOptionLabel={(option) => option.section_heading}
                                                         getOptionValue={(option) => option.id}
-                                                        value={selectedPage || null}
+                                                        value={selectedSection || null}
                                                         onChange={(newVal) => {
                                                             form.setFieldValue('sections', newVal?.id)
                                                         }}
@@ -210,21 +222,24 @@ const AssignPageSection = () => {
                                 </FormItem>
                             </FormContainer>
 
-                            <FormItem label="position">
+                            <FormItem label="Position">
                                 <Field type="number" min="0" name="position" placeholder="Enter Position" component={Input} />
                             </FormItem>
+
                             <FormItem label="Is Active">
-                                <Field type="checkbox" min="0" name="is_active" placeholder="Enter Position" component={Checkbox} />
+                                <Field type="checkbox" name="is_active" component={Checkbox} />
                             </FormItem>
 
                             <FormContainer className="flex gap-2 mt-4 items-center justify-end">
                                 <FormItem>
                                     <Button variant="reject" type="button" onClick={() => resetForm()}>
-                                        clear
+                                        Clear
                                     </Button>
                                 </FormItem>
                                 <FormItem>
-                                    <Button variant="accept">Assign</Button>
+                                    <Button variant="accept" type="submit">
+                                        Assign
+                                    </Button>
                                 </FormItem>
                             </FormContainer>
                         </Form>

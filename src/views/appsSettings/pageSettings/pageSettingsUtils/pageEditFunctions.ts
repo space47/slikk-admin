@@ -93,6 +93,7 @@ export const handleVideo = async (files: File[]) => {
             formData.append('file', file)
         })
         formData.append('file_type', 'product')
+        formData.append('compression_service', 'slikk')
 
         notification.info({
             message: 'Video Upload In Process',
