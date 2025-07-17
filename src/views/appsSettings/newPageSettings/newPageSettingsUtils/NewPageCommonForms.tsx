@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Card, Checkbox, Dialog, FormContainer, FormItem, Input, Select, Tabs } from '@/components/ui'
+import { Button, Checkbox, FormContainer, FormItem, Input, Select, Tabs } from '@/components/ui'
 import TabList from '@/components/ui/Tabs/TabList'
 import { FormFieldsArray, TabsArray } from './newpageConstants'
 import TabNav from '@/components/ui/Tabs/TabNav'
@@ -12,8 +12,9 @@ import { Field, FieldProps } from 'formik'
 import { COMPONENT_CATEGORY_TYPES } from '@/common/banner'
 import { pageSettingsType } from '@/store/types/pageSettings.types'
 import ExtraConfig from '../newPageSettingsComponents/ExtraConfig'
-import { FaEye } from 'react-icons/fa'
+
 import { useState } from 'react'
+import BannerSelect from '../newPageSettingsComponents/BannerSelect'
 
 interface props {
     isEdit?: boolean
@@ -40,7 +41,7 @@ const NewPageCommonForms = ({
     barcodeData,
     bannerDetails,
 }: props) => {
-    const [showPreview, setShowPreview] = useState(false)
+    const [showIsBannerList, setShowIsBannerList] = useState(false)
     console.log('initial Value in main form', initialValue)
     return (
         <div className="p-2 shadow-xl rounded-xl">
@@ -64,6 +65,12 @@ const NewPageCommonForms = ({
                 </Field>
             </FormItem>
 
+            <div className="mt-5 mb-5">
+                <Button type="button" variant="new" onClick={() => setShowIsBannerList(true)}>
+                    Add banner
+                </Button>
+            </div>
+
             <FormContainer className="grid grid-cols-2 gap-2">
                 <FormItem label="Banners">
                     <Field name="banners">
@@ -81,6 +88,7 @@ const NewPageCommonForms = ({
                                         getOptionValue={(option) => option.id}
                                         value={selectedStores || null}
                                         onChange={(newVal) => {
+                                            console.log('new val is', newVal)
                                             form.setFieldValue(field.name, newVal)
                                         }}
                                     />
@@ -88,9 +96,6 @@ const NewPageCommonForms = ({
                             )
                         }}
                     </Field>
-                    <div className="mx-4 mt-2">
-                        <FaEye className="text-xl cursor-pointer" onClick={() => setShowPreview(true)} />
-                    </div>
                 </FormItem>
                 {FormFieldsArray?.map((item, key) => {
                     return (
@@ -165,28 +170,14 @@ const NewPageCommonForms = ({
                     <ExtraConfig />
                 </TabContent>
             </Tabs>
-            {showPreview && (
-                <>
-                    <Dialog isOpen={showPreview} onClose={() => setShowPreview(false)}>
-                        <div className="p-2 max-h-[80vh] overflow-y-auto space-y-4 mt-7">
-                            {values?.banners?.map((item: any, key: any) => (
-                                <Card key={key} className="rounded-2xl shadow-md p-4 border border-gray-200 bg-white overflow-hidden">
-                                    <div className="text-lg font-semibold text-gray-800 mb-2 break-words">Name: {item?.name}</div>
-                                    <div className="flex items-start gap-4">
-                                        <span className="text-gray-700 font-medium">Image:</span>
-                                        <div className="overflow-auto max-w-[300px] max-h-[150px] scrollbar-hide">
-                                            <img
-                                                src={item?.image_web}
-                                                alt={item?.name || 'banner'}
-                                                className="object-contain border rounded-lg shadow-sm w-full h-auto"
-                                            />
-                                        </div>
-                                    </div>
-                                </Card>
-                            ))}
-                        </div>
-                    </Dialog>
-                </>
+            {showIsBannerList && (
+                <BannerSelect
+                    bannerData={bannerDetails}
+                    values={values}
+                    isOpen={showIsBannerList}
+                    setIsOpen={setShowIsBannerList}
+                    setFieldValues={setFieldValue}
+                />
             )}
         </div>
     )
