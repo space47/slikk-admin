@@ -270,7 +270,7 @@ const NewPageSettingsTables = () => {
                         </Button>
                     )}
                     <div>
-                        <ClearCache cacheKey="sections" />
+                        <ClearCache cacheKey="section" />
                     </div>
                     <Button type="button" variant="new" size="sm" onClick={handlePageUpdate}>
                         Update Page

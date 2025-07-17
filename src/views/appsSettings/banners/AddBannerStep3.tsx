@@ -317,6 +317,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
 
             <div className="grid xl:grid-cols-8 grid-cols-2  gap-3">
                 <BannerDateSelector
+                    isReq
                     handleTimeChange={(value: any) => {
                         handleFromTimeChange(value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
                     }}
@@ -324,6 +325,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                     label="Start Date"
                 />
                 <BannerDateSelector
+                    isReq
                     handleTimeChange={(value: any) => {
                         handleToTimeChange(value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
                     }}
@@ -332,7 +334,9 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                 />
 
                 <div className="flex flex-col">
-                    <div>Sub Page</div>
+                    <div>
+                        Sub Page <span className="text-red-600">*</span>
+                    </div>
                     <Select
                         isMulti
                         options={subPageNamesData}

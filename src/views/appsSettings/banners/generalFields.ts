@@ -4,6 +4,7 @@ type BannerField = {
     placeHolder: string
     label: string
     idDisable?: boolean
+    isRequired?: boolean
 }
 
 type BannerFields = {
@@ -12,9 +13,10 @@ type BannerFields = {
 
 export const ADD_BANNER_BASIC_FIELDS: BannerFields = {
     name: {
-        label: 'Name',
+        label: 'Name ',
         type: 'text',
         defVal: '',
+        isRequired: '',
         placeHolder: 'Enter Name',
     },
     position: {
