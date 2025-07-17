@@ -285,7 +285,7 @@ const NewPageSettingsTables = () => {
                     >
                         New Section
                     </Button>
-                    {/* <Button
+                    <Button
                         type="button"
                         variant="new"
                         size="sm"
@@ -300,7 +300,7 @@ const NewPageSettingsTables = () => {
                         }
                     >
                         New Page Section
-                    </Button> */}
+                    </Button>
                 </div>
             </div>
             <div>

@@ -11,7 +11,7 @@ import { notification } from 'antd'
 import { AxiosError } from 'axios'
 import { Field, FieldProps, Form, Formik } from 'formik'
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 interface RequiredSections {
     id: number
@@ -31,6 +31,8 @@ interface valueProps {
 const AssignPageSection = () => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
+    const location = useLocation()
+    const { pageState, subPageState, storeState } = location.state || {}
     const [pageNamesData, setPageNamesData] = useState<pageNameTypes[] | undefined>([])
     const [subPageNamesData, setSubPageNamesData] = useState<pageNameTypes[] | undefined>([])
     const { data: sectionsData } = useFetchApi<RequiredSections>({ url: `/section` })
@@ -54,6 +56,12 @@ const AssignPageSection = () => {
     }, [dispatch, isSubPageNamesSuccess])
 
     const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
+
+    const initialState = {
+        page: pageState ? pageState : '',
+        sub_page: subPageState ? subPageState : '',
+        store: storeState ? storeState : [],
+    }
 
     useEffect(() => {
         dispatch(fetchCompanyStore())
@@ -87,7 +95,7 @@ const AssignPageSection = () => {
     }
     return (
         <div>
-            <Formik enableReinitialize initialValues={{} as valueProps} onSubmit={handleSubmit}>
+            <Formik enableReinitialize initialValues={initialState as valueProps} onSubmit={handleSubmit}>
                 {({ resetForm }) => {
                     return (
                         <Form className="p-3 rounded-xl shadow-xl ">

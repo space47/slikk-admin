@@ -72,6 +72,12 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                     </FormItem>
                 ))}
 
+                {typeValues?.carousel && (
+                    <FormItem label="Dot Inside" className="w-full">
+                        <Field type="checkbox" name={`${typeName}.extra_config.dots_inside` as string} component={Checkbox} />
+                    </FormItem>
+                )}
+
                 {/* Carousel */}
                 <CommonSelect
                     needClassName
@@ -92,6 +98,7 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                         className="col-span-1 w-1/2"
                     />
                 )}
+
                 {typeValues?.carousel_type === 'PARALLAX' && (
                     <>
                         {componentParallaxFieldsArray.map((item, key) => (
@@ -411,6 +418,15 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                             />{' '}
                             <br />
                             <br />
+                            {typeValues?.web_carousel && (
+                                <FormItem label="Web Dot Inside" className="w-full">
+                                    <Field
+                                        type="checkbox"
+                                        name={`${typeName}.extra_config.web_dots_inside` as string}
+                                        component={Checkbox}
+                                    />
+                                </FormItem>
+                            )}
                             {typeValues?.web_name === true && (
                                 <>
                                     {mainNameWebArray?.map((item, key) => (
