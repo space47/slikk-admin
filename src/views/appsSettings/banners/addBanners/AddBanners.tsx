@@ -96,7 +96,7 @@ const AddBanners = () => {
     console.log('section heading is', sectionHeadingData)
 
     const handleSectionSelect = (value: string) => {
-        const selectHeading = sectionHeadingData.find((item) => item.section_heading)
+        const selectHeading = sectionHeadingData.find((item) => item.section_heading === value)
 
         const selectHeadingIndex = sectionHeadingData.findIndex((item) => item.section_heading === value)
 
@@ -108,6 +108,10 @@ const AddBanners = () => {
     }
 
     const [completeBannerFormData, setCompleteBannerFormData] = useState([{ id: Date.now(), is_clickable: true }])
+
+    console.log('section heading data', sectionHeadingData)
+
+    console.log('data below', selectedSectionHeading)
 
     return (
         <div>
