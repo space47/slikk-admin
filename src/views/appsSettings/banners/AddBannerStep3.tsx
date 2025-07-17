@@ -19,7 +19,8 @@ import { pageNameTypes } from '@/store/types/pageSettings.types'
 import { companyStore } from '@/store/types/companyStore.types'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
 
-function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBannerFormData }: any) {
+function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBannerFormData, selectedPage }: any) {
+    console.log('selected section', selectedPage?.value)
     const [bannerForm, setBannerFormData] = useState<BANNER_UPLOAD_DATA[]>(completeBannerFormData)
 
     useEffect(() => {
@@ -81,6 +82,7 @@ function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBan
                                 bannerForm={bannerForm}
                                 setBannerForm={setBannerFormData}
                                 index={key}
+                                pageName={selectedPage?.value}
                                 handleInputChange={(field: any, value: any) => handleInputChange(key, field, value)}
                             />
 
@@ -111,16 +113,21 @@ function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBan
 
 export default AddBannerStep3
 
-const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputChange }: any) => {
+const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputChange, pageName }: any) => {
     const dispatch = useAppDispatch()
     const [subPageNamesData, setSubPageNamesData] = useState<pageNameTypes[] | undefined>([])
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
-    const { data: SubPageNames, isSuccess: isSubPageNamesSuccess } = pageSettingsService.useSubPageNamesQuery({ page: 1, pageSize: 100 })
+    const { data: SubPageNames, isSuccess: isSubPageNamesSuccess } = pageSettingsService.useSubPageNamesQuery({
+        page: 1,
+        pageSize: 100,
+        pageName: pageName || '',
+    })
 
     const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
 
+    console.log('page name', pageName)
     useEffect(() => {
         dispatch(fetchCompanyStore())
     }, [dispatch])

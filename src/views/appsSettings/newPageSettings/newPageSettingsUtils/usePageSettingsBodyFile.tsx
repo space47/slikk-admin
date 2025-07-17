@@ -1,10 +1,48 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { handleimage } from '@/common/handleImage'
-import { calculateAspectRatio, handleImage, handleVideo } from '../../pageSettings/pageSettingsUtils/pageEditFunctions'
+import { calculateAspectRatio, handleImage } from '../../pageSettings/pageSettingsUtils/pageEditFunctions'
+import { notification } from 'antd'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 interface props {
     values?: any
     initialValue?: any
+}
+
+const handleVideo = async (files: File[]) => {
+    notification.info({
+        message: 'Video Upload In Process',
+    })
+    console.log('file is', files)
+    if (files.length > 0) {
+        console.log('abc')
+        console.log(typeof files)
+        try {
+            const formData = new FormData()
+            console.log(files[0])
+            formData.append('file', files[0])
+            formData.append('file_type', 'product')
+            console.log('formdata is', formData.get('file'))
+            const response = await axioisInstance.post('fileupload/dashboard', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
+            console.log(response)
+            notification.success({
+                message: 'Video Updated',
+            })
+            const newData = response.data.url
+            return newData
+        } catch (error: any) {
+            console.error('Error uploading files:', error)
+            notification.error({
+                message: 'Failure',
+                description: error?.response?.data?.message || 'Video Not uploaded',
+            })
+            return 'Error'
+        }
+    }
 }
 
 export const PageSettingsBodyFile = async ({ values, initialValue }: props) => {
@@ -19,11 +57,14 @@ export const PageSettingsBodyFile = async ({ values, initialValue }: props) => {
         ? await handleimage('product', values?.mobile_background_lottie_array)
         : initialValue?.mobile_background_lottie
 
-    const footervideoUpload = (await handleVideo(values?.footer_config_video_Array)) || ''
-    const headerVideoUpload = (await handleVideo(values?.header_config_video_Array)) || ''
-    const subHeaderVideoUpload = (await handleVideo(values?.sub_header_config_video_Array)) || ''
-    const backgroundVideoUpload = (await handleVideo(values?.background_video_array)) || ''
-    const mobileBackgroundVideoUpload = (await handleVideo(values?.mobile_background_video_array)) || ''
+    const backgroundVideoUpload = values?.background_video_array ? await handleVideo(values?.background_video_array) : ''
+    const mobileBackgroundVideoUpload = values?.mobile_background_video_array
+        ? await handleVideo(values?.mobile_background_video_array)
+        : ''
+
+    const footervideoUpload = values?.footer_config_video_Array ? await handleVideo(values?.footer_config_video_Array) : ''
+    const headerVideoUpload = values?.header_config_video_Array ? await handleVideo(values?.header_config_video_Array) : ''
+    const subHeaderVideoUpload = values?.sub_header_config_video_Array ? await handleVideo(values?.sub_header_config_video_Array) : ''
 
     const imageUpload = (await handleImage(values?.background_image_array)) || ''
     const mobileimageUpload = (await handleImage(values?.mobile_background_array)) || ''

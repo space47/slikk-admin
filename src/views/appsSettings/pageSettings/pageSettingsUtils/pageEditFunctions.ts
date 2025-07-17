@@ -85,6 +85,7 @@ export const handleImage = async (files: File[]) => {
 }
 
 export const handleVideo = async (files: File[]) => {
+    console.log('file is', files)
     if (files) {
         const formData = new FormData()
 
@@ -96,8 +97,11 @@ export const handleVideo = async (files: File[]) => {
         notification.info({
             message: 'Video Upload In Process',
         })
+
         try {
-            console.log(formData.get('file'))
+            console.log(formData.get('file'), 'is the file')
+
+            console.log('formdata is', formData)
             const response = await axioisInstance.post('fileupload', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',

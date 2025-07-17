@@ -66,7 +66,7 @@ export const useBannerColumns = ({
 
             {
                 header: 'Status',
-                accessorKey: '',
+                accessorKey: 'from_date',
                 cell: ({ row }: any) => {
                     const now = moment()
                     const fromDate = moment(row.original.from_date)

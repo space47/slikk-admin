@@ -46,7 +46,7 @@ const AppBanners = () => {
             return { name: item?.name, value: item?.name }
         }) || []
 
-    const { data: pageData } = useFetchApi<pageNameTypes>({ url: `/page` })
+    const { data: pageData } = useFetchApi<pageNameTypes>({ url: `/page?p=1&page_size=500` })
     const BANNER_PAGE_NAME = pageData?.map((item) => ({
         name: item?.display_name,
         value: item?.name,

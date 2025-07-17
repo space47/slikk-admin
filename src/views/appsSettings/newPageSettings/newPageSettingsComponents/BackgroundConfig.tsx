@@ -197,15 +197,43 @@ const BackgroundConfig = ({ editMode = false, initialValue, values, setInitialVa
                     />
                 </FormItem>
             ))}
+
+            <FormItem label="Mobile Width">
+                <Field type="number" name="background_config.mobile_width" placeholder="Enter Width" component={Input} />
+            </FormItem>
+            <FormItem label="Web Mobile Width">
+                <Field type="number" name="background_config.web_width" placeholder="Enter Web Width" component={Input} />
+            </FormItem>
+            <FormItem label="Aspect ratio">
+                <Field
+                    type="number"
+                    name="background_config.background_image_aspect_ratio"
+                    placeholder="Enter Aspect ratio"
+                    component={Input}
+                />
+            </FormItem>
+            <FormItem label="Mobile Aspect Ratio">
+                <Field
+                    type="number"
+                    name="background_config.mobile_image_aspect_ratio"
+                    placeholder="Enter Mobile Aspect ratio"
+                    component={Input}
+                />
+            </FormItem>
+            <FormItem label="Scale">
+                <Field type="number" name="background_config.scale" placeholder="Enter Scale" component={Input} />
+            </FormItem>
+            <FormItem label="Web Scale">
+                <Field type="number" name="background_config.scale_web" placeholder="Enter web Scale" component={Input} />
+            </FormItem>
+
             {BackgroundExtraArray?.map((item, key) => (
-                <FormItem key={key} asterisk label={item.label} className="w-full">
+                <FormItem key={key} label={item.label} className="w-full">
                     <Field
                         type={item.type}
                         name={item.name}
                         placeholder={item.placeholder}
                         component={item?.type === 'checkbox' ? Checkbox : Input}
-                        min="0"
-                        step={0.01}
                     />
                 </FormItem>
             ))}

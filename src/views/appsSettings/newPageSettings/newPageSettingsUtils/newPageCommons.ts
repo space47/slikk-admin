@@ -29,26 +29,8 @@ export const BackgroundFields = getBackgroundArray('background_config')
 export const webBackgroundFields = getWebBackgroundArray('background_config')
 
 export const BackgroundExtraArray = [
-    { label: 'Mobile Width', type: 'number', key: 'background_config.mobile_width', placeholder: 'Place Mobile width' },
-    { label: 'Web Width', type: 'number', key: 'background_config.web_width', placeholder: 'Place Mobile width' },
-    {
-        label: 'Aspect Ratio',
-        className: 'col-span-1 w-full',
-        type: 'number',
-        key: 'background_config.background_image_aspect_ratio',
-        placeholder: 'Place your Web Aspect Ratio',
-    },
-    {
-        label: 'Mobile Aspect Ratio',
-        className: 'col-span-1 w-full',
-        type: 'number',
-        key: 'background_config.mobile_image_aspect_ratio',
-        placeholder: 'Place your mobile Aspect Ratio',
-    },
     { label: 'Video', type: 'checkbox', name: 'background_config.is_background_video', placeholder: '' },
     { label: 'Lottie', type: 'checkbox', name: 'background_config.is_background_lottie', placeholder: '' },
-    { label: 'Scale', type: 'number', key: 'background_config.scale', placeholder: 'Enter Image Scale ' },
-    { label: 'Web Scale', type: 'number', key: 'background_config.scale_web', placeholder: 'Enter Web Image Scale ' },
 ]
 
 export const MobileAndDesktopPositions = [

@@ -2,6 +2,7 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 
 export const handleVideo = async (files: File[]) => {
+    console.log('file in all files', files)
     if (files) {
         const formData = new FormData()
         files.forEach((file, index) => {
