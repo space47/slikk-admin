@@ -233,8 +233,12 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
 
             console.log('Data to send', data)
 
+            const filteredBody = Object.fromEntries(Object.entries(data)?.filter(([, val]) => val !== ''))
+
+            console.log('filtered body', filteredBody)
+
             await axioisInstance
-                .post('banners', data)
+                .post('banners', filteredBody)
                 .then((res) => {
                     notification.success({
                         message: 'Successfully uploaded banner ' + (index + 1) || res?.data?.message,
