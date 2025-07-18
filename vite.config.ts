@@ -16,6 +16,7 @@ export default defineConfig({
     ],
     optimizeDeps: {
         exclude: ['@preflower/barcode-detector-polyfill'],
+        force: true,
     },
 
     assetsInclude: ['**/*.md'],

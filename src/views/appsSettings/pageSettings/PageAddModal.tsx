@@ -12,7 +12,7 @@ import { handleimage } from '@/common/handleImage'
 import {
     calculateAspectRatio,
     EditAspectRatios,
-    EditImageUpoads,
+    EditImageUploads,
     EditVideoUpload,
     handleImage,
     handleVideo,

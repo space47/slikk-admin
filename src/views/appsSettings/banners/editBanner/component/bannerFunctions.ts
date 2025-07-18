@@ -1,5 +1,5 @@
 import { handleimage } from '@/common/handleImage'
-import { handleVideo } from '@/common/handleVideo'
+import { handleVideo } from '@/views/appsSettings/newPageSettings/newPageSettingsUtils/usePageSettingsBodyFile'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const calculateAspectRatio = async (files: File[]): Promise<number[]> => {

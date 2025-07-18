@@ -20,6 +20,7 @@ import { DIVISION_STATE } from '@/store/types/division.types'
 import { useFetchApi } from '@/commonHooks/useFetchApi'
 import DeleteBannerModal from './editBanner/component/DeleteBannerModal'
 import { fetchForSectionHeading } from './bannerUtils/bannerFunctions'
+import { pageNameTypes } from '@/store/types/pageSettings.types'
 
 const AppBanners = () => {
     const navigate = useNavigate()
@@ -39,22 +40,29 @@ const AppBanners = () => {
     const [updatedPosition, setUpdatedPosition] = useState<{ [key: number]: number }>({})
     const [sectionFilter, setSectionFilter] = useState<string>('')
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
-    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(var1 !== undefined ? var1 : BANNER_PAGE_NAME[0])
 
     const DivisionArray =
         divisions?.divisions?.map((item) => {
             return { name: item?.name, value: item?.name }
         }) || []
 
-    //NOTE: FOR FETCHING PAGE NAMES Dynamically.......will fix it later
-    // useEffect(() => {
-    //     fetchPageSettings(setPageNames, setCurrentSelectedPage)
-    // }, [])
+    const { data: pageData } = useFetchApi<pageNameTypes>({ url: `/page?p=1&page_size=500` })
+    const BANNER_PAGE_NAME = pageData?.map((item) => ({
+        name: item?.display_name,
+        value: item?.name,
+    }))
 
-    // const BANNER_PAGE_NAME = pageNames?.map((item) => ({
-    //     name: item?.display_name,
-    //     value: item?.name,
-    // }))
+    console.log('var1', BANNER_PAGE_NAME)
+
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(
+        var1 !== undefined ? { name: var1, value: var1 } : BANNER_PAGE_NAME[0],
+    )
+
+    useEffect(() => {
+        if (!var1) {
+            setCurrentSelectedPage(BANNER_PAGE_NAME[0])
+        }
+    }, [pageData])
 
     useEffect(() => {
         fetchForSectionHeading(currentSelectedPage)
@@ -75,7 +83,7 @@ const AppBanners = () => {
             sectionHeading = `&section_heading=${encodeURIComponent(selectedHeading)}`
         }
         const divisionFilter = selectedDivision !== 'Select Division' ? `&division=${encodeURIComponent(selectedDivision)}` : ''
-        return `/banners?p=${page}&page_size=${pageSize}&name=${globalFilter}&page=${currentSelectedPage.value}${sectionHeading}${divisionFilter}`
+        return `/banners?p=${page}&page_size=${pageSize}&name=${globalFilter}&page=${currentSelectedPage?.value}${sectionHeading}${divisionFilter}`
     }, [page, pageSize, globalFilter, currentSelectedPage, selectedHeading, selectedDivision, var2, isSectionHeading])
 
     const { data, totalData, responseStatus } = useFetchApi<BANNER_MODEL>({ url: queryURL })
@@ -168,7 +176,7 @@ const AppBanners = () => {
                         <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px]">
                             <Dropdown
                                 className="border bg-gray-200 text-black text-lg font-semibold"
-                                title={currentSelectedPage?.name}
+                                title={currentSelectedPage?.name || 'SELECT'}
                                 onSelect={handleSelectPage}
                             >
                                 {BANNER_PAGE_NAME.map((item) => (

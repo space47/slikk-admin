@@ -2,7 +2,7 @@
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
-import { Field, Form, Formik, ErrorMessage } from 'formik'
+import { Field, Form, Formik, ErrorMessage, FieldProps } from 'formik'
 import { useEffect, useMemo, useState } from 'react'
 import { notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -21,11 +21,12 @@ import { beforeUpload } from '@/common/beforeUpload'
 import BannerCategories from './component/BannerCategories'
 import { beforeVideoUpload } from '@/common/beforUploadVideo'
 import VideoComponent from './component/VideoComponent'
-import { Checkbox } from '@/components/ui'
+import { Checkbox, Select } from '@/components/ui'
 import BannerFilterTags from './component/BannerFilterTags'
 import { ImageHandlerBanners, MediaType } from './component/bannerFunctions'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 import FullDateForm from '@/common/FullDateForm'
+import { pageSettingsService } from '@/store/services/pageSettingService'
 
 const EditBanner = () => {
     const { id } = useParams()
@@ -40,6 +41,17 @@ const EditBanner = () => {
     const [sectionBGmobile, setSectionBGmobile] = useState<string[]>([])
     const [showSpinner, setShowSpinner] = useState(false)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
+    const [subPageNamesData, setSubPageNamesData] = useState<any>([])
+
+    const { data: SubPageNames, isSuccess: isSubPageNamesSuccess } = pageSettingsService.useSubPageNamesQuery({ page: 1, pageSize: 100 })
+
+    useEffect(() => {
+        if (isSubPageNamesSuccess) {
+            setSubPageNamesData(SubPageNames?.data || [])
+        }
+    }, [isSubPageNamesSuccess])
+
+    console.log('subPage name is', subPageNamesData)
 
     const validationSchema = Yup.object().shape({
         min_off: Yup.number().max(Yup.ref('max_off'), 'min_off must be less than or equal to max_off'),
@@ -159,6 +171,7 @@ const EditBanner = () => {
             uptooff: values?.uptooff || '',
             video_mobile: values?.video_mobile || '',
             video_web: values?.video_web || '',
+            sub_page: values?.sub_page || [],
         }
 
         const filteredBody = Object.fromEntries(Object.entries(body).filter(([, v]) => v !== ''))
@@ -307,6 +320,30 @@ const EditBanner = () => {
                                 />
                                 <BannerFilterTags label="Tags" name="tags" />
                                 <BannerFilterTags label="Quick Filter Tags" name="quick_filter_tags" />
+                                <FormItem label="Sub Page" className="col-span-1 w-1/2">
+                                    <Field name="sub_page">
+                                        {({ field, form }: FieldProps<any>) => {
+                                            const selectedTags = Array.isArray(field.value)
+                                                ? subPageNamesData?.filter((option: any) => field.value.includes(option.id)) || []
+                                                : []
+
+                                            return (
+                                                <Select
+                                                    isMulti
+                                                    placeholder="Select Filter Tags"
+                                                    options={subPageNamesData}
+                                                    value={selectedTags}
+                                                    getOptionLabel={(option) => option.name}
+                                                    getOptionValue={(option) => option.id}
+                                                    onChange={(newVal) => {
+                                                        const newIds = newVal ? newVal.map((val) => val.id) : []
+                                                        form.setFieldValue('sub_page', newIds)
+                                                    }}
+                                                />
+                                            )
+                                        }}
+                                    </Field>
+                                </FormItem>
                             </FormContainer>
 
                             <FormContainer>

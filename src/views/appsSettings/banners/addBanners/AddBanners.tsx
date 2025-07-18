@@ -64,9 +64,9 @@ const AddBanners = () => {
         if (!currentSelectedPage) return
 
         try {
-            const response = await axioisInstance.get(`/page/config?page_name=${currentSelectedPage.value}`)
-            const responsedata = response.data.data.value.Web
-            setSectionHeadingData(Object.values(responsedata))
+            const response = await axioisInstance.get(`/page-sections?p=1&page_size=500&page=${currentSelectedPage.value}`)
+            const responsedata = response.data.data.results
+            setSectionHeadingData(responsedata?.map((item) => item?.section))
             console.log('API call successful')
         } catch (error) {
             console.error('API call error:', error)
@@ -93,12 +93,12 @@ const AddBanners = () => {
         setCurrentStep(2)
     }
 
-    const handleSectionSelect = (value: string) => {
-        const selectHeading = sectionHeadingData.find((item) => item.section_heading === value && item.data_type.type === 'banner')
+    console.log('section heading is', sectionHeadingData)
 
-        const selectHeadingIndex = sectionHeadingData.findIndex(
-            (item) => item.section_heading === value && item.data_type.type === 'banner',
-        )
+    const handleSectionSelect = (value: string) => {
+        const selectHeading = sectionHeadingData.find((item) => item.section_heading === value)
+
+        const selectHeadingIndex = sectionHeadingData.findIndex((item) => item.section_heading === value)
 
         setSelectedSectionHeading({ ...selectHeading, position: selectHeadingIndex } || null)
     }
@@ -108,6 +108,10 @@ const AddBanners = () => {
     }
 
     const [completeBannerFormData, setCompleteBannerFormData] = useState([{ id: Date.now(), is_clickable: true }])
+
+    console.log('section heading data', sectionHeadingData)
+
+    console.log('data below', selectedSectionHeading)
 
     return (
         <div>
@@ -155,16 +159,14 @@ const AddBanners = () => {
                                     title={selectedSectionHeading?.section_heading || 'Select Section Heading'}
                                     onSelect={handleSectionSelect}
                                 >
-                                    {sectionHeadingData
-                                        ?.filter((item) => item.data_type.type === 'banner')
-                                        .map((item, key) => {
-                                            // console.log('Seaction Heading', item?.section_heading)
-                                            return (
-                                                <DropdownItem key={key} eventKey={item.section_heading}>
-                                                    <span>{item.section_heading}</span>
-                                                </DropdownItem>
-                                            )
-                                        })}
+                                    {sectionHeadingData?.map((item, key) => {
+                                        // console.log('Seaction Heading', item?.section_heading)
+                                        return (
+                                            <DropdownItem key={key} eventKey={item.section_heading}>
+                                                <span>{item.section_heading}</span>
+                                            </DropdownItem>
+                                        )
+                                    })}
                                 </Dropdown>
                             </div>
                         ) : (
@@ -179,9 +181,7 @@ const AddBanners = () => {
                             {selectedSectionHeading && (
                                 <BannerDetails
                                     data={sectionHeadingData.filter(
-                                        (item) =>
-                                            item.section_heading === selectedSectionHeading.section_heading &&
-                                            item.data_type.type === 'banner',
+                                        (item) => item.section_heading === selectedSectionHeading.section_heading,
                                     )}
                                 />
                             )}

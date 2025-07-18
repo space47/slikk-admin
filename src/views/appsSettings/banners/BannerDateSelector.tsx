@@ -7,12 +7,23 @@ interface Props {
     label: string
     valueDate: string | null
     handleTimeChange: any
+    isReq?: boolean
 }
 
-const BannerDateSelector = ({ valueDate, handleTimeChange, label }: Props) => {
+const BannerDateSelector = ({ valueDate, handleTimeChange, label, isReq }: Props) => {
     return (
         <div className="flex flex-col gap-2">
-            <div>{label}</div>
+            <div>
+                {' '}
+                {label}
+                {isReq ? (
+                    <>
+                        <span className="text-red-500">*</span>
+                    </>
+                ) : (
+                    ''
+                )}
+            </div>
             <DatePicker
                 showTime
                 placeholder=""

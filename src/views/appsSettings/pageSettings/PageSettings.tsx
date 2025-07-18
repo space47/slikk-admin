@@ -38,6 +38,8 @@ const PageSettings = () => {
         fetchPageSettings(setPageNames, setCurrentSelectedPage)
     }, [])
 
+    console.log('page names', pageNames)
+
     const BANNER_PAGE = pageNames?.map((item) => ({
         name: item?.display_name,
         value: item?.name,

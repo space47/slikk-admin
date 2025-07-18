@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
-import { Field, Form, Formik } from 'formik'
+import { Field } from 'formik'
 import Upload from '@/components/ui/Upload'
 import type { FieldProps } from 'formik'
 import { FormItem, FormContainer } from '@/components/ui/Form'
-import { WebType } from './PageModal'
 import { MdCancel } from 'react-icons/md'
 
 interface IMAGEPROPS {
@@ -36,7 +36,7 @@ const PageEditImage = ({
     return (
         <div>
             {' '}
-            <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
+            <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col  items-center  rounded-xl mb-2 overflow-scroll scrollbar-hide">
                 <div className="font-semibold mb-1">{label}</div>
                 {noImage && rowName && (
                     <div className="flex flex-col items-center justify-center min-w-[100px]">
@@ -53,7 +53,7 @@ const PageEditImage = ({
                         className="grid grid-rows-2"
                     >
                         <Field name={name}>
-                            {({ field, form }: FieldProps<WebType>) => (
+                            {({ form }: FieldProps) => (
                                 <>
                                     <Upload
                                         beforeUpload={beforeUpload}
