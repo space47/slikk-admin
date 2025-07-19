@@ -66,14 +66,19 @@ const NewPageSettingsTables = () => {
         data: pageSettingsMain,
         isSuccess,
         isLoading,
-    } = pageSettingsService.useMainPageSettingsQuery({
-        page,
-        pageSize,
-        pageId: currentPageName?.label,
-        sub_page: currentSubPageName?.label,
-        store_code: storeCode?.map((item) => item.id) || [],
-        is_active: isActive || 'true',
-    })
+    } = pageSettingsService.useMainPageSettingsQuery(
+        {
+            page,
+            pageSize,
+            pageId: currentPageName?.label,
+            sub_page: currentSubPageName?.label,
+            store_code: storeCode?.map((item) => item.id) || [],
+            is_active: isActive || 'true',
+        },
+        {
+            refetchOnMountOrArgChange: true,
+        },
+    )
 
     const { data: pageNames, isSuccess: isPageNamesSuccess } = pageSettingsService.usePageNamesQuery({
         page: pageForName,
@@ -132,17 +137,22 @@ const NewPageSettingsTables = () => {
             }
         }
     }
-    const handleMarkInactive = async () => {
+    const handleMarkInactive = async (state: boolean) => {
         const body = pageIdStore?.map((item) => ({
             id: item,
-            is_active: false,
+            is_active: state,
         }))
         try {
             const res = await axioisInstance.post('/page-section-bulk/update', body)
-            notification.success({ message: res.data?.data?.message || 'Made inactive' })
+            notification.success({
+                message: res.data?.data?.message || `${state === true ? 'The page is active' : 'Inactivated the Page'}`,
+            })
         } catch (error) {
             if (error instanceof AxiosError) {
-                notification.error({ message: error?.response?.data?.message || 'Failed to make inactive' })
+                notification.error({
+                    message:
+                        error?.response?.data?.message || `${state === true ? 'Failed to active the page' : 'Failed to Inactive the page'}`,
+                })
             }
         }
     }
@@ -264,11 +274,17 @@ const NewPageSettingsTables = () => {
                     </div>
                 </div>
                 <div className="grid grid-cols-2 gap-2 xl:flex ">
-                    {pageIdStore.length > 0 && (
-                        <Button type="button" variant="new" size="sm" onClick={handleMarkInactive}>
+                    {pageIdStore.length > 0 && isActive === 'true' && (
+                        <Button type="button" variant="new" size="sm" onClick={() => handleMarkInactive(false)}>
                             Mark Inactive
                         </Button>
                     )}
+                    {pageIdStore.length > 0 && isActive === 'false' && (
+                        <Button type="button" variant="new" size="sm" onClick={() => handleMarkInactive(true)}>
+                            Mark Active
+                        </Button>
+                    )}
+
                     <div>
                         <ClearCache cacheKey="section" />
                     </div>
