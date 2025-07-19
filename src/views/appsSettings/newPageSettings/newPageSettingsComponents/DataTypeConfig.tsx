@@ -12,6 +12,7 @@ import { dataTypeArray, dataTypeValidationArray } from '../../pageSettings/confi
 import { SubDataTypeArray } from '../../pageSettings/PageSettingsCommon'
 import ComonFilterSelect from '@/common/ComonFilterSelect'
 import BarcodeData from '../newPageSettingsUtils/BarcodeData'
+import { SortArrays } from '../newPageSettingsUtils/newPageCommons'
 
 interface DataTypesConfigProps {
     values: any
@@ -122,6 +123,9 @@ const DataTypesConfig = ({ values, filterId, setFilterId, setFieldValue, setBarc
                 <div className="mb-4">
                     <ComonFilterSelect isEdit={isEdit ?? false} filterId={filterId} setFilterId={setFilterId} />
                 </div>
+                {/* sort_hightolow */}
+
+                <CommonSelect label="Sort By" name="sort" options={SortArrays} />
 
                 <FormItem label="Data Count" className="col-span-1 w-full h-[80%]">
                     <Field type="number" name="data_type.data_count" placeholder="Place Data Count" component={Input} min="0" step={0.01} />

@@ -144,3 +144,9 @@ export const TimeFieldsArray = [
     { label: 'Timer Type', name: 'extra_info.timer_type', type: 'text' },
     { label: 'Background Color', name: 'extra_info.bg_color', type: 'text' },
 ]
+
+export const SortArrays = [
+    { label: 'High to Low', value: 'hightolow' },
+    { label: 'Low to High', value: 'lowtohigh' },
+    { label: 'Discount', value: 'discount' },
+]
