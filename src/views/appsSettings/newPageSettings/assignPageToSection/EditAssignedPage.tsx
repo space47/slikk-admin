@@ -63,6 +63,14 @@ const EditAssignedPage = () => {
         dispatch(fetchCompanyStore())
     }, [dispatch])
 
+    useEffect(() => {
+        if (data && data[0]?.page) {
+            const initialPage = data[0]?.page
+            const pageName = typeof initialPage === 'object' ? initialPage.name : initialPage
+            setSelectedPageName(pageName)
+        }
+    }, [data])
+
     const initialValue = {
         page: data[0]?.page,
         sub_page: data[0]?.sub_page,

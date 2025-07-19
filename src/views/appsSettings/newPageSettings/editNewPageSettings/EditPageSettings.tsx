@@ -98,7 +98,7 @@ const EditPageSettings = () => {
                       : {}),
                 filters: [
                     ...(values?.division_select ? [`division_${values.division_select}`] : []),
-                    // ...(values?.data_type?.filters ?? []), // remove this after extra info is fixed
+                    ...(values?.sort ? [`sort_${values.sort}`] : []),
                     ...(filterId ? [`filterID_${filterId}`] : []),
                 ]
                     .filter(Boolean)
