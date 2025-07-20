@@ -174,7 +174,11 @@ const EditBanner = () => {
             sub_page: values?.sub_page || [],
         }
 
-        const filteredBody = Object.fromEntries(Object.entries(body).filter(([, v]) => v !== ''))
+        const keysToKeepEvenIfEmpty = ['division', 'category', 'sub_category', 'product_type']
+
+        const filteredBody = Object.fromEntries(
+            Object.entries(body).filter(([key, value]) => keysToKeepEvenIfEmpty.includes(key) || value !== ''),
+        )
 
         console.log('FormData of Edit Banner:', filteredBody)
         try {
