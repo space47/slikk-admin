@@ -27,6 +27,7 @@ import { ImageHandlerBanners, MediaType } from './component/bannerFunctions'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 import FullDateForm from '@/common/FullDateForm'
 import { pageSettingsService } from '@/store/services/pageSettingService'
+import CommonFilterSelect from '@/common/ComonFilterSelect'
 
 const EditBanner = () => {
     const { id } = useParams()
@@ -42,6 +43,7 @@ const EditBanner = () => {
     const [showSpinner, setShowSpinner] = useState(false)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const [subPageNamesData, setSubPageNamesData] = useState<any>([])
+    const [filterId, setFilterId] = useState<number | string>('')
 
     const { data: SubPageNames, isSuccess: isSubPageNamesSuccess } = pageSettingsService.useSubPageNamesQuery({ page: 1, pageSize: 100 })
 
@@ -83,6 +85,7 @@ const EditBanner = () => {
         setSectionBGmobile(toArray(bannerData?.section_background_mobile))
         setMobilelottieView(toArray(bannerData?.extra_attributes?.lottie_mobile))
         setWeblottieView(toArray(bannerData?.extra_attributes?.lottie_web))
+        setFilterId(bannerData?.filter_id)
     }, [bannerData])
 
     const handleImageRemove = (index: number, type: MediaType) => {
@@ -150,6 +153,7 @@ const EditBanner = () => {
             offer_id: values?.offer_id || '',
             offers: values?.offers ?? '',
             page: values?.page || '',
+            filter_id: filterId || '',
             parent_banner: values?.parent_banner || '',
             position: values?.position || '',
             product_type: values?.product_type?.map((item: any) => item.name).join(',') || '',
@@ -322,6 +326,9 @@ const EditBanner = () => {
                                     options={brands.brands}
                                     fieldValues="brand"
                                 />
+                                <div className="mb-4">
+                                    <CommonFilterSelect isEdit filterId={filterId as string} setFilterId={setFilterId} />
+                                </div>
                                 <BannerFilterTags label="Tags" name="tags" />
                                 <BannerFilterTags label="Quick Filter Tags" name="quick_filter_tags" />
                                 <FormItem label="Sub Page" className="col-span-1 w-1/2">

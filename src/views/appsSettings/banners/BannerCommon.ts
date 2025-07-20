@@ -65,4 +65,6 @@ export interface BANNER_MODEL {
     lottie_web: string
     lottie_mobile: string
     sub_page?: any
+    sort?: string
+    filter_id?: number
 }
