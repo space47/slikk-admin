@@ -13,8 +13,12 @@ import { COMPONENT_CATEGORY_TYPES } from '@/common/banner'
 import { pageSettingsType } from '@/store/types/pageSettings.types'
 import ExtraConfig from '../newPageSettingsComponents/ExtraConfig'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import BannerSelect from '../newPageSettingsComponents/BannerSelect'
+import TagsEdit from '../../pageSettings/TagsEdit'
+import { useAppDispatch, useAppSelector } from '@/store'
+import { FILTER_STATE } from '@/store/types/filters.types'
+import { getAllFiltersAPI } from '@/store/action/filters.action'
 
 interface props {
     isEdit?: boolean
@@ -42,6 +46,12 @@ const NewPageCommonForms = ({
     bannerDetails,
 }: props) => {
     const [showIsBannerList, setShowIsBannerList] = useState(false)
+    const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
+
+    const dispatch = useAppDispatch()
+    useEffect(() => {
+        dispatch(getAllFiltersAPI())
+    }, [dispatch])
     console.log('initial Value in main form', initialValue)
     return (
         <div className="p-2 shadow-xl rounded-xl">
@@ -110,7 +120,9 @@ const NewPageCommonForms = ({
                     )
                 })}
             </FormContainer>
+            {values?.is_section_clickable && <TagsEdit isValue filterOptions={filters.filters} />}
 
+            <br />
             <Tabs>
                 <TabList className="flex items-center justify-center gap-4 bg-yellow-50 rounded-xl shadow-md p-3 mb-10 sticky z-10 top-16 ">
                     {(!!values?.extra_info?.child_data_type === true

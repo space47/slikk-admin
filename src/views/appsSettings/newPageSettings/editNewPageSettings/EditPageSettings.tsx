@@ -104,6 +104,7 @@ const EditPageSettings = () => {
                     .filter(Boolean)
                     .flat(),
             },
+            ...(values?.section_filters ? { section_filters: values?.section_filters } : {}),
         }
         const filteredBody = Object.fromEntries(Object.entries(body || {}).filter(([_, value]) => value !== undefined))
         try {
