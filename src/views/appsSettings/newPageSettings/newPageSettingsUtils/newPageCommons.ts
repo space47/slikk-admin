@@ -149,4 +149,6 @@ export const SortArrays = [
     { label: 'High to Low', value: 'hightolow' },
     { label: 'Low to High', value: 'lowtohigh' },
     { label: 'Discount', value: 'discount' },
+    { label: 'Rating', value: 'rating' },
+    { label: 'Newest', value: 'newest' },
 ]

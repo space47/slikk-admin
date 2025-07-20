@@ -18,6 +18,8 @@ import { pageSettingsService } from '@/store/services/pageSettingService'
 import { pageNameTypes } from '@/store/types/pageSettings.types'
 import { companyStore } from '@/store/types/companyStore.types'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
+import CommonFilterSelect from '@/common/ComonFilterSelect'
+import FilterSelectWithoutFormik from '@/common/FilterSelectWithoutFormik'
 
 function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBannerFormData, selectedPage }: any) {
     console.log('selected section', selectedPage?.value)
@@ -127,6 +129,8 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
 
     const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
 
+    const [filterId, setFilterId] = useState('')
+
     console.log('page name', pageName)
     useEffect(() => {
         dispatch(fetchCompanyStore())
@@ -196,6 +200,17 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
         const finalValue = type === 'number' ? Number(value) : type === 'checkbox' ? checked : value
         handleInputChange(name, finalValue)
     }
+
+    useEffect(() => {
+        if (filterId) {
+            const tempBannerForm = [...bannerForm]
+            tempBannerForm[index] = {
+                ...bannerForm[index],
+                filter_id: filterId,
+            }
+            setBannerForm(tempBannerForm)
+        }
+    }, [filterId])
 
     const handleSetDataInForm = (key: string, value: any) => {
         const tempBannerForm = bannerForm
@@ -339,7 +354,6 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                     valueDate={bannerForm[index]?.to_date}
                     label="End Date"
                 />
-
                 <div className="flex flex-col">
                     <div>
                         Sub Page <span className="text-red-600">*</span>
@@ -491,6 +505,8 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                             { value: 'sort_lowtohigh', label: 'Low to High' },
                             { value: 'sort_hightolow', label: 'High to Low' },
                             { value: 'sort_discount', label: 'DISCOUNT' },
+                            { value: 'sort_rating', label: 'RATING' },
+                            { value: 'sort_newest', label: 'NEWEST' },
                         ]}
                         getOptionLabel={(option) => option.label}
                         getOptionValue={(option) => option.value}
@@ -498,6 +514,10 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                             handleMultiSelect('tags', [selectedOption?.value])
                         }}
                     />
+                </div>
+
+                <div className="mb-4">
+                    <FilterSelectWithoutFormik filterId={filterId} setFilterId={setFilterId} customClass="xl:w-[400px]" />
                 </div>
 
                 <div></div>
