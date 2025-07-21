@@ -15,6 +15,9 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import TagsEdit from '../../pageSettings/TagsEdit'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
+import CommonFilterSelect from '@/common/ComonFilterSelect'
+import CommonSelect from '../../pageSettings/CommonSelect'
+import { SortArrays } from '../newPageSettingsUtils/newPageCommons'
 
 interface RequiredSections {
     id: number
@@ -30,7 +33,8 @@ interface valueProps {
     position: number
     is_active: boolean
     is_section_clickable?: boolean
-    section_filters: string[]
+    section_filters?: string[]
+    sort?: string
 }
 
 const AssignPageSection = () => {
@@ -41,6 +45,7 @@ const AssignPageSection = () => {
     const [pageNamesData, setPageNamesData] = useState<pageNameTypes[] | undefined>([])
     const [subPageNamesData, setSubPageNamesData] = useState<pageNameTypes[] | undefined>([])
     const [selectedPageName, setSelectedPageName] = useState<string | undefined>(undefined)
+    const [filterId, setFilterId] = useState('')
 
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
 
@@ -100,7 +105,11 @@ const AssignPageSection = () => {
             position: values?.position,
             is_active: values?.is_active ?? false,
             is_section_clickable: values?.is_section_clickable || false,
-            section_filters: values?.section_filters || [],
+            section_filters: [
+                ...(values?.section_filters ? values.section_filters : []),
+                values?.sort ? `sort_${values?.sort}` : [],
+                filterId ? `filterId_${filterId}` : [],
+            ],
         }
 
         console.log('body is', body)
@@ -239,7 +248,17 @@ const AssignPageSection = () => {
                                 <Field type="checkbox" name="is_section_clickable" component={Checkbox} />
                             </FormItem>
 
-                            {values?.is_section_clickable && <TagsEdit isValue filterOptions={filters.filters} />}
+                            {values?.is_section_clickable && (
+                                <>
+                                    <TagsEdit isValue filterOptions={filters.filters} />
+                                    <div className="mb-4">
+                                        <CommonFilterSelect filterId={filterId} setFilterId={setFilterId} />
+                                    </div>
+                                    {/* sort_hightolow */}
+
+                                    <CommonSelect label="Sort By" name="sort" options={SortArrays} />
+                                </>
+                            )}
 
                             <FormItem label="Position">
                                 <Field type="number" min="0" name="position" placeholder="Enter Position" component={Input} />
