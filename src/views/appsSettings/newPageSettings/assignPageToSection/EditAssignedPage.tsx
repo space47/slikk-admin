@@ -2,9 +2,11 @@
 import { useFetchApi } from '@/commonHooks/useFetchApi'
 import { Button, Checkbox, FormContainer, FormItem, Input, Select } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
+import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { pageSettingsService } from '@/store/services/pageSettingService'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
 import { companyStore } from '@/store/types/companyStore.types'
+import { FILTER_STATE } from '@/store/types/filters.types'
 import { pageNameTypes } from '@/store/types/pageSettings.types'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
@@ -12,6 +14,7 @@ import { AxiosError } from 'axios'
 import { Field, FieldProps, Form, Formik } from 'formik'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import TagsEdit from '../../pageSettings/TagsEdit'
 
 interface valueProps {
     page: any
@@ -20,6 +23,8 @@ interface valueProps {
     section?: number
     position: number
     is_active: boolean
+    is_section_clickable?: boolean
+    section_filters?: string[]
 }
 
 const EditAssignedPage = () => {
@@ -57,6 +62,12 @@ const EditAssignedPage = () => {
     const query = useMemo(() => `/page-sections?section_id=${section_id}`, [section_id])
     const { data } = useFetchApi<any>({ url: query })
 
+    const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
+
+    useEffect(() => {
+        dispatch(getAllFiltersAPI())
+    }, [dispatch])
+
     useEffect(() => {
         dispatch(fetchCompanyStore())
     }, [dispatch])
@@ -75,6 +86,7 @@ const EditAssignedPage = () => {
         is_active: data[0]?.is_active,
         position: data[0]?.position,
         store: data[0]?.store?.map(({ code, id }: { code: string; id: number }) => ({ code, id })) || [],
+        is_section_clickable: data[0]?.is_section_clickable,
     }
 
     const handleSubmit = async (values: valueProps) => {
@@ -88,6 +100,8 @@ const EditAssignedPage = () => {
             section: Number(section_id),
             position: values?.position,
             is_active: values?.is_active ?? false,
+            is_section_clickable: values?.is_section_clickable || false,
+            section_filters: values?.section_filters || [],
         }
         try {
             const res = await axioisInstance.patch(`/page-sections/${section_id}`, body)
@@ -104,7 +118,7 @@ const EditAssignedPage = () => {
     return (
         <div>
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
-                {({ resetForm }) => (
+                {({ resetForm, values }) => (
                     <Form>
                         <FormContainer>
                             <FormItem label="Store">
@@ -192,6 +206,12 @@ const EditAssignedPage = () => {
                                 </Field>
                             </FormItem>
                         </FormContainer>
+
+                        <FormItem label="Section Clickable">
+                            <Field type="checkbox" name="is_section_clickable" component={Checkbox} />
+                        </FormItem>
+
+                        {values?.is_section_clickable && <TagsEdit isValue filterOptions={filters.filters} />}
 
                         <FormItem label="Position">
                             <Field type="number" min="0" name="position" placeholder="Enter Position" component={Input} />

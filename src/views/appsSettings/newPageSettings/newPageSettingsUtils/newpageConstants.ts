@@ -93,7 +93,7 @@ export const FormFieldsArray = [
     { label: 'Section Heading', name: 'section_heading', type: 'text' },
     { label: 'Display Name', name: 'display_name', type: 'text' },
     { label: 'Is Active', name: 'is_active', type: 'checkbox' },
-    { label: 'Is Section Clickable', name: 'is_section_clickable', type: 'checkbox' },
+    // { label: 'Is Section Clickable', name: 'is_section_clickable', type: 'checkbox' },
     { label: 'Product Filter', name: 'extra_info?.is_product_filter', type: 'checkbox' },
 ]
 
