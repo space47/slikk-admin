@@ -2,12 +2,7 @@
 import AdaptableCard from '@/components/shared/AdaptableCard'
 import Table from '@/components/ui/Table'
 
-import {
-    useReactTable,
-    getCoreRowModel,
-    flexRender,
-    createColumnHelper,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, flexRender, createColumnHelper } from '@tanstack/react-table'
 
 interface DataType {
     type: string
@@ -65,13 +60,7 @@ const columns = [
         cell: (info) => {
             return (
                 <div className="flex items-center justify-center">
-                    {info.getValue() ? (
-                        <img
-                            src={info.getValue()}
-                            alt="Image"
-                            className="w-full h-full object-cover"
-                        />
-                    ) : "NA"}
+                    {info.getValue() ? <img src={info.getValue()} alt="Image" className="w-full h-full object-cover" /> : 'NA'}
                 </div>
             )
         },
@@ -81,13 +70,7 @@ const columns = [
         cell: (info) => {
             return (
                 <div className="flex items-center justify-center">
-                    {info.getValue() && (
-                        <img
-                            src={info.getValue()}
-                            alt="Image"
-                            className="w-full h-full object-cover"
-                        />
-                    )}
+                    {info.getValue() && <img src={info.getValue()} alt="Image" className="w-full h-full object-cover" />}
                 </div>
             )
         },
@@ -103,20 +86,14 @@ const BannerDetails = ({ data }: OrderProductsProps) => {
 
     return (
         <AdaptableCard className="mb-4 border border-gray-800 w-full">
-            <Table className='table-auto'>
+            <Table className="table-auto" overflow>
                 <THead>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => {
                                 return (
-                                    <Th
-                                        key={header.id}
-                                        colSpan={header.colSpan}
-                                    >
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext(),
-                                        )}
+                                    <Th key={header.id} colSpan={header.colSpan}>
+                                        {flexRender(header.column.columnDef.header, header.getContext())}
                                     </Th>
                                 )
                             })}
@@ -128,14 +105,7 @@ const BannerDetails = ({ data }: OrderProductsProps) => {
                         return (
                             <Tr key={row.id}>
                                 {row.getVisibleCells().map((cell) => {
-                                    return (
-                                        <Td key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext(),
-                                            )}
-                                        </Td>
-                                    )
+                                    return <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                                 })}
                             </Tr>
                         )

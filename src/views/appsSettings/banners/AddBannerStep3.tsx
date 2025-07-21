@@ -21,7 +21,7 @@ import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore
 import CommonFilterSelect from '@/common/ComonFilterSelect'
 import FilterSelectWithoutFormik from '@/common/FilterSelectWithoutFormik'
 
-function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBannerFormData, selectedPage }: any) {
+function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBannerFormData, selectedPage, subPageId }: any) {
     console.log('selected section', selectedPage?.value)
     const [bannerForm, setBannerFormData] = useState<BANNER_UPLOAD_DATA[]>(completeBannerFormData)
 
@@ -58,7 +58,7 @@ function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBan
 
     const handlePreviewClicked = () => {
         const formValid = bannerForm?.map((formData) => {
-            if (formData?.from_date && formData.to_date && formData?.name && formData?.sub_page) {
+            if (formData?.from_date && formData.to_date && formData?.name) {
                 return true
             }
             return false
@@ -81,6 +81,7 @@ function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBan
                     return (
                         <div key={key} className=" w-full border my-4 shadow-md relative min-h-[100px]">
                             <SingleBannerFormComp
+                                subPageId={subPageId}
                                 bannerForm={bannerForm}
                                 setBannerForm={setBannerFormData}
                                 index={key}
@@ -115,7 +116,7 @@ function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBan
 
 export default AddBannerStep3
 
-const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputChange, pageName }: any) => {
+const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputChange, pageName, subPageId }: any) => {
     const dispatch = useAppDispatch()
     const [subPageNamesData, setSubPageNamesData] = useState<pageNameTypes[] | undefined>([])
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
@@ -168,7 +169,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
         })
     }
 
-    console.log('filteredCategories', filteredCategories)
+    console.log('filteredCategories', subPageId)
 
     const handleFromTimeChange = (value: any) => {
         console.log('HandleTimeChange', value)
@@ -209,6 +210,20 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
             setBannerForm(tempBannerForm)
         }
     }, [filterId])
+
+    useEffect(() => {
+        if (subPageId) {
+            const tempBannerForm = [...bannerForm]
+            tempBannerForm[index] = {
+                ...bannerForm[index],
+                sub_page: [subPageId],
+            }
+            setBannerForm(tempBannerForm)
+        }
+    }, [subPageId])
+
+    console.log('sub page names', subPageNamesData)
+    console.log('sub page id', subPageId)
 
     const handleSetDataInForm = (key: string, value: any) => {
         const tempBannerForm = bannerForm
@@ -258,6 +273,9 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
 
         setBannerForm(tempBannerForm)
     }
+
+    console.log('here it us', subPageNamesData?.find((item) => item?.id === subPageId)?.name)
+
     return (
         <div className="flex flex-row flex-wrap gap-x-5 gap-y-2 p-4">
             <div className="flex flex-col gap-y-2 items-center justify-center w-[300px] overflow-hidden bg-gray-50 p-2">
@@ -357,17 +375,11 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                         Sub Page <span className="text-red-600">*</span>
                     </div>
                     <Select
-                        isMulti
+                        isDisabled={true}
                         options={subPageNamesData}
                         getOptionLabel={(option) => option.name}
                         getOptionValue={(option) => option.id}
-                        onChange={(newVal, actionMeta) => {
-                            console.log(newVal, actionMeta)
-                            handleMultiSelect(
-                                'sub_page',
-                                newVal?.map((val) => val.id),
-                            )
-                        }}
+                        value={subPageNamesData?.find((item) => item?.id === subPageId)}
                     />
                 </div>
 
