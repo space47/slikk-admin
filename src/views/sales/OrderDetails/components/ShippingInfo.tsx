@@ -12,7 +12,7 @@ import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate, useParams } from 'react-router-dom'
 
-const ShippingInfo = ({ data, logistic_partner, delivery_type, setShowRiderModal }: ShippingInfoProps) => {
+const ShippingInfo = ({ data, logistic_partner, delivery_type, setShowRiderModal, rider }: ShippingInfoProps) => {
     const [partnerChange, setPartnerChange] = useState<string>('')
     const { invoice_id } = useParams()
     const navigate = useNavigate()
@@ -106,6 +106,11 @@ const ShippingInfo = ({ data, logistic_partner, delivery_type, setShowRiderModal
                         </div>
                     )}
                 </div>
+                {rider && (
+                    <div className="flex gap-2 font-bold">
+                        Last Rider : <span>{rider?.mobile}</span>
+                    </div>
+                )}
             </div>
         </Card>
     )

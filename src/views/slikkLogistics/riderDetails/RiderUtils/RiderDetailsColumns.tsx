@@ -89,24 +89,20 @@ export const RiderColumns = ({ handleActiveCareer, hanldeProfileClick, currentSt
                 return <div>{row?.original?.recent_task_detail?.distance ?? 0} Km</div>
             },
         },
-        // {
-        //     header: 'Estimate Time',
-        //     accessorKey: 'recent_task_detail.estimate_time',
-        //     cell: ({ row }: any) => {
-        //         return <div>{row?.original?.recent_task_detail?.estimate_time ?? '-'}</div>
-        //     },
-        // },
+
         {
             header: 'Order',
             accessorKey: 'recent_task_detail.order_id',
             cell: ({ row }: any) => {
-                return (
+                return row?.original?.recent_task_detail?.order_id ? (
                     <div
-                        onClick={() => navigate(`/app/orders/${row?.original?.recent_task_detail?.order_id}`)}
                         className="p-2 cursor-pointer bg-red-500 text-white rounded-xl"
+                        onClick={() => navigate(`/app/orders/${row?.original?.recent_task_detail?.order_id}`)}
                     >
                         {row?.original?.recent_task_detail?.order_id}
                     </div>
+                ) : (
+                    'N/A'
                 )
             },
         },

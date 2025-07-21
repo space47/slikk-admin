@@ -211,7 +211,7 @@ const RiderDetails = () => {
 
                     <div className="flex flex-col gap-2 xl:flex-row xl:gap-5 items-center">
                         <div onClick={() => setShowRiderMap((prev) => !prev)} className="items-center xl:mt-8 flex gap-1">
-                            <span className="text-xl font-bold cursor-pointer">{showRiderMap ? 'Close Map:' : 'View Map:'}</span>
+                            <span className="text-xl font-bold cursor-pointer">{showRiderMap ? 'Close:' : 'Map:'}</span>
                             <button>
                                 {showRiderMap ? (
                                     <FaMapMarkedAlt className="text-4xl text-red-700 " />
@@ -219,6 +219,11 @@ const RiderDetails = () => {
                                     <FaMapMarkedAlt className="text-4xl text-green-600 " />
                                 )}
                             </button>
+                        </div>
+                        <div className="xl:mt-8">
+                            <Button variant="new" size="sm" onClick={() => navigate(`/app/riders/addBulk`)}>
+                                Bulk ADD Riders
+                            </Button>
                         </div>
                         <div className="xl:mt-8">
                             <Button variant="new" size="sm" onClick={() => navigate(`/app/riders/addNew`)}>
