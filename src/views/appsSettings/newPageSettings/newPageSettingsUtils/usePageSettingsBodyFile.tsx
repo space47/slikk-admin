@@ -63,18 +63,20 @@ export const PageSettingsBodyFile = async ({ values, initialValue }: props) => {
     const headerVideoUpload = values?.header_config_video_Array ? await handleVideo(values?.header_config_video_Array) : ''
     const subHeaderVideoUpload = values?.sub_header_config_video_Array ? await handleVideo(values?.sub_header_config_video_Array) : ''
 
-    const imageUpload = (await handleImage(values?.background_image_array)) || ''
-    const mobileimageUpload = (await handleImage(values?.mobile_background_array)) || ''
-    const footerImageUpload = (await handleImage(values?.footer_config_image_Array)) || ''
-    const headerImageUpload = (await handleImage(values?.header_config_image_Array)) || ''
-    const subHeaderImageUpload = (await handleImage(values?.sub_header_config_image_Array)) || ''
-    const headerIconUpload = (await handleImage(values?.header_config_icon_Array)) || ''
+    const imageUpload = values?.background_image_array ? await handleImage(values?.background_image_array) : ''
+    const mobileimageUpload = values?.mobile_background_array ? await handleImage(values?.mobile_background_array) : ''
+    const footerImageUpload = values?.footer_config_image_Array ? await handleImage(values?.footer_config_image_Array) : ''
+    const headerImageUpload = values?.header_config_image_Array ? await handleImage(values?.header_config_image_Array) : ''
+    const subHeaderImageUpload = values?.sub_header_config_image_Array ? await handleImage(values?.sub_header_config_image_Array) : ''
+    const headerIconUpload = values?.header_config_icon_Array ? await handleImage(values?.header_config_icon_Array) : ''
 
-    const backgroundImageAspectRatios = (await calculateAspectRatio(values?.background_image_array)) || ''
-    const mobileImageAspectRatios = (await calculateAspectRatio(values?.mobile_background_array)) || ''
-    const headerImageAspectRatios = (await calculateAspectRatio(values?.header_config_image_Array)) || ''
-    const subHeaderImageAspectRatios = (await calculateAspectRatio(values?.sub_header_config_image_Array)) || ''
-    const footerImageAspectRatios = (await calculateAspectRatio(values?.footer_config_image_Array)) || ''
+    const backgroundImageAspectRatios = values?.background_image_array ? await calculateAspectRatio(values?.background_image_array) : ''
+    const mobileImageAspectRatios = values?.mobile_background_array ? await calculateAspectRatio(values?.mobile_background_array) : ''
+    const headerImageAspectRatios = values?.header_config_image_Array ? await calculateAspectRatio(values?.header_config_image_Array) : ''
+    const subHeaderImageAspectRatios = values?.sub_header_config_image_Array
+        ? await calculateAspectRatio(values?.sub_header_config_image_Array)
+        : ''
+    const footerImageAspectRatios = values?.footer_config_image_Array ? await calculateAspectRatio(values?.footer_config_image_Array) : ''
 
     const cta_config_data = {
         ...values?.extra_info?.cta_config,

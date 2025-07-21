@@ -168,7 +168,7 @@ const OrderMap = ({ taskData }: props) => {
     }, [taskData])
 
     if (!mapCenter) {
-        return <p className="flex justify-between items-center h-screen">Loading map...</p>
+        return
     }
 
     const CurrentLocationButton = () => {
