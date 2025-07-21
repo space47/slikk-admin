@@ -74,6 +74,8 @@ const TrackModal = ({
 
             const field = isOrder ? taskId : storeData?.task_id
 
+            console.log('hello', `logistic/slikk/task/${field}`)
+
             const response = await axioisInstance.patch(`logistic/slikk/task/${field}`, riderBody)
             notification.success({
                 message: 'SUCCESS',

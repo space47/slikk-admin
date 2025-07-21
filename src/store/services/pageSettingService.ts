@@ -16,6 +16,7 @@ interface PageSettingsDataTypes {
     section_id?: number
     is_active?: string
     pageName?: string
+    name?: string
 }
 
 export const pageSettingsService = RtkQueryService.injectEndpoints({
@@ -57,6 +58,7 @@ export const pageSettingsService = RtkQueryService.injectEndpoints({
                 if (params.page) parameters.p = params.page
                 if (params.pageSize) parameters.page_size = params.pageSize
                 if (params.pageId) parameters.page = params.pageId
+                if (params.name) parameters.name = params.name
                 return {
                     url: `/page`,
                     method: 'GET',

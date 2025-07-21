@@ -179,11 +179,13 @@ const AppBanners = () => {
                                 title={currentSelectedPage?.name || 'SELECT'}
                                 onSelect={handleSelectPage}
                             >
-                                {BANNER_PAGE_NAME.map((item) => (
-                                    <DropdownItem key={item.value} eventKey={item.value}>
-                                        {item.name}
-                                    </DropdownItem>
-                                ))}
+                                <div className="max-h-60 overflow-y-auto">
+                                    {BANNER_PAGE_NAME.map((item) => (
+                                        <DropdownItem key={item.value} eventKey={item.value}>
+                                            {item.name}
+                                        </DropdownItem>
+                                    ))}
+                                </div>
                             </Dropdown>
                         </div>
 
@@ -202,7 +204,7 @@ const AppBanners = () => {
                                         onChange={(e) => setSectionFilter(e.target.value)}
                                     />
                                 </div>
-                                <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide xl:h-[400px] xl:overflow-y-scroll font-bold ">
+                                <div className="max-h-60 overflow-y-auto">
                                     {filteredSectionHeadings?.map((item, key) => (
                                         <DropdownItem key={key} eventKey={item} className="h-1">
                                             {item}

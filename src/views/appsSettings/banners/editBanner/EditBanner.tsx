@@ -45,7 +45,7 @@ const EditBanner = () => {
     const [subPageNamesData, setSubPageNamesData] = useState<any>([])
     const [filterId, setFilterId] = useState<number | string>('')
 
-    const { data: SubPageNames, isSuccess: isSubPageNamesSuccess } = pageSettingsService.useSubPageNamesQuery({ page: 1, pageSize: 100 })
+    const { data: SubPageNames, isSuccess: isSubPageNamesSuccess } = pageSettingsService.useSubPageNamesQuery({})
 
     useEffect(() => {
         if (isSubPageNamesSuccess) {

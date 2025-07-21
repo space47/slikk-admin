@@ -24,7 +24,7 @@ const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: props) => {
 
     const { data: pageNames, isSuccess: isPageNamesSuccess } = pageSettingsService.usePageNamesQuery({
         page: 1,
-        pageSize: 100,
+        pageSize: 500,
     })
 
     useEffect(() => {

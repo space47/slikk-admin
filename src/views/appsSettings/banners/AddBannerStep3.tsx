@@ -122,8 +122,6 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
     const { data: SubPageNames, isSuccess: isSubPageNamesSuccess } = pageSettingsService.useSubPageNamesQuery({
-        page: 1,
-        pageSize: 100,
         pageName: pageName || '',
     })
 
