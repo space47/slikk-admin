@@ -42,6 +42,8 @@ const TrackModal = ({
     const [globalFilter, setGlobalFilter] = useState<string | undefined>('')
     const { riderDetails } = useAppSelector<RiderDetailType>((state) => state.riderDetails)
 
+    console.log('task id is', taskId)
+
     const { data: riders, isSuccess } = ridersService.useRiderDetailsQuery(
         {
             page: 1,

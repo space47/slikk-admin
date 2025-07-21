@@ -52,6 +52,7 @@ const ReportAnalytics = () => {
     const [serverError, setServerError] = useState(false)
     const [reportValue, setReportValue] = useState()
     const [isCustomQuery, setIsCustomQuery] = useState(false)
+    const [errorQuery, setErrorQuery] = useState('')
 
     const fetchReportApi = async () => {
         try {
@@ -215,7 +216,8 @@ const ReportAnalytics = () => {
             } else if (error.response && error.response.status === 400) {
                 setBadRequest(true)
             }
-            console.log(error)
+            setErrorQuery(error?.response?.data?.error_query)
+            console.log(error?.response?.data?.error_query)
         } finally {
             setShowSpinner(false)
         }
@@ -352,8 +354,8 @@ const ReportAnalytics = () => {
 
             {badRequest ? (
                 <>
-                    <div className="flex justify-center text-red-700 font-bold text-xl">
-                        You have Passed wrong value or the data do not exist
+                    <div className="flex justify-center text-red-700 font-bold text-xl gap-2">
+                        ⚠️Error - <span className="font-normal text-black"> {errorQuery}</span>{' '}
                     </div>
                 </>
             ) : (
