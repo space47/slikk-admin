@@ -12,13 +12,8 @@ import { Field, FieldProps } from 'formik'
 import { COMPONENT_CATEGORY_TYPES } from '@/common/banner'
 import { pageSettingsType } from '@/store/types/pageSettings.types'
 import ExtraConfig from '../newPageSettingsComponents/ExtraConfig'
-
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import BannerSelect from '../newPageSettingsComponents/BannerSelect'
-import TagsEdit from '../../pageSettings/TagsEdit'
-import { useAppDispatch, useAppSelector } from '@/store'
-import { FILTER_STATE } from '@/store/types/filters.types'
-import { getAllFiltersAPI } from '@/store/action/filters.action'
 
 interface props {
     isEdit?: boolean
@@ -46,12 +41,7 @@ const NewPageCommonForms = ({
     bannerDetails,
 }: props) => {
     const [showIsBannerList, setShowIsBannerList] = useState(false)
-    const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
 
-    const dispatch = useAppDispatch()
-    useEffect(() => {
-        dispatch(getAllFiltersAPI())
-    }, [dispatch])
     console.log('initial Value in main form', initialValue)
     return (
         <div className="p-2 shadow-xl rounded-xl">
@@ -81,32 +71,33 @@ const NewPageCommonForms = ({
                 </Button>
             </div>
 
+            <FormItem label="Banners">
+                <Field name="banners">
+                    {({ form, field }: FieldProps) => {
+                        const selectedStores = bannerDetails?.filter((option) =>
+                            field?.value?.some((store: any) => store?.id === option.id),
+                        )
+                        return (
+                            <div className="flex flex-col gap-1  xl:items-baseline w-full max-w-md">
+                                <Select
+                                    isMulti
+                                    className="w-full"
+                                    options={bannerDetails}
+                                    getOptionLabel={(option) => option.name}
+                                    getOptionValue={(option) => option.id}
+                                    value={selectedStores || null}
+                                    onChange={(newVal) => {
+                                        console.log('new val is', newVal)
+                                        form.setFieldValue(field.name, newVal)
+                                    }}
+                                />
+                            </div>
+                        )
+                    }}
+                </Field>
+            </FormItem>
+
             <FormContainer className="grid grid-cols-2 gap-2">
-                <FormItem label="Banners">
-                    <Field name="banners">
-                        {({ form, field }: FieldProps) => {
-                            const selectedStores = bannerDetails?.filter((option) =>
-                                field?.value?.some((store: any) => store?.id === option.id),
-                            )
-                            return (
-                                <div className="flex flex-col gap-1  xl:items-baseline w-full max-w-md">
-                                    <Select
-                                        isMulti
-                                        className="w-full"
-                                        options={bannerDetails}
-                                        getOptionLabel={(option) => option.name}
-                                        getOptionValue={(option) => option.id}
-                                        value={selectedStores || null}
-                                        onChange={(newVal) => {
-                                            console.log('new val is', newVal)
-                                            form.setFieldValue(field.name, newVal)
-                                        }}
-                                    />
-                                </div>
-                            )
-                        }}
-                    </Field>
-                </FormItem>
                 {FormFieldsArray?.map((item, key) => {
                     return (
                         <FormItem key={key} label={item?.label}>
@@ -120,7 +111,6 @@ const NewPageCommonForms = ({
                     )
                 })}
             </FormContainer>
-            {values?.is_section_clickable && <TagsEdit isValue filterOptions={filters.filters} />}
 
             <br />
             <Tabs>

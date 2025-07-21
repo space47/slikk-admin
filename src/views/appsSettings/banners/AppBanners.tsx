@@ -287,7 +287,12 @@ const AppBanners = () => {
             </div>
             {showDeleteModal && <DeleteBannerModal isOpen={showDeleteModal} setIsOpen={setShowDeleteModal} bannerId={bannerId!} />}
             {showBulkEditModal && (
-                <BulkEditModal dialogIsOpen={showBulkEditModal} setIsOpen={setShowBulkEditModal} bannerIdStore={bannerIdStore} />
+                <BulkEditModal
+                    pageState={currentSelectedPage?.name}
+                    dialogIsOpen={showBulkEditModal}
+                    setIsOpen={setShowBulkEditModal}
+                    bannerIdStore={bannerIdStore}
+                />
             )}
         </div>
     )

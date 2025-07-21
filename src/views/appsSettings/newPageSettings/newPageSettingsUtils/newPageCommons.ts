@@ -52,7 +52,7 @@ export const ConfigArray = [
     { label: 'Letter Spacing', key: 'letter_spacing', type: 'number' },
     { label: 'mobile Font Size', key: 'font_size', type: 'number' },
     { label: 'Top Margin', key: 'topMargin', type: 'number' },
-    { label: 'bottom Margin', key: 'sub_bottomMargin', type: 'number' },
+    { label: 'bottom Margin', key: 'bottomMargin', type: 'number' },
     { label: 'redirection url', key: 'redirection_url', type: 'text' },
 ]
 

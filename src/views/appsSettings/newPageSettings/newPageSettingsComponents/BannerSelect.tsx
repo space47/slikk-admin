@@ -47,15 +47,17 @@ const BannerSelect = ({ bannerData, isOpen, setFieldValues, setIsOpen, values }:
     return (
         <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)} width={800}>
             <div className="max-h-[70vh] overflow-y-auto p-4 mt-10 scrollbar-hide">
-                <h2 className="text-xl font-semibold mb-4">Select Banners</h2>
+                <div className="flex sticky top-0 flex-col gap-2 bg-white">
+                    <h2 className="text-xl font-semibold mb-4">Select Banners</h2>
 
-                <Input
-                    placeholder="Search by banner name..."
-                    className="mb-4"
-                    type="search"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                />
+                    <Input
+                        placeholder="Search by banner name..."
+                        className="mb-4 sticky"
+                        type="search"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                    />
+                </div>
 
                 <div className="space-y-4">
                     {filteredBanners.length > 0 ? (
