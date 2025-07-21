@@ -93,16 +93,16 @@ export const PageSettingsBodyFile = async ({ values, initialValue }: props) => {
         ...(mobileimageUpload || values?.mobile_background_image
             ? { mobile_background_image: mobileimageUpload || values?.mobile_background_image }
             : {}),
-        ...(values?.background_config?.background_image_aspect_ratio
-            ? { background_image_aspect_ratio: values.background_config.background_image_aspect_ratio }
-            : backgroundImageAspectRatios[0]
-              ? { background_image_aspect_ratio: backgroundImageAspectRatios[0] }
+        ...(backgroundImageAspectRatios?.[0]
+            ? { background_image_aspect_ratio: backgroundImageAspectRatios[0] }
+            : values?.background_config?.background_image_aspect_ratio
+              ? { background_image_aspect_ratio: values.background_config.background_image_aspect_ratio }
               : {}),
 
-        ...(values?.background_config?.mobile_image_aspect_ratio
-            ? { mobile_image_aspect_ratio: values.background_config.mobile_image_aspect_ratio }
-            : mobileImageAspectRatios[0]
-              ? { mobile_image_aspect_ratio: mobileImageAspectRatios[0] }
+        ...(mobileImageAspectRatios?.[0]
+            ? { mobile_image_aspect_ratio: mobileImageAspectRatios[0] }
+            : values?.background_config?.mobile_image_aspect_ratio
+              ? { mobile_image_aspect_ratio: values.background_config.mobile_image_aspect_ratio }
               : {}),
         ...(backgroundVideoUpload || values?.background_video
             ? { background_video: backgroundVideoUpload || values?.background_video }
