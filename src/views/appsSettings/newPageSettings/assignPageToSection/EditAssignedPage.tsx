@@ -33,12 +33,10 @@ const EditAssignedPage = () => {
 
     const { data: pageNames, isSuccess: isPageNamesSuccess } = pageSettingsService.usePageNamesQuery({
         page: 1,
-        pageSize: 100,
+        pageSize: 500,
     })
 
     const { data: SubPageNames, isSuccess: isSubPageNamesSuccess } = pageSettingsService.useSubPageNamesQuery({
-        page: 1,
-        pageSize: 500,
         pageName: selectedPageName ?? '',
     })
 

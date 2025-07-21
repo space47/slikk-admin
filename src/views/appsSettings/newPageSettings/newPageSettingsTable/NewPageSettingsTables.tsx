@@ -198,7 +198,7 @@ const NewPageSettingsTables = () => {
         <div className="p-4 shadow-xl rounded-xl">
             <div className="flex flex-col gap-2 items-center xl:items-start xl:flex-row xl:justify-between mb-6">
                 <div className="flex gap-3">
-                    <div className=" gap-3 mb-7">
+                    <div className="gap-3 mb-7">
                         <div className="font-bold">Pages</div>
                         <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px] mt-1">
                             <Dropdown
@@ -206,14 +206,16 @@ const NewPageSettingsTables = () => {
                                 title={currentPageName?.label}
                                 onSelect={handleSelectPage}
                             >
-                                {BANNER_PAGE?.map((item) => (
-                                    <DropdownItem key={item.value} eventKey={item?.value?.toString()}>
-                                        {item.label}
-                                    </DropdownItem>
-                                ))}
+                                <div className="max-h-60 overflow-y-auto">
+                                    {BANNER_PAGE?.map((item) => (
+                                        <DropdownItem key={item.value} eventKey={item?.value?.toString()}>
+                                            {item.label}
+                                        </DropdownItem>
+                                    ))}
+                                </div>
                                 <div
                                     className="flex items-center justify-center mt-2 bg-gray-50 text-green-600 p-2
-                             hover:bg-gray-100 hover:text-green-500 cursor-pointer"
+                     hover:bg-gray-100 hover:text-green-500 cursor-pointer"
                                     onClick={() => setShowAddPageModal(true)}
                                 >
                                     ADD NEW
@@ -221,7 +223,8 @@ const NewPageSettingsTables = () => {
                             </Dropdown>
                         </div>
                     </div>
-                    <div className=" gap-3 mb-7">
+
+                    <div className="gap-3 mb-7">
                         <div className="font-bold">Sub Pages</div>
                         <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px] mt-1">
                             <Dropdown
@@ -229,14 +232,17 @@ const NewPageSettingsTables = () => {
                                 title={currentSubPageName?.label || 'SELECT'}
                                 onSelect={handleSelectSubPage}
                             >
-                                {SUB_PAGE?.map((item) => (
-                                    <DropdownItem key={item.value} eventKey={item?.value?.toString()}>
-                                        {item.label}
-                                    </DropdownItem>
-                                ))}
+                                <div className="max-h-60 overflow-y-auto">
+                                    {SUB_PAGE?.map((item) => (
+                                        <DropdownItem key={item.value} eventKey={item?.value?.toString()}>
+                                            {item.label}
+                                        </DropdownItem>
+                                    ))}
+                                </div>
+
                                 <div
                                     className="flex items-center justify-center mt-2 bg-gray-50 text-red-600 p-2
-                             hover:bg-gray-100 hover:text-red-500 cursor-pointer"
+                     hover:bg-gray-100 hover:text-red-500 cursor-pointer"
                                     onClick={() =>
                                         dispatch(
                                             setCurrentSubPageName({
@@ -248,9 +254,10 @@ const NewPageSettingsTables = () => {
                                 >
                                     Clear
                                 </div>
+
                                 <div
                                     className="flex items-center justify-center mt-2 bg-gray-50 text-green-600 p-2
-                             hover:bg-gray-100 hover:text-green-500 cursor-pointer"
+                     hover:bg-gray-100 hover:text-green-500 cursor-pointer"
                                     onClick={() => setShowAddSubPageModal(true)}
                                 >
                                     ADD NEW
@@ -258,6 +265,7 @@ const NewPageSettingsTables = () => {
                             </Dropdown>
                         </div>
                     </div>
+
                     <div>
                         <div className="font-bold">Select Store</div>
                         <Select
