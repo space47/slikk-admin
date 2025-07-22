@@ -4,9 +4,13 @@ import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
 
 interface RiderColumnsProps {
+    sortedRiderDetails: any
     handleActiveCareer: (id: number, e: any, checked: boolean, mobile: string, name: string) => void
     hanldeProfileClick: (mobile: string) => void
     currentStoreLocation: Record<string, number | undefined>
+    riderMobileStore: any[]
+    handleSelectAllRiders: (x: any) => void
+    handleSelectRiderMobile: (x: any, y: any) => void
 }
 
 export const calculateDistance = (latitude: number, longitude: number, storeLat: number, storeLong: number) => {
@@ -20,9 +24,43 @@ export const calculateDistance = (latitude: number, longitude: number, storeLat:
     return distance
 }
 
-export const RiderColumns = ({ handleActiveCareer, hanldeProfileClick, currentStoreLocation }: RiderColumnsProps) => {
+export const RiderColumns = ({
+    handleActiveCareer,
+    hanldeProfileClick,
+    currentStoreLocation,
+    riderMobileStore,
+    sortedRiderDetails,
+    handleSelectAllRiders,
+    handleSelectRiderMobile,
+}: RiderColumnsProps) => {
     const navigate = useNavigate()
     return [
+        {
+            header: (
+                <div className="flex flex-col gap-2 items-center justify-center">
+                    <input
+                        type="checkbox"
+                        name="selectAll"
+                        checked={sortedRiderDetails.length > 0 && riderMobileStore.length === sortedRiderDetails.length}
+                        onChange={handleSelectAllRiders}
+                    />
+                </div>
+            ),
+            accessorKey: 'x',
+            cell: ({ row }: { row: { original: any } }) => {
+                const mobiles = row.original.profile.mobile
+                return (
+                    <div className="flex items-center justify-center">
+                        <input
+                            type="checkbox"
+                            name="mobiles"
+                            checked={riderMobileStore.includes(mobiles)}
+                            onChange={(e) => handleSelectRiderMobile(mobiles, e.target.checked)}
+                        />
+                    </div>
+                )
+            },
+        },
         {
             header: 'Status',
             accessorKey: 'profile.checked_in_status',
@@ -89,24 +127,20 @@ export const RiderColumns = ({ handleActiveCareer, hanldeProfileClick, currentSt
                 return <div>{row?.original?.recent_task_detail?.distance ?? 0} Km</div>
             },
         },
-        // {
-        //     header: 'Estimate Time',
-        //     accessorKey: 'recent_task_detail.estimate_time',
-        //     cell: ({ row }: any) => {
-        //         return <div>{row?.original?.recent_task_detail?.estimate_time ?? '-'}</div>
-        //     },
-        // },
+
         {
             header: 'Order',
             accessorKey: 'recent_task_detail.order_id',
             cell: ({ row }: any) => {
-                return (
+                return row?.original?.recent_task_detail?.order_id ? (
                     <div
-                        onClick={() => navigate(`/app/orders/${row?.original?.recent_task_detail?.order_id}`)}
                         className="p-2 cursor-pointer bg-red-500 text-white rounded-xl"
+                        onClick={() => navigate(`/app/orders/${row?.original?.recent_task_detail?.order_id}`)}
                     >
                         {row?.original?.recent_task_detail?.order_id}
                     </div>
+                ) : (
+                    'N/A'
                 )
             },
         },

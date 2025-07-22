@@ -168,23 +168,27 @@ const StockOverview = () => {
         setShowDrawer(false)
     }
     const handleUpdate = async (id: any, originalQuantity: any, originalLocation: any) => {
-        const location = updatedLocation[id] ?? null
-        const quantity = Number(updatedQuantities[id] >= 0 ? updatedQuantities[id] : originalQuantity)
+        console.log(originalQuantity, originalLocation)
+        const location = updatedLocation[id] || ''
+        const quantity = Number(updatedQuantities[id]) || ''
 
         try {
             const body = {
-                quantity: quantity >= 0 ? quantity : originalQuantity,
-                location: location ? location : originalLocation,
+                quantity: quantity,
+                location: location,
             }
+
+            const filteredObjects = Object.fromEntries(Object.entries(body).filter(([, val]) => val !== ''))
 
             console.log('BODY', body)
 
-            const response = await axiosInstance.patch(`inventory/${id}`, body)
+            const response = await axiosInstance.patch(`inventory/${id}`, filteredObjects)
             notification.success({
                 message: 'SUCCESS',
                 description: response?.data?.message || 'UPDATE SUCCESS',
             })
         } catch (error) {
+            notification.error({ message: 'Field not set' })
             console.error(error)
         }
     }
