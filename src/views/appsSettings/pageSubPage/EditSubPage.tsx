@@ -2,25 +2,24 @@
 import { useEffect, useState } from 'react'
 import { Formik, Form, Field } from 'formik'
 import Button from '@/components/ui/Button'
-import Dialog from '@/components/ui/Dialog'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { FormItem, Select } from '@/components/ui'
 import { pageSettingsService } from '@/store/services/pageSettingService'
 import { pageNameTypes } from '@/store/types/pageSettings.types'
-import { useNavigate } from 'react-router-dom'
-import PageAddVideo from '../../pageSettings/PageAddVideo'
+import { useNavigate, useParams } from 'react-router-dom'
 import { beforeUpload } from '@/common/beforeUpload'
 import { handleimage } from '@/common/handleImage'
+import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
+import PageEditVideo from '../pageSettings/PageEditVideo'
 
-interface Props {
-    dialogIsOpen: boolean
-    setIsOpen: (x: boolean) => void
-}
-
-const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: Props) => {
-    const [pageNamesData, setPageNamesData] = useState<pageNameTypes[] | undefined>([])
+const EditSubPage = () => {
+    const { id } = useParams()
     const navigate = useNavigate()
+    const [pageNamesData, setPageNamesData] = useState<pageNameTypes[] | undefined>([])
+
+    const query = `/subpage?sub_page_id=${id}`
+    const { data: subPageData } = useFetchSingleData<any>({ url: query })
 
     const { data: pageNames, isSuccess: isPageNamesSuccess } = pageSettingsService.usePageNamesQuery({
         page: 1,
@@ -33,20 +32,20 @@ const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: Props) => {
         }
     }, [pageNames, isPageNamesSuccess])
 
-    const onDialogClose = (e?: any) => {
-        console.log(e)
-        setIsOpen(false)
-    }
-
-    const initialValues: any = {
-        name: '',
-        page: null as pageNameTypes | null,
+    const initialValues = {
+        name: subPageData?.name || '',
+        page: subPageData?.page || (null as pageNameTypes | null),
+        display_name: subPageData?.display_name || '',
+        position: subPageData?.position || '',
+        image: subPageData?.image || '',
+        extra_attributes: {
+            primary_color: subPageData?.extra_attributes?.primaryColor || '',
+            accent_color: subPageData?.extra_attributes?.accentColor || '',
+        },
     }
 
     const handleSubmit = async (values: any) => {
         const imageUpload = await handleimage('product', values?.image_array)
-
-        console.log('image upload is', imageUpload)
 
         const body = {
             name: values.name || '',
@@ -64,24 +63,26 @@ const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: Props) => {
         const filteredBody = Object.fromEntries(Object.entries(body).filter(([, val]) => val !== ''))
 
         try {
-            const response = await axioisInstance.post(`/subpage`, filteredBody)
+            const response = await axioisInstance.patch(`/subpage/${id}`, filteredBody)
             notification.success({
-                message: response?.data?.message || 'Successfully added a new sub page',
+                message: response?.data?.message || 'Successfully updated sub page',
             })
-            navigate(0)
+            // navigate(0)
         } catch (error: any) {
             notification.error({
-                message: error?.response?.data?.message || error?.response?.data?.data?.message || 'Failed to add new sub page',
+                message: error?.response?.data?.message || error?.response?.data?.data?.message || 'Failed to update sub page',
             })
-        } finally {
-            setIsOpen(false)
         }
     }
 
+    if (!subPageData) {
+        return <div>Loading...</div>
+    }
+
     return (
-        <Dialog isOpen={dialogIsOpen} onClose={onDialogClose} width={1000}>
-            <h5 className="mb-4 text-red-500">Add New Sub Page</h5>
-            <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+        <div className="p-6">
+            <h5 className="mb-4 text-red-500">Edit Sub Page</h5>
+            <Formik initialValues={initialValues} onSubmit={handleSubmit} enableReinitialize>
                 {({ setFieldValue, values }) => (
                     <Form className="grid grid-cols-2 xl:grid-cols-3 gap-2">
                         <FormItem label="Name">
@@ -112,7 +113,7 @@ const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: Props) => {
                             <Field
                                 name="extra_attributes.primary_color"
                                 type="text"
-                                placeholder="Enter Position"
+                                placeholder="Enter Primary Color"
                                 className="rounded-xl px-3 py-2 border border-gray-300"
                             />
                         </FormItem>
@@ -120,19 +121,20 @@ const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: Props) => {
                             <Field
                                 name="extra_attributes.accent_color"
                                 type="text"
-                                placeholder="Enter Position"
+                                placeholder="Enter Accent Color"
                                 className="rounded-xl px-3 py-2 border border-gray-300"
                             />
                         </FormItem>
 
-                        <PageAddVideo
-                            label="Image"
-                            name="image_array"
+                        <PageEditVideo
+                            isImage
+                            label="background Mobile Image"
+                            rowName={initialValues.image}
+                            name="mobile_background_array"
+                            beforeVideoUpload={beforeUpload}
+                            fileList={values.image_array as any}
                             fieldName="image_array"
-                            fileList={values.image_array}
-                            beforeUpload={beforeUpload}
                         />
-
                         <FormItem label="Is Active">
                             <Field
                                 name="is_active"
@@ -154,19 +156,20 @@ const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: Props) => {
                                 onChange={(val) => setFieldValue('page', val)}
                             />
                         </div>
-                        <div className="flex justify-end mt-10">
-                            <Button className="ltr:mr-2 rtl:ml-2" variant="reject" onClick={onDialogClose}>
+
+                        <div className="flex justify-end mt-10 col-span-full">
+                            <Button className="ltr:mr-2 rtl:ml-2" variant="reject" onClick={() => navigate(-1)}>
                                 Cancel
                             </Button>
                             <Button type="submit" variant="solid">
-                                Add
+                                Update
                             </Button>
                         </div>
                     </Form>
                 )}
             </Formik>
-        </Dialog>
+        </div>
     )
 }
 
-export default AddSubPageNameModal
+export default EditSubPage

@@ -664,6 +664,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         authority: [ADMIN, USER],
                         subMenu: [],
                     },
+                    {
+                        key: 'appsAppSettings.pageSubPage',
+                        path: `${APP_PREFIX_PATH}/appSettings/pageSubPage`,
+                        title: 'SubPage',
+                        translateKey: 'nav.appsAppSettings.pageSubPage',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
                 ],
             },
 
