@@ -44,13 +44,13 @@ const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: Props) => {
     }
 
     const handleSubmit = async (values: any) => {
-        const imageUpload = values?.image_array ? await handleimage('product', values?.image_array) : ''
+        const imageUpload = values?.image_array?.length > 0 ? await handleimage('product', values?.image_array) : ''
 
         const body = {
             name: values.name || '',
             page: values.page?.id || '',
             display_name: values?.display_name || '',
-            position: values?.position || '',
+            position: Number(values?.position) || '',
             image: imageUpload || '',
             is_active: values?.is_active || false,
             extra_attributes: {
