@@ -34,10 +34,11 @@ const EditSubPage = () => {
 
     const initialValues = {
         name: subPageData?.name || '',
-        page: subPageData?.page || (null as pageNameTypes | null),
+        page: pageNamesData?.find((page) => page.id === subPageData?.page) || null,
         display_name: subPageData?.display_name || '',
         position: subPageData?.position || '',
         image: subPageData?.image || '',
+        is_active: subPageData?.is_active || false,
         extra_attributes: {
             primary_color: subPageData?.extra_attributes?.primaryColor || '',
             accent_color: subPageData?.extra_attributes?.accentColor || '',
@@ -45,13 +46,13 @@ const EditSubPage = () => {
     }
 
     const handleSubmit = async (values: any) => {
-        const imageUpload = values?.image_array ? await handleimage('product', values?.image_array) : ''
+        const imageUpload = values?.image_array?.length > 0 ? await handleimage('product', values?.image_array) : ''
         console.log('here')
         const body = {
             name: values.name || '',
             page: values.page?.id || '',
             display_name: values?.display_name || '',
-            position: values?.position || '',
+            position: Number(values?.position) || '',
             image: imageUpload || '',
             is_active: values?.is_active || false,
             extra_attributes: {
@@ -73,6 +74,11 @@ const EditSubPage = () => {
                 message: error?.response?.data?.message || error?.response?.data?.data?.message || 'Failed to update sub page',
             })
         }
+    }
+
+    const handleRemove = (setFieldValue: (field: string, value: any) => void) => {
+        setFieldValue('image_array', [])
+        setFieldValue('image', '')
     }
 
     if (!subPageData) {
@@ -128,9 +134,10 @@ const EditSubPage = () => {
 
                         <PageEditVideo
                             isImage
-                            label="background Mobile Image"
-                            rowName={initialValues.image}
-                            name="mobile_background_array"
+                            label=" Image"
+                            rowName={values.image}
+                            name="image_array"
+                            handleRemoveVideo={() => handleRemove(setFieldValue)}
                             beforeVideoUpload={beforeUpload}
                             fileList={values.image_array as any}
                             fieldName="image_array"
