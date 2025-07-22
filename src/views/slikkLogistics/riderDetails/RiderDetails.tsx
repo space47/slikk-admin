@@ -25,6 +25,7 @@ import {
 import { Option, pageSizeOptions } from '../taskTracking/TaskCommonType'
 import { calculateDistance, RiderColumns } from './RiderUtils/RiderDetailsColumns'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import BulkEditRiderModal from './RiderComponents/BulkEditRiderModal'
 
 const RiderDetails = () => {
     const navigate = useNavigate()
@@ -46,7 +47,9 @@ const RiderDetails = () => {
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
     const [isCheckModal, setIsCheckModal] = useState<boolean>(false)
     const [isCheckOutModal, setIsCheckOutModal] = useState<boolean>(false)
+    const [isBulkRiderModal, setIsBulkRiderModal] = useState<boolean>(false)
     const [riderSearchByType, setRiderSearchByType] = useState('name')
+    const [riderMobileStore, setRiderMobileStore] = useState<number[]>([])
     const { data: riders, isSuccess } = ridersService.useRiderDetailsQuery(
         {
             from: from,
@@ -185,7 +188,34 @@ const RiderDetails = () => {
         window.URL.revokeObjectURL(url)
     }
 
-    const columns = RiderColumns({ handleActiveCareer, hanldeProfileClick, currentStoreLocation })
+    const handleSelectAllRiders = (e: any) => {
+        if (e.target.checked) {
+            const allIds = sortedRiderDetails?.map((item) => item?.profile?.mobile)
+            setRiderMobileStore(allIds as number[])
+        } else {
+            setRiderMobileStore([])
+        }
+    }
+
+    const handleSelectRiderMobile = (mobiles: number, isChecked: boolean) => {
+        setRiderMobileStore((prev) => {
+            if (isChecked) {
+                return [...prev, mobiles]
+            } else {
+                return prev.filter((item) => item !== mobiles)
+            }
+        })
+    }
+
+    const columns = RiderColumns({
+        sortedRiderDetails,
+        handleActiveCareer,
+        hanldeProfileClick,
+        currentStoreLocation,
+        riderMobileStore,
+        handleSelectAllRiders,
+        handleSelectRiderMobile,
+    })
 
     return (
         <div>
@@ -221,9 +251,11 @@ const RiderDetails = () => {
                             </button>
                         </div>
                         <div className="xl:mt-8">
-                            <Button variant="new" size="sm" onClick={() => navigate(`/app/riders/addBulk`)}>
-                                Bulk ADD Riders
-                            </Button>
+                            {riderMobileStore?.length > 0 && (
+                                <Button variant="new" size="sm" onClick={() => setIsBulkRiderModal(true)}>
+                                    Bulk Update
+                                </Button>
+                            )}
                         </div>
                         <div className="xl:mt-8">
                             <Button variant="new" size="sm" onClick={() => navigate(`/app/riders/addNew`)}>
@@ -397,6 +429,9 @@ const RiderDetails = () => {
                     mobile={mobileForParticularRider || ''}
                     name={nameForParticularRider || ''}
                 />
+            )}
+            {isBulkRiderModal && (
+                <BulkEditRiderModal dialogIsOpen={isBulkRiderModal} setIsOpen={setIsBulkRiderModal} riderMobileStore={riderMobileStore} />
             )}
         </div>
     )

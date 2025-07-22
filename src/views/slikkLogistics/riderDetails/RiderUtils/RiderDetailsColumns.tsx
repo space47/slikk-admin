@@ -4,9 +4,13 @@ import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
 
 interface RiderColumnsProps {
+    sortedRiderDetails: any
     handleActiveCareer: (id: number, e: any, checked: boolean, mobile: string, name: string) => void
     hanldeProfileClick: (mobile: string) => void
     currentStoreLocation: Record<string, number | undefined>
+    riderMobileStore: any[]
+    handleSelectAllRiders: (x: any) => void
+    handleSelectRiderMobile: (x: any, y: any) => void
 }
 
 export const calculateDistance = (latitude: number, longitude: number, storeLat: number, storeLong: number) => {
@@ -20,9 +24,43 @@ export const calculateDistance = (latitude: number, longitude: number, storeLat:
     return distance
 }
 
-export const RiderColumns = ({ handleActiveCareer, hanldeProfileClick, currentStoreLocation }: RiderColumnsProps) => {
+export const RiderColumns = ({
+    handleActiveCareer,
+    hanldeProfileClick,
+    currentStoreLocation,
+    riderMobileStore,
+    sortedRiderDetails,
+    handleSelectAllRiders,
+    handleSelectRiderMobile,
+}: RiderColumnsProps) => {
     const navigate = useNavigate()
     return [
+        {
+            header: (
+                <div className="flex flex-col gap-2 items-center justify-center">
+                    <input
+                        type="checkbox"
+                        name="selectAll"
+                        checked={sortedRiderDetails.length > 0 && riderMobileStore.length === sortedRiderDetails.length}
+                        onChange={handleSelectAllRiders}
+                    />
+                </div>
+            ),
+            accessorKey: 'x',
+            cell: ({ row }: { row: { original: any } }) => {
+                const mobiles = row.original.profile.mobile
+                return (
+                    <div className="flex items-center justify-center">
+                        <input
+                            type="checkbox"
+                            name="mobiles"
+                            checked={riderMobileStore.includes(mobiles)}
+                            onChange={(e) => handleSelectRiderMobile(mobiles, e.target.checked)}
+                        />
+                    </div>
+                )
+            },
+        },
         {
             header: 'Status',
             accessorKey: 'profile.checked_in_status',
