@@ -102,7 +102,7 @@ const BulkEditModal = ({ dialogIsOpen, setIsOpen, bannerIdStore, pageState, subP
             start_date: dates.startDate ? dates.startDate.format('YYYY-MM-DD HH:mm:ss') : null,
             end_date: dates.endDate ? dates.endDate.format('YYYY-MM-DD HH:mm:ss') : null,
             page: values?.page?.name || '',
-            sub_page: values.sub_page,
+            sub_page: subPageNamesData?.filter((item) => values?.sub_page?.includes(item?.name))?.map((item) => item?.id) || [],
             section_heading: values?.sections,
             store: values?.store?.map((item: any) => item?.id as number) || [],
         }
