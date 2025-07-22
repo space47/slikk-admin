@@ -80,7 +80,7 @@ const AddBanners = () => {
 
         try {
             const response = await axioisInstance.get(
-                `/page-sections?p=1&page_size=500&page=${currentSelectedPage.value}&sub_page=${currentSelectedSubPage?.name}`,
+                `/page-sections?p=1&page_size=500&page=${currentSelectedPage.value}&sub_page=${encodeURIComponent(currentSelectedSubPage?.name || '')}`,
             )
             const responsedata = response.data.data.results
             setSectionHeadingData(responsedata?.map((item) => item?.section))
