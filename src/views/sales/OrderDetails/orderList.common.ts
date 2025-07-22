@@ -53,7 +53,9 @@ export type SalesOrderDetailsResponse = {
         tracking_url: string
         awb_code: any
     }
-
+    rider: {
+        mobile: string | number
+    }
     logistic_partner: any
     order_items: {
         barcode: string
@@ -116,6 +118,7 @@ export type ShippingInfoProps = {
         awb_code: any
         task_id: any
     }
+    rider: Record<string, string | number | any>
     logistic_partner: any
     delivery_type: string
     setShowRiderModal: (x: boolean) => void
