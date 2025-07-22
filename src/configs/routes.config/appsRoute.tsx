@@ -988,6 +988,18 @@ const appsRoute: Routes = [
     },
     // new Page Settings
     {
+        key: 'appsAppSettings.pageSubPage',
+        path: `${APP_PREFIX_PATH}/appSettings/pageSubPage`,
+        component: lazy(() => import('@/views/appsSettings/pageSubPage/PageSubPage')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.pageSubPage',
+        path: `${APP_PREFIX_PATH}/appSettings/pageSubPage/editSubPage/:id`,
+        component: lazy(() => import('@/views/appsSettings/pageSubPage/EditSubPage')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsAppSettings.newPageSettings',
         path: `${APP_PREFIX_PATH}/appSettings/newPageSettings`,
         component: lazy(() => import('@/views/appsSettings/newPageSettings/newPageSettingsTable/NewPageSettingsTables')),
