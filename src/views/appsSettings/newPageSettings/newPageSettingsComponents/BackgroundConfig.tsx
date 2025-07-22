@@ -247,6 +247,14 @@ const BackgroundConfig = ({ editMode = false, initialValue, values, setInitialVa
                     </FormItem>
                 </FormContainer>
             )}
+            <FormContainer className="flex gap-10">
+                <FormItem label="Elements Inside">
+                    <Field type="checkbox" name="extra_info.elements_inside" component={Checkbox} />
+                </FormItem>
+                <FormItem label="Web Elements Inside">
+                    <Field type="checkbox" name="extra_info.web_elements_inside" component={Checkbox} />
+                </FormItem>
+            </FormContainer>
             <CommonSelect
                 needClassName
                 name="background_config.desktop_position"
