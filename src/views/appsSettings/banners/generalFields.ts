@@ -119,4 +119,10 @@ export const ADD_BANNER_BASIC_FIELDS: BannerFields = {
         defVal: false,
         placeHolder: 'is_custom',
     },
+    is_parent: {
+        label: '',
+        type: 'checkbox',
+        defVal: false,
+        placeHolder: 'is_parent',
+    },
 }
