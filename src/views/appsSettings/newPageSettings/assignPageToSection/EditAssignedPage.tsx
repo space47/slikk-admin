@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useFetchApi } from '@/commonHooks/useFetchApi'
 import { Button, Checkbox, FormContainer, FormItem, Input, Select } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
@@ -18,6 +17,7 @@ import TagsEdit from '../../pageSettings/TagsEdit'
 import CommonFilterSelect from '@/common/ComonFilterSelect'
 import CommonSelect from '../../pageSettings/CommonSelect'
 import { SortArrays } from '../newPageSettingsUtils/newPageCommons'
+import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 
 interface valueProps {
     page: any
@@ -64,8 +64,8 @@ const EditAssignedPage = () => {
 
     const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
 
-    const query = useMemo(() => `/page-sections?section_id=${section_id}`, [section_id])
-    const { data } = useFetchApi<any>({ url: query })
+    const query = useMemo(() => `/page-sections?page_section_id=${section_id}`, [section_id])
+    const { data } = useFetchSingleData<any>({ url: query })
 
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
 
@@ -78,20 +78,20 @@ const EditAssignedPage = () => {
     }, [dispatch])
 
     useEffect(() => {
-        if (data && data[0]?.page) {
-            const initialPage = data[0]?.page
+        if (data && data?.page) {
+            const initialPage = data?.page
             const pageName = typeof initialPage === 'object' ? initialPage.name : initialPage
             setSelectedPageName(pageName)
         }
     }, [data])
 
     const initialValue = {
-        page: data[0]?.page,
-        sub_page: data[0]?.sub_page,
-        is_active: data[0]?.is_active,
-        position: data[0]?.position,
-        store: data[0]?.store?.map(({ code, id }: { code: string; id: number }) => ({ code, id })) || [],
-        is_section_clickable: data[0]?.is_section_clickable,
+        page: data?.page,
+        sub_page: data?.sub_page,
+        is_active: data?.is_active,
+        position: data?.position,
+        store: data?.store?.map(({ code, id }: { code: string; id: number }) => ({ code, id })) || [],
+        is_section_clickable: data?.is_section_clickable,
     }
 
     const handleSubmit = async (values: valueProps) => {
