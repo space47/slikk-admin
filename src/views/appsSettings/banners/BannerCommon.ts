@@ -21,7 +21,7 @@ export interface BANNER_MODEL {
     id: number
     name: string
     section_heading: string
-    parent_banner: string | null
+    parent_banner?: string | number
     quick_filter_tags: string[]
     brand: BRANDTYPES[]
     division: DIVTYPES[]

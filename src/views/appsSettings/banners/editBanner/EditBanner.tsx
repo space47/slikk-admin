@@ -28,6 +28,7 @@ import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 import FullDateForm from '@/common/FullDateForm'
 import { pageSettingsService } from '@/store/services/pageSettingService'
 import CommonFilterSelect from '@/common/ComonFilterSelect'
+import { useFetchApi } from '@/commonHooks/useFetchApi'
 
 const EditBanner = () => {
     const { id } = useParams()
@@ -74,9 +75,9 @@ const EditBanner = () => {
         }
     }, [isSubPageNamesSuccess])
 
-    console.log('subPage name is', subPageNamesData)
-
-    console.log('page is', bannerData?.page)
+    const { data: bannerFile } = useFetchApi<BANNER_MODEL>({
+        url: `/banners?p=1&page_size=200&page=${bannerData?.page}&section_heading=${bannerData?.section_heading}`,
+    })
 
     useEffect(() => {
         if (!bannerData) return
@@ -333,6 +334,30 @@ const EditBanner = () => {
                                 <div className="mb-4">
                                     <CommonFilterSelect isEdit filterId={filterId as string} setFilterId={setFilterId} />
                                 </div>
+
+                                <FormItem label="Parent Banner">
+                                    <Field name="parent_banner">
+                                        {({ field, form }: FieldProps<any>) => {
+                                            const selectedTag = bannerFile.find((item) => item.id === field.value)
+
+                                            return (
+                                                <Select
+                                                    isClearable
+                                                    className="w-1/2"
+                                                    placeholder="Select Filter Tags"
+                                                    options={bannerFile}
+                                                    value={selectedTag}
+                                                    getOptionLabel={(option) => option.name}
+                                                    getOptionValue={(option) => option.id}
+                                                    onChange={(newVal) => {
+                                                        form.setFieldValue('parent_banner', newVal?.id)
+                                                    }}
+                                                />
+                                            )
+                                        }}
+                                    </Field>
+                                </FormItem>
+
                                 <BannerFilterTags label="Tags" name="tags" />
                                 <BannerFilterTags label="Quick Filter Tags" name="quick_filter_tags" />
                                 <FormItem label="Sub Page" className="col-span-1 w-1/2">

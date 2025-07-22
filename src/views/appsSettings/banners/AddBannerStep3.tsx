@@ -20,8 +20,17 @@ import { companyStore } from '@/store/types/companyStore.types'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
 import CommonFilterSelect from '@/common/ComonFilterSelect'
 import FilterSelectWithoutFormik from '@/common/FilterSelectWithoutFormik'
+import { useFetchApi } from '@/commonHooks/useFetchApi'
+import { BANNER_MODEL } from './BannerCommon'
 
-function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBannerFormData, selectedPage, subPageId }: any) {
+function AddBannerStep3({
+    setCurrentStep,
+    completeBannerFormData,
+    setCompleteBannerFormData,
+    selectedPage,
+    subPageId,
+    selectedSection,
+}: any) {
     console.log('selected section', selectedPage?.value)
     const [bannerForm, setBannerFormData] = useState<BANNER_UPLOAD_DATA[]>(completeBannerFormData)
 
@@ -81,6 +90,8 @@ function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBan
                     return (
                         <div key={key} className=" w-full border my-4 shadow-md relative min-h-[100px]">
                             <SingleBannerFormComp
+                                selectedPage={selectedPage}
+                                selectedSection={selectedSection}
                                 subPageId={subPageId}
                                 bannerForm={bannerForm}
                                 setBannerForm={setBannerFormData}
@@ -116,7 +127,7 @@ function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBan
 
 export default AddBannerStep3
 
-const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputChange, pageName, subPageId }: any) => {
+const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputChange, pageName, subPageId, selectedSection }: any) => {
     const dispatch = useAppDispatch()
     const [subPageNamesData, setSubPageNamesData] = useState<pageNameTypes[] | undefined>([])
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
@@ -125,12 +136,9 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
     const { data: SubPageNames, isSuccess: isSubPageNamesSuccess } = pageSettingsService.useSubPageNamesQuery({
         pageName: pageName || '',
     })
-
     const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
-
     const [filterId, setFilterId] = useState('')
 
-    console.log('page name', pageName)
     useEffect(() => {
         dispatch(fetchCompanyStore())
     }, [dispatch])
@@ -168,9 +176,6 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
             return bannerForm[index]['sub_category'].map((item: any) => item?.name).some((div: any) => div === prodType.sub_category_name)
         })
     }
-
-    console.log('filteredCategories', subPageId)
-
     const handleFromTimeChange = (value: any) => {
         console.log('HandleTimeChange', value)
         const formattedValue = moment(value).format('YYYY-MM-DD HH:mm:ss')
@@ -184,8 +189,6 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
 
     const handleToTimeChange = (value: any) => {
         const formattedValue = moment(value).format('YYYY-MM-DD HH:mm:ss')
-
-        // Update the bannerForm with to_date
         const updatedBannerForm = [...bannerForm]
         updatedBannerForm[index] = {
             ...updatedBannerForm[index],
@@ -199,6 +202,10 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
         const finalValue = type === 'number' ? Number(value) : type === 'checkbox' ? checked : value
         handleInputChange(name, finalValue)
     }
+
+    const { data: bannerData } = useFetchApi<BANNER_MODEL>({
+        url: `/banners?p=1&page_size=200&page=${pageName}&section_heading=${selectedSection?.section_heading}`,
+    })
 
     useEffect(() => {
         if (filterId) {
@@ -221,9 +228,6 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
             setBannerForm(tempBannerForm)
         }
     }, [subPageId])
-
-    console.log('sub page names', subPageNamesData)
-    console.log('sub page id', subPageId)
 
     const handleSetDataInForm = (key: string, value: any) => {
         const tempBannerForm = bannerForm
@@ -352,6 +356,25 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                     </>
                 )}
             </form>
+
+            {bannerForm[index]?.is_parent && (
+                <div className="flex flex-col">
+                    <div>
+                        Parent Banner <span className="text-red-600">*</span>
+                    </div>
+                    <Select
+                        isClearable
+                        options={bannerData}
+                        className="w-full xl:w-[300px]"
+                        getOptionLabel={(option) => option.name}
+                        getOptionValue={(option) => option.id}
+                        onChange={(newVal) => {
+                            handleMultiSelect('parent_banner', newVal?.id)
+                        }}
+                    />
+                </div>
+            )}
+            <br />
 
             <div className="grid xl:grid-cols-8 grid-cols-2  gap-3">
                 <BannerDateSelector
