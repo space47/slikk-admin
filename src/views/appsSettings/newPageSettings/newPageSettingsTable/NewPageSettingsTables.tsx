@@ -119,7 +119,9 @@ const NewPageSettingsTables = () => {
     })
 
     const handleGoToBanner = (sectionHeading: string) => {
-        navigate('/app/appSettings/banners', { state: { var1: currentPageName?.label, var2: sectionHeading } })
+        navigate('/app/appSettings/banners', {
+            state: { var1: currentPageName?.label, var2: sectionHeading, var3: currentSubPageName?.label },
+        })
     }
 
     const handlePageUpdate = async () => {
