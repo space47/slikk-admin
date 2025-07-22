@@ -44,20 +44,18 @@ const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: Props) => {
     }
 
     const handleSubmit = async (values: any) => {
-        const imageUpload = await handleimage('product', values?.image_array)
-
-        console.log('image upload is', imageUpload)
+        const imageUpload = values?.image_array ? await handleimage('product', values?.image_array) : ''
 
         const body = {
             name: values.name || '',
             page: values.page?.id || '',
             display_name: values?.display_name || '',
             position: values?.position || '',
-            image: imageUpload,
+            image: imageUpload || '',
             is_active: values?.is_active || false,
             extra_attributes: {
-                primaryColor: values?.extra_attributes?.primary_color,
-                accentColor: values?.extra_attributes?.accent_color,
+                primaryColor: values?.extra_attributes?.primary_color || '',
+                accentColor: values?.extra_attributes?.accent_color || '',
             },
         }
 
