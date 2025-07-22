@@ -32,6 +32,7 @@ const BulkEditModal = ({ dialogIsOpen, setIsOpen, bannerIdStore, pageState, subP
     const [pageNamesData, setPageNamesData] = useState<pageNameTypes[] | undefined>([])
     const [subPageNamesData, setSubPageNamesData] = useState<pageNameTypes[] | undefined>([])
     const [selectedPageName, setSelectedPageName] = useState<string | undefined>(pageState)
+    const [selectedSubPageName, setSelectedSubPageName] = useState<string | undefined>('')
     const [sectionsData, setSectionsData] = useState<any>()
 
     useEffect(() => {
@@ -50,8 +51,12 @@ const BulkEditModal = ({ dialogIsOpen, setIsOpen, bannerIdStore, pageState, subP
     })
 
     const query = useMemo(() => {
-        return `/page-sections?p=1&page_size=500&page=${selectedPageName}`
-    }, [selectedPageName])
+        let subPageData = ''
+        if (selectedSubPageName) {
+            subPageData = `&sub_page=${selectedSubPageName}`
+        }
+        return `/page-sections?p=1&page_size=500&page=${selectedPageName}${subPageData}`
+    }, [selectedPageName, selectedSubPageName])
 
     const { data: pageSettingsData } = useFetchApi<any>({ url: query })
 
@@ -72,6 +77,8 @@ const BulkEditModal = ({ dialogIsOpen, setIsOpen, bannerIdStore, pageState, subP
             setSectionsData(pageSettingsData?.map((item) => item?.section))
         }
     }, [pageNames, pageSettingsData])
+
+    console.log('sub page names', selectedSubPageName)
 
     const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
 
@@ -124,12 +131,12 @@ const BulkEditModal = ({ dialogIsOpen, setIsOpen, bannerIdStore, pageState, subP
     return (
         <div>
             <Dialog isOpen={dialogIsOpen} width={800} onRequestClose={onDialogClose} onClose={onDialogClose}>
+                <div className="text-xl mb-2">Bulk Edit Banners</div>
                 <Formik enableReinitialize initialValues={initialState as any} onSubmit={handleSubmit}>
                     {({ resetForm }) => {
                         return (
-                            <Form className="p-3 rounded-xl shadow-xl">
-                                <div className="text-xl mb-2">Bulk Edit Banners</div>
-                                <div className="flex flex-col md:flex-row gap-6 mb-6">
+                            <Form className="p-3 rounded-xl shadow-xl ">
+                                <FormContainer className="grid grid-cols-2 gap-3">
                                     <FormItem label="Start Date">
                                         <DatePicker
                                             showTime
@@ -148,136 +155,139 @@ const BulkEditModal = ({ dialogIsOpen, setIsOpen, bannerIdStore, pageState, subP
                                             onChange={(date) => handleDateChange('endDate', date)}
                                         />
                                     </FormItem>
-                                </div>
-                                <FormContainer>
-                                    <FormItem label="Store">
-                                        <Field name="store">
-                                            {({ form, field }: FieldProps) => {
-                                                const selectedStores = storeResults.filter((option) =>
-                                                    field.value?.some((store: any) => store?.id === option.id),
-                                                )
-                                                return (
-                                                    <div className="flex flex-col gap-1 w-full max-w-md">
-                                                        <Select
-                                                            isMulti
-                                                            className="w-full"
-                                                            options={storeResults}
-                                                            getOptionLabel={(option) => option.code}
-                                                            getOptionValue={(option) => option.id}
-                                                            value={selectedStores || null}
-                                                            onChange={(newVal) => {
-                                                                form.setFieldValue('store', newVal)
-                                                            }}
-                                                        />
-                                                    </div>
-                                                )
-                                            }}
-                                        </Field>
-                                    </FormItem>
-                                </FormContainer>
 
-                                <FormContainer>
-                                    <FormItem label="Page">
-                                        <Field name="page">
-                                            {({ form, field }: FieldProps) => {
-                                                const selectedPage =
-                                                    typeof field?.value === 'object'
-                                                        ? pageNamesData?.find((option) => option.name === field?.value?.name)
-                                                        : pageNamesData?.find((option) => option.name === field?.value)
-                                                return (
-                                                    <div className="flex flex-col gap-1 w-full max-w-md">
-                                                        <Select
-                                                            isClearable
-                                                            className="w-full"
-                                                            options={pageNamesData}
-                                                            getOptionLabel={(option) => option.name}
-                                                            getOptionValue={(option) => option.id}
-                                                            value={selectedPage || null}
-                                                            onChange={(newVal) => {
-                                                                form.setFieldValue('page', newVal)
-                                                                const name = typeof newVal === 'object' ? newVal?.name : newVal
-                                                                setSelectedPageName(name)
-                                                            }}
-                                                        />
-                                                    </div>
-                                                )
-                                            }}
-                                        </Field>
-                                    </FormItem>
-                                </FormContainer>
+                                    <FormContainer>
+                                        <FormItem label="Store">
+                                            <Field name="store">
+                                                {({ form, field }: FieldProps) => {
+                                                    const selectedStores = storeResults.filter((option) =>
+                                                        field.value?.some((store: any) => store?.id === option.id),
+                                                    )
+                                                    return (
+                                                        <div className="flex flex-col gap-1 w-full max-w-md">
+                                                            <Select
+                                                                isMulti
+                                                                className="w-full"
+                                                                options={storeResults}
+                                                                getOptionLabel={(option) => option.code}
+                                                                getOptionValue={(option) => option.id}
+                                                                value={selectedStores || null}
+                                                                onChange={(newVal) => {
+                                                                    form.setFieldValue('store', newVal)
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    )
+                                                }}
+                                            </Field>
+                                        </FormItem>
+                                    </FormContainer>
 
-                                <FormContainer>
-                                    <FormItem label="Sub Page">
-                                        <Field name="sub_page">
-                                            {({ form, field }: FieldProps) => {
-                                                // Determine the current value - handle both array and single object cases
-                                                const currentValue = Array.isArray(field?.value)
-                                                    ? subPageNamesData?.filter((option) =>
-                                                          field.value.some(
-                                                              (val: any) => (typeof val === 'object' ? val.name : val) === option.name,
-                                                          ),
-                                                      )
-                                                    : field?.value
-                                                      ? [
-                                                            subPageNamesData?.find(
-                                                                (option) =>
-                                                                    (typeof field.value === 'object' ? field.value.name : field.value) ===
-                                                                    option.name,
-                                                            ),
-                                                        ].filter(Boolean)
-                                                      : []
+                                    <FormContainer>
+                                        <FormItem label="Page">
+                                            <Field name="page">
+                                                {({ form, field }: FieldProps) => {
+                                                    const selectedPage =
+                                                        typeof field?.value === 'object'
+                                                            ? pageNamesData?.find((option) => option.name === field?.value?.name)
+                                                            : pageNamesData?.find((option) => option.name === field?.value)
+                                                    return (
+                                                        <div className="flex flex-col gap-1 w-full max-w-md">
+                                                            <Select
+                                                                isClearable
+                                                                className="w-full"
+                                                                options={pageNamesData}
+                                                                getOptionLabel={(option) => option.name}
+                                                                getOptionValue={(option) => option.id}
+                                                                value={selectedPage || null}
+                                                                onChange={(newVal) => {
+                                                                    form.setFieldValue('page', newVal)
+                                                                    const name = typeof newVal === 'object' ? newVal?.name : newVal
+                                                                    setSelectedPageName(name)
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    )
+                                                }}
+                                            </Field>
+                                        </FormItem>
+                                    </FormContainer>
 
-                                                return (
-                                                    <div className="flex flex-col gap-1 w-full max-w-md">
-                                                        <Select
-                                                            isMulti
-                                                            isClearable
-                                                            className="w-full"
-                                                            options={subPageNamesData}
-                                                            getOptionLabel={(option) => option.name}
-                                                            getOptionValue={(option) => option.id}
-                                                            value={currentValue}
-                                                            onChange={(newVal) => {
-                                                                form.setFieldValue(
-                                                                    'sub_page',
-                                                                    newVal ? newVal.map((item) => item?.name) : [],
-                                                                )
-                                                            }}
-                                                        />
-                                                    </div>
-                                                )
-                                            }}
-                                        </Field>
-                                    </FormItem>
-                                </FormContainer>
+                                    <FormContainer>
+                                        <FormItem label="Sub Page">
+                                            <Field name="sub_page">
+                                                {({ form, field }: FieldProps) => {
+                                                    // Determine the current value - handle both array and single object cases
+                                                    const currentValue = Array.isArray(field?.value)
+                                                        ? subPageNamesData?.filter((option) =>
+                                                              field.value.some(
+                                                                  (val: any) => (typeof val === 'object' ? val.name : val) === option.name,
+                                                              ),
+                                                          )
+                                                        : field?.value
+                                                          ? [
+                                                                subPageNamesData?.find(
+                                                                    (option) =>
+                                                                        (typeof field.value === 'object'
+                                                                            ? field.value.name
+                                                                            : field.value) === option.name,
+                                                                ),
+                                                            ].filter(Boolean)
+                                                          : []
 
-                                <FormContainer>
-                                    <FormItem label="Sections">
-                                        <Field name="sections">
-                                            {({ form, field }: FieldProps) => {
-                                                console.log('field', field?.value)
-                                                const selectedSection = sectionsData?.find(
-                                                    (option: any) => option?.section_heading === field?.value,
-                                                )
-                                                return (
-                                                    <div className="flex flex-col gap-1 w-full max-w-md">
-                                                        <Select
-                                                            isClearable
-                                                            className="w-full"
-                                                            options={sectionsData}
-                                                            getOptionLabel={(option) => option.section_heading}
-                                                            getOptionValue={(option) => option.id}
-                                                            value={selectedSection || null}
-                                                            onChange={(newVal) => {
-                                                                console.log('new vsal', newVal)
-                                                                form.setFieldValue('sections', newVal?.section_heading)
-                                                            }}
-                                                        />
-                                                    </div>
-                                                )
-                                            }}
-                                        </Field>
-                                    </FormItem>
+                                                    return (
+                                                        <div className="flex flex-col gap-1 w-full max-w-md">
+                                                            <Select
+                                                                isMulti
+                                                                isClearable
+                                                                className="w-full"
+                                                                options={subPageNamesData}
+                                                                getOptionLabel={(option) => option.name}
+                                                                getOptionValue={(option) => option.id}
+                                                                value={currentValue}
+                                                                onChange={(newVal) => {
+                                                                    form.setFieldValue(
+                                                                        'sub_page',
+                                                                        newVal ? newVal.map((item) => item?.name) : [],
+                                                                    )
+                                                                    setSelectedSubPageName(newVal.map((item) => item?.name)[0])
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    )
+                                                }}
+                                            </Field>
+                                        </FormItem>
+                                    </FormContainer>
+
+                                    <FormContainer>
+                                        <FormItem label="Sections">
+                                            <Field name="sections">
+                                                {({ form, field }: FieldProps) => {
+                                                    console.log('field', field?.value)
+                                                    const selectedSection = sectionsData?.find(
+                                                        (option: any) => option?.section_heading === field?.value,
+                                                    )
+                                                    return (
+                                                        <div className="flex flex-col gap-1 w-full max-w-md">
+                                                            <Select
+                                                                isClearable
+                                                                className="w-full"
+                                                                options={sectionsData}
+                                                                getOptionLabel={(option) => option.section_heading}
+                                                                getOptionValue={(option) => option.id}
+                                                                value={selectedSection || null}
+                                                                onChange={(newVal) => {
+                                                                    console.log('new vsal', newVal)
+                                                                    form.setFieldValue('sections', newVal?.section_heading)
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    )
+                                                }}
+                                            </Field>
+                                        </FormItem>
+                                    </FormContainer>
                                 </FormContainer>
 
                                 <FormContainer className="flex gap-2 mt-4 items-center justify-end">

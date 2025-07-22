@@ -45,16 +45,6 @@ const EditBanner = () => {
     const [subPageNamesData, setSubPageNamesData] = useState<any>([])
     const [filterId, setFilterId] = useState<number | string>('')
 
-    const { data: SubPageNames, isSuccess: isSubPageNamesSuccess } = pageSettingsService.useSubPageNamesQuery({})
-
-    useEffect(() => {
-        if (isSubPageNamesSuccess) {
-            setSubPageNamesData(SubPageNames?.data || [])
-        }
-    }, [isSubPageNamesSuccess])
-
-    console.log('subPage name is', subPageNamesData)
-
     const validationSchema = Yup.object().shape({
         min_off: Yup.number().max(Yup.ref('max_off'), 'min_off must be less than or equal to max_off'),
         max_off: Yup.number(),
@@ -73,6 +63,20 @@ const EditBanner = () => {
     const { data: bannerData } = useFetchSingleData<any>({ url: query })
 
     const toArray = (value: string | undefined): string[] => (value ? [value] : [])
+
+    const { data: SubPageNames, isSuccess: isSubPageNamesSuccess } = pageSettingsService.useSubPageNamesQuery({
+        pageName: bannerData?.page || '',
+    })
+
+    useEffect(() => {
+        if (isSubPageNamesSuccess) {
+            setSubPageNamesData(SubPageNames?.data || [])
+        }
+    }, [isSubPageNamesSuccess])
+
+    console.log('subPage name is', subPageNamesData)
+
+    console.log('page is', bannerData?.page)
 
     useEffect(() => {
         if (!bannerData) return
