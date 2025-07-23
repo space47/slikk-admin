@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
 // import { API_RESPONSE } from './data';
-import { Button } from '@/components/ui'
+import { Button, Spinner } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import { useNavigate } from 'react-router-dom'
@@ -11,6 +11,7 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
     const navigate = useNavigate()
     const [API_BANNERS, setApiBanners] = useState<any[]>([])
     const [viewSize, setViewSize] = useState('lg')
+    const [showSpinner, setShowSpinner] = useState(false)
 
     useEffect(() => {
         const fetchBanners = async () => {
@@ -175,6 +176,7 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
 
     const handleSubmit = async () => {
         await completeBannerFormData?.forEach(async (banner: any, index: number) => {
+            setShowSpinner(true)
             console.log('maxOff value', banner?.maxoff, banner?.minoff)
             const webImageUpload = await HandleImage(banner.image_web_file)
             const mobileImageUpload = await HandleImage(banner.image_mobile_file)
@@ -232,12 +234,7 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                 image_mobile_file: null,
             }
 
-            console.log('Data to send', data)
-
             const filteredBody = Object.fromEntries(Object.entries(data)?.filter(([, val]) => val !== ''))
-
-            console.log('filtered body', filteredBody)
-
             await axioisInstance
                 .post('banners', filteredBody)
                 .then((res) => {
@@ -252,6 +249,9 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                         message: 'Error when creating banner ' + (index + 1),
                         description: err?.response?.data?.message || 'Error in banner api',
                     })
+                })
+                .finally(() => {
+                    setShowSpinner(false)
                 })
         })
     }
@@ -268,9 +268,10 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                     onClick={() => {
                         handleSubmit()
                     }}
-                    variant="new"
+                    variant={showSpinner ? 'default' : 'new'}
+                    className="flex gap-2 items-center"
                 >
-                    Save Banner
+                    {showSpinner && <Spinner size={30} />} {showSpinner ? 'Saving..' : 'Save Banner'}
                 </Button>
             </div>
             <div className="mb-5 w-full px-[10%] flex flex-col lg:flex-row gap-4">
