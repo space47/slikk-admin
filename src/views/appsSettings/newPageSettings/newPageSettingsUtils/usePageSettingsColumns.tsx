@@ -127,6 +127,44 @@ export const usePageSettingsColumns = ({
                     )
                 },
             },
+            {
+                header: 'BG Image',
+                accessorKey: 'extra_attributes.background_image',
+                cell: ({ row }: any) => {
+                    const imageUrl = row?.original?.extra_attributes?.background_image
+
+                    return (
+                        <div>
+                            {imageUrl ? (
+                                <>
+                                    <img src={imageUrl} alt="Image" className="w-24 h-20 object-cover cursor-pointer" />
+                                </>
+                            ) : (
+                                'N/A'
+                            )}
+                        </div>
+                    )
+                },
+            },
+            {
+                header: 'Mobile BG Image',
+                accessorKey: 'extra_attributes.mobile_background_image',
+                cell: ({ row }: any) => {
+                    const imageUrl = row?.original?.extra_attributes?.mobile_background_image
+
+                    return (
+                        <div>
+                            {imageUrl ? (
+                                <>
+                                    <img src={imageUrl} alt="Image" className="w-24 h-20 object-cover cursor-pointer" />
+                                </>
+                            ) : (
+                                'N/A'
+                            )}
+                        </div>
+                    )
+                },
+            },
             { header: 'Page', accessorKey: 'page' },
             { header: 'Sub Page', accessorKey: 'sub_page' },
             {
