@@ -18,6 +18,9 @@ import CommonFilterSelect from '@/common/ComonFilterSelect'
 import CommonSelect from '../../pageSettings/CommonSelect'
 import { PageSectionsFiltersArray, SortArrays } from '../newPageSettingsUtils/newPageCommons'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
+import PageEditVideo from '../../pageSettings/PageEditVideo'
+import { beforeUpload } from '@/common/beforeUpload'
+import { handleimage } from '@/common/handleImage'
 
 interface valueProps {
     page: any
@@ -29,6 +32,7 @@ interface valueProps {
     is_section_clickable?: boolean
     section_filters?: string[]
     sort?: string
+    extra_attributes?: any
 }
 
 const EditAssignedPage = () => {
@@ -88,13 +92,14 @@ const EditAssignedPage = () => {
 
     console.log('filter is', filterId)
 
-    const initialValue = {
+    const initialValue: any = {
         page: data?.page,
         sub_page: data?.sub_page,
         is_active: data?.is_active,
         position: data?.position,
         store: data?.store?.map(({ code, id }: { code: string; id: number }) => ({ code, id })) || [],
         is_section_clickable: data?.is_section_clickable,
+        extra_attributes: data?.extra_attributes,
         section_filters: data?.section_filter?.filter((item: any) => !item.startsWith('filterId_') && !item.startsWith('sort_')),
         sort: data?.section_filter?.find((item: any) => item.startsWith('sort_'))?.split('_')[1],
         maxPrice: data?.section_filter?.find((item: any) => item.startsWith('maxprice_'))?.split('_')[1],
@@ -103,10 +108,37 @@ const EditAssignedPage = () => {
         minDiscount: data?.section_filter?.find((item: any) => item.startsWith('mindiscount_'))?.split('_')[1],
     }
 
+    const handleRemove = (text: string, setFieldValue: (field: string, value: any) => void) => {
+        if (text === 'web') {
+            setFieldValue('extra_attributes.background_image_array', [])
+            setFieldValue('extra_attributes.background_image', '')
+        }
+        if (text === 'mobile') {
+            setFieldValue('extra_attributes.mobile_background_image_array', [])
+            setFieldValue('extra_attributes.mobile_background_image', '')
+        }
+    }
+
     const handleSubmit = async (values: any) => {
+        const imageUpload =
+            values?.extra_attributes?.background_image_array?.length > 0
+                ? await handleimage('product', values?.extra_attributes.background_image_array)
+                : ''
+        const mobile_imageUpload =
+            values?.extra_attributes?.mobile_background_image_array?.length > 0
+                ? await handleimage('product', values?.extra_attributes.mobile_background_image_array)
+                : ''
+
         console.log('tyyft', values)
         const subPageComparator = typeof values?.sub_page === 'object' ? values?.sub_page?.name : values?.sub_page
         const pageComparator = typeof values?.page === 'object' ? values?.page?.name : values?.page
+
+        const extra = {
+            background_image: imageUpload || values?.extra_attributes?.background_image || '',
+            mobile_background_image: mobile_imageUpload || values?.extra_attributes?.mobile_background_image || '',
+        }
+
+        const extraValues = Object.fromEntries(Object.entries(extra).filter(([, val]) => val !== ''))
 
         const body = {
             page: pageNamesData?.find((item) => item?.name === pageComparator)?.id,
@@ -116,6 +148,7 @@ const EditAssignedPage = () => {
             position: values?.position,
             is_active: values?.is_active ?? false,
             is_section_clickable: values?.is_section_clickable || false,
+            extra_attributes: extraValues,
             section_filter: [
                 ...(values?.section_filters ? values.section_filters : []),
                 values?.maxPrice ? `maxprice_${values?.maxPrice}` : '',
@@ -140,8 +173,8 @@ const EditAssignedPage = () => {
 
     return (
         <div>
-            <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
-                {({ resetForm, values }) => (
+            <Formik enableReinitialize initialValues={initialValue as valueProps} onSubmit={handleSubmit}>
+                {({ resetForm, values, setFieldValue }) => (
                     <Form>
                         <FormContainer>
                             <FormItem label="Store">
@@ -230,10 +263,30 @@ const EditAssignedPage = () => {
                             </FormItem>
                         </FormContainer>
 
+                        <PageEditVideo
+                            isImage
+                            label="BG Image"
+                            rowName={values?.extra_attributes?.background_image}
+                            name="extra_attributes.background_image_array"
+                            handleRemoveVideo={() => handleRemove('web', setFieldValue)}
+                            beforeVideoUpload={beforeUpload}
+                            fileList={values?.extra_attributes?.background_image_array as any}
+                            fieldName="extra_attributes.background_image_array"
+                        />
+                        <PageEditVideo
+                            isImage
+                            label="Mobile BG Image"
+                            rowName={values?.extra_attributes?.mobile_background_image}
+                            name="extra_attributes.mobile_background_image_array"
+                            handleRemoveVideo={() => handleRemove('mobile', setFieldValue)}
+                            beforeVideoUpload={beforeUpload}
+                            fileList={values?.extra_attributes?.mobile_background_image_array as any}
+                            fieldName="extra_attributes.mobile_background_image_array"
+                        />
+
                         <FormItem label="Section Clickable">
                             <Field type="checkbox" name="is_section_clickable" component={Checkbox} />
                         </FormItem>
-
                         {values?.is_section_clickable && (
                             <>
                                 <TagsEdit isValue filterOptions={filters.filters} />
