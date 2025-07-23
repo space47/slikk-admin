@@ -272,7 +272,7 @@ const EditAssignedPage = () => {
                             </FormItem>
                             <FormItem>
                                 <Button variant="accept" type="submit">
-                                    Assign
+                                    Update
                                 </Button>
                             </FormItem>
                         </FormContainer>
