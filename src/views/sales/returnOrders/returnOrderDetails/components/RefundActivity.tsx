@@ -46,7 +46,7 @@ const RefundActivity = () => {
     const [packetsValue, setPacketsValue] = useState('')
     const [packetsContainer, setPacketsContainer] = useState<string[]>([])
     // const packetIdArray = returnOrder?.returnOrders?.packet_ids || ['r1456', 'r1234', 'r4444']
-    const packetIdArray = ['1', '2', '3', '4', '5']
+    // const packetIdArray = ['1', '2', '3', '4', '5']
 
     const handlePICKUPGenerate = () => {
         setAction('create_reverse_pickup')
@@ -172,21 +172,21 @@ const RefundActivity = () => {
         }
     }
 
-    const handlePacketsCount = (e: any) => {
-        if (e.key === 'Enter') {
-            if (packetsContainer.includes(e.target.value)) {
-                notification.warning({ message: 'Packet Already scanned' })
-            } else if (packetIdArray.includes(e.target.value)) {
-                setPacketsContainer((prev) => [...prev, e.target.value])
-                setPacketsValue('')
-            } else {
-                notification.error({ message: 'No packet Id' })
-            }
-        }
-    }
+    // const handlePacketsCount = (e: any) => {
+    //     if (e.key === 'Enter') {
+    //         if (packetsContainer.includes(e.target.value)) {
+    //             notification.warning({ message: 'Packet Already scanned' })
+    //         } else if (packetIdArray.includes(e.target.value)) {
+    //             setPacketsContainer((prev) => [...prev, e.target.value])
+    //             setPacketsValue('')
+    //         } else {
+    //             notification.error({ message: 'No packet Id' })
+    //         }
+    //     }
+    // }
 
     const isPickedUp = returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'PICKED_UP'
-    const equalNumber = packetsContainer?.length === packetIdArray.length
+    // const equalNumber = packetsContainer?.length === packetIdArray.length
 
     return (
         <Card className="mb-10 flex flex-col">
@@ -220,7 +220,7 @@ const RefundActivity = () => {
             </Timeline>
             {/* buttons........................................................................................................ */}
 
-            <div className="mt-5 mb-5">
+            {/* <div className="mt-5 mb-5">
                 {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'PICKED_UP' && (
                     <>
                         <div className="grid grid-cols-3 mb-3 gap-3">
@@ -240,10 +240,14 @@ const RefundActivity = () => {
                         </div>
                     </>
                 )}
-            </div>
+            </div> */}
 
             {buttonText && returnDetails?.status && returnDetails.status !== 'CANCELLED' && returnDetails.status !== 'ACCEPTED' && (
-                <Button variant="solid" onClick={() => showModal(content)} disabled={isPickedUp && !equalNumber}>
+                <Button
+                    variant="solid"
+                    onClick={() => showModal(content)}
+                    //  disabled={isPickedUp && !equalNumber}
+                >
                     {buttonText}
                 </Button>
             )}
