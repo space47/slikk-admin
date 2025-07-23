@@ -16,7 +16,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import TagsEdit from '../../pageSettings/TagsEdit'
 import CommonFilterSelect from '@/common/ComonFilterSelect'
 import CommonSelect from '../../pageSettings/CommonSelect'
-import { SortArrays } from '../newPageSettingsUtils/newPageCommons'
+import { PageSectionsFiltersArray, SortArrays } from '../newPageSettingsUtils/newPageCommons'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 
 interface valueProps {
@@ -81,9 +81,12 @@ const EditAssignedPage = () => {
         if (data && data?.page) {
             const initialPage = data?.page
             const pageName = typeof initialPage === 'object' ? initialPage.name : initialPage
+            setFilterId(data?.section_filter.find((item: any) => item.startsWith('filterId_'))?.split('_')[1])
             setSelectedPageName(pageName)
         }
     }, [data])
+
+    console.log('filter is', filterId)
 
     const initialValue = {
         page: data?.page,
@@ -92,25 +95,36 @@ const EditAssignedPage = () => {
         position: data?.position,
         store: data?.store?.map(({ code, id }: { code: string; id: number }) => ({ code, id })) || [],
         is_section_clickable: data?.is_section_clickable,
+        section_filters: data?.section_filter?.filter((item: any) => !item.startsWith('filterId_') && !item.startsWith('sort_')),
+        sort: data?.section_filter?.find((item: any) => item.startsWith('sort_'))?.split('_')[1],
+        maxPrice: data?.section_filter?.find((item: any) => item.startsWith('maxprice_'))?.split('_')[1],
+        minPrice: data?.section_filter?.find((item: any) => item.startsWith('minprice_'))?.split('_')[1],
+        maxDiscount: data?.section_filter?.find((item: any) => item.startsWith('maxdiscount_'))?.split('_')[1],
+        minDiscount: data?.section_filter?.find((item: any) => item.startsWith('mindiscount_'))?.split('_')[1],
     }
 
-    const handleSubmit = async (values: valueProps) => {
+    const handleSubmit = async (values: any) => {
+        console.log('tyyft', values)
         const subPageComparator = typeof values?.sub_page === 'object' ? values?.sub_page?.name : values?.sub_page
         const pageComparator = typeof values?.page === 'object' ? values?.page?.name : values?.page
 
         const body = {
             page: pageNamesData?.find((item) => item?.name === pageComparator)?.id,
             sub_page: subPageNamesData?.find((item) => item?.name === subPageComparator)?.id,
-            store: values?.store?.map((item) => item?.id),
+            store: values?.store?.map((item: any) => item?.id),
             section: Number(data?.section?.id),
             position: values?.position,
             is_active: values?.is_active ?? false,
             is_section_clickable: values?.is_section_clickable || false,
-            section_filters: [
+            section_filter: [
                 ...(values?.section_filters ? values.section_filters : []),
-                values?.sort ? `sort_${values?.sort}` : [],
-                filterId ? `filterId_${filterId}` : [],
-            ],
+                values?.maxPrice ? `maxprice_${values?.maxPrice}` : '',
+                values?.minPrice ? `minprice_${values?.minPrice}` : '',
+                values?.maxDiscount ? `maxdiscount_${values?.maxDiscount}` : '',
+                values?.minDiscount ? `mindiscount_${values?.minDiscount}` : '',
+                values?.sort ? `sort_${values?.sort}` : '',
+                filterId ? `filterId_${filterId}` : '',
+            ]?.filter((val) => val !== ''),
         }
         try {
             const res = await axioisInstance.patch(`/page-sections/${section_id}`, body)
@@ -226,9 +240,19 @@ const EditAssignedPage = () => {
                                 <div className="mb-4">
                                     <CommonFilterSelect isEdit filterId={filterId} setFilterId={setFilterId} />
                                 </div>
-                                {/* sort_hightolow */}
-
                                 <CommonSelect label="Sort By" name="sort" options={SortArrays} />
+
+                                <FormContainer className="grid grid-cols-2 gap-2">
+                                    {PageSectionsFiltersArray?.map((item, key) => {
+                                        return (
+                                            <div key={key}>
+                                                <FormItem label={item?.label}>
+                                                    <Field type={item?.type} name={item?.name} component={Input} />
+                                                </FormItem>
+                                            </div>
+                                        )
+                                    })}
+                                </FormContainer>
                             </>
                         )}
 

@@ -17,7 +17,7 @@ import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import CommonFilterSelect from '@/common/ComonFilterSelect'
 import CommonSelect from '../../pageSettings/CommonSelect'
-import { SortArrays } from '../newPageSettingsUtils/newPageCommons'
+import { PageSectionsFiltersArray, SortArrays } from '../newPageSettingsUtils/newPageCommons'
 
 interface RequiredSections {
     id: number
@@ -93,7 +93,7 @@ const AssignPageSection = () => {
         dispatch(fetchCompanyStore())
     }, [dispatch])
 
-    const handleSubmit = async (values: valueProps) => {
+    const handleSubmit = async (values: any) => {
         const subPageComparator = typeof values?.sub_page === 'object' ? values?.sub_page?.name : values?.sub_page
         const pageComparator = typeof values?.page === 'object' ? values?.page?.name : values?.page
 
@@ -105,11 +105,15 @@ const AssignPageSection = () => {
             position: values?.position,
             is_active: values?.is_active ?? false,
             is_section_clickable: values?.is_section_clickable || false,
-            section_filters: [
+            section_filter: [
                 ...(values?.section_filters ? values.section_filters : []),
-                values?.sort ? `sort_${values?.sort}` : [],
-                filterId ? `filterId_${filterId}` : [],
-            ],
+                values?.maxPrice ? `maxprice_${values?.maxPrice}` : '',
+                values?.minPrice ? `minprice_${values?.minPrice}` : '',
+                values?.maxDiscount ? `maxdiscount_${values?.maxDiscount}` : '',
+                values?.minDiscount ? `mindiscount_${values?.minDiscount}` : '',
+                values?.sort ? `sort_${values?.sort}` : '',
+                filterId ? `filterId_${filterId}` : '',
+            ]?.filter((val) => val !== ''),
         }
 
         console.log('body is', body)
@@ -257,6 +261,17 @@ const AssignPageSection = () => {
                                     {/* sort_hightolow */}
 
                                     <CommonSelect label="Sort By" name="sort" options={SortArrays} />
+                                    <FormContainer className="grid grid-cols-2 gap-2">
+                                        {PageSectionsFiltersArray?.map((item, key) => {
+                                            return (
+                                                <div key={key}>
+                                                    <FormItem label={item?.label}>
+                                                        <Field type={item?.type} name={item?.name} component={Input} />
+                                                    </FormItem>
+                                                </div>
+                                            )
+                                        })}
+                                    </FormContainer>
                                 </>
                             )}
 
