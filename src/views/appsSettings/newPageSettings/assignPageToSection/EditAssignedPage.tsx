@@ -102,7 +102,7 @@ const EditAssignedPage = () => {
             page: pageNamesData?.find((item) => item?.name === pageComparator)?.id,
             sub_page: subPageNamesData?.find((item) => item?.name === subPageComparator)?.id,
             store: values?.store?.map((item) => item?.id),
-            section: Number(section_id),
+            section: Number(data?.section?.id),
             position: values?.position,
             is_active: values?.is_active ?? false,
             is_section_clickable: values?.is_section_clickable || false,
