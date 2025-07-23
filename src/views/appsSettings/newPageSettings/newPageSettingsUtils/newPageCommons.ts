@@ -54,6 +54,7 @@ export const ConfigArray = [
     { label: 'Top Margin', key: 'topMargin', type: 'number' },
     { label: 'bottom Margin', key: 'bottomMargin', type: 'number' },
     { label: 'redirection url', key: 'redirection_url', type: 'text' },
+    { label: 'Width', key: 'width', type: 'number' },
 ]
 
 export const getConfigArray = (title: string, prefix: string) => {
@@ -151,4 +152,11 @@ export const SortArrays = [
     { label: 'Discount', value: 'discount' },
     { label: 'Rating', value: 'rating' },
     { label: 'Newest', value: 'newest' },
+]
+
+export const PageSectionsFiltersArray = [
+    { label: 'Max Price', name: 'maxPrice', type: 'number' },
+    { label: 'Min Price', name: 'minPrice', type: 'number' },
+    { label: 'Max Discount', name: 'maxDiscount', type: 'number' },
+    { label: 'Min Discount', name: 'minDiscount', type: 'number' },
 ]
