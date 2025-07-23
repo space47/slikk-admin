@@ -18,6 +18,9 @@ import { getAllFiltersAPI } from '@/store/action/filters.action'
 import CommonFilterSelect from '@/common/ComonFilterSelect'
 import CommonSelect from '../../pageSettings/CommonSelect'
 import { PageSectionsFiltersArray, SortArrays } from '../newPageSettingsUtils/newPageCommons'
+import PageAddVideo from '../../pageSettings/PageAddVideo'
+import { beforeUpload } from '@/common/beforeUpload'
+import { handleimage } from '@/common/handleImage'
 
 interface RequiredSections {
     id: number
@@ -35,6 +38,7 @@ interface valueProps {
     is_section_clickable?: boolean
     section_filters?: string[]
     sort?: string
+    extra_attributes?: any
 }
 
 const AssignPageSection = () => {
@@ -97,14 +101,31 @@ const AssignPageSection = () => {
         const subPageComparator = typeof values?.sub_page === 'object' ? values?.sub_page?.name : values?.sub_page
         const pageComparator = typeof values?.page === 'object' ? values?.page?.name : values?.page
 
+        const imageUpload =
+            values?.extra_attributes.background_image_array?.length > 0
+                ? await handleimage('product', values?.extra_attributes.background_image_array)
+                : ''
+        const mobile_imageUpload =
+            values?.extra_attributes.mobile_background_image_array?.length > 0
+                ? await handleimage('product', values?.extra_attributes.mobile_background_image_array)
+                : ''
+
+        const extra = {
+            background_image: imageUpload,
+            mobile_background_image: mobile_imageUpload,
+        }
+
+        const extraValues = Object.fromEntries(Object.entries(extra).filter(([, val]) => val !== ''))
+
         const body = {
             page: pageNamesData?.find((item) => item?.name === pageComparator)?.id,
             sub_page: subPageNamesData?.find((item) => item?.name === subPageComparator)?.id,
-            store: values?.store?.map((item) => item?.id) || [],
+            store: values?.store?.map((item: any) => item?.id) || [],
             section: values?.sections,
             position: values?.position,
             is_active: values?.is_active ?? false,
             is_section_clickable: values?.is_section_clickable || false,
+            extra_attributes: extraValues,
             section_filter: [
                 ...(values?.section_filters ? values.section_filters : []),
                 values?.maxPrice ? `maxprice_${values?.maxPrice}` : '',
@@ -247,6 +268,21 @@ const AssignPageSection = () => {
                                     </Field>
                                 </FormItem>
                             </FormContainer>
+
+                            <PageAddVideo
+                                label="Background image"
+                                name="extra_attributes.background_image_array"
+                                fieldName="extra_attributes.background_image_array"
+                                fileList={values?.extra_attributes?.background_image_array}
+                                beforeUpload={beforeUpload}
+                            />
+                            <PageAddVideo
+                                label="Mobile Background image"
+                                name="extra_attributes.mobile_background_image_array"
+                                fieldName="extra_attributes.mobile_background_image_array"
+                                fileList={values?.extra_attributes?.mobile_background_image_array}
+                                beforeUpload={beforeUpload}
+                            />
 
                             <FormItem label="Section Clickable">
                                 <Field type="checkbox" name="is_section_clickable" component={Checkbox} />
