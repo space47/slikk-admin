@@ -154,7 +154,7 @@ export const usePageSettingsColumns = ({
                 cell: ({ row }: any) => (
                     <button
                         className="border-none bg-none"
-                        onClick={() => navigate(`/app/appSettings/newPageSettings/assignSection/${row?.original?.section?.id}`)}
+                        onClick={() => navigate(`/app/appSettings/newPageSettings/assignSection/${row?.original?.id}`)}
                     >
                         <MdAssignment className="text-3xl text-red-600" />
                     </button>
