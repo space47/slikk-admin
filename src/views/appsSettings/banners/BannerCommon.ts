@@ -46,7 +46,7 @@ export interface BANNER_MODEL {
     from_date: Date | null
     to_date: Date | null
     uptooff: string
-    tags: TAGSTYPE[]
+    tags: string[]
     footer: string | null
     coupon_code: string | null
     is_clickable: boolean

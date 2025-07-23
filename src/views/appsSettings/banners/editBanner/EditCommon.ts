@@ -242,7 +242,7 @@ export const BANNER_FIELDS_TYPE = [
 
 export const getInitialBannerValue = (bannerData: BANNER_MODEL | undefined) => ({
     id: bannerData?.id || 0,
-    sort: bannerData?.tags?.find((item: any) => item.startsWith('sort_'))?.split('_')[1],
+    sort: bannerData?.tags?.find((item: string) => item.startsWith('sort_'))?.split('_')[1],
     name: bannerData?.name || '',
     section_heading: bannerData?.section_heading || '',
     parent_banner: bannerData?.parent_banner || null,
@@ -271,7 +271,7 @@ export const getInitialBannerValue = (bannerData: BANNER_MODEL | undefined) => (
     from_date: bannerData?.from_date || null,
     to_date: bannerData?.to_date || null,
     uptooff: bannerData?.uptooff || '',
-    tags: bannerData?.tags || [],
+    tags: bannerData?.tags?.filter((item: string) => !item?.startsWith('filterId_') && !item?.startsWith('sort_')) || [],
     footer: bannerData?.footer || null,
     coupon_code: bannerData?.coupon_code || null,
     is_clickable: bannerData?.is_clickable || false,
@@ -285,7 +285,7 @@ export const getInitialBannerValue = (bannerData: BANNER_MODEL | undefined) => (
     min_off: bannerData?.extra_attributes?.minoff || 0,
     barcodes: bannerData?.barcodes || '',
     redirection_url: bannerData?.redirection_url || null,
-    tags_input: bannerData?.tags?.filter((item: any) => !item.startsWith('filterId_') && !item.startsWith('sort_'))?.join(',') || '',
+    tags_input: bannerData?.tags?.join(',') || '',
 
     position: bannerData?.position || null,
 })

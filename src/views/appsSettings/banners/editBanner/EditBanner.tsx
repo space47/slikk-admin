@@ -112,6 +112,7 @@ const EditBanner = () => {
             updater((prev) => prev.filter((_, i) => i !== index))
         }
     }
+    console.log('banner data us', bannerData)
 
     const handleSubmit = async (values: BANNER_MODEL) => {
         const {
@@ -174,8 +175,8 @@ const EditBanner = () => {
             sub_category: values?.sub_category?.map((item: any) => item.name).join(',') || '',
             tags: [
                 ...(values?.tags ? values.tags : []),
-                BANNER_FIELDS_TYPE.some((item) => item.name === 'max_off') && values?.max_off && `maxoff_${values?.max_off}`,
-                BANNER_FIELDS_TYPE.some((item) => item.name === 'min_off') && values?.min_off && `minoff_${values?.min_off}`,
+                BANNER_FIELDS_TYPE.some((item) => item.name === 'max_off') && values?.max_off ? `maxoff_${values?.max_off}` : '',
+                BANNER_FIELDS_TYPE.some((item) => item.name === 'min_off') && values?.min_off ? `minoff_${values?.min_off}` : '',
                 values?.sort ? `sort_${values?.sort}` : '',
             ]?.filter((val) => val !== ''),
             to_date: values?.to_date || '',
@@ -387,7 +388,7 @@ const EditBanner = () => {
                                         }}
                                     </Field>
                                 </FormItem>
-                                <CommonSelect label="Sort By" name="sort" options={SortArrays} />
+                                <CommonSelect needClassName className="w-1/2" label="Sort By" name="sort" options={SortArrays} />
                             </FormContainer>
 
                             <FormContainer>
