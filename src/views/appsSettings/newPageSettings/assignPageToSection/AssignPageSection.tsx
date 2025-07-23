@@ -101,14 +101,17 @@ const AssignPageSection = () => {
         const subPageComparator = typeof values?.sub_page === 'object' ? values?.sub_page?.name : values?.sub_page
         const pageComparator = typeof values?.page === 'object' ? values?.page?.name : values?.page
 
+        console.log('here')
+
         const imageUpload =
-            values?.extra_attributes.background_image_array?.length > 0
-                ? await handleimage('product', values?.extra_attributes.background_image_array)
+            values?.extra_attributes?.background_image_array?.length > 0
+                ? await handleimage('product', values?.extra_attributes?.background_image_array)
                 : ''
         const mobile_imageUpload =
-            values?.extra_attributes.mobile_background_image_array?.length > 0
-                ? await handleimage('product', values?.extra_attributes.mobile_background_image_array)
+            values?.extra_attributes?.mobile_background_image_array?.length > 0
+                ? await handleimage('product', values?.extra_attributes?.mobile_background_image_array)
                 : ''
+        console.log('here 1.5')
 
         const extra = {
             background_image: imageUpload,

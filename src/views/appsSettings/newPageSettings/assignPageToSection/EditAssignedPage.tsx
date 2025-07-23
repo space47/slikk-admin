@@ -122,11 +122,11 @@ const EditAssignedPage = () => {
     const handleSubmit = async (values: any) => {
         const imageUpload =
             values?.extra_attributes?.background_image_array?.length > 0
-                ? await handleimage('product', values?.extra_attributes.background_image_array)
+                ? await handleimage('product', values?.extra_attributes?.background_image_array)
                 : ''
         const mobile_imageUpload =
             values?.extra_attributes?.mobile_background_image_array?.length > 0
-                ? await handleimage('product', values?.extra_attributes.mobile_background_image_array)
+                ? await handleimage('product', values?.extra_attributes?.mobile_background_image_array)
                 : ''
 
         console.log('tyyft', values)
