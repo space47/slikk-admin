@@ -242,6 +242,7 @@ export const BANNER_FIELDS_TYPE = [
 
 export const getInitialBannerValue = (bannerData: BANNER_MODEL | undefined) => ({
     id: bannerData?.id || 0,
+    sort: bannerData?.tags?.find((item: any) => item.startsWith('sort_'))?.split('_')[1],
     name: bannerData?.name || '',
     section_heading: bannerData?.section_heading || '',
     parent_banner: bannerData?.parent_banner || null,
@@ -284,6 +285,7 @@ export const getInitialBannerValue = (bannerData: BANNER_MODEL | undefined) => (
     min_off: bannerData?.extra_attributes?.minoff || 0,
     barcodes: bannerData?.barcodes || '',
     redirection_url: bannerData?.redirection_url || null,
-    tags_input: bannerData?.tags?.join(',') || '',
+    tags_input: bannerData?.tags?.filter((item: any) => !item.startsWith('filterId_') && !item.startsWith('sort_'))?.join(',') || '',
+
     position: bannerData?.position || null,
 })

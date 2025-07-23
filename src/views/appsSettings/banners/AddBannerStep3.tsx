@@ -204,7 +204,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
     }
 
     const { data: bannerData } = useFetchApi<BANNER_MODEL>({
-        url: `/banners?p=1&page_size=200&page=${pageName}&section_heading=${selectedSection?.section_heading}`,
+        url: `/banners?p=1&page_size=200&page=${pageName}&section_heading=${selectedSection?.section_heading}&sub_page=${subPageId}`,
     })
 
     useEffect(() => {

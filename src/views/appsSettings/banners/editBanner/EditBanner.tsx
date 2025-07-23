@@ -29,6 +29,8 @@ import FullDateForm from '@/common/FullDateForm'
 import { pageSettingsService } from '@/store/services/pageSettingService'
 import CommonFilterSelect from '@/common/ComonFilterSelect'
 import { useFetchApi } from '@/commonHooks/useFetchApi'
+import CommonSelect from '../../pageSettings/CommonSelect'
+import { SortArrays } from '../../newPageSettings/newPageSettingsUtils/newPageCommons'
 
 const EditBanner = () => {
     const { id } = useParams()
@@ -174,7 +176,8 @@ const EditBanner = () => {
                 ...(values?.tags ? values.tags : []),
                 BANNER_FIELDS_TYPE.some((item) => item.name === 'max_off') && values?.max_off && `maxoff_${values?.max_off}`,
                 BANNER_FIELDS_TYPE.some((item) => item.name === 'min_off') && values?.min_off && `minoff_${values?.min_off}`,
-            ].filter(Boolean),
+                values?.sort ? `sort_${values?.sort}` : '',
+            ]?.filter((val) => val !== ''),
             to_date: values?.to_date || '',
             type: values?.type || '',
             uptooff: values?.uptooff || '',
@@ -384,6 +387,7 @@ const EditBanner = () => {
                                         }}
                                     </Field>
                                 </FormItem>
+                                <CommonSelect label="Sort By" name="sort" options={SortArrays} />
                             </FormContainer>
 
                             <FormContainer>
