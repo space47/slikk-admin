@@ -135,7 +135,14 @@ const DataTypesConfig = ({ values, filterId, setFilterId, setFieldValue, setBarc
                 </FormItem>
 
                 <FormItem label="Order Count" className="w-full">
-                    <Field type="number" name="order_count" placeholder="Enter order count" component={Input} min="0" step={0.01} />
+                    <Field
+                        type="number"
+                        name="extra_info.order_count"
+                        placeholder="Enter order count"
+                        component={Input}
+                        min="0"
+                        step={0.01}
+                    />
                 </FormItem>
                 <FormItem label="Min Order Value for Event Pass" className="w-full">
                     <Field
