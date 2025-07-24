@@ -160,7 +160,7 @@ const AssignPageSection = () => {
                 {({ resetForm, values }) => {
                     return (
                         <Form className="p-3 rounded-xl shadow-xl">
-                            <div className="text-xl mb-2">2. Assign Sections</div>
+                            <div className="text-xl mb-2">Assign Sections</div>
 
                             <FormContainer>
                                 <FormItem label="Store">

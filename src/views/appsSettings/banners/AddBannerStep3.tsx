@@ -501,7 +501,6 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                     <Select
                         isMulti
                         options={filters.filters}
-                        value={bannerForm[index]['quick_filter_tags'] || []}
                         getOptionLabel={(option) => option.label}
                         getOptionValue={(option) => option.value}
                         onChange={(newVal, actionMeta) => {
