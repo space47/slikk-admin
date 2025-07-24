@@ -39,8 +39,8 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
     const isOrderDone = data.some((log) => log.status === 'DELIVERED' || log.status === 'COMPLETED')
     const isExchangeComplete = hasStatus('EXCHANGE_DELIVERED')
     const [rtoCancel, setRtoCancel] = useState(false)
-    const [bagsCount, setBagsCount] = useState('')
-    const [binNumber, setBinNumber] = useState('')
+    const [bagsCount, setBagsCount] = useState('1')
+    const [binNumber, setBinNumber] = useState('1')
 
     const rejectData = mainData.order_items?.filter((item) => !fulfilledIDs.includes(item.id.toString()))?.map((item) => item.id)
 
