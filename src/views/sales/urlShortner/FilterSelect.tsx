@@ -29,6 +29,7 @@ const DISCOUNTOPTIONS = [
     { value: 'sort_discount', label: 'DISCOUNT' },
     { value: 'sort_rating', label: 'RATING' },
     { value: 'sort_newest', label: 'NEWEST' },
+    { value: 'sort_popularity', label: 'POPULARiTY' },
 ]
 
 export const targetPageArray = [

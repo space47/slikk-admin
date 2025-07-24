@@ -152,6 +152,7 @@ export const SortArrays = [
     { label: 'Discount', value: 'discount' },
     { label: 'Rating', value: 'rating' },
     { label: 'Newest', value: 'newest' },
+    { label: 'Popularity', value: 'popularity' },
 ]
 
 export const PageSectionsFiltersArray = [
