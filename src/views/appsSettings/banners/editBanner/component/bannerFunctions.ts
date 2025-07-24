@@ -1,5 +1,5 @@
 import { handleimage } from '@/common/handleImage'
-import { handleVideo } from '@/common/handleVideo'
+import { handleVideo } from '@/views/appsSettings/newPageSettings/newPageSettingsUtils/usePageSettingsBodyFile'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const calculateAspectRatio = async (files: File[]): Promise<number[]> => {
@@ -56,10 +56,10 @@ export const calculateAspectRatioFromStrings = async (imageSources: string[]): P
 
 export const ImageHandlerBanners = async (values: any, webImagview: string[], mobileImagview: string[]) => {
     const processImageUpload = async (imageArray: any[], currentImage: string) => {
-        return imageArray.length > 0 ? await handleimage('product', imageArray) : currentImage
+        return imageArray.length > 0 ? await handleimage('product', imageArray) : currentImage || ''
     }
     const processVideoUpload = async (videoArray: any[], currentvideo: string) => {
-        return videoArray.length > 0 ? await handleVideo(videoArray) : currentvideo
+        return videoArray.length > 0 ? await handleVideo(videoArray) : currentvideo || ''
     }
     const webImageUpload = await processImageUpload(values.image_web_array, values.image_web)
     const webAspectratio =

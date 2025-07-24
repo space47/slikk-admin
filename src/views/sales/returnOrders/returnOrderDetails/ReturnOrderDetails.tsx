@@ -22,7 +22,6 @@ const ReturnOrderDetails = () => {
     const returnDetails = returnOrder?.returnOrders
 
     const query = useMemo(() => {
-        if (!returnDetails?.return_order_delivery) return null
         return `/logistic/slikk/task?task_id=${returnDetails?.return_order_delivery[0]?.task_id}`
     }, [returnDetails?.return_order_delivery])
 

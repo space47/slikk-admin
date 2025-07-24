@@ -96,6 +96,10 @@ export const useOrderListColumns = ({
                     )
                 },
             },
+            { header: 'Payment Status', accessorKey: 'payment.status' },
+            { header: 'Payment Mode', accessorKey: 'payment.mode' },
+            { header: 'Distance', accessorKey: 'distance', cell: ({ getValue }: any) => <span>{getValue()} km</span> },
+            { header: 'Total Items', accessorKey: 'order_items.length' },
             { header: 'Order Count', accessorKey: 'user_order_count' },
             { header: 'Total Items', accessorKey: 'order_items.length' },
             { header: 'Payment Mode', accessorKey: 'payment.mode' },

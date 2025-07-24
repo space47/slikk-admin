@@ -12,7 +12,7 @@ import * as Yup from 'yup'
 import { EditInitialValues } from './pageSettingsUtils/PageSettingEditInitialValues'
 import { DROPDOWNTYPE } from '@/views/category-management/catalog/CommonType'
 import { handleimage } from '@/common/handleImage'
-import { EditAspectRatios, EditImageUpoads, EditVideoUpload } from './pageSettingsUtils/pageEditFunctions'
+import { EditAspectRatios, EditImageUploads, EditVideoUpload } from './pageSettingsUtils/pageEditFunctions'
 import { usePageEditRemoveFunctions } from './pageSettingsUtils/usePageEditRemoveFunctions'
 import { fetchInput, fetchPost } from './pageSettingsUtils/pageEditApi'
 
@@ -125,7 +125,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
 
         try {
             const { imageUpload, mobileimageUpload, footerImageUpload, headerImageUpload, subHeaderImageUpload, headerIconUpload } =
-                await EditImageUpoads(row)
+                await EditImageUploads(row)
 
             const { backgroundVideoUpload, footervideoUpload, headerVideoUpload, mobileBackgroundVideoUpload, subHeaderVideoUpload } =
                 await EditVideoUpload(row)

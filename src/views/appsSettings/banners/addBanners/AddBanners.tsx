@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react'
 // import { BANNER_PAGE_NAME } from '@/common/banner'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
@@ -13,6 +13,8 @@ import { getAllBrandsAPI } from '@/store/action/brand.action'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { FaCircleArrowLeft } from 'react-icons/fa6'
 import { fetchPageSettings } from '../../pageSettings/pageSettingsUtils/PageSettingsApiCalls'
+import { useFetchApi } from '@/commonHooks/useFetchApi'
+import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 
 interface DataType {
     type: string
@@ -58,15 +60,30 @@ const AddBanners = () => {
     }))
 
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string> | null>(null)
+    const [currentSelectedSubPage, setCurrentSelectedSubPage] = useState<Record<string, string> | null>(null)
 
-    // Fetch Data for section Headings
+    const query = useMemo(() => {
+        return `/subpage?page=${currentSelectedPage?.name}`
+    }, [currentSelectedPage])
+
+    const { data: subPage } = useFetchSingleData<any>({ url: query })
+
+    console.log('subPage Data is', subPage)
+
+    const SUB_PAGE_NAME = subPage?.map((item) => ({
+        name: item?.name,
+        value: item?.id,
+    }))
+
     const fetchData = async () => {
         if (!currentSelectedPage) return
 
         try {
-            const response = await axioisInstance.get(`/page/config?page_name=${currentSelectedPage.value}`)
-            const responsedata = response.data.data.value.Web
-            setSectionHeadingData(Object.values(responsedata))
+            const response = await axioisInstance.get(
+                `/page-sections?p=1&page_size=500&page=${currentSelectedPage.value}&sub_page=${encodeURIComponent(currentSelectedSubPage?.name || '')}`,
+            )
+            const responsedata = response.data.data.results
+            setSectionHeadingData(responsedata?.map((item) => item?.section))
             console.log('API call successful')
         } catch (error) {
             console.error('API call error:', error)
@@ -75,7 +92,9 @@ const AddBanners = () => {
     }
     useEffect(() => {
         fetchData()
-    }, [currentSelectedPage])
+    }, [currentSelectedPage, currentSelectedSubPage])
+
+    console.log('currentntnttnt', currentSelectedSubPage?.name)
 
     const dispatch = useAppDispatch()
     useEffect(() => {
@@ -92,13 +111,20 @@ const AddBanners = () => {
 
         setCurrentStep(2)
     }
+    const handleSubPageSelect = (values: string, e: any) => {
+        setCurrentSelectedSubPage({
+            value: values,
+            name: SUB_PAGE_NAME.find((item) => item.value === values)?.name || '',
+        })
+        setSelectedSectionHeading(null)
+    }
+
+    console.log('section heading is', currentSelectedSubPage)
 
     const handleSectionSelect = (value: string) => {
-        const selectHeading = sectionHeadingData.find((item) => item.section_heading === value && item.data_type.type === 'banner')
+        const selectHeading = sectionHeadingData.find((item) => item.section_heading === value)
 
-        const selectHeadingIndex = sectionHeadingData.findIndex(
-            (item) => item.section_heading === value && item.data_type.type === 'banner',
-        )
+        const selectHeadingIndex = sectionHeadingData.findIndex((item) => item.section_heading === value)
 
         setSelectedSectionHeading({ ...selectHeading, position: selectHeadingIndex } || null)
     }
@@ -108,6 +134,10 @@ const AddBanners = () => {
     }
 
     const [completeBannerFormData, setCompleteBannerFormData] = useState([{ id: Date.now(), is_clickable: true }])
+
+    console.log('section heading data', sectionHeadingData)
+
+    console.log('data below', selectedSectionHeading)
 
     return (
         <div>
@@ -147,50 +177,81 @@ const AddBanners = () => {
 
                 {/* STEP 2 -- Select Section */}
                 {currentStep == 2 && (
-                    <div className="flex flex-col items-center justify-center h-full">
-                        {sectionHeadingData && sectionHeadingData.length != 0 ? (
-                            <div className="text-[16px] border">
-                                <Dropdown
-                                    className="text-xl text-black"
-                                    title={selectedSectionHeading?.section_heading || 'Select Section Heading'}
-                                    onSelect={handleSectionSelect}
-                                >
-                                    {sectionHeadingData
-                                        ?.filter((item) => item.data_type.type === 'banner')
-                                        .map((item, key) => {
-                                            // console.log('Seaction Heading', item?.section_heading)
-                                            return (
-                                                <DropdownItem key={key} eventKey={item.section_heading}>
-                                                    <span>{item.section_heading}</span>
-                                                </DropdownItem>
-                                            )
-                                        })}
-                                </Dropdown>
+                    <div className="space-y-6 p-6 max-w-4xl mx-auto">
+                        {/* Page Selection Section */}
+                        <div className="text-center">
+                            <h2 className="text-2xl font-bold text-gray-800 mb-4">Select Sub Page</h2>
+                            <div className="flex justify-center">
+                                <div className="w-64">
+                                    <Dropdown
+                                        className="w-full flex items-center justify-center text-lg text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:border-blue-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                                        title={currentSelectedSubPage?.name || 'Select Page Name'}
+                                        onSelect={handleSubPageSelect}
+                                    >
+                                        {SUB_PAGE_NAME?.map((item, key) => (
+                                            <DropdownItem key={key} eventKey={item.value} className="hover:bg-blue-50 px-4 py-2">
+                                                <span className="text-gray-700">{item?.name}</span>
+                                            </DropdownItem>
+                                        ))}
+                                    </Dropdown>
+                                </div>
                             </div>
-                        ) : (
-                            <div className="flex flex-col gap-5">
-                                No Section Created for this Page. Please create section first
-                                <Button variant="new" onClick={() => setCurrentStep(1)}>
-                                    Go Back to Select Another Page
-                                </Button>
-                            </div>
-                        )}
-                        <div className="mt-5 w-full">
-                            {selectedSectionHeading && (
-                                <BannerDetails
-                                    data={sectionHeadingData.filter(
-                                        (item) =>
-                                            item.section_heading === selectedSectionHeading.section_heading &&
-                                            item.data_type.type === 'banner',
-                                    )}
-                                />
-                            )}
                         </div>
-                        <div className="mt-4">
-                            {selectedSectionHeading && (
-                                <Button variant="new" size="sm" onClick={handleProceedToAddBanner}>
-                                    Proceed to Add Banner
-                                </Button>
+
+                        {/* Section Heading Selection */}
+                        <div className="text-center">
+                            {sectionHeadingData && sectionHeadingData.length !== 0 ? (
+                                <div className="flex flex-col items-center space-y-4">
+                                    <div className="w-64">
+                                        <Dropdown
+                                            className="w-full text-lg flex items-center justify-center text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:border-blue-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                                            title={selectedSectionHeading?.section_heading || 'Select Section Heading'}
+                                            onSelect={handleSectionSelect}
+                                        >
+                                            {sectionHeadingData?.map((item, key) => (
+                                                <DropdownItem
+                                                    key={key}
+                                                    eventKey={item.section_heading}
+                                                    className="hover:bg-blue-50 px-4 py-2"
+                                                >
+                                                    <span className="text-gray-700">{item.section_heading}</span>
+                                                </DropdownItem>
+                                            ))}
+                                        </Dropdown>
+                                    </div>
+
+                                    {selectedSectionHeading && (
+                                        <>
+                                            <div className="w-full mt-6 p-4 bg-white rounded-lg shadow-md border border-gray-100">
+                                                <BannerDetails
+                                                    data={sectionHeadingData.filter(
+                                                        (item) => item.section_heading === selectedSectionHeading.section_heading,
+                                                    )}
+                                                />
+                                            </div>
+
+                                            <Button
+                                                variant="new"
+                                                size="sm"
+                                                onClick={handleProceedToAddBanner}
+                                                className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg shadow hover:shadow-md transition-all"
+                                            >
+                                                Proceed to Add Banner
+                                            </Button>
+                                        </>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="flex flex-col items-center justify-center p-8 bg-white rounded-lg shadow border border-gray-200 space-y-4 text-center">
+                                    <p className="text-gray-600 text-lg">No Section Created for this Page. Please create section first</p>
+                                    <Button
+                                        variant="new"
+                                        onClick={() => setCurrentStep(1)}
+                                        className="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-6 rounded-lg shadow hover:shadow-md transition-all"
+                                    >
+                                        Go Back to Select Another Page
+                                    </Button>
+                                </div>
                             )}
                         </div>
                     </div>
@@ -200,6 +261,7 @@ const AddBanners = () => {
                 {currentStep == 3 && (
                     <div className="flex flex-col items-center justify-center h-full">
                         <AddBannerStep3
+                            subPageId={currentSelectedSubPage?.value}
                             selectedPage={currentSelectedPage}
                             selectedSection={selectedSectionHeading}
                             setCurrentStep={setCurrentStep}

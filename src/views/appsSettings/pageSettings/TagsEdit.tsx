@@ -12,7 +12,7 @@ const TagsEdit = ({ filterOptions, isValue }: FilterProps) => {
     return (
         <FormContainer className="grid grid-cols-2 gap-4 w-3/4">
             {/* Filters */}
-            <FormItem label="Filters">
+            <FormItem label="Section Filters">
                 <Field name="section_filters">
                     {({ field, form }: FieldProps<any>) => {
                         // Ensure field.value is an array

@@ -205,6 +205,35 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
                                             onChange={(e: any) => setFieldValue(fieldName, e.target.value)}
                                         />
                                     </FormItem>
+                                ) : key.toLowerCase().includes('lottie') ? (
+                                    <FormItem className="xl:mt-6 ">
+                                        <Field name={fieldName}>
+                                            {() => (
+                                                <Field name={fieldName}>
+                                                    {({ form }: FieldProps) => (
+                                                        <Upload
+                                                            beforeUpload={beforeUpload}
+                                                            className="flex justify-center"
+                                                            onChange={(files) => {
+                                                                console.log('files to be upload', fieldName)
+                                                                return form.setFieldValue(fieldName, files)
+                                                            }}
+                                                            onFileRemove={(files) => form.setFieldValue(fieldName, files)}
+                                                        />
+                                                    )}
+                                                </Field>
+                                            )}
+                                        </Field>
+                                        <Field
+                                            component={Input}
+                                            type="text"
+                                            placeholder={`Enter ${key}`}
+                                            name={fieldName}
+                                            value={val}
+                                            className="w-[500px]"
+                                            onChange={(e: any) => setFieldValue(fieldName, e.target.value)}
+                                        />
+                                    </FormItem>
                                 ) : _.isPlainObject(val) || _.isArray(val) ? (
                                     <div className="w-full">
                                         <RenderFields

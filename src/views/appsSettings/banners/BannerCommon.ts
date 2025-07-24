@@ -21,7 +21,7 @@ export interface BANNER_MODEL {
     id: number
     name: string
     section_heading: string
-    parent_banner: string | null
+    parent_banner?: string | number
     quick_filter_tags: string[]
     brand: BRANDTYPES[]
     division: DIVTYPES[]
@@ -46,7 +46,7 @@ export interface BANNER_MODEL {
     from_date: Date | null
     to_date: Date | null
     uptooff: string
-    tags: TAGSTYPE[]
+    tags: string[]
     footer: string | null
     coupon_code: string | null
     is_clickable: boolean
@@ -64,4 +64,7 @@ export interface BANNER_MODEL {
     position: number | null
     lottie_web: string
     lottie_mobile: string
+    sub_page?: any
+    sort?: string
+    filter_id?: number
 }

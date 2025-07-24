@@ -63,6 +63,32 @@ export const useBannerColumns = ({
                     </button>
                 ),
             },
+
+            {
+                header: 'Status',
+                accessorKey: 'from_date',
+                cell: ({ row }: any) => {
+                    const now = moment()
+                    const fromDate = moment(row.original.from_date)
+                    const toDate = moment(row.original.to_date)
+
+                    let status = ''
+                    let className = 'px-2 py-1 rounded-md text-xs text-white items-center font-medium flex justify-center'
+
+                    if (now.isAfter(toDate)) {
+                        status = 'Expired'
+                        className += ' bg-red-500'
+                    } else if (now.isBefore(fromDate)) {
+                        status = 'Upcoming'
+                        className += ' bg-yellow-500 '
+                    } else {
+                        status = 'Live'
+                        className += ' bg-green-500 '
+                    }
+
+                    return <div className={className}>{status}</div>
+                },
+            },
             { header: 'Name', accessorKey: 'name' },
             {
                 header: 'Position',

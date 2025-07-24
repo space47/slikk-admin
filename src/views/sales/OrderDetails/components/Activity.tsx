@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom'
 import { CustomModal, CustomModal2, CustomModal3, CustomModal4, CustomModal5, ExchangeModal } from './Modal'
 import { ActivityProps, LOGISTIC_PARTNER } from './activityCommon'
 import { getButtonAndModalContent, particularApiCall } from './activityFunctions'
+import { AxiosError } from 'axios'
 
 const Activity = ({ data = [], status, product = [], payment, invoice_id, mainData, delivery_type }: ActivityProps) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -38,6 +39,8 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
     const isOrderDone = data.some((log) => log.status === 'DELIVERED' || log.status === 'COMPLETED')
     const isExchangeComplete = hasStatus('EXCHANGE_DELIVERED')
     const [rtoCancel, setRtoCancel] = useState(false)
+    const [bagsCount, setBagsCount] = useState('1')
+    const [binNumber, setBinNumber] = useState('1')
 
     const rejectData = mainData.order_items?.filter((item) => !fulfilledIDs.includes(item.id.toString()))?.map((item) => item.id)
 
@@ -53,10 +56,19 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
         }))
     }
 
+    console.log('Action is', status)
+
     useEffect(() => {
         if (triggerApiCall) {
             const sendApiRequest = async () => {
                 try {
+                    if (status === 'ACCEPTED' && !bagsCount) {
+                        notification.error({ message: 'Number of bags Required' })
+                        setInterval(() => {
+                            navigate(0)
+                        }, 3000)
+                        return
+                    }
                     const data = Object.entries(fulfilledQuantities).reduce(
                         (acc, [id, quantity]: any) => {
                             if (quantity > 0) {
@@ -116,18 +128,31 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                 } catch (error) {
                     console.error(error)
                     setTriggerApiCall(false)
+                } finally {
+                    setButtonAfterClick(false)
                 }
             }
             const makeApiCall = async (data: { [key: number]: number }) => {
                 const body = {
                     action,
                     data,
+                    ...(bagsCount ? { packets_count: Number(bagsCount) } : {}),
+                    ...(binNumber ? { bin_id: binNumber } : {}),
                 }
-                const response = await axiosInstance.patch(`merchant/order/${invoice_id}`, body)
-                console.log(response)
-                setIsModalOpen(false)
-                setTriggerApiCall(false)
-                navigate(0)
+                try {
+                    const response = await axiosInstance.patch(`merchant/order/${invoice_id}`, body)
+                    notification.success({ message: response?.data?.message })
+                    setIsModalOpen(false)
+                    setTriggerApiCall(false)
+                } catch (error) {
+                    if (error instanceof AxiosError) {
+                        notification.error({ message: error?.response?.data?.message })
+                    }
+                } finally {
+                    setInterval(() => {
+                        navigate(0)
+                    }, 2000)
+                }
             }
             sendApiRequest()
         }
@@ -174,7 +199,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
 
     const handleApiCall = (trigger: boolean, setTrigger: React.Dispatch<React.SetStateAction<boolean>>, isPacking: boolean) => {
         if (trigger) {
-            particularApiCall(action, invoice_id, partner?.value, navigate, isPacking)
+            particularApiCall(action, invoice_id, partner?.value, navigate, isPacking, binNumber)
             setTrigger(false)
         }
     }
@@ -317,6 +342,8 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                     handlePartnerSelect={handlePartnerSelect}
                     partner={partner?.label}
                     isButtonClick={buttonAfterClick}
+                    binNumber={binNumber}
+                    setBinNumber={setBinNumber}
                 />
             )}
             {data[data.length - 1]?.status === 'ACCEPTED' && (
@@ -338,6 +365,8 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                     handleSelectChange={handleSelectChange}
                     errorMessage={errorMessage || undefined}
                     isButtonClick={buttonAfterClick}
+                    bagsCount={bagsCount}
+                    setBagsCount={setBagsCount}
                 />
             )}
 

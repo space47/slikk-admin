@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react'
 import { notification } from 'antd'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-import { Dropdown } from '@/components/ui'
+import { Dropdown, Spinner } from '@/components/ui'
 import Dialog from '@/components/ui/Dialog'
 import { IoIosAddCircle, IoIosWarning } from 'react-icons/io'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -18,6 +18,7 @@ const CancelModal: React.FC<Props5> = ({ isModalOpen, handleClose, invoice_id, s
     const [cancelReason, setCancelReason] = useState<string | undefined>(undefined)
     const [showCancelInput, setShowCancelInput] = useState(false)
     const [inputValue, setInputValue] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
 
     const handleSelect = useCallback((value: string) => {
         setCancelReason(value)
@@ -36,6 +37,7 @@ const CancelModal: React.FC<Props5> = ({ isModalOpen, handleClose, invoice_id, s
             return_reason: inputValue ? inputValue : cancelReason,
         }
         try {
+            setIsLoading(true)
             const response = await axioisInstance.post(`merchant/cancelorder/${invoice_id}`, body)
 
             notification.success({
@@ -49,6 +51,8 @@ const CancelModal: React.FC<Props5> = ({ isModalOpen, handleClose, invoice_id, s
                 message: 'Failure',
                 description: 'Order failed to cancel',
             })
+        } finally {
+            setIsLoading(false)
         }
     }
 
@@ -103,10 +107,11 @@ const CancelModal: React.FC<Props5> = ({ isModalOpen, handleClose, invoice_id, s
                         Changed your mind
                     </button>
                     <button
+                        disabled={isLoading}
+                        className="bg-red-600 disabled:bg-red-100 text-white hover:bg-red-500 transition-colors duration-300 px-4 py-2 rounded-lg flex gap-2 items-center"
                         onClick={handlePack}
-                        className="bg-red-600 text-white hover:bg-red-500 transition-colors duration-300 px-4 py-2 rounded-lg"
                     >
-                        Cancel Order
+                        <span>{isLoading && <Spinner color="white" size={20} />}</span> Cancel
                     </button>
                 </div>
             </div>

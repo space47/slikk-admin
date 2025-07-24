@@ -34,6 +34,7 @@ export const handleImage = async (files: File[]) => {
         return
     }
 
+    console.log('is reached here')
     const formData = new FormData()
 
     for (const file of files) {
@@ -84,6 +85,7 @@ export const handleImage = async (files: File[]) => {
 }
 
 export const handleVideo = async (files: File[]) => {
+    console.log('file is', files)
     if (files) {
         const formData = new FormData()
 
@@ -91,12 +93,16 @@ export const handleVideo = async (files: File[]) => {
             formData.append('file', file)
         })
         formData.append('file_type', 'product')
+        formData.append('compression_service', 'slikk')
 
         notification.info({
             message: 'Video Upload In Process',
         })
+
         try {
-            console.log(formData.get('file'))
+            console.log(formData.get('file'), 'is the file')
+
+            console.log('formdata is', formData)
             const response = await axioisInstance.post('fileupload', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
@@ -119,14 +125,14 @@ export const handleVideo = async (files: File[]) => {
     }
 }
 
-export const EditImageUpoads = async (row: any) => {
-    const imageUpload = await handleImage(row.background_image_array)
-    const mobileimageUpload = await handleImage(row.mobile_background_array)
-    const footerImageUpload = await handleImage(row.footer_config_image_Array)
-    const headerImageUpload = await handleImage(row.header_config_image_Array)
-    const subHeaderImageUpload = await handleImage(row.sub_header_config_image_Array)
-    const headerIconUpload = await handleImage(row.header_config_icon_Array)
-    const exploreMoreImageUpload = await handleImage(row.extra_info.explore_more_image_Array)
+export const EditImageUploads = async (row: any) => {
+    const imageUpload = (await handleImage(row.background_image_array)) || ''
+    const mobileimageUpload = (await handleImage(row.mobile_background_array)) || ''
+    const footerImageUpload = (await handleImage(row.footer_config_image_Array)) || ''
+    const headerImageUpload = (await handleImage(row.header_config_image_Array)) || ''
+    const subHeaderImageUpload = (await handleImage(row.sub_header_config_image_Array)) || ''
+    const headerIconUpload = (await handleImage(row.header_config_icon_Array)) || ''
+    const exploreMoreImageUpload = (await handleImage(row.extra_info.explore_more_image_Array)) || ''
 
     return {
         imageUpload,

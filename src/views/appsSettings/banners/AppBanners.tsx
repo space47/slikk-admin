@@ -20,11 +20,13 @@ import { DIVISION_STATE } from '@/store/types/division.types'
 import { useFetchApi } from '@/commonHooks/useFetchApi'
 import DeleteBannerModal from './editBanner/component/DeleteBannerModal'
 import { fetchForSectionHeading } from './bannerUtils/bannerFunctions'
+import { pageNameTypes } from '@/store/types/pageSettings.types'
+import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 
 const AppBanners = () => {
     const navigate = useNavigate()
     const location = useLocation()
-    const { var1, var2 } = location.state || {}
+    const { var1, var2, var3 } = location.state || {}
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState<string>('')
@@ -39,44 +41,79 @@ const AppBanners = () => {
     const [updatedPosition, setUpdatedPosition] = useState<{ [key: number]: number }>({})
     const [sectionFilter, setSectionFilter] = useState<string>('')
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
-    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(var1 !== undefined ? var1 : BANNER_PAGE_NAME[0])
 
     const DivisionArray =
         divisions?.divisions?.map((item) => {
             return { name: item?.name, value: item?.name }
         }) || []
 
-    //NOTE: FOR FETCHING PAGE NAMES Dynamically.......will fix it later
-    // useEffect(() => {
-    //     fetchPageSettings(setPageNames, setCurrentSelectedPage)
-    // }, [])
+    const { data: pageData } = useFetchApi<pageNameTypes>({ url: `/page?p=1&page_size=500` })
+    const BANNER_PAGE_NAME = pageData?.map((item) => ({
+        name: item?.display_name,
+        value: item?.name,
+    }))
 
-    // const BANNER_PAGE_NAME = pageNames?.map((item) => ({
-    //     name: item?.display_name,
-    //     value: item?.name,
-    // }))
+    console.log('var1', BANNER_PAGE_NAME)
+
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(
+        var1 !== undefined ? { name: var1, value: var1 } : BANNER_PAGE_NAME[0],
+    )
+    const query = useMemo(() => {
+        return `/subpage?page=${currentSelectedPage?.name}`
+    }, [currentSelectedPage])
+
+    const { data: subPageData } = useFetchSingleData<any>({ url: query })
+
+    const SUB_PAGE_NAME = subPageData?.map((item) => ({
+        name: item?.name,
+        value: item?.name,
+    }))
+
+    const [currentSelectedSubPage, setCurrentSelectedSubPage] = useState<Record<string, string>>(
+        var3 !== undefined ? { name: var3, value: var3 } : { name: '', value: null },
+    )
 
     useEffect(() => {
-        fetchForSectionHeading(currentSelectedPage)
+        if (!var1) {
+            setCurrentSelectedPage(BANNER_PAGE_NAME[0])
+        }
+    }, [pageData])
+
+    useEffect(() => {
+        fetchForSectionHeading(currentSelectedPage, currentSelectedSubPage)
             .then((data) => {
                 setSectionHeadingArray(data)
             })
             .catch((error) => {
                 console.error('Error fetching section headings:', error)
             })
-    }, [currentSelectedPage])
+    }, [currentSelectedPage, currentSelectedSubPage])
 
     const queryURL = useMemo(() => {
         let sectionHeading = ''
+        let subPage = ''
         if (var2) {
             sectionHeading = `&section_heading=${encodeURIComponent(var2)}`
         }
         if (isSectionHeading && selectedHeading !== 'Select Section') {
             sectionHeading = `&section_heading=${encodeURIComponent(selectedHeading)}`
         }
+        if (currentSelectedSubPage) {
+            subPage = `&sub_page=${encodeURIComponent(currentSelectedSubPage?.name)}`
+        }
         const divisionFilter = selectedDivision !== 'Select Division' ? `&division=${encodeURIComponent(selectedDivision)}` : ''
-        return `/banners?p=${page}&page_size=${pageSize}&name=${globalFilter}&page=${currentSelectedPage.value}${sectionHeading}${divisionFilter}`
-    }, [page, pageSize, globalFilter, currentSelectedPage, selectedHeading, selectedDivision, var2, isSectionHeading])
+        return `/banners?p=${page}&page_size=${pageSize}&name=${globalFilter}&page=${currentSelectedPage?.value}${sectionHeading}${divisionFilter}${subPage}`
+    }, [
+        page,
+        pageSize,
+        globalFilter,
+        currentSelectedPage,
+        selectedHeading,
+        selectedDivision,
+        var2,
+        isSectionHeading,
+        currentSelectedSubPage,
+    ])
 
     const { data, totalData, responseStatus } = useFetchApi<BANNER_MODEL>({ url: queryURL })
     const filteredSectionHeadings = _.uniq(sectionHeadingArray)?.filter((item) => item.toLowerCase().includes(sectionFilter.toLowerCase()))
@@ -134,6 +171,10 @@ const AppBanners = () => {
         const selectedPage = BANNER_PAGE_NAME.find((page) => page.value === value)
         if (selectedPage) setCurrentSelectedPage(selectedPage)
     }
+    const handleSelectSubPage = (value: string) => {
+        const selectedPage = SUB_PAGE_NAME.find((page) => page.value === value)
+        if (selectedPage) setCurrentSelectedSubPage(selectedPage)
+    }
 
     const handleDeleteClick = (id: number) => {
         setShowDeleteModal(true)
@@ -168,14 +209,39 @@ const AppBanners = () => {
                         <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px]">
                             <Dropdown
                                 className="border bg-gray-200 text-black text-lg font-semibold"
-                                title={currentSelectedPage?.name}
+                                title={currentSelectedPage?.name || 'SELECT'}
                                 onSelect={handleSelectPage}
                             >
-                                {BANNER_PAGE_NAME.map((item) => (
-                                    <DropdownItem key={item.value} eventKey={item.value}>
-                                        {item.name}
-                                    </DropdownItem>
-                                ))}
+                                <div className="max-h-60 overflow-y-auto">
+                                    {BANNER_PAGE_NAME.map((item) => (
+                                        <DropdownItem key={item.value} eventKey={item.value}>
+                                            {item.name}
+                                        </DropdownItem>
+                                    ))}
+                                </div>
+                            </Dropdown>
+                        </div>
+
+                        {/* Sub page */}
+                        <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px]">
+                            <Dropdown
+                                className="border bg-gray-200 text-black text-lg font-semibold"
+                                title={currentSelectedSubPage?.name || 'Select Sub Page'}
+                                onSelect={handleSelectSubPage}
+                            >
+                                <div className="max-h-60 overflow-y-auto">
+                                    {SUB_PAGE_NAME?.map((item) => (
+                                        <DropdownItem key={item.value} eventKey={item.name}>
+                                            {item.name}
+                                        </DropdownItem>
+                                    ))}
+                                </div>
+                                <div
+                                    className="flex mt-3 justify-center items-center rounded-lg cursor-pointer text-white bg-red-500 hover:bg-red-400"
+                                    onClick={() => setCurrentSelectedSubPage({ name: '', value: '' })}
+                                >
+                                    Clear
+                                </div>
                             </Dropdown>
                         </div>
 
@@ -194,7 +260,7 @@ const AppBanners = () => {
                                         onChange={(e) => setSectionFilter(e.target.value)}
                                     />
                                 </div>
-                                <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide xl:h-[400px] xl:overflow-y-scroll font-bold ">
+                                <div className="max-h-60 overflow-y-auto">
                                     {filteredSectionHeadings?.map((item, key) => (
                                         <DropdownItem key={key} eventKey={item} className="h-1">
                                             {item}
@@ -277,7 +343,12 @@ const AppBanners = () => {
             </div>
             {showDeleteModal && <DeleteBannerModal isOpen={showDeleteModal} setIsOpen={setShowDeleteModal} bannerId={bannerId!} />}
             {showBulkEditModal && (
-                <BulkEditModal dialogIsOpen={showBulkEditModal} setIsOpen={setShowBulkEditModal} bannerIdStore={bannerIdStore} />
+                <BulkEditModal
+                    pageState={currentSelectedPage?.name}
+                    dialogIsOpen={showBulkEditModal}
+                    setIsOpen={setShowBulkEditModal}
+                    bannerIdStore={bannerIdStore}
+                />
             )}
         </div>
     )
