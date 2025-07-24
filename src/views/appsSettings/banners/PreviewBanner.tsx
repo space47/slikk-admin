@@ -201,11 +201,11 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
             console.log('banner index', banner)
             const data = {
                 ...banner,
-                division: banner?.division?.map((item: any) => item.name).join(',') || '',
-                category: banner?.category?.map((item: any) => item.name).join(',') || '',
-                sub_category: banner?.sub_category?.map((item: any) => item.name).join(',') || '',
-                product_type: banner?.product_type?.map((item: any) => item.name).join(',') || '',
-                brand: banner?.brand?.map((item: any) => item.name).join(',') || '',
+                division: banner?.division?.map((item: any) => item.id) || '',
+                category: banner?.category?.map((item: any) => item.id) || '',
+                sub_category: banner?.sub_category?.map((item: any) => item.id) || '',
+                product_type: banner?.product_type?.map((item: any) => item.id) || '',
+                brand: banner?.brand?.map((item: any) => item.id) || '',
                 page: selectedPage.value,
                 section_heading: selectedSection?.section_heading,
                 image_web: webImageUpload || '',
