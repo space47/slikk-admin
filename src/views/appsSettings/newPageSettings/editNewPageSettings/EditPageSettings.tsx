@@ -74,7 +74,7 @@ const EditPageSettings = () => {
                     ...(values?.extra_info?.timeout ? { timeout: values?.extra_info?.timeout } : {}),
                     ...(values?.extra_info?.page_size ? { page_size: values?.extra_info?.page_size } : {}),
                     ...(values?.extra_info?.child_data_type && { child_data_type: values?.extra_info?.child_data_type }),
-                    is_product_filter: values?.extra_info?.is_product_filter || false,
+                    is_product_filter: values?.extra_info?.is_product_filter ? values?.extra_info?.is_product_filter : false,
                     cta_config: cta_config,
                     child_component_config: child_component_config,
                 }).filter(([, value]) => value !== ''),
