@@ -56,10 +56,18 @@ const EditConfigurations = () => {
                         console.log('Values to check is  number', value)
                         if (key.toLowerCase().includes('image') && Array.isArray(val)) {
                             const processedImage = await handleimage('product', val)
+                            if (processedImage === 'Error') {
+                                notification.error({ message: 'Imagey failed to upload' })
+                                return
+                            }
                             return [key, processedImage]
                         }
                         if (key.toLowerCase().includes('lottie') && Array.isArray(val)) {
                             const processedLottie = await handleimage('product', val)
+                            if (processedLottie === 'Error') {
+                                notification.error({ message: 'Lottie failed to upload' })
+                                return
+                            }
                             return [key, processedLottie]
                         }
                         if (_.isPlainObject(val) || Array.isArray(val)) {

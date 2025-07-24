@@ -22,6 +22,7 @@ import CommonFilterSelect from '@/common/ComonFilterSelect'
 import FilterSelectWithoutFormik from '@/common/FilterSelectWithoutFormik'
 import { useFetchApi } from '@/commonHooks/useFetchApi'
 import { BANNER_MODEL } from './BannerCommon'
+import { DISCOUNTOPTIONS } from '@/views/sales/groupNotification/sendNotification/sendNotify.common'
 
 function AddBannerStep3({
     setCurrentStep,
@@ -534,13 +535,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                     <div>Sort By</div>
                     <Select
                         defaultValue={{ value: '', label: 'Sort by' }}
-                        options={[
-                            { value: 'sort_lowtohigh', label: 'Low to High' },
-                            { value: 'sort_hightolow', label: 'High to Low' },
-                            { value: 'sort_discount', label: 'DISCOUNT' },
-                            { value: 'sort_rating', label: 'RATING' },
-                            { value: 'sort_newest', label: 'NEWEST' },
-                        ]}
+                        options={DISCOUNTOPTIONS}
                         getOptionLabel={(option) => option.label}
                         getOptionValue={(option) => option.value}
                         onChange={(selectedOption) => {

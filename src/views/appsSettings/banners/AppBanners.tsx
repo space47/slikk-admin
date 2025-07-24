@@ -22,6 +22,7 @@ import DeleteBannerModal from './editBanner/component/DeleteBannerModal'
 import { fetchForSectionHeading } from './bannerUtils/bannerFunctions'
 import { pageNameTypes } from '@/store/types/pageSettings.types'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
+import ClearCache from '@/common/ClearCache'
 
 const AppBanners = () => {
     const navigate = useNavigate()
@@ -310,6 +311,9 @@ const AppBanners = () => {
                                 </Button>
                             </div>
                         )}
+                    </div>
+                    <div className="mb-2">
+                        <ClearCache cacheKey="banner" />
                     </div>
                     <div className="flex items-end justify-end mb-2 gap-2">
                         <button
