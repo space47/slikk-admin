@@ -15,9 +15,10 @@ interface props {
     isEdit?: boolean
     filterId?: string
     customClass?: string
+    isOnchange?: (x: any) => void
 }
 
-const CommonFilterSelect = ({ setFilterId, filterId, customClass }: props) => {
+const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange }: props) => {
     const dispatch = useAppDispatch()
     const [showAddFilter, setShowAddFilter] = useState<number[]>([])
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
@@ -120,10 +121,14 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass }: props) => {
                                         getOptionLabel={(option) => option.label}
                                         getOptionValue={(option) => option.value}
                                         className={`${!!customClass === true ? customClass : 'w-3/4'}`}
-                                        onChange={(newVal) => {
-                                            const newValues = newVal ? newVal.map((val) => val.value) : []
-                                            form.setFieldValue(field.name, newValues)
-                                        }}
+                                        onChange={
+                                            isOnchange
+                                                ? isOnchange
+                                                : (newVal) => {
+                                                      const newValues = newVal ? newVal.map((val) => val.value) : []
+                                                      form.setFieldValue(field.name, newValues)
+                                                  }
+                                        }
                                     />
                                 )
                             }}

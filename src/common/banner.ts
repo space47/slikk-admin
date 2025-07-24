@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const BANNER_PAGE_NAME = [
     { name: 'Home', value: 'Home' },
     { name: 'Trend', value: 'Trend' },
@@ -23,7 +24,7 @@ export const BANNER_PAGE_NAME = [
 
 export type BANNER_UPLOAD_DATA = {
     id?: number
-
+    tags?: any
     page?: string
     section_heading?: string
 

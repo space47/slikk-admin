@@ -242,6 +242,7 @@ export const BANNER_FIELDS_TYPE = [
 
 export const getInitialBannerValue = (bannerData: BANNER_MODEL | undefined) => ({
     id: bannerData?.id || 0,
+    sort: bannerData?.tags?.find((item: string) => item.startsWith('sort_'))?.split('_')[1],
     name: bannerData?.name || '',
     section_heading: bannerData?.section_heading || '',
     parent_banner: bannerData?.parent_banner || null,
@@ -251,7 +252,7 @@ export const getInitialBannerValue = (bannerData: BANNER_MODEL | undefined) => (
     category: bannerData?.category || [],
     image_web_array: bannerData?.image_web_array || [],
     image_mobile_array: bannerData?.image_mobile_array || [],
-
+    sub_page: bannerData?.sub_page || '',
     video_web_array: bannerData?.video_web_array || [],
     video_mobile_array: bannerData?.video_mobile_array || [],
     lottie_web_array: bannerData?.lottie_web_array || [],
@@ -270,7 +271,7 @@ export const getInitialBannerValue = (bannerData: BANNER_MODEL | undefined) => (
     from_date: bannerData?.from_date || null,
     to_date: bannerData?.to_date || null,
     uptooff: bannerData?.uptooff || '',
-    tags: bannerData?.tags || [],
+    tags: bannerData?.tags?.filter((item: string) => !item?.startsWith('filterId_') && !item?.startsWith('sort_')) || [],
     footer: bannerData?.footer || null,
     coupon_code: bannerData?.coupon_code || null,
     is_clickable: bannerData?.is_clickable || false,
@@ -285,5 +286,6 @@ export const getInitialBannerValue = (bannerData: BANNER_MODEL | undefined) => (
     barcodes: bannerData?.barcodes || '',
     redirection_url: bannerData?.redirection_url || null,
     tags_input: bannerData?.tags?.join(',') || '',
+
     position: bannerData?.position || null,
 })

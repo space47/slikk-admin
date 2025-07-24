@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
 // import { API_RESPONSE } from './data';
-import { Button } from '@/components/ui'
+import { Button, Spinner } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import { useNavigate } from 'react-router-dom'
@@ -11,6 +11,7 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
     const navigate = useNavigate()
     const [API_BANNERS, setApiBanners] = useState<any[]>([])
     const [viewSize, setViewSize] = useState('lg')
+    const [showSpinner, setShowSpinner] = useState(false)
 
     useEffect(() => {
         const fetchBanners = async () => {
@@ -117,6 +118,7 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
             formData.append('file', files)
 
             formData.append('file_type', 'product')
+            formData.append('compression_service', 'slikk')
 
             notification.info({
                 message: 'Video Upload In Process',
@@ -174,6 +176,7 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
 
     const handleSubmit = async () => {
         await completeBannerFormData?.forEach(async (banner: any, index: number) => {
+            setShowSpinner(true)
             console.log('maxOff value', banner?.maxoff, banner?.minoff)
             const webImageUpload = await HandleImage(banner.image_web_file)
             const mobileImageUpload = await HandleImage(banner.image_mobile_file)
@@ -207,14 +210,21 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                 section_heading: selectedSection?.section_heading,
                 image_web: webImageUpload || '',
                 image_mobile: mobileImageUpload || '',
+                redirection_url: banner?.redirection_url || '',
                 extra_attributes: {
                     video_web: webVideoUpload ?? '',
                     video_mobile: mobileVideoUpload ?? '',
                     web_aspect_ratio: banner?.web_aspect_ratio ?? (webAspectratio?.[0] ? Number(webAspectratio[0]?.toFixed(2)) : null),
                     mobile_aspect_ratio:
                         banner?.mobile_aspect_ratio ?? (mobileAspectratio?.[0] ? Number(mobileAspectratio[0]?.toFixed(2)) : null),
-                    web_redirection_url: banner?.web_redirection_url ?? null,
-                    mobile_redirection_url: banner?.mobile_redirection_url ?? null,
+                    web_redirection_url:
+                        banner.is_custom === true
+                            ? `s/${banner.pageName}${banner.subPageName ? `/${banner.subPageName}` : ''}`
+                            : (banner?.web_redirection_url ?? null),
+                    mobile_redirection_url:
+                        banner.is_custom === true
+                            ? `s/${banner.pageName}${banner.subPageName ? `/${banner.subPageName}` : ''}`
+                            : (banner?.web_redirection_url ?? null),
                     max_off: banner?.maxoff ?? null,
                     min_off: banner?.minoff ?? null,
                     lottie_web: webLottieUpload ?? '',
@@ -224,10 +234,9 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                 image_mobile_file: null,
             }
 
-            console.log('Data to send', data)
-
+            const filteredBody = Object.fromEntries(Object.entries(data)?.filter(([, val]) => val !== ''))
             await axioisInstance
-                .post('banners', data)
+                .post('banners', filteredBody)
                 .then((res) => {
                     notification.success({
                         message: 'Successfully uploaded banner ' + (index + 1) || res?.data?.message,
@@ -240,6 +249,9 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                         message: 'Error when creating banner ' + (index + 1),
                         description: err?.response?.data?.message || 'Error in banner api',
                     })
+                })
+                .finally(() => {
+                    setShowSpinner(false)
                 })
         })
     }
@@ -256,9 +268,10 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                     onClick={() => {
                         handleSubmit()
                     }}
-                    variant="new"
+                    variant={showSpinner ? 'default' : 'new'}
+                    className="flex gap-2 items-center"
                 >
-                    Save Banner
+                    {showSpinner && <Spinner size={30} />} {showSpinner ? 'Saving..' : 'Save Banner'}
                 </Button>
             </div>
             <div className="mb-5 w-full px-[10%] flex flex-col lg:flex-row gap-4">

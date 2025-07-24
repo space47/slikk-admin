@@ -2,12 +2,14 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 
 export const handleVideo = async (files: File[]) => {
+    console.log('file in all files', files)
     if (files) {
         const formData = new FormData()
         files.forEach((file, index) => {
             formData.append(`file[${index}]`, file)
         })
         formData.append('file_type', 'product')
+        formData.append('compression_service', 'slikk')
 
         try {
             console.log('Uploading video files:', files)

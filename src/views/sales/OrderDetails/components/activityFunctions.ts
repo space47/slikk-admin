@@ -71,9 +71,10 @@ export const particularApiCall = async (
     partnerValue: string | undefined,
     navigate: any,
     isDelivery: boolean = true,
+    binNumber?: string,
 ) => {
     try {
-        const body = isDelivery ? { action, delivery_partner: partnerValue } : { action }
+        const body = isDelivery ? { action, delivery_partner: partnerValue, bin_number: binNumber } : { action }
         if (isDelivery && !partnerValue) {
             notification.error({
                 message: 'Select Partner to continue',

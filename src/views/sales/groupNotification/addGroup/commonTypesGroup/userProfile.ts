@@ -148,6 +148,7 @@ export const LoyaltyOptions = [
 ]
 
 export const form = (values, csvFile, mobileNumbers) => {
+    console.log('here')
     const formData = {
         ...(values.name && { name: values.name }),
         ...(values.user ? { user: values.user } : csvFile ? { user: mobileNumbers.join(',') } : ''),
@@ -344,6 +345,6 @@ export const form = (values, csvFile, mobileNumbers) => {
             ],
         },
     }
-
+    console.log('there')
     return formData
 }

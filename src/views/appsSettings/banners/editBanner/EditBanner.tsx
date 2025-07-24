@@ -2,7 +2,7 @@
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
-import { Field, Form, Formik, ErrorMessage } from 'formik'
+import { Field, Form, Formik, ErrorMessage, FieldProps } from 'formik'
 import { useEffect, useMemo, useState } from 'react'
 import { notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -21,11 +21,16 @@ import { beforeUpload } from '@/common/beforeUpload'
 import BannerCategories from './component/BannerCategories'
 import { beforeVideoUpload } from '@/common/beforUploadVideo'
 import VideoComponent from './component/VideoComponent'
-import { Checkbox } from '@/components/ui'
+import { Checkbox, Select } from '@/components/ui'
 import BannerFilterTags from './component/BannerFilterTags'
 import { ImageHandlerBanners, MediaType } from './component/bannerFunctions'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 import FullDateForm from '@/common/FullDateForm'
+import { pageSettingsService } from '@/store/services/pageSettingService'
+import CommonFilterSelect from '@/common/ComonFilterSelect'
+import { useFetchApi } from '@/commonHooks/useFetchApi'
+import CommonSelect from '../../pageSettings/CommonSelect'
+import { SortArrays } from '../../newPageSettings/newPageSettingsUtils/newPageCommons'
 
 const EditBanner = () => {
     const { id } = useParams()
@@ -40,6 +45,8 @@ const EditBanner = () => {
     const [sectionBGmobile, setSectionBGmobile] = useState<string[]>([])
     const [showSpinner, setShowSpinner] = useState(false)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
+    const [subPageNamesData, setSubPageNamesData] = useState<any>([])
+    const [filterId, setFilterId] = useState<number | string>('')
 
     const validationSchema = Yup.object().shape({
         min_off: Yup.number().max(Yup.ref('max_off'), 'min_off must be less than or equal to max_off'),
@@ -60,6 +67,20 @@ const EditBanner = () => {
 
     const toArray = (value: string | undefined): string[] => (value ? [value] : [])
 
+    const { data: SubPageNames, isSuccess: isSubPageNamesSuccess } = pageSettingsService.useSubPageNamesQuery({
+        pageName: bannerData?.page || '',
+    })
+
+    useEffect(() => {
+        if (isSubPageNamesSuccess) {
+            setSubPageNamesData(SubPageNames?.data || [])
+        }
+    }, [isSubPageNamesSuccess])
+
+    const { data: bannerFile } = useFetchApi<BANNER_MODEL>({
+        url: `/banners?p=1&page_size=200&page=${bannerData?.page}&section_heading=${bannerData?.section_heading}`,
+    })
+
     useEffect(() => {
         if (!bannerData) return
 
@@ -71,6 +92,7 @@ const EditBanner = () => {
         setSectionBGmobile(toArray(bannerData?.section_background_mobile))
         setMobilelottieView(toArray(bannerData?.extra_attributes?.lottie_mobile))
         setWeblottieView(toArray(bannerData?.extra_attributes?.lottie_web))
+        setFilterId(bannerData?.filter_id)
     }, [bannerData])
 
     const handleImageRemove = (index: number, type: MediaType) => {
@@ -90,6 +112,7 @@ const EditBanner = () => {
             updater((prev) => prev.filter((_, i) => i !== index))
         }
     }
+    console.log('banner data us', bannerData)
 
     const handleSubmit = async (values: BANNER_MODEL) => {
         const {
@@ -138,6 +161,7 @@ const EditBanner = () => {
             offer_id: values?.offer_id || '',
             offers: values?.offers ?? '',
             page: values?.page || '',
+            filter_id: filterId || '',
             parent_banner: values?.parent_banner || '',
             position: values?.position || '',
             product_type: values?.product_type?.map((item: any) => item.name).join(',') || '',
@@ -151,17 +175,23 @@ const EditBanner = () => {
             sub_category: values?.sub_category?.map((item: any) => item.name).join(',') || '',
             tags: [
                 ...(values?.tags ? values.tags : []),
-                BANNER_FIELDS_TYPE.some((item) => item.name === 'max_off') && values?.max_off && `maxoff_${values?.max_off}`,
-                BANNER_FIELDS_TYPE.some((item) => item.name === 'min_off') && values?.min_off && `minoff_${values?.min_off}`,
-            ].filter(Boolean),
+                BANNER_FIELDS_TYPE.some((item) => item.name === 'max_off') && values?.max_off ? `maxoff_${values?.max_off}` : '',
+                BANNER_FIELDS_TYPE.some((item) => item.name === 'min_off') && values?.min_off ? `minoff_${values?.min_off}` : '',
+                values?.sort ? `sort_${values?.sort}` : '',
+            ]?.filter((val) => val !== ''),
             to_date: values?.to_date || '',
             type: values?.type || '',
             uptooff: values?.uptooff || '',
             video_mobile: values?.video_mobile || '',
             video_web: values?.video_web || '',
+            sub_page: values?.sub_page || [],
         }
 
-        const filteredBody = Object.fromEntries(Object.entries(body).filter(([, v]) => v !== ''))
+        const keysToKeepEvenIfEmpty = ['division', 'category', 'sub_category', 'product_type']
+
+        const filteredBody = Object.fromEntries(
+            Object.entries(body).filter(([key, value]) => keysToKeepEvenIfEmpty.includes(key) || value !== ''),
+        )
 
         console.log('FormData of Edit Banner:', filteredBody)
         try {
@@ -305,8 +335,60 @@ const EditBanner = () => {
                                     options={brands.brands}
                                     fieldValues="brand"
                                 />
+                                <div className="mb-4">
+                                    <CommonFilterSelect isEdit filterId={filterId as string} setFilterId={setFilterId} />
+                                </div>
+
+                                <FormItem label="Parent Banner">
+                                    <Field name="parent_banner">
+                                        {({ field, form }: FieldProps<any>) => {
+                                            const selectedTag = bannerFile.find((item) => item.id === field.value)
+
+                                            return (
+                                                <Select
+                                                    isClearable
+                                                    className="w-1/2"
+                                                    placeholder="Select Filter Tags"
+                                                    options={bannerFile}
+                                                    value={selectedTag}
+                                                    getOptionLabel={(option) => option.name}
+                                                    getOptionValue={(option) => option.id}
+                                                    onChange={(newVal) => {
+                                                        form.setFieldValue('parent_banner', newVal?.id)
+                                                    }}
+                                                />
+                                            )
+                                        }}
+                                    </Field>
+                                </FormItem>
+
                                 <BannerFilterTags label="Tags" name="tags" />
                                 <BannerFilterTags label="Quick Filter Tags" name="quick_filter_tags" />
+                                <FormItem label="Sub Page" className="col-span-1 w-1/2">
+                                    <Field name="sub_page">
+                                        {({ field, form }: FieldProps<any>) => {
+                                            const selectedTags = Array.isArray(field.value)
+                                                ? subPageNamesData?.filter((option: any) => field.value.includes(option.id)) || []
+                                                : []
+
+                                            return (
+                                                <Select
+                                                    isMulti
+                                                    placeholder="Select Filter Tags"
+                                                    options={subPageNamesData}
+                                                    value={selectedTags}
+                                                    getOptionLabel={(option) => option.name}
+                                                    getOptionValue={(option) => option.id}
+                                                    onChange={(newVal) => {
+                                                        const newIds = newVal ? newVal.map((val) => val.id) : []
+                                                        form.setFieldValue('sub_page', newIds)
+                                                    }}
+                                                />
+                                            )
+                                        }}
+                                    </Field>
+                                </FormItem>
+                                <CommonSelect needClassName className="w-1/2" label="Sort By" name="sort" options={SortArrays} />
                             </FormContainer>
 
                             <FormContainer>

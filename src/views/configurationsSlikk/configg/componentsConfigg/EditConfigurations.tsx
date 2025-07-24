@@ -58,6 +58,10 @@ const EditConfigurations = () => {
                             const processedImage = await handleimage('product', val)
                             return [key, processedImage]
                         }
+                        if (key.toLowerCase().includes('lottie') && Array.isArray(val)) {
+                            const processedLottie = await handleimage('product', val)
+                            return [key, processedLottie]
+                        }
                         if (_.isPlainObject(val) || Array.isArray(val)) {
                             return [key, await processValues(value)]
                         }

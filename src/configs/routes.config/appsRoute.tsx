@@ -986,6 +986,56 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/appsSettings/seoSettings/createSeoSettings/CreateSeoSettings')),
         authority: [ADMIN, USER],
     },
+    // new Page Settings
+    {
+        key: 'appsAppSettings.pageSubPage',
+        path: `${APP_PREFIX_PATH}/appSettings/pageSubPage`,
+        component: lazy(() => import('@/views/appsSettings/pageSubPage/PageSubPage')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.pageSubPage',
+        path: `${APP_PREFIX_PATH}/appSettings/pageSubPage/editSubPage/:id`,
+        component: lazy(() => import('@/views/appsSettings/pageSubPage/EditSubPage')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.newPageSettings',
+        path: `${APP_PREFIX_PATH}/appSettings/newPageSettings`,
+        component: lazy(() => import('@/views/appsSettings/newPageSettings/newPageSettingsTable/NewPageSettingsTables')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.newPageSettings',
+        path: `${APP_PREFIX_PATH}/appSettings/sections/:id`,
+        component: lazy(() => import('@/views/appsSettings/newPageSettings/newPageSettingsTable/SectionsTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.newPageSettings',
+        path: `${APP_PREFIX_PATH}/appSettings/newPageSettings/addNew`,
+        component: lazy(() => import('@/views/appsSettings/newPageSettings/addNewPageSettings/AddPageSettings')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.newPageSettings',
+        path: `${APP_PREFIX_PATH}/appSettings/newPageSettings/edit/:section_id`,
+        component: lazy(() => import('@/views/appsSettings/newPageSettings/editNewPageSettings/EditPageSettings')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.newPageSettings',
+        path: `${APP_PREFIX_PATH}/appSettings/newPageSettings/assignSection`,
+        component: lazy(() => import('@/views/appsSettings/newPageSettings/assignPageToSection/AssignPageSection')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.newPageSettings',
+        path: `${APP_PREFIX_PATH}/appSettings/newPageSettings/assignSection/:section_id`,
+        component: lazy(() => import('@/views/appsSettings/newPageSettings/assignPageToSection/EditAssignedPage')),
+        authority: [ADMIN, USER],
+    },
+    //
     {
         key: 'appsCommuncication.notification',
         path: `${APP_PREFIX_PATH}/appSettings/addNotification`,

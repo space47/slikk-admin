@@ -26,6 +26,8 @@ const BannerCategories = ({ setFieldValue }: CATEGORYBANNERPROPS) => {
                             const selectedIds = fieldValue.map((item) => item.id)
                             const selectedOption = divisions.divisions?.filter((item) => selectedIds.includes(item.id)) || []
 
+                            console.log('divisions', divisions.divisions)
+
                             return (
                                 <Select
                                     isMulti
