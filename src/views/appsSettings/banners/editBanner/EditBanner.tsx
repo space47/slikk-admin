@@ -164,10 +164,12 @@ const EditBanner = () => {
         const body = {
             banner_id: values?.id || '',
             barcodes: values?.barcodes || '',
-            brand: values?.brand?.map((item: any) => item.name).join(',') || '',
-            category: values?.category?.map((item: any) => item.name).join(',') || '',
+            brand: values?.brand?.map((item: any) => item.id) || '',
+            category: values?.category?.map((item: any) => item.id) || '',
+            sub_category: values?.sub_category?.map((item: any) => item.id) || '',
             coupon_code: values?.coupon_code || '',
-            division: values?.division?.map((item: any) => item.name).join(',') || '',
+            division: values?.division?.map((item: any) => item.id) || '',
+            product_type: values?.product_type?.map((item: any) => item.id) || '',
             extra_attributes: {
                 video_web: webVideoUpload ? webVideoUpload : values?.extra_attributes?.video_web || '',
                 video_mobile: mobileVideoUpload ? mobileVideoUpload : values?.extra_attributes?.video_mobile || '',
@@ -197,7 +199,6 @@ const EditBanner = () => {
             filter_id: filterId || '',
             parent_banner: values?.parent_banner || '',
             position: values?.position || '',
-            product_type: values?.product_type?.map((item: any) => item.name).join(',') || '',
             quick_filter_tags: values?.quick_filter_tags || [],
             redirection_url: values?.redirection_url || '',
             section_background_mobile: sectionBgMobileUpload || values?.section_background_mobile || '',
@@ -205,7 +206,6 @@ const EditBanner = () => {
             section_background_web: sectionBgWebUpload || values?.section_background_web || '',
             section_background_web_array: values?.section_background_web_array || [],
             section_heading: values?.section_heading || '',
-            sub_category: values?.sub_category?.map((item: any) => item.name).join(',') || '',
             tags: [
                 ...(values?.tags ? values.tags : []),
                 BANNER_FIELDS_TYPE.some((item) => item.name === 'max_off') && values?.max_off ? `maxoff_${values?.max_off}` : '',
