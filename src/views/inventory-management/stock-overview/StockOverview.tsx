@@ -170,7 +170,7 @@ const StockOverview = () => {
     const handleUpdate = async (id: any, originalQuantity: any, originalLocation: any) => {
         console.log(originalQuantity, originalLocation)
         const location = updatedLocation[id] || ''
-        const quantity = Number(updatedQuantities[id]) || ''
+        const quantity = updatedQuantities[id] != null ? Number(updatedQuantities[id]) : ''
 
         try {
             const body = {
