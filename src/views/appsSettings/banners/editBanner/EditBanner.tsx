@@ -73,10 +73,8 @@ const EditBanner = () => {
     })
 
     useEffect(() => {
-        if (isSubPageNamesSuccess) {
-            setSubPageNamesData(SubPageNames?.data || [])
-        }
-    }, [isSubPageNamesSuccess, selectedPage])
+        setSubPageNamesData(SubPageNames?.data || [])
+    }, [SubPageNames])
 
     const { data: bannerFile } = useFetchApi<BANNER_MODEL>({
         url: `/banners?p=1&page_size=200&page=${bannerData?.page}&section_heading=${bannerData?.section_heading}`,
@@ -84,7 +82,6 @@ const EditBanner = () => {
 
     useEffect(() => {
         if (!bannerData) return
-
         setMobileImageView(toArray(bannerData.image_mobile))
         setWebImageView(toArray(bannerData.image_web))
         setWebVideoView(toArray(bannerData?.extra_attributes?.video_web))
