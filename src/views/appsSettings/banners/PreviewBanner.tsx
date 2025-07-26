@@ -201,11 +201,11 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
             console.log('banner index', banner)
             const data = {
                 ...banner,
-                division: banner?.division?.map((item: any) => item.id) || '',
-                category: banner?.category?.map((item: any) => item.id) || '',
-                sub_category: banner?.sub_category?.map((item: any) => item.id) || '',
-                product_type: banner?.product_type?.map((item: any) => item.id) || '',
-                brand: banner?.brand?.map((item: any) => item.id) || '',
+                division: banner?.division?.map((item: any) => item.id) || [],
+                category: banner?.category?.map((item: any) => item.id) || [],
+                sub_category: banner?.sub_category?.map((item: any) => item.id) || [],
+                product_type: banner?.product_type?.map((item: any) => item.id) || [],
+                brand: banner?.brand?.map((item: any) => item.id) || [],
                 page: selectedPage.value,
                 section_heading: selectedSection?.section_heading,
                 image_web: webImageUpload || '',
@@ -234,7 +234,10 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                 image_mobile_file: null,
             }
 
-            const filteredBody = Object.fromEntries(Object.entries(data)?.filter(([, val]) => val !== ''))
+            const keysToKeepEvenIfEmpty = ['division', 'category', 'sub_category', 'product_type', 'brand']
+            const filteredBody = Object.fromEntries(
+                Object.entries(data).filter(([key, value]) => keysToKeepEvenIfEmpty.includes(key) || value !== ''),
+            )
             await axioisInstance
                 .post('banners', filteredBody)
                 .then((res) => {
