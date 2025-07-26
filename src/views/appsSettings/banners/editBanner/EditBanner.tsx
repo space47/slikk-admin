@@ -46,6 +46,7 @@ const EditBanner = () => {
     const [showSpinner, setShowSpinner] = useState(false)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const [subPageNamesData, setSubPageNamesData] = useState<any>([])
+    const [selectedPage, setSelectedPage] = useState('')
     const [filterId, setFilterId] = useState<number | string>('')
 
     const validationSchema = Yup.object().shape({
@@ -68,14 +69,14 @@ const EditBanner = () => {
     const toArray = (value: string | undefined): string[] => (value ? [value] : [])
 
     const { data: SubPageNames, isSuccess: isSubPageNamesSuccess } = pageSettingsService.useSubPageNamesQuery({
-        pageName: bannerData?.page || '',
+        pageName: selectedPage,
     })
 
     useEffect(() => {
         if (isSubPageNamesSuccess) {
             setSubPageNamesData(SubPageNames?.data || [])
         }
-    }, [isSubPageNamesSuccess])
+    }, [isSubPageNamesSuccess, selectedPage])
 
     const { data: bannerFile } = useFetchApi<BANNER_MODEL>({
         url: `/banners?p=1&page_size=200&page=${bannerData?.page}&section_heading=${bannerData?.section_heading}`,
@@ -93,6 +94,7 @@ const EditBanner = () => {
         setMobilelottieView(toArray(bannerData?.extra_attributes?.lottie_mobile))
         setWeblottieView(toArray(bannerData?.extra_attributes?.lottie_web))
         setFilterId(bannerData?.filter_id)
+        setSelectedPage(bannerData?.page)
     }, [bannerData])
 
     const handleImageRemove = (

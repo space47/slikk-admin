@@ -57,7 +57,7 @@ const AssignPageSection = () => {
         dispatch(getAllFiltersAPI())
     }, [dispatch])
 
-    const { data: sectionsData } = useFetchApi<RequiredSections>({ url: `/section` })
+    const { data: sectionsData } = useFetchApi<RequiredSections>({ url: `/section?is_active=true` })
 
     const { data: pageNames, isSuccess: isPageNamesSuccess } = pageSettingsService.usePageNamesQuery({
         page: 1,
