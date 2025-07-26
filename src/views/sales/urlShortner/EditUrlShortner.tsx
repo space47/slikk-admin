@@ -251,7 +251,7 @@ const EditUrlShortner = () => {
 
         let pageTitle = ''
 
-        if (page_title) {
+        if (page_title && values?.target_page === 'products') {
             pageTitle = `/${values?.page_title}`
         }
 
@@ -276,18 +276,18 @@ const EditUrlShortner = () => {
             short_code: values?.short_code,
             ios_url: !values.select_filter
                 ? values.ios_url
-                    ? `${values.ios_url}${target_page}${pageTitle}?${subPage}${noSelectFilters}${appOnly}`
-                    : `${baseUrl}${target_page}${pageTitle}?${subPage}${noSelectFilters}${appOnly}`
+                    ? `${values.ios_url}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
+                    : `${baseUrl}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
                 : `${baseUrl}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
             web_url: !values.select_filter
                 ? values.web_url
-                    ? `${values.web_url}${target_page}${pageTitle}?${subPage}${noSelectFilters}${appOnly}`
-                    : `${baseUrl}${target_page}${pageTitle}?${subPage}${noSelectFilters}${appOnly}`
+                    ? `${values.web_url}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
+                    : `${baseUrl}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
                 : `${baseUrl}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
             android_url: !values.select_filter
                 ? values.android_url
-                    ? `${values.android_url}${target_page}${pageTitle}?${subPage}${noSelectFilters}${appOnly}`
-                    : `${baseUrl}${target_page}${pageTitle}?${subPage}${noSelectFilters}${appOnly}`
+                    ? `${values.android_url}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
+                    : `${baseUrl}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
                 : `${baseUrl}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
         }
 
