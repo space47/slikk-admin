@@ -164,12 +164,12 @@ const EditBanner = () => {
         const body = {
             banner_id: values?.id || '',
             barcodes: values?.barcodes || '',
-            brand: values?.brand?.map((item: any) => item.id) || '',
-            category: values?.category?.map((item: any) => item.id) || '',
-            sub_category: values?.sub_category?.map((item: any) => item.id) || '',
+            brand: values?.brand?.map((item: any) => item.id) || [],
+            category: values?.category?.map((item: any) => item.id) || [],
+            sub_category: values?.sub_category?.map((item: any) => item.id) || [],
             coupon_code: values?.coupon_code || '',
-            division: values?.division?.map((item: any) => item.id) || '',
-            product_type: values?.product_type?.map((item: any) => item.id) || '',
+            division: values?.division?.map((item: any) => item.id) || [],
+            product_type: values?.product_type?.map((item: any) => item.id) || [],
             extra_attributes: {
                 video_web: webVideoUpload ? webVideoUpload : values?.extra_attributes?.video_web || '',
                 video_mobile: mobileVideoUpload ? mobileVideoUpload : values?.extra_attributes?.video_mobile || '',
@@ -220,7 +220,7 @@ const EditBanner = () => {
             sub_page: values?.sub_page || [],
         }
 
-        const keysToKeepEvenIfEmpty = ['division', 'category', 'sub_category', 'product_type', 'image_web', 'image_mobile']
+        const keysToKeepEvenIfEmpty = ['division', 'category', 'sub_category', 'product_type', 'image_web', 'image_mobile', 'brand']
 
         const filteredBody = Object.fromEntries(
             Object.entries(body).filter(([key, value]) => keysToKeepEvenIfEmpty.includes(key) || value !== ''),
