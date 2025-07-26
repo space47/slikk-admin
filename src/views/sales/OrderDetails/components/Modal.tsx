@@ -196,23 +196,13 @@ export const CustomModal2: React.FC<props2> = ({
             onCancel={handleClose}
         >
             <div
-                className="flex flex-col items-center justify-center min-w-[22rem] px-6 py-8 
+                className="flex flex-col items-center justify-center min-w-[18rem] px-6 py-8 
                 bg-white/60 backdrop-blur-md rounded-2xl shadow-2xl"
             >
                 <p className="mb-6 text-xl font-semibold text-gray-800 text-center">{modalContent}</p>
                 <span className="mb-8 inline-block rounded-full bg-green-100 px-4 py-1 text-sm font-semibold text-green-700 shadow-sm">
                     Delivery Partner
                 </span>
-                <label className="mb-6 flex w-full flex-col items-start gap-2">
-                    <span className="text-sm font-medium text-gray-700">Bin Number</span>
-                    <Input
-                        value={binNumber}
-                        placeholder="Enter Bin Number"
-                        className="w-full rounded-xl border border-gray-300 bg-white/80 px-4 py-2 text-base
-                        shadow-inner transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-                        onChange={(e) => setBinNumber(e.target.value)}
-                    />
-                </label>
                 <div className="flex w-full flex-col items-center gap-4">
                     <span className="text-base font-semibold text-gray-800">Select Delivery Partner</span>
 
@@ -236,6 +226,16 @@ export const CustomModal2: React.FC<props2> = ({
                         </div>
                     </Dropdown>
                 </div>
+                <label className="mb-6 flex w-full flex-col items-start gap-2">
+                    <span className="text-sm font-medium text-gray-700">Bin Number</span>
+                    <Input
+                        value={binNumber}
+                        placeholder="Enter Bin Number"
+                        className="w-full rounded-xl border border-gray-300 bg-white/80 px-4 py-2 text-base
+                        shadow-inner transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                        onChange={(e) => setBinNumber(e.target.value)}
+                    />
+                </label>
             </div>
         </Modal>
     )
