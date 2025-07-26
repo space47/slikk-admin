@@ -77,7 +77,7 @@ const AddUrlShortner = () => {
 
         const { page_title, ...rest } = values
         let pageTitle = ''
-        if (values.page_title) {
+        if (values.page_title && values?.target_page === 'products') {
             pageTitle = `/${values?.page_title}`
         }
 
@@ -100,18 +100,18 @@ const AddUrlShortner = () => {
             short_code: values?.short_code,
             ios_url: !values.select_filter
                 ? values.ios_url
-                    ? `${values.ios_url}${target_page}${pageTitle}?${subPage}${noSelectFilters}${appOnly}`
-                    : `${base_url}${target_page}${pageTitle}?${subPage}${noSelectFilters}${appOnly}`
+                    ? `${values.ios_url}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
+                    : `${base_url}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
                 : `${base_url}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
             web_url: !values.select_filter
                 ? values.web_url
-                    ? `${values.web_url}${target_page}${pageTitle}?${subPage}${noSelectFilters}${appOnly}`
-                    : `${base_url}${target_page}${pageTitle}?${subPage}${noSelectFilters}${appOnly}`
+                    ? `${values.web_url}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
+                    : `${base_url}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
                 : `${base_url}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
             android_url: !values.select_filter
                 ? values.android_url
                     ? `${values.android_url}${target_page}${pageTitle}?${subPage}${noSelectFilters}${appOnly}`
-                    : `${base_url}${target_page}${pageTitle}?${subPage}${noSelectFilters}${appOnly}`
+                    : `${base_url}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
                 : `${base_url}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
         }
 
