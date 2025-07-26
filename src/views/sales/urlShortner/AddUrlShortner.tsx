@@ -7,14 +7,13 @@ import { AiOutlineCopy } from 'react-icons/ai'
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
-// import Select from '@/components/ui/Select'
-// import * as Yup from 'yup'
-
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { URLARRAY, initialValueForUrl } from './urlShortner.common'
 import { MAXMINARRAY, OFFARRAY, UtmArray } from '../groupNotification/sendNotification/sendNotify.common'
 import FilterSelect, { targetPageArray } from './FilterSelect'
 import { Checkbox, Select } from '@/components/ui'
+import { pageNameTypes } from '@/store/types/pageSettings.types'
+import { pageSettingsService } from '@/store/services/pageSettingService'
 
 const AddUrlShortner = () => {
     const navigate = useNavigate()
@@ -23,7 +22,30 @@ const AddUrlShortner = () => {
     const [showGeneratedUrl, setShowGeneratedUrl] = useState(false)
     const [showAddFilter, setShowAddFilter] = useState<number[]>([])
     const [filterId, setFilterId] = useState()
-    const [filtersData, setFiltersData] = useState<any[]>([])
+    const [subPageNamesData, setSubPageNamesData] = useState<pageNameTypes[] | undefined>([])
+    const [pageNamesData, setPageNamesData] = useState<pageNameTypes[] | undefined>([])
+    const [selectedPageName, setSelectedPageName] = useState<string | undefined>(undefined)
+
+    const { data: SubPageNames, isSuccess: isSubPageNamesSuccess } = pageSettingsService.useSubPageNamesQuery({
+        pageName: selectedPageName || '',
+    })
+
+    const { data: pageNames, isSuccess: isPageNamesSuccess } = pageSettingsService.usePageNamesQuery({
+        page: 1,
+        pageSize: 500,
+    })
+
+    useEffect(() => {
+        if (isPageNamesSuccess) {
+            setPageNamesData(pageNames?.data?.results || [])
+        }
+    }, [pageNames, isPageNamesSuccess])
+
+    useEffect(() => {
+        if (isSubPageNamesSuccess) {
+            setSubPageNamesData(SubPageNames?.data || [])
+        }
+    }, [isSubPageNamesSuccess, SubPageNames, selectedPageName])
 
     const handleAddFilter = () => {
         setShowAddFilter([...showAddFilter, showAddFilter.length])
@@ -34,34 +56,8 @@ const AddUrlShortner = () => {
         setShowAddFilter(updatedFilters)
     }
 
-    // const handleAddFilters = async (values) => {
-    //     const newFilterData = showAddFilter.map((_, index) => values.filtersAdd[index] || [])
-    //     setFiltersData((prev: any) => {
-    //         const updatedFilters = [...prev, newFilterData]
-    //         const lastElement = updatedFilters.at(-1)
-    //         sendFilterData(lastElement)
-    //         return updatedFilters
-    //     })
-    // }
-
-    // const sendFilterData = async (filterData: number) => {
-    //     try {
-    //         const response = await axioisInstance.post(`/product/search/criteria`, { filter_data: filterData })
-    //         setFilterId(response.data?.data?.id)
-    //         notification.success({
-    //             message: 'Filter Id Added',
-    //         })
-    //         console.log('here')
-    //     } catch (error) {
-    //         console.log('error', error)
-    //         notification.error({
-    //             message: 'Failed to Add Filter ID',
-    //         })
-    //         console.error(error)
-    //     }
-    // }
-
     const handleSubmit = async (values: any) => {
+        console.log('values', values)
         const filters = [
             ...(values.filters || []),
             ...UtmArray.filter((item) => values[item.name] !== undefined).map(
@@ -94,29 +90,44 @@ const AddUrlShortner = () => {
         if (values?.target_page) {
             target_page = `/${values?.target_page}`
         }
+        let subPage = ''
+        if (values?.sub_page && values?.target_page === 'home') {
+            subPage = `sub_page=${values?.sub_page?.name}`
+        }
 
         const formData = {
             ...rest,
             short_code: values?.short_code,
             ios_url: !values.select_filter
                 ? values.ios_url
-                    ? `${values.ios_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
-                    : `${base_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
-                : `${base_url}${target_page}${pageTitle}?filters=${filters}${appOnly}`,
+                    ? `${values.ios_url}${target_page}${pageTitle}?${subPage}${noSelectFilters}${appOnly}`
+                    : `${base_url}${target_page}${pageTitle}?${subPage}${noSelectFilters}${appOnly}`
+                : `${base_url}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
             web_url: !values.select_filter
                 ? values.web_url
-                    ? `${values.web_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
-                    : `${base_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
-                : `${base_url}${target_page}${pageTitle}?filters=${filters}${appOnly}`,
+                    ? `${values.web_url}${target_page}${pageTitle}?${subPage}${noSelectFilters}${appOnly}`
+                    : `${base_url}${target_page}${pageTitle}?${subPage}${noSelectFilters}${appOnly}`
+                : `${base_url}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
             android_url: !values.select_filter
                 ? values.android_url
-                    ? `${values.android_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
-                    : `${base_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
-                : `${base_url}${target_page}${pageTitle}?filters=${filters}${appOnly}`,
+                    ? `${values.android_url}${target_page}${pageTitle}?${subPage}${noSelectFilters}${appOnly}`
+                    : `${base_url}${target_page}${pageTitle}?${subPage}${noSelectFilters}${appOnly}`
+                : `${base_url}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
         }
 
+        const pageUrl = `${base_url}/s/${values?.page?.name}/${values?.sub_page?.name}`
+        const customBody = {
+            short_code: values?.short_code,
+            ios_url: pageUrl,
+            web_url: pageUrl,
+            android_url: pageUrl,
+        }
+
+        console.log('formdata is', customBody)
+
         try {
-            const response = await axioisInstance.post('/short_url/create', formData)
+            const body = values?.is_custom ? customBody : formData
+            const response = await axioisInstance.post('/short_url/create', body)
             notification.success({
                 message: 'Success',
                 description: response?.data?.message || 'Url Shortener created successfully',
@@ -197,6 +208,68 @@ const AddUrlShortner = () => {
                                 <FormItem label="App Only">
                                     <Field type="checkbox" name="app" component={Checkbox} />
                                 </FormItem>
+                                <FormItem label="Is Custom">
+                                    <Field type="checkbox" name="is_custom" component={Checkbox} />
+                                </FormItem>
+
+                                {values?.is_custom === true && (
+                                    <FormItem label="Page">
+                                        <Field name="page">
+                                            {({ form, field }: FieldProps) => {
+                                                const selectedPage =
+                                                    typeof field?.value === 'object'
+                                                        ? pageNamesData?.find((option) => option.name === field?.value?.name)
+                                                        : pageNamesData?.find((option) => option.name === field?.value)
+                                                return (
+                                                    <div className="flex flex-col gap-1 w-full max-w-md">
+                                                        <Select
+                                                            isClearable
+                                                            className="w-full"
+                                                            options={pageNamesData}
+                                                            getOptionLabel={(option) => option.name}
+                                                            getOptionValue={(option) => option.id}
+                                                            value={selectedPage || null}
+                                                            onChange={(newVal) => {
+                                                                form.setFieldValue('page', newVal)
+                                                                const name = typeof newVal === 'object' ? newVal?.name : newVal
+                                                                setSelectedPageName(name)
+                                                            }}
+                                                        />
+                                                    </div>
+                                                )
+                                            }}
+                                        </Field>
+                                    </FormItem>
+                                )}
+                                {(values?.target_page === 'home' || values?.is_custom === true) && (
+                                    <FormContainer>
+                                        <FormItem label="Sub Page">
+                                            <Field name="sub_page">
+                                                {({ form, field }: FieldProps) => {
+                                                    const selectedSubPage =
+                                                        typeof field?.value === 'object'
+                                                            ? subPageNamesData?.find((option) => option.name === field?.value?.name)
+                                                            : subPageNamesData?.find((option) => option.name === field?.value)
+                                                    return (
+                                                        <div className="flex flex-col gap-1 w-full max-w-md">
+                                                            <Select
+                                                                isClearable
+                                                                className="w-full"
+                                                                options={subPageNamesData}
+                                                                getOptionLabel={(option) => option.name}
+                                                                getOptionValue={(option) => option.id}
+                                                                value={selectedSubPage || null}
+                                                                onChange={(newVal) => {
+                                                                    form.setFieldValue('sub_page', newVal)
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    )
+                                                }}
+                                            </Field>
+                                        </FormItem>
+                                    </FormContainer>
+                                )}
                             </FormContainer>
 
                             <FormContainer>
@@ -221,7 +294,7 @@ const AddUrlShortner = () => {
                                     type="checkbox"
                                     name="select_filter"
                                     component={Checkbox}
-                                    onChange={(e) => handleFilterChange(e, setFieldValue)}
+                                    onChange={(e: any) => handleFilterChange(e, setFieldValue)}
                                 />
                             </FormItem>
 
