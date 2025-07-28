@@ -16,7 +16,7 @@ const BannerFilterTags = ({ label, name }: props) => {
 
     return (
         <div>
-            <FormItem label={label} className="col-span-1 w-1/2">
+            <FormItem label={label} className="col-span-1">
                 <Field name={name}>
                     {({ field, form }: FieldProps<any>) => {
                         const selectedTags = Array.isArray(field?.value)

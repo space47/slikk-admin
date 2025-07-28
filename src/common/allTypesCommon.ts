@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 export interface GenericCommonTypes {
     // Input Event (e.g., for input, textarea, select)
     InputEvent: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -40,4 +42,20 @@ export interface GenericCommonTypes {
 
     // Touch Events (for mobile interactions)
     TouchEvent: React.TouchEvent<HTMLElement>
+}
+
+export const handleDownloadCsv = (
+    data: any[],
+    columns: any[],
+    convertToCSV: (data: any[], columns: any[]) => string,
+    filename = 'riderData.csv',
+) => {
+    const csvData = convertToCSV(data, columns)
+    const blob = new Blob([csvData], { type: 'text/csv' })
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    a.click()
+    window.URL.revokeObjectURL(url)
 }

@@ -13,6 +13,10 @@ import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { notification } from 'antd'
 import { useParams } from 'react-router-dom'
+import { AxiosError } from 'axios'
+import { Spinner, Tooltip } from '@/components/ui'
+import { FaDownload } from 'react-icons/fa6'
+import { handleDownloadCsv } from '@/common/allTypesCommon'
 
 const genderOptions = [
     {
@@ -39,7 +43,7 @@ const LoyaltyOptions = [
 const EditGroup = () => {
     const [initialData, setInitialData] = useState<any>([])
     const [userData, setUserData] = useState<any[]>([])
-
+    const [spinner, setSpinner] = useState(false)
     const { groupId } = useParams()
 
     const fetchGroupNotification = async () => {
@@ -118,6 +122,35 @@ const EditGroup = () => {
     useEffect(() => {
         dispatch(getAllFiltersAPI())
     }, [])
+
+    const convertToCSV = (data: any[], columns: any[]) => {
+        const header = columns.map((col) => col.header).join(',')
+        const rows = data
+            .map((row) => {
+                return columns
+                    .map((col) => {
+                        if (col.accessorKey === 'first_name') {
+                            return `${row?.first_name}`
+                        } else if (col.accessorKey === 'mobile') {
+                            return row?.mobile
+                        } else {
+                            return ''
+                        }
+                    })
+                    .join(',')
+            })
+            .join('\n')
+        return `${header}\n${rows}`
+    }
+
+    const columnsForCsv = [
+        { header: 'First Name', accessorKey: 'first_name' },
+        { header: 'Mobile', accessorKey: 'mobile' },
+    ]
+
+    const handleDownloadUserCsv = () => {
+        handleDownloadCsv(userData, columnsForCsv, convertToCSV, 'group_users.csv')
+    }
 
     const handleSubmit = async (values: any) => {
         console.log('start')
@@ -329,11 +362,11 @@ const EditGroup = () => {
 
             console.log('finish')
         } catch (error) {
-            console.log(error)
-            notification.error({
-                message: 'Failure',
-                description: 'Failed to add group',
-            })
+            if (error instanceof AxiosError) {
+                notification.error({ message: error?.response?.data?.message || error?.response?.data?.data?.message || 'Failed to add' })
+            }
+        } finally {
+            setSpinner(false)
         }
     }
     return (
@@ -349,6 +382,14 @@ const EditGroup = () => {
                         <FormContainer>
                             <FormContainer>
                                 <h3>Groups</h3>
+                                <div className="flex justify-end">
+                                    <Tooltip title="Download User CSV">
+                                        <FaDownload
+                                            className="text-xl cursor-pointer hover:text-blue-500"
+                                            onClick={handleDownloadUserCsv}
+                                        />
+                                    </Tooltip>
+                                </div>
                                 <FormContainer className="grid grid-cols-2 gap-6">
                                     {headingGroup.map((item, key) => (
                                         <FormItem key={key} label={item.label} className={item.className}>
@@ -601,8 +642,8 @@ const EditGroup = () => {
                             <Button type="reset" className="mr-2 bg-gray-600" onClick={() => resetForm()}>
                                 Reset
                             </Button>
-                            <Button variant="solid" type="submit" className=" text-white">
-                                Submit
+                            <Button variant="solid" type="submit" className=" text-white flex items-center gap-2">
+                                <span>{spinner && <Spinner size={30} color="white" />}</span> Submit
                             </Button>
                         </FormContainer>
                     </Form>

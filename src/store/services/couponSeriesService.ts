@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import RtkQueryService from '@/services/RtkQueryService'
 import { CouponGenerateBodyType, CouponSeriesBodyType, CouponSeriesTypes } from '../types/couponSeries.types'
 
@@ -73,12 +74,17 @@ export const couponSeriesService = RtkQueryService.injectEndpoints({
         }),
         generateCouponFromSeries: builder.mutation<{ success: string }, CouponGenerateBodyType>({
             query: (params) => {
+                const formData = new FormData()
+
+                Object.entries(params).forEach(([key, value]) => {
+                    if (value !== undefined && value !== null && value !== '') {
+                        formData.append(key, value as any)
+                    }
+                })
                 return {
                     url: `/merchant/coupon/generate`,
                     method: 'POST',
-                    body: {
-                        ...params,
-                    },
+                    body: formData,
                 }
             },
         }),

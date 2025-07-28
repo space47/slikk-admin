@@ -19,6 +19,8 @@ interface CouponProps {
     isEdit?: any
     setFilterId?: any
     filterValue?: any
+    setExcludeFilterId?: any
+    excludeFilterValue?: any
 }
 
 const DiscountType = [
@@ -33,7 +35,7 @@ const CouponsType = () => {
     }))
 }
 
-const CouponSeriesForm = ({ values, setFieldValue, setFilterId, filterValue }: CouponProps) => {
+const CouponSeriesForm = ({ values, setFieldValue, setFilterId, filterValue, setExcludeFilterId, excludeFilterValue }: CouponProps) => {
     return (
         <Form className="">
             <FormContainer>
@@ -161,6 +163,9 @@ const CouponSeriesForm = ({ values, setFieldValue, setFilterId, filterValue }: C
 
                     <div>
                         <CommonFilterSelect filterId={filterValue} setFilterId={setFilterId} />
+                    </div>
+                    <div>
+                        <CommonFilterSelect isExclude filterId={excludeFilterValue} setFilterId={setExcludeFilterId} />
                     </div>
 
                     {COUPON_SERIES_FORM.slice(5).map((item, key) => (
