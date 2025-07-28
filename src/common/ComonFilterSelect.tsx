@@ -58,10 +58,11 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
     const dispatch = useAppDispatch()
     const [showAddFilter, setShowAddFilter] = useState<number[]>([])
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
+    const [excludeFilterId, setExcludeFilterId] = useState<any[]>([])
     const [filtersData, setFiltersData] = useState<any[]>([])
     const [state, dispatchState] = useReducer(reducer, initialState)
     const { setFieldValue } = useFormikContext()
-    console.log('initial values', filtersData)
+    console.log('initial values', filtersData, excludeFilterId)
 
     useEffect(() => {
         const fetchCriteria = async () => {
@@ -87,7 +88,7 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
             }
         }
         fetchCriteria()
-    }, [filterId, setFieldValue])
+    }, [])
 
     useEffect(() => {
         dispatch(getAllFiltersAPI())
@@ -106,6 +107,16 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
     const handleAddFilters = async (values: any) => {
         const newFilterData = showAddFilter.map((_, index) => values.filtersAdd[index] || [])
         setFiltersData((prev) => {
+            const updatedFilters = [...prev, newFilterData]
+            const lastElement = updatedFilters.at(-1)
+            sendFilterData(lastElement)
+            return updatedFilters
+        })
+    }
+
+    const handleAddExcludeFilters = async (values: any) => {
+        const newFilterData = showAddFilter.map((_, index) => values.excludeFiltersAdd[index] || [])
+        setExcludeFilterId((prev) => {
             const updatedFilters = [...prev, newFilterData]
             const lastElement = updatedFilters.at(-1)
             sendFilterData(lastElement)
@@ -155,7 +166,7 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
             {showAddFilter.map((_, index: any) => (
                 <FormItem key={index} className="flex gap-2">
                     <div className="flex gap-3 items-center">
-                        <Field key={index} name={`filtersAdd[${index}]`}>
+                        <Field key={index} name={isExclude ? `excludeFiltersAdd[${index}]` : `filtersAdd[${index}]`}>
                             {({ field, form }: FieldProps<any>) => {
                                 const selectedOptions =
                                     field.value?.flatMap((value: any) =>
@@ -273,7 +284,11 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
                     </div>
                     <Field>
                         {({ form }: FieldProps<any>) => (
-                            <Button type="button" variant="new" onClick={() => handleAddFilters(form.values)}>
+                            <Button
+                                type="button"
+                                variant="new"
+                                onClick={isExclude ? () => handleAddExcludeFilters(form.values) : () => handleAddFilters(form.values)}
+                            >
                                 Search Strings
                             </Button>
                         )}

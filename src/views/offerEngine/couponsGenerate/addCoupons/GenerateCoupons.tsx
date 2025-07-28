@@ -43,13 +43,14 @@ const GenerateCoupons = () => {
         })
     const initialValue = {}
     const handleSubmit = async (values: any) => {
-        console.log('form values are', values?.docsArray[0])
+        console.log('here')
         const formData = new FormData()
         const appendIfDefined = (key: string, value: any) => {
             if (value !== undefined && value !== null && value !== '') {
                 formData.append(key, value)
             }
         }
+        console.log('here')
         appendIfDefined('id', values?.coupon_series)
         appendIfDefined('auto_generate', (values.auto_generate_code ? true : false).toString())
         appendIfDefined('mobiles', values?.users || '')
