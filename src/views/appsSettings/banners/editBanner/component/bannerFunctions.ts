@@ -1,5 +1,6 @@
 import { handleimage } from '@/common/handleImage'
 import { handleVideo } from '@/views/appsSettings/newPageSettings/newPageSettingsUtils/usePageSettingsBodyFile'
+import { filter } from 'lodash'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const calculateAspectRatio = async (files: File[]): Promise<number[]> => {
@@ -121,6 +122,7 @@ export const bannerBodyFile = (
     mobileImageUpload: any,
     webImageUpload: any,
     filterId: any,
+    excludeFilterId: any,
     sectionBgWebUpload: any,
     sectionBgMobileUpload: any,
     BANNER_FIELDS_TYPE: any[],
@@ -145,6 +147,7 @@ export const bannerBodyFile = (
             web_redirection_url: values?.extra_attributes?.web_redirection_url || '',
             lottie_web: webLottieUpload ?? values?.extra_attributes?.lottie_web ?? '',
             lottie_mobile: mobileLottieUpload ?? values?.extra_attributes?.lottie_mobile ?? '',
+            filter_id_exclude: excludeFilterId || '',
         },
         footer: values?.footer || '',
         from_date: values?.from_date || '',

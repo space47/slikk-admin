@@ -18,7 +18,6 @@ import { pageSettingsService } from '@/store/services/pageSettingService'
 import { pageNameTypes } from '@/store/types/pageSettings.types'
 import { companyStore } from '@/store/types/companyStore.types'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
-import CommonFilterSelect from '@/common/ComonFilterSelect'
 import FilterSelectWithoutFormik from '@/common/FilterSelectWithoutFormik'
 import { useFetchApi } from '@/commonHooks/useFetchApi'
 import { BANNER_MODEL } from './BannerCommon'
@@ -139,6 +138,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
     })
     const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
     const [filterId, setFilterId] = useState('')
+    const [excludeFilterId, setExcludeFilterId] = useState('')
 
     useEffect(() => {
         dispatch(fetchCompanyStore())
@@ -218,6 +218,22 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
             setBannerForm(tempBannerForm)
         }
     }, [filterId])
+
+    useEffect(() => {
+        if (bannerForm[index]) {
+            setBannerForm((prev: any) => {
+                const updatedForm = [...prev]
+                updatedForm[index] = {
+                    ...updatedForm[index],
+                    extra_attributes: {
+                        ...updatedForm[index]?.extra_attributes,
+                        filter_id_exclude: excludeFilterId,
+                    },
+                }
+                return updatedForm
+            })
+        }
+    }, [excludeFilterId])
 
     useEffect(() => {
         if (subPageId) {
@@ -543,8 +559,18 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                     />
                 </div>
 
-                <div className="mb-4">
-                    <FilterSelectWithoutFormik filterId={filterId} setFilterId={setFilterId} customClass="xl:w-[400px]" />
+                <div className="flex justify-between gap-5">
+                    <div className="mb-4">
+                        <FilterSelectWithoutFormik filterId={filterId} setFilterId={setFilterId} customClass="xl:w-[300px]" />
+                    </div>
+                    <div className="mb-4">
+                        <FilterSelectWithoutFormik
+                            exclude
+                            filterId={excludeFilterId}
+                            setFilterId={setExcludeFilterId}
+                            customClass="xl:w-[300px]"
+                        />
+                    </div>
                 </div>
 
                 <div></div>
