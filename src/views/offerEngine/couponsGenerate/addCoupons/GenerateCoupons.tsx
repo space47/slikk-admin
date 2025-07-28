@@ -43,13 +43,14 @@ const GenerateCoupons = () => {
         })
     const initialValue = {}
     const handleSubmit = async (values: any) => {
-        console.log('form values are', values)
+        console.log('here')
         const formData = new FormData()
         const appendIfDefined = (key: string, value: any) => {
             if (value !== undefined && value !== null && value !== '') {
                 formData.append(key, value)
             }
         }
+        console.log('here')
         appendIfDefined('id', values?.coupon_series)
         appendIfDefined('auto_generate', (values.auto_generate_code ? true : false).toString())
         appendIfDefined('mobiles', values?.users || '')
@@ -62,8 +63,10 @@ const GenerateCoupons = () => {
         appendIfDefined('code', values.coupon_code_name)
         appendIfDefined('series_diff', values?.series_diff)
         appendIfDefined('is_random', (values?.numeric_type === 'random' ? true : false).toString())
-        if (values.docsArray && values.docsArray.length > 0) {
-            formData.append('users', values.docsArray[0])
+        if (values.docsArray) {
+            if (values.docsArray[0] instanceof Blob || values.docsArray[0] instanceof File) {
+                formData.append('users', values.docsArray[0])
+            }
         }
         const formDataEntries: any = {}
         formData.forEach((value: any, key: any) => {

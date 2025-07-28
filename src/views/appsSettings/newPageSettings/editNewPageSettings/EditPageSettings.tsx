@@ -121,7 +121,7 @@ const EditPageSettings = () => {
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                 {({ values, resetForm, setFieldValue }) => {
                     return (
-                        <Form>
+                        <Form onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}>
                             <NewPageCommonForms
                                 bannerDetails={bannerDetails}
                                 isEdit

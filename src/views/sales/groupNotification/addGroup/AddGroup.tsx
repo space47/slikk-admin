@@ -24,11 +24,13 @@ import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { notification } from 'antd'
 import { MdDelete } from 'react-icons/md'
-import { Checkbox } from '@/components/ui'
+import { Checkbox, Spinner } from '@/components/ui'
+import { AxiosError } from 'axios'
 
 const AddGroup = () => {
     const [csvFile, setCSVFile] = useState<any>()
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
+    const [spinner, setSpinner] = useState(false)
     const [mobileNumbers, setMobileNumbers] = useState<string[]>([])
     const initialValue = {}
 
@@ -60,6 +62,7 @@ const AddGroup = () => {
 
     const handleSubmit = async (values: any) => {
         try {
+            setSpinner(true)
             const response = await axioisInstance.post(`/notification/groups`, form(values, csvFile, mobileNumbers))
             console.log(response.data)
             notification.success({
@@ -69,11 +72,11 @@ const AddGroup = () => {
 
             console.log('finish')
         } catch (error) {
-            console.log(error)
-            notification.error({
-                message: 'Failure',
-                description: 'Failed to add group',
-            })
+            if (error instanceof AxiosError) {
+                notification.error({ message: error?.response?.data?.message || error?.response?.data?.data?.message || 'Failed to add' })
+            }
+        } finally {
+            setSpinner(false)
         }
     }
     return (
@@ -361,8 +364,8 @@ const AddGroup = () => {
                             <Button type="reset" className="mr-2 bg-gray-600" onClick={() => resetForm()}>
                                 Reset
                             </Button>
-                            <Button variant="solid" type="submit" className=" text-white">
-                                Submit
+                            <Button variant="solid" type="submit" className=" text-white flex items-center gap-2">
+                                <span>{spinner && <Spinner size={30} color="white" />}</span> Submit
                             </Button>
                         </FormContainer>
                     </Form>
