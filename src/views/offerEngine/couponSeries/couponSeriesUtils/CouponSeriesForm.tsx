@@ -8,6 +8,7 @@ import { COUPON_SERIES_FORM } from '../couponSeriesCommon'
 import CommonFilterSelect from '@/common/ComonFilterSelect'
 import { CiCircleQuestion } from 'react-icons/ci'
 import dayjs from 'dayjs'
+import CommonFilterSelectExclude from '@/common/CommonFilterSelectExclude'
 
 interface CouponProps {
     values: any
@@ -165,7 +166,7 @@ const CouponSeriesForm = ({ values, setFieldValue, setFilterId, filterValue, set
                         <CommonFilterSelect filterId={filterValue} setFilterId={setFilterId} />
                     </div>
                     <div>
-                        <CommonFilterSelect isExclude filterId={excludeFilterValue} setFilterId={setExcludeFilterId} />
+                        <CommonFilterSelectExclude filterId={excludeFilterValue} setFilterId={setExcludeFilterId} />
                     </div>
 
                     {COUPON_SERIES_FORM.slice(5).map((item, key) => (

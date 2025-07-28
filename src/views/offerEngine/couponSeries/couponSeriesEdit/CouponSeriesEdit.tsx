@@ -60,9 +60,11 @@ const CouponSeriesEdit = () => {
         extra_attributes: couponSeriesActive?.extra_attributes,
     }
 
-    useEffect(() => {
-        setExcludeFilterId(couponSeriesActive?.extra_attributes?.filter_id_exclude || '')
-    }, [])
+    // useEffect(() => {
+    //     setExcludeFilterId(couponSeriesActive?.extra_attributes?.filters?.filter_id_exclude || '')
+    // }, [couponSeriesActive])
+
+    console.log('filters are', excludeFilterId)
 
     const handleSubmit = async (values: any) => {
         let imageUpload = values?.image
@@ -130,7 +132,7 @@ const CouponSeriesEdit = () => {
                                 values={values}
                                 setFieldValue={setFieldValue}
                                 resetForm={resetForm}
-                                excludeFilterValue={excludeFilterId}
+                                excludeFilterValue={initialValue?.extra_attributes?.filters?.filter_id_exclude}
                                 setExcludeFilterId={setExcludeFilterId}
                                 filterValue={initialValue?.extra_attributes?.filters?.filter_id}
                             />
