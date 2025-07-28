@@ -30,6 +30,7 @@ import { useFetchApi } from '@/commonHooks/useFetchApi'
 import CommonSelect from '../../pageSettings/CommonSelect'
 import { SortArrays } from '../../newPageSettings/newPageSettingsUtils/newPageCommons'
 import FormButton from '@/components/ui/Button/FormButton'
+import CommonFilterSelectExclude from '@/common/CommonFilterSelectExclude'
 
 const EditBanner = () => {
     const { id } = useParams()
@@ -47,6 +48,7 @@ const EditBanner = () => {
     const [subPageNamesData, setSubPageNamesData] = useState<any>([])
     const [selectedPage, setSelectedPage] = useState('')
     const [filterId, setFilterId] = useState<number | string>('')
+    const [excludeFilterId, setExcludeFilterId] = useState<number | string>('')
 
     const validationSchema = Yup.object().shape({
         min_off: Yup.number().max(Yup.ref('max_off'), 'min_off must be less than or equal to max_off'),
@@ -87,6 +89,7 @@ const EditBanner = () => {
         setWeblottieView(toArray(bannerData?.extra_attributes?.lottie_web))
         setFilterId(bannerData?.filter_id)
         setSelectedPage(bannerData?.page)
+        setExcludeFilterId(bannerData?.filter_id_exclude || '')
     }, [bannerData])
 
     const handleImageRemove = (
@@ -162,6 +165,7 @@ const EditBanner = () => {
             mobileImageUpload,
             webImageUpload,
             filterId,
+            excludeFilterId,
             sectionBgWebUpload,
             sectionBgMobileUpload,
             BANNER_FIELDS_TYPE,
@@ -307,6 +311,13 @@ const EditBanner = () => {
                                 />
                                 <div className="mb-4">
                                     <CommonFilterSelect isEdit filterId={filterId as string} setFilterId={setFilterId} />
+                                </div>
+                                <div className="mb-4">
+                                    <CommonFilterSelectExclude
+                                        isEdit
+                                        filterId={excludeFilterId as string}
+                                        setFilterId={setExcludeFilterId}
+                                    />
                                 </div>
 
                                 <FormContainer className="grid grid-cols-2 gap-4">

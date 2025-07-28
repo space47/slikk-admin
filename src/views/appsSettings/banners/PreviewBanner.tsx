@@ -229,6 +229,7 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                     min_off: banner?.minoff ?? null,
                     lottie_web: webLottieUpload ?? '',
                     lottie_mobile: mobileLottieUpload ?? '',
+                    filter_id_exclude: banner?.extra_attributes?.filter_id_exclude || '',
                 },
                 image_web_file: null,
                 image_mobile_file: null,
@@ -238,6 +239,8 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
             const filteredBody = Object.fromEntries(
                 Object.entries(data).filter(([key, value]) => keysToKeepEvenIfEmpty.includes(key) || value !== ''),
             )
+
+            console.log('Filtered Body', filteredBody)
             await axioisInstance
                 .post('banners', filteredBody)
                 .then((res) => {
