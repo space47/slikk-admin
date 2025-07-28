@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Input from '@/components/ui/Input'
 import Checkbox from '@/components/ui/Checkbox'
 import { BANNER_MODEL } from '../BannerCommon'
@@ -242,7 +243,7 @@ export const BANNER_FIELDS_TYPE = [
 
 export const getInitialBannerValue = (bannerData: BANNER_MODEL | undefined) => ({
     id: bannerData?.id || 0,
-    sort: bannerData?.tags?.find((item: string) => item.startsWith('sort_'))?.split('_')[1],
+    sort: bannerData?.tags ? bannerData?.tags?.find((item: string) => item.startsWith('sort_'))?.split('_')[1] : '',
     name: bannerData?.name || '',
     section_heading: bannerData?.section_heading || '',
     parent_banner: bannerData?.parent_banner || null,
@@ -252,7 +253,7 @@ export const getInitialBannerValue = (bannerData: BANNER_MODEL | undefined) => (
     category: bannerData?.category || [],
     image_web_array: bannerData?.image_web_array || [],
     image_mobile_array: bannerData?.image_mobile_array || [],
-    sub_page: bannerData?.sub_page?.map((item) => item?.id) || '',
+    sub_page: bannerData?.sub_page?.map((item: any) => item?.id) || '',
     video_web_array: bannerData?.video_web_array || [],
     video_mobile_array: bannerData?.video_mobile_array || [],
     lottie_web_array: bannerData?.lottie_web_array || [],
