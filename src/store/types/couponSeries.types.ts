@@ -20,6 +20,9 @@ export type CouponResults = {
         applicable_categories?: string[]
         filters?: Record<string, string | number>
         min_filters_products_amount?: number
+        filter_id_exclude?: string
+        min_item_quantity?: number
+        max_item_quantity?: number
     }
 }
 
@@ -52,6 +55,9 @@ export type CouponSeriesBodyType = {
         new_users_only?: boolean
         filters?: Record<string, string | number>
         min_filters_products_amount?: number
+        filter_id_exclude?: string
+        min_item_quantity?: number
+        max_item_quantity?: number
     }
 }
 

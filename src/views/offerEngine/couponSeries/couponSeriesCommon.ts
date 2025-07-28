@@ -109,6 +109,22 @@ export const COUPON_SERIES_FORM = [
         component: { Input },
         status: 'extra_attributes.min_filters_products_amount',
     },
+    {
+        label: 'Min Item Quantity',
+        classname: 'col-span-1 w-full',
+        type: 'number',
+        name: 'extra_attributes.min_item_quantity',
+        placeholder: 'Enter Minimum Item Quantity',
+        component: { Input },
+    },
+    {
+        label: 'Max Item Quantity',
+        classname: 'col-span-1 w-full',
+        type: 'number',
+        name: 'extra_attributes.max_item_quantity',
+        placeholder: 'Enter Maximum Item Quantity',
+        component: { Input },
+    },
 
     {
         label: 'Is Public',

@@ -109,7 +109,7 @@ const AddPageSettings = () => {
             <Formik enableReinitialize initialValues={{}} onSubmit={handleSubmit}>
                 {({ values, resetForm, setFieldValue }) => {
                     return (
-                        <Form>
+                        <Form onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}>
                             <div className="text-xl mb-2">1. Create New Sections</div>
                             <NewPageCommonForms
                                 bannerDetails={bannerDetails}

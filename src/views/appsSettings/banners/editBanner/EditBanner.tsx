@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
-import Button from '@/components/ui/Button'
 import { Field, Form, Formik, ErrorMessage, FieldProps, FormikErrors } from 'formik'
 import { useEffect, useMemo, useState } from 'react'
 import { notification } from 'antd'
@@ -16,14 +15,13 @@ import { getAllFiltersAPI } from '@/store/action/filters.action'
 import ImageComponent from './component/ImageComponent'
 import SectionsComponent from './component/SectionsComponent'
 import * as Yup from 'yup'
-import LoadingSpinner from '@/common/LoadingSpinner'
 import { beforeUpload } from '@/common/beforeUpload'
 import BannerCategories from './component/BannerCategories'
 import { beforeVideoUpload } from '@/common/beforUploadVideo'
 import VideoComponent from './component/VideoComponent'
 import { Checkbox, Select } from '@/components/ui'
 import BannerFilterTags from './component/BannerFilterTags'
-import { ImageHandlerBanners } from './component/bannerFunctions'
+import { bannerBodyFile, ImageHandlerBanners } from './component/bannerFunctions'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 import FullDateForm from '@/common/FullDateForm'
 import { pageSettingsService } from '@/store/services/pageSettingService'
@@ -31,6 +29,7 @@ import CommonFilterSelect from '@/common/ComonFilterSelect'
 import { useFetchApi } from '@/commonHooks/useFetchApi'
 import CommonSelect from '../../pageSettings/CommonSelect'
 import { SortArrays } from '../../newPageSettings/newPageSettingsUtils/newPageCommons'
+import FormButton from '@/components/ui/Button/FormButton'
 
 const EditBanner = () => {
     const { id } = useParams()
@@ -65,12 +64,8 @@ const EditBanner = () => {
     }, [id])
 
     const { data: bannerData } = useFetchSingleData<any>({ url: query })
-
     const toArray = (value: string | undefined): string[] => (value ? [value] : [])
-
-    const { data: SubPageNames, isSuccess: isSubPageNamesSuccess } = pageSettingsService.useSubPageNamesQuery({
-        pageName: selectedPage,
-    })
+    const { data: SubPageNames } = pageSettingsService.useSubPageNamesQuery({ pageName: selectedPage })
 
     useEffect(() => {
         setSubPageNamesData(SubPageNames?.data || [])
@@ -143,11 +138,7 @@ const EditBanner = () => {
                 break
         }
     }
-
-    console.log('banner data us', bannerData)
-
     const handleSubmit = async (values: BANNER_MODEL) => {
-        console.log('values are', values?.image_web)
         const {
             webImageUpload,
             webAspectratio,
@@ -160,72 +151,25 @@ const EditBanner = () => {
             webLottieUpload,
             mobileLottieUpload,
         } = await ImageHandlerBanners(values, webImagview, mobileImagview)
-        const body = {
-            banner_id: values?.id || '',
-            barcodes: values?.barcodes || '',
-            brand: values?.brand?.map((item: any) => item.id) || [],
-            category: values?.category?.map((item: any) => item.id) || [],
-            sub_category: values?.sub_category?.map((item: any) => item.id) || [],
-            coupon_code: values?.coupon_code || '',
-            division: values?.division?.map((item: any) => item.id) || [],
-            product_type: values?.product_type?.map((item: any) => item.id) || [],
-            extra_attributes: {
-                video_web: webVideoUpload ? webVideoUpload : values?.extra_attributes?.video_web || '',
-                video_mobile: mobileVideoUpload ? mobileVideoUpload : values?.extra_attributes?.video_mobile || '',
-                web_aspect_ratio: webAspectratio?.[0]
-                    ? Number(webAspectratio[0].toFixed(2))
-                    : values?.extra_attributes?.web_aspect_ratio || '',
-                mobile_aspect_ratio: mobileAspectratio?.[0]
-                    ? Number(mobileAspectratio[0].toFixed(2))
-                    : values?.extra_attributes?.mobile_aspect_ratio || '',
-                mobile_redirection_url: values?.extra_attributes?.mobile_redirection_url || '',
-                web_redirection_url: values?.extra_attributes?.web_redirection_url || '',
-                lottie_web: webLottieUpload ?? values?.extra_attributes?.lottie_web ?? '',
-                lottie_mobile: mobileLottieUpload ?? values?.extra_attributes?.lottie_mobile ?? '',
-            },
-            footer: values?.footer || '',
-            from_date: values?.from_date || '',
-            id: values?.id || '',
-            image_mobile: mobileImageUpload || '',
-            image_web: webImageUpload || '',
-            is_clickable: values?.is_clickable ?? '',
-            max_price: values?.max_price || '',
-            min_price: values?.min_price || '',
-            name: values?.name || '',
-            offer_id: values?.offer_id || '',
-            offers: values?.offers ?? '',
-            page: values?.page || '',
-            filter_id: filterId || '',
-            parent_banner: values?.parent_banner || '',
-            position: values?.position || '',
-            quick_filter_tags: values?.quick_filter_tags || [],
-            redirection_url: values?.redirection_url || '',
-            section_background_mobile: sectionBgMobileUpload || values?.section_background_mobile || '',
-            section_background_mobile_array: values?.section_background_mobile_array || [],
-            section_background_web: sectionBgWebUpload || values?.section_background_web || '',
-            section_background_web_array: values?.section_background_web_array || [],
-            section_heading: values?.section_heading || '',
-            tags: [
-                ...(values?.tags ? values.tags : []),
-                BANNER_FIELDS_TYPE.some((item) => item.name === 'max_off') && values?.max_off ? `maxoff_${values?.max_off}` : '',
-                BANNER_FIELDS_TYPE.some((item) => item.name === 'min_off') && values?.min_off ? `minoff_${values?.min_off}` : '',
-                values?.sort ? `sort_${values?.sort}` : '',
-            ]?.filter((val) => val !== ''),
-            to_date: values?.to_date || '',
-            type: values?.type || '',
-            uptooff: values?.uptooff || '',
-            video_mobile: values?.video_mobile || '',
-            video_web: values?.video_web || '',
-            sub_page: values?.sub_page || [],
-        }
-
+        const body = bannerBodyFile(
+            values,
+            webVideoUpload,
+            mobileVideoUpload,
+            webAspectratio,
+            mobileAspectratio,
+            webLottieUpload,
+            mobileLottieUpload,
+            mobileImageUpload,
+            webImageUpload,
+            filterId,
+            sectionBgWebUpload,
+            sectionBgMobileUpload,
+            BANNER_FIELDS_TYPE,
+        )
         const keysToKeepEvenIfEmpty = ['division', 'category', 'sub_category', 'product_type', 'image_web', 'image_mobile', 'brand']
-
         const filteredBody = Object.fromEntries(
             Object.entries(body).filter(([key, value]) => keysToKeepEvenIfEmpty.includes(key) || value !== ''),
         )
-
-        console.log('FormData of Edit Banner:', filteredBody)
         try {
             setShowSpinner(true)
             const response = await axioisInstance.patch(`banners`, filteredBody)
@@ -236,10 +180,6 @@ const EditBanner = () => {
         } finally {
             setShowSpinner(false)
         }
-    }
-
-    if (showSpinner) {
-        return <LoadingSpinner />
     }
 
     return (
@@ -336,8 +276,6 @@ const EditBanner = () => {
                                 fileList={values.lottie_web_array}
                             />
 
-                            {/* ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,, */}
-
                             <div>Section BG Web</div>
                             <ImageComponent
                                 imageView={sectionBGweb}
@@ -371,65 +309,61 @@ const EditBanner = () => {
                                     <CommonFilterSelect isEdit filterId={filterId as string} setFilterId={setFilterId} />
                                 </div>
 
-                                <FormItem label="Parent Banner">
-                                    <Field name="parent_banner">
-                                        {({ field, form }: FieldProps<any>) => {
-                                            const selectedTag = bannerFile.find((item) => item.id === field.value)
+                                <FormContainer className="grid grid-cols-2 gap-4">
+                                    <FormItem label="Parent Banner">
+                                        <Field name="parent_banner">
+                                            {({ field, form }: FieldProps<any>) => {
+                                                const selectedTag = bannerFile.find((item) => item.id === field.value)
 
-                                            return (
-                                                <Select
-                                                    isClearable
-                                                    className="w-1/2"
-                                                    placeholder="Select Filter Tags"
-                                                    options={bannerFile}
-                                                    value={selectedTag}
-                                                    getOptionLabel={(option) => option.name}
-                                                    getOptionValue={(option) => option.id}
-                                                    onChange={(newVal) => {
-                                                        form.setFieldValue('parent_banner', newVal?.id)
-                                                    }}
-                                                />
-                                            )
-                                        }}
-                                    </Field>
-                                </FormItem>
+                                                return (
+                                                    <Select
+                                                        isClearable
+                                                        className=""
+                                                        placeholder="Select Filter Tags"
+                                                        options={bannerFile}
+                                                        value={selectedTag}
+                                                        getOptionLabel={(option) => option.name}
+                                                        getOptionValue={(option) => option.id}
+                                                        onChange={(newVal) => {
+                                                            form.setFieldValue('parent_banner', newVal?.id)
+                                                        }}
+                                                    />
+                                                )
+                                            }}
+                                        </Field>
+                                    </FormItem>
 
-                                <BannerFilterTags label="Tags" name="tags" />
-                                <BannerFilterTags label="Quick Filter Tags" name="quick_filter_tags" />
-                                <FormItem label="Sub Page" className="col-span-1 w-1/2">
-                                    <Field name="sub_page">
-                                        {({ field, form }: FieldProps<any>) => {
-                                            const selectedTags = Array.isArray(field.value)
-                                                ? subPageNamesData?.filter((option: any) => field.value.includes(option.id)) || []
-                                                : []
+                                    <BannerFilterTags label="Tags" name="tags" />
+                                    <BannerFilterTags label="Quick Filter Tags" name="quick_filter_tags" />
+                                    <FormItem label="Sub Page" className="col-span-1">
+                                        <Field name="sub_page">
+                                            {({ field, form }: FieldProps<any>) => {
+                                                const selectedTags = Array.isArray(field.value)
+                                                    ? subPageNamesData?.filter((option: any) => field.value.includes(option.id)) || []
+                                                    : []
 
-                                            return (
-                                                <Select
-                                                    isMulti
-                                                    placeholder="Select Filter Tags"
-                                                    options={subPageNamesData}
-                                                    value={selectedTags}
-                                                    getOptionLabel={(option) => option.name}
-                                                    getOptionValue={(option) => option.id}
-                                                    onChange={(newVal) => {
-                                                        const newIds = newVal ? newVal.map((val) => val.id) : []
-                                                        form.setFieldValue('sub_page', newIds)
-                                                    }}
-                                                />
-                                            )
-                                        }}
-                                    </Field>
-                                </FormItem>
-                                <CommonSelect needClassName className="w-1/2" label="Sort By" name="sort" options={SortArrays} />
+                                                return (
+                                                    <Select
+                                                        isMulti
+                                                        placeholder="Select Filter Tags"
+                                                        options={subPageNamesData}
+                                                        value={selectedTags}
+                                                        getOptionLabel={(option) => option.name}
+                                                        getOptionValue={(option) => option.id}
+                                                        onChange={(newVal) => {
+                                                            const newIds = newVal ? newVal.map((val) => val.id) : []
+                                                            form.setFieldValue('sub_page', newIds)
+                                                        }}
+                                                    />
+                                                )
+                                            }}
+                                        </Field>
+                                    </FormItem>
+                                    <CommonSelect needClassName className="" label="Sort By" name="sort" options={SortArrays} />
+                                </FormContainer>
                             </FormContainer>
 
-                            <FormContainer>
-                                <FormItem className="mt-5">
-                                    <Button type="submit" variant="solid">
-                                        Submit
-                                    </Button>
-                                </FormItem>
-                            </FormContainer>
+                            <FormButton isSpinning={showSpinner} value="Update" />
                         </FormContainer>
                     </Form>
                 )}

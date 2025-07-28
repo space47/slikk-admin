@@ -12,6 +12,7 @@ const CouponSeriesAdd = () => {
     const navigate = useNavigate()
     const [addCouponseries, addCouponseriesresponse] = couponSeriesService.useAddCouponSeriesMutation()
     const [filterId, setFilterId] = useState<any>()
+    const [excludeFilterId, setExcludeFilterId] = useState<any>()
 
     console.log('filterId is', filterId)
 
@@ -58,6 +59,9 @@ const CouponSeriesAdd = () => {
                     filters: {
                         filter_id: filterId ?? '',
                     },
+                    filter_id_exclude: excludeFilterId ?? values?.extra_attributes?.filter_id_exclude,
+                    min_item_quantity: values?.extra_attributes?.min_item_quantity,
+                    max_item_quantity: values?.extra_attributes?.max_item_quantity,
                     min_filters_products_amount: values?.extra_attributes?.min_filters_products_amount,
                 },
             }).unwrap()
@@ -94,6 +98,8 @@ const CouponSeriesAdd = () => {
                                 values={values}
                                 setFieldValue={setFieldValue}
                                 resetForm={resetForm}
+                                excludeFilterValue={excludeFilterId}
+                                setExcludeFilterId={setExcludeFilterId}
                             />
                         </FormContainer>
                         <FormContainer>
