@@ -53,7 +53,7 @@ const reducer = (state: state, action: Action): state => {
     }
 }
 
-const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange }: props) => {
+const CommonFilterSelectExclude = ({ setFilterId, filterId, customClass, isOnchange }: props) => {
     const dispatch = useAppDispatch()
     const [showAddFilter, setShowAddFilter] = useState<number[]>([])
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
@@ -77,7 +77,7 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange }: 
                         )
 
                         initialVals.forEach((val: string[], index: number) => {
-                            setFieldValue(`filtersAdd[${index}]`, val)
+                            setFieldValue(`filtersExclude[${index}]`, val)
                         })
                     }
                 } catch (error) {
@@ -99,11 +99,11 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange }: 
     const handleRemoveFilter = (index: number) => {
         const updatedFilters = showAddFilter.filter((_, i) => i !== index)
         setShowAddFilter(updatedFilters)
-        setFieldValue(`filtersAdd[${index}]`, undefined)
+        setFieldValue(`filtersExclude[${index}]`, undefined)
     }
 
     const handleAddFilters = async (values: any) => {
-        const newFilterData = showAddFilter.map((_, index) => values.filtersAdd[index] || [])
+        const newFilterData = showAddFilter.map((_, index) => values.filtersExclude[index] || [])
         setFiltersData((prev) => {
             const updatedFilters = [...prev, newFilterData]
             const lastElement = updatedFilters.at(-1)
@@ -144,7 +144,7 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange }: 
 
     return (
         <div>
-            <div className="font-bold mb-7">Filters:</div>
+            <div className="font-bold mb-7">Exclude Filters:</div>
             <FormContainer className="items-center mt-4">
                 <button type="button" onClick={handleAddFilter}>
                     <IoMdAddCircle className="text-3xl text-green-500" />
@@ -154,7 +154,7 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange }: 
             {showAddFilter.map((_, index: any) => (
                 <FormItem key={index} className="flex gap-2">
                     <div className="flex gap-3 items-center">
-                        <Field key={index} name={`filtersAdd[${index}]`}>
+                        <Field key={index} name={`filtersExclude[${index}]`}>
                             {({ field, form }: FieldProps<any>) => {
                                 const selectedOptions =
                                     field.value?.flatMap((value: any) =>
@@ -283,4 +283,4 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange }: 
     )
 }
 
-export default CommonFilterSelect
+export default CommonFilterSelectExclude
