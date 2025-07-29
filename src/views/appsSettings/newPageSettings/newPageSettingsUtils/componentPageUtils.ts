@@ -24,7 +24,7 @@ const ComponentConfigArray = [
         type: 'text',
     },
     {
-        label: 'Carousel AutoPlay',
+        label: "Carousel AutoPlay (Section alignment center doesn't work with autoplay)",
         key: 'carousel_autoplay',
         component: { Checkbox },
         type: 'checkbox',
