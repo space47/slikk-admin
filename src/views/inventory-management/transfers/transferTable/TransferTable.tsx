@@ -109,7 +109,7 @@ const TransferTable = () => {
             },
             {
                 header: 'Updated On',
-                accessorKey: 'update_at',
+                accessorKey: 'updated_at',
                 cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
             },
         ],
