@@ -16,6 +16,7 @@ interface props {
     filterId?: string
     customClass?: string
     isOnchange?: (x: any) => void
+    isExclude?: boolean
 }
 
 type state = {
@@ -53,7 +54,7 @@ const reducer = (state: state, action: Action): state => {
     }
 }
 
-const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange }: props) => {
+const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, isExclude }: props) => {
     const dispatch = useAppDispatch()
     const [showAddFilter, setShowAddFilter] = useState<number[]>([])
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
@@ -76,9 +77,15 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange }: 
                                 .map((_, i) => i),
                         )
 
-                        initialVals.forEach((val: string[], index: number) => {
-                            setFieldValue(`filtersAdd[${index}]`, val)
-                        })
+                        if (isExclude) {
+                            initialVals.forEach((val: string[], index: number) => {
+                                setFieldValue(`filtersRemove[${index}]`, val)
+                            })
+                        } else {
+                            initialVals.forEach((val: string[], index: number) => {
+                                setFieldValue(`filtersAdd[${index}]`, val)
+                            })
+                        }
                     }
                 } catch (error) {
                     console.log(error)
@@ -86,7 +93,7 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange }: 
             }
         }
         fetchCriteria()
-    }, [filterId, setFieldValue])
+    }, [])
 
     useEffect(() => {
         dispatch(getAllFiltersAPI())
@@ -101,9 +108,16 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange }: 
         setShowAddFilter(updatedFilters)
         setFieldValue(`filtersAdd[${index}]`, undefined)
     }
+    const handleRemoveExcludeFilter = (index: number) => {
+        const updatedFilters = showAddFilter.filter((_, i) => i !== index)
+        setShowAddFilter(updatedFilters)
+        setFieldValue(`filtersRemove[${index}]`, undefined)
+    }
 
     const handleAddFilters = async (values: any) => {
-        const newFilterData = showAddFilter.map((_, index) => values.filtersAdd[index] || [])
+        const newFilterData = isExclude
+            ? showAddFilter.map((_, index) => values.filtersRemove[index] || [])
+            : showAddFilter.map((_, index) => values.filtersAdd[index] || [])
         setFiltersData((prev) => {
             const updatedFilters = [...prev, newFilterData]
             const lastElement = updatedFilters.at(-1)
@@ -144,7 +158,7 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange }: 
 
     return (
         <div>
-            <div className="font-bold mb-7">Filters:</div>
+            <div className="font-bold mb-7">{isExclude ? 'Exclude Filters:' : 'Filters:'}</div>
             <FormContainer className="items-center mt-4">
                 <button type="button" onClick={handleAddFilter}>
                     <IoMdAddCircle className="text-3xl text-green-500" />
@@ -154,7 +168,7 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange }: 
             {showAddFilter.map((_, index: any) => (
                 <FormItem key={index} className="flex gap-2">
                     <div className="flex gap-3 items-center">
-                        <Field key={index} name={`filtersAdd[${index}]`}>
+                        <Field key={index} name={isExclude ? `filtersRemove[${index}]` : `filtersAdd[${index}]`}>
                             {({ field, form }: FieldProps<any>) => {
                                 const selectedOptions =
                                     field.value?.flatMap((value: any) =>
@@ -186,7 +200,11 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange }: 
                         </Field>
 
                         <div className="">
-                            <button type="button" className="" onClick={() => handleRemoveFilter(index)}>
+                            <button
+                                type="button"
+                                className=""
+                                onClick={isExclude ? () => handleRemoveExcludeFilter(index) : () => handleRemoveFilter(index)}
+                            >
                                 <MdCancel className="text-xl text-red-500" />
                             </button>
                         </div>
