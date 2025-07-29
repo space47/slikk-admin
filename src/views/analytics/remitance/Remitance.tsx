@@ -71,14 +71,14 @@ const Remitance = () => {
     }
 
     return (
-        <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
+        <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 dark:bg-slate-800">
             <div className="flex flex-col gap-8">
                 {/* Date & Brand Filter Section */}
-                <div className="flex flex-col xl:flex-row gap-6 xl:justify-between items-start xl:items-center bg-gray-50 p-5 rounded-xl border border-gray-200 shadow-sm">
+                <div className="flex flex-col xl:flex-row gap-6 xl:justify-between items-start xl:items-center bg-gray-50 p-5 rounded-xl border dark:bg-gray-900 border-gray-200 shadow-sm">
                     <div className="flex flex-col xl:flex-row gap-6">
                         {/* From Date */}
                         <div className="flex flex-col gap-1">
-                            <label className="text-sm font-medium text-gray-700">
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                                 From Date {showOneMonthBack && <span className="text-xs text-blue-500">(Start of Month)</span>}
                             </label>
                             <DatePicker
@@ -96,7 +96,7 @@ const Remitance = () => {
 
                         {/* To Date */}
                         <div className="flex flex-col gap-1">
-                            <label className="text-sm font-medium text-gray-700">To Date</label>
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">To Date</label>
                             <DatePicker
                                 inputPrefix={<HiOutlineCalendar className="text-lg text-gray-500" />}
                                 value={new Date(to)}
@@ -118,7 +118,7 @@ const Remitance = () => {
 
                     {/* Brand Select */}
                     <div className="flex flex-col gap-1 w-full xl:w-auto">
-                        <label className="text-sm font-medium text-gray-700">Brands</label>
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Brands</label>
                         <Select
                             isClearable
                             options={brands.brands}
@@ -153,7 +153,7 @@ const Remitance = () => {
                         </div>
 
                         <div className="flex flex-col gap-1">
-                            <label className="text-sm font-medium text-gray-700">Select Company</label>
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Select Company</label>
                             <Select
                                 isClearable
                                 className="w-60"
@@ -190,15 +190,15 @@ const Remitance = () => {
                         </div>
 
                         {/* Total Amount */}
-                        <div className="text-right text-sm font-medium text-gray-700 flex justify-start">
+                        <div className="text-right text-sm font-medium text-gray-700 dark:text-gray-300 flex justify-start">
                             TOTAL AMOUNT:{' '}
                             <span className="text-green-600 font-semibold">₹{fullRemitanceRespone?.total_amount.toFixed(2)}</span>
                         </div>
 
                         {/* Table */}
-                        <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+                        <div className="overflow-x-auto rounded-xl border border-gray-200 dark:bg-slate-800 shadow-sm">
                             <Table className="min-w-full text-sm text-gray-800">
-                                <THead className="bg-gray-100 text-gray-700">
+                                <THead className="bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300">
                                     {table.getHeaderGroups().map((headerGroup) => (
                                         <Tr key={headerGroup.id}>
                                             {headerGroup.headers.map((header) => (
@@ -211,9 +211,9 @@ const Remitance = () => {
                                 </THead>
                                 <TBody>
                                     {table.getRowModel().rows.map((row) => (
-                                        <Tr key={row.id} className="hover:bg-gray-50">
+                                        <Tr key={row.id} className="hover:bg-gray-50 dark:bg-gray-800">
                                             {row.getVisibleCells().map((cell) => (
-                                                <Td key={cell.id} className="px-4 py-3">
+                                                <Td key={cell.id} className="px-4 py-3 dark:text-gray-300">
                                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                                 </Td>
                                             ))}

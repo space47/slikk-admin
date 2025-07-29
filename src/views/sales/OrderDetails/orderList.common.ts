@@ -24,6 +24,7 @@ export type SalesOrderDetailsResponse = {
     longitude: number
     distance: number
     order_id: string
+    is_internal_order?: boolean
     payment?: {
         amount: number
         mode: string

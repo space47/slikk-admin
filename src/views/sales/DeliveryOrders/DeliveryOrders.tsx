@@ -184,7 +184,7 @@ const DeliveryOrders = () => {
     }
 
     return (
-        <div className="bg-gray-50 rounded-xl p-4">
+        <div className="bg-gray-50 dark:bg-slate-800 rounded-xl p-4">
             <div className="flex flex-col xl:flex-row justify-between lg:flex-row lg:justify-between mb-10 items-center gap-4 md:flex-col">
                 <div className="flex gap-2">
                     <div className="flex  xl:gap-2  flex-row   gap-3  ">

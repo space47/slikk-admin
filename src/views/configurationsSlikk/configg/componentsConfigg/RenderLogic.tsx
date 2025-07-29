@@ -85,7 +85,10 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
                         const fieldName = parentKey ? `${parentKey}.${key}` : key
                         const tempKey = editableKeys[key] ?? key
                         return (
-                            <div key={fieldName} className="flex gap-4 items-center mb-2 shadow-xl bg-gray-50 p-3 rounded-lg">
+                            <div
+                                key={fieldName}
+                                className="flex gap-4 items-center mb-2 shadow-xl bg-gray-50 dark:bg-gray-900 p-3 rounded-lg"
+                            >
                                 {/* Editable key */}
                                 <Field name={fieldName}>
                                     {() => (

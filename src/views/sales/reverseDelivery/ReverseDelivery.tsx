@@ -188,11 +188,8 @@ const ReverseDelivery = () => {
 
     const columns = ReverseDeliveryColumns(handleInvoiceClick, partner, handlePartnerSelect, handleCreateTask, handleCancelTask)
 
-    console.log('columns', columns)
-    console.log('partner', partner)
-
     return (
-        <div className="bg-gray-50 rounded-xl p-4">
+        <div className="bg-gray-50 dark:bg-slate-800 rounded-xl p-4">
             <div className="flex flex-col xl:flex-row justify-between lg:flex-row lg:justify-between mb-10 items-center gap-4">
                 <div className="flex gap-2">
                     <div className="flex items-center gap-2 bg-white dark:bg-gray-900 px-3 py-2 rounded-lg shadow-md">

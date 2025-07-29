@@ -4,7 +4,10 @@ import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import moment from 'moment'
 import { SKUhistory } from './skuhistoru.common'
 import EasyTable from '@/common/EasyTable'
-import { Spinner } from '@/components/ui'
+import { Spinner, Tabs } from '@/components/ui'
+import TabList from '@/components/ui/Tabs/TabList'
+import TabNav from '@/components/ui/Tabs/TabNav'
+import debounce from 'lodash/debounce'
 
 const SkuOrderHistory = () => {
     const [data, setData] = useState<SKUhistory[]>([])
@@ -12,12 +15,13 @@ const SkuOrderHistory = () => {
     const [showSkuTable, setShowSkuTable] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [hasSearched, setHasSearched] = useState(false)
+    const [tab, setTab] = useState('sku')
 
     const fetchData = async () => {
         setIsLoading(true)
         setHasSearched(true)
         try {
-            const response = await axiosInstance.get(`/merchant/product/sku/sales?sku=${encodeURIComponent(globalFilter.trim())}`)
+            const response = await axiosInstance.get(`/merchant/product/sku/sales?${tab}=${encodeURIComponent(globalFilter.trim())}`)
             const data = response.data.data
             setData(data)
         } catch (error) {
@@ -28,20 +32,22 @@ const SkuOrderHistory = () => {
         }
     }
 
+    const debouncedFetchData = useMemo(() => debounce(fetchData, 500), [globalFilter, tab])
+
     useEffect(() => {
         const trimmedSku = globalFilter.trim()
         if (trimmedSku) {
-            const timer = setTimeout(() => {
-                fetchData()
-            }, 500)
-
-            return () => clearTimeout(timer)
+            debouncedFetchData()
+            setShowSkuTable(true)
+            return () => {
+                debouncedFetchData.cancel()
+            }
         } else {
             setData([])
             setShowSkuTable(false)
             setHasSearched(false)
         }
-    }, [globalFilter])
+    }, [globalFilter, tab])
 
     const columns = useMemo<ColumnDef<SKUhistory>[]>(
         () => [
@@ -143,8 +149,25 @@ const SkuOrderHistory = () => {
     return (
         <div className="">
             <div className="mb-8">
-                <h1 className="text-2xl font-bold text-blue-800 mb-2 ">SKU Order History</h1>
-                <p className="text-gray-600 mb-4">Track all orders for a specific product SKU</p>
+                <h1 className="text-2xl font-bold text-blue-800 mb-2 ">Order History</h1>
+                <p className="text-gray-600 mb-4">Track all orders for a specific product SKU or SKID</p>
+
+                <Tabs defaultValue="sku" onChange={(e: string) => setTab(e)}>
+                    <TabList className="flex items-center justify-start gap-4 bg-gray-50  shadow-md p-3 mb-10">
+                        <TabNav
+                            value="sku"
+                            className="relative px-4 py-2 text-sm sm:text-base font-semibold text-gray-700 rounded-xl transition-all duration-300 hover:text-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-400"
+                        >
+                            SKU
+                        </TabNav>
+                        <TabNav
+                            value="skid"
+                            className="relative px-4 py-2 text-sm sm:text-base font-semibold text-gray-700 rounded-xl transition-all duration-300 hover:text-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-400"
+                        >
+                            SKID
+                        </TabNav>
+                    </TabList>
+                </Tabs>
 
                 <div className="relative max-w-md">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -158,7 +181,7 @@ const SkuOrderHistory = () => {
                         </svg>
                     </div>
                     <input
-                        type="text"
+                        type="search"
                         placeholder="Enter SKU code..."
                         className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         value={globalFilter}

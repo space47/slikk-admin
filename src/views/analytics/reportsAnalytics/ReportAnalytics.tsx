@@ -278,13 +278,13 @@ const ReportAnalytics = () => {
         <div>
             <Formik enableReinitialize initialValues={reportData} onSubmit={handleSubmit}>
                 {({ values, resetForm, setFieldValue }) => (
-                    <Form className=" w-full p-6  bg-white shadow-lg rounded-lg">
+                    <Form className=" w-full p-6  bg-white dark:bg-slate-900 shadow-lg rounded-lg">
                         <FormContainer className="">
-                            <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 p-4 bg-white shadow-md rounded-2xl">
+                            <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 p-4 bg-white dark:bg-slate-700 shadow-md rounded-2xl">
                                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 w-full">
                                     {!isCustomQuery ? (
-                                        <FormItem className="font-medium text-gray-800">
-                                            <label className="text-lg xl:text-xl font-semibold text-gray-800 mb-2">
+                                        <FormItem className="font-medium text-gray-800 dark:text-gray-300">
+                                            <label className="text-lg xl:text-xl font-semibold text-gray-800 mb-2 dark:text-gray-300">
                                                 Select Target Page
                                             </label>
                                             <Field name="target_page">
