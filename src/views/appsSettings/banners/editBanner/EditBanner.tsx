@@ -89,7 +89,7 @@ const EditBanner = () => {
         setWeblottieView(toArray(bannerData?.extra_attributes?.lottie_web))
         setFilterId(bannerData?.filter_id)
         setSelectedPage(bannerData?.page)
-        setExcludeFilterId(bannerData?.filter_id_exclude || '')
+        setExcludeFilterId(bannerData?.extra_attributes?.filter_id_exclude || '')
     }, [bannerData])
 
     const handleImageRemove = (
