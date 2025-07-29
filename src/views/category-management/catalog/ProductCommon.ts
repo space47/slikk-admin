@@ -285,6 +285,7 @@ export const INITIALVALUES: Product = {
 export const ProductFilterArray = [
     { label: 'SKU', value: 'sku' },
     { label: 'Name', value: 'name' },
+    { label: 'SKID', value: 'skid' },
     { label: 'Barcode', value: 'barcode' },
 ]
 

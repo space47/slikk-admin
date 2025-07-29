@@ -19,6 +19,7 @@ import { useStockOverViewColumns } from './stockOverViewUtils/useStockOverViewCo
 const FilterArray = [
     { label: 'SKU', value: 'sku' },
     { label: 'NAME', value: 'name' },
+    { label: 'SKID', value: 'skid' },
     { label: 'BARCODE', value: 'barcode' },
 ]
 
@@ -64,6 +65,9 @@ const StockOverview = () => {
             }
             if (currentSelectedPage?.value === 'barcode' && globalFilter) {
                 filterValue = `&barcode=${encodeURIComponent(globalFilter)}`
+            }
+            if (currentSelectedPage?.value === 'skid' && globalFilter) {
+                filterValue = `&skid=${encodeURIComponent(globalFilter)}`
             }
 
             const response = await axiosInstance.get(`inventory?p=${page}&page_size=${pageSize}&${typeFetch}${filterValue}`)
