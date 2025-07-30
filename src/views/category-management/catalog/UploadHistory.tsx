@@ -93,7 +93,7 @@ const PaginationTable = () => {
     const handleActionClick = async (failure: number, error_file: string, uploaded_file: string) => {
         try {
             const requiredFile = failure === 0 ? uploaded_file : error_file
-            const response = await axioisInstance.get(`file/presign?file_url=${requiredFile}`)
+            const response = await axioisInstance.get(`file/presign?file_url=${encodeURIComponent(requiredFile)}`)
             console.log('sss', response)
             const preSignedUrl = response.data.data
             const data = await fetch(preSignedUrl)
@@ -122,7 +122,7 @@ const PaginationTable = () => {
     const handleDownloadOriginalFile = async (failure: number, error_file: string, uploaded_file: string) => {
         try {
             const requiredFile = uploaded_file
-            const response = await axioisInstance.get(`file/presign?file_url=${requiredFile}`)
+            const response = await axioisInstance.get(`file/presign?file_url=${encodeURIComponent(requiredFile)}`)
             console.log('sss', response)
             const preSignedUrl = response.data.data
             const data = await fetch(preSignedUrl)

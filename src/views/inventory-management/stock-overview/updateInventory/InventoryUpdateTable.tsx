@@ -66,7 +66,7 @@ const UpdateInventoryTable = () => {
         try {
             const requiredUrl = failure === 0 ? uploaded_file : error_file
 
-            const response = await axioisInstance.get(`file/presign?file_url=${requiredUrl}`)
+            const response = await axioisInstance.get(`file/presign?file_url=${encodeURIComponent(requiredUrl)}`)
 
             const preSignedUrl = response.data.data
             const data = await fetch(preSignedUrl)
@@ -97,7 +97,7 @@ const UpdateInventoryTable = () => {
         try {
             const requiredUrl = uploaded_file
 
-            const response = await axioisInstance.get(`file/presign?file_url=${requiredUrl}`)
+            const response = await axioisInstance.get(`file/presign?file_url=${encodeURIComponent(requiredUrl)}`)
 
             const preSignedUrl = response.data.data
             const data = await fetch(preSignedUrl)
