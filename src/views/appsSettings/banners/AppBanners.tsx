@@ -194,7 +194,7 @@ const AppBanners = () => {
     })
 
     return (
-        <div className="shadow-md p-4 bg-gray-50 rounded-lg">
+        <div className="shadow-md p-4 bg-gray-50 dark:bg-slate-800 rounded-lg">
             <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
                 <div className="mb-4 flex gap-2 flex-col xl:flex-row ">
                     <div className="flex justify-center xl:justify-normal">

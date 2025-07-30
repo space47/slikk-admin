@@ -30,7 +30,6 @@ import { useFetchApi } from '@/commonHooks/useFetchApi'
 import CommonSelect from '../../pageSettings/CommonSelect'
 import { SortArrays } from '../../newPageSettings/newPageSettingsUtils/newPageCommons'
 import FormButton from '@/components/ui/Button/FormButton'
-import CommonFilterSelectExclude from '@/common/CommonFilterSelectExclude'
 
 const EditBanner = () => {
     const { id } = useParams()
@@ -94,7 +93,7 @@ const EditBanner = () => {
 
     const handleImageRemove = (
         type: string,
-        setFieldValue: (field: string, value: any, shouldValidate?: boolean) => Promise<void | FormikErrors<BANNER_MODEL>>,
+        setFieldValue: (field: string, value: any, data?: boolean) => Promise<void | FormikErrors<BANNER_MODEL>>,
     ) => {
         switch (type) {
             case 'm_image':
@@ -180,7 +179,7 @@ const EditBanner = () => {
             notification.success({ message: response?.data?.message || 'Banner Edited Successfully' })
             navigate('/app/appSettings/banners')
         } catch (error: any) {
-            notification.error({ message: error?.response?.data?.message || 'Banner not Edited' })
+            notification.error({ message: error?.response?.data?.message || error?.response?.data?.data?.message || 'Banner not Edited' })
         } finally {
             setShowSpinner(false)
         }
@@ -217,8 +216,6 @@ const EditBanner = () => {
                                 <FullDateForm label="From Date" name="from_date" fieldname="from_date" />
                                 <FullDateForm label="To Date" name="to_date" fieldname="to_date" />
                             </FormContainer>
-
-                            {/* ................I.....M......A.....G.....E....S.................... */}
                             <div>Mobile Image</div>
                             <ImageComponent
                                 imageView={mobileImagview}
@@ -228,9 +225,6 @@ const EditBanner = () => {
                                 beforeUpload={beforeUpload}
                                 fileList={values.image_mobile_array}
                             />
-
-                            {/* 2nd image */}
-
                             <div>Web Image</div>
                             <ImageComponent
                                 imageView={webImagview}
@@ -240,7 +234,6 @@ const EditBanner = () => {
                                 beforeUpload={beforeUpload}
                                 fileList={values.image_web_array}
                             />
-
                             <div>Mobile Video</div>
                             <VideoComponent
                                 videoView={mobileVideoview}
@@ -250,7 +243,6 @@ const EditBanner = () => {
                                 beforeUpload={beforeVideoUpload}
                                 fileList={values.video_mobile_array}
                             />
-
                             <div>Web Video</div>
                             <VideoComponent
                                 videoView={webVideoview}
@@ -260,7 +252,6 @@ const EditBanner = () => {
                                 beforeUpload={beforeVideoUpload}
                                 fileList={values.video_web_array}
                             />
-
                             <div>Mobile Lottie</div>
                             <ImageComponent
                                 imageView={mobilelottieview}
@@ -313,8 +304,9 @@ const EditBanner = () => {
                                     <CommonFilterSelect isEdit filterId={filterId as string} setFilterId={setFilterId} />
                                 </div>
                                 <div className="mb-4">
-                                    <CommonFilterSelectExclude
+                                    <CommonFilterSelect
                                         isEdit
+                                        isExclude
                                         filterId={excludeFilterId as string}
                                         setFilterId={setExcludeFilterId}
                                     />
@@ -373,7 +365,6 @@ const EditBanner = () => {
                                     <CommonSelect needClassName className="" label="Sort By" name="sort" options={SortArrays} />
                                 </FormContainer>
                             </FormContainer>
-
                             <FormButton isSpinning={showSpinner} value="Update" />
                         </FormContainer>
                     </Form>

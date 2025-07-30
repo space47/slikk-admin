@@ -49,24 +49,6 @@ export const BANNER_FIELDS_TYPE = [
         component: { Input },
         status: 'type',
     },
-    // {
-    //     label: 'Image (Web)',
-    //     classname: 'col-span-1 w-full',
-    //     type: 'text',
-    //     name: 'image_web',
-    //     placeholder: 'Place your Image URL for Web',
-    //     component: { Input },
-    //     status: 'image_web',
-    // },
-    // {
-    //     label: 'Image (Mobile)',
-    //     classname: 'col-span-1 w-full',
-    //     type: 'text',
-    //     name: 'image_mobile',
-    //     placeholder: 'Place your Image URL for Mobile',
-    //     component: { Input },
-    //     status: 'image_mobile',
-    // },
 
     {
         label: 'Offer ID',
@@ -113,25 +95,6 @@ export const BANNER_FIELDS_TYPE = [
         component: { Input },
         status: 'coupon_code',
     },
-
-    // {
-    //     label: 'Section Background (Web)',
-    //     classname: 'col-span-1 w-full',
-    //     type: 'text',
-    //     name: 'section_background_web',
-    //     placeholder: 'Place your Section Background URL for Web',
-    //     component: { Input },
-    //     status: 'section_background_web',
-    // },
-    // {
-    //     label: 'Section Background (Mobile)',
-    //     classname: 'col-span-1 w-full',
-    //     type: 'text',
-    //     name: 'section_background_mobile',
-    //     placeholder: 'Place your Section Background URL for Mobile',
-    //     component: { Input },
-    //     status: 'section_background_mobile',
-    // },
     {
         label: 'Max Price',
         classname: 'col-span-1 w-full',

@@ -1,6 +1,5 @@
 import { handleimage } from '@/common/handleImage'
 import { handleVideo } from '@/views/appsSettings/newPageSettings/newPageSettingsUtils/usePageSettingsBodyFile'
-import { filter } from 'lodash'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const calculateAspectRatio = async (files: File[]): Promise<number[]> => {

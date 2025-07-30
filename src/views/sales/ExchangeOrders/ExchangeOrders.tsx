@@ -107,7 +107,7 @@ const Exchangeorders = () => {
     }
 
     return (
-        <div className="p-4 bg-gray-50 rounded-xl">
+        <div className="p-4 bg-gray-50 dark:bg-slate-800 rounded-xl">
             <div className="overflow-x-auto scrollbar-hide">
                 <div className="flex flex-col xl:flex-row justify-between lg:flex-row lg:justify-between mb-10 xl:items-center gap-3 md:flex-col sm:flex-col">
                     <div className="flex  xl:gap-2  flex-row   gap-3  ">
