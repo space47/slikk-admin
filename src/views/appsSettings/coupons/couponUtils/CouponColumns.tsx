@@ -95,7 +95,25 @@ export const CouponCoulumns = ({ handleDeleteCoupon }: props) => {
             {
                 header: 'Campaign',
                 accessorKey: 'coupon_series.campaign',
-                cell: ({ row }: any) => row.original.coupon_series?.campaign || 'N/A',
+                cell: ({ row }: any) => {
+                    const campaign = row.original.coupon_series?.id
+                    return campaign ? (
+                        <div
+                            className="cursor-pointer hover:text-blue-500"
+                            onClick={() =>
+                                navigate(`/app/appSettings/couponsSeries`, {
+                                    state: {
+                                        campaignId: campaign,
+                                    },
+                                })
+                            }
+                        >
+                            {row.original.coupon_series?.campaign || campaign}
+                        </div>
+                    ) : (
+                        'N/A'
+                    )
+                },
             },
             {
                 header: 'Max Discount',

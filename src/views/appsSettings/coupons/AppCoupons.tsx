@@ -54,8 +54,6 @@ const AppCoupons = () => {
         },
     )
 
-    console.log('ssss', var1)
-
     useEffect(() => {
         if (isSuccess) {
             dispatch(setCouponData(couponsData?.data?.results))
