@@ -19,12 +19,6 @@ export const useSellerColumns = () => {
                 ),
             },
             {
-                header: 'ID',
-                accessorKey: 'id',
-                cell: (info) => info.getValue(),
-            },
-
-            {
                 header: 'Name',
                 accessorKey: 'name',
                 cell: (info) => info.getValue(),
