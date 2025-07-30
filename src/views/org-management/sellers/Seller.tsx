@@ -55,7 +55,7 @@ const Seller = () => {
         let userData = []
         try {
             const filterValue = globalFilter ? `&name=${globalFilter}` : ''
-            const response = await axioisInstance.get(`merchant/company?download=true&p=1&page_size=100${filterValue}`)
+            const response = await axioisInstance.get(`merchant/company?download=true&p=1&page_size=1000${filterValue}`)
             userData = response.data?.data?.results
             handleDownloadCsv(userData, columns, convertToCSV, 'Sellers.csv')
             notification.success({ message: 'Download complete' })
