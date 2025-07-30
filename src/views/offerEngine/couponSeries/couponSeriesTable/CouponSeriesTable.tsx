@@ -15,7 +15,7 @@ import { HiSearch } from 'react-icons/hi'
 import EasyTable from '@/common/EasyTable'
 import { Option } from '@/views/org-management/sellers/sellerCommon'
 import { pageSizeOptions } from '@/views/category-management/orderlist/commontypes'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { CouponDiscountTypeArray, CouponTypeArray } from '@/constants/commonArray.constant'
 import CommonDropdown from '@/common/commonDropdown'
 import { handleSelectCoupons } from '../couponSeriesUtils/couponSeriesFunctions'
@@ -24,6 +24,8 @@ const CouponSeriesTable = () => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
     const [globalFilter, setGlobalFilter] = useState<string>('')
+    const location = useLocation()
+    const { campaignId } = location.state || {}
     const [searchOnEnter, setSearchOnEnter] = useState('')
     const [currentCouponSelect, setCurrentCouponSelect] = useState<Record<string, string>>()
     const [currentDiscountTypeSelect, setCurrentDiscountTypeSelect] = useState<Record<string, string>>()
@@ -35,6 +37,7 @@ const CouponSeriesTable = () => {
             campaign: searchOnEnter ?? null,
             discount_type: currentDiscountTypeSelect?.value ?? undefined,
             coupon_type: currentCouponSelect?.value ?? undefined,
+            id: campaignId ?? undefined,
         },
         { refetchOnMountOrArgChange: true },
     )
