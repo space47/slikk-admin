@@ -265,7 +265,7 @@ const OrderList = () => {
     })
 
     return (
-        <div className="p-4 bg-gray-50 rounded-xl">
+        <div className="p-4 bg-gray-50 dark:bg-slate-800 rounded-xl">
             <div className="overflow-x-auto scrollbar-hide">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mb-10">
                     {/* Search + Dropdown */}

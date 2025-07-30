@@ -2,7 +2,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import Loading from '@/components/shared/Loading'
 import Container from '@/components/shared/Container'
-import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
 import OrderProducts from './components/OrderProducts'
 import PaymentSummary from './components/PaymentSummary'
 import ShippingInfo from './components/ShippingInfo'
@@ -27,6 +26,7 @@ import TwoPointMap from './components/TwoPointMap'
 import OrdersRiderActivity from './components/OrdersRiderActivity'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 import { commonDownload } from '@/common/commonDownload'
+import { AxiosError } from 'axios'
 // import { string } from 'yup'
 
 const OrderDetails = () => {
@@ -89,10 +89,25 @@ const OrderDetails = () => {
             const response = await axioisInstance.patch(`/merchant/order/${invoice_id}`, body)
             notification.success({ message: response?.data?.message || 'Successfully converted' })
         } catch (error) {
-            console.log(error)
-            notification.error({ message: 'Failed to Convert' })
+            if (error instanceof AxiosError) {
+                notification.error({ message: error?.response?.data?.message || error?.message || 'Failed to convert' })
+            }
         } finally {
             setShowCancelExchangeModal(false)
+        }
+    }
+    const handleMarketingOrder = async () => {
+        const body = { action: 'MARK_INTERNAL_ORDER', is_internal_order: !data?.is_internal_order }
+        try {
+            const response = await axioisInstance.patch(`/merchant/order/${invoice_id}`, body)
+            notification.success({ message: response?.data?.message || 'Marketing order status updated' })
+            navigate(0)
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                notification.error({
+                    message: error?.response?.data?.message || error?.message || 'Failed to update marketing order status',
+                })
+            }
         }
     }
 
@@ -140,7 +155,7 @@ const OrderDetails = () => {
                                     <div className="text-3xl font-bold text-gray-800 text-center md:text-left flex gap-2">
                                         <span>Order</span>
                                         <span className="ml-2 text-red-600 flex gap-3">
-                                            #{data.invoice_id}{' '}
+                                            #{data.invoice_id}
                                             <div>
                                                 <button className="bg-none border-none text-md mt-1" onClick={handleDownload}>
                                                     <FaDownload className="bg-none text-gray-700" />
@@ -158,6 +173,14 @@ const OrderDetails = () => {
                                             ) : (
                                                 <></>
                                             )}
+                                            <div>
+                                                <button
+                                                    className=" text-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-200"
+                                                    onClick={handleMarketingOrder}
+                                                >
+                                                    {data?.is_internal_order ? 'Marketing Marked' : 'Mark as Marketing'}
+                                                </button>
+                                            </div>
                                         </span>
                                     </div>
                                 </div>
@@ -429,17 +452,6 @@ const OrderDetails = () => {
                     </>
                 )}
             </Loading>
-            {!loading && isEmpty(data) && (
-                <div className="h-full flex flex-col items-center justify-center">
-                    <DoubleSidedImage
-                        src="/img/others/img-2.png"
-                        darkModeSrc="/img/others/img-2-dark.png"
-                        alt="No order found!"
-                        className="w-64"
-                    />
-                    <h3 className="mt-8 text-center text-xl font-medium text-gray-700">No order found!</h3>
-                </div>
-            )}
         </Container>
     )
 }

@@ -282,8 +282,8 @@ const AnalyticsOverview = () => {
     return (
         <div className="overflow-x-auto">
             <div className="flex flex-col lg:flex-row justify-between mb-5 items-center gap-5">
-                <div className="w-auto lg:w-1/2 flex flex-col  ">
-                    <Button variant="new" onClick={handleDrawer} className="xl:w-1/2 w-auto flex gap-3 items-center justify-center">
+                <div className=" flex flex-col  ">
+                    <Button variant="new" onClick={handleDrawer} className="flex gap-3 items-center justify-center">
                         {' '}
                         <FaFilter className="text-lg" /> <p>CATEGORY FILTER</p>
                     </Button>

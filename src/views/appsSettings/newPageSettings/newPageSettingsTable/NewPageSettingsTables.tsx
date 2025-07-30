@@ -336,16 +336,16 @@ const NewPageSettingsTables = () => {
             <div>
                 {/* Tabs */}
                 <Tabs defaultValue="true" onChange={(e: string) => dispatch(setIsActive(e))}>
-                    <TabList className="flex items-center justify-start gap-4 bg-gray-50  shadow-md p-3 mb-10">
+                    <TabList className="flex items-center justify-start gap-4 bg-gray-50 dark:bg-slate-900 dark:rounded-xl  shadow-md p-3 mb-10">
                         <TabNav
                             value="true"
-                            className="relative px-4 py-2 text-sm sm:text-base font-semibold text-gray-700 rounded-xl transition-all duration-300 hover:text-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-400"
+                            className="relative px-4 py-2 text-sm sm:text-base font-semibold text-gray-700 dark:text-gray-500 rounded-xl transition-all duration-300 hover:text-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-400"
                         >
                             Active
                         </TabNav>
                         <TabNav
                             value="false"
-                            className="relative px-4 py-2 text-sm sm:text-base font-semibold text-gray-700 rounded-xl transition-all duration-300 hover:text-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-400"
+                            className="relative px-4 py-2 text-sm sm:text-base font-semibold text-gray-700 dark:text-gray-500 rounded-xl transition-all duration-300 hover:text-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-400"
                         >
                             InActive
                         </TabNav>

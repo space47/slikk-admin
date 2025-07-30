@@ -93,7 +93,7 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
             }
         }
         fetchCriteria()
-    }, [])
+    }, [filterId, setFieldValue])
 
     useEffect(() => {
         dispatch(getAllFiltersAPI())

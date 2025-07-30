@@ -61,27 +61,27 @@ const ConfigurationPage = () => {
                         >
                             <div className="flex flex-col gap-2">
                                 <div className="text-xl font-bold text-gray-800 flex justify-between">
-                                    <span className="text-gray-700 flex gap-2">
+                                    <span className="text-gray-700 flex gap-2 dark:text-gray-300">
                                         Id:<span className="text-red-600">{item?.id}</span>
                                     </span>
                                     <a href={`/app/configurations/edit/${item?.id}`} target="_blank" rel="noreferrer">
                                         <FaEdit className="cursor-pointer text-blue-500" />
                                     </a>
                                 </div>
-                                <div className="text-lg font-medium text-gray-700">
+                                <div className="text-lg font-medium text-gray-700 dark:text-gray-300">
                                     Name: <span className="text-green-600 break-words">{item?.name}</span>
                                 </div>
-                                <div className="text-sm text-gray-600 mt-2">{renderValue(item?.value)}</div>
-                                <div className="text-sm text-gray-500 mt-2">
+                                <div className="text-sm text-gray-600 dark:text-gray-300 mt-2">{renderValue(item?.value)}</div>
+                                <div className="text-sm text-gray-500 mt-2 dark:text-gray-400">
                                     <span className="font-semibold">Created:</span> {moment(item?.create_date).format('YYYY-MM-DD')}
                                 </div>
-                                <div className="text-sm text-gray-500">
+                                <div className="text-sm text-gray-500 dark:text-gray-400">
                                     <span className="font-semibold">Updated:</span> {moment(item?.update_date).format('YYYY-MM-DD')}
                                 </div>
-                                <div className="text-sm text-gray-500">
-                                    <span className="font-semibold">Is Active:{item?.is_active}</span>
+                                <div className="text-sm text-gray-500 dark:text-gray-400">
+                                    <span className="font-semibold">Is Active:</span> {item?.is_active ? 'Yes' : 'No'}
                                 </div>
-                                <div className="text-sm text-gray-500">
+                                <div className="text-sm text-gray-500 dark:text-gray-400">
                                     <span className="font-semibold">Last Updated By:</span> {item?.last_updated_by}
                                 </div>
                             </div>

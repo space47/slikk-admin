@@ -91,15 +91,15 @@ const ActiveUserFlow = ({ from, to }: ActiveUserProps) => {
     )
 
     return (
-        <div className="flex flex-col gap-6 p-6 bg-gray-100 ">
-            <div className="font-bold text-2xl text-blue-900  mb-6">Active User Stats</div>
+        <div className="flex flex-col gap-6 p-6 bg-gray-100 dark:bg-gray-600 rounded-lg shadow-lg">
+            <div className="font-bold text-2xl text-blue-900 dark:text-blue-300 mb-6">Active User Stats</div>
 
             <div className="">
                 <div className="flex flex-wrap xl:gap-4 gap-0 justify-center">
                     {dynamicKeys.map((key, index) => (
                         <div key={key} className="flex flex-col items-center py-0 xl:py-2 xl:flex-row">
                             <Card className="text-center shadow-xl cursor-pointer xl:w-full w-[200px] bg-white hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
-                                <div className="font-bold text-xl text-blue-900 mb-2">{key.replace(/_/g, ' ')}</div>
+                                <div className="font-bold text-xl text-blue-900 dark:text-blue-300 mb-2">{key.replace(/_/g, ' ')}</div>
                                 <div className="text-green-600 text-2xl font-semibold">{userData[0]?.[key] ?? ''}</div>
                             </Card>
 
