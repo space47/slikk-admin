@@ -73,6 +73,12 @@ const FourthStep = ({
                     )}
                 </Field>
             </FormContainer>
+            {!values?.users_all && (
+                <div className="mt-4 px-4 py-2 rounded-md flex flex-col bg-blue-50 border border-blue-200 text-blue-800 font-medium shadow-sm w-fit">
+                    <div>Group Name : {values?.groupId?.name || 'No Group Selected'}</div>
+                    <div>Users: {values?.groupId?.user?.length || 0}</div>
+                </div>
+            )}
             {scheduleModal && (
                 <SchedularPage
                     handleOk={handleOk}

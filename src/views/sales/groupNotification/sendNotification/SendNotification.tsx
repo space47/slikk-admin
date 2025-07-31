@@ -92,7 +92,7 @@ const SendNotification = () => {
             title: titleView ?? '',
             name: values?.event_name ?? '',
             image_url: imageUpload || '',
-            notification_group: values?.groupIds?.name || '',
+            notification_group: values?.groupId?.name || '',
             filters: [
                 ...(values.filters || []),
                 ...UtmArray.filter((item) => values[item.name] !== undefined).map(
@@ -116,7 +116,9 @@ const SendNotification = () => {
 
         setValueForSchedule(data)
 
-        const filteredData = Object.fromEntries(Object.entries(data).filter(([_, value]) => value !== undefined && value !== ''))
+        const filteredData = Object.fromEntries(
+            Object.entries(data).filter(([key, value]) => value !== undefined && value !== '' && key !== 'groupId'),
+        )
 
         console.log('Data to send', filteredData)
         try {
@@ -126,6 +128,7 @@ const SendNotification = () => {
                 message: 'SUCCESS',
                 description: response.data.message || 'Notification has been added',
             })
+            navigate(-1)
         } catch (error: any) {
             console.log(error)
             notification.error({
