@@ -40,6 +40,7 @@ const TrackModal = ({
     // const [ridersData, setRidersData] = useState<RiderProfile[]>([])
     const [selectedRiderMobile, setSelectedRiderMobile] = useState<string>('')
     const [globalFilter, setGlobalFilter] = useState<string | undefined>('')
+    const [mobileFilter, setMobileFilter] = useState<string | undefined>('')
     const { riderDetails } = useAppSelector<RiderDetailType>((state) => state.riderDetails)
 
     console.log('task id is', taskId)
@@ -49,6 +50,9 @@ const TrackModal = ({
             page: 1,
             pageSize: 100,
             name: globalFilter,
+            mobile: mobileFilter,
+            isActive: 'true',
+            rider_type: isReturn ? 'RETURN' : 'FORWARD',
         },
         { refetchOnMountOrArgChange: true },
     )
@@ -119,15 +123,27 @@ const TrackModal = ({
             >
                 <div className="main h-[500px] xl:h-[650px] ">
                     <div className="text-xl font-bold text-red-700 mb-6">ASSIGN RIDER</div>
-                    <div className="mb-8 flex gap-2">
-                        <input
-                            type="search"
-                            name="globalFilter"
-                            placeholder="Enter Rider name"
-                            value={globalFilter}
-                            className="rounded-xl"
-                            onChange={(e) => setGlobalFilter(e.target.value)}
-                        />
+                    <div className="flex gap-2 flex-col mb-4">
+                        <div className="mb-8 flex gap-2">
+                            <input
+                                type="search"
+                                name="globalFilter"
+                                placeholder="Enter Rider name"
+                                value={globalFilter}
+                                className="rounded-xl"
+                                onChange={(e) => setGlobalFilter(e.target.value)}
+                            />
+                        </div>
+                        <div className="mb-8 flex gap-2">
+                            <input
+                                type="search"
+                                name="mobileFilter"
+                                placeholder="Enter Rider Mobile"
+                                value={mobileFilter}
+                                className="rounded-xl"
+                                onChange={(e) => setMobileFilter(e.target.value)}
+                            />
+                        </div>
                     </div>
 
                     {riderDetails && (

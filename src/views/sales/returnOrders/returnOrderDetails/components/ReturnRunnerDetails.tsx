@@ -14,6 +14,10 @@ const ReturnRunnerDetails = () => {
     const [showRiderModal, setShowRiderModal] = useState(false)
     const returnDetails = returnOrder?.returnOrders
 
+    const isOutForPickup = returnOrder?.returnOrders?.log?.some((item) => item?.status === 'OUT_FOR_PICKUP')
+
+    console.log('OF{P', isOutForPickup)
+
     return (
         <Card className="card">
             <h5 className="mb-4">Runner Details</h5>

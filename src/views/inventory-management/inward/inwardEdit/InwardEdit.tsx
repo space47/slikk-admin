@@ -27,7 +27,7 @@ const InwardEdit = () => {
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
     const [companyData, setCompanyData] = useState<number>()
     const { grn } = useParams()
-    console.log('docs', docsView)
+
     const navigate = useNavigate()
 
     const handleUpload = async (files: File[]) => {
@@ -189,8 +189,6 @@ const InwardEdit = () => {
             })
         }
     }
-    console.log('ssdsdsdsd', imagview)
-
     return (
         <div>
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
