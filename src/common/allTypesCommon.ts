@@ -59,3 +59,9 @@ export const handleDownloadCsv = (
     a.click()
     window.URL.revokeObjectURL(url)
 }
+
+export const escapeCsvValue = (value: any) => {
+    if (value == null) return ''
+    const stringValue = String(value)
+    return `"${stringValue.replace(/"/g, '""')}"`
+}
