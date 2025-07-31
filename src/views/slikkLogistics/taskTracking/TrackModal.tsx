@@ -49,6 +49,8 @@ const TrackModal = ({
             page: 1,
             pageSize: 100,
             name: globalFilter,
+            isActive: 'true',
+            rider_type: isReturn ? 'RETURN' : 'FORWARD',
         },
         { refetchOnMountOrArgChange: true },
     )
