@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, Pagination, Select } from '@/components/ui'
+import { Button, Pagination, Select, Tabs } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -10,6 +10,9 @@ import { handleDownloadCsv } from '@/common/allTypesCommon'
 import { useGroupColumns } from './groupUtils/useGroupColumns'
 import { notification } from 'antd'
 import { AxiosError } from 'axios'
+import TabList from '@/components/ui/Tabs/TabList'
+import TabNav from '@/components/ui/Tabs/TabNav'
+import ActiveInactiveModal from '@/views/appsSettings/careers/careerDetails/ActiveInactiveModal'
 
 const GetGroupNotification = () => {
     const [groupData, setGroupData] = useState([])
@@ -18,12 +21,16 @@ const GetGroupNotification = () => {
     const [pageSize, setPageSize] = useState<number | undefined>(10)
     const [accessDenied, setAccessDenied] = useState(false)
     const [downloadSpinner, setDownloadSpinner] = useState(false)
+    const [isActive, setIsActive] = useState('true')
+    const [showModalForActive, setShowModalForActive] = useState(false)
+    const [checkActive, setCheckActive] = useState(false)
+    const [forActive, setForActive] = useState('')
 
     const navigate = useNavigate()
 
     const fetchGroupNotification = async () => {
         try {
-            const response = await axioisInstance.get(`/notification/groups?p=${page}&page_size=${pageSize}`)
+            const response = await axioisInstance.get(`/notification/groups?p=${page}&page_size=${pageSize}&is_active=${isActive}`)
             const data = response?.data?.data
             setGroupData(data?.results)
             setTotalCount(data?.count)
@@ -37,7 +44,7 @@ const GetGroupNotification = () => {
 
     useEffect(() => {
         fetchGroupNotification()
-    }, [page, pageSize])
+    }, [page, pageSize, isActive])
 
     const convertToCSV = (data: any[], columns: any[]) => {
         const header = columns.map((col) => col.header).join(',')
@@ -109,7 +116,15 @@ const GetGroupNotification = () => {
         navigate(`/app/appsCommuncication/addGroups`)
     }
 
-    const columns = useGroupColumns({ handleEditClick, handleDownloadUserCsv, downloadSpinner })
+    const handleActiveCareer = (id: number | string, e: React.MouseEvent, checked: boolean) => {
+        setForActive(id as string)
+        setShowModalForActive(true)
+        setCheckActive(checked)
+    }
+
+    const tableData = groupData.filter((item: any) => item.is_active.toString() === isActive)
+
+    const columns = useGroupColumns({ handleEditClick, handleDownloadUserCsv, downloadSpinner, handleActiveCareer })
 
     if (accessDenied) {
         return <AccessDenied />
@@ -122,7 +137,25 @@ const GetGroupNotification = () => {
                     Add Groups
                 </Button>
             </div>
-            <EasyTable mainData={groupData} columns={columns} />
+
+            <Tabs defaultValue="true" onChange={(e: string) => setIsActive(e)}>
+                <TabList className="flex items-center justify-start gap-4 bg-gray-50 dark:bg-slate-900 dark:rounded-xl  shadow-md p-3 mb-10">
+                    <TabNav
+                        value="true"
+                        className="relative px-4 py-2 text-sm sm:text-base font-semibold text-gray-700 dark:text-gray-500 rounded-xl transition-all duration-300 hover:text-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-400"
+                    >
+                        Active
+                    </TabNav>
+                    <TabNav
+                        value="false"
+                        className="relative px-4 py-2 text-sm sm:text-base font-semibold text-gray-700 dark:text-gray-500 rounded-xl transition-all duration-300 hover:text-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-400"
+                    >
+                        InActive
+                    </TabNav>
+                </TabList>
+            </Tabs>
+
+            <EasyTable mainData={tableData} columns={columns} />
             <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-4">
                 <Pagination pageSize={pageSize} currentPage={page} total={totalCount} onChange={onPaginationChange} />
                 <div className="w-full sm:w-auto min-w-[130px]">
@@ -135,6 +168,16 @@ const GetGroupNotification = () => {
                     />
                 </div>
             </div>
+            {showModalForActive && (
+                <ActiveInactiveModal
+                    dialogIsOpen={showModalForActive}
+                    setIsOpen={setShowModalForActive}
+                    idForUpdate={forActive}
+                    isActive={checkActive}
+                    url={`/notification/groups/${forActive}`}
+                    label="Group"
+                />
+            )}
         </div>
     )
 }

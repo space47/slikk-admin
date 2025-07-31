@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Spinner } from '@/components/ui'
+import { Switch } from 'antd'
 import moment from 'moment'
 import React, { useMemo } from 'react'
 import { FaDownload, FaEdit } from 'react-icons/fa'
@@ -8,11 +9,27 @@ interface GroupColumn {
     handleEditClick: any
     handleDownloadUserCsv: any
     downloadSpinner: boolean
+    handleActiveCareer: any
 }
 
-export const useGroupColumns = ({ handleEditClick, handleDownloadUserCsv, downloadSpinner }: GroupColumn) => {
+export const useGroupColumns = ({ handleEditClick, handleDownloadUserCsv, downloadSpinner, handleActiveCareer }: GroupColumn) => {
     return useMemo(
         () => [
+            {
+                header: 'Activate / Inactivate',
+                accessorKey: 'is_active',
+                cell: ({ row }: any) => {
+                    return (
+                        <div>
+                            <Switch
+                                className="bg-red-500"
+                                checked={row.original.is_active}
+                                onChange={(checked) => handleActiveCareer(row.original.id, checked, row.original.is_active)}
+                            />
+                        </div>
+                    )
+                },
+            },
             {
                 header: 'Edit',
                 accessorKey: 'id',
@@ -35,6 +52,13 @@ export const useGroupColumns = ({ handleEditClick, handleDownloadUserCsv, downlo
                             {item.name}
                         </div>
                     ))
+                },
+            },
+            {
+                header: 'User',
+                accessorKey: 'users',
+                cell: ({ row }: any) => {
+                    return <div>{row?.original.user?.length || 0} Users</div>
                 },
             },
             {

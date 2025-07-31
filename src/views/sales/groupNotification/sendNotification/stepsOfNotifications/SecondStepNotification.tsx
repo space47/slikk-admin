@@ -7,12 +7,9 @@ import { MdCancel } from 'react-icons/md'
 import { OFFARRAY } from '../sendNotify.common'
 
 interface SecondStepNotification {
+    values: any
     notificationTypeArray: any[]
-    groupValue: any
-    setGroupValue: any
     groupDatatoSend: any[]
-    clickedGuarantee: any
-    hanldeGroupSearch: any
     handleAddFilter: any
     showAddFilter: any
     filters: any
@@ -24,11 +21,8 @@ interface SecondStepNotification {
 }
 
 const SecondStepNotification = ({
-    groupValue,
-    setGroupValue,
+    values,
     groupDatatoSend,
-    clickedGuarantee,
-    hanldeGroupSearch,
     handleAddFilter,
     showAddFilter,
     filters,
@@ -38,35 +32,34 @@ const SecondStepNotification = ({
     targetPageArray,
     handleAddFilters,
 }: SecondStepNotification) => {
+    console.log('groupDatatoSend', values?.groupId)
     return (
         <div className="space-y-6 shadow-lg rounded-lg px-14 py-9 mt-10">
             <div className="text-xl font-bold">Select Filters</div>
             <div className="grid xl:grid-cols-2 grid-cols-1  gap-10">
-                <FormItem label="Group Name" className="w-full xl:w-2/3 items-center">
-                    <input
-                        type="text"
-                        name="group_name"
-                        placeholder="Enter Group name"
-                        value={groupValue}
-                        onChange={(e) => setGroupValue(e.target.value)}
-                    />
-
-                    {groupValue && (
-                        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
-                            {groupDatatoSend?.map((item, key) => (
-                                <div key={key} className="flex items-center justify-center">
-                                    <div
-                                        className={
-                                            clickedGuarantee[item?.name]
-                                                ? 'px-6 py-2 bg-gray-500 text-green-200 font-semibold rounded-lg shadow-md transition duration-300 ease-in-out cursor-pointer'
-                                                : 'px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition duration-300 ease-in-out cursor-pointer'
-                                        }
-                                        onClick={() => hanldeGroupSearch(item?.name)}
-                                    >
-                                        {item?.name}
-                                    </div>
-                                </div>
-                            ))}
+                <FormItem label={'Group Ids'} className={'col-span-1 w-full'}>
+                    <Field name="groupId">
+                        {({ field, form }: FieldProps<any>) => {
+                            return (
+                                <Select
+                                    isClearable
+                                    options={groupDatatoSend}
+                                    value={groupDatatoSend.find((option) => option.name === field.value)}
+                                    getOptionLabel={(option: any) => option.name}
+                                    getOptionValue={(option: any) => option.name}
+                                    onChange={(option) => {
+                                        const value = option ? option.value : ''
+                                        form.setFieldValue(field.name, option)
+                                        console.log('FIELD.NAME', value)
+                                    }}
+                                    onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+                                />
+                            )
+                        }}
+                    </Field>
+                    {values?.groupId && (
+                        <div className="mt-4 px-4 py-2 rounded-md bg-blue-50 border border-blue-200 text-blue-800 font-medium shadow-sm w-fit">
+                            Users: {values?.groupId?.user?.length || 0}
                         </div>
                     )}
                 </FormItem>

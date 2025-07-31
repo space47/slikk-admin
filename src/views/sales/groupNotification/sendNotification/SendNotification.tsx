@@ -1,16 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
-import { FormItem, FormContainer } from '@/components/ui/Form'
+import { FormContainer } from '@/components/ui/Form'
 import Button from '@/components/ui/Button'
-import { Field, Form, Formik, FieldProps } from 'formik'
+import { Form, Formik } from 'formik'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import {
     MAXMINARRAY,
     OFFARRAY,
     SendNotificationARRAY,
-    sendNotificationType,
     UtmArray,
     notificationTypeArray,
     targetPageArray,
@@ -20,7 +19,7 @@ import {
 import { useAppDispatch, useAppSelector } from '@/store'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
-import { Checkbox, Spinner, Upload } from '@/components/ui'
+import { Spinner } from '@/components/ui'
 import { handleimage } from '@/common/handleImage'
 import SchedularModal from './SchedularModule'
 import FirstStepNotification from './stepsOfNotifications/FirstStepNotification'
@@ -31,15 +30,12 @@ import FourthStep from './stepsOfNotifications/FourthStep'
 import MobilePreview from './mobilePreview/MobilePreview'
 import { useNavigate } from 'react-router-dom'
 import MobileDrawer from './MobileDrawer'
+import FormButton from '@/components/ui/Button/FormButton'
 
 const SendNotification = () => {
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
     const [showSpinner, setShowSpinner] = useState(false)
-    const [groupValue, setGroupValue] = useState('')
     const [groupDatatoSend, setGroupDataToSend] = useState([])
-    const [clickedGuarantee, setClickedGuarantee] = useState<any>({})
-    const [groupId, setgroupId] = useState<string[]>([])
-    const [groupName, setgroupName] = useState<string[]>([])
     const dispatch = useAppDispatch()
     const [currentStep, setCurrentStep] = useState(0)
     const [filterId, setFilterId] = useState()
@@ -58,7 +54,7 @@ const SendNotification = () => {
 
     const fetchGroupValue = async () => {
         try {
-            const response = await axioisInstance.get(`/notification/groups?group_name=${groupValue}`)
+            const response = await axioisInstance.get(`/notification/groups?p=1&page_size=1000&is_active=true`)
             const data = response?.data?.data.results
             setGroupDataToSend(data)
         } catch (error) {
@@ -67,31 +63,8 @@ const SendNotification = () => {
     }
 
     useEffect(() => {
-        if (groupValue) {
-            fetchGroupValue()
-        }
-    }, [groupValue])
-
-    const hanldeGroupSearch = async (groupName: string) => {
-        console.log('onclicking group', groupName)
-        setClickedGuarantee((prevState: any) => ({
-            ...prevState,
-            [groupName]: !prevState[groupName],
-        }))
-        try {
-            const response = await axioisInstance.get(`/notification/groups?group_name=${groupName}`)
-            const Gdata = response?.data?.data.results
-            console.log('data from groups', Gdata)
-            const groupID = Gdata?.map((item: any) => item.id).join(',') // name is there in api.....if required add here
-            const groupNameData = Gdata?.map((item: any) => item.name).join(',') // name is there in api.....if required add here
-            setgroupId((prev) => [...prev, groupID])
-            setgroupName((prev) => [...prev, groupNameData])
-            // setGroupValue(groupName)
-            // setGroupDataToSend([])
-        } catch (error) {
-            console.log(error)
-        }
-    }
+        fetchGroupValue()
+    }, [])
 
     const handleSubmit = async (values: any) => {
         const parser = new DOMParser()
@@ -114,13 +87,12 @@ const SendNotification = () => {
         console.log(utm_medium, utm_source, utm_campaign, utm_tags, maxoff, maxprice, minoff, minprice, filtersAdd)
 
         const imageUpload = values.image_url_array.length > 0 ? await handleimage('product', image_url_array) : values.image_url
-
         const data = {
             ...formData,
             title: titleView ?? '',
             name: values?.event_name ?? '',
             image_url: imageUpload || '',
-            notification_group_id: groupId.join(',') || '',
+            notification_group: values?.groupId?.name || '',
             filters: [
                 ...(values.filters || []),
                 ...UtmArray.filter((item) => values[item.name] !== undefined).map(
@@ -144,18 +116,27 @@ const SendNotification = () => {
 
         setValueForSchedule(data)
 
+        const filteredData = Object.fromEntries(
+            Object.entries(data).filter(([key, value]) => value !== undefined && value !== '' && key !== 'groupId'),
+        )
+
+        console.log('Data to send', filteredData)
         try {
-            const response = await axioisInstance.post(`/notification/send`, data)
+            setShowSpinner(true)
+            const response = await axioisInstance.post(`/notification/send`, filteredData)
             notification.success({
                 message: 'SUCCESS',
                 description: response.data.message || 'Notification has been added',
             })
+            navigate(-1)
         } catch (error: any) {
             console.log(error)
             notification.error({
                 message: 'FAILURE',
                 description: error?.response?.data?.message || error?.response?.message || 'Failed to send',
             })
+        } finally {
+            setShowSpinner(false)
         }
     }
 
@@ -225,8 +206,6 @@ const SendNotification = () => {
         } = val ?? {}
 
         setStoreSchedular(rest)
-
-        console.log('Rest of Data', storeSchedular)
         const parser = new DOMParser()
         const htmlDoc = parser.parseFromString(valueForSchedule?.message ?? '', 'text/html')
         const plainTextMessage = htmlDoc.body.textContent || ''
@@ -263,23 +242,18 @@ const SendNotification = () => {
                 key: valueForSchedule?.key ?? '',
                 page_title: valueForSchedule?.page_title ?? '',
             },
-            expiry_date: expiry_date ?? '',
+            expiry_date: expiry_date || '',
             mobiles: valueForSchedule?.users ?? [],
-            group_name: groupName.join(',') ?? '',
         }
-        console.log('body', body)
+        const filteredBody = Object.fromEntries(Object.entries(body).filter(([_, value]) => value !== undefined && value !== ''))
 
         try {
-            const response = await axioisInstance.post(`/user_notification`, body)
-            notification.success({
-                message: 'Scheduled successfully',
-            })
+            const response = await axioisInstance.post(`/user_notification`, filteredBody)
+            notification.success({ message: 'Scheduled successfully' })
             navigate(`/app/appsCommuncication/sendNotification`)
         } catch (error: any) {
             console.log(error)
-            notification.error({
-                message: error?.response?.data?.message || error?.response?.message || 'Failed to schedule',
-            })
+            notification.error({ message: error?.response?.data?.message || error?.response?.message || 'Failed to schedule' })
         } finally {
             setScheduleModal(false)
         }
@@ -292,7 +266,6 @@ const SendNotification = () => {
     const handlePrevious = () => {
         setCurrentStep((prev) => prev - 1)
     }
-
     return (
         <div>
             <div className="mb-10">
@@ -326,13 +299,13 @@ const SendNotification = () => {
                 className={
                     currentStep === 3
                         ? showScheduleModal
-                            ? 'grid xl:grid-cols-3 grid-cols-1 gap-7 xl:gap-0 '
+                            ? 'grid xl:grid-cols-2 grid-cols-1 gap-7 xl:gap-0 '
                             : 'flex gap-4 '
                         : 'flex gap-10'
                 }
             >
                 <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
-                    {({ values, resetForm }) => (
+                    {({ values, resetForm, setFieldValue }) => (
                         <Form className="w-full lg:w-2/3 mx-auto xl:mx-0">
                             <FormContainer>
                                 {currentStep === 0 && (
@@ -347,12 +320,9 @@ const SendNotification = () => {
 
                                 {currentStep === 1 && (
                                     <SecondStepNotification
+                                        values={values}
                                         notificationTypeArray={notificationTypeArray}
-                                        groupValue={groupValue}
-                                        setGroupValue={setGroupValue}
                                         groupDatatoSend={groupDatatoSend}
-                                        clickedGuarantee={clickedGuarantee}
-                                        hanldeGroupSearch={hanldeGroupSearch}
                                         handleAddFilter={handleAddFilter}
                                         showAddFilter={showAddFilter}
                                         filters={filters}
@@ -369,8 +339,12 @@ const SendNotification = () => {
                                     <FourthStep
                                         values={values}
                                         handleSchedule={hanldeSchedule}
+                                        setValueForSchedule={setValueForSchedule}
                                         valueForSchedule={valueForSchedule}
                                         scheduleModal={showScheduleModal}
+                                        setShowScheduleModal={setScheduleModal}
+                                        setFieldValue={setFieldValue}
+                                        handleOk={handleOk}
                                     />
                                 )}
                             </FormContainer>
@@ -399,13 +373,11 @@ const SendNotification = () => {
                             <FormContainer className="flex justify-start">
                                 {currentStep === 3 && (
                                     <div className="flex">
-                                        <Button type="button" variant="pending" onClick={handlePrevious} className="mr-2 bg-gray-600">
+                                        <Button type="button" variant="pending" onClick={handlePrevious} className="mr-2 mt-5 bg-gray-600">
                                             Previous
                                         </Button>
                                         <div className="flex gap-20">
-                                            <Button variant="accept" type="submit" className=" text-white">
-                                                Submit
-                                            </Button>
+                                            <FormButton isSpinning={showSpinner} value="Submit" />
                                         </div>
                                     </div>
                                 )}
@@ -414,20 +386,27 @@ const SendNotification = () => {
                     )}
                 </Formik>
 
-                {showScheduleModal && currentStep === 3 ? (
-                    <SchedularModal handleOk={handleOk} scheduleValues={valueForSchedule} />
+                {/* {showScheduleModal && currentStep === 3 ? (
+                    <SchedularModal
+                        showScheduleModal={showScheduleModal}
+                        setShowScheduleModal={setScheduleModal}
+                        handleOk={handleOk}
+                        scheduleValues={valueForSchedule}
+                    />
                 ) : (
                     <>
                         <div></div>
                     </>
-                )}
+                )} */}
 
-                <div className="w-[450px] bg-contain h-[780px] rounded-[24px] shadow-2xl overflow-hidden bg-gray-100 relative hidden xl:inline">
-                    <img src="/img/logo/mobilePreview.jpeg" alt="" className="w-full h-full object-cover" />
-                    <div className="absolute top-20 left-1 right-1">
-                        <MobilePreview message={messagePreview} image={imagePreview} title={titleView} />
+                {currentStep !== 4 && (
+                    <div className="w-[250px] bg-contain h-[500px] rounded-[24px] shadow-2xl overflow-hidden bg-gray-100 relative hidden xl:inline">
+                        <img src="/img/logo/mobilePreview.jpeg" alt="" className="w-full h-full object-cover" />
+                        <div className="absolute top-20 left-1 right-1">
+                            <MobilePreview message={messagePreview} image={imagePreview} title={titleView} />
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
             {showMobileView && (
                 <>
