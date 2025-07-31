@@ -54,7 +54,7 @@ const SendNotification = () => {
 
     const fetchGroupValue = async () => {
         try {
-            const response = await axioisInstance.get(`/notification/groups`)
+            const response = await axioisInstance.get(`/notification/groups?p=1&page_size=1000&is_active=true`)
             const data = response?.data?.data.results
             setGroupDataToSend(data)
         } catch (error) {
