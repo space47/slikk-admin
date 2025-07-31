@@ -13,7 +13,7 @@ import { FaDownload } from 'react-icons/fa'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { AxiosError } from 'axios'
-import { handleDownloadCsv } from '@/common/allTypesCommon'
+import { escapeCsvValue, handleDownloadCsv } from '@/common/allTypesCommon'
 import { ColumnDef } from '@tanstack/react-table'
 
 const Seller = () => {
@@ -32,20 +32,16 @@ const Seller = () => {
     const columns = useSellerColumns()
 
     const convertToCSV = (data: Product[], columns: ColumnDef<Product>[]) => {
-        const header = columns
-            ?.filter((item) => item.header !== 'Edit')
-            .map((col) => col.header)
-            .join(',')
+        const filteredColumns = columns?.filter((item) => item.header !== 'Edit')
+
+        const header = filteredColumns.map((col) => escapeCsvValue(col.header)).join(',')
+
         const rows = data
             .map((row: any) => {
-                return columns
-                    ?.filter((item) => item.header !== 'Edit')
-                    .map((col: any) => {
-                        return row[col.accessorKey] || ''
-                    })
-                    .join(',')
+                return filteredColumns.map((col: any) => escapeCsvValue(row[col.accessorKey])).join(',')
             })
             .join('\n')
+
         return `${header}\n${rows}`
     }
 
