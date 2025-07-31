@@ -55,6 +55,13 @@ export const useGroupColumns = ({ handleEditClick, handleDownloadUserCsv, downlo
                 },
             },
             {
+                header: 'User',
+                accessorKey: 'users',
+                cell: ({ row }: any) => {
+                    return <div>{row?.original.user?.length || 0} Users</div>
+                },
+            },
+            {
                 header: 'USER INFO',
                 accessorKey: 'rules?.userInfo',
                 cell: ({ getValue }: any) => {

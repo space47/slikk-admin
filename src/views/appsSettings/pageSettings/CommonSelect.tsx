@@ -36,7 +36,7 @@ const CommonSelect = ({ label, name, options, className, needClassName = false, 
                                 onChange={(option) => {
                                     const value = option ? option.value : ''
                                     form.setFieldValue(field.name, value)
-                                    console.log('FIELD.NAME', field.name)
+                                    console.log('FIELD.NAME', field.name, value)
                                 }}
                                 onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
                             />

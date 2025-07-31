@@ -5,9 +5,9 @@ import React from 'react'
 import { IoMdAddCircle } from 'react-icons/io'
 import { MdCancel } from 'react-icons/md'
 import { OFFARRAY } from '../sendNotify.common'
-import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 
 interface SecondStepNotification {
+    values: any
     notificationTypeArray: any[]
     groupDatatoSend: any[]
     handleAddFilter: any
@@ -21,6 +21,7 @@ interface SecondStepNotification {
 }
 
 const SecondStepNotification = ({
+    values,
     groupDatatoSend,
     handleAddFilter,
     showAddFilter,
@@ -31,11 +32,37 @@ const SecondStepNotification = ({
     targetPageArray,
     handleAddFilters,
 }: SecondStepNotification) => {
+    console.log('groupDatatoSend', values?.groupId)
     return (
         <div className="space-y-6 shadow-lg rounded-lg px-14 py-9 mt-10">
             <div className="text-xl font-bold">Select Filters</div>
             <div className="grid xl:grid-cols-2 grid-cols-1  gap-10">
-                <CommonSelect name="groupIds" options={groupDatatoSend} label="Group Id" />
+                <FormItem label={'Group Ids'} className={'col-span-1 w-full'}>
+                    <Field name="groupId">
+                        {({ field, form }: FieldProps<any>) => {
+                            return (
+                                <Select
+                                    isClearable
+                                    options={groupDatatoSend}
+                                    value={groupDatatoSend.find((option) => option.name === field.value)}
+                                    getOptionLabel={(option: any) => option.name}
+                                    getOptionValue={(option: any) => option.name}
+                                    onChange={(option) => {
+                                        const value = option ? option.value : ''
+                                        form.setFieldValue(field.name, option)
+                                        console.log('FIELD.NAME', value)
+                                    }}
+                                    onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+                                />
+                            )
+                        }}
+                    </Field>
+                    {values?.groupId && (
+                        <div className="mt-4 px-4 py-2 rounded-md bg-blue-50 border border-blue-200 text-blue-800 font-medium shadow-sm w-fit">
+                            Users: {values?.groupId?.user?.length || 0}
+                        </div>
+                    )}
+                </FormItem>
 
                 <FormItem label="SEARCH FILTER STRINGS">
                     <FormContainer className="items-center mt-4">

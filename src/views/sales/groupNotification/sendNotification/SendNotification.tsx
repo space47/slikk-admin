@@ -317,6 +317,7 @@ const SendNotification = () => {
 
                                 {currentStep === 1 && (
                                     <SecondStepNotification
+                                        values={values}
                                         notificationTypeArray={notificationTypeArray}
                                         groupDatatoSend={groupDatatoSend}
                                         handleAddFilter={handleAddFilter}
