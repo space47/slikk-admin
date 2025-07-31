@@ -54,6 +54,7 @@ type ReceivedBy = {
 }
 
 export type FormModel = {
+    id?: number
     select: string
     create_date: string | null
     singleCheckbox: boolean | false
