@@ -5,14 +5,11 @@ import React from 'react'
 import { IoMdAddCircle } from 'react-icons/io'
 import { MdCancel } from 'react-icons/md'
 import { OFFARRAY } from '../sendNotify.common'
+import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 
 interface SecondStepNotification {
     notificationTypeArray: any[]
-    groupValue: any
-    setGroupValue: any
     groupDatatoSend: any[]
-    clickedGuarantee: any
-    hanldeGroupSearch: any
     handleAddFilter: any
     showAddFilter: any
     filters: any
@@ -24,11 +21,7 @@ interface SecondStepNotification {
 }
 
 const SecondStepNotification = ({
-    groupValue,
-    setGroupValue,
     groupDatatoSend,
-    clickedGuarantee,
-    hanldeGroupSearch,
     handleAddFilter,
     showAddFilter,
     filters,
@@ -42,34 +35,7 @@ const SecondStepNotification = ({
         <div className="space-y-6 shadow-lg rounded-lg px-14 py-9 mt-10">
             <div className="text-xl font-bold">Select Filters</div>
             <div className="grid xl:grid-cols-2 grid-cols-1  gap-10">
-                <FormItem label="Group Name" className="w-full xl:w-2/3 items-center">
-                    <input
-                        type="text"
-                        name="group_name"
-                        placeholder="Enter Group name"
-                        value={groupValue}
-                        onChange={(e) => setGroupValue(e.target.value)}
-                    />
-
-                    {groupValue && (
-                        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
-                            {groupDatatoSend?.map((item, key) => (
-                                <div key={key} className="flex items-center justify-center">
-                                    <div
-                                        className={
-                                            clickedGuarantee[item?.name]
-                                                ? 'px-6 py-2 bg-gray-500 text-green-200 font-semibold rounded-lg shadow-md transition duration-300 ease-in-out cursor-pointer'
-                                                : 'px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition duration-300 ease-in-out cursor-pointer'
-                                        }
-                                        onClick={() => hanldeGroupSearch(item?.name)}
-                                    >
-                                        {item?.name}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </FormItem>
+                <CommonSelect name="groupIds" options={groupDatatoSend} label="Group Id" />
 
                 <FormItem label="SEARCH FILTER STRINGS">
                     <FormContainer className="items-center mt-4">
