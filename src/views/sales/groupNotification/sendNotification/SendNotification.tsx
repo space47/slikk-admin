@@ -92,7 +92,7 @@ const SendNotification = () => {
             title: titleView ?? '',
             name: values?.event_name ?? '',
             image_url: imageUpload || '',
-            notification_group: values?.groupId?.name || '',
+            notification_group: values?.groupId?.id || '',
             filters: [
                 ...(values.filters || []),
                 ...UtmArray.filter((item) => values[item.name] !== undefined).map(
