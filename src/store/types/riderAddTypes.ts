@@ -83,6 +83,7 @@ export type UserProfile = Partial<{
     email: string
     mobile: number
     gender: string
+    rider_type: string
     dob: string
     country_code: string
     device_id: string
