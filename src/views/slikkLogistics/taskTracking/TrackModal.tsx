@@ -148,8 +148,8 @@ const TrackModal = ({
                     </div>
 
                     {riderDetails && (
-                        <div className="flex-1 overflow-scroll">
-                            <div className="overflow-y-auto h-full pr-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
+                        <div className="flex-1 overflow-scroll scrollbar-hide ">
+                            <div className="overflow-y-auto h-[200px] xl:h-[400px] md:h-[300px] pr-2 scrollbar-thin scrollbar-thumb-gray-400  scrollbar-track-gray-100">
                                 <Radio.Group value={selectedRiderMobile} onChange={handleRiderSelection} className="w-full">
                                     <div className="space-y-3">
                                         {riderDataArray?.map((item, key) => {
