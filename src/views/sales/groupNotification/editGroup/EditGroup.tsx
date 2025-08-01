@@ -73,11 +73,9 @@ const EditGroup = () => {
 
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
 
-    console.log('Initial values', initialData[0].user?.map((item: any) => item?.mobile).join(','))
-
     const initialValues = {
         name: initialData[0]?.name,
-        user: initialData[0].user?.map((item: any) => item?.mobile).join(','),
+        user: initialData[0]?.user?.map((item: any) => item?.mobile).join(',') || '',
         groups: initialData[0]?.group || [],
         cart_start: initialData[0]?.rules?.cart?.find((rule: any) => rule.type === 'cart')?.value.start_date || '',
         cart_end: initialData[0]?.rules?.cart?.find((rule: any) => rule.type === 'cart')?.value.end_date || '',
