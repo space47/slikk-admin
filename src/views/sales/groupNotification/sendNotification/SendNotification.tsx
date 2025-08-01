@@ -119,22 +119,14 @@ const SendNotification = () => {
         const filteredData = Object.fromEntries(
             Object.entries(data).filter(([key, value]) => value !== undefined && value !== '' && key !== 'groupId'),
         )
-
-        console.log('Data to send', filteredData)
         try {
             setShowSpinner(true)
             const response = await axioisInstance.post(`/notification/send`, filteredData)
-            notification.success({
-                message: 'SUCCESS',
-                description: response.data.message || 'Notification has been added',
-            })
-            navigate(-1)
+            notification.success({ message: response.data.message || 'Notification has been added' })
+            // navigate(-1)
         } catch (error: any) {
             console.log(error)
-            notification.error({
-                message: 'FAILURE',
-                description: error?.response?.data?.message || error?.response?.message || 'Failed to send',
-            })
+            notification.error({ message: error?.response?.data?.message || error?.response?.message || 'Failed to send' })
         } finally {
             setShowSpinner(false)
         }
@@ -148,38 +140,26 @@ const SendNotification = () => {
     const handleRemoveFilter = (index: number) => {
         setShowAddFilter((prev) => prev.filter((item) => item !== index))
     }
-
     const [filtersData, setFiltersData] = useState<any[]>([])
-
     const handleAddFilters = async (values: any) => {
         const newFilterData = showAddFilter.map((_, index) => {
             return values.filtersAdd[index] || []
         })
-
         setFiltersData((prev: any) => {
             const updatedFilters = [...prev, newFilterData]
-
             const lastElement = updatedFilters.at(-1)
-
             sendFilterData(lastElement)
-
             return updatedFilters
         })
     }
 
     const sendFilterData = async (filterData: any) => {
         try {
-            const body = {
-                filter_data: filterData,
-            }
-
+            const body = { filter_data: filterData }
             const response = await axioisInstance.post(`/product/search/criteria`, body)
-
             const id = response.data?.data?.id
             setFilterId(id)
-            notification.success({
-                message: 'Filters has been set',
-            })
+            notification.success({ message: 'Filters has been set' })
         } catch (error) {
             console.log(error)
         }
@@ -259,13 +239,6 @@ const SendNotification = () => {
         }
     }
 
-    const handleNext = () => {
-        setCurrentStep((prev) => prev + 1)
-    }
-
-    const handlePrevious = () => {
-        setCurrentStep((prev) => prev - 1)
-    }
     return (
         <div>
             <div className="mb-10">
@@ -351,12 +324,22 @@ const SendNotification = () => {
 
                             <FormContainer className="flex justify-end mt-5 mb-9 xl:mb-0">
                                 {currentStep > 0 && currentStep < 3 && (
-                                    <Button type="button" variant="pending" onClick={handlePrevious} className="mr-2 bg-gray-600">
+                                    <Button
+                                        type="button"
+                                        variant="pending"
+                                        onClick={() => setCurrentStep((prev) => prev - 1)}
+                                        className="mr-2 bg-gray-600"
+                                    >
                                         Previous
                                     </Button>
                                 )}
                                 {currentStep < 3 && currentStep > 0 && (
-                                    <Button type="button" variant="accept" onClick={handleNext} className="mr-2 bg-gray-600">
+                                    <Button
+                                        type="button"
+                                        variant="accept"
+                                        onClick={() => setCurrentStep((prev) => prev + 1)}
+                                        className="mr-2 bg-gray-600"
+                                    >
                                         Next
                                     </Button>
                                 )}
@@ -364,7 +347,12 @@ const SendNotification = () => {
 
                             {currentStep === 0 && (
                                 <FormContainer className="flex justify-end">
-                                    <Button type="button" variant="accept" onClick={handleNext} className="mr-2 bg-gray-600">
+                                    <Button
+                                        type="button"
+                                        variant="accept"
+                                        onClick={() => setCurrentStep((prev) => prev + 1)}
+                                        className="mr-2 bg-gray-600"
+                                    >
                                         Next
                                     </Button>
                                 </FormContainer>
@@ -373,7 +361,12 @@ const SendNotification = () => {
                             <FormContainer className="flex justify-start">
                                 {currentStep === 3 && (
                                     <div className="flex">
-                                        <Button type="button" variant="pending" onClick={handlePrevious} className="mr-2 mt-5 bg-gray-600">
+                                        <Button
+                                            type="button"
+                                            variant="pending"
+                                            onClick={() => setCurrentStep((prev) => prev - 1)}
+                                            className="mr-2 mt-5 bg-gray-600"
+                                        >
                                             Previous
                                         </Button>
                                         <div className="flex gap-20">
@@ -385,19 +378,6 @@ const SendNotification = () => {
                         </Form>
                     )}
                 </Formik>
-
-                {/* {showScheduleModal && currentStep === 3 ? (
-                    <SchedularModal
-                        showScheduleModal={showScheduleModal}
-                        setShowScheduleModal={setScheduleModal}
-                        handleOk={handleOk}
-                        scheduleValues={valueForSchedule}
-                    />
-                ) : (
-                    <>
-                        <div></div>
-                    </>
-                )} */}
 
                 {currentStep !== 4 && (
                     <div className="w-[250px] bg-contain h-[500px] rounded-[24px] shadow-2xl overflow-hidden bg-gray-100 relative hidden xl:inline">
