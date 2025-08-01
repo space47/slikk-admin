@@ -86,89 +86,106 @@ const EditSubPage = () => {
     }
 
     return (
-        <div className="p-6">
-            <h5 className="mb-4 text-red-500">Edit Sub Page</h5>
+        <div className="bg-white p-8 shadow-lg rounded-xl border border-gray-100">
+            <h5 className="text-xl font-semibold text-red-500 mb-6">Edit Sub Page</h5>
             <Formik initialValues={initialValues} onSubmit={handleSubmit} enableReinitialize>
                 {({ setFieldValue, values }) => (
-                    <Form className="grid grid-cols-2 xl:grid-cols-3 gap-2">
-                        <FormItem label="Name">
-                            <Field
-                                name="name"
-                                type="text"
-                                placeholder="Enter Name"
-                                className="rounded-xl px-3 py-2 border border-gray-300"
-                            />
-                        </FormItem>
-                        <FormItem label="Display Name">
-                            <Field
-                                name="display_name"
-                                type="text"
-                                placeholder="Enter Display Name"
-                                className="rounded-xl px-3 py-2 border border-gray-300"
-                            />
-                        </FormItem>
-                        <FormItem label="Position">
-                            <Field
-                                name="position"
-                                type="text"
-                                placeholder="Enter Position"
-                                className="rounded-xl px-3 py-2 border border-gray-300"
-                            />
-                        </FormItem>
-                        <FormItem label="Primary Color">
-                            <Field
-                                name="extra_attributes.primary_color"
-                                type="text"
-                                placeholder="Enter Primary Color"
-                                className="rounded-xl px-3 py-2 border border-gray-300"
-                            />
-                        </FormItem>
-                        <FormItem label="Accent Color">
-                            <Field
-                                name="extra_attributes.accent_color"
-                                type="text"
-                                placeholder="Enter Accent Color"
-                                className="rounded-xl px-3 py-2 border border-gray-300"
-                            />
-                        </FormItem>
+                    <Form className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6">
+                            <FormItem label="Name" className="space-y-1">
+                                <Field
+                                    name="name"
+                                    type="text"
+                                    placeholder="Enter Name"
+                                    className="w-full rounded-lg px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition"
+                                />
+                            </FormItem>
 
-                        <PageEditVideo
-                            isImage
-                            label=" Image"
-                            rowName={values.image}
-                            name="image_array"
-                            handleRemoveVideo={() => handleRemove(setFieldValue)}
-                            beforeVideoUpload={beforeUpload}
-                            fileList={values.image_array as any}
-                            fieldName="image_array"
-                        />
-                        <FormItem label="Is Active">
-                            <Field
-                                name="is_active"
-                                type="checkbox"
-                                placeholder="Enter Accent Color"
-                                className="rounded-xl px-3 py-2 border border-gray-300"
-                            />
-                        </FormItem>
+                            <FormItem label="Display Name" className="space-y-1">
+                                <Field
+                                    name="display_name"
+                                    type="text"
+                                    placeholder="Enter Display Name"
+                                    className="w-full rounded-lg px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition"
+                                />
+                            </FormItem>
 
-                        <div>
-                            <Select
-                                isClearable
-                                className="w-full"
-                                options={pageNamesData}
-                                getOptionLabel={(option) => option.name}
-                                getOptionValue={(option) => option.id}
-                                value={values.page}
-                                placeholder="Select Page"
-                                onChange={(val) => setFieldValue('page', val)}
-                            />
+                            <FormItem label="Is Active" className="flex items-center space-x-2">
+                                <Field
+                                    name="is_active"
+                                    type="checkbox"
+                                    className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                />
+                            </FormItem>
+
+                            <div className="space-y-1">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Page</label>
+                                <Select
+                                    isClearable
+                                    className="w-full text-sm rounded-lg border-gray-300 focus:border-blue-400 focus:ring-blue-100"
+                                    options={pageNamesData}
+                                    getOptionLabel={(option) => option.name}
+                                    getOptionValue={(option) => option.id}
+                                    value={values.page}
+                                    placeholder="Select Page"
+                                    onChange={(val) => setFieldValue('page', val)}
+                                />
+                            </div>
+
+                            <FormItem label="Position" className="space-y-1">
+                                <Field
+                                    name="position"
+                                    type="text"
+                                    placeholder="Enter Position"
+                                    className="w-full rounded-lg px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition"
+                                />
+                            </FormItem>
+
+                            <FormItem label="Primary Color" className="space-y-1">
+                                <Field
+                                    name="extra_attributes.primary_color"
+                                    type="text"
+                                    placeholder="Enter Primary Color"
+                                    className="w-full rounded-lg px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition"
+                                />
+                            </FormItem>
+
+                            <FormItem label="Accent Color" className="space-y-1">
+                                <Field
+                                    name="extra_attributes.accent_color"
+                                    type="text"
+                                    placeholder="Enter Accent Color"
+                                    className="w-full rounded-lg px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition"
+                                />
+                            </FormItem>
+
+                            <div className="space-y-1">
+                                <PageEditVideo
+                                    isImage
+                                    label="Image"
+                                    rowName={values.image}
+                                    name="image_array"
+                                    handleRemoveVideo={() => handleRemove(setFieldValue)}
+                                    beforeVideoUpload={beforeUpload}
+                                    fileList={values.image_array as any}
+                                    fieldName="image_array"
+                                />
+                            </div>
                         </div>
 
-                        <div className="flex justify-end mt-10 col-span-full">
-                            <Button className="ltr:mr-2 rtl:ml-2" variant="reject" onClick={() => navigate(-1)}>
+                        <div className="flex justify-end space-x-3 pt-4 border-t border-gray-100">
+                            <Button
+                                variant="reject"
+                                onClick={() => navigate(-1)}
+                                className="px-6 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition"
+                            >
                                 Cancel
                             </Button>
-                            <Button type="submit" variant="solid">
+                            <Button
+                                type="submit"
+                                variant="solid"
+                                className="px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-100 transition"
+                            >
                                 Update
                             </Button>
                         </div>
