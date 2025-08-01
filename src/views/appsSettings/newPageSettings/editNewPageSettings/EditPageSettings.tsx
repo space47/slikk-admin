@@ -20,6 +20,7 @@ const EditPageSettings = () => {
     const [barcodeData, setBarcodeData] = useState<any>()
     const location = useLocation()
     const { pageState } = location.state || {}
+    const [isCopy, setIsCopy] = useState<boolean>(false)
 
     const queryParams =
         useMemo(() => {
@@ -107,7 +108,9 @@ const EditPageSettings = () => {
         }
         const filteredBody = Object.fromEntries(Object.entries(body || {}).filter(([_, value]) => value !== undefined))
         try {
-            const response = await axioisInstance.patch(`/section/${section_id}`, filteredBody)
+            const response = isCopy
+                ? await axioisInstance.post(`/section`, filteredBody)
+                : await axioisInstance.patch(`/section/${section_id}`, filteredBody)
             notification.success({ message: response?.data?.message || 'successfully updated' })
         } catch (error) {
             console.error(error)
@@ -118,6 +121,19 @@ const EditPageSettings = () => {
     }
     return (
         <div>
+            <div className="flex items-center justify-between mb-4">
+                <div className="text-xl font-bold">{isCopy ? 'New Page Settings' : 'Edit Page Settings'}</div>
+                <Button
+                    variant={isCopy ? 'twoTone' : 'solid'}
+                    type="button"
+                    size="sm"
+                    onClick={() => {
+                        setIsCopy(!isCopy)
+                    }}
+                >
+                    {isCopy ? 'Set to Edit Mode' : 'Set to Copy'}
+                </Button>
+            </div>
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                 {({ values, resetForm, setFieldValue }) => {
                     return (

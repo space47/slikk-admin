@@ -52,7 +52,7 @@ const TrackModal = ({
             name: globalFilter,
             mobile: mobileFilter,
             isActive: 'true',
-            rider_type: isReturn ? 'RETURN' : 'FORWARD',
+            rider_type: isReturn ? 'RETURN' : '',
         },
         { refetchOnMountOrArgChange: true },
     )
@@ -117,74 +117,87 @@ const TrackModal = ({
                         borderColor: 'darkgreen',
                     },
                 }}
-                width={450}
+                width={650}
                 onOk={assignTask}
                 onCancel={handleCloseModal}
             >
-                <div className="main h-[500px] xl:h-[650px] ">
-                    <div className="text-xl font-bold text-red-700 mb-6">ASSIGN RIDER</div>
-                    <div className="flex gap-2 flex-col mb-4">
-                        <div className="mb-8 flex gap-2">
+                <div className="flex flex-col h-full">
+                    <div className="text-xl font-bold text-red-700 mb-6 text-center">ASSIGN RIDER</div>
+
+                    <div className="flex flex-col gap-4 mb-4">
+                        <div className="flex gap-2">
                             <input
                                 type="search"
                                 name="globalFilter"
                                 placeholder="Enter Rider name"
                                 value={globalFilter}
-                                className="rounded-xl"
+                                className="rounded-xl p-2 border border-gray-300 w-full focus:outline-none focus:ring-2 focus:ring-green-500"
                                 onChange={(e) => setGlobalFilter(e.target.value)}
                             />
                         </div>
-                        <div className="mb-8 flex gap-2">
+                        <div className="flex gap-2">
                             <input
                                 type="search"
                                 name="mobileFilter"
                                 placeholder="Enter Rider Mobile"
                                 value={mobileFilter}
-                                className="rounded-xl"
+                                className="rounded-xl p-2 border border-gray-300 w-full focus:outline-none focus:ring-2 focus:ring-green-500"
                                 onChange={(e) => setMobileFilter(e.target.value)}
                             />
                         </div>
                     </div>
 
                     {riderDetails && (
-                        <div className="details overflow-y-scroll scrollbar-hide h-[340px] xl:h-[500px]">
-                            <Radio.Group value={selectedRiderMobile} onChange={handleRiderSelection}>
-                                {riderDataArray?.map((item, key) => {
-                                    const latitude = isOrder ? storeLat : storeData?.pickup_details?.latitude
-                                    const longitude = isOrder ? storeLong : storeData?.pickup_details?.longitude
+                        <div className="flex-1 overflow-scroll scrollbar-hide ">
+                            <div className="overflow-y-auto h-[200px] xl:h-[400px] md:h-[300px] pr-2 scrollbar-thin scrollbar-thumb-gray-400  scrollbar-track-gray-100">
+                                <Radio.Group value={selectedRiderMobile} onChange={handleRiderSelection} className="w-full">
+                                    <div className="space-y-3">
+                                        {riderDataArray?.map((item, key) => {
+                                            const latitude = isOrder ? storeLat : storeData?.pickup_details?.latitude
+                                            const longitude = isOrder ? storeLong : storeData?.pickup_details?.longitude
 
-                                    const distanceFromStore = calculateDistance(
-                                        Number(item?.profile?.current_location?.latitude),
-                                        Number(item?.profile?.current_location?.longitude),
-                                        latitude,
-                                        longitude,
-                                    )
+                                            const distanceFromStore = calculateDistance(
+                                                Number(item?.profile?.current_location?.latitude),
+                                                Number(item?.profile?.current_location?.longitude),
+                                                latitude,
+                                                longitude,
+                                            )
 
-                                    console.log('distance from store', distanceFromStore)
+                                            console.log('distance from store', distanceFromStore)
 
-                                    const isFree = item?.rider_status == false
+                                            const isFree = item?.rider_status == false
 
-                                    return (
-                                        <Card key={key} className={`${isFree == true ? 'bg-green-300' : 'bg-red-300'} w-[380px] mb-4`}>
-                                            <div className="flex items-center gap-2 ">
-                                                <Radio value={item?.profile?.mobile} />
-                                                <div className="flex gap-3 items-center ">
-                                                    <RiMotorbikeFill className="text-xl" />
-                                                    <div className="flex flex-col">
-                                                        <div className="flex gap-1">
-                                                            <span className="text-xl font-bold">{item?.profile?.first_name}</span>
-                                                            <span className="text-xl font-bold">{item?.profile?.last_name}</span>
-                                                            <span className="text-sm mt-1 font-semibold">
-                                                                {latitude && <>({distanceFromStore}KM)</>}
-                                                            </span>
+                                            return (
+                                                <Card
+                                                    key={key}
+                                                    className={`${isFree ? 'bg-green-100 hover:bg-green-200' : 'bg-red-100 hover:bg-red-200'} w-full transition-colors duration-200 cursor-pointer`}
+                                                >
+                                                    <div className="flex items-center gap-3 p-3">
+                                                        <Radio value={item?.profile?.mobile} />
+                                                        <div className="flex items-center gap-3 flex-1">
+                                                            <RiMotorbikeFill className="text-2xl text-gray-700" />
+                                                            <div className="flex flex-col flex-1">
+                                                                <div className="flex items-baseline gap-2">
+                                                                    <span className="text-lg font-semibold">
+                                                                        {item?.profile?.first_name} {item?.profile?.last_name}
+                                                                    </span>
+                                                                    {latitude && (
+                                                                        <span className="text-sm text-gray-600">
+                                                                            {distanceFromStore}KM away
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                <div className="text-sm text-gray-600 mt-1">{item?.profile?.mobile}</div>
+                                                                <span className="text-sm text-gray-600">{item?.profile?.rider_type}</span>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </div>
-                                        </Card>
-                                    )
-                                })}
-                            </Radio.Group>
+                                                </Card>
+                                            )
+                                        })}
+                                    </div>
+                                </Radio.Group>
+                            </div>
                         </div>
                     )}
                 </div>
