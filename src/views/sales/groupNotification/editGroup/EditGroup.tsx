@@ -73,26 +73,19 @@ const EditGroup = () => {
 
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
 
-    console.log('Iniyial va;ues', initialData)
+    console.log('Initial values', initialData[0].user?.map((item: any) => item?.mobile).join(','))
 
     const initialValues = {
         name: initialData[0]?.name,
-        user: userData?.flatMap((item) => item?.mobile).join(','),
-        // Group fields
+        user: initialData[0].user?.map((item: any) => item?.mobile).join(','),
         groups: initialData[0]?.group || [],
-
-        // Cart fields
         cart_start: initialData[0]?.rules?.cart?.find((rule: any) => rule.type === 'cart')?.value.start_date || '',
         cart_end: initialData[0]?.rules?.cart?.find((rule: any) => rule.type === 'cart')?.value.end_date || '',
-
-        // User profile fields
         registration_start: initialData[0]?.rules?.userInfo?.find((info: any) => info.type === 'registration')?.value.start || '',
         registration_end: initialData[0]?.rules?.userInfo?.find((info: any) => info.type === 'registration')?.value.end || '',
         dob_start: initialData[0]?.rules?.userInfo?.find((info: any) => info.type === 'dob')?.value.start || '',
         dob_end: initialData[0]?.rules?.userInfo?.find((info: any) => info.type === 'dob')?.value.end || '',
         gender: initialData[0]?.rules?.userInfo?.find((info: any) => info.type === 'gender')?.value || [],
-
-        // Order fields
         min_value: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'order_value')?.value.min || '',
         max_value: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'order_value')?.value.max || '',
         max_purchase: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'life_time_purchase')?.value.min || '',
@@ -100,17 +93,9 @@ const EditGroup = () => {
         min_count: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'order_count')?.value.min || '',
         max_count: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'order_count')?.value.max || '',
         order_delivery_type: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'order_delivery_type')?.value || [],
-
-        // Loyalty
-        // max_point_available:  initialData[0]?.rules?.loyalty?.find((rule: any) => rule.type === 'order_type_delivery')?.value || [],
-        // min_point_available:  initialData[0]?.rules?.loyalty?.find((rule: any) => rule.type === 'order_type_delivery')?.value || [],
-
-        // Order item fields
         max_basket_size: initialData[0]?.rules?.order_item?.find((item: any) => item.type === 'basket_size')?.value.max || '',
         min_basket_size: initialData[0]?.rules?.order_item?.find((item: any) => item.type === 'basket_size')?.value.min || '',
         filters: initialData[0]?.rules?.order_item?.find((item: any) => item.type === 'tag_filters')?.value || [],
-
-        // Location fields
         city: initialData[0]?.rules?.location?.find((loc: any) => loc.type === 'city')?.value || '',
         state: initialData[0]?.rules?.location?.find((loc: any) => loc.type === 'state')?.value || '',
         distance: initialData[0]?.rules?.location?.find((loc: any) => loc.type === 'distance')?.value || '',
@@ -382,14 +367,14 @@ const EditGroup = () => {
                         <FormContainer>
                             <FormContainer>
                                 <h3>Groups</h3>
-                                <div className="flex justify-end">
+                                {/* <div className="flex justify-end">
                                     <Tooltip title="Download User CSV">
                                         <FaDownload
                                             className="text-xl cursor-pointer hover:text-blue-500"
                                             onClick={handleDownloadUserCsv}
                                         />
                                     </Tooltip>
-                                </div>
+                                </div> */}
                                 <FormContainer className="grid grid-cols-2 gap-6">
                                     {headingGroup.map((item, key) => (
                                         <FormItem key={key} label={item.label} className={item.className}>
