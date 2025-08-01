@@ -82,8 +82,13 @@ export const ImageHandlerBanners = async (values: any, webImagview: string[], mo
     const webVideoUpload = await processVideoUpload(values?.video_web_array, values?.video_web)
     const mobileVideoUpload = await processVideoUpload(values?.video_mobile_array, values?.video_mobile)
 
-    const webLottieUpload = await processImageUpload(values?.lottie_web_array, values?.lottie_web)
-    const mobileLottieUpload = await processImageUpload(values?.lottie_mobile_array, values?.lottie_mobile)
+    const webLottieUpload =
+        values?.lottie_web_array?.length > 0 ? await processImageUpload(values?.lottie_web_array, values?.lottie_web) : ''
+    const mobileLottieUpload =
+        values?.lottie_mobile_array?.length > 0 ? await processImageUpload(values?.lottie_mobile_array, values?.lottie_mobile) : ''
+
+    console.log('Web Lottie Upload:', webLottieUpload)
+    console.log('Mobile Lottie Upload:', mobileLottieUpload)
 
     return {
         webImageUpload,
