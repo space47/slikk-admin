@@ -101,8 +101,8 @@ const AddUrlShortner = () => {
             ios_url: !values.select_filter
                 ? values.ios_url
                     ? `${values.ios_url}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
-                    : `${base_url}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
-                : `${base_url}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
+                    : `${`slikk:/`}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
+                : `${`slikk:/`}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
             web_url: !values.select_filter
                 ? values.web_url
                     ? `${values.web_url}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
@@ -111,15 +111,16 @@ const AddUrlShortner = () => {
             android_url: !values.select_filter
                 ? values.android_url
                     ? `${values.android_url}${target_page}${pageTitle}?${subPage}${noSelectFilters}${appOnly}`
-                    : `${base_url}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
-                : `${base_url}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
+                    : `${`slikk:/`}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
+                : `${`slikk:/`}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
         }
 
-        const pageUrl = `${base_url}/s/${values?.page?.name}${values?.sub_page?.name ? `/${values?.sub_page?.name}` : ''}${pageTitle}?${noSelectFilters}${appOnly}`
+        const pageUrl = `${`slikk:/`}/s/${values?.page?.name}${values?.sub_page?.name ? `/${values?.sub_page?.name}` : ''}${pageTitle}?${noSelectFilters}${appOnly}`
+        const webPageUrl = `${base_url}/s/${values?.page?.name}${values?.sub_page?.name ? `/${values?.sub_page?.name}` : ''}${pageTitle}?${noSelectFilters}${appOnly}`
         const customBody = {
             short_code: values?.short_code,
             ios_url: pageUrl,
-            web_url: pageUrl,
+            web_url: webPageUrl,
             android_url: pageUrl,
         }
 

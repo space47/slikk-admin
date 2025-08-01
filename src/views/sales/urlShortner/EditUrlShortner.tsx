@@ -88,8 +88,8 @@ const EditUrlShortner = () => {
     const initialValues: any = {
         short_code: urlFieldDatas?.short_code || '',
         web_url: urlFieldDatas?.ios_url ? `${baseUrl}` : '',
-        android_url: urlFieldDatas?.ios_url ? `${baseUrl}` : '',
-        ios_url: urlFieldDatas?.ios_url ? `${baseUrl}` : '',
+        android_url: urlFieldDatas?.ios_url ? `${`slikk://`}` : '',
+        ios_url: urlFieldDatas?.ios_url ? `${`slikk://`}` : '',
         page: (() => {
             const url = urlFieldDatas?.web_url || urlFieldDatas?.android_url || urlFieldDatas?.ios_url
             if (url) {
@@ -277,8 +277,8 @@ const EditUrlShortner = () => {
             ios_url: !values.select_filter
                 ? values.ios_url
                     ? `${values.ios_url}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
-                    : `${baseUrl}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
-                : `${baseUrl}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
+                    : `${`slikk:/`}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
+                : `${`slikk:/`}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
             web_url: !values.select_filter
                 ? values.web_url
                     ? `${values.web_url}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
@@ -287,15 +287,16 @@ const EditUrlShortner = () => {
             android_url: !values.select_filter
                 ? values.android_url
                     ? `${values.android_url}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
-                    : `${baseUrl}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
-                : `${baseUrl}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
+                    : `${`slikk:/`}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
+                : `${`slikk:/`}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
         }
 
-        const pageUrl = `${baseUrl}/s/${values?.page?.name}${values?.sub_page?.name ? `/${values?.sub_page?.name}` : ''}${pageTitle}?${noSelectFilters}${appOnly}`
+        const webPageUrl = `${baseUrl}/s/${values?.page?.name}${values?.sub_page?.name ? `/${values?.sub_page?.name}` : ''}${pageTitle}?${noSelectFilters}${appOnly}`
+        const pageUrl = `${`slikk:/`}/s/${values?.page?.name}${values?.sub_page?.name ? `/${values?.sub_page?.name}` : ''}${pageTitle}?${noSelectFilters}${appOnly}`
         const customBody = {
             short_code: values?.short_code,
             ios_url: pageUrl,
-            web_url: pageUrl,
+            web_url: webPageUrl,
             android_url: pageUrl,
         }
 
