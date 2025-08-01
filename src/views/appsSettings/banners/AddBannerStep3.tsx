@@ -22,6 +22,7 @@ import FilterSelectWithoutFormik from '@/common/FilterSelectWithoutFormik'
 import { useFetchApi } from '@/commonHooks/useFetchApi'
 import { BANNER_MODEL } from './BannerCommon'
 import { DISCOUNTOPTIONS } from '@/views/sales/groupNotification/sendNotification/sendNotify.common'
+import { beforeUpload } from '@/common/beforeUpload'
 
 function AddBannerStep3({
     setCurrentStep,
@@ -320,11 +321,11 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
             </div>
             <div className="flex flex-col gap-y-2 items-center justify-center w-[300px] overflow-hidden bg-gray-50 p-2">
                 <span>Select Banner Lottie</span>
-                <Upload uploadLimit={1} onChange={(file) => handleSetDataInForm('lottie_web', file[0])} />
+                <Upload uploadLimit={1} beforeUpload={beforeUpload} onChange={(file) => handleSetDataInForm('lottie_web', file[0])} />
             </div>
             <div className="flex flex-col gap-y-2 items-center justify-center w-[300px] overflow-hidden bg-gray-50 p-2">
                 <span>Select Mobile Banner Lottie</span>
-                <Upload uploadLimit={1} onChange={(file) => handleSetDataInForm('lottie_mobile', file[0])} />
+                <Upload uploadLimit={1} beforeUpload={beforeUpload} onChange={(file) => handleSetDataInForm('lottie_mobile', file[0])} />
             </div>
 
             <form className="p-4 flex flex-row gap-3 flex-wrap">
