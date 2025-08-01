@@ -291,7 +291,7 @@ const EditUrlShortner = () => {
                 : `${baseUrl}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
         }
 
-        const pageUrl = `${baseUrl}/s/${values?.page?.name}/${values?.sub_page?.name}`
+        const pageUrl = `${baseUrl}/s/${values?.page?.name}${values?.sub_page?.name ? `/${values?.sub_page?.name}` : ''}${pageTitle}?${noSelectFilters}${appOnly}`
         const customBody = {
             short_code: values?.short_code,
             ios_url: pageUrl,
@@ -300,6 +300,7 @@ const EditUrlShortner = () => {
         }
 
         console.log('object', formData)
+        console.log('object 2', customBody)
         try {
             const body = values?.is_custom ? customBody : formData
             const response = await axioisInstance.patch(`/short_url/update/${short_code}`, body)
