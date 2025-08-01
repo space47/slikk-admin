@@ -15,7 +15,7 @@ import TabNav from '@/components/ui/Tabs/TabNav'
 import ActiveInactiveModal from '@/views/appsSettings/careers/careerDetails/ActiveInactiveModal'
 
 const GetGroupNotification = () => {
-    const [groupData, setGroupData] = useState([])
+    const [groupData, setGroupData] = useState<any[]>([])
     const [totalCount, setTotalCount] = useState(0)
     const [page, setPage] = useState<number>(1)
     const [pageSize, setPageSize] = useState<number | undefined>(10)
@@ -84,12 +84,13 @@ const GetGroupNotification = () => {
     ]
 
     const handleDownloadUserCsv = async (groupId: number) => {
-        let userData = []
+        let userData = groupData?.find((item) => item.id === groupId)?.user || []
+
         try {
             setDownloadSpinner(true)
             const response = await axioisInstance.get(`/notification/groups/${groupId}`)
-            const data = response?.data?.data
-            userData = data?.group_users
+            const data = response?.data?.data || {}
+            userData = [...userData, ...data.group_users]
             handleDownloadCsv(userData, columnsForCsv, convertToCSV, 'group_users.csv')
             notification.success({ message: 'Download complete' })
         } catch (error) {
