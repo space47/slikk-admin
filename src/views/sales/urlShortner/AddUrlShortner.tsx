@@ -115,8 +115,8 @@ const AddUrlShortner = () => {
                 : `${`slikk:/`}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
         }
 
-        const pageUrl = `${base_url}/s/${values?.page?.name}${values?.sub_page?.name ? `/${values?.sub_page?.name}` : ''}${pageTitle}?${noSelectFilters}${appOnly}`
-        const webPageUrl = `${`slikk:/`}/s/${values?.page?.name}${values?.sub_page?.name ? `/${values?.sub_page?.name}` : ''}${pageTitle}?${noSelectFilters}${appOnly}`
+        const pageUrl = `${`slikk:/`}/s/${values?.page?.name}${values?.sub_page?.name ? `/${values?.sub_page?.name}` : ''}${pageTitle}?${noSelectFilters}${appOnly}`
+        const webPageUrl = `${base_url}/s/${values?.page?.name}${values?.sub_page?.name ? `/${values?.sub_page?.name}` : ''}${pageTitle}?${noSelectFilters}${appOnly}`
         const customBody = {
             short_code: values?.short_code,
             ios_url: pageUrl,
