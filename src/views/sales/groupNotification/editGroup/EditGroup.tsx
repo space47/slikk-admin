@@ -14,9 +14,7 @@ import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { notification } from 'antd'
 import { useParams } from 'react-router-dom'
 import { AxiosError } from 'axios'
-import { Spinner, Tooltip } from '@/components/ui'
-import { FaDownload } from 'react-icons/fa6'
-import { handleDownloadCsv } from '@/common/allTypesCommon'
+import { Spinner } from '@/components/ui'
 
 const genderOptions = [
     {
@@ -105,35 +103,6 @@ const EditGroup = () => {
     useEffect(() => {
         dispatch(getAllFiltersAPI())
     }, [])
-
-    const convertToCSV = (data: any[], columns: any[]) => {
-        const header = columns.map((col) => col.header).join(',')
-        const rows = data
-            .map((row) => {
-                return columns
-                    .map((col) => {
-                        if (col.accessorKey === 'first_name') {
-                            return `${row?.first_name}`
-                        } else if (col.accessorKey === 'mobile') {
-                            return row?.mobile
-                        } else {
-                            return ''
-                        }
-                    })
-                    .join(',')
-            })
-            .join('\n')
-        return `${header}\n${rows}`
-    }
-
-    const columnsForCsv = [
-        { header: 'First Name', accessorKey: 'first_name' },
-        { header: 'Mobile', accessorKey: 'mobile' },
-    ]
-
-    const handleDownloadUserCsv = () => {
-        handleDownloadCsv(userData, columnsForCsv, convertToCSV, 'group_users.csv')
-    }
 
     const handleSubmit = async (values: any) => {
         console.log('start')
@@ -365,14 +334,6 @@ const EditGroup = () => {
                         <FormContainer>
                             <FormContainer>
                                 <h3>Groups</h3>
-                                {/* <div className="flex justify-end">
-                                    <Tooltip title="Download User CSV">
-                                        <FaDownload
-                                            className="text-xl cursor-pointer hover:text-blue-500"
-                                            onClick={handleDownloadUserCsv}
-                                        />
-                                    </Tooltip>
-                                </div> */}
                                 <FormContainer className="grid grid-cols-2 gap-6">
                                     {headingGroup.map((item, key) => (
                                         <FormItem key={key} label={item.label} className={item.className}>
