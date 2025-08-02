@@ -106,10 +106,12 @@ const SendNotification = () => {
                 .filter((filter) => filter)
                 .join(','),
             message: plainTextMessage || '',
+            sent_to_all: false,
         }
 
         if (values.users_all) {
             data.users = ''
+            data.sent_to_all = true
         } else {
             data.users = values.users?.replace(/\s+/g, '') || ''
         }
