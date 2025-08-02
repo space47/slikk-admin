@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, FormContainer, FormItem, Input, Select } from '@/components/ui'
+import { FashionList } from '@/constants/commonArray.constant'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
 import { companyStore } from '@/store/types/companyStore.types'
@@ -115,6 +116,24 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
                                                                 onChange={(newVal) => {
                                                                     console.log('new val is', newVal?.code)
                                                                     form.setFieldValue(`required_fields[${index}].value`, newVal?.code)
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    )
+                                                }
+                                                if (dataType === 'Select' && key === 'fashion_style') {
+                                                    console.log('field value', field?.value)
+
+                                                    return (
+                                                        <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
+                                                            <Select
+                                                                className="w-full"
+                                                                options={FashionList}
+                                                                getOptionLabel={(option) => option.name}
+                                                                getOptionValue={(option) => option.value}
+                                                                onChange={(newVal) => {
+                                                                    console.log('new val is', newVal?.value)
+                                                                    form.setFieldValue(`required_fields[${index}].value`, newVal?.value)
                                                                 }}
                                                             />
                                                         </div>

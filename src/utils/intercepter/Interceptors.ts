@@ -1,3 +1,4 @@
+import { notification } from 'antd'
 import { AxiosError, AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'axios'
 
 const onRequest = async (config: InternalAxiosRequestConfig): Promise<InternalAxiosRequestConfig<any>> => {
@@ -21,9 +22,11 @@ const onResponse = (response: AxiosResponse): AxiosResponse => {
 }
 
 const onResponseError = (error: AxiosError): Promise<AxiosError> => {
-    // if (error.response?.status === 403) {
-    //     window.location.href = '/access-denied'
-    // }
+    if (error.response?.status === 403) {
+        notification.error({
+            message: 'You have no access to this resource.',
+        })
+    }
     // else if (error.response?.status === 500) {
     //     window.location.href = '/internal-error'
     // }
