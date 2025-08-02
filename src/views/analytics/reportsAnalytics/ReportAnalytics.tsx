@@ -15,23 +15,13 @@ import AccessDenied from '@/views/pages/AccessDenied'
 import InnternalError from '@/views/pages/InternalServerError/InternalError'
 import ReportFields from './ReportFields'
 import moment from 'moment'
-import BadRequest from '@/views/pages/BadRequest/BadRequest'
 import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
 import { PRODUCTTYPE_STATE } from '@/store/types/productType.types'
 import ReportCustomQuery from './ReportCustomQuery'
 import { notification } from 'antd'
-
-const reportQueryArray = [
-    { label: 'Date', value: 'Date' },
-    { label: 'Number', value: 'Number' },
-    { label: 'String', value: 'String' },
-    { label: 'Boolean', value: 'Boolean' },
-    { label: 'Select', value: 'Select' },
-    { label: 'MultiSelect', value: 'MultiSelect' },
-]
+import { reportQueryArray } from '@/constants/commonArray.constant'
 
 const ReportAnalytics = () => {
-    const [reportQueryData, setReportQueryData] = useState<ReportQueryData[]>([])
     const [storeName, setStoreName] = useState('')
     const [reportQueryNames, setReportQueryNames] = useState<{ label: string; value: string }[]>([])
     const [showDataBelow, setShowDataBelow] = useState(false)
@@ -50,7 +40,6 @@ const ReportAnalytics = () => {
     const [accessDenied, setAccessDenied] = useState(false)
     const [badRequest, setBadRequest] = useState(false)
     const [serverError, setServerError] = useState(false)
-    const [reportValue, setReportValue] = useState()
     const [isCustomQuery, setIsCustomQuery] = useState(false)
     const [errorQuery, setErrorQuery] = useState('')
 
@@ -59,7 +48,6 @@ const ReportAnalytics = () => {
             setShowSpinner(true)
             const response = await axioisInstance.get(`/query/config?p=1&page_size=100`)
             const data = response?.data?.data
-            setReportQueryData(data?.results)
             setReportQueryNames(
                 data?.results?.map((item: any) => ({
                     label: item.name,
@@ -109,13 +97,11 @@ const ReportAnalytics = () => {
                         console.log('full value', fullValue)
                         const [position, dataType, valueArray, prefix, suffix] = Array.isArray(fullValue) ? fullValue : []
                         let transformedValue = valueArray
-
                         if (key === 'start_date') {
                             transformedValue = moment().startOf('month').format('YYYY-MM-DD')
                         } else if (key === 'end_date') {
                             transformedValue = moment().endOf('month').format('YYYY-MM-DD')
                         }
-
                         return {
                             position: position,
                             key,
@@ -128,7 +114,6 @@ const ReportAnalytics = () => {
                     ?.sort((a, b) => a.position - b.position),
             }
             setReportData(formattedData)
-            setReportValue(formattedData?.value)
             setShowDataBelow(true)
         } catch (error: any) {
             if (error.response && error.response.status === 403) {
@@ -145,8 +130,6 @@ const ReportAnalytics = () => {
         }
     }, [storeName])
 
-    console.log('reportValue', reportValue)
-
     const [currentValues, setCurrentValues] = useState<any>()
 
     const fetchTable = async (values?: any) => {
@@ -156,9 +139,7 @@ const ReportAnalytics = () => {
                 .map((field: { key: string; value: any; prefix?: string; suffix?: string; dataType?: string; position?: number }) => {
                     const { key, value = '', prefix = '', suffix = '', dataType } = field
                     const val = encodeURIComponent(value)
-
                     if (dataType === 'MultiSelect' && Array.isArray(value)) {
-                        console.log('value for muktiselect ', value)
                         if (value.length === 0 || value[0] === '') {
                             return `${key}= NOT IN ('')`
                         }
@@ -186,7 +167,7 @@ const ReportAnalytics = () => {
                         ? `${prefix.toUpperCase()}${val.toString().toUpperCase()}${suffix.toUpperCase()}`
                         : `${prefix.toUpperCase()}${val}${suffix.toUpperCase()}`
 
-                    if (key === 'store_code') {
+                    if (key === 'store_code' || key === 'fashion_style') {
                         transformedValue = !['Date', 'Number', 'Boolean'].includes(dataType!)
                             ? `${prefix}${val.toString()}${suffix}`
                             : `${prefix}${val}${suffix}`
@@ -202,7 +183,6 @@ const ReportAnalytics = () => {
             setShowSpinner(true)
             const response = await axioisInstance.get(`/query/execute/${storeName}?${reportParameters}`)
             const data = response?.data?.data
-
             const tab = Object.keys(data).map((key) => {
                 return { key, data: data[key] }
             })
