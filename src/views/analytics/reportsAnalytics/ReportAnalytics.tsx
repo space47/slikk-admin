@@ -196,7 +196,7 @@ const ReportAnalytics = () => {
             } else if (error.response && error.response.status === 400) {
                 setBadRequest(true)
             }
-            setErrorQuery(error?.response?.data?.error_query)
+            setErrorQuery(error?.response?.data?.message)
             console.log(error?.response?.data?.error_query)
         } finally {
             setShowSpinner(false)
