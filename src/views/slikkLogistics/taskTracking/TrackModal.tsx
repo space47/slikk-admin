@@ -52,7 +52,6 @@ const TrackModal = ({
             name: globalFilter,
             mobile: mobileFilter,
             isActive: 'true',
-            rider_type: isReturn ? 'RETURN' : '',
         },
         { refetchOnMountOrArgChange: true },
     )
