@@ -106,7 +106,7 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
     const handleRemoveFilter = (index: number) => {
         const updatedFilters = showAddFilter.filter((_, i) => i !== index)
         setShowAddFilter(updatedFilters)
-        setFieldValue(`filtersAdd[${index}]`, undefined)
+        setFieldValue(`filtersAdd[${index}]`, [])
     }
     const handleRemoveExcludeFilter = (index: number) => {
         const updatedFilters = showAddFilter.filter((_, i) => i !== index)
@@ -124,6 +124,17 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
             sendFilterData(lastElement)
             return updatedFilters
         })
+    }
+
+    const handleRemoveAllFilters = () => {
+        setShowAddFilter([])
+        setFiltersData([])
+        setFilterId('')
+        if (isExclude) {
+            setFieldValue('filtersRemove', [])
+        } else {
+            setFieldValue('filtersAdd', [])
+        }
     }
 
     const sendFilterData = async (filterData: any) => {
@@ -288,13 +299,18 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
                             </Field>
                         </FormItem>
                     </div>
-                    <Field>
-                        {({ form }: FieldProps<any>) => (
-                            <Button type="button" variant="new" onClick={() => handleAddFilters(form.values)}>
-                                Search Strings
-                            </Button>
-                        )}
-                    </Field>
+                    <div className="flex flex-col gap-3 xl:flex-row  mt-4">
+                        <Field>
+                            {({ form }: FieldProps<any>) => (
+                                <Button type="button" variant="new" onClick={() => handleAddFilters(form.values)}>
+                                    Search Strings
+                                </Button>
+                            )}
+                        </Field>
+                        <Button type="button" variant="reject" onClick={handleRemoveAllFilters}>
+                            Remove All Filters
+                        </Button>
+                    </div>
                 </>
             )}
         </div>

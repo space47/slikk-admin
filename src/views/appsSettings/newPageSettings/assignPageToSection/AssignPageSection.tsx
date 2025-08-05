@@ -291,28 +291,24 @@ const AssignPageSection = () => {
                                 <Field type="checkbox" name="is_section_clickable" component={Checkbox} />
                             </FormItem>
 
-                            {values?.is_section_clickable && (
-                                <>
-                                    <TagsEdit isValue filterOptions={filters.filters} />
-                                    <div className="mb-4">
-                                        <CommonFilterSelect filterId={filterId} setFilterId={setFilterId} />
-                                    </div>
-                                    {/* sort_hightolow */}
+                            <TagsEdit isValue filterOptions={filters.filters} customClass="grid grid-cols-2 gap-4 w-[500px]" />
+                            <div className="mb-4">
+                                <CommonFilterSelect filterId={filterId} setFilterId={setFilterId} customClass="xl:w-[400px] w-auto" />
+                            </div>
+                            {/* sort_hightolow */}
 
-                                    <CommonSelect label="Sort By" name="sort" options={SortArrays} />
-                                    <FormContainer className="grid grid-cols-2 gap-2">
-                                        {PageSectionsFiltersArray?.map((item, key) => {
-                                            return (
-                                                <div key={key}>
-                                                    <FormItem label={item?.label}>
-                                                        <Field type={item?.type} name={item?.name} component={Input} />
-                                                    </FormItem>
-                                                </div>
-                                            )
-                                        })}
-                                    </FormContainer>
-                                </>
-                            )}
+                            <CommonSelect label="Sort By" name="sort" options={SortArrays} />
+                            {/* <FormContainer className="grid grid-cols-2 gap-2">
+                                {PageSectionsFiltersArray?.map((item, key) => {
+                                    return (
+                                        <div key={key}>
+                                            <FormItem label={item?.label}>
+                                                <Field type={item?.type} name={item?.name} component={Input} />
+                                            </FormItem>
+                                        </div>
+                                    )
+                                })}
+                            </FormContainer> */}
 
                             <FormItem label="Position">
                                 <Field type="number" min="0" name="position" placeholder="Enter Position" component={Input} />
