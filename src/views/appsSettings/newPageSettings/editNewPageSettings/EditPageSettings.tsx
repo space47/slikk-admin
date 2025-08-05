@@ -56,6 +56,7 @@ const EditPageSettings = () => {
     }, [pageSettingsData, bannerDetails])
 
     const handleSubmit = async (values: any) => {
+        console.log('values in submit', values)
         const { componentConfig, backgroundConfig, footerConfig, headerConfig, subHeaderConfig, child_component_config, cta_config } =
             await PageSettingsBodyFile({
                 values,
@@ -100,7 +101,7 @@ const EditPageSettings = () => {
                 filters: [
                     ...(values?.division_select ? [`division_${values.division_select}`] : []),
                     ...(values?.sort ? [`sort_${values.sort}`] : []),
-                    ...(filterId ? [`filterID_${filterId}`] : []),
+                    ...(values.filtersAdd.length > 0 ? [`filterID_${filterId}`] : []),
                 ]
                     .filter(Boolean)
                     .flat(),
