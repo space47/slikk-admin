@@ -28,9 +28,9 @@ import { Checkbox, Spinner } from '@/components/ui'
 import { AxiosError } from 'axios'
 
 const AddGroup = () => {
-    const [csvFile, setCSVFile] = useState<any>()
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
     const [spinner, setSpinner] = useState(false)
+    const [csvFile, setCSVFile] = useState<any>()
     const [mobileNumbers, setMobileNumbers] = useState<string[]>([])
     const initialValue = {}
 
@@ -88,196 +88,203 @@ const AddGroup = () => {
                 onSubmit={handleSubmit}
             >
                 {({ resetForm }) => (
-                    <Form className="w-2/3">
-                        <FormContainer>
-                            <FormContainer>
-                                <h3>Groups</h3>
-                                <FormContainer className="grid grid-cols-2 gap-6">
-                                    {headingGroup.map((item, key) => (
-                                        <FormItem key={key} label={item.label} className={item.className}>
-                                            <Field
-                                                type={item.type}
-                                                name={item.name}
-                                                placeholder={item.placeholder}
-                                                component={item?.type === 'checkbox' ? Checkbox : Input}
-                                            />
-                                        </FormItem>
-                                    ))}
-                                </FormContainer>
-                                <FormItem label="CSV for User" className="flex gap-2">
-                                    <div className="flex ">
-                                        <input type="file" accept=".csv" onChange={handleCSVFileChange} />
-                                        <span>
-                                            <MdDelete className="text-xl cursor-pointer" onClick={() => setMobileNumbers([])} />
-                                        </span>
-                                    </div>
-                                </FormItem>
-                            </FormContainer>
-                            <FormContainer>
-                                <FormContainer className="w-1/2">
-                                    <h3>Cart</h3>
-
-                                    <FormItem label="All Open Cart">
+                    <Form className="w-full p-6 bg-white rounded-xl shadow-xl space-y-8">
+                        {/* Groups Section */}
+                        <FormContainer className="space-y-6 p-6 bg-white rounded-lg shadow">
+                            <h3 className="text-lg font-semibold text-gray-800">Groups</h3>
+                            <FormContainer className="grid grid-cols-2 gap-6">
+                                {headingGroup.map((item, key) => (
+                                    <FormItem key={key} label={item.label} className={item.className}>
                                         <Field
-                                            type="checkbox"
-                                            name="allOpenCart"
-                                            component={Checkbox}
-                                            className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            type={item.type}
+                                            name={item.name}
+                                            placeholder={item.placeholder}
+                                            component={item?.type === 'checkbox' ? Checkbox : Input}
+                                            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         />
                                     </FormItem>
-                                    <FormItem className="col-span-1 w-full sm:w-1/2 space-y-2">
+                                ))}
+                            </FormContainer>
+                            <FormItem label="CSV for User" className="flex flex-col gap-2">
+                                <div className="flex items-center gap-4">
+                                    <input
+                                        type="file"
+                                        accept=".csv"
+                                        className="file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                        onChange={handleCSVFileChange}
+                                    />
+                                    <MdDelete
+                                        className="text-xl text-red-500 cursor-pointer hover:text-red-700"
+                                        onClick={() => {
+                                            setMobileNumbers([])
+                                            setCSVFile('')
+                                            notification.info({ message: 'CSV file cleared' })
+                                        }}
+                                    />
+                                </div>
+                            </FormItem>
+                        </FormContainer>
+
+                        {/* Cart Section */}
+                        <FormContainer className="p-6 bg-white rounded-lg shadow">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-4">Cart</h3>
+                            <div className="grid grid-cols-2 gap-6">
+                                <FormItem label="All Open Cart" className="col-span-1">
+                                    <Field
+                                        type="checkbox"
+                                        name="allOpenCart"
+                                        component={Checkbox}
+                                        className="h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
+                                    />
+                                </FormItem>
+                                <FormItem className="col-span-1 space-y-4">
+                                    <div className="flex flex-col">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Cart Start</label>
+                                        <Field
+                                            type="date"
+                                            name="cart_start"
+                                            component={Input}
+                                            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Cart End</label>
+                                        <Field
+                                            type="date"
+                                            name="cart_end"
+                                            component={Input}
+                                            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    </div>
+                                </FormItem>
+                            </div>
+                        </FormContainer>
+
+                        {/* User Section */}
+                        <FormContainer className="p-6 bg-white rounded-lg shadow">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-4">User</h3>
+                            <div className="grid grid-cols-2 gap-6">
+                                {userProfileGroup.map((item, key) => (
+                                    <FormItem key={key} label={item.label} className="space-y-4">
                                         <div className="flex flex-col">
-                                            <label className="text-gray-700 font-semibold mb-1">Cart Start</label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">{item.label} Start</label>
                                             <Field
-                                                type="date"
-                                                name="cart_start"
+                                                type={item.type}
+                                                name={item.start_name}
                                                 component={Input}
-                                                className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             />
                                         </div>
                                         <div className="flex flex-col">
-                                            <label className="text-gray-700 font-semibold mb-1">Cart End</label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">{item.label} End</label>
                                             <Field
-                                                type="date"
-                                                name="cart_end"
+                                                type={item.type}
+                                                name={item.end_name}
                                                 component={Input}
-                                                className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             />
                                         </div>
                                     </FormItem>
-                                </FormContainer>
-                            </FormContainer>
-                            <h3>User:</h3> <br />
-                            <div className="grid grid-cols-2 gap-4">
-                                {userProfileGroup.map((item, key) => {
-                                    return (
-                                        <FormContainer key={key} className="space-y-4">
-                                            <FormItem label={item.label} className="col-span-1 w-full sm:w-1/2 space-y-2">
-                                                <div className="flex flex-col">
-                                                    <label className="text-gray-700 font-semibold mb-1">{item.label} Start</label>
-                                                    <Field
-                                                        type={item.type}
-                                                        name={item.start_name}
-                                                        component={Input}
-                                                        className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                    />
-                                                </div>
-                                                <div className="flex flex-col mt-4">
-                                                    <label className="text-gray-700 font-semibold mb-1">{item.label} End</label>
-                                                    <Field
-                                                        type={item.type}
-                                                        name={item.end_name}
-                                                        component={Input}
-                                                        className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                    />
-                                                </div>
-                                            </FormItem>
-                                        </FormContainer>
-                                    )
-                                })}
-                                <FormItem asterisk label="Gender" className="col-span-1 w-1/2">
+                                ))}
+                                <FormItem label="Gender" className="col-span-1">
                                     <Field name="gender">
-                                        {({ field, form }: FieldProps<any>) => {
-                                            return (
-                                                <Select
-                                                    isMulti
-                                                    field={field}
-                                                    form={form}
-                                                    options={genderOptions}
-                                                    value={genderOptions.find((option) => option.value === field.value)}
-                                                    onChange={(newVal) => {
-                                                        const newValues = newVal ? newVal.map((val) => val.value) : []
-                                                        form.setFieldValue(field.name, newValues)
-                                                    }}
-                                                />
-                                            )
-                                        }}
+                                        {({ field, form }: FieldProps<any>) => (
+                                            <Select
+                                                isMulti
+                                                field={field}
+                                                form={form}
+                                                options={genderOptions}
+                                                value={genderOptions.find((option) => option.value === field.value)}
+                                                onChange={(newVal) => {
+                                                    const newValues = newVal ? newVal.map((val) => val.value) : []
+                                                    form.setFieldValue(field.name, newValues)
+                                                }}
+                                                className="w-full"
+                                            />
+                                        )}
                                     </Field>
                                 </FormItem>
                             </div>
                         </FormContainer>
-                        {/* order................................................................................................. */}
-                        <FormContainer>
-                            <h3>Order:</h3> <br />
-                            <FormContainer className="grid grid-cols-2 gap-4">
-                                {orderGroup.map((item, key) => {
-                                    return (
-                                        <FormContainer key={key} className="space-y-4">
-                                            <FormItem label={item.label} className="col-span-1 w-full sm:w-1/2 space-y-2">
-                                                <div className="flex flex-col">
-                                                    <label className="text-gray-700 font-semibold mb-1">{item.start_placeholder} </label>
-                                                    <Field
-                                                        type={item.type}
-                                                        name={item.start_name}
-                                                        component={Input}
-                                                        placeholder={item.start_placeholder}
-                                                        className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                    />
-                                                </div>
-                                                <div className="flex flex-col mt-4">
-                                                    <label className="text-gray-700 font-semibold mb-1">{item.min_placeholder} </label>
-                                                    <Field
-                                                        type={item.type}
-                                                        name={item.end_name}
-                                                        component={Input}
-                                                        placeholder={item.min_placeholder}
-                                                        className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                    />
-                                                </div>
-                                            </FormItem>
-                                        </FormContainer>
-                                    )
-                                })}
-                                <FormItem asterisk label="Delivery Type" className="col-span-1 w-1/2">
+
+                        {/* Order Section */}
+                        <FormContainer className="p-6 bg-white rounded-lg shadow">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-4">Order</h3>
+                            <div className="grid grid-cols-2 gap-6">
+                                {orderGroup.map((item, key) => (
+                                    <FormItem key={key} label={item.label} className="space-y-4">
+                                        <div className="flex flex-col">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">{item.start_placeholder}</label>
+                                            <Field
+                                                type={item.type}
+                                                name={item.start_name}
+                                                component={Input}
+                                                placeholder={item.start_placeholder}
+                                                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">{item.min_placeholder}</label>
+                                            <Field
+                                                type={item.type}
+                                                name={item.end_name}
+                                                component={Input}
+                                                placeholder={item.min_placeholder}
+                                                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                    </FormItem>
+                                ))}
+                                <FormItem label="Delivery Type" className="col-span-1">
                                     <Field name="order_delivery_type">
-                                        {({ field, form }: FieldProps<any>) => {
-                                            return (
-                                                <Select
-                                                    isMulti
-                                                    field={field}
-                                                    form={form}
-                                                    options={DeliveryOptions}
-                                                    value={DeliveryOptions.find((option) => option.value === field.value)}
-                                                    onChange={(newVal) => {
-                                                        const newValues = newVal ? newVal.map((val) => val.value) : []
-                                                        form.setFieldValue(field.name, newValues)
-                                                    }}
-                                                />
-                                            )
-                                        }}
+                                        {({ field, form }: FieldProps<any>) => (
+                                            <Select
+                                                isMulti
+                                                field={field}
+                                                form={form}
+                                                options={DeliveryOptions}
+                                                value={DeliveryOptions.find((option) => option.value === field.value)}
+                                                onChange={(newVal) => {
+                                                    const newValues = newVal ? newVal.map((val) => val.value) : []
+                                                    form.setFieldValue(field.name, newValues)
+                                                }}
+                                                className="w-full"
+                                            />
+                                        )}
                                     </Field>
                                 </FormItem>
-                            </FormContainer>
+                            </div>
                         </FormContainer>
-                        {/* OrderItem................................ */}
-                        <FormContainer className="grid grid-cols-2 gap-10">
-                            <h3>Order Item</h3> <br />
-                            <FormItem label="Basket Size" className="col-span-1 w-full sm:w-1/2 space-y-2">
-                                <div className="flex flex-col">
-                                    <label className="text-gray-700 font-semibold mb-1">Max Basket Size</label>{' '}
-                                    <Field
-                                        type="number"
-                                        name="max_basket_size"
-                                        placeholder="Max"
-                                        component={Input}
-                                        className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    />
-                                </div>
-                                <div className="flex flex-col">
-                                    <label className="text-gray-700 font-semibold mb-1">Min Basket Size</label>
-                                    <Field
-                                        type="number"
-                                        name="min_basket_size"
-                                        placeholder="Min"
-                                        component={Input}
-                                        className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    />
-                                </div>
-                            </FormItem>
-                            <FormItem label="Filters">
-                                <Field name="tag_filters">
-                                    {({ field, form }: FieldProps<any>) => {
-                                        return (
+
+                        {/* Order Item Section */}
+                        <FormContainer className="p-6 bg-white rounded-lg shadow">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-4">Order Item</h3>
+                            <div className="grid grid-cols-2 gap-6">
+                                <FormItem label="Basket Size" className="space-y-4">
+                                    <div className="flex flex-col">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Max Basket Size</label>
+                                        <Field
+                                            type="number"
+                                            name="max_basket_size"
+                                            placeholder="Max"
+                                            component={Input}
+                                            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Min Basket Size</label>
+                                        <Field
+                                            type="number"
+                                            name="min_basket_size"
+                                            placeholder="Min"
+                                            component={Input}
+                                            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    </div>
+                                </FormItem>
+                                <FormItem label="Filters">
+                                    <Field name="tag_filters">
+                                        {({ field, form }: FieldProps<any>) => (
                                             <Select
                                                 isMulti
                                                 placeholder="Select Filter Tags"
@@ -288,20 +295,21 @@ const AddGroup = () => {
                                                     const newValues = newVal ? newVal.map((val) => val.value) : []
                                                     form.setFieldValue(field.name, newValues)
                                                 }}
+                                                className="w-full"
                                             />
-                                        )
-                                    }}
-                                </Field>
-                            </FormItem>
+                                        )}
+                                    </Field>
+                                </FormItem>
+                            </div>
                         </FormContainer>
-                        {/* Location */}
-                        <FormContainer>
-                            <h3>Loyalty:</h3>
-                            <br />
-                            <FormItem asterisk label="Loyalty" className="col-span-1 w-1/2">
-                                <Field name="loyalty">
-                                    {({ field, form }: FieldProps<any>) => {
-                                        return (
+
+                        {/* Loyalty Section */}
+                        <FormContainer className="p-6 bg-white rounded-lg shadow">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-4">Loyalty</h3>
+                            <div className="grid grid-cols-2 gap-6">
+                                <FormItem label="Loyalty" className="col-span-1">
+                                    <Field name="loyalty">
+                                        {({ field, form }: FieldProps<any>) => (
                                             <Select
                                                 isMulti
                                                 field={field}
@@ -312,60 +320,72 @@ const AddGroup = () => {
                                                     const newValues = newVal ? newVal.map((val) => val.value) : []
                                                     form.setFieldValue(field.name, newValues)
                                                 }}
+                                                className="w-full"
                                             />
-                                        )
-                                    }}
-                                </Field>
-                            </FormItem>
-                            <FormContainer className="grid grid-cols-2 gap-6">
-                                {LoyaltyArray.map((item, key) => {
-                                    return (
-                                        <FormContainer key={key} className="space-y-4">
-                                            <FormItem label={item.label} className="col-span-1 w-full sm:w-1/2 space-y-2">
-                                                <div className="flex flex-col">
-                                                    <label className="text-gray-700 font-semibold mb-1">{item.start_placeholder} </label>
-                                                    <Field
-                                                        type={item.type}
-                                                        name={item.start_name}
-                                                        component={Input}
-                                                        placeholder={item.start_placeholder}
-                                                        className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                    />
-                                                </div>
-                                                <div className="flex flex-col mt-4">
-                                                    <label className="text-gray-700 font-semibold mb-1">{item.min_placeholder} </label>
-                                                    <Field
-                                                        type={item.type}
-                                                        name={item.end_name}
-                                                        component={Input}
-                                                        placeholder={item.min_placeholder}
-                                                        className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                    />
-                                                </div>
-                                            </FormItem>
-                                        </FormContainer>
-                                    )
-                                })}
-                            </FormContainer>
-                        </FormContainer>
-
-                        <FormContainer>
-                            <h3>Location</h3> <br />
-                            <FormContainer className="grid grid-cols-2 gap-10">
-                                {groupLocation.map((item, key) => (
-                                    <FormItem key={key} label={item.label}>
-                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                        )}
+                                    </Field>
+                                </FormItem>
+                                {LoyaltyArray.map((item, key) => (
+                                    <FormItem key={key} label={item.label} className="space-y-4">
+                                        <div className="flex flex-col">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">{item.start_placeholder}</label>
+                                            <Field
+                                                type={item.type}
+                                                name={item.start_name}
+                                                component={Input}
+                                                placeholder={item.start_placeholder}
+                                                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">{item.min_placeholder}</label>
+                                            <Field
+                                                type={item.type}
+                                                name={item.end_name}
+                                                component={Input}
+                                                placeholder={item.min_placeholder}
+                                                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
                                     </FormItem>
                                 ))}
-                            </FormContainer>
+                            </div>
                         </FormContainer>
 
-                        <FormContainer className="flex justify-end mt-5">
-                            <Button type="reset" className="mr-2 bg-gray-600" onClick={() => resetForm()}>
+                        {/* Location Section */}
+                        <FormContainer className="p-6 bg-white rounded-lg shadow">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-4">Location</h3>
+                            <div className="grid grid-cols-2 gap-6">
+                                {groupLocation.map((item, key) => (
+                                    <FormItem key={key} label={item.label}>
+                                        <Field
+                                            type={item.type}
+                                            name={item.name}
+                                            placeholder={item.placeholder}
+                                            component={Input}
+                                            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    </FormItem>
+                                ))}
+                            </div>
+                        </FormContainer>
+
+                        {/* Form Actions */}
+                        <FormContainer className="flex justify-end gap-4 mt-8">
+                            <Button
+                                type="reset"
+                                className="px-6 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
+                                onClick={() => resetForm()}
+                            >
                                 Reset
                             </Button>
-                            <Button variant="solid" type="submit" className=" text-white flex items-center gap-2">
-                                <span>{spinner && <Spinner size={30} color="white" />}</span> Submit
+                            <Button
+                                variant="solid"
+                                type="submit"
+                                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2"
+                            >
+                                <span>{spinner && <Spinner size={20} color="white" />}</span>
+                                Submit
                             </Button>
                         </FormContainer>
                     </Form>
