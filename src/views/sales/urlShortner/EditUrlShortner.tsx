@@ -85,6 +85,45 @@ const EditUrlShortner = () => {
 
     const baseUrl = import.meta.env.VITE_WEBSITE_URL
 
+    const extractFilters = (url: string) => {
+        const filterParams: Record<string, any> = {}
+
+        if (!url.includes('filters')) {
+            const filterRegex = /([a-zA-Z0-9-_]+)=([^&]+)/g
+            let match
+            while ((match = filterRegex.exec(url)) !== null) {
+                const [_, key, value] = match
+                console.log('key value is', value)
+                if (key === 'utm-medium') filterParams['utm_medium'] = value
+                if (key === 'utm-source') filterParams['utm_source'] = value
+                if (key === 'utm-campaign') filterParams['utm_campaign'] = value
+                if (key === 'utm-tags') filterParams['utm_tags'] = value
+            }
+        } else {
+            const filterRegex = /([a-zA-Z0-9-_]+)_([a-zA-Z0-9-_]+)/g
+            let match
+            while ((match = filterRegex.exec(url)) !== null) {
+                const [_, key, value] = match
+
+                if (key === 'minprice') filterParams['minprice'] = value
+                if (key === 'maxprice') filterParams['maxprice'] = value
+                if (key === 'utm-medium') filterParams['utm_medium'] = value
+                if (key === 'utm-source') filterParams['utm_source'] = value
+                if (key === 'utm-campaign') filterParams['utm_campaign'] = value
+                if (key === 'utm-tags') filterParams['utm_tags'] = value
+                if (key === 'maxoff') filterParams['maxoff'] = value
+                if (key === 'minoff') filterParams['minoff'] = value
+                if (key === 'sort') filterParams['discountTags'] = value
+                if (key === 'filterId') filterParams['filter_id'] = value
+                if (key === 'ub/') filterParams['target_page'] = value
+                if (key === 'app') filterParams['app'] = value
+            }
+        }
+        return filterParams
+    }
+
+    const filterParamsx = extractFilters(urlFieldDatas?.web_url || urlFieldDatas?.android_url || urlFieldDatas?.ios_url || '')
+
     const initialValues: any = {
         short_code: urlFieldDatas?.short_code || '',
         web_url: urlFieldDatas?.ios_url ? `${baseUrl}` : '',
@@ -127,50 +166,24 @@ const EditUrlShortner = () => {
             return ''
         })(),
         select_filter: urlFieldDatas?.web_url?.includes('filters') || urlFieldDatas?.android_url?.includes('filters'),
+        is_custom: (() => {
+            const url = urlFieldDatas?.web_url || urlFieldDatas?.android_url || urlFieldDatas?.ios_url
+            if (url) {
+                const match = url.match(/\/s\/[^/]+\/([^/?]+)/)
+                return match ? true : false
+            }
+            return false
+        })(),
         app: urlFieldDatas?.web_url?.includes('&app') || urlFieldDatas?.android_url?.includes('&app'),
+        utm_medium: filterParamsx['utm_medium'],
+        utm_source: filterParamsx['utm_source'],
+        utm_campaign: filterParamsx['utm_campaign'],
+        utm_tags: filterParamsx['utm_tags'],
     }
 
-    console.log('initial values are', initialValues?.page)
     useEffect(() => {
         setSelectedPageName(initialValues?.page)
     }, [initialValues?.page])
-
-    const extractFilters = (url: string) => {
-        const filterParams: Record<string, any> = {}
-
-        if (!url.includes('filters')) {
-            const filterRegex = /([a-zA-Z0-9-_]+)=([^&]+)/g
-            let match
-            while ((match = filterRegex.exec(url)) !== null) {
-                const [_, key, value] = match
-                console.log('key value is', value)
-                if (key === 'utm-medium') filterParams['utm_medium'] = value
-                if (key === 'utm-source') filterParams['utm_source'] = value
-                if (key === 'utm-campaign') filterParams['utm_campaign'] = value
-                if (key === 'utm-tags') filterParams['utm_tags'] = value
-            }
-        } else {
-            const filterRegex = /([a-zA-Z0-9-_]+)_([a-zA-Z0-9-_]+)/g
-            let match
-            while ((match = filterRegex.exec(url)) !== null) {
-                const [_, key, value] = match
-
-                if (key === 'minprice') filterParams['minprice'] = value
-                if (key === 'maxprice') filterParams['maxprice'] = value
-                if (key === 'utm-medium') filterParams['utm_medium'] = value
-                if (key === 'utm-source') filterParams['utm_source'] = value
-                if (key === 'utm-campaign') filterParams['utm_campaign'] = value
-                if (key === 'utm-tags') filterParams['utm_tags'] = value
-                if (key === 'maxoff') filterParams['maxoff'] = value
-                if (key === 'minoff') filterParams['minoff'] = value
-                if (key === 'sort') filterParams['discountTags'] = value
-                if (key === 'filterId') filterParams['filter_id'] = value
-                if (key === 'ub/') filterParams['target_page'] = value
-                if (key === 'app') filterParams['app'] = value
-            }
-        }
-        return filterParams
-    }
 
     const extractTargetPage = (url: string) => {
         const pageRegex = /.club\/([^/?]+)/
@@ -230,8 +243,10 @@ const EditUrlShortner = () => {
         }
     }
 
+    console.log('Filter Id 🚀🚀', initialValues)
+
     const handleSubmit = async (values: any) => {
-        console.log('Values of target page', values?.target_page)
+        console.log('Values of target page', values?.sub_page)
         const filters = [
             ...(values.filters || []),
             ...UtmArray.filter((item) => values[item.name] !== undefined).map(
@@ -246,6 +261,8 @@ const EditUrlShortner = () => {
         const noSelectFilters = UtmArray.filter((item) => values[item.name] !== undefined)
             .map((item) => `${item.name.replace('_', '-')}=${values[item.name]}`)
             .join('&')
+
+        console.log('Filters', noSelectFilters)
 
         const { page_title, rest } = values
 
@@ -267,6 +284,8 @@ const EditUrlShortner = () => {
         let subPage = ''
         if (values?.sub_page && values?.target_page === 'home') {
             subPage = `sub_page=${values?.sub_page?.name}`
+        } else if (values?.sub_page?.name === undefined && values?.target_page === 'home') {
+            subPage = `sub_page=${values?.sub_page}`
         }
 
         console.log('Target Page', values?.target_page)
@@ -291,8 +310,22 @@ const EditUrlShortner = () => {
                 : `${`slikk:/`}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
         }
 
-        const webPageUrl = `${baseUrl}/s/${values?.page?.name}${values?.sub_page?.name ? `/${values?.sub_page?.name}` : ''}${pageTitle}?${noSelectFilters}${appOnly}`
-        const pageUrl = `${`slikk:/`}/s/${values?.page?.name}${values?.sub_page?.name ? `/${values?.sub_page?.name}` : ''}${pageTitle}?${noSelectFilters}${appOnly}`
+        const webPageUrl = `${baseUrl}/s/${values?.page?.name === undefined ? values?.page : values?.page?.name || ''}${
+            values?.sub_page == 'null'
+                ? ''
+                : values?.sub_page?.name === undefined
+                  ? `/${values?.sub_page}`
+                  : `/${values?.sub_page?.name || ''}`
+        }?${noSelectFilters}${appOnly}`
+
+        const pageUrl = `slikk:/s/${values?.page?.name === undefined ? values?.page : values?.page?.name || ''}${
+            values?.sub_page == 'null'
+                ? ''
+                : values?.sub_page?.name === undefined
+                  ? `/${values?.sub_page}`
+                  : `/${values?.sub_page?.name || ''}`
+        }?${noSelectFilters}${appOnly}`
+
         const customBody = {
             short_code: values?.short_code,
             ios_url: pageUrl,
