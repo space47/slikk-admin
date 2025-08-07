@@ -30,30 +30,21 @@ const SkuUpdate = ({ data }: props) => {
     const [qualitySentInput, setQualitySentInput] = useState('')
     const [batchNumberInput, setBatchNumberInput] = useState('')
     const [globalFilter, setGlobalFilter] = useState('')
-    const [updatedPassed, setUpdatedPassed] = useState<{
-        [key: number]: number
-    }>({})
-    const [updatedReceived, setUpdatedReceived] = useState<{
-        [key: number]: number
-    }>({})
-    const [updatedLocation, setUpdatedLocation] = useState<{
-        [key: number]: string
-    }>({})
+    const [updatedPassed, setUpdatedPassed] = useState<{ [key: number]: number }>({})
+    const [updatedReceived, setUpdatedReceived] = useState<{ [key: number]: number }>({})
+    const [updatedLocation, setUpdatedLocation] = useState<{ [key: number]: string }>({})
     const [refreshTable, setRefreshTable] = useState(false)
     const [showSpinner, setShowSpinner] = useState(false)
     const [dataForPrinter, setDataForPrinter] = useState([])
     const [counter, setCounter] = useState(0)
-    const [qtySent, setQtySent] = useState(0)
 
     const fetchSkuData = async () => {
         try {
             setShowSpinner(true)
             let searchFilter = ''
-
             if (globalFilter) {
                 searchFilter = `&sku=${globalFilter}`
             }
-
             const response = await axioisInstance.get(
                 `/goods/qualitycheck?grn_number=${document_number}${searchFilter}&p=${page}&page_size=${pageSize}`,
             )
@@ -75,10 +66,7 @@ const SkuUpdate = ({ data }: props) => {
         }
     }, [page, pageSize, globalFilter, skuWiseData, refreshTable, counter])
 
-    const [formData, setFormData] = useState({
-        location: '',
-        sku: '',
-    })
+    const [formData, setFormData] = useState({ location: '', sku: '' })
 
     const fetchDataForPrinter = async () => {
         try {
@@ -314,8 +302,6 @@ const SkuUpdate = ({ data }: props) => {
         }))
     }
 
-    console.log('Printers data is', dataForPrinter)
-
     const handleEditSku = async (oLocation: string, oPassed: number, oReceived: number, oFailed: number, oSku: string) => {
         const getSame = getSkuData?.find((item) => item.sku === oSku)
         const body = {
@@ -349,9 +335,7 @@ const SkuUpdate = ({ data }: props) => {
 
         try {
             await axioisInstance.patch(`/goods/qualitycheck/${id}`, body)
-            notification.success({
-                message: 'Successfully edited',
-            })
+            notification.success({ message: 'Successfully edited' })
             setRefreshTable(true)
         } catch (error) {
             console.error(error)
@@ -371,15 +355,14 @@ const SkuUpdate = ({ data }: props) => {
                 batchNumberInput={batchNumberInput}
                 company={company}
                 setFormData={setFormData}
-                setCounter={setCounter}
+                setCounter={setCounter as any}
             />
             {<EasyTable noPage overflow mainData={skuWiseData} columns={columns} />}
-            <div className="flex justify-start items-center">
+            <div className="flex justify-start items-center mb-10">
                 {skuWiseData?.length > 0 && <span className="text-xl font-bold">Print Product Data: </span>}
                 <span>{skuWiseData?.length > 0 && <PrinterComp dataForPrinter={dataForPrinter} />}</span>
             </div>
-            <br />
-            <br />
+
             <div className="flex flex-col gap-6">
                 <div className="flex justify-between">
                     <label htmlFor="" className="font-bold text-xl">
