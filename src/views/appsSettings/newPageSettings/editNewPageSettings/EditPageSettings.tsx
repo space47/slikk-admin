@@ -101,7 +101,7 @@ const EditPageSettings = () => {
                 filters: [
                     ...(values?.division_select ? [`division_${values.division_select}`] : []),
                     ...(values?.sort ? [`sort_${values.sort}`] : []),
-                    ...(values.filtersAdd.length > 0 ? [`filterID_${filterId}`] : []),
+                    ...(values?.filterAdd && values.filtersAdd.length > 0 ? [`filterID_${filterId}`] : []),
                 ]
                     .filter(Boolean)
                     .flat(),
@@ -112,11 +112,13 @@ const EditPageSettings = () => {
             const response = isCopy
                 ? await axioisInstance.post(`/section`, filteredBody)
                 : await axioisInstance.patch(`/section/${section_id}`, filteredBody)
-            notification.success({ message: response?.data?.message || 'successfully updated' })
+            notification.success({ message: response?.data?.message || `successfully ${isCopy ? 'created' : 'updated'}` })
         } catch (error) {
             console.error(error)
             if (error instanceof AxiosError) {
-                notification.error({ message: error?.response?.data?.message || 'Failed to Edit' })
+                notification.error({
+                    message: error?.response?.data?.message || `Error occurred while ${isCopy ? 'creating' : 'updating'} page settings`,
+                })
             }
         }
     }
