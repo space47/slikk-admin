@@ -42,7 +42,7 @@ const SkuDataInputs = ({
         const { sku, location } = formData
         if (!sku.trim()) return
 
-        const getSameData = getSkuData?.find((item) => item.sku === sku)
+        const getSameData = getSkuData?.find((item) => item.sku === sku && item?.location?.toLowerCase() === location?.toLowerCase())
 
         const updatedData = skuWiseData.map((item) => {
             if (item.sku === sku) {
@@ -63,11 +63,7 @@ const SkuDataInputs = ({
                 qc_passed: getSameData.qc_passed + 1,
                 quantity_received: getSameData.quantity_received + 1,
                 qc_failed: getSameData.quantity_received + 1 - (getSameData.qc_passed + 1),
-                location: formData?.location
-                    ? formData.location?.toLowerCase() !== getSameData?.location?.toLowerCase()
-                        ? uniq([getSameData?.location, formData.location].filter(Boolean)).join(',')
-                        : getSameData?.location
-                    : getSameData?.location,
+                location: getSameData?.location,
             }
         }
 

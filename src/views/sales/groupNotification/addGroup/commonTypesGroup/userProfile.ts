@@ -171,156 +171,156 @@ export const form = (values, csvFile, mobileNumbers) => {
                       ]
                     : []),
             ],
-            // userInfo: [
-            //     ...(values.registration_start || values.registration_end
-            //         ? [
-            //               {
-            //                   type: 'registration',
-            //                   value: {
-            //                       ...(values.registration_start && { start_date: values.registration_start }),
-            //                       ...(values.registration_end && { end_date: values.registration_end }),
-            //                   },
-            //               },
-            //           ]
-            //         : []),
-            //     ...(values.dob_start || values.dob_end
-            //         ? [
-            //               {
-            //                   type: 'dob',
-            //                   value: {
-            //                       ...(values.dob_start && { start_date: values.dob_start }),
-            //                       ...(values.dob_end && { end_date: values.dob_end }),
-            //                   },
-            //               },
-            //           ]
-            //         : []),
-            //     ...(values.gender && values.gender.length
-            //         ? [
-            //               {
-            //                   type: 'gender',
-            //                   value: values.gender.join(','),
-            //               },
-            //           ]
-            //         : []),
-            // ],
-            // order: [
-            //     ...(values.start_date || values.end_date
-            //         ? [
-            //               {
-            //                   type: 'order_date',
-            //                   value: {
-            //                       ...(values.start_date && { start_date: values.start_date }),
-            //                       ...(values.end_date && { end_date: values.end_date }),
-            //                   },
-            //               },
-            //           ]
-            //         : []),
-            //     ...(values.max_value || values.min_value
-            //         ? [
-            //               {
-            //                   type: 'order_value',
-            //                   value: {
-            //                       ...(values.max_value && { max_amount: values.max_value }),
-            //                       ...(values.min_value && { min_amount: values.min_value }),
-            //                   },
-            //               },
-            //           ]
-            //         : []),
-            //     ...(values.max_purchase || values.min_purchase
-            //         ? [
-            //               {
-            //                   type: 'life_time_purchase',
-            //                   value: {
-            //                       ...(values.max_purchase && { max_amount: Number(values.max_purchase) }),
-            //                       ...(values.min_purchase && { min_amount: Number(values.min_purchase) }),
-            //                   },
-            //               },
-            //           ]
-            //         : []),
-            //     ...(values.max_count >= 0 || values.min_count >= 0
-            //         ? [
-            //               {
-            //                   type: 'order_count',
-            //                   value: {
-            //                       ...(values.max_count >= 0 && { max_order_count: Number(values.max_count) }),
-            //                       ...(values.min_count >= 0 && { min_order_count: Number(values.min_count) }),
-            //                   },
-            //               },
-            //           ]
-            //         : []),
-            //     ...(values.order_delivery_type && values.order_delivery_type.length
-            //         ? [
-            //               {
-            //                   type: 'order_delivery_type',
-            //                   value: values.order_delivery_type.join(','),
-            //               },
-            //           ]
-            //         : []),
-            // ],
-            // loyalty: [
-            //     ...(values.loyalty && values.loyalty.length
-            //         ? [
-            //               {
-            //                   type: 'tier',
-            //                   value: values.loyalty.join(','),
-            //               },
-            //           ]
-            //         : []),
-            //     ...(values.max_point_available || values.min_point_available
-            //         ? [
-            //               {
-            //                   type: 'points available',
-            //                   value: {
-            //                       ...(values.max_point_available && { max: values.max_point_available }),
-            //                       ...(values.min_point_available && { min: values.min_point_available }),
-            //                   },
-            //               },
-            //           ]
-            //         : []),
-            //     ...(values.max_point_earned || values.min_point_earned
-            //         ? [
-            //               {
-            //                   type: 'points earned',
-            //                   value: {
-            //                       ...(values.max_point_earned && { max: values.max_point_earned }),
-            //                       ...(values.min_point_earned && { min: values.min_point_earned }),
-            //                   },
-            //               },
-            //           ]
-            //         : []),
-            //     ...(values.max_point_redeemed || values.min_point_redeemed
-            //         ? [
-            //               {
-            //                   type: 'points redeemed',
-            //                   value: {
-            //                       ...(values.max_point_redeemed && { max: values.max_point_redeemed }),
-            //                       ...(values.min_point_redeemed && { min: values.min_point_redeemed }),
-            //                   },
-            //               },
-            //           ]
-            //         : []),
-            // ],
-            // order_item: [
-            //     ...(values.max_basket_size || values.min_basket_size
-            //         ? [
-            //               {
-            //                   type: 'basket_size',
-            //                   value: {
-            //                       ...(values.max_basket_size && { max: values.max_basket_size }),
-            //                       ...(values.min_basket_size && { min: values.min_basket_size }),
-            //                   },
-            //               },
-            //           ]
-            //         : []),
-            //     ...(values.filters
-            //         ? [
-            //               {
-            //                   type: 'tag_filters',
-            //                   value: values.filters,
-            //               },
-            //           ]
-            //         : []),
-            // ],
+            userInfo: [
+                ...(values.registration_start || values.registration_end
+                    ? [
+                          {
+                              type: 'registration',
+                              value: {
+                                  ...(values.registration_start && { start_date: values.registration_start }),
+                                  ...(values.registration_end && { end_date: values.registration_end }),
+                              },
+                          },
+                      ]
+                    : []),
+                ...(values.dob_start || values.dob_end
+                    ? [
+                          {
+                              type: 'dob',
+                              value: {
+                                  ...(values.dob_start && { start_date: values.dob_start }),
+                                  ...(values.dob_end && { end_date: values.dob_end }),
+                              },
+                          },
+                      ]
+                    : []),
+                ...(values.gender && values.gender.length
+                    ? [
+                          {
+                              type: 'gender',
+                              value: values.gender.join(','),
+                          },
+                      ]
+                    : []),
+            ],
+            order: [
+                ...(values.start_date || values.end_date
+                    ? [
+                          {
+                              type: 'order_date',
+                              value: {
+                                  ...(values.start_date && { start_date: values.start_date }),
+                                  ...(values.end_date && { end_date: values.end_date }),
+                              },
+                          },
+                      ]
+                    : []),
+                ...(values.max_value || values.min_value
+                    ? [
+                          {
+                              type: 'order_value',
+                              value: {
+                                  ...(values.max_value && { max_amount: values.max_value }),
+                                  ...(values.min_value && { min_amount: values.min_value }),
+                              },
+                          },
+                      ]
+                    : []),
+                ...(values.max_purchase || values.min_purchase
+                    ? [
+                          {
+                              type: 'life_time_purchase',
+                              value: {
+                                  ...(values.max_purchase && { max_amount: Number(values.max_purchase) }),
+                                  ...(values.min_purchase && { min_amount: Number(values.min_purchase) }),
+                              },
+                          },
+                      ]
+                    : []),
+                ...(values.max_count >= 0 || values.min_count >= 0
+                    ? [
+                          {
+                              type: 'order_count',
+                              value: {
+                                  ...(values.max_count >= 0 && { max_order_count: Number(values.max_count) }),
+                                  ...(values.min_count >= 0 && { min_order_count: Number(values.min_count) }),
+                              },
+                          },
+                      ]
+                    : []),
+                ...(values.order_delivery_type && values.order_delivery_type.length
+                    ? [
+                          {
+                              type: 'order_delivery_type',
+                              value: values.order_delivery_type.join(','),
+                          },
+                      ]
+                    : []),
+            ],
+            loyalty: [
+                ...(values.loyalty && values.loyalty.length
+                    ? [
+                          {
+                              type: 'tier',
+                              value: values.loyalty.join(','),
+                          },
+                      ]
+                    : []),
+                ...(values.max_point_available || values.min_point_available
+                    ? [
+                          {
+                              type: 'points available',
+                              value: {
+                                  ...(values.max_point_available && { max: values.max_point_available }),
+                                  ...(values.min_point_available && { min: values.min_point_available }),
+                              },
+                          },
+                      ]
+                    : []),
+                ...(values.max_point_earned || values.min_point_earned
+                    ? [
+                          {
+                              type: 'points earned',
+                              value: {
+                                  ...(values.max_point_earned && { max: values.max_point_earned }),
+                                  ...(values.min_point_earned && { min: values.min_point_earned }),
+                              },
+                          },
+                      ]
+                    : []),
+                ...(values.max_point_redeemed || values.min_point_redeemed
+                    ? [
+                          {
+                              type: 'points redeemed',
+                              value: {
+                                  ...(values.max_point_redeemed && { max: values.max_point_redeemed }),
+                                  ...(values.min_point_redeemed && { min: values.min_point_redeemed }),
+                              },
+                          },
+                      ]
+                    : []),
+            ],
+            order_item: [
+                ...(values.max_basket_size || values.min_basket_size
+                    ? [
+                          {
+                              type: 'basket_size',
+                              value: {
+                                  ...(values.max_basket_size && { max: values.max_basket_size }),
+                                  ...(values.min_basket_size && { min: values.min_basket_size }),
+                              },
+                          },
+                      ]
+                    : []),
+                ...(values.filters
+                    ? [
+                          {
+                              type: 'tag_filters',
+                              value: values.filters,
+                          },
+                      ]
+                    : []),
+            ],
             location: [
                 ...(values.city
                     ? [
