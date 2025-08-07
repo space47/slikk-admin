@@ -300,7 +300,7 @@ const EditGroup = () => {
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">Max Basket Size</label>
                                                 <Field
-                                                    type="number"
+                                                    type="text"
                                                     name="max_basket_size"
                                                     placeholder="Max"
                                                     component={Input}
@@ -310,7 +310,7 @@ const EditGroup = () => {
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">Min Basket Size</label>
                                                 <Field
-                                                    type="number"
+                                                    type="text"
                                                     name="min_basket_size"
                                                     placeholder="Min"
                                                     component={Input}
