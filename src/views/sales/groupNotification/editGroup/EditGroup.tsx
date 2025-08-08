@@ -15,12 +15,12 @@ import { useFetchApi } from '@/commonHooks/useFetchApi'
 const EditGroup = () => {
     const [userData, setUserData] = useState<any[]>([])
     const [spinner, setSpinner] = useState(false)
-    const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
     const { groupId } = useParams()
 
     const urlReq = useMemo(() => {
-        return `/notification/groups/${groupId}`
+        return `/notification/groups?group_id=${groupId}`
     }, [groupId])
+    const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
 
     const { data: initialData } = useFetchApi<any>({ url: urlReq })
 

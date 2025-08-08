@@ -481,7 +481,12 @@ const AddUser = () => {
                             )}
 
                             {storeAssign && (
-                                <StoreAssignComponent storePicker={storePicker} setStorePicker={setStorePicker} mobile={mobileNumber} />
+                                <StoreAssignComponent
+                                    storePicker={storePicker}
+                                    setStorePicker={setStorePicker}
+                                    mobile={mobileNumber}
+                                    profile={[]}
+                                />
                             )}
 
                             {/* ............................................................................................ */}
