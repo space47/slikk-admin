@@ -225,10 +225,10 @@ export const form = (values, csvFile, mobileNumbers = []) => {
                                   value: {
                                       ...(values.max_value !== undefined &&
                                           values.max_value !== null &&
-                                          values.max_value !== '' && { max_value: Number(values.max_value) || 0 }),
+                                          values.max_value !== '' && { max_value: Number(values.max_value) }),
                                       ...(values.min_value !== undefined &&
                                           values.min_value !== null &&
-                                          values.min_value !== '' && { min_value: Number(values.min_value) || 0 }),
+                                          values.min_value !== '' && { min_value: Number(values.min_value) }),
                                   },
                               },
                           ]
@@ -241,24 +241,26 @@ export const form = (values, csvFile, mobileNumbers = []) => {
                                   value: {
                                       ...(values.max_purchase !== undefined &&
                                           values.max_purchase !== null &&
-                                          values.max_purchase !== '' && { max_amount: Number(values.max_purchase) || 0 }),
+                                          values.max_purchase !== '' && { max_amount: Number(values.max_purchase) }),
                                       ...(values.min_purchase !== undefined &&
                                           values.min_purchase !== null &&
-                                          values.min_purchase !== '' && { min_amount: Number(values.min_purchase) || 0 }),
+                                          values.min_purchase !== '' && { min_amount: Number(values.min_purchase) }),
                                   },
                               },
                           ]
                         : []),
-                    ...((values.max_count !== undefined && values.max_count !== null) ||
-                    (values.min_count !== undefined && values.min_count !== null)
+                    ...((values.max_count !== undefined && values.max_count !== null && values.max_count !== '') ||
+                    (values.min_count !== undefined && values.min_count !== null && values.min_count !== '')
                         ? [
                               {
                                   type: 'order_count',
                                   value: {
                                       ...(values.max_count !== undefined &&
-                                          values.max_count !== null && { max_order_count: Number(values.max_count) || 0 }),
+                                          values.max_count !== null &&
+                                          values.max_count !== '' && { max_order_count: Number(values.max_count) }),
                                       ...(values.min_count !== undefined &&
-                                          values.min_count !== null && { min_order_count: Number(values.min_count) || 0 }),
+                                          values.min_count !== null &&
+                                          values.min_count !== '' && { min_order_count: Number(values.min_count) }),
                                   },
                               },
                           ]
@@ -291,10 +293,10 @@ export const form = (values, csvFile, mobileNumbers = []) => {
                                   value: {
                                       ...(values.max_point_available !== undefined &&
                                           values.max_point_available !== null &&
-                                          values.max_point_available !== '' && { max: Number(values.max_point_available) || 0 }),
+                                          values.max_point_available !== '' && { max: Number(values.max_point_available) }),
                                       ...(values.min_point_available !== undefined &&
                                           values.min_point_available !== null &&
-                                          values.min_point_available !== '' && { min: Number(values.min_point_available) || 0 }),
+                                          values.min_point_available !== '' && { min: Number(values.min_point_available) }),
                                   },
                               },
                           ]
@@ -307,10 +309,10 @@ export const form = (values, csvFile, mobileNumbers = []) => {
                                   value: {
                                       ...(values.max_point_earned !== undefined &&
                                           values.max_point_earned !== null &&
-                                          values.max_point_earned !== '' && { max: Number(values.max_point_earned) || 0 }),
+                                          values.max_point_earned !== '' && { max: Number(values.max_point_earned) }),
                                       ...(values.min_point_earned !== undefined &&
                                           values.min_point_earned !== null &&
-                                          values.min_point_earned !== '' && { min: Number(values.min_point_earned) || 0 }),
+                                          values.min_point_earned !== '' && { min: Number(values.min_point_earned) }),
                                   },
                               },
                           ]
@@ -325,10 +327,10 @@ export const form = (values, csvFile, mobileNumbers = []) => {
                                   value: {
                                       ...(values.max_point_redeemed !== undefined &&
                                           values.max_point_redeemed !== null &&
-                                          values.max_point_redeemed !== '' && { max: Number(values.max_point_redeemed) || 0 }),
+                                          values.max_point_redeemed !== '' && { max: Number(values.max_point_redeemed) }),
                                       ...(values.min_point_redeemed !== undefined &&
                                           values.min_point_redeemed !== null &&
-                                          values.min_point_redeemed !== '' && { min: Number(values.min_point_redeemed) || 0 }),
+                                          values.min_point_redeemed !== '' && { min: Number(values.min_point_redeemed) }),
                                   },
                               },
                           ]
@@ -343,19 +345,19 @@ export const form = (values, csvFile, mobileNumbers = []) => {
                                   value: {
                                       ...(values.max_basket_size !== undefined &&
                                           values.max_basket_size !== null &&
-                                          values.max_basket_size !== '' && { max: Number(values.max_basket_size) || 0 }),
+                                          values.max_basket_size !== '' && { max: Number(values.max_basket_size) }),
                                       ...(values.min_basket_size !== undefined &&
                                           values.min_basket_size !== null &&
-                                          values.min_basket_size !== '' && { min: Number(values.min_basket_size) || 0 }),
+                                          values.min_basket_size !== '' && { min: Number(values.min_basket_size) }),
                                   },
                               },
                           ]
                         : []),
-                    ...(values.filters
+                    ...(values.tag_filters
                         ? [
                               {
                                   type: 'tag_filters',
-                                  value: values.filters,
+                                  value: values.tag_filters,
                               },
                           ]
                         : []),

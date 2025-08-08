@@ -82,28 +82,28 @@ const EditGroup = () => {
         dob_start: initialData[0]?.rules?.userInfo?.find((info: any) => info.type === 'dob')?.value.start_date || '',
         dob_end: initialData[0]?.rules?.userInfo?.find((info: any) => info.type === 'dob')?.value.end_date || '',
         gender: initialData[0]?.rules?.userInfo?.find((info: any) => info.type === 'gender')?.value || [],
-        min_value: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'order_value')?.value.min_value || '',
-        max_value: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'order_value')?.value.max_value || '',
+        min_value: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'order_value')?.value.min_value ?? '',
+        max_value: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'order_value')?.value.max_value ?? '',
         start_date: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'order_date')?.value.start_date || '',
         end_date: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'order_date')?.value.end_date || '',
-        max_purchase: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'life_time_purchase')?.value.min_amount || '',
-        min_purchase: initialData[0]?.rules.order?.find((rule: any) => rule.type === 'life_time_purchase')?.value.max_amount || '',
-        min_count: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'order_count')?.value.min_order_count || '',
-        max_count: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'order_count')?.value.max_order_count || '',
+        max_purchase: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'life_time_purchase')?.value.min_amount ?? '',
+        min_purchase: initialData[0]?.rules.order?.find((rule: any) => rule.type === 'life_time_purchase')?.value.max_amount ?? '',
+        min_count: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'order_count')?.value.min_order_count ?? '',
+        max_count: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'order_count')?.value.max_order_count ?? '',
         order_delivery_type: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'order_delivery_type')?.value || [],
-        max_basket_size: initialData[0]?.rules?.order_item?.find((item: any) => item.type === 'basket_size')?.value.max || '',
-        min_basket_size: initialData[0]?.rules?.order_item?.find((item: any) => item.type === 'basket_size')?.value.min || '',
-        filters: initialData[0]?.rules?.order_item?.find((item: any) => item.type === 'tag_filters')?.value || [],
+        max_basket_size: initialData[0]?.rules?.order_item?.find((item: any) => item.type === 'basket_size')?.value.max ?? '',
+        min_basket_size: initialData[0]?.rules?.order_item?.find((item: any) => item.type === 'basket_size')?.value.min ?? '',
+        tag_filters: initialData[0]?.rules?.order_item?.find((item: any) => item.type === 'tag_filters')?.value || [],
         city: initialData[0]?.rules?.location?.find((loc: any) => loc.type === 'city')?.value || '',
         state: initialData[0]?.rules?.location?.find((loc: any) => loc.type === 'state')?.value || '',
         distance: initialData[0]?.rules?.location?.find((loc: any) => loc.type === 'distance')?.value || '',
-        max_point_available: initialData[0]?.rules?.loyalty?.find((loyalty: any) => loyalty.type === 'points available')?.value.max || '',
-        min_point_available: initialData[0]?.rules?.loyalty?.find((loyalty: any) => loyalty.type === 'points available')?.value.min || '',
-        max_point_earned: initialData[0]?.rules?.loyalty?.find((loyalty: any) => loyalty.type === 'points earned')?.value.max || '',
-        min_point_earned: initialData[0]?.rules?.loyalty?.find((loyalty: any) => loyalty.type === 'points earned')?.value.min || '',
-        max_point_redeemed: initialData[0]?.rules?.loyalty?.find((loyalty: any) => loyalty.type === 'points redeemed')?.value.max || '',
-        min_point_redeemed: initialData[0]?.rules?.loyalty?.find((loyalty: any) => loyalty.type === 'points redeemed')?.value.min || '',
-        loyalty: initialData[0]?.rules?.loyalty?.find((loyalty: any) => loyalty.type === 'tier')?.value || [],
+        max_point_available: initialData[0]?.rules?.loyalty?.find((loyalty: any) => loyalty.type === 'points available')?.value.max ?? '',
+        min_point_available: initialData[0]?.rules?.loyalty?.find((loyalty: any) => loyalty.type === 'points available')?.value.min ?? '',
+        max_point_earned: initialData[0]?.rules?.loyalty?.find((loyalty: any) => loyalty.type === 'points earned')?.value.max ?? '',
+        min_point_earned: initialData[0]?.rules?.loyalty?.find((loyalty: any) => loyalty.type === 'points earned')?.value.min ?? '',
+        max_point_redeemed: initialData[0]?.rules?.loyalty?.find((loyalty: any) => loyalty.type === 'points redeemed')?.value.max ?? '',
+        min_point_redeemed: initialData[0]?.rules?.loyalty?.find((loyalty: any) => loyalty.type === 'points redeemed')?.value.min ?? '',
+        loyalty: initialData[0]?.rules?.loyalty?.find((loyalty: any) => loyalty.type === 'tier')?.value ?? [],
     }
 
     // const initialValues = {}
@@ -330,20 +330,29 @@ const EditGroup = () => {
                                     </FormItem>
                                     <FormItem label="Filters" className="space-y-2">
                                         <Field name="tag_filters">
-                                            {({ field, form }: FieldProps<any>) => (
-                                                <Select
-                                                    isMulti
-                                                    placeholder="Select Filter Tags"
-                                                    options={filters.filters}
-                                                    getOptionLabel={(option) => option.label}
-                                                    getOptionValue={(option) => option.value}
-                                                    onChange={(newVal) => {
-                                                        const newValues = newVal ? newVal.map((val) => val.value) : []
-                                                        form.setFieldValue(field.name, newValues)
-                                                    }}
-                                                    className="w-full"
-                                                />
-                                            )}
+                                            {({ field, form }: FieldProps<any>) => {
+                                                const selectedOptions =
+                                                    field.value?.flatMap((value: any) =>
+                                                        filters?.filters?.flatMap((filterGroup) =>
+                                                            filterGroup?.options?.filter((option: any) => option?.value === value),
+                                                        ),
+                                                    ) || []
+                                                return (
+                                                    <Select
+                                                        isMulti
+                                                        placeholder="Select Filter Tags"
+                                                        options={filters.filters}
+                                                        getOptionLabel={(option) => option.label}
+                                                        getOptionValue={(option) => option.value}
+                                                        value={selectedOptions}
+                                                        onChange={(newVal) => {
+                                                            const newValues = newVal ? newVal.map((val) => val.value) : []
+                                                            form.setFieldValue(field.name, newValues)
+                                                        }}
+                                                        className="w-full"
+                                                    />
+                                                )
+                                            }}
                                         </Field>
                                     </FormItem>
                                 </div>
