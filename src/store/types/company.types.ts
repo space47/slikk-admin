@@ -33,6 +33,12 @@ export type USER_PROFILE_DATA = {
     currCompany: SINGLE_COMPANY_DATA
     permissions: []
     roles: []
+    store: {
+        code: string
+        id: number
+        is_fulfillment_center: boolean
+        name: string
+    }[]
 }
 
 export const companyRequest = 'companyRequest'

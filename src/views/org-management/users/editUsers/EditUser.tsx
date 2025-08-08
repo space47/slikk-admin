@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react'
 import { Card, notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAppSelector } from '@/store'
-import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+import { SINGLE_COMPANY_DATA, USER_PROFILE_DATA } from '@/store/types/company.types'
 import { USER_EDIT_FROM } from './UserEditForm'
 import CardComponent from './cardComponents/CardComponent'
 import { Spinner } from '@/components/ui'
@@ -26,6 +26,7 @@ type FormModel = {
     business_email: string
     permissions: []
     company: []
+    store: USER_PROFILE_DATA['store']
 }
 
 interface permission {
@@ -506,7 +507,12 @@ const BrandUserEdit = () => {
                                 )}
 
                                 {storeAssign && (
-                                    <StoreAssignComponent storePicker={storePicker} setStorePicker={setStorePicker} mobile={mobile} />
+                                    <StoreAssignComponent
+                                        storePicker={storePicker}
+                                        setStorePicker={setStorePicker}
+                                        mobile={mobile}
+                                        profile={userData?.store}
+                                    />
                                 )}
                                 <br />
 
