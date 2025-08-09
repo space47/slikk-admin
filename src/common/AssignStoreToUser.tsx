@@ -1,31 +1,41 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 import { FormItem, Select } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
-import { USER_PROFILE_DATA } from '@/store/types/company.types'
+import { SINGLE_COMPANY_DATA, USER_PROFILE_DATA } from '@/store/types/company.types'
 import { companyStore } from '@/store/types/companyStore.types'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 interface props {
-    storePicker: (string | number)[]
-    setStorePicker: (x: (string | number)[]) => void
     mobile: string | undefined
-    profile?: USER_PROFILE_DATA['store']
     customClass?: string
 }
 
-const StoreAssignComponent = ({ setStorePicker, storePicker, mobile, profile, customClass }: props) => {
-    console.log('mobile Number is ', mobile)
+const AssignStoreToUser = ({ mobile, customClass }: props) => {
+    const [storePicker, setStorePicker] = useState<(string | number)[]>([])
     const dispatch = useAppDispatch()
     const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
+    const currentCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
+
+    const query = useMemo(() => {
+        if (mobile) {
+            return `/company/${currentCompany.id}/users?mobile=${mobile}`
+        } else {
+            return []
+        }
+    }, [currentCompany.id, mobile])
+
+    const { data: userData } = useFetchSingleData<USER_PROFILE_DATA>({ url: query as string })
 
     useEffect(() => {
-        if (profile && profile.length > 0) {
-            const initialStoreIds = profile.map((store) => store.id)
+        if (userData && userData?.store?.length > 0) {
+            const initialStoreIds = userData?.store?.map((store) => store.id)
             setStorePicker(initialStoreIds)
         }
-    }, [profile, setStorePicker])
+    }, [userData, setStorePicker])
 
     useEffect(() => {
         dispatch(fetchCompanyStore())
@@ -77,4 +87,4 @@ const StoreAssignComponent = ({ setStorePicker, storePicker, mobile, profile, cu
     )
 }
 
-export default StoreAssignComponent
+export default AssignStoreToUser
