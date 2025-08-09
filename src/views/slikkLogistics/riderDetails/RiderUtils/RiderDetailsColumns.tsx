@@ -2,6 +2,7 @@
 import { Switch } from 'antd'
 import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
+import { a } from 'vitest/dist/chunks/suite.B2jumIFP'
 
 interface RiderColumnsProps {
     sortedRiderDetails: any
@@ -133,25 +134,20 @@ export const RiderColumns = ({
             accessorKey: 'recent_task_detail.order_id',
             cell: ({ row }: any) => {
                 return row?.original?.recent_task_detail?.order_id ? (
-                    <div
+                    <a
                         className="p-2 cursor-pointer bg-red-500 text-white rounded-xl"
-                        onClick={() => navigate(`/app/orders/${row?.original?.recent_task_detail?.order_id}`)}
+                        href={`/app/orders/${row?.original?.recent_task_detail?.order_id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
                     >
                         {row?.original?.recent_task_detail?.order_id}
-                    </div>
+                    </a>
                 ) : (
                     'N/A'
                 )
             },
         },
 
-        // {
-        //     header: 'Assigned',
-        //     accessorKey: 'recent_task_detail.assigned_at',
-        //     cell: ({ row }: any) => {
-        //         return <div>{moment(row?.original?.recent_task_detail?.assigned_at).format('YYYY-MM-DD')}</div>
-        //     },
-        // },
         {
             header: 'Delivered',
             accessorKey: 'recent_task_detail.delivered_at',
