@@ -66,7 +66,9 @@ export const InwardColumns = () => {
             {
                 header: 'Received At',
                 accessorKey: 'received_address',
-                cell: (info) => info.getValue(),
+                cell: (info) => (
+                    <div className="w-[100px] line-clamp-3 overflow-hidden text-ellipsis">{info.getValue() || 'Not Available'}</div>
+                ),
             },
             {
                 header: 'Received By',
@@ -99,25 +101,25 @@ export const InwardColumns = () => {
 }
 
 export const InwardDetailsColumns = (
-    editingRow,
-    editFormDataRef,
-    barcodeInputRef,
-    skuInputRef,
-    qtySentInputRef,
-    handleEdit,
-    renderEditableCell,
-    handleEditChange,
-    handleEditKeyDown,
-    handleSave,
-    handleCancel,
-    handleAddRow,
+    editingRow: any,
+    editFormDataRef: any,
+    barcodeInputRef: any,
+    skuInputRef: any,
+    qtySentInputRef: any,
+    handleEdit: any,
+    renderEditableCell: any,
+    handleEditChange: any,
+    handleEditKeyDown: any,
+    handleSave: any,
+    handleCancel: any,
+    handleAddRow: any,
     formData: {
         boxCount: string
         sku: string
         barcode: string
     },
     skuWiseData: any[],
-    handleDeleteRow,
+    handleDeleteRow: any,
 ) => {
     return useMemo(
         () => [
@@ -242,18 +244,18 @@ export const InwardDetailsColumns = (
     )
 }
 export const ShipmentDetailsInwardColumns = (
-    editingRow,
-    editFormDataRef,
-    barcodeInputRef,
-    skuInputRef,
-    qtySentInputRef,
-    handleEdit,
-    renderEditableCell,
-    handleEditChange,
-    handleEditKeyDown,
-    handleSave,
-    handleCancel,
-    qtyReceivedInputRef,
+    editingRow: any,
+    editFormDataRef: any,
+    barcodeInputRef: any,
+    skuInputRef: any,
+    qtySentInputRef: any,
+    handleEdit: any,
+    renderEditableCell: any,
+    handleEditChange: any,
+    handleEditKeyDown: any,
+    handleSave: any,
+    handleCancel: any,
+    qtyReceivedInputRef: any,
 ) => {
     useMemo(
         () => [
