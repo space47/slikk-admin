@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { RiderDetailType, setRiderProfile } from '@/store/slices/riderDetails/riderDetails.slice'
 import { GenericCommonTypes } from '@/common/allTypesCommon'
+import AssignStoreToUser from '@/common/AssignStoreToUser'
 
 const AddRider = () => {
     const navigate = useNavigate()
@@ -33,6 +34,8 @@ const AddRider = () => {
         },
         { refetchOnMountOrArgChange: true },
     )
+
+    console.log('object', riderProfile)
 
     useEffect(() => {
         if (isSuccess) {
@@ -118,7 +121,7 @@ const AddRider = () => {
     return (
         <div>
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
-                {() => (
+                {({ values }) => (
                     <Form className="w-full mx-auto p-6 bg-white rounded-lg shadow-md">
                         <FormContainer>
                             <FormContainer className="grid grid-cols-2 gap-6">
@@ -141,7 +144,15 @@ const AddRider = () => {
                                             <select
                                                 value={selectedRider || 'SELECT'}
                                                 className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                onChange={(e) => setSelectedRider(e.target.value === 'CLEAR' ? '' : e.target.value)}
+                                                onChange={(e) => {
+                                                    const value = e.target.value
+                                                    if (value === 'CLEAR') {
+                                                        setSelectedRider('')
+                                                        dispatch(setRiderProfile([]))
+                                                    } else {
+                                                        setSelectedRider(value)
+                                                    }
+                                                }}
                                             >
                                                 <option disabled value="SELECT">
                                                     SELECT RIDER
@@ -201,6 +212,7 @@ const AddRider = () => {
                                         }}
                                     </Field>
                                 </FormItem>
+                                <AssignStoreToUser mobile={values?.mobile || ''} customClass="mb-6 xl:ml-20" />
                                 <FullTimePicker label="SHIFT START" name="shift_start_time" fieldname="shift_start_time" />
                                 <FullTimePicker label="SHIFT END" name="shift_end_time" fieldname="shift_end_time" />
                             </FormContainer>

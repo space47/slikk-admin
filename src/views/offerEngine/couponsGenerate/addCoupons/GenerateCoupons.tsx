@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, FormContainer } from '@/components/ui'
-import { Form, Formik } from 'formik'
-import React, { useEffect } from 'react'
+import { Button, FormContainer, FormItem, Select } from '@/components/ui'
+import { Field, FieldProps, Form, Formik } from 'formik'
+import React, { useEffect, useState } from 'react'
 import { couponSeriesService } from '@/store/services/couponSeriesService'
 import { notification } from 'antd'
 import { useNavigate } from 'react-router-dom'
@@ -13,11 +13,10 @@ const GenerateCoupons = () => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
     const { couponSeries } = useAppSelector<CouponSeriesInitialTypes>((state) => state.couponSeries)
-    const { data: couponSeriesData, isSuccess } = couponSeriesService.useCouponSeriesQuery(
-        { page: 1, pageSize: 100 },
-        { refetchOnMountOrArgChange: true },
-    )
+    const [queryParams, setQueryParams] = useState({ page: 1, pageSize: 100, campaign: '' })
+    const { data: couponSeriesData, isSuccess } = couponSeriesService.useCouponSeriesQuery(queryParams, { refetchOnMountOrArgChange: true })
     const [generateCoupon, generateCouponResponse] = couponSeriesService.useGenerateCouponFromSeriesMutation()
+    const [searchInput, setSearchInput] = useState<string>('')
 
     useEffect(() => {
         if (isSuccess) {
@@ -30,27 +29,29 @@ const GenerateCoupons = () => {
             notification.success({ message: 'Coupon Series Updated Successfully' })
             navigate(-2)
         } else if (generateCouponResponse?.error) {
-            notification.error({
-                message: 'Failed to update',
-            })
+            notification.error({ message: 'Failed to update' })
         }
     }, [generateCouponResponse?.isSuccess, generateCouponResponse?.error, navigate])
+
+    const handleSearch = (inputValue: string) => {
+        setSearchInput(inputValue)
+        setQueryParams((prev) => ({ ...prev, campaign: inputValue }))
+    }
 
     const formattedData = couponSeries
         ?.filter((item) => item?.campaign !== '')
         .map((item) => {
             return { label: item?.campaign, value: item?.id }
         })
+
     const initialValue = {}
     const handleSubmit = async (values: any) => {
-        console.log('here')
         const formData = new FormData()
         const appendIfDefined = (key: string, value: any) => {
             if (value !== undefined && value !== null && value !== '') {
                 formData.append(key, value)
             }
         }
-        console.log('here')
         appendIfDefined('id', values?.coupon_series)
         appendIfDefined('auto_generate', (values.auto_generate_code ? true : false).toString())
         appendIfDefined('mobiles', values?.users || '')
@@ -80,12 +81,36 @@ const GenerateCoupons = () => {
             })
         }
     }
+
     return (
         <div>
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                 {({ values }) => (
                     <Form className="w-full shadow-xl p-3 rounded-xl ">
                         <div className="text-xl text-red-900 font-bold mb-10">Add New Coupon</div>
+
+                        <FormItem label="Select Coupon Series" className="col-span-1 w-full">
+                            <Field name="coupon_series">
+                                {({ form, field }: FieldProps) => {
+                                    console.log('FIELD.NAME', field.name, field.value)
+                                    return (
+                                        <Select
+                                            isSearchable
+                                            isClearable
+                                            inputValue={searchInput}
+                                            options={formattedData}
+                                            value={formattedData?.find((option) => option.value === field.value)}
+                                            onInputChange={handleSearch}
+                                            onChange={(selectedOption: any) => {
+                                                const value = selectedOption ? selectedOption.value : ''
+                                                form.setFieldValue(field.name, value)
+                                            }}
+                                            onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+                                        />
+                                    )
+                                }}
+                            </Field>
+                        </FormItem>
                         <FormContainer className="">
                             <CouponsGenerateForm formattedOptions={formattedData} values={values} />
                         </FormContainer>
