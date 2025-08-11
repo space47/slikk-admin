@@ -46,6 +46,7 @@ import pageSettingsReducer from './slices/pageSettingsSlice/pageSettingsSlice'
 import pageNamesReducer from './slices/pageSettingsSlice/pageNames.slice'
 import productReducer from './slices/productData/productData.slice'
 import pageSettingsMainReducer from './slices/mainPageSettings/mainPageSettingsSlice'
+import qualityCheckReducer from './slices/qualityCheckSlice/qualityCheckList.slice'
 
 export type RootState = CombinedState<{
     authorization: CombinedState<Authorization>
@@ -106,6 +107,7 @@ const staticReducers = {
     pageNames: pageNamesReducer,
     product: productReducer,
     pageSettingsMain: pageSettingsMainReducer,
+    qualityCheck: qualityCheckReducer,
     [remitanceApi.reducerPath]: remitanceApi.reducer,
     [RtkQueryService.reducerPath]: RtkQueryService.reducer,
 }

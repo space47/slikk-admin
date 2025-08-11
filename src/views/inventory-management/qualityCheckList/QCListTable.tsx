@@ -1,231 +1,103 @@
-import React, { useEffect, useState, useMemo } from 'react'
-import Table from '@/components/ui/Table'
+import React, { useEffect, useState } from 'react'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
-
+import { qualityCheckService } from '@/store/services/qualityCheckListService'
+import { useAppDispatch, useAppSelector } from '@/store'
 import {
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    flexRender,
-    // useGlobalFilter,
-    PaginationState,
-    Updater,
-} from '@tanstack/react-table'
-import type { ColumnDef } from '@tanstack/react-table'
-import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
+    QcInitialStateTypes,
+    setPage,
+    setCount,
+    setFrom,
+    setPageSize,
+    setQcDetails,
+    setTo,
+    setCustomChange,
+} from '@/store/slices/qualityCheckSlice/qualityCheckList.slice'
+import { Option, pageSizeOptions } from '@/constants/pageUtils.constants'
+import moment from 'moment'
+import LoadingSpinner from '@/common/LoadingSpinner'
+import { useQcColumns } from './qcUtils/useQcColumns'
+import EasyTable from '@/common/EasyTable'
 import AccessDenied from '@/views/pages/AccessDenied'
-
-type QUALITY_CHECK = {
-    quantity_sent: number
-    quantity_received: number
-    qc_passed: number
-    qc_failed: number
-    sent_to_inventory: number
-    qc_done_by: QC_DONE_BY
-    last_updated_by: LAST_UPDATED_BY
-}
-
-type LAST_UPDATED_BY = {
-    name: string
-    mobile: string
-}
-
-type QC_DONE_BY = {
-    name: string
-    mobile: string
-}
-
-type QualityData = {
-    [quantity_id: string]: QUALITY_CHECK
-}
-
-type Option = {
-    value: number
-    label: string
-}
-
-const { Tr, Th, Td, THead, TBody } = Table
-
-const pageSizeOptions = [
-    { value: 10, label: '10 / page' },
-    { value: 25, label: '25 / page' },
-    { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
-]
+import UltimateReduxDatePicker from '@/common/UltimateReduxDatePicker'
 
 const QCListTable = () => {
-    const [data, setData] = useState<QualityData>()
-    const [accessDenied, setAccessDenied] = useState(false)
-    const [page, setPage] = useState(1)
-    const [pageSize, setPageSize] = useState(10)
+    const dispatch = useAppDispatch()
     const [globalFilter, setGlobalFilter] = useState('')
-
-    const [quantityId, setQuantityId] = useState<Array<{ key: string; value: QUALITY_CHECK }>>([])
-
-    const fetchData = async () => {
-        try {
-            const response = await axiosInstance.get(`goods/qc/summary`)
-            const data = response.data
-
-            setData(data)
-            console.log('ssssssssssssssss', data)
-            const QCData = data.data
-
-            console.log('tttttttttttttt', QCData)
-
-            const skuDetailsArray = Object.entries(QCData).map(([key, value]) => ({
-                key,
-                value,
-            }))
-
-            setQuantityId(skuDetailsArray)
-        } catch (error: any) {
-            if (error.response && error.response.status === 403) {
-                setAccessDenied(true)
-            }
-            console.error(error)
-        }
-    }
-
-    useEffect(() => {
-        fetchData()
-    }, [])
-
-    console.log('SKU Details:', quantityId)
-
-    const columns = useMemo<ColumnDef<{ key: QUALITY_CHECK; value: QUALITY_CHECK }>[]>(
-        () => [
-            {
-                header: 'ID',
-                accessorKey: 'key',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Quantity Sent',
-                accessorKey: 'value.quantity_sent',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Quantity Received',
-                accessorKey: 'value.quantity_received',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'QC Passed',
-                accessorKey: 'value.qc_passed',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'QC Inventory',
-                accessorKey: 'value.sent_to_inventory',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'QC Done Name',
-                accessorKey: 'value.qc_done_by.name',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'QC Done Mobile ',
-                accessorKey: 'value.qc_done_by.mobile',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Last Updated By ',
-                accessorKey: 'value.last_updated_by.name',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'QC Done Mobile ',
-                accessorKey: 'value.last_updated_by.mobile',
-                cell: (info) => info.getValue(),
-            },
-        ],
-        [],
+    const { qcDetails, count, from, page, pageSize, to, customChange } = useAppSelector<QcInitialStateTypes>((state) => state.qualityCheck)
+    const { data, isLoading, isSuccess, error } = qualityCheckService.useQualityCheckDataQuery(
+        {
+            from: from,
+            to: to,
+            grn_id: globalFilter ?? '',
+            page: page,
+            pageSize: pageSize,
+        },
+        { refetchOnMountOrArgChange: true },
     )
 
-    const table = useReactTable({
-        data: quantityId,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        pageCount: Math.ceil(quantityId.length / pageSize),
-        manualPagination: true,
-        state: {
-            pagination: {
-                pageIndex: page - 1,
-                pageSize: pageSize,
-            },
-            globalFilter,
-        },
-        onPaginationChange: (updater: Updater<PaginationState>) => {
-            const newPagination = typeof updater === 'function' ? updater({ pageIndex: page - 1, pageSize }) : updater
+    useEffect(() => {
+        if (isSuccess && data) {
+            dispatch(setQcDetails(data.data.results))
+            dispatch(setCount(data.data.count))
+        }
+    }, [dispatch, isSuccess, data])
 
-            setPage(newPagination.pageIndex + 1)
-            setPageSize(newPagination.pageSize)
-        },
-        onGlobalFilterChange: setGlobalFilter,
-    })
-
-    const onPaginationChange = (page: number) => {
-        setPage(page)
+    const handleDateChange = (dates: [Date | null, Date | null] | null) => {
+        if (dates && dates[0]) {
+            dispatch(setFrom(moment(dates[0]).format('YYYY-MM-DD')))
+            const toDate = dates[1] ? moment(dates[1]).add(1, 'days').format('YYYY-MM-DD') : moment().add(1, 'days').format('YYYY-MM-DD')
+            dispatch(setTo(toDate))
+        }
     }
-
-    const onSelectChange = (value = 0) => {
-        setPageSize(Number(value))
-    }
-    if (accessDenied) {
+    const columns = useQcColumns()
+    if (error && 'status' in error && error.status === 403) {
         return <AccessDenied />
+    }
+    if (isLoading) {
+        return <LoadingSpinner />
     }
 
     return (
-        <div className="overflow-x-auto">
+        <div className="">
             <div className="upper flex justify-between mb-5 items-center ">
-                <div className="mb-4">
+                <div className="mb-4 mt-8">
                     <input
                         type="text"
-                        placeholder="Search here"
+                        placeholder="Search GRN here...."
                         value={globalFilter}
-                        onChange={(e) => setGlobalFilter(e.target.value)}
                         className="p-2 border rounded"
+                        onChange={(e) => setGlobalFilter(e.target.value)}
+                    />
+                </div>
+                <div className="mb-4">
+                    <UltimateReduxDatePicker
+                        customChange={customChange}
+                        setCustomChange={setCustomChange}
+                        dispatch={dispatch}
+                        from={from}
+                        to={to}
+                        setFrom={setFrom}
+                        setTo={setTo}
+                        handleDateChange={handleDateChange}
                     />
                 </div>
             </div>
-
-            <Table>
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(header.column.columnDef.header, header.getContext())}
-                                </Th>
-                            ))}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <Tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
-                            ))}
-                        </Tr>
-                    ))}
-                </TBody>
-            </Table>
+            <EasyTable overflow mainData={qcDetails} columns={columns} page={page} pageSize={pageSize} />
             <div className="flex items-center justify-between mt-4">
-                <Pagination pageSize={pageSize} currentPage={page} total={quantityId && quantityId.length} onChange={onPaginationChange} />
+                <Pagination pageSize={pageSize} currentPage={page} total={count} onChange={(page) => dispatch(setPage(page))} />
                 <div style={{ minWidth: 130 }}>
                     <Select<Option>
                         size="sm"
                         isSearchable={false}
                         value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
-                        onChange={(option) => onSelectChange(option?.value)}
+                        onChange={(option) => {
+                            if (option) {
+                                dispatch(setPageSize(option?.value))
+                                dispatch(setPage(1))
+                            }
+                        }}
                     />
                 </div>
             </div>
