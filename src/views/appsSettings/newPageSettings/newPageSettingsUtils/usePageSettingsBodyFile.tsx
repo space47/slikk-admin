@@ -65,10 +65,17 @@ export const PageSettingsBodyFile = async ({ values, initialValue }: props) => {
 
     const imageUpload = values?.background_image_array ? await handleImage(values?.background_image_array) : ''
     const mobileimageUpload = values?.mobile_background_array ? await handleImage(values?.mobile_background_array) : ''
+    const headerIconUpload = values?.header_config_icon_Array ? await handleImage(values?.header_config_icon_Array) : ''
+
     const footerImageUpload = values?.footer_config_image_Array ? await handleImage(values?.footer_config_image_Array) : ''
     const headerImageUpload = values?.header_config_image_Array ? await handleImage(values?.header_config_image_Array) : ''
     const subHeaderImageUpload = values?.sub_header_config_image_Array ? await handleImage(values?.sub_header_config_image_Array) : ''
-    const headerIconUpload = values?.header_config_icon_Array ? await handleImage(values?.header_config_icon_Array) : ''
+
+    const footerWebImageUpload = values?.footer_config_web_image_Array ? await handleImage(values?.footer_config_web_image_Array) : ''
+    const subHeaderWebImageUpload = values?.sub_header_config_web_image_Array
+        ? await handleImage(values?.sub_header_config_web_image_Array)
+        : ''
+    const headerWebImageUpload = values?.header_config_web_image_Array ? await handleImage(values?.header_config_web_image_Array) : ''
 
     const backgroundImageAspectRatios = values?.background_image_array ? await calculateAspectRatio(values?.background_image_array) : ''
     const mobileImageAspectRatios = values?.mobile_background_array ? await calculateAspectRatio(values?.mobile_background_array) : ''
@@ -77,6 +84,16 @@ export const PageSettingsBodyFile = async ({ values, initialValue }: props) => {
         ? await calculateAspectRatio(values?.sub_header_config_image_Array)
         : ''
     const footerImageAspectRatios = values?.footer_config_image_Array ? await calculateAspectRatio(values?.footer_config_image_Array) : ''
+
+    const webHeaderImageAspectRatios = values?.header_config_web_image_Array
+        ? await calculateAspectRatio(values?.header_config_web_image_Array)
+        : ''
+    const websubHeaderImageAspectRatios = values?.sub_header_config_web_image_Array
+        ? await calculateAspectRatio(values?.sub_header_config_web_image_Array)
+        : ''
+    const webfooterImageAspectRatios = values?.footer_config_web_image_Array
+        ? await calculateAspectRatio(values?.footer_config_web_image_Array)
+        : ''
 
     const cta_config_data = {
         ...values?.extra_info?.cta_config,
@@ -122,7 +139,9 @@ export const PageSettingsBodyFile = async ({ values, initialValue }: props) => {
         Object.entries({
             ...values?.footer_config,
             ...(footerImageUpload ? { image: footerImageUpload } : {}),
+            ...(footerWebImageUpload ? { web_image: footerWebImageUpload } : {}),
             ...(footerImageAspectRatios?.[0] ? { aspect_ratio: footerImageAspectRatios[0] } : {}),
+            ...(webfooterImageAspectRatios?.[0] ? { web_aspect_ratio: webfooterImageAspectRatios[0] } : {}),
             ...(footervideoUpload ? { video: footervideoUpload } : {}),
         }).filter(([, value]) => value !== ''),
     )
@@ -130,8 +149,10 @@ export const PageSettingsBodyFile = async ({ values, initialValue }: props) => {
         Object.entries({
             ...values?.header_config,
             ...(headerIconUpload ? { icon: headerIconUpload } : {}),
+            ...(headerWebImageUpload ? { web_image: headerWebImageUpload } : {}),
             ...(headerImageUpload ? { image: headerImageUpload } : {}),
             ...(headerImageAspectRatios?.[0] ? { aspect_ratio: headerImageAspectRatios[0] } : {}),
+            ...(webHeaderImageAspectRatios?.[0] ? { web_aspect_ratio: webHeaderImageAspectRatios[0] } : {}),
             ...(headerVideoUpload ? { video: headerVideoUpload } : {}),
         }).filter(([, value]) => value !== ''),
     )
@@ -139,7 +160,9 @@ export const PageSettingsBodyFile = async ({ values, initialValue }: props) => {
         Object.entries({
             ...values?.sub_header_config,
             ...(subHeaderImageUpload ? { image: subHeaderImageUpload } : {}),
+            ...(subHeaderWebImageUpload ? { web_image: subHeaderWebImageUpload } : {}),
             ...(subHeaderImageAspectRatios?.[0] ? { aspect_ratio: subHeaderImageAspectRatios[0] } : {}),
+            ...(websubHeaderImageAspectRatios?.[0] ? { web_aspect_ratio: websubHeaderImageAspectRatios[0] } : {}),
             ...(subHeaderVideoUpload ? { video: subHeaderVideoUpload } : {}),
         }).filter(([, value]) => value !== ''),
     )
