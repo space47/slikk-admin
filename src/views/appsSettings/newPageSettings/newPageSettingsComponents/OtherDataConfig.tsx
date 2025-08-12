@@ -106,12 +106,12 @@ const OtherDataConfigs = ({ editMode, initialValue, values, setInitialValue }: O
                     <>
                         <PageEditImage
                             label="Header Image"
-                            rowName={initialValue.header_config.image}
+                            rowName={initialValue?.header_config?.image}
                             removeName="header_image_image"
                             handleRemoveImage={() => handleRemove('header_image')}
                             name="header_config_image_Array"
                             beforeUpload={beforeUpload}
-                            fileList={values.header_config_image_Array}
+                            fileList={values?.header_config_image_Array}
                             fieldName="header_config_image_Array"
                         />
                     </>
@@ -121,7 +121,7 @@ const OtherDataConfigs = ({ editMode, initialValue, values, setInitialValue }: O
                             label="Header Image"
                             name="header_config_image_Array"
                             fieldName="header_config_image_Array"
-                            fileList={values.header_config_image_Array}
+                            fileList={values?.header_config_image_Array}
                             beforeUpload={beforeUpload}
                         />
                     </>
@@ -130,12 +130,12 @@ const OtherDataConfigs = ({ editMode, initialValue, values, setInitialValue }: O
                     <>
                         <PageEditImage
                             label="web Header Image"
-                            rowName={initialValue.header_config.web_image}
+                            rowName={initialValue?.header_config?.web_image}
                             removeName="web_header_image"
                             handleRemoveImage={() => handleRemove('header_web_image')}
                             name="header_config_web_image_Array"
                             beforeUpload={beforeUpload}
-                            fileList={values.header_config_web_image_Array}
+                            fileList={values?.header_config_web_image_Array}
                             fieldName="header_config_web_image_Array"
                         />
                     </>
@@ -145,7 +145,7 @@ const OtherDataConfigs = ({ editMode, initialValue, values, setInitialValue }: O
                             label="web Header Image"
                             name="header_config_web_image_Array"
                             fieldName="header_config_web_image_Array"
-                            fileList={values.header_config_web_image_Array}
+                            fileList={values?.header_config_web_image_Array}
                             beforeUpload={beforeUpload}
                         />
                     </>
@@ -155,12 +155,12 @@ const OtherDataConfigs = ({ editMode, initialValue, values, setInitialValue }: O
                     <>
                         <PageEditVideo
                             label="header Video"
-                            rowName={initialValue.header_config.video}
+                            rowName={initialValue?.header_config?.video}
                             removeName="header_video"
                             // handleRemoveImage={()=>handleRemove('sub_image')}
                             name="header_config_video_Array"
                             beforeVideoUpload={beforeVideoUpload}
-                            fileList={values.header_config_video_Array}
+                            fileList={values?.header_config_video_Array}
                             fieldName="header_config_video_Array"
                         />
                     </>
@@ -170,7 +170,7 @@ const OtherDataConfigs = ({ editMode, initialValue, values, setInitialValue }: O
                             label="Header video"
                             name="header_config_video_Array"
                             fieldName="header_config_video_Array"
-                            fileList={values.header_config_video_Array}
+                            fileList={values?.header_config_video_Array}
                             beforeUpload={beforeVideoUpload}
                         />
                     </>
@@ -292,12 +292,12 @@ const OtherDataConfigs = ({ editMode, initialValue, values, setInitialValue }: O
                     <>
                         <PageEditImage
                             label="Sub_Header Image"
-                            rowName={initialValue.sub_header_config.image}
+                            rowName={initialValue?.sub_header_config?.image}
                             removeName="sub_header_image"
                             handleRemoveImage={() => handleRemove('sub_image')}
                             name="sub_header_config_image_Array"
                             beforeUpload={beforeUpload}
-                            fileList={values.sub_header_config_image_Array}
+                            fileList={values?.sub_header_config_image_Array}
                             fieldName="sub_header_config_image_Array"
                         />
                     </>
@@ -307,7 +307,7 @@ const OtherDataConfigs = ({ editMode, initialValue, values, setInitialValue }: O
                             label="Sub Header Image"
                             name="sub_header_config_image_Array"
                             fieldName="sub_header_config_image_Array"
-                            fileList={values.sub_header_config_image_Array}
+                            fileList={values?.sub_header_config_image_Array}
                             beforeUpload={beforeUpload}
                         />
                     </>
@@ -316,12 +316,12 @@ const OtherDataConfigs = ({ editMode, initialValue, values, setInitialValue }: O
                     <>
                         <PageEditImage
                             label="web Sub Header Image"
-                            rowName={initialValue.sub_header_config.web_image}
+                            rowName={initialValue?.sub_header_config?.web_image}
                             removeName="web_sub_header_image"
                             handleRemoveImage={() => handleRemove('sub_web_image')}
                             name="sub_header_config_web_image_Array"
                             beforeUpload={beforeUpload}
-                            fileList={values.sub_header_config_web_image_Array}
+                            fileList={values?.sub_header_config_web_image_Array}
                             fieldName="sub_header_config_web_image_Array"
                         />
                     </>
@@ -331,7 +331,7 @@ const OtherDataConfigs = ({ editMode, initialValue, values, setInitialValue }: O
                             label="web Sub Header Image"
                             name="sub_header_config_web_image_Array"
                             fieldName="sub_header_config_web_image_Array"
-                            fileList={values.sub_header_config_web_image_Array}
+                            fileList={values?.sub_header_config_web_image_Array}
                             beforeUpload={beforeUpload}
                         />
                     </>
@@ -341,12 +341,12 @@ const OtherDataConfigs = ({ editMode, initialValue, values, setInitialValue }: O
                     <>
                         <PageEditVideo
                             label="Sub_Header Video"
-                            rowName={initialValue.sub_header_config.video}
+                            rowName={initialValue?.sub_header_config?.video}
                             removeName="sub_header_video"
                             // handleRemoveImage={handleRemoveSubImage}
                             name="sub_header_config_video_Array"
                             beforeVideoUpload={beforeVideoUpload}
-                            fileList={values.sub_header_config_video_Array}
+                            fileList={values?.sub_header_config_video_Array}
                             fieldName="sub_header_config_video_Array"
                         />
                     </>
@@ -356,7 +356,7 @@ const OtherDataConfigs = ({ editMode, initialValue, values, setInitialValue }: O
                             label="Sub Header video"
                             name="sub_header_config_video_Array"
                             fieldName="sub_header_config_video_Array"
-                            fileList={values.sub_header_config_video_Array}
+                            fileList={values?.sub_header_config_video_Array}
                             beforeUpload={beforeVideoUpload}
                         />
                     </>
@@ -414,12 +414,12 @@ const OtherDataConfigs = ({ editMode, initialValue, values, setInitialValue }: O
                     <>
                         <PageEditImage
                             label="Footer Image"
-                            rowName={initialValue.footer_config.image}
+                            rowName={initialValue?.footer_config?.image}
                             removeName="footer_image"
                             handleRemoveImage={() => handleRemove('footer_image')}
                             name="footer_config_image_Array"
                             beforeUpload={beforeUpload}
-                            fileList={values.footer_config_image_Array}
+                            fileList={values?.footer_config_image_Array}
                             fieldName="footer_config_image_Array"
                         />
                     </>
@@ -429,7 +429,7 @@ const OtherDataConfigs = ({ editMode, initialValue, values, setInitialValue }: O
                             label="Footer Image"
                             name="footer_config_image_Array"
                             fieldName="footer_config_image_Array"
-                            fileList={values.footer_config_image_Array}
+                            fileList={values?.footer_config_image_Array}
                             beforeUpload={beforeUpload}
                         />
                     </>
@@ -438,12 +438,12 @@ const OtherDataConfigs = ({ editMode, initialValue, values, setInitialValue }: O
                     <>
                         <PageEditImage
                             label="web Footer Image"
-                            rowName={initialValue.footer_config.web_image}
+                            rowName={initialValue?.footer_config?.web_image}
                             removeName="footer_web_image"
                             handleRemoveImage={() => handleRemove('footer_web_image')}
                             name="footer_config_web_image_Array"
                             beforeUpload={beforeUpload}
-                            fileList={values.footer_config_web_image_Array}
+                            fileList={values?.footer_config_web_image_Array}
                             fieldName="footer_config_web_image_Array"
                         />
                     </>
@@ -453,7 +453,7 @@ const OtherDataConfigs = ({ editMode, initialValue, values, setInitialValue }: O
                             label="web Footer Image"
                             name="footer_config_web_image_Array"
                             fieldName="footer_config_web_image_Array"
-                            fileList={values.footer_config_web_image_Array}
+                            fileList={values?.footer_config_web_image_Array}
                             beforeUpload={beforeUpload}
                         />
                     </>
@@ -463,12 +463,12 @@ const OtherDataConfigs = ({ editMode, initialValue, values, setInitialValue }: O
                     <>
                         <PageEditVideo
                             label="Footer Video"
-                            rowName={initialValue.footer_config.video}
+                            rowName={initialValue?.footer_config?.video}
                             removeName="footer_video"
                             // handleRemoveImage={handleRemoveSubImage}
                             name="footer_config_video_Array"
                             beforeVideoUpload={beforeVideoUpload}
-                            fileList={values.footer_config_video_Array}
+                            fileList={values?.footer_config_video_Array}
                             fieldName="footer_config_video_Array"
                         />
                     </>
@@ -478,7 +478,7 @@ const OtherDataConfigs = ({ editMode, initialValue, values, setInitialValue }: O
                             label="Footer video"
                             name="footer_config_video_Array"
                             fieldName="footer_config_video_Array"
-                            fileList={values.footer_config_video_Array}
+                            fileList={values?.footer_config_video_Array}
                             beforeUpload={beforeVideoUpload}
                         />
                     </>
