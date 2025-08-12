@@ -32,26 +32,64 @@ interface OtherConfigProps {
 
 const OtherDataConfigs = ({ editMode, initialValue, values, setInitialValue }: OtherConfigProps) => {
     const handleRemove = (value: string) => {
-        const configMap: Record<string, { configKey: keyof typeof initialValue; fieldKey: string }> = {
-            header_image: { configKey: 'header_config', fieldKey: 'image' },
-            header_web_image: { configKey: 'header_config', fieldKey: 'web_image' },
-
-            sub_image: { configKey: 'sub_header_config', fieldKey: 'image' },
-            sub_web_image: { configKey: 'sub_header_config', fieldKey: 'web_image' },
-            footer_image: { configKey: 'footer_config', fieldKey: 'image' },
-            footer_web_image: { configKey: 'footer_config', fieldKey: 'web_image' },
+        if (value === 'header_image') {
+            setInitialValue({
+                ...initialValue,
+                header_config: {
+                    ...initialValue.header_config,
+                    image: '',
+                },
+            })
         }
 
-        const mapping = configMap[value]
-        if (!mapping) return
+        if (value === 'header_web_image') {
+            setInitialValue({
+                ...initialValue,
+                header_config: {
+                    ...initialValue.header_config,
+                    web_image: '',
+                },
+            })
+        }
 
-        setInitialValue((prev: any) => ({
-            ...prev,
-            [mapping.configKey]: {
-                ...prev[mapping.configKey],
-                [mapping.fieldKey]: '',
-            },
-        }))
+        if (value === 'sub_image') {
+            setInitialValue({
+                ...initialValue,
+                sub_header_config: {
+                    ...initialValue.sub_header_config,
+                    image: '',
+                },
+            })
+        }
+
+        if (value === 'sub_web_image') {
+            setInitialValue({
+                ...initialValue,
+                sub_header_config: {
+                    ...initialValue.sub_header_config,
+                    web_image: '',
+                },
+            })
+        }
+
+        if (value === 'footer_image') {
+            setInitialValue({
+                ...initialValue,
+                footer_config: {
+                    ...initialValue.footer_config,
+                    image: '',
+                },
+            })
+        }
+        if (value === 'footer_web_image') {
+            setInitialValue({
+                ...initialValue,
+                footer_config: {
+                    ...initialValue.footer_config,
+                    web_image: '',
+                },
+            })
+        }
     }
 
     return (
