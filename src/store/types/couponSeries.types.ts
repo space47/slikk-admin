@@ -16,7 +16,7 @@ export type CouponResults = {
     coupon_type: string
     is_public: boolean
     event_name?: string
-    coupon_active_event?: string
+    coupon_active_event_name?: string
     max_coupons_per_user?: number
     series_type?: string
     extra_attributes: {
@@ -55,7 +55,7 @@ export type CouponSeriesBodyType = {
     coupon_type?: string
     is_public?: boolean
     event_name?: string
-    coupon_active_event?: string
+    coupon_active_event_name?: string
     extra_attributes?: {
         applicable_categories?: string[]
         new_users_only?: boolean
