@@ -56,7 +56,7 @@ const CouponSeriesAdd = () => {
                 is_public: values?.is_public ?? false,
                 series_type: values?.series_type,
                 event_name: values?.event_name,
-                coupon_active_event: values?.coupon_active_event,
+                coupon_active_event_name: values?.coupon_active_event_name,
                 max_coupons_per_user: values?.max_coupons_per_user,
                 extra_attributes: {
                     new_users_only: values?.extra_attributes?.new_users_only,

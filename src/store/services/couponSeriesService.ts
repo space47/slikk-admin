@@ -56,7 +56,7 @@ export const couponSeriesService = RtkQueryService.injectEndpoints({
                         max_coupons_per_user: params.max_coupons_per_user,
                         series_type: params.series_type,
                         event_name: params.event_name,
-                        coupon_active_event: params.coupon_active_event,
+                        coupon_active_event_name_name: params.coupon_active_event_name,
                         campaign: params.campaign,
                         coupon_type: params.coupon_type,
                         is_public: params.is_public,
