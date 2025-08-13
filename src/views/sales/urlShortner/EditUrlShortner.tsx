@@ -246,7 +246,7 @@ const EditUrlShortner = () => {
     console.log('Filter Id 🚀🚀', initialValues)
 
     const handleSubmit = async (values: any) => {
-        console.log('Values of target page', values?.sub_page)
+        console.log('Values of target page', values)
         const filters = [
             ...(values.filters || []),
             ...UtmArray.filter((item) => values[item.name] !== undefined).map(
@@ -311,11 +311,19 @@ const EditUrlShortner = () => {
         }
 
         const webPageUrl = `${baseUrl}/s/${values?.page?.name === undefined ? values?.page : values?.page?.name || ''}${
-            values?.sub_page == 'null' ? '' : values?.sub_page?.name === undefined ? `` : `/${values?.sub_page?.name || ''}`
+            values?.sub_page == 'null' || values?.sub_page === null
+                ? ''
+                : values?.sub_page?.name === undefined
+                  ? `/${values?.sub_page}`
+                  : `/${values?.sub_page?.name || ''}`
         }?${noSelectFilters}${appOnly}`
 
         const pageUrl = `slikk://page/s/${values?.page?.name === undefined ? values?.page : values?.page?.name || ''}${
-            values?.sub_page == 'null' ? '' : values?.sub_page?.name === undefined ? `` : `/${values?.sub_page?.name || ''}`
+            values?.sub_page == 'null' || values?.sub_page === null
+                ? ''
+                : values?.sub_page?.name === undefined
+                  ? `/${values?.sub_page}`
+                  : `/${values?.sub_page?.name || ''}`
         }?${noSelectFilters}${appOnly}`
 
         const customBody = {
