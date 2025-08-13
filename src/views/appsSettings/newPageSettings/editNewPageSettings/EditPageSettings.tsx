@@ -52,6 +52,7 @@ const EditPageSettings = () => {
         const division = filters.find((item: string) => item.includes('division'))?.split('_')[1]
         setInitialValue({ ...editedValues, division_select: division, banners: bannerData })
         setBarcodeData(editedValues?.data_type?.barcodes)
+
         setFilterId(filterId)
     }, [pageSettingsData, bannerDetails])
 
@@ -79,6 +80,7 @@ const EditPageSettings = () => {
                     is_product_filter: values?.extra_info?.is_product_filter ? values?.extra_info?.is_product_filter : false,
                     cta_config: cta_config,
                     child_component_config: child_component_config,
+                    series_id: values?.extra_info?.coupon_series || '',
                 }).filter(([, value]) => value !== ''),
             ),
             data_type: {

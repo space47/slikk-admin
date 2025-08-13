@@ -33,7 +33,7 @@ const AddPageSettings = () => {
             return
         }
 
-        console.log('here 0')
+        console.log('here 0', values?.coupon_series)
 
         const { componentConfig, backgroundConfig, footerConfig, headerConfig, subHeaderConfig, child_component_config, cta_config } =
             await PageSettingsBodyFile({
@@ -58,6 +58,7 @@ const AddPageSettings = () => {
                     ...(values?.extra_info?.is_product_filter ? { is_product_filter: values.extra_info.is_product_filter } : {}),
                     cta_config: cta_config,
                     child_component_config: child_component_config,
+                    series_id: values?.extra_info?.coupon_series || '',
                 }).filter(([, value]) => value !== ''),
             ),
 

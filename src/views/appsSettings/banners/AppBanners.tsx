@@ -194,138 +194,136 @@ const AppBanners = () => {
 
     return (
         <div className="shadow-md p-4 bg-gray-50 dark:bg-slate-800 rounded-lg">
-            <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
-                <div className="mb-4 flex gap-2 flex-col xl:flex-row ">
-                    <div className="flex justify-center xl:justify-normal">
-                        <input
-                            type="text"
-                            placeholder="Search by name"
-                            value={globalFilter}
-                            className="p-2 border rounded"
-                            onChange={(e) => setGlobalFilter(e.target.value)}
-                        />
+            <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 p-4 bg-white rounded-lg shadow-sm">
+                {/* Filters Section */}
+                <div className="flex flex-col xl:flex-row gap-3">
+                    {/* Search Input */}
+                    <input
+                        type="text"
+                        placeholder="Search by name"
+                        value={globalFilter}
+                        onChange={(e) => setGlobalFilter(e.target.value)}
+                        className="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-full xl:w-60"
+                    />
+
+                    {/* Page Dropdown */}
+                    <div className="bg-gray-200 rounded-xl font-semibold">
+                        <Dropdown
+                            className="border border-gray-300 bg-gray-200 hover:bg-gray-300 text-black font-semibold rounded-lg transition-colors"
+                            title={currentSelectedPage?.name || 'Select Page'}
+                            onSelect={handleSelectPage}
+                        >
+                            <div className="max-h-60 overflow-y-auto">
+                                {BANNER_PAGE_NAME.map((item) => (
+                                    <DropdownItem key={item.value} eventKey={item.value}>
+                                        {item.name}
+                                    </DropdownItem>
+                                ))}
+                            </div>
+                        </Dropdown>
                     </div>
-                    <div className="flex gap-2 flex-col xl:flex-row">
-                        <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px]">
-                            <Dropdown
-                                className="border bg-gray-200 text-black text-lg font-semibold"
-                                title={currentSelectedPage?.name || 'SELECT'}
-                                onSelect={handleSelectPage}
-                            >
-                                <div className="max-h-60 overflow-y-auto">
-                                    {BANNER_PAGE_NAME.map((item) => (
-                                        <DropdownItem key={item.value} eventKey={item.value}>
-                                            {item.name}
-                                        </DropdownItem>
-                                    ))}
-                                </div>
-                            </Dropdown>
-                        </div>
 
-                        {/* Sub page */}
-                        <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px]">
-                            <Dropdown
-                                className="border bg-gray-200 text-black text-lg font-semibold"
-                                title={currentSelectedSubPage?.name || 'Select Sub Page'}
-                                onSelect={handleSelectSubPage}
+                    {/* Sub Page Dropdown */}
+                    <div className="bg-gray-200 rounded-xl font-semibold">
+                        <Dropdown
+                            className="border border-gray-300 bg-gray-200 hover:bg-gray-300 text-black font-semibold rounded-lg transition-colors"
+                            title={currentSelectedSubPage?.name || 'Select Sub Page'}
+                            onSelect={handleSelectSubPage}
+                        >
+                            <div className="max-h-60 overflow-y-auto">
+                                {SUB_PAGE_NAME?.map((item) => (
+                                    <DropdownItem key={item.value} eventKey={item.name}>
+                                        {item.name}
+                                    </DropdownItem>
+                                ))}
+                            </div>
+                            <div
+                                className="mt-3 px-3 py-1 rounded-md text-white text-center bg-red-500 hover:bg-red-400 cursor-pointer"
+                                onClick={() => setCurrentSelectedSubPage({ name: '', value: '' })}
                             >
-                                <div className="max-h-60 overflow-y-auto">
-                                    {SUB_PAGE_NAME?.map((item) => (
-                                        <DropdownItem key={item.value} eventKey={item.name}>
-                                            {item.name}
-                                        </DropdownItem>
-                                    ))}
-                                </div>
-                                <div
-                                    className="flex mt-3 justify-center items-center rounded-lg cursor-pointer text-white bg-red-500 hover:bg-red-400"
-                                    onClick={() => setCurrentSelectedSubPage({ name: '', value: '' })}
-                                >
-                                    Clear
-                                </div>
-                            </Dropdown>
-                        </div>
+                                Clear
+                            </div>
+                        </Dropdown>
+                    </div>
 
-                        <div className="bg-gray-200 max-h-[140px] px-1 rounded-lg font-bold text-[15px]">
-                            <Dropdown
-                                className="border   text-black text-lg font-semibold "
-                                title={selectedHeading}
-                                onSelect={handleSectionHeading}
+                    {/* Section Heading Dropdown */}
+                    <div className="bg-gray-200 rounded-xl font-semibold">
+                        <Dropdown
+                            className="border border-gray-300 bg-gray-200 hover:bg-gray-300 text-black font-semibold rounded-lg transition-colors"
+                            title={selectedHeading}
+                            onSelect={handleSectionHeading}
+                        >
+                            <div className="px-2 py-1">
+                                <input
+                                    type="search"
+                                    placeholder="Search Section Heading"
+                                    value={sectionFilter}
+                                    onChange={(e) => setSectionFilter(e.target.value)}
+                                    className="w-full h-8 px-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-400"
+                                />
+                            </div>
+                            <div className="max-h-60 overflow-y-auto">
+                                {filteredSectionHeadings?.map((item, key) => (
+                                    <DropdownItem key={key} eventKey={item}>
+                                        {item}
+                                    </DropdownItem>
+                                ))}
+                            </div>
+                            <div
+                                className="mt-3 px-3 py-1 rounded-md text-white text-center bg-red-500 hover:bg-red-400 cursor-pointer"
+                                onClick={() => setSelectedHeading('Select Section')}
                             >
-                                <div className="mt-2 mb-2">
-                                    <input
-                                        className="flex h-[30px] items-center rounded-xl"
-                                        placeholder="Search Section Heading"
-                                        type="search"
-                                        value={sectionFilter}
-                                        onChange={(e) => setSectionFilter(e.target.value)}
-                                    />
-                                </div>
-                                <div className="max-h-60 overflow-y-auto">
-                                    {filteredSectionHeadings?.map((item, key) => (
-                                        <DropdownItem key={key} eventKey={item} className="h-1">
-                                            {item}
-                                        </DropdownItem>
-                                    ))}
-                                </div>
-                                <div
-                                    className="flex mt-3 justify-center items-center rounded-lg cursor-pointer text-white bg-red-500 hover:bg-red-400"
-                                    onClick={() => setSelectedHeading('Select Section')}
-                                >
-                                    Clear
-                                </div>
-                            </Dropdown>
-                        </div>
-                        <div className="bg-gray-200 h-auto scrollbar-hide px-1 rounded-lg font-bold text-[15px]">
-                            <Dropdown
-                                className="border   text-black text-lg font-semibold "
-                                title={selectedDivision}
-                                onSelect={(e) => {
-                                    setSelectedDivision(e)
-                                }}
+                                Clear
+                            </div>
+                        </Dropdown>
+                    </div>
+
+                    {/* Division Dropdown */}
+                    <div className="bg-gray-200  rounded-xl font-semibold ">
+                        <Dropdown
+                            className="border border-gray-600 bg-gray-200 hover:bg-gray-300 text-black font-semibold rounded-lg transition-colors"
+                            title={selectedDivision}
+                            onSelect={(e) => setSelectedDivision(e)}
+                        >
+                            <div className="max-h-40 overflow-y-auto">
+                                {DivisionArray?.map((item, key) => (
+                                    <DropdownItem key={key} eventKey={item.value}>
+                                        {item.name}
+                                    </DropdownItem>
+                                ))}
+                            </div>
+                            <div
+                                className="mt-3 px-3 py-1 rounded-md text-white text-center bg-red-500 hover:bg-red-400 cursor-pointer"
+                                onClick={() => setSelectedDivision('Select Division')}
                             >
-                                <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide xl:h-[150px] xl:overflow-y-scroll font-bold ">
-                                    {DivisionArray?.map((item, key) => (
-                                        <DropdownItem key={key} eventKey={item.value} className="h-1">
-                                            {item.name}
-                                        </DropdownItem>
-                                    ))}
-                                </div>
-                                <div
-                                    className="flex mt-3 justify-center items-center rounded-lg cursor-pointer text-white bg-red-500 hover:bg-red-400"
-                                    onClick={() => setSelectedDivision('Select Division')}
-                                >
-                                    Clear
-                                </div>
-                            </Dropdown>
-                        </div>
+                                Clear
+                            </div>
+                        </Dropdown>
                     </div>
                 </div>
 
-                <div className="flex gap-3 items-center justify-center order-first xl:order-none">
-                    <div className="mb-2">
-                        {bannerIdStore.length > 0 && (
-                            <div className="flex gap-2 items-center">
-                                <Button variant="new" size="sm" onClick={() => setShowBulkEditModal(true)}>
-                                    Bulk Edit
-                                </Button>
-                            </div>
-                        )}
-                    </div>
-                    <div className="mb-2">
-                        <ClearCache cacheKey="banner" />
-                    </div>
-                    <div className="flex items-end justify-end mb-2 gap-2">
-                        <button
-                            className="bg-black text-white px-5 py-2 rounded-md hover:bg-gray-700"
-                            onClick={() => {
-                                navigate('/app/appSettings/banners/addNew')
-                            }}
+                {/* Actions Section */}
+                <div className="flex items-center gap-3 flex-wrap">
+                    {bannerIdStore.length > 0 && (
+                        <Button
+                            variant="new"
+                            size="sm"
+                            onClick={() => setShowBulkEditModal(true)}
+                            className="bg-blue-600 hover:bg-blue-500 text-white rounded-lg px-4 py-2"
                         >
-                            ADD NEW BANNER
-                        </button>
-                    </div>
+                            Bulk Edit
+                        </Button>
+                    )}
+                    <ClearCache cacheKey="banner" />
+                    <button
+                        onClick={() => navigate('/app/appSettings/banners/addNew')}
+                        className="bg-black hover:bg-gray-800 text-white rounded-lg px-5 py-2"
+                    >
+                        Add New Banner
+                    </button>
                 </div>
             </div>
+
             <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
             <div className="flex items-center justify-between mt-4">
                 <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={(page) => setPage(page)} />

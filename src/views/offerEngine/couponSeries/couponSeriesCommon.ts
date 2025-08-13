@@ -99,6 +99,17 @@ export const COUPON_SERIES_FORM = [
         status: 'max_count_per_user',
     },
     {
+        label: 'Max Coupons Per User',
+        classname: 'col-span-1 w-full',
+        type: 'number',
+        max: 10,
+        min: 0,
+        name: 'max_coupons_per_user',
+        placeholder: 'Enter maximum coupons per user',
+        component: { Input },
+        status: 'max_coupons_per_user',
+    },
+    {
         label: 'Minimum Filter Products Amount',
         classname: 'col-span-1 w-full',
         type: 'number',
