@@ -183,7 +183,7 @@ const CouponSeriesForm = ({ values, setFieldValue, setFilterId, filterValue, set
                     {values?.series_type === 'event' && (
                         <>
                             <GetEvenNames label="Coupon Issued on Event" name="event_name" />
-                            <GetEvenNames label="Coupon Activation on Event" name="coupon_active_event" />
+                            <GetEvenNames label="Coupon Activation on Event" name="coupon_active_event_name" />
                         </>
                     )}
 
