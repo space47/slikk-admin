@@ -36,7 +36,7 @@ const BrandAccounting = () => {
         try {
             setShowSpinner(true)
 
-            const response = await axiosInstance.get(`/merchant/product/sales?brand=${selectedCompany?.name}&from=${from}&to=${to}`)
+            const response = await axiosInstance.get(`/merchant/product/sales?code=${selectedCompany?.code}&from=${from}&to=${to}`)
             const remitanceData = response.data?.data.items
             setShowSpinner(false)
             setFullRemitanceResponse(response.data?.data)
@@ -76,7 +76,7 @@ const BrandAccounting = () => {
     const handleDownload = async () => {
         try {
             const response = await axiosInstance.get(
-                `/merchant/product/sales?from=${from}&to=${to}&download=true&brand=${selectedCompany?.name}`,
+                `/merchant/product/sales?from=${from}&to=${to}&download=true&code=${selectedCompany?.code}`,
                 {
                     responseType: 'blob',
                 },
