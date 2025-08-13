@@ -81,7 +81,10 @@ export const InitialValuesEdit = (data: pageSettingsType | undefined) => {
         header_config: data?.header_config ?? {},
         sub_header_config: data?.sub_header_config ?? {},
         footer_config: data?.footer_config ?? {},
-        extra_info: data?.extra_info ?? {},
+        extra_info: {
+            ...data?.extra_info,
+            coupon_series: data?.extra_info?.series_id ?? '',
+        },
         is_section_clickable: data?.is_section_clickable ?? false,
         last_updated_by: data?.last_updated_by ?? '',
         created_at: data?.created_at ?? '',

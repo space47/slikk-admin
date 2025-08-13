@@ -34,10 +34,11 @@ const PaginationTable = () => {
     const query = useMemo(() => {
         let filter = ''
         let code = ''
+        let store = ''
         if (globalFilter) filter = `&document_number=${globalFilter}`
         if (companyCode) code = `&company_code=${encodeURIComponent(companyCode)}`
-        if (storeCode) code = `&store_id=${encodeURIComponent(storeCode?.join(','))}`
-        const response = `goods/received/${selectedCompany.id}?p=${page}&page_size=${pageSize}${filter}${code}`
+        if (storeCode && storeCode.length > 0) store = `&store_id=${encodeURIComponent(storeCode?.join(','))}`
+        const response = `goods/received/${selectedCompany.id}?p=${page}&page_size=${pageSize}${filter}${code}${store}`
         return response
     }, [page, pageSize, globalFilter, companyCode, selectedCompany, storeCode])
 
