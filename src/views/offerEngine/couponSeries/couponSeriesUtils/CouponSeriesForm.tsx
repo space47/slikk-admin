@@ -8,6 +8,7 @@ import { COUPON_SERIES_FORM } from '../couponSeriesCommon'
 import CommonFilterSelect from '@/common/ComonFilterSelect'
 import { CiCircleQuestion } from 'react-icons/ci'
 import dayjs from 'dayjs'
+import GetEvenNames from '@/common/GetEvenNames'
 
 interface CouponProps {
     values: any
@@ -26,6 +27,10 @@ interface CouponProps {
 const DiscountType = [
     { name: 'PERCENT_OFF', value: 'PERCENT_OFF' },
     { name: 'FLAT_OFF', value: 'FLAT_OFF' },
+]
+const SeriesType = [
+    { name: 'PROMOTION', value: 'promotion' },
+    { name: 'EVENT', value: 'event' },
 ]
 
 const CouponsType = () => {
@@ -158,8 +163,29 @@ const CouponSeriesForm = ({ values, setFieldValue, setFilterId, filterValue, set
                                 const newValue: string = selectedOption?.value || ''
                                 setFieldValue('discount_type', newValue)
                             }}
-                        />{' '}
+                        />
                     </FormItem>
+                    <FormItem label="Series Type">
+                        <Select
+                            isClearable
+                            className="xl:w-1/2 mt-7 w-full"
+                            options={SeriesType}
+                            getOptionLabel={(option) => option.name}
+                            getOptionValue={(option) => option.value}
+                            value={SeriesType.find((option: any) => option.value === values.series_type) || null}
+                            onChange={(selectedOption) => {
+                                const newValue: string = selectedOption?.value || ''
+                                setFieldValue('series_type', newValue)
+                            }}
+                        />
+                    </FormItem>
+
+                    {values?.series_type === 'event' && (
+                        <>
+                            <GetEvenNames label="Coupon Issued on Event" name="event_name" />
+                            <GetEvenNames label="Coupon Activation on Event" name="coupon_active_event" />
+                        </>
+                    )}
 
                     <div>
                         <CommonFilterSelect filterId={filterValue} setFilterId={setFilterId} />

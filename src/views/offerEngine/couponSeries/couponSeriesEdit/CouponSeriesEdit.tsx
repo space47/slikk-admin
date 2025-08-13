@@ -58,6 +58,10 @@ const CouponSeriesEdit = () => {
         coupon_type: couponSeriesActive?.coupon_type,
         is_public: couponSeriesActive?.is_public,
         extra_attributes: couponSeriesActive?.extra_attributes,
+        max_coupons_per_user: couponSeriesActive?.max_coupons_per_user,
+        series_type: couponSeriesActive?.series_type,
+        event_name: couponSeriesActive?.event_name,
+        coupon_active_event: couponSeriesActive?.coupon_active_event,
     }
 
     // useEffect(() => {
@@ -85,6 +89,10 @@ const CouponSeriesEdit = () => {
                 max_count_per_user: values?.max_count_per_user,
                 campaign: values?.campaign,
                 coupon_type: values?.coupon_type,
+                series_type: values?.series_type,
+                event_name: values?.event_name,
+                coupon_active_event: values?.coupon_active_event,
+                max_coupons_per_user: values?.max_coupons_per_user,
                 is_public: values?.is_public ?? false,
                 extra_attributes: {
                     new_users_only: values?.extra_attributes?.new_users_only,
