@@ -101,7 +101,7 @@ const AddUrlShortner = () => {
             ios_url: !values.select_filter
                 ? values.ios_url
                     ? `${values.ios_url}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
-                    : `${`slikk://page`}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
+                    : `${`slikk:/`}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
                 : `${`slikk://page`}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
             web_url: !values.select_filter
                 ? values.web_url
