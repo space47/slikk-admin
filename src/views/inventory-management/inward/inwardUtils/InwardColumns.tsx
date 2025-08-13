@@ -6,6 +6,11 @@ import { FaEdit, FaSave, FaTimes, FaTrash } from 'react-icons/fa'
 
 const isDashboard = import.meta.env.VITE_IS_DASHBOARD !== 'brand'
 
+interface props {
+    companyList: { id: number; name: string }[]
+    storeList: { id: number; name: string }[]
+}
+
 const getowner = (own: any) => {
     if (own === true) {
         return 'Yes'
@@ -14,7 +19,16 @@ const getowner = (own: any) => {
     }
 }
 
-export const InwardColumns = () => {
+export const InwardColumns = ({ companyList, storeList }: props) => {
+    function GetCompanyNameFromId(id: number) {
+        const company = companyList.find((company) => company.id === id)
+        return company ? company.name : ''
+    }
+
+    function GetStoreNameFromId(id: number) {
+        const store = storeList.find((store) => store.id === id)
+        return store ? store.name : ''
+    }
     return useMemo(
         () => [
             {
@@ -47,6 +61,16 @@ export const InwardColumns = () => {
                 header: 'Document Number',
                 accessorKey: 'document_number',
                 cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Company',
+                accessorKey: 'company',
+                cell: ({ row }) => GetCompanyNameFromId(row.original.company),
+            },
+            {
+                header: 'Store',
+                accessorKey: 'store',
+                cell: ({ row }) => GetStoreNameFromId(row.original.store),
             },
             {
                 header: 'Create Date',
