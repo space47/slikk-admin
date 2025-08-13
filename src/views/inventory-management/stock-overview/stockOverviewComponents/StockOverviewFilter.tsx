@@ -41,6 +41,8 @@ const StockOverviewFilter = ({
     const product_type = useAppSelector<PRODUCTTYPE_STATE>((state) => state.product_type)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
 
+    console.log('division that ', divisions)
+
     const dispatch = useAppDispatch()
     useEffect(() => {
         dispatch(getAllBrandsAPI())
@@ -71,9 +73,9 @@ const StockOverviewFilter = ({
                                             <Select
                                                 isMulti
                                                 className="w-full"
-                                                options={divisions.divisions}
+                                                options={divisions?.divisions}
                                                 getOptionLabel={(option) => option.name}
-                                                getOptionValue={(option) => option.id.toString()}
+                                                getOptionValue={(option) => option?.id?.toString()}
                                                 defaultValue={divisions.divisions.filter((option) =>
                                                     fieldValue.some((item) => item === option.name),
                                                 )}

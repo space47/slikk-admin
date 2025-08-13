@@ -11,7 +11,6 @@ import { Button, Dropdown } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import _ from 'lodash'
 import BulkEditModal from './BulkEditModal'
-import { BANNER_PAGE_NAME } from '@/common/banner'
 import { useBannerColumns } from './bannerUtils/BannerColumns'
 import { Option } from '@/views/org-management/sellers/sellerCommon'
 import { pageSizeOptions } from '@/views/category-management/orderlist/commontypes'
@@ -65,7 +64,7 @@ const AppBanners = () => {
 
     const { data: subPageData } = useFetchSingleData<any>({ url: query })
 
-    const SUB_PAGE_NAME = subPageData?.map((item) => ({
+    const SUB_PAGE_NAME = subPageData?.map((item: any) => ({
         name: item?.name,
         value: item?.name,
     }))
@@ -173,7 +172,7 @@ const AppBanners = () => {
         if (selectedPage) setCurrentSelectedPage(selectedPage)
     }
     const handleSelectSubPage = (value: string) => {
-        const selectedPage = SUB_PAGE_NAME.find((page) => page.value === value)
+        const selectedPage = SUB_PAGE_NAME.find((page: any) => page.value === value)
         if (selectedPage) setCurrentSelectedSubPage(selectedPage)
     }
 
