@@ -127,8 +127,8 @@ const EditUrlShortner = () => {
     const initialValues: any = {
         short_code: urlFieldDatas?.short_code || '',
         web_url: urlFieldDatas?.ios_url ? `${baseUrl}` : '',
-        android_url: urlFieldDatas?.ios_url ? `${`slikk://`}` : '',
-        ios_url: urlFieldDatas?.ios_url ? `${`slikk://`}` : '',
+        android_url: urlFieldDatas?.ios_url ? `${`slikk://page`}` : '',
+        ios_url: urlFieldDatas?.ios_url ? `${`slikk://page`}` : '',
         page: (() => {
             const url = urlFieldDatas?.web_url || urlFieldDatas?.android_url || urlFieldDatas?.ios_url
             if (url) {
@@ -258,7 +258,7 @@ const EditUrlShortner = () => {
             ...(filterId ? [`filterId_${filterId}`] : []),
         ].join(',')
 
-        const noSelectFilters = UtmArray.filter((item) => values[item.name] !== undefined)
+        const noSelectFilters = UtmArray.filter((item) => values[item.name] !== undefined && values[item.name] !== '')
             .map((item) => `${item.name.replace('_', '-')}=${values[item.name]}`)
             .join('&')
 
@@ -318,7 +318,7 @@ const EditUrlShortner = () => {
                   : `/${values?.sub_page?.name || ''}`
         }?${noSelectFilters}${appOnly}`
 
-        const pageUrl = `slikk:/s/${values?.page?.name === undefined ? values?.page : values?.page?.name || ''}${
+        const pageUrl = `slikk://page/s/${values?.page?.name === undefined ? values?.page : values?.page?.name || ''}${
             values?.sub_page == 'null'
                 ? ''
                 : values?.sub_page?.name === undefined
