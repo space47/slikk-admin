@@ -250,6 +250,6 @@ export const getInitialBannerValue = (bannerData: BANNER_MODEL | undefined) => (
     barcodes: bannerData?.barcodes || '',
     redirection_url: bannerData?.redirection_url || null,
     tags_input: bannerData?.tags?.join(',') || '',
-
+    show_subscription_popup: bannerData?.extra_attributes?.show_subscription_popup || false,
     position: bannerData?.position || null,
 })

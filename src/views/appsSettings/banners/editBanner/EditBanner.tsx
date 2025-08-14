@@ -362,6 +362,9 @@ const EditBanner = () => {
                                             }}
                                         </Field>
                                     </FormItem>
+                                    <FormItem label="Show Subscription Popup">
+                                        <Field type="checkbox" name="show_subscription_popup" component={Checkbox} />
+                                    </FormItem>
                                     <CommonSelect needClassName className="" label="Sort By" name="sort" options={SortArrays} />
                                 </FormContainer>
                             </FormContainer>
