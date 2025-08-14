@@ -12,9 +12,6 @@ import GetEvenNames from '@/common/GetEvenNames'
 
 interface CouponProps {
     values: any
-    ACTIONARRAY?: any
-    userAction?: any
-    setUserAction?: any
     setFieldValue: any
     resetForm: any
     isEdit?: any
