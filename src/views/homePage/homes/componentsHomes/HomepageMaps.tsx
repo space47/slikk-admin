@@ -15,11 +15,18 @@ interface props {
 const HomepageMaps = ({ from, to, activeTab, setAccessDenied }: props) => {
     const [orders, setOrders] = useState<any[]>([])
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
+    const [selectedStatus, setSelectedStatus] = useState<string[]>([])
+
+    console.log('selectedStatus', selectedStatus)
 
     useEffect(() => {
         const fetchOrderForLocation = async () => {
+            let statusData = ''
+            if (selectedStatus && selectedStatus.length > 0) {
+                statusData = `&status=${selectedStatus.join(',')}`
+            }
             try {
-                const response = await axioisInstance.get(`/merchant/orders?location_data=true&from=${from}&to=${To_Date}`)
+                const response = await axioisInstance.get(`/merchant/orders?location_data=true&from=${from}&to=${To_Date}${statusData}`)
                 const ordersData = response.data?.data
                 setOrders(ordersData)
             } catch (error: any) {
@@ -30,7 +37,7 @@ const HomepageMaps = ({ from, to, activeTab, setAccessDenied }: props) => {
             }
         }
         fetchOrderForLocation()
-    }, [from, to])
+    }, [from, to, selectedStatus])
     return (
         <div>
             {activeTab === 'orders' && (
@@ -41,6 +48,7 @@ const HomepageMaps = ({ from, to, activeTab, setAccessDenied }: props) => {
                         amount={orders.map((item) => item.amount || [])}
                         currentStatus={orders.map((item) => item.status || [])}
                         currentInvoice={orders.map((item) => item.invoice_id || [])}
+                        setSelectedStatus={setSelectedStatus}
                     />
                 </div>
             )}

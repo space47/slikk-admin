@@ -56,6 +56,7 @@ interface MultipleMapProps {
     amount: any[]
     currentStatus: string[]
     currentInvoice: string[]
+    setSelectedStatus: (status: string[]) => void
 }
 
 interface CenterProps {
@@ -142,27 +143,32 @@ const MarkerComponent = ({
     return (
         <div>
             {markers.map((marker, index) => (
-                <Marker
-                    key={index}
-                    position={[marker.lat, marker.lon]}
-                    icon={
-                        ['PENDING', 'ACCEPTED', 'PACKED'].includes(marker?.status)
-                            ? officeIcon
-                            : marker?.status === 'EXCHANGE'
-                              ? orangeIcon // orange
-                              : ['DECLINED', 'CANCELLED'].includes(marker?.status)
-                                ? blackIcon //black
-                                : DefaultIcon
-                    }
-                >
-                    <Popup className="hover:bg-blue-50">
-                        <a href={`/app/orders/${marker?.invoice_id}`} target="_blank" rel="noreferrer" className="cursor-pointer">
-                            <p>Amount: Rs.{marker.amount}</p>
-                            <p>Distance: {marker.distance} km</p>
-                            <p>Status: {marker.status} </p>
-                        </a>
-                    </Popup>
-                </Marker>
+                <>
+                    <Marker
+                        key={index}
+                        position={[marker.lat, marker.lon]}
+                        icon={
+                            ['PENDING', 'ACCEPTED', 'PACKED'].includes(marker?.status)
+                                ? officeIcon
+                                : marker?.status === 'EXCHANGE'
+                                  ? orangeIcon // orange
+                                  : ['DECLINED', 'CANCELLED'].includes(marker?.status)
+                                    ? blackIcon //black
+                                    : DefaultIcon
+                        }
+                    >
+                        <Popup className="hover:bg-blue-50">
+                            <a href={`/app/orders/${marker?.invoice_id}`} target="_blank" rel="noreferrer" className="cursor-pointer">
+                                <div className="flex items-center justify-start ">
+                                    <p className="p-2 bg-red-500 rounded-xl text-white">{marker?.invoice_id}</p>
+                                </div>
+                                <p>Amount: Rs.{marker.amount}</p>
+                                <p>Distance: {marker.distance} km</p>
+                                <p>Status: {marker.status} </p>
+                            </a>
+                        </Popup>
+                    </Marker>
+                </>
             ))}
 
             <Marker position={[currLat, currLong]} icon={wareHouseIcon}>
@@ -267,8 +273,21 @@ const MAP_STYLE_ARRAY = [
     { name: 'Marker', value: 'marker' },
     { name: 'HeatMap', value: 'heat_map' },
 ]
+const STATUS_ARRAY = [
+    { name: 'ACCEPTED', value: 'ACCEPTED' },
+    { name: 'PACKED', value: 'PACKED' },
+    { name: 'DELIVERY_CREATED', value: 'DELIVERY_CREATED' },
+]
 
-const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount, currentStatus, currentInvoice }) => {
+const MultipleMap: React.FC<MultipleMapProps> = ({
+    latitudes,
+    longitudes,
+    amount,
+    currentStatus,
+    currentInvoice,
+
+    setSelectedStatus,
+}) => {
     const dispatch = useAppDispatch()
     const [currLat, setCurrLat] = useState<number>(12.920216)
     const [currLong, setCurrLong] = useState<number>(77.649326)
@@ -448,22 +467,25 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
 
     return (
         <div className="flex flex-col gap-4">
-            <div className="flex gap-4 ">
-                <div>
-                    <input className="rounded-xl" placeholder="Enter location" value={location} onChange={handleChangeLocation} />
-                    {suggestions.length > 0 && (
-                        <ul className="mt-2 border rounded-xl bg-white shadow-md">
-                            {suggestions.map((suggestion: any, index: any) => (
-                                <li
-                                    key={index}
-                                    className="p-2 cursor-pointer hover:bg-gray-200"
-                                    onClick={() => handleSelectSuggestion(suggestion)}
-                                >
-                                    {suggestion.name}
-                                </li>
-                            ))}
-                        </ul>
-                    )}
+            {/* Hello */}
+            <div className="flex flex-row items-center gap-2">
+                <div className="flex gap-4 ">
+                    <div>
+                        <input className="rounded-xl" placeholder="Enter location" value={location} onChange={handleChangeLocation} />
+                        {suggestions.length > 0 && (
+                            <ul className="mt-2 border rounded-xl bg-white shadow-md">
+                                {suggestions.map((suggestion: any, index: any) => (
+                                    <li
+                                        key={index}
+                                        className="p-2 cursor-pointer hover:bg-gray-200"
+                                        onClick={() => handleSelectSuggestion(suggestion)}
+                                    >
+                                        {suggestion.name}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
                 </div>
             </div>
 
@@ -486,6 +508,24 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
                     <FullScreenMap currLat={currLat} currLong={currLong} markers={markers} currentPage={currentSelectedPage?.value} />
                 </MapContainer>
                 <div className="space-y-2  xl:w-[300px]">
+                    <div>
+                        <div className="flex flex-col gap-3 mt-6 mb-10">
+                            <div>Select Status</div>
+                            <Select
+                                isMulti
+                                isClearable
+                                placeholder="select status"
+                                options={STATUS_ARRAY}
+                                getOptionLabel={(option) => option.name}
+                                getOptionValue={(option) => option.value}
+                                className="w-full"
+                                onChange={(newVal) => {
+                                    console.log('newVal', newVal)
+                                    setSelectedStatus(newVal ? newVal.map((item) => item.value) : [])
+                                }}
+                            />
+                        </div>
+                    </div>
                     {Belowdatas.map((item, key) => (
                         <div key={key} className="flex flex-col  bg-white px-4 py-2 rounded-md border border-gray-200 shadow-sm">
                             <div className="flex justify-between">
