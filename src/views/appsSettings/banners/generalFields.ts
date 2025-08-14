@@ -125,4 +125,10 @@ export const ADD_BANNER_BASIC_FIELDS: BannerFields = {
         defVal: false,
         placeHolder: 'is_parent',
     },
+    show_subscription_popup: {
+        label: '',
+        type: 'checkbox',
+        defVal: false,
+        placeHolder: 'show_subscription_popup',
+    },
 }

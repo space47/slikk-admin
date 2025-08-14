@@ -255,6 +255,18 @@ const OrderList = () => {
         }
     }
 
+    const handleSyncDistance = async (invoice_id: string | number) => {
+        try {
+            const response = await axiosInstance.post(`backend/task/create`, {
+                task_name: 'update_order_distances_and_time',
+                orders: invoice_id,
+            })
+            notification.success({ message: response.data.message || 'DISTANCE SYNCED' })
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     const columns = useOrderListColumns({
         generatePrintingData,
         setPendingSound,
@@ -262,6 +274,7 @@ const OrderList = () => {
         handleDeliveryChange,
         deliveryChangeType,
         CHANGE_DELIVERY_OPTIONS,
+        handleSyncDistance,
     })
 
     return (
