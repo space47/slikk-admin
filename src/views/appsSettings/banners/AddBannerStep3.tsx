@@ -3,7 +3,7 @@ import { BANNER_UPLOAD_DATA } from '@/common/banner'
 import { Button, Select, Upload } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { DIVISION_STATE } from '@/store/types/division.types'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { FaWindowClose } from 'react-icons/fa'
 import { ADD_BANNER_BASIC_FIELDS } from './generalFields'
 import { BRAND_STATE } from '@/store/types/brand.types'
@@ -205,9 +205,13 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
         handleInputChange(name, finalValue)
     }
 
-    const { data: bannerData } = useFetchApi<BANNER_MODEL>({
-        url: `/banners?p=1&page_size=200&page=${pageName}&section_heading=${selectedSection?.section_heading}&sub_page=${subPageId}`,
-    })
+    const query = useMemo(() => {
+        let subPage = ''
+        if (subPageId) subPage = `&sub_page_id=${subPageId}`
+        return `/banners?p=1&page_size=200&page=${pageName}&section_heading=${selectedSection?.section_heading}${subPage}`
+    }, [pageName, selectedSection, subPageId])
+
+    const { data: bannerData } = useFetchApi<BANNER_MODEL>({ url: query })
 
     useEffect(() => {
         if (filterId) {
