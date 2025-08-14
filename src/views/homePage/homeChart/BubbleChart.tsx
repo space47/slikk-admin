@@ -27,76 +27,86 @@ const BrandDataChart = ({ brandData, from, to }: BRANDWISEDATA) => {
             <div className="text-xl font-bold text-blue-900">
                 BRAND WISE DATA CHART : <span>({sum})</span>
             </div>
-            <Chart
-                options={{
-                    chart: {
-                        toolbar: {
-                            show: true,
-                            export: {
-                                csv: {
-                                    headerCategory: 'Brand',
-                                    categoryFormatter(value: any) {
-                                        return value?.replace(/\(.*?\)/g, '')?.trim()
-                                    },
+            <div
+                style={{
+                    maxHeight: '600px',
+                    overflowY: 'auto',
+                    scrollbarWidth: 'none',
+                    msOverflowStyle: 'none',
+                }}
+                className="hide-scrollbar border border-gray-300 rounded-lg p-2"
+            >
+                <Chart
+                    options={{
+                        chart: {
+                            toolbar: {
+                                show: true,
+                                export: {
+                                    csv: {
+                                        headerCategory: 'Brand',
+                                        categoryFormatter(value: any) {
+                                            return value?.replace(/\(.*?\)/g, '')?.trim()
+                                        },
 
-                                    filename: `BrandChart-${Math.floor(Math.random() * 100)}`,
+                                        filename: `BrandChart-${Math.floor(Math.random() * 100)}`,
+                                    },
+                                },
+                            },
+
+                            events: {
+                                dataPointSelection: (event, chartContext, config) => {
+                                    const label = brandName[config.dataPointIndex]
+
+                                    navigate(`/app/analytics/orders`, {
+                                        state: {
+                                            stateName: label,
+                                            var1: from,
+                                            var2: to,
+                                        },
+                                    })
                                 },
                             },
                         },
-
-                        events: {
-                            dataPointSelection: (event, chartContext, config) => {
-                                const label = brandName[config.dataPointIndex]
-
-                                navigate(`/app/analytics/orders`, {
-                                    state: {
-                                        stateName: label,
-                                        var1: from,
-                                        var2: to,
-                                    },
-                                })
+                        plotOptions: {
+                            bar: {
+                                horizontal: true,
+                                dataLabels: {
+                                    position: 'top',
+                                },
                             },
                         },
-                    },
-                    plotOptions: {
-                        bar: {
-                            horizontal: true,
-                            dataLabels: {
-                                position: 'top',
-                            },
+                        fill: {
+                            colors: COLOR_6,
                         },
-                    },
-                    fill: {
                         colors: COLOR_6,
-                    },
-                    colors: COLOR_6,
-                    dataLabels: {
-                        enabled: true,
-                        offsetX: -6,
-                        style: {
-                            fontSize: '10px',
-                            colors: ['#fff'],
-                        },
-                    },
-                    xaxis: {
-                        categories: categories,
-                    },
-                    yaxis: {
-                        labels: {
+                        dataLabels: {
+                            enabled: true,
+                            offsetX: -6,
                             style: {
-                                fontSize: '9px',
-                                display: 'flex',
-                                fontWeight: 'bold',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
+                                fontSize: '10px',
+                                colors: ['#fff'],
                             },
                         },
-                    },
-                }}
-                series={data}
-                height={1200}
-                type="bar"
-            />
+                        xaxis: {
+                            categories: categories,
+                        },
+                        yaxis: {
+                            labels: {
+                                style: {
+                                    fontSize: '9px',
+                                    display: 'flex',
+                                    fontWeight: 'bold',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                },
+                            },
+                        },
+                    }}
+                    series={data}
+                    height={categories.length * 30}
+                    type="bar"
+                />
+            </div>
         </div>
     )
 }
