@@ -80,7 +80,7 @@ const AddBanners = () => {
 
         try {
             const response = await axioisInstance.get(
-                `/page-sections?p=1&page_size=500&page=${currentSelectedPage.value}&sub_page=${encodeURIComponent(currentSelectedSubPage?.name || '')}`,
+                `/page-sections?is_active=true&p=1&page_size=500&page=${currentSelectedPage.value}&sub_page=${encodeURIComponent(currentSelectedSubPage?.name || '')}`,
             )
             const responsedata = response.data.data.results
             setSectionHeadingData(responsedata?.map((item) => item?.section))
@@ -221,8 +221,9 @@ const AddBanners = () => {
                                     </div>
 
                                     {selectedSectionHeading && (
-                                        <>
-                                            <div className="w-full mt-6 p-4 bg-white rounded-lg shadow-md border border-gray-100">
+                                        <div className="flex flex-col gap-4 sm:gap-6">
+                                            {/* Banner details container */}
+                                            <div className="w-full p-3 sm:p-4 bg-white rounded-lg shadow-md border border-gray-100">
                                                 <BannerDetails
                                                     data={sectionHeadingData.filter(
                                                         (item) => item.section_heading === selectedSectionHeading.section_heading,
@@ -230,15 +231,13 @@ const AddBanners = () => {
                                                 />
                                             </div>
 
-                                            <Button
-                                                variant="new"
-                                                size="sm"
-                                                onClick={handleProceedToAddBanner}
-                                                className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg shadow hover:shadow-md transition-all"
-                                            >
-                                                Proceed to Add Banner
-                                            </Button>
-                                        </>
+                                            {/* Proceed button */}
+                                            <div className="flex justify-center ">
+                                                <Button variant="new" size="sm" onClick={handleProceedToAddBanner}>
+                                                    Proceed to Add Banner
+                                                </Button>
+                                            </div>
+                                        </div>
                                     )}
                                 </div>
                             ) : (
