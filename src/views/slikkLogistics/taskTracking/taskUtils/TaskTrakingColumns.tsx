@@ -47,6 +47,38 @@ export const TaskTrackingColumns = ({ handleAssignClick, handleReAssignClick, ha
                 },
             },
             { header: 'Status', accessor: 'status' },
+            {
+                header: 'Payment Mode',
+                accessor: 'client_order_details',
+                format: (_: any, row: TaskDetails) => {
+                    return <div>{row?.client_order_details?.payment_mode}</div>
+                },
+            },
+            {
+                header: 'Cash to be Collected',
+                accessor: 'client_order_details',
+                format: (_: any, row: TaskDetails) => {
+                    return (
+                        <div>
+                            {row?.client_order_details?.cash_to_be_collected ? (
+                                <>
+                                    <div>Rs. {row?.client_order_details?.cash_to_be_collected}</div>
+                                </>
+                            ) : (
+                                'N/A'
+                            )}
+                        </div>
+                    )
+                },
+            },
+            {
+                header: 'Cash Collected',
+                accessor: 'client_order_details',
+                format: (_: any, row: TaskDetails) => {
+                    return <div>{row?.client_order_details?.cash_collected ? 'Yes' : 'No'}</div>
+                },
+            },
+
             { header: 'Task Type', accessor: 'task_type' },
             {
                 header: 'Runner Name',
@@ -120,11 +152,7 @@ export const TaskTrackingColumns = ({ handleAssignClick, handleReAssignClick, ha
                 accessor: 'client_order_details.is_prepaid',
                 format: (_: any, row: TaskDetails) => (row.client_order_details?.is_prepaid ? 'Yes' : 'No'),
             },
-            {
-                header: 'Cash to be Collected',
-                accessor: 'client_order_details.cash_to_be_collected',
-                format: (_: any, row: TaskDetails) => row.client_order_details?.cash_to_be_collected || '',
-            },
+
             {
                 header: 'Delivery Charge from Customer',
                 accessor: 'client_order_details.delivery_charge_to_be_collected_from_customer',
