@@ -460,6 +460,7 @@ export const dataTypeArray = [
     { label: 'banner', value: 'banner' },
     { label: 'nested', value: 'nested' },
     { label: 'wishlist', value: 'wishlist' },
+    { label: 'page_views', value: 'page_views' },
     { label: 'purchases', value: 'purchases' },
     { label: 'searches', value: 'searches' },
     { label: 'spotlight', value: 'spotlight' },

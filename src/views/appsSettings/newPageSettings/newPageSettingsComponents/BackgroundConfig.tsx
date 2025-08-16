@@ -270,6 +270,12 @@ const BackgroundConfig = ({ editMode = false, initialValue, values, setInitialVa
                 options={MobileAndDesktopPositions}
                 className="w-1/2"
             />
+            <FormItem label="Gradient Direction">
+                <Field type="text" name="extra_info.gradient_direction" placeholder="Enter Gradient Direction" component={Input} />
+            </FormItem>
+            <FormItem label="Web Gradient Direction">
+                <Field type="text" name="extra_info.web_gradient_direction" placeholder="Enter Gradient Direction" component={Input} />
+            </FormItem>
         </FormContainer>
     )
 }

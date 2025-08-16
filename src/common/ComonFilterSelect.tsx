@@ -1,14 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, FormContainer, FormItem, Select } from '@/components/ui'
+import { Button, FormContainer, FormItem, Select, Tabs, Upload } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import { Field, FieldProps, useFormikContext } from 'formik'
-import React, { useEffect, useReducer, useState } from 'react'
+import React, { useEffect, useMemo, useReducer, useState } from 'react'
 import { IoMdAddCircle } from 'react-icons/io'
 import { MdCancel } from 'react-icons/md'
+import { beforeUpload } from './beforeUpload'
+import { FaSearch } from 'react-icons/fa'
+import EasyTable from './EasyTable'
+import TabNav from '@/components/ui/Tabs/TabNav'
+import TabList from '@/components/ui/Tabs/TabList'
+import TabContent from '@/components/ui/Tabs/TabContent'
 
 interface props {
     setFilterId: (x: any) => void
@@ -17,6 +23,10 @@ interface props {
     customClass?: string
     isOnchange?: (x: any) => void
     isExclude?: boolean
+    isCsv?: boolean
+    noExtra?: boolean
+    values?: any
+    isSku?: boolean
 }
 
 type state = {
@@ -54,46 +64,106 @@ const reducer = (state: state, action: Action): state => {
     }
 }
 
-const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, isExclude }: props) => {
+const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, isExclude, isCsv, values, isSku }: props) => {
     const dispatch = useAppDispatch()
     const [showAddFilter, setShowAddFilter] = useState<number[]>([])
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
     const [filtersData, setFiltersData] = useState<any[]>([])
     const [state, dispatchState] = useReducer(reducer, initialState)
+    const [csvFile, setCsvFile] = useState<File[]>([])
     const { setFieldValue } = useFormikContext()
     console.log('initial values', filtersData)
+    const [skuInput, setSkuInput] = useState('')
+
+    const TabsArray = [
+        { label: `SELECT ${isExclude ? 'EXCLUDE' : ''} FILTERS`, value: 'method_1' },
+        { label: 'SEARCH SKU', value: 'method_2' },
+        { label: 'CSV UPLOAD', value: 'method_3' },
+    ]
+
+    const [skuSearchData, setSkuSearchData] = useState<any[]>([])
+    const handleRemoveSku = (sku: string) => {
+        setSkuSearchData((prev) => prev.filter((item) => item.sku !== sku))
+    }
+    const fetchSkuData = async () => {
+        try {
+            const response = await axioisInstance.get(`/merchant/products?sku=${skuInput}`)
+            const data = response?.data?.data?.results
+
+            setSkuSearchData((prev) => {
+                const newData = Array.isArray(data) ? data : [data]
+                return [...prev, ...newData.filter((item) => !prev.some((prevItem) => prevItem.sku === item.sku))]
+            })
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const handleAddSku = () => {
+        fetchSkuData()
+    }
+
+    const columns = useMemo(
+        () => [
+            {
+                header: 'SKU',
+                accessorKey: 'sku',
+                cell: ({ row }: any) => {
+                    return <div>{row?.original?.sku}</div>
+                },
+            },
+            { header: 'Barcode', accessorKey: 'barcode' },
+            { header: 'Brand', accessorKey: 'brand' },
+            { header: 'Category', accessorKey: 'category' },
+            { header: 'Color', accessorKey: 'color' },
+            { header: 'Size', accessorKey: 'size' },
+            {
+                header: 'Actions',
+                cell: ({ row }: any) => (
+                    <button className="text-red-500" onClick={() => handleRemoveSku(row.original.sku)}>
+                        Remove
+                    </button>
+                ),
+            },
+        ],
+        [skuSearchData],
+    )
 
     useEffect(() => {
         const fetchCriteria = async () => {
-            if (filterId) {
-                try {
-                    const res = await axioisInstance.get(`/product/search/criteria?id=${filterId}`)
-                    const data = res?.data?.data
-                    if (data?.search_data) {
-                        const initialVals = data.search_data.map((items: string[]) => items)
-                        setShowAddFilter(
-                            Array(data.search_data.length)
-                                .fill(0)
-                                .map((_, i) => i),
-                        )
+            if (!filterId) return
 
-                        if (isExclude) {
-                            initialVals.forEach((val: string[], index: number) => {
-                                setFieldValue(`filtersRemove[${index}]`, val)
-                            })
-                        } else {
-                            initialVals.forEach((val: string[], index: number) => {
-                                setFieldValue(`filtersAdd[${index}]`, val)
-                            })
-                        }
+            try {
+                const res = await axioisInstance.get(`/product/search/criteria?id=${filterId}`)
+                const searchData = res?.data?.data?.search_data
+                if (!searchData) return
+
+                let initialValues: any[] = []
+
+                if (Array.isArray(searchData)) {
+                    initialValues = [...searchData]
+                } else if (typeof searchData === 'string') {
+                    try {
+                        const parsed = JSON.parse(searchData)
+                        initialValues = Array.isArray(parsed) ? parsed : [parsed]
+                    } catch (error) {
+                        console.error('Invalid JSON in search_data:', error)
+                        return
                     }
-                } catch (error) {
-                    console.log(error)
                 }
+                if (initialValues.length === 0) return
+                setShowAddFilter(initialValues.map((_, i) => i))
+                const fieldPrefix = isExclude ? 'filtersRemove' : 'filtersAdd'
+                initialValues.forEach((val: string[], index: number) => {
+                    setFieldValue(`${fieldPrefix}[${index}]`, val)
+                })
+            } catch (error) {
+                console.error('Failed to fetch criteria:', error)
             }
         }
+
         fetchCriteria()
-    }, [filterId, setFieldValue])
+    }, [filterId, setFieldValue, isExclude])
 
     useEffect(() => {
         dispatch(getAllFiltersAPI())
@@ -138,23 +208,39 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
     }
 
     const sendFilterData = async (filterData: any) => {
-        const additionalData = {
-            max_discount: state.max_discount || '',
-            min_discount: state.min_discount || '',
-            max_price: state.max_price || '',
-            min_price: state.min_price || '',
-        }
-
-        const filterDataWithAdditional = Object.fromEntries(
-            Object.entries(additionalData).filter(([, value]) => value !== null && value !== ''),
+        const additionalData = Object.fromEntries(
+            Object.entries({
+                max_discount: state.max_discount || '',
+                min_discount: state.min_discount || '',
+                max_price: state.max_price || '',
+                min_price: state.min_price || '',
+            }).filter(([, value]) => value !== ''),
         )
 
-        const body = {
-            filter_data: filterData,
-            extra_filters: filterDataWithAdditional,
+        const formData = new FormData()
+        if (filterData && filterData.length > 0) {
+            formData.append('filter_data', JSON.stringify(filterData))
+        } else {
+            formData.append('filter_data', '')
         }
+        formData.append('extra_filters', JSON.stringify(additionalData))
+        if (isCsv && csvFile && csvFile.length > 0) {
+            formData.append('skus', csvFile[0])
+        } else {
+            formData.append('skus', '')
+        }
+        if (skuSearchData && skuSearchData.length > 0) {
+            formData.append('barcodes', skuSearchData?.map((item) => item.barcode).join(','))
+        } else {
+            formData.append('barcodes', '')
+        }
+
         try {
-            const response = await axioisInstance.post(`/product/search/criteria`, body)
+            const response = await axioisInstance.post(`/product/search/criteria`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
             setFilterId(response.data?.data?.id)
             notification.success({
                 message: 'Filter Id Added',
@@ -170,60 +256,141 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
     return (
         <div>
             <div className="font-bold mb-7">{isExclude ? 'Exclude Filters:' : 'Filters:'}</div>
-            <FormContainer className="items-center mt-4">
-                <button type="button" onClick={handleAddFilter}>
-                    <IoMdAddCircle className="text-3xl text-green-500" />
-                </button>
-            </FormContainer>
 
-            {showAddFilter.map((_, index: any) => (
-                <FormItem key={index} className="flex gap-2">
-                    <div className="flex gap-3 items-center">
-                        <Field key={index} name={isExclude ? `filtersRemove[${index}]` : `filtersAdd[${index}]`}>
-                            {({ field, form }: FieldProps<any>) => {
-                                const selectedOptions =
-                                    field.value?.flatMap((value: any) =>
-                                        filters?.filters?.flatMap((filterGroup) =>
-                                            filterGroup?.options?.filter((option: any) => option.value === value),
-                                        ),
-                                    ) || []
+            <Tabs defaultValue="method_1">
+                <TabList className="flex items-center justify-center gap-4 bg-blue-50 rounded-xl shadow-md p-3 mb-10 sticky z-10 top-16">
+                    {TabsArray.filter((tab) => {
+                        if (tab.value === 'method_3' && !isCsv) return false
+                        if (tab.value === 'method_2' && !isSku) return false
+                        return true
+                    }).map((tab, index) => (
+                        <TabNav
+                            key={index}
+                            value={tab.value}
+                            className="relative px-4 py-2 text-sm sm:text-base font-semibold text-gray-700 rounded-xl transition-all duration-300 hover:text-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-400"
+                        >
+                            {tab.label}
+                        </TabNav>
+                    ))}
+                </TabList>
 
-                                return (
-                                    <Select
-                                        isMulti
-                                        placeholder={`Filter Tags ${index + 1}`}
-                                        options={filters.filters || []}
-                                        value={selectedOptions}
-                                        getOptionLabel={(option) => option.label}
-                                        getOptionValue={(option) => option.value}
-                                        className={`${!!customClass === true ? customClass : 'w-3/4'}`}
-                                        onChange={
-                                            isOnchange
-                                                ? isOnchange
-                                                : (newVal) => {
-                                                      const newValues = newVal ? newVal.map((val) => val.value) : []
-                                                      form.setFieldValue(field.name, newValues)
-                                                  }
-                                        }
-                                    />
-                                )
+                <TabContent value="method_1">
+                    <FormContainer className="items-center mt-4 justify-between flex">
+                        <button type="button" onClick={handleAddFilter}>
+                            <IoMdAddCircle className="text-3xl text-green-500" />
+                        </button>
+                        <Button type="button" variant="reject" size="sm" onClick={handleRemoveAllFilters}>
+                            Remove
+                        </Button>
+                    </FormContainer>
+                    {showAddFilter.map((_, index: any) => (
+                        <FormItem key={index} className="flex gap-2">
+                            <div className="flex gap-3 items-center">
+                                <Field key={index} name={isExclude ? `filtersRemove[${index}]` : `filtersAdd[${index}]`}>
+                                    {({ field, form }: FieldProps<any>) => {
+                                        console.log('field', field, filterId)
+                                        const selectedOptions =
+                                            field.value?.flatMap((value: any) =>
+                                                filters?.filters?.flatMap((filterGroup) =>
+                                                    filterGroup?.options?.filter((option: any) => option.value === value),
+                                                ),
+                                            ) || []
+
+                                        return (
+                                            <Select
+                                                isMulti
+                                                placeholder={`Filter Tags ${index + 1}`}
+                                                options={filters.filters || []}
+                                                value={selectedOptions}
+                                                getOptionLabel={(option) => option.label}
+                                                getOptionValue={(option) => option.value}
+                                                className={`${!!customClass === true ? customClass : 'w-3/4'}`}
+                                                onChange={
+                                                    isOnchange
+                                                        ? isOnchange
+                                                        : (newVal) => {
+                                                              const newValues = newVal ? newVal.map((val) => val.value) : []
+                                                              form.setFieldValue(field.name, newValues)
+                                                          }
+                                                }
+                                            />
+                                        )
+                                    }}
+                                </Field>
+
+                                <div className="">
+                                    <button
+                                        type="button"
+                                        className=""
+                                        onClick={isExclude ? () => handleRemoveExcludeFilter(index) : () => handleRemoveFilter(index)}
+                                    >
+                                        <MdCancel className="text-xl text-red-500" />
+                                    </button>
+                                </div>
+                            </div>
+                        </FormItem>
+                    ))}
+                </TabContent>
+
+                <TabContent value="method_2">
+                    <div className="flex flex-col md:flex-row items-center gap-3">
+                        <input
+                            name="sku"
+                            type="search"
+                            placeholder="Enter SKU"
+                            className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            value={skuInput}
+                            onChange={(e) => setSkuInput(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    handleAddSku()
+                                }
                             }}
-                        </Field>
-
-                        <div className="">
-                            <button
-                                type="button"
-                                className=""
-                                onClick={isExclude ? () => handleRemoveExcludeFilter(index) : () => handleRemoveFilter(index)}
-                            >
-                                <MdCancel className="text-xl text-red-500" />
-                            </button>
-                        </div>
+                        />
+                        <button
+                            onClick={handleAddSku}
+                            className="bg-blue-600 hover:bg-blue-700 transition text-white px-4 py-2 rounded-xl flex items-center gap-2"
+                        >
+                            <FaSearch className="text-lg" /> Search
+                        </button>
                     </div>
-                </FormItem>
-            ))}
 
-            {showAddFilter.length > 0 && (
+                    {/* SKU Table */}
+                    {skuSearchData.length > 0 && (
+                        <div className="w-full overflow-x-auto rounded-lg border border-gray-200 shadow-sm mt-2">
+                            <EasyTable mainData={skuSearchData} columns={columns} overflow />
+                        </div>
+                    )}
+                </TabContent>
+                <TabContent value="method_3">
+                    {isCsv && (
+                        <>
+                            <FormItem label="CSV File" className="mt-10">
+                                <Field name="csvList">
+                                    {({ form }: FieldProps<any>) => (
+                                        <>
+                                            <Upload
+                                                beforeUpload={beforeUpload}
+                                                fileList={values.csvList || []}
+                                                className="flex justify-center mt-6"
+                                                onFileRemove={(files) => {
+                                                    form.setFieldValue('csvList', files)
+                                                }}
+                                                onChange={(files) => {
+                                                    form.setFieldValue('csvList', files)
+                                                    setCsvFile(files as any)
+                                                }}
+                                            />
+                                        </>
+                                    )}
+                                </Field>
+                            </FormItem>
+                        </>
+                    )}
+                </TabContent>
+            </Tabs>
+
+            {
                 <>
                     <div className="grid grid-cols-2 gap-4 mt-4">
                         <FormItem label="Max Discount for Filters">
@@ -307,12 +474,9 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
                                 </Button>
                             )}
                         </Field>
-                        <Button type="button" variant="reject" onClick={handleRemoveAllFilters}>
-                            Remove All Filters
-                        </Button>
                     </div>
                 </>
-            )}
+            }
         </div>
     )
 }
