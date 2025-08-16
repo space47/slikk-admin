@@ -63,6 +63,8 @@ const EditPageSettings = () => {
                 values,
                 initialValue,
             })
+
+        console.log('componentConfig', filterId)
         const body = {
             ...values,
             banners: values?.banners?.map((item: any) => item?.id) || [],
@@ -103,7 +105,7 @@ const EditPageSettings = () => {
                 filters: [
                     ...(values?.division_select ? [`division_${values.division_select}`] : []),
                     ...(values?.sort ? [`sort_${values.sort}`] : []),
-                    ...(values?.filterAdd && values.filtersAdd.length > 0 ? [`filterID_${filterId}`] : []),
+                    ...(filterId ? [`filterID_${filterId}`] : []),
                 ]
                     .filter(Boolean)
                     .flat(),

@@ -1,15 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, FormContainer, FormItem, Select, Upload } from '@/components/ui'
+import { Button, FormContainer, FormItem, Select, Tabs, Upload } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import { Field, FieldProps, useFormikContext } from 'formik'
-import React, { useEffect, useReducer, useState } from 'react'
+import React, { useEffect, useMemo, useReducer, useState } from 'react'
 import { IoMdAddCircle } from 'react-icons/io'
 import { MdCancel } from 'react-icons/md'
 import { beforeUpload } from './beforeUpload'
+import { FaSearch } from 'react-icons/fa'
+import EasyTable from './EasyTable'
+import TabNav from '@/components/ui/Tabs/TabNav'
+import TabList from '@/components/ui/Tabs/TabList'
+import TabContent from '@/components/ui/Tabs/TabContent'
 
 interface props {
     setFilterId: (x: any) => void
@@ -19,9 +24,9 @@ interface props {
     isOnchange?: (x: any) => void
     isExclude?: boolean
     isCsv?: boolean
-    barcodes?: string[]
     noExtra?: boolean
     values?: any
+    isSku?: boolean
 }
 
 type state = {
@@ -59,7 +64,13 @@ const reducer = (state: state, action: Action): state => {
     }
 }
 
-const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, isExclude, isCsv, barcodes, noExtra, values }: props) => {
+export const TabsArray = [
+    { label: 'SELECT FILTERS', value: 'method_1' },
+    { label: 'SEARCH SKU', value: 'method_2' },
+    { label: 'CSV UPLOAD', value: 'method_3' },
+]
+
+const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, isExclude, isCsv, values, isSku }: props) => {
     const dispatch = useAppDispatch()
     const [showAddFilter, setShowAddFilter] = useState<number[]>([])
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
@@ -68,6 +79,55 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
     const [csvFile, setCsvFile] = useState<File[]>([])
     const { setFieldValue } = useFormikContext()
     console.log('initial values', filtersData)
+    const [skuInput, setSkuInput] = useState('')
+
+    const [skuSearchData, setSkuSearchData] = useState<any[]>([])
+    const handleRemoveSku = (sku: string) => {
+        setSkuSearchData((prev) => prev.filter((item) => item.sku !== sku))
+    }
+    const fetchSkuData = async () => {
+        try {
+            const response = await axioisInstance.get(`/merchant/products?sku=${skuInput}`)
+            const data = response?.data?.data?.results
+
+            setSkuSearchData((prev) => {
+                const newData = Array.isArray(data) ? data : [data]
+                return [...prev, ...newData.filter((item) => !prev.some((prevItem) => prevItem.sku === item.sku))]
+            })
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const handleAddSku = () => {
+        fetchSkuData()
+    }
+
+    const columns = useMemo(
+        () => [
+            {
+                header: 'SKU',
+                accessorKey: 'sku',
+                cell: ({ row }: any) => {
+                    return <div>{row?.original?.sku}</div>
+                },
+            },
+            { header: 'Barcode', accessorKey: 'barcode' },
+            { header: 'Brand', accessorKey: 'brand' },
+            { header: 'Category', accessorKey: 'category' },
+            { header: 'Color', accessorKey: 'color' },
+            { header: 'Size', accessorKey: 'size' },
+            {
+                header: 'Actions',
+                cell: ({ row }: any) => (
+                    <button className="text-red-500" onClick={() => handleRemoveSku(row.original.sku)}>
+                        Remove
+                    </button>
+                ),
+            },
+        ],
+        [skuSearchData],
+    )
 
     useEffect(() => {
         const fetchCriteria = async () => {
@@ -148,7 +208,6 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
     }
 
     const sendFilterData = async (filterData: any) => {
-        console.log('filterData 🚀🚀🚀🚀🚀🚀', filterData)
         const additionalData = Object.fromEntries(
             Object.entries({
                 max_discount: state.max_discount || '',
@@ -172,8 +231,8 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
         }
 
         // Append barcodes if exists
-        if (barcodes && barcodes.length > 0) {
-            formData.append('barcodes', barcodes.join(','))
+        if (skuSearchData && skuSearchData.length > 0) {
+            formData.append('barcodes', skuSearchData?.map((item) => item.barcode).join(','))
         } else {
             formData.append('barcodes', '')
         }
@@ -199,61 +258,110 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
     return (
         <div>
             <div className="font-bold mb-7">{isExclude ? 'Exclude Filters:' : 'Filters:'}</div>
-            <FormContainer className="items-center mt-4">
-                <button type="button" onClick={handleAddFilter}>
-                    <IoMdAddCircle className="text-3xl text-green-500" />
-                </button>
-            </FormContainer>
 
-            {showAddFilter.map((_, index: any) => (
-                <FormItem key={index} className="flex gap-2">
-                    <div className="flex gap-3 items-center">
-                        <Field key={index} name={isExclude ? `filtersRemove[${index}]` : `filtersAdd[${index}]`}>
-                            {({ field, form }: FieldProps<any>) => {
-                                const selectedOptions =
-                                    field.value?.flatMap((value: any) =>
-                                        filters?.filters?.flatMap((filterGroup) =>
-                                            filterGroup?.options?.filter((option: any) => option.value === value),
-                                        ),
-                                    ) || []
+            <Tabs defaultValue="method_1">
+                <TabList className="flex items-center justify-center gap-4 bg-blue-50 rounded-xl shadow-md p-3 mb-10 sticky z-10 top-16">
+                    {TabsArray.filter((tab) => {
+                        if (tab.value === 'method_3' && !isCsv) return false
+                        if (tab.value === 'method_2' && !isSku) return false
+                        return true
+                    }).map((tab, index) => (
+                        <TabNav
+                            key={index}
+                            value={tab.value}
+                            className="relative px-4 py-2 text-sm sm:text-base font-semibold text-gray-700 rounded-xl transition-all duration-300 hover:text-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-400"
+                        >
+                            {tab.label}
+                        </TabNav>
+                    ))}
+                </TabList>
 
-                                return (
-                                    <Select
-                                        isMulti
-                                        placeholder={`Filter Tags ${index + 1}`}
-                                        options={filters.filters || []}
-                                        value={selectedOptions}
-                                        getOptionLabel={(option) => option.label}
-                                        getOptionValue={(option) => option.value}
-                                        className={`${!!customClass === true ? customClass : 'w-3/4'}`}
-                                        onChange={
-                                            isOnchange
-                                                ? isOnchange
-                                                : (newVal) => {
-                                                      const newValues = newVal ? newVal.map((val) => val.value) : []
-                                                      form.setFieldValue(field.name, newValues)
-                                                  }
-                                        }
-                                    />
-                                )
+                <TabContent value="method_1">
+                    <FormContainer className="items-center mt-4">
+                        <button type="button" onClick={handleAddFilter}>
+                            <IoMdAddCircle className="text-3xl text-green-500" />
+                        </button>
+                    </FormContainer>
+                    {showAddFilter.map((_, index: any) => (
+                        <FormItem key={index} className="flex gap-2">
+                            <div className="flex gap-3 items-center">
+                                <Field key={index} name={isExclude ? `filtersRemove[${index}]` : `filtersAdd[${index}]`}>
+                                    {({ field, form }: FieldProps<any>) => {
+                                        console.log('field', field, filterId)
+                                        const selectedOptions =
+                                            field.value?.flatMap((value: any) =>
+                                                filters?.filters?.flatMap((filterGroup) =>
+                                                    filterGroup?.options?.filter((option: any) => option.value === value),
+                                                ),
+                                            ) || []
+
+                                        return (
+                                            <Select
+                                                isMulti
+                                                placeholder={`Filter Tags ${index + 1}`}
+                                                options={filters.filters || []}
+                                                value={selectedOptions}
+                                                getOptionLabel={(option) => option.label}
+                                                getOptionValue={(option) => option.value}
+                                                className={`${!!customClass === true ? customClass : 'w-3/4'}`}
+                                                onChange={
+                                                    isOnchange
+                                                        ? isOnchange
+                                                        : (newVal) => {
+                                                              const newValues = newVal ? newVal.map((val) => val.value) : []
+                                                              form.setFieldValue(field.name, newValues)
+                                                          }
+                                                }
+                                            />
+                                        )
+                                    }}
+                                </Field>
+
+                                <div className="">
+                                    <button
+                                        type="button"
+                                        className=""
+                                        onClick={isExclude ? () => handleRemoveExcludeFilter(index) : () => handleRemoveFilter(index)}
+                                    >
+                                        <MdCancel className="text-xl text-red-500" />
+                                    </button>
+                                </div>
+                            </div>
+                        </FormItem>
+                    ))}
+                </TabContent>
+
+                <TabContent value="method_2">
+                    <div className="flex flex-col md:flex-row items-center gap-3">
+                        <input
+                            name="sku"
+                            type="search"
+                            placeholder="Enter SKU"
+                            className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            value={skuInput}
+                            onChange={(e) => setSkuInput(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    handleAddSku()
+                                }
                             }}
-                        </Field>
-
-                        <div className="">
-                            <button
-                                type="button"
-                                className=""
-                                onClick={isExclude ? () => handleRemoveExcludeFilter(index) : () => handleRemoveFilter(index)}
-                            >
-                                <MdCancel className="text-xl text-red-500" />
-                            </button>
-                        </div>
+                        />
+                        <button
+                            onClick={handleAddSku}
+                            className="bg-blue-600 hover:bg-blue-700 transition text-white px-4 py-2 rounded-xl flex items-center gap-2"
+                        >
+                            <FaSearch className="text-lg" /> Search
+                        </button>
                     </div>
-                </FormItem>
-            ))}
 
-            {!noExtra && showAddFilter.length > 0 && (
-                <>
+                    {/* SKU Table */}
+                    {skuSearchData.length > 0 && (
+                        <div className="w-full overflow-x-auto rounded-lg border border-gray-200 shadow-sm mt-2">
+                            <EasyTable mainData={skuSearchData} columns={columns} overflow />
+                        </div>
+                    )}
+                </TabContent>
+                <TabContent value="method_3">
                     {isCsv && (
                         <>
                             <FormItem label="CSV File" className="mt-10">
@@ -278,6 +386,11 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
                             </FormItem>
                         </>
                     )}
+                </TabContent>
+            </Tabs>
+
+            {
+                <>
                     <div className="grid grid-cols-2 gap-4 mt-4">
                         <FormItem label="Max Discount for Filters">
                             <Field name="max_discount">
@@ -365,7 +478,7 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
                         </Button>
                     </div>
                 </>
-            )}
+            }
         </div>
     )
 }
