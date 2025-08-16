@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormContainer, FormItem, Input } from '@/components/ui'
+import { FormContainer, FormItem, Input, Upload } from '@/components/ui'
 import React from 'react'
 import { FormArray } from './markdownCommon'
-import { Field } from 'formik'
+import { Field, FieldProps } from 'formik'
 import FullDateForm from '@/common/FullDateForm'
 import CommonSelectByLabel from '@/common/CommonSelectByLabel'
 import SearchStrings from '@/common/SearchStrings'
 import { FaSearch } from 'react-icons/fa'
 import EasyTable from '@/common/EasyTable'
+import { beforeUpload } from '@/common/beforeUpload'
 
 interface props {
     skuInput: string
@@ -38,6 +39,7 @@ interface props {
               accessorKey?: undefined
           }
     )[]
+    setProductCsvFile: React.Dispatch<React.SetStateAction<any>>
 }
 
 const apply_Array = [
@@ -63,6 +65,7 @@ const MarkdownCommonForm = ({
     columns,
     skuInput,
     setSkuInput,
+    setProductCsvFile,
 }: props) => {
     return (
         <div className="">
@@ -87,6 +90,28 @@ const MarkdownCommonForm = ({
 
                 <CommonSelectByLabel label="Price Type" name="apply_on" fieldname="apply_on" options={apply_Array} />
             </FormContainer>
+            <FormItem label="Product Filters File" className="grid mt-8 w-1/3 bg-gray-100 p-2">
+                <Field name="productFiltersFile">
+                    {({ form }: FieldProps<any>) => (
+                        <>
+                            <div className="font-semibold flex justify-start ">Upload Csv</div>
+                            <Upload
+                                beforeUpload={beforeUpload}
+                                fileList={values.productFiltersFile}
+                                className="flex justify-center mt-6"
+                                onFileRemove={(files) => {
+                                    form.setFieldValue('productFiltersFile', files)
+                                }}
+                                onChange={(files) => {
+                                    form.setFieldValue('productFiltersFile', files)
+                                    setProductCsvFile(files)
+                                }}
+                            />
+                        </>
+                    )}
+                </Field>
+            </FormItem>
+
             <div>
                 <h3>Product Selection</h3>
                 <br />

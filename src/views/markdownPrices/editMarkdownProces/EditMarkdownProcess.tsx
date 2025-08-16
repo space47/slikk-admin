@@ -19,6 +19,7 @@ const EditMarkdownPrices = () => {
     const [filtersData, setFiltersData] = useState<any[]>([])
     const [editMarkdownData, setEditMarkdownData] = useState<Record<string, string | number | boolean>>()
     const [csvFile, setCsvFile] = useState<any>()
+    const [productCsvFile, setProductCsvFile] = useState<any>()
 
     // for sku table
     const [skuInput, setSkuInput] = useState<string>('')
@@ -163,19 +164,26 @@ const EditMarkdownPrices = () => {
     }
 
     const handleSubmit = async (values: any) => {
-        const body = {
-            product_filter: filterId ?? editMarkdownData?.product_filter,
-            start_date: values.start_date || '',
-            end_date: values.end_date || '',
-            discount_type: values.discount_type || '',
-            offer_value: values.offer_value || {},
-            apply_on: values.apply_on || '',
-            name: values.name || '',
+        const formData = new FormData()
+
+        console.log('start date', values.offer_value)
+
+        formData.append('product_filter', JSON.stringify(filterId ?? editMarkdownData?.product_filter ?? {}))
+        formData.append('start_date', values.start_date || '')
+        formData.append('end_date', values.end_date || '')
+        formData.append('discount_type', values.discount_type || '')
+        formData.append('offer_value', values.offer_value || '')
+        formData.append('apply_on', values.apply_on || '')
+        formData.append('name', values.name || '')
+
+        if (productCsvFile) {
+            formData.append('product_price_file', productCsvFile[0])
         }
+
         console.log('xBody of MarkDown', filtersData)
 
         try {
-            const response = await axioisInstance.patch(`/product/offer/pricing/${editMarkdownData?.id}`, body)
+            const response = await axioisInstance.patch(`/product/offer/pricing/${editMarkdownData?.id}`, formData)
             notification.success({
                 message: response?.data?.message || 'Successfully Updated',
             })
@@ -196,7 +204,7 @@ const EditMarkdownPrices = () => {
                 onSubmit={handleSubmit}
             >
                 {({ values }) => (
-                    <Form className="w-3/4">
+                    <Form className="w-full p-2 shadow-xl rounded-xl">
                         <FormContainer className="">
                             <MarkdownCommonForm
                                 handleAddFilter={handleAddFilter}
@@ -211,6 +219,7 @@ const EditMarkdownPrices = () => {
                                 columns={columns}
                                 skuInput={skuInput}
                                 setSkuInput={setSkuInput}
+                                setProductCsvFile={setProductCsvFile}
                             />
                         </FormContainer>
                         <Button variant="accept" type="submit">
