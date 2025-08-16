@@ -38,17 +38,15 @@ const ProductLockEdit = () => {
 
     const handleSubmit = async (values: any) => {
         const body = {
-            product_filter: values?.filterAdd && values?.filterAdd?.length > 0 ? filterId : '',
+            product_filter: filterId ? filterId : '',
             name: values.name || '',
             locked_by: values.locked_by || '',
             start_date: values.start_date || '',
             end_date: values.end_date || '',
         }
 
-        const filteredBody = Object.fromEntries(Object.entries(body).filter(([, v]) => v !== ''))
-
         try {
-            await axioisInstance.patch(`/product/lock/update/${id}`, filteredBody)
+            await axioisInstance.patch(`/product/lock/update/${id}`, body)
             notification.success({ message: 'Successfully Updated' })
         } catch (error) {
             console.log('error', error)

@@ -11,15 +11,15 @@ const ProductAdd = () => {
 
     const handleSubmit = async (values: any) => {
         const body = {
-            product_filter: values?.filterAdd && values?.filterAdd?.length > 0 ? filterId : '',
+            product_filter: filterId ? filterId : '',
             name: values.name || '',
             locked_by: values.locked_by || '',
             start_date: values.start_date || '',
             end_date: values.end_date || '',
         }
-        const filteredBody = Object.fromEntries(Object.entries(body).filter(([, v]) => v !== ''))
+
         try {
-            await axioisInstance.post('/product/lock/update', filteredBody)
+            await axioisInstance.post('/product/lock/update', body)
             notification.success({
                 message: 'Successfully Updated',
             })
@@ -42,7 +42,7 @@ const ProductAdd = () => {
                         <FormContainer className="">
                             <ProductLockCommonForm values={values} isEdit={false} filterId={filterId} setFilterId={setFilterId} />
                         </FormContainer>
-                        <Button variant="accept" type="submit">
+                        <Button variant="accept" type="submit" className="mt-5">
                             Submit
                         </Button>
                     </Form>

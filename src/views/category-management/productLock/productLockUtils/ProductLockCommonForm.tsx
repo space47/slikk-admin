@@ -1,12 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import EasyTable from '@/common/EasyTable'
 import FullDateForm from '@/common/FullDateForm'
 import { FormContainer, FormItem, Input } from '@/components/ui'
 import { Field } from 'formik'
-import React, { useMemo, useState } from 'react'
-import { FaSearch } from 'react-icons/fa'
+import React from 'react'
 import { LockFormArray } from './productCommon'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import CommonFilterSelect from '@/common/ComonFilterSelect'
 
 interface ProductLockCommonFormProps {
@@ -17,61 +14,6 @@ interface ProductLockCommonFormProps {
 }
 
 const ProductLockCommonForm = ({ isEdit, filterId, setFilterId, values }: ProductLockCommonFormProps) => {
-    const [skuInput, setSkuInput] = useState('')
-
-    const [skuSearchData, setSkuSearchData] = useState<any[]>([])
-    const handleRemoveSku = (sku: string) => {
-        setSkuSearchData((prev) => prev.filter((item) => item.sku !== sku))
-    }
-    const fetchSkuData = async () => {
-        try {
-            const response = await axioisInstance.get(`/merchant/products?sku=${skuInput}`)
-            const data = response?.data?.data?.results
-
-            setSkuSearchData((prev) => {
-                const newData = Array.isArray(data) ? data : [data]
-                return [...prev, ...newData.filter((item) => !prev.some((prevItem) => prevItem.sku === item.sku))]
-            })
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
-    const handleAddSku = () => {
-        fetchSkuData()
-    }
-
-    const columns = useMemo(
-        () => [
-            {
-                header: 'SKU',
-                accessorKey: 'sku',
-                cell: ({ row }: any) => {
-                    return <div>{row?.original?.sku}</div>
-                },
-            },
-            { header: 'Barcode', accessorKey: 'barcode' },
-            { header: 'Brand', accessorKey: 'brand' },
-            { header: 'Category', accessorKey: 'category' },
-            { header: 'Color', accessorKey: 'color' },
-            { header: 'Size', accessorKey: 'size' },
-            {
-                header: 'Actions',
-                cell: ({ row }: any) => (
-                    <button className="text-red-500" onClick={() => handleRemoveSku(row.original.sku)}>
-                        Remove
-                    </button>
-                ),
-            },
-        ],
-        [skuSearchData],
-    )
-
-    console.log(
-        'sku search data:',
-        skuSearchData?.map((item) => item?.barcode),
-    )
-
     return (
         <div className="space-y-8">
             {/* Lock Form Section */}
@@ -98,44 +40,9 @@ const ProductLockCommonForm = ({ isEdit, filterId, setFilterId, values }: Produc
                 <h3 className="text-lg font-semibold text-gray-800 mb-6">Product Selection</h3>
                 <div className="space-y-6">
                     {/* SKU Search */}
-                    <div className="flex flex-col md:flex-row items-center gap-3">
-                        <input
-                            name="sku"
-                            type="search"
-                            placeholder="Enter SKU"
-                            className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                            value={skuInput}
-                            onChange={(e) => setSkuInput(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    handleAddSku()
-                                }
-                            }}
-                        />
-                        <button
-                            onClick={handleAddSku}
-                            className="bg-blue-600 hover:bg-blue-700 transition text-white px-4 py-2 rounded-xl flex items-center gap-2"
-                        >
-                            <FaSearch className="text-lg" /> Search
-                        </button>
-                    </div>
-
-                    {/* SKU Table */}
-                    {skuSearchData.length > 0 && (
-                        <div className="w-full overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
-                            <EasyTable mainData={skuSearchData} columns={columns} overflow />
-                        </div>
-                    )}
 
                     {/* Common Filter */}
-                    <CommonFilterSelect
-                        isCsv
-                        isEdit={isEdit}
-                        filterId={filterId}
-                        setFilterId={setFilterId}
-                        barcodes={skuSearchData?.map((item) => item?.barcode)}
-                        values={values}
-                    />
+                    <CommonFilterSelect isCsv isSku isEdit={isEdit} filterId={filterId} setFilterId={setFilterId} values={values} />
                 </div>
             </div>
         </div>
