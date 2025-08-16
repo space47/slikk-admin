@@ -64,12 +64,6 @@ const reducer = (state: state, action: Action): state => {
     }
 }
 
-export const TabsArray = [
-    { label: 'SELECT FILTERS', value: 'method_1' },
-    { label: 'SEARCH SKU', value: 'method_2' },
-    { label: 'CSV UPLOAD', value: 'method_3' },
-]
-
 const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, isExclude, isCsv, values, isSku }: props) => {
     const dispatch = useAppDispatch()
     const [showAddFilter, setShowAddFilter] = useState<number[]>([])
@@ -80,6 +74,12 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
     const { setFieldValue } = useFormikContext()
     console.log('initial values', filtersData)
     const [skuInput, setSkuInput] = useState('')
+
+    const TabsArray = [
+        { label: `SELECT ${isExclude ? 'EXCLUDE' : ''} FILTERS`, value: 'method_1' },
+        { label: 'SEARCH SKU', value: 'method_2' },
+        { label: 'CSV UPLOAD', value: 'method_3' },
+    ]
 
     const [skuSearchData, setSkuSearchData] = useState<any[]>([])
     const handleRemoveSku = (sku: string) => {
@@ -229,8 +229,6 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
         } else {
             formData.append('skus', '')
         }
-
-        // Append barcodes if exists
         if (skuSearchData && skuSearchData.length > 0) {
             formData.append('barcodes', skuSearchData?.map((item) => item.barcode).join(','))
         } else {
@@ -277,10 +275,13 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
                 </TabList>
 
                 <TabContent value="method_1">
-                    <FormContainer className="items-center mt-4">
+                    <FormContainer className="items-center mt-4 justify-between flex">
                         <button type="button" onClick={handleAddFilter}>
                             <IoMdAddCircle className="text-3xl text-green-500" />
                         </button>
+                        <Button type="button" variant="reject" size="sm" onClick={handleRemoveAllFilters}>
+                            Remove
+                        </Button>
                     </FormContainer>
                     {showAddFilter.map((_, index: any) => (
                         <FormItem key={index} className="flex gap-2">
@@ -473,9 +474,6 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
                                 </Button>
                             )}
                         </Field>
-                        <Button type="button" variant="reject" onClick={handleRemoveAllFilters}>
-                            Remove All Filters
-                        </Button>
                     </div>
                 </>
             }

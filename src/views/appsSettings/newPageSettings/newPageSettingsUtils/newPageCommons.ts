@@ -138,6 +138,7 @@ export const TimeFieldsArray = [
     { label: 'Timer Text', name: 'extra_info.timer_text', type: 'text' },
     { label: 'Timer Color', name: 'extra_info.timer_color', type: 'text' },
     { label: 'Timer Text color', name: 'extra_info.timer_text_color', type: 'text' },
+    { label: 'Timer Dots color', name: 'extra_info.timer_dots_color', type: 'text' },
     { label: 'Timer Text Font', name: 'extra_info.timer_text_font', type: 'checkbox' },
     { label: 'Timer Font Size', name: 'extra_info.timer_font_size', type: 'number' },
     { label: 'Timer Background Color', name: 'extra_info.timer_bg_color', type: 'text' },
