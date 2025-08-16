@@ -47,3 +47,25 @@ export type ProductResponseType = {
         results: ProductTypes[]
     }
 }
+
+export type ProductLockType = {
+    id: number
+    product_filter: number
+    name: string
+    start_date: string
+    end_date: string
+    status: string
+    error_barcodes: Record<string, unknown>
+    products_count: number
+    create_date: string
+    update_date: string
+    locked_by: string
+}
+
+export type ProductLockResponseType = {
+    status: string
+    data: {
+        count: number
+        results: ProductLockType[]
+    }
+}
