@@ -280,9 +280,21 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
-        key: 'appsCategory.productFeedback',
-        path: `${APP_PREFIX_PATH}/category/productFeedback`,
-        component: lazy(() => import('@/views/category-management/productFeedback/ProductFeedback')),
+        key: 'appsCategory.productLock',
+        path: `${APP_PREFIX_PATH}/category/productLock`,
+        component: lazy(() => import('@/views/category-management/productLock/productLockTable/ProductLockTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCategory.productLock',
+        path: `${APP_PREFIX_PATH}/category/productLock/add`,
+        component: lazy(() => import('@/views/category-management/productLock/productLockAdd/ProductLockAdd')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCategory.productLock',
+        path: `${APP_PREFIX_PATH}/category/productLock/Edit/:id`,
+        component: lazy(() => import('@/views/category-management/productLock/productLockEdit/ProductLockEdit')),
         authority: [ADMIN, USER],
     },
     {

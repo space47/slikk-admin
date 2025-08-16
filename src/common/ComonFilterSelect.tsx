@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, FormContainer, FormItem, Select } from '@/components/ui'
+import { Button, FormContainer, FormItem, Select, Upload } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { FILTER_STATE } from '@/store/types/filters.types'
@@ -9,6 +9,7 @@ import { Field, FieldProps, useFormikContext } from 'formik'
 import React, { useEffect, useReducer, useState } from 'react'
 import { IoMdAddCircle } from 'react-icons/io'
 import { MdCancel } from 'react-icons/md'
+import { beforeUpload } from './beforeUpload'
 
 interface props {
     setFilterId: (x: any) => void
@@ -17,6 +18,10 @@ interface props {
     customClass?: string
     isOnchange?: (x: any) => void
     isExclude?: boolean
+    isCsv?: boolean
+    barcodes?: string[]
+    noExtra?: boolean
+    values?: any
 }
 
 type state = {
@@ -54,46 +59,51 @@ const reducer = (state: state, action: Action): state => {
     }
 }
 
-const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, isExclude }: props) => {
+const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, isExclude, isCsv, barcodes, noExtra, values }: props) => {
     const dispatch = useAppDispatch()
     const [showAddFilter, setShowAddFilter] = useState<number[]>([])
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
     const [filtersData, setFiltersData] = useState<any[]>([])
     const [state, dispatchState] = useReducer(reducer, initialState)
+    const [csvFile, setCsvFile] = useState<File[]>([])
     const { setFieldValue } = useFormikContext()
     console.log('initial values', filtersData)
 
     useEffect(() => {
         const fetchCriteria = async () => {
-            if (filterId) {
-                try {
-                    const res = await axioisInstance.get(`/product/search/criteria?id=${filterId}`)
-                    const data = res?.data?.data
-                    if (data?.search_data) {
-                        const initialVals = data.search_data.map((items: string[]) => items)
-                        setShowAddFilter(
-                            Array(data.search_data.length)
-                                .fill(0)
-                                .map((_, i) => i),
-                        )
+            if (!filterId) return
 
-                        if (isExclude) {
-                            initialVals.forEach((val: string[], index: number) => {
-                                setFieldValue(`filtersRemove[${index}]`, val)
-                            })
-                        } else {
-                            initialVals.forEach((val: string[], index: number) => {
-                                setFieldValue(`filtersAdd[${index}]`, val)
-                            })
-                        }
+            try {
+                const res = await axioisInstance.get(`/product/search/criteria?id=${filterId}`)
+                const searchData = res?.data?.data?.search_data
+                if (!searchData) return
+
+                let initialValues: any[] = []
+
+                if (Array.isArray(searchData)) {
+                    initialValues = [...searchData]
+                } else if (typeof searchData === 'string') {
+                    try {
+                        const parsed = JSON.parse(searchData)
+                        initialValues = Array.isArray(parsed) ? parsed : [parsed]
+                    } catch (error) {
+                        console.error('Invalid JSON in search_data:', error)
+                        return
                     }
-                } catch (error) {
-                    console.log(error)
                 }
+                if (initialValues.length === 0) return
+                setShowAddFilter(initialValues.map((_, i) => i))
+                const fieldPrefix = isExclude ? 'filtersRemove' : 'filtersAdd'
+                initialValues.forEach((val: string[], index: number) => {
+                    setFieldValue(`${fieldPrefix}[${index}]`, val)
+                })
+            } catch (error) {
+                console.error('Failed to fetch criteria:', error)
             }
         }
+
         fetchCriteria()
-    }, [filterId, setFieldValue])
+    }, [filterId, setFieldValue, isExclude])
 
     useEffect(() => {
         dispatch(getAllFiltersAPI())
@@ -138,23 +148,42 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
     }
 
     const sendFilterData = async (filterData: any) => {
-        const additionalData = {
-            max_discount: state.max_discount || '',
-            min_discount: state.min_discount || '',
-            max_price: state.max_price || '',
-            min_price: state.min_price || '',
-        }
-
-        const filterDataWithAdditional = Object.fromEntries(
-            Object.entries(additionalData).filter(([, value]) => value !== null && value !== ''),
+        console.log('filterData 🚀🚀🚀🚀🚀🚀', filterData)
+        const additionalData = Object.fromEntries(
+            Object.entries({
+                max_discount: state.max_discount || '',
+                min_discount: state.min_discount || '',
+                max_price: state.max_price || '',
+                min_price: state.min_price || '',
+            }).filter(([, value]) => value !== ''),
         )
 
-        const body = {
-            filter_data: filterData,
-            extra_filters: filterDataWithAdditional,
+        const formData = new FormData()
+        if (filterData && filterData.length > 0) {
+            formData.append('filter_data', JSON.stringify(filterData))
+        } else {
+            formData.append('filter_data', '')
         }
+        formData.append('extra_filters', JSON.stringify(additionalData))
+        if (isCsv && csvFile && csvFile.length > 0) {
+            formData.append('skus', csvFile[0])
+        } else {
+            formData.append('skus', '')
+        }
+
+        // Append barcodes if exists
+        if (barcodes && barcodes.length > 0) {
+            formData.append('barcodes', barcodes.join(','))
+        } else {
+            formData.append('barcodes', '')
+        }
+
         try {
-            const response = await axioisInstance.post(`/product/search/criteria`, body)
+            const response = await axioisInstance.post(`/product/search/criteria`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
             setFilterId(response.data?.data?.id)
             notification.success({
                 message: 'Filter Id Added',
@@ -223,8 +252,32 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
                 </FormItem>
             ))}
 
-            {showAddFilter.length > 0 && (
+            {!noExtra && showAddFilter.length > 0 && (
                 <>
+                    {isCsv && (
+                        <>
+                            <FormItem label="CSV File" className="mt-10">
+                                <Field name="csvList">
+                                    {({ form }: FieldProps<any>) => (
+                                        <>
+                                            <Upload
+                                                beforeUpload={beforeUpload}
+                                                fileList={values.csvList || []}
+                                                className="flex justify-center mt-6"
+                                                onFileRemove={(files) => {
+                                                    form.setFieldValue('csvList', files)
+                                                }}
+                                                onChange={(files) => {
+                                                    form.setFieldValue('csvList', files)
+                                                    setCsvFile(files as any)
+                                                }}
+                                            />
+                                        </>
+                                    )}
+                                </Field>
+                            </FormItem>
+                        </>
+                    )}
                     <div className="grid grid-cols-2 gap-4 mt-4">
                         <FormItem label="Max Discount for Filters">
                             <Field name="max_discount">
