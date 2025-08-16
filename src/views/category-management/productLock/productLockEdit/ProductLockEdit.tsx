@@ -19,7 +19,7 @@ const ProductLockEdit = () => {
 
     const { data } = useFetchSingleData({ url: query })
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (data) {
             setInitialData(data)
         }
