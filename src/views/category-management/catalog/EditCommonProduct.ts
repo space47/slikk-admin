@@ -80,4 +80,5 @@ export const InitialValues = (productData: any, segmentOptions: string[] | undef
     size_chart_image: productData?.size_chart_image,
     size_chart_image_array: productData?.size_chart_image_array || [],
     filter_tags: productData?.filter_tags,
+    is_locked: productData?.is_locked || false,
 })

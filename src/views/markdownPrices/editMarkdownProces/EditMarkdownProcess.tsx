@@ -1,29 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, FormContainer } from '@/components/ui'
-import { useAppDispatch, useAppSelector } from '@/store'
-import { getAllFiltersAPI } from '@/store/action/filters.action'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import { Form, Formik } from 'formik'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import MarkdownCommonForm from '../MarkdownCommonForm'
-import { FILTER_STATE } from '@/store/types/filters.types'
 import { useParams } from 'react-router-dom'
 
 const EditMarkdownPrices = () => {
-    const dispatch = useAppDispatch()
     const { name } = useParams()
-    const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
-    const [showAddFilter, setShowAddFilter] = useState<any[]>([])
-    const [filterId, setFilterId] = useState()
-    const [filtersData, setFiltersData] = useState<any[]>([])
+    const [filterId, setFilterId] = useState<any>()
     const [editMarkdownData, setEditMarkdownData] = useState<Record<string, string | number | boolean>>()
-    const [csvFile, setCsvFile] = useState<any>()
     const [productCsvFile, setProductCsvFile] = useState<any>()
-
-    // for sku table
-    const [skuInput, setSkuInput] = useState<string>('')
-    const [skuSearchData, setSkuSearchData] = useState<any[]>([])
 
     const fetchEditMarkdown = async () => {
         try {
@@ -38,122 +26,6 @@ const EditMarkdownPrices = () => {
         fetchEditMarkdown()
     }, [])
 
-    console.log('Edit data', editMarkdownData)
-
-    useEffect(() => {
-        dispatch(getAllFiltersAPI())
-    }, [dispatch])
-
-    const fetchSkuData = async () => {
-        try {
-            const response = await axioisInstance.get(`/merchant/products?sku=${skuInput}`)
-            const data = response?.data?.data?.results
-
-            setSkuSearchData((prev) => {
-                const newData = Array.isArray(data) ? data : [data]
-                return [...prev, ...newData.filter((item) => !prev.some((prevItem) => prevItem.sku === item.sku))]
-            })
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
-    // Add SKU
-    const handleAddSku = () => {
-        fetchSkuData()
-    }
-
-    const handleRemoveSku = (sku: string) => {
-        setSkuSearchData((prev) => prev.filter((item) => item.sku !== sku))
-    }
-
-    const [skuList, setSkuList] = useState<string[]>([])
-
-    useEffect(() => {
-        const allSkus = skuSearchData.map((item: any) => item.barcode)
-        setSkuList(allSkus)
-    }, [skuSearchData])
-
-    const columns = useMemo(
-        () => [
-            {
-                header: 'SKU',
-                accessorKey: 'sku',
-                cell: ({ row }: any) => {
-                    return <div>{row?.original?.sku}</div>
-                },
-            },
-            { header: 'Barcode', accessorKey: 'barcode' },
-            { header: 'Brand', accessorKey: 'brand' },
-            { header: 'Category', accessorKey: 'category' },
-            { header: 'Color', accessorKey: 'color' },
-            { header: 'Size', accessorKey: 'size' },
-            {
-                header: 'Actions',
-                cell: ({ row }: any) => (
-                    <button className="text-red-500" onClick={() => handleRemoveSku(row.original.sku)}>
-                        Remove
-                    </button>
-                ),
-            },
-        ],
-        [skuSearchData],
-    )
-
-    const handleAddFilter = () => {
-        setShowAddFilter([...showAddFilter, showAddFilter.length])
-    }
-
-    const handleRemoveFilter = (index: number) => {
-        const updatedFilters = showAddFilter.filter((_, i) => i !== index)
-        setShowAddFilter(updatedFilters)
-    }
-
-    const handleAddFilters = async (values: any) => {
-        const newFilterData = showAddFilter.map((_, index) => values.filtersAdd[index] || [])
-        setFiltersData((prev) => {
-            const updatedFilters = [...prev, newFilterData]
-            const lastElement = updatedFilters.at(-1)
-            sendFilterData(lastElement)
-            return updatedFilters
-        })
-    }
-
-    const sendFilterData = async (filterData: any) => {
-        console.log('filter data is', filterData)
-        const formData = new FormData()
-
-        if (filterData && filterData.length > 0) {
-            formData.append('filter_data', JSON.stringify(filterData))
-        } else {
-            formData.append('filter_data', '')
-        }
-
-        if (csvFile && csvFile.length > 0) {
-            formData.append('skus', csvFile[0])
-        } else {
-            formData.append('skus', '')
-        }
-        if (skuList && skuList.length > 0) {
-            formData.append('barcodes', skuList.join(','))
-        } else {
-            formData.append('barcodes', '')
-        }
-
-        try {
-            const response = await axioisInstance.post(`/product/search/criteria`, formData)
-            setFilterId(response.data?.data?.id)
-            notification.success({
-                message: 'Filter ID Added Successfully',
-            })
-        } catch (error) {
-            notification.error({
-                message: 'Failed to Add Filter ID',
-            })
-            console.error(error)
-        }
-    }
-
     const initialValue = {
         name: editMarkdownData?.name,
         start_date: editMarkdownData?.start_date,
@@ -163,24 +35,33 @@ const EditMarkdownPrices = () => {
         apply_on: editMarkdownData?.apply_on,
     }
 
+    useEffect(() => {
+        setFilterId(editMarkdownData?.product_filter || null)
+    }, [editMarkdownData])
+
     const handleSubmit = async (values: any) => {
         const formData = new FormData()
 
-        console.log('start date', values.offer_value)
-
-        formData.append('product_filter', JSON.stringify(filterId ?? editMarkdownData?.product_filter ?? {}))
-        formData.append('start_date', values.start_date || '')
-        formData.append('end_date', values.end_date || '')
-        formData.append('discount_type', values.discount_type || '')
-        formData.append('offer_value', values.offer_value || '')
-        formData.append('apply_on', values.apply_on || '')
-        formData.append('name', values.name || '')
-
-        if (productCsvFile) {
-            formData.append('product_price_file', productCsvFile[0])
+        // collect fields
+        const fields: Record<string, any> = {
+            product_filter: filterId ? JSON.stringify(filterId) : null,
+            start_date: values.start_date || '',
+            end_date: values.end_date || '',
+            discount_type: values.discount_type || '',
+            offer_value: values.offer_value || '',
+            apply_on: values.apply_on || '',
+            name: values.name || '',
         }
 
-        console.log('xBody of MarkDown', filtersData)
+        Object.entries(fields).forEach(([key, value]) => {
+            if (value !== null && value !== '' && value !== undefined) {
+                formData.append(key, value)
+            }
+        })
+
+        if (productCsvFile?.[0]) {
+            formData.append('product_price_file', productCsvFile[0])
+        }
 
         try {
             const response = await axioisInstance.patch(`/product/offer/pricing/${editMarkdownData?.id}`, formData)
@@ -197,32 +78,19 @@ const EditMarkdownPrices = () => {
 
     return (
         <div>
-            <Formik
-                enableReinitialize
-                initialValues={initialValue}
-                // validationSchema={validationSchema}
-                onSubmit={handleSubmit}
-            >
+            <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                 {({ values }) => (
                     <Form className="w-full p-2 shadow-xl rounded-xl">
                         <FormContainer className="">
                             <MarkdownCommonForm
-                                handleAddFilter={handleAddFilter}
-                                showAddFilter={showAddFilter}
-                                handleAddFilters={handleAddFilters}
-                                handleRemoveFilter={handleRemoveFilter}
-                                filters={filters?.filters}
                                 values={values}
-                                setCsvFile={setCsvFile}
-                                handleAddSku={handleAddSku}
-                                skuSearchData={skuSearchData}
-                                columns={columns}
-                                skuInput={skuInput}
-                                setSkuInput={setSkuInput}
+                                filterId={filterId}
+                                setFilterId={setFilterId}
                                 setProductCsvFile={setProductCsvFile}
+                                isEdit={true}
                             />
                         </FormContainer>
-                        <Button variant="accept" type="submit">
+                        <Button variant="accept" type="submit" className="mt-10">
                             Submit
                         </Button>
                     </Form>

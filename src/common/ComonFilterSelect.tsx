@@ -343,13 +343,14 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
                             onChange={(e) => setSkuInput(e.target.value)}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
+                                    e.preventDefault()
                                     handleAddSku()
                                 }
                             }}
                         />
                         <button
-                            onClick={handleAddSku}
                             className="bg-blue-600 hover:bg-blue-700 transition text-white px-4 py-2 rounded-xl flex items-center gap-2"
+                            onClick={handleAddSku}
                         >
                             <FaSearch className="text-lg" /> Search
                         </button>
@@ -466,17 +467,17 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
                             </Field>
                         </FormItem>
                     </div>
-                    <div className="flex flex-col gap-3 xl:flex-row  mt-4">
-                        <Field>
-                            {({ form }: FieldProps<any>) => (
-                                <Button type="button" variant="new" onClick={() => handleAddFilters(form.values)}>
-                                    Search Strings
-                                </Button>
-                            )}
-                        </Field>
-                    </div>
                 </>
             }
+            <div className="flex flex-col gap-3 xl:flex-row  mt-4 justify-center">
+                <Field>
+                    {({ form }: FieldProps<any>) => (
+                        <Button type="button" variant="new" onClick={() => handleAddFilters(form.values)}>
+                            Search Strings
+                        </Button>
+                    )}
+                </Field>
+            </div>
         </div>
     )
 }
