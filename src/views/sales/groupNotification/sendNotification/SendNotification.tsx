@@ -67,6 +67,7 @@ const SendNotification = () => {
     }, [])
 
     const handleSubmit = async (values: any) => {
+        console.log('values', values)
         const parser = new DOMParser()
         const htmlDoc = parser.parseFromString(values.message, 'text/html')
         const plainTextMessage = htmlDoc.body.textContent || ''
@@ -86,6 +87,10 @@ const SendNotification = () => {
         } = values
         console.log(utm_medium, utm_source, utm_campaign, utm_tags, maxoff, maxprice, minoff, minprice, filtersAdd)
 
+        const targetPage = values?.is_custom
+            ? `s/${values?.page}${values?.sub_page ? `/${values?.sub_page}` : ''}`
+            : values?.target_page || ''
+
         const imageUpload = values.image_url_array.length > 0 ? await handleimage('product', image_url_array) : values.image_url
         const data = {
             ...formData,
@@ -93,6 +98,7 @@ const SendNotification = () => {
             name: values?.event_name ?? '',
             image_url: imageUpload || '',
             notification_group: values?.groupId?.id || '',
+            target_page: targetPage,
             filters: [
                 ...(values.filters || []),
                 ...UtmArray.filter((item) => values[item.name] !== undefined).map(
@@ -195,6 +201,10 @@ const SendNotification = () => {
 
         const { expiry_date, ...schedulerConfigs } = rest ?? {}
 
+        const targetPage = valueForSchedule?.is_custom
+            ? `s/${valueForSchedule?.page}${valueForSchedule?.sub_page ? `/${valueForSchedule?.sub_page}` : ''}`
+            : valueForSchedule?.target_page || ''
+
         const body = {
             title: titleView ?? '',
             message: plainTextMessage ?? '',
@@ -216,7 +226,7 @@ const SendNotification = () => {
                     ...(valueForSchedule?.discountTags ?? []),
                     ...(filterId !== undefined ? [`filterId_${filterId}`] : []),
                 ].filter((filter) => filter),
-                target_page: valueForSchedule?.target_page ?? '',
+                target_page: targetPage,
                 key: valueForSchedule?.key ?? '',
                 page_title: valueForSchedule?.page_title ?? '',
             },

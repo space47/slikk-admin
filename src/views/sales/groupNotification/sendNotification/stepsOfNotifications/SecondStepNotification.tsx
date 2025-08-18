@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, FormContainer, FormItem, Input, Select } from '@/components/ui'
+import { Button, Checkbox, FormContainer, FormItem, Input, Select } from '@/components/ui'
 import { Field, FieldProps } from 'formik'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { IoMdAddCircle } from 'react-icons/io'
 import { MdCancel } from 'react-icons/md'
 import { OFFARRAY } from '../sendNotify.common'
+import { pageNameTypes } from '@/store/types/pageSettings.types'
+import { pageSettingsService } from '@/store/services/pageSettingService'
 
 interface SecondStepNotification {
     values: any
@@ -32,6 +34,31 @@ const SecondStepNotification = ({
     targetPageArray,
     handleAddFilters,
 }: SecondStepNotification) => {
+    const [subPageNamesData, setSubPageNamesData] = useState<pageNameTypes[] | undefined>([])
+    const [pageNamesData, setPageNamesData] = useState<pageNameTypes[] | undefined>([])
+    const [selectedPageName, setSelectedPageName] = useState<string | undefined>(undefined)
+
+    const { data: SubPageNames, isSuccess: isSubPageNamesSuccess } = pageSettingsService.useSubPageNamesQuery({
+        pageName: selectedPageName || '',
+    })
+
+    const { data: pageNames, isSuccess: isPageNamesSuccess } = pageSettingsService.usePageNamesQuery({
+        page: 1,
+        pageSize: 500,
+    })
+
+    useEffect(() => {
+        if (isPageNamesSuccess) {
+            setPageNamesData(pageNames?.data?.results || [])
+        }
+    }, [pageNames, isPageNamesSuccess])
+
+    useEffect(() => {
+        if (isSubPageNamesSuccess) {
+            setSubPageNamesData(SubPageNames?.data || [])
+        }
+    }, [isSubPageNamesSuccess, SubPageNames, selectedPageName])
+
     console.log('groupDatatoSend', values?.groupId)
     return (
         <div className="space-y-6 shadow-lg rounded-lg px-14 py-9 mt-10">
@@ -152,21 +179,91 @@ const SecondStepNotification = ({
                     </Field>
                 </div>
 
-                <FormItem label="Target Page">
-                    <Field name="target_page">
-                        {({ field, form }: FieldProps<any>) => {
-                            return (
-                                <Select
-                                    isClearable
-                                    placeholder="Select Target Page"
-                                    options={targetPageArray}
-                                    value={targetPageArray.find((option: any) => option.value === field.value)}
-                                    onChange={(option) => form.setFieldValue(field.name, option?.value)}
-                                />
-                            )
-                        }}
-                    </Field>
-                </FormItem>
+                <div>
+                    <FormItem label="Is Custom" className="w-full xl:w-2/3">
+                        <Field type="checkbox" name="is_custom" component={Checkbox} />
+                    </FormItem>
+                </div>
+                {values?.is_custom && (
+                    <>
+                        <FormItem label="Page">
+                            <Field name="page">
+                                {({ form, field }: FieldProps) => {
+                                    console.log('field.value', field.value)
+                                    const selectedPage =
+                                        typeof field?.value === 'object'
+                                            ? pageNamesData?.find((option) => option.name === field?.value?.name)
+                                            : pageNamesData?.find((option) => option.name === field?.value)
+                                    return (
+                                        <div className="flex flex-col gap-1 w-full max-w-md">
+                                            <Select
+                                                isClearable
+                                                className="w-full"
+                                                options={pageNamesData}
+                                                getOptionLabel={(option) => option.name}
+                                                getOptionValue={(option) => option.id}
+                                                value={selectedPage || null}
+                                                onChange={(newVal) => {
+                                                    console.log('inside  select', newVal)
+                                                    const name = newVal?.name
+                                                    form.setFieldValue('page', name)
+                                                    setSelectedPageName(name)
+                                                }}
+                                            />
+                                        </div>
+                                    )
+                                }}
+                            </Field>
+                        </FormItem>
+                        <FormContainer>
+                            <FormItem label="Sub Page">
+                                <Field name="sub_page">
+                                    {({ form, field }: FieldProps) => {
+                                        const selectedSubPage =
+                                            typeof field?.value === 'object'
+                                                ? subPageNamesData?.find((option) => option.name === field?.value?.name)
+                                                : subPageNamesData?.find((option) => option.name === field?.value)
+                                        return (
+                                            <div className="flex flex-col gap-1 w-full max-w-md">
+                                                <Select
+                                                    isClearable
+                                                    className="w-full"
+                                                    options={subPageNamesData}
+                                                    getOptionLabel={(option) => option.name}
+                                                    getOptionValue={(option) => option.id}
+                                                    value={selectedSubPage || null}
+                                                    onChange={(newVal) => {
+                                                        console.log('inside sub page select', newVal)
+                                                        const name = newVal?.name
+                                                        form.setFieldValue('sub_page', name)
+                                                    }}
+                                                />
+                                            </div>
+                                        )
+                                    }}
+                                </Field>
+                            </FormItem>
+                        </FormContainer>
+                    </>
+                )}
+
+                {values?.is_custom === false && (
+                    <FormItem label="Target Page">
+                        <Field name="target_page">
+                            {({ field, form }: FieldProps<any>) => {
+                                return (
+                                    <Select
+                                        isClearable
+                                        placeholder="Select Target Page"
+                                        options={targetPageArray}
+                                        value={targetPageArray.find((option: any) => option.value === field.value)}
+                                        onChange={(option) => form.setFieldValue(field.name, option?.value)}
+                                    />
+                                )
+                            }}
+                        </Field>
+                    </FormItem>
+                )}
             </div>
         </div>
     )
