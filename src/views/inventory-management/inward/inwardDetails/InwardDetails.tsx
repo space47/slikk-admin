@@ -107,9 +107,9 @@ const InwardDetails = () => {
 
     const handleRegenerateGrn = async (doc_number: string) => {
         try {
-            let responseData = `/goods/received/${companyId}/detail?download=true&regenerate=true&document_number=${doc_number}`
+            let responseData = `/goods/received/${companyId}/detail?download=true&regenerate=true&document_number=${encodeURIComponent(doc_number)}`
             if (selectValue === 'csv') {
-                responseData = `/goods/received/${companyId}/detail?download=true&regenerate=true&document_number=${doc_number}&download_type=csv`
+                responseData = `/goods/received/${companyId}/detail?download=true&regenerate=true&document_number=${encodeURIComponent(doc_number)}&download_type=csv`
             }
 
             const response = await axioisInstance.get(responseData)
