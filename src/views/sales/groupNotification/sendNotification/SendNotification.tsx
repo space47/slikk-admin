@@ -232,7 +232,7 @@ const SendNotification = () => {
         try {
             const response = await axioisInstance.post(`/user_notification`, filteredBody)
             notification.success({ message: 'Scheduled successfully' })
-            navigate(`/app/appsCommuncication/sendNotification`)
+            // navigate(`/app/appsCommuncication/sendNotification`)
         } catch (error: any) {
             console.log(error)
             notification.error({ message: error?.response?.data?.message || error?.response?.message || 'Failed to schedule' })
