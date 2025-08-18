@@ -89,7 +89,7 @@ const SendNotification = () => {
         const imageUpload = values.image_url_array.length > 0 ? await handleimage('product', image_url_array) : values.image_url
         const data = {
             ...formData,
-            title: titleView ?? '',
+            title: values?.title ?? '',
             name: values?.event_name ?? '',
             image_url: imageUpload || '',
             notification_group: values?.groupId?.id || '',
@@ -165,10 +165,6 @@ const SendNotification = () => {
         } catch (error) {
             console.log(error)
         }
-    }
-
-    if (showSpinner) {
-        return <div className="flex h-screen items-center justify-center">{<Spinner size={40} />}</div>
     }
 
     const hanldeSchedule = (value: any) => {
@@ -290,6 +286,7 @@ const SendNotification = () => {
                                         setImagePreview={setImagePreview}
                                         setMessagePreview={setMessagePreview}
                                         setTitleView={setTitleView}
+                                        setFieldValue={setFieldValue}
                                     />
                                 )}
 
@@ -363,6 +360,14 @@ const SendNotification = () => {
                             <FormContainer className="flex justify-start">
                                 {currentStep === 3 && (
                                     <div className="flex">
+                                        <Button
+                                            variant="twoTone"
+                                            type="button"
+                                            className="mr-2 mt-5 bg-gray-600"
+                                            onClick={() => setCurrentStep(0)}
+                                        >
+                                            First Page
+                                        </Button>
                                         <Button
                                             type="button"
                                             variant="pending"

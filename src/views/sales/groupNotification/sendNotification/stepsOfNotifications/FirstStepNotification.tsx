@@ -12,20 +12,43 @@ interface FirstStepProps {
     setMessagePreview: React.Dispatch<React.SetStateAction<string>>
     setImagePreview: React.Dispatch<React.SetStateAction<string>>
     setTitleView: React.Dispatch<React.SetStateAction<string>>
+    setFieldValue: (field: string, value: any) => void
 }
 
-const FirstStepNotification = ({ SendNotificationARRAY, values, setMessagePreview, setImagePreview, setTitleView }: FirstStepProps) => {
+const FirstStepNotification = ({
+    SendNotificationARRAY,
+    values,
+    setMessagePreview,
+    setImagePreview,
+    setTitleView,
+    setFieldValue,
+}: FirstStepProps) => {
     return (
         <div className="space-y-6 shadow-lg rounded-lg px-6 py-4 xl:px-14 xl:py-9">
             <div className="text-lg font-bold xl:text-xl">Basic Information for Sending Notifications</div>
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 xl:gap-6">
                 <FormItem label="Title" className="w-full rounded-[10px]">
+                    {/* <Field name="notification_type">
+                        {({ field, form }: FieldProps) => (
+                            <Input
+                                type="text"
+                                name="title"
+                                placeholder="Enter Title"
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                    form.setFieldValue(field.name, e.target.value)
+                                }}
+                            />
+                        )}
+                    </Field> */}
                     <Field
                         type="text"
-                        name="Title"
+                        name="title"
                         placeholder="Enter Title"
                         component={Input}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitleView(e.target.value)}
+                        onChange={(e: any) => {
+                            setTitleView(e.target.value)
+                            setFieldValue('title', e.target.value)
+                        }}
                     />
                 </FormItem>
                 {SendNotificationARRAY.map((item, key) => (
