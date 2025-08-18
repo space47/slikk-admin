@@ -5,6 +5,9 @@ import { Product } from '../CommonType'
 import { FaEdit, FaEye } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
+import { GiResize } from 'react-icons/gi'
+import { notification } from 'antd'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 interface props {
     handleOpenModal: (img: any) => void
@@ -13,6 +16,20 @@ interface props {
 
 export const useProductColumns = ({ handleOpenModal, handleViewProducts }: props) => {
     const navigate = useNavigate()
+
+    const handleResize = async (barcode: string | undefined) => {
+        try {
+            const res = await axioisInstance.post(`/backend/task/create`, {
+                task_name: 'resize_product_images',
+                barcodes: barcode,
+            })
+            notification.success({ message: res?.data?.message || 'Successfully Resized' })
+        } catch (error) {
+            notification.error({ message: 'Failed to Resize' })
+            console.error('Error resizing product:', error)
+        }
+    }
+
     return useMemo<ColumnDef<Product>[]>(
         () => [
             {
@@ -33,6 +50,15 @@ export const useProductColumns = ({ handleOpenModal, handleViewProducts }: props
                 cell: ({ row }) => (
                     <button className="border-none bg-none" onClick={() => handleViewProducts(row?.original)}>
                         <FaEye className="text-xl text-yellow-500" />
+                    </button>
+                ),
+            },
+            {
+                header: 'Re-Size Image',
+                accessorKey: '',
+                cell: ({ row }) => (
+                    <button className="border-none bg-none" onClick={() => handleResize(row?.original?.barcode)}>
+                        <GiResize className="text-xl text-green-500" />
                     </button>
                 ),
             },
