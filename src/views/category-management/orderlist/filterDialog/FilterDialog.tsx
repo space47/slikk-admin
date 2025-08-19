@@ -24,6 +24,8 @@ type OrderFilterProps = {
     setFrom?: any
     setTo?: any
     forExchange?: boolean
+    handlePaymentStatusSelect: (x: any) => void
+    paymentStatus?: any
 }
 
 const FilterDialogOrder = ({
@@ -36,6 +38,8 @@ const FilterDialogOrder = ({
     handleDeliverySelect,
     paymentType,
     handlePaymentSelect,
+    paymentStatus,
+    handlePaymentStatusSelect,
 }: OrderFilterProps) => {
     return (
         <div>
@@ -120,7 +124,7 @@ const FilterDialogOrder = ({
                             <div className="relative w-auto lg:w-auto bg-gray-100 flex justify-center dark:bg-gray-800 dark:text-white lg:justify-start">
                                 <div className="w-full px-1 py-2 text-sm  text-black bg-gray-100 border dark:bg-gray-800 dark:text-white border-gray-300 rounded-md shadow-sm">
                                     <div className="h-auto overflow-y-auto max-h-80">
-                                        {PAYMENTOPTIONS?.map((item, key) => (
+                                        {PAYMENTOPTIONS?.slice(0, 3)?.map((item, key) => (
                                             <div
                                                 key={key}
                                                 className={`flex items-center px-2 py-2 text-black dark:bg-gray-800 dark:text-white hover:bg-gray-100 cursor-pointer ${
@@ -131,6 +135,33 @@ const FilterDialogOrder = ({
                                                     type="checkbox"
                                                     checked={paymentType?.value?.includes(item.value)}
                                                     onChange={() => handlePaymentSelect(item.value)}
+                                                    className="mr-2 "
+                                                />
+                                                <span>{item.label}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="flex flex-col">
+                            <label htmlFor="" className="font-semibold text-lg mb-2">
+                                SELECT PAYMENT STATUS
+                            </label>
+                            <div className="relative w-auto lg:w-auto bg-gray-100 flex justify-center dark:bg-gray-800 dark:text-white lg:justify-start">
+                                <div className="w-full px-1 py-2 text-sm  text-black bg-gray-100 border dark:bg-gray-800 dark:text-white border-gray-300 rounded-md shadow-sm">
+                                    <div className="h-auto overflow-y-auto max-h-80">
+                                        {PAYMENTOPTIONS?.slice(3)?.map((item, key) => (
+                                            <div
+                                                key={key}
+                                                className={`flex items-center px-2 py-2 text-black dark:bg-gray-800 dark:text-white hover:bg-gray-100 cursor-pointer ${
+                                                    paymentStatus?.value?.includes(item.value) ? 'bg-gray-200' : ''
+                                                }`}
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    checked={paymentStatus?.value?.includes(item.value)}
+                                                    onChange={() => handlePaymentStatusSelect(item.value)}
                                                     className="mr-2 "
                                                 />
                                                 <span>{item.label}</span>
