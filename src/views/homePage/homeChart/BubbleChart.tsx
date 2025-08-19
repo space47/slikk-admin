@@ -13,6 +13,7 @@ const BrandDataChart = ({ brandData, from, to }: BRANDWISEDATA) => {
     const brandName = Object.keys(brandData).map((key) => key)
     const categories = Object.keys(brandData).map((key) => `${key} (${brandData[key]})`)
     const dataValues = Object.values(brandData)
+    console.log('yes the data values', dataValues)
     const navigate = useNavigate()
     const sum = dataValues.reduce((acc, value) => acc + value, 0)
 
@@ -28,13 +29,7 @@ const BrandDataChart = ({ brandData, from, to }: BRANDWISEDATA) => {
                 BRAND WISE DATA CHART : <span>({sum})</span>
             </div>
             <div
-                style={{
-                    maxHeight: '600px',
-                    overflowY: 'auto',
-                    scrollbarWidth: 'none',
-                    msOverflowStyle: 'none',
-                }}
-                className="hide-scrollbar border border-gray-300 rounded-lg p-2"
+                className={`${dataValues.length > 20 ? 'overflow-y-scroll max-h-[600px]' : ''} hide-scrollbar border border-gray-300 rounded-lg p-2`}
             >
                 <Chart
                     options={{
@@ -103,7 +98,7 @@ const BrandDataChart = ({ brandData, from, to }: BRANDWISEDATA) => {
                         },
                     }}
                     series={data}
-                    height={categories.length * 30}
+                    height={dataValues.length > 20 ? categories.length * 30 : 400}
                     type="bar"
                 />
             </div>

@@ -42,6 +42,7 @@ const OrderList = () => {
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(SEARCHOPTIONS[0])
     const [deliveryType, setDeliveryType] = useState<DropdownStatus>({ value: [], name: [] })
     const [paymentType, setPaymentType] = useState<DropdownStatus>({ value: [], name: [] })
+    const [paymentStatus, setPaymentStatus] = useState<DropdownStatus>({ value: [], name: [] })
     const [searchInput, setSearchInput] = useState<string>('')
     const [pageSize, setPageSize] = useState(10)
     const [page, setPage] = useState(1)
@@ -75,7 +76,8 @@ const OrderList = () => {
         const deliveryStatus =
             tabSelect === 'exchange' ? `&delivery_type=EXCHANGE` : deliveryType?.value?.length ? `&delivery_type=${deliveryType.value}` : ''
 
-        const paymentStatus = paymentType?.value?.length ? `&payment_mode=${paymentType.value}` : ''
+        const paymentMode = paymentType?.value?.length ? `&payment_mode=${paymentType.value}` : ''
+        const paymentStatusData = paymentStatus?.value?.length ? `&payment_status=${paymentStatus.value}` : ''
 
         const filterParams = searchInput
             ? currentSelectedPage.value === 'invoice'
@@ -85,13 +87,15 @@ const OrderList = () => {
                   : ''
             : `p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}`
 
-        return { status, deliveryStatus, paymentStatus, filterParams }
+        return { status, deliveryStatus, paymentMode, filterParams, paymentStatus: paymentStatusData }
     }
 
     const fetchApiCall = async (): Promise<{ ordersData: any[]; orderCount: number }> => {
         try {
-            const { status, deliveryStatus, paymentStatus, filterParams } = extraFilters()
-            const response = await axiosInstance.get(`/merchant/orders?${filterParams}${status}${deliveryStatus}${paymentStatus}`)
+            const { status, deliveryStatus, paymentStatus, filterParams, paymentMode } = extraFilters()
+            const response = await axiosInstance.get(
+                `/merchant/orders?${filterParams}${status}${deliveryStatus}${paymentStatus}${paymentMode}`,
+            )
             const ordersData = response.data?.data.results
             const orderCount = response.data?.data.count
             return { ordersData, orderCount }
@@ -168,7 +172,20 @@ const OrderList = () => {
 
             return () => clearInterval(interval)
         }
-    }, [page, pageSize, from, to, dropdownStatus, searchOnEnter, deliveryType, paymentType, numberClick, previousOrders, tabSelect])
+    }, [
+        page,
+        pageSize,
+        from,
+        to,
+        dropdownStatus,
+        searchOnEnter,
+        deliveryType,
+        paymentType,
+        numberClick,
+        previousOrders,
+        tabSelect,
+        paymentStatus,
+    ])
 
     useEffect(() => {
         checkingNewOrders()
@@ -424,6 +441,8 @@ const OrderList = () => {
                     handleDeliverySelect={(val: any) => handleSelectFilters(deliveryType, setDeliveryType, val)}
                     paymentType={paymentType}
                     handlePaymentSelect={(val: any) => handleSelectFilters(paymentType, setPaymentType, val)}
+                    paymentStatus={paymentStatus}
+                    handlePaymentStatusSelect={(val: any) => handleSelectFilters(paymentStatus, setPaymentStatus, val)}
                     handleDateChange={handleDateChange}
                 />
             )}
