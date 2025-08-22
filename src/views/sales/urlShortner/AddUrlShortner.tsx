@@ -115,8 +115,8 @@ const AddUrlShortner = () => {
                 : `${`slikk:/`}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
         }
 
-        const pageUrl = `${`slikk://page`}/s/${values?.page?.name}${values?.sub_page?.name ? `/${values?.sub_page?.name}` : ''}${pageTitle}?${noSelectFilters}${appOnly}`
-        const webPageUrl = `${base_url}/s/${values?.page?.name}${values?.sub_page?.name ? `/${values?.sub_page?.name}` : ''}${pageTitle}?${noSelectFilters}${appOnly}`
+        const pageUrl = `${`slikk://page`}/s/${encodeURIComponent(values?.page?.name)}${values?.sub_page?.name ? `/${encodeURIComponent(values?.sub_page?.name)}` : ''}${pageTitle}?${noSelectFilters}${appOnly}`
+        const webPageUrl = `${base_url}/s/${encodeURIComponent(values?.page?.name)}${values?.sub_page?.name ? `/${encodeURIComponent(values?.sub_page?.name)}` : ''}${pageTitle}?${noSelectFilters}${appOnly}`
         const customBody = {
             short_code: values?.short_code,
             ios_url: pageUrl,
@@ -189,6 +189,7 @@ const AddUrlShortner = () => {
                                         {({ field, form }: FieldProps<any>) => {
                                             return (
                                                 <Select
+                                                    isClearable
                                                     placeholder="Select Target Page"
                                                     options={targetPageArray}
                                                     // defaultValue={selectedOption}

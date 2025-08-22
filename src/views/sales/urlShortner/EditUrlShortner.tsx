@@ -133,7 +133,7 @@ const EditUrlShortner = () => {
             const url = urlFieldDatas?.web_url || urlFieldDatas?.android_url || urlFieldDatas?.ios_url
             if (url) {
                 const match = url.match(/\/s\/([^/]+)/)
-                return match ? match[1] : ''
+                return match ? match[1]?.replace('?', '') : ''
             }
             return ''
         })(),
@@ -141,7 +141,7 @@ const EditUrlShortner = () => {
             const url = urlFieldDatas?.web_url || urlFieldDatas?.android_url || urlFieldDatas?.ios_url
             if (url) {
                 const match = url.match(/\/s\/[^/]+\/([^/?]+)/)
-                return match ? match[1] : ''
+                return match ? match[1]?.replace('?', '') : ''
             }
             return ''
         })(),
@@ -169,7 +169,7 @@ const EditUrlShortner = () => {
         is_custom: (() => {
             const url = urlFieldDatas?.web_url || urlFieldDatas?.android_url || urlFieldDatas?.ios_url
             if (url) {
-                const match = url.match(/\/s\/[^/]+\/([^/?]+)/)
+                const match = url.match(/\/s\/([^/]+)/)
                 return match ? true : false
             }
             return false
@@ -310,20 +310,20 @@ const EditUrlShortner = () => {
                 : `${`slikk:/`}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
         }
 
-        const webPageUrl = `${baseUrl}/s/${values?.page?.name === undefined ? values?.page : values?.page?.name || ''}${
-            values?.sub_page == 'null' || values?.sub_page === null
+        const webPageUrl = `${baseUrl}/s/${values?.page?.name === undefined ? values?.page : encodeURIComponent(values?.page?.name) || ''}${
+            values?.sub_page == 'null' || values?.sub_page === null || values?.sub_page?.name === 'undefined'
                 ? ''
                 : values?.sub_page?.name === undefined
                   ? `/${values?.sub_page}`
-                  : `/${values?.sub_page?.name || ''}`
+                  : `/${encodeURIComponent(values?.sub_page?.name) || ''}`
         }?${noSelectFilters}${appOnly}`
 
-        const pageUrl = `slikk://page/s/${values?.page?.name === undefined ? values?.page : values?.page?.name || ''}${
-            values?.sub_page == 'null' || values?.sub_page === null
+        const pageUrl = `slikk://page/s/${values?.page?.name === undefined ? values?.page : encodeURIComponent(values?.page?.name) || ''}${
+            values?.sub_page == 'null' || values?.sub_page === null || values?.sub_page === 'undefined'
                 ? ''
                 : values?.sub_page?.name === undefined
                   ? `/${values?.sub_page}`
-                  : `/${values?.sub_page?.name || ''}`
+                  : `/${encodeURIComponent(values?.sub_page?.name) || ''}`
         }?${noSelectFilters}${appOnly}`
 
         const customBody = {
@@ -352,6 +352,8 @@ const EditUrlShortner = () => {
             })
         }
     }
+
+    console.log('Initial Values', initialValues?.page, pageNamesData)
 
     const handleCopy = (data: string) => {
         navigator.clipboard.writeText(data)
@@ -424,8 +426,10 @@ const EditUrlShortner = () => {
                                             {({ form, field }: FieldProps) => {
                                                 const selectedPage =
                                                     typeof field?.value === 'object'
-                                                        ? pageNamesData?.find((option) => option.name === field?.value?.name)
-                                                        : pageNamesData?.find((option) => option.name === field?.value)
+                                                        ? pageNamesData?.find(
+                                                              (option) => option.name === decodeURIComponent(field?.value?.name),
+                                                          )
+                                                        : pageNamesData?.find((option) => option.name === decodeURIComponent(field?.value))
                                                 return (
                                                     <div className="flex flex-col gap-1 w-full max-w-md">
                                                         <Select
@@ -454,8 +458,12 @@ const EditUrlShortner = () => {
                                                 {({ form, field }: FieldProps) => {
                                                     const selectedSubPage =
                                                         typeof field?.value === 'object'
-                                                            ? subPageNamesData?.find((option) => option.name === field?.value?.name)
-                                                            : subPageNamesData?.find((option) => option.name === field?.value)
+                                                            ? subPageNamesData?.find(
+                                                                  (option) => option.name === decodeURIComponent(field?.value?.name),
+                                                              )
+                                                            : subPageNamesData?.find(
+                                                                  (option) => option.name === decodeURIComponent(field?.value),
+                                                              )
                                                     return (
                                                         <div className="flex flex-col gap-1 w-full max-w-md">
                                                             <Select
