@@ -10,10 +10,13 @@ export const useRiderModalColumnsForOrders = () => {
                 header: 'Order Id',
                 accessorKey: 'client_order_id',
                 cell: ({ row }: any) => {
+                    const link = row?.original?.client_order_id?.startsWith('R')
+                        ? `/app/returnOrders/${row.original.client_order_id}`
+                        : `/app/orders/${row.original.client_order_id}`
                     return (
                         <div
                             className="p-2 rounded-xl bg-red-500 text-white flex justify-center items-center"
-                            onClick={() => navigate(`/app/orders/${row.original.client_order_id}`)}
+                            onClick={() => navigate(link)}
                         >
                             {row.original.client_order_id ?? 'N/A'}
                         </div>
