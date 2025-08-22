@@ -140,6 +140,8 @@ export const PAYMENTOPTIONS = [
     { label: 'POD', value: 'POD' },
     { label: 'POD_CREATED', value: 'POD_CREATED' },
     { label: 'POD_PAID', value: 'POD_PAID' },
+    { label: 'POD_COMPLETED', value: 'POD_COMPLETED' },
+    { label: 'COMPLETED', value: 'COMPLETED' },
 ]
 
 export const CHANGE_DELIVERY_OPTIONS = [

@@ -546,6 +546,12 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsInventoryManagement.indentUpload',
+        path: `${APP_PREFIX_PATH}/goods/indentUpload/`,
+        component: lazy(() => import('@/views/inventory-management/indent/indentUploader/IndentBulkUpload')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsInventoryManagement.quality_checkList',
         path: `${APP_PREFIX_PATH}/goods/qualitycheckList`,
         component: lazy(() => import('@/views/inventory-management/qualityCheckList/QCListTable')),

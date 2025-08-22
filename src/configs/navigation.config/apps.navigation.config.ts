@@ -208,6 +208,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         authority: [ADMIN, USER],
                         subMenu: [],
                     },
+                    {
+                        key: 'appsInventoryManagement.indentUpload',
+                        path: `${APP_PREFIX_PATH}/goods/indentUpload/`,
+                        title: 'Indent Upload',
+                        translateKey: 'nav.appsInventoryManagement.indentUploader',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
                 ],
             },
 
