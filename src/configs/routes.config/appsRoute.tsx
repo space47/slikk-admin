@@ -546,6 +546,18 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsInventoryManagement.indent',
+        path: `${APP_PREFIX_PATH}/goods/indent`,
+        component: lazy(() => import('@/views/inventory-management/indent/indentOverview/IndentTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsInventoryManagement.indent',
+        path: `${APP_PREFIX_PATH}/goods/indentDetails/:id`,
+        component: lazy(() => import('@/views/inventory-management/indent/indentOverview/indentComponents/IndentDetails')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsInventoryManagement.indentUpload',
         path: `${APP_PREFIX_PATH}/goods/indentUpload/`,
         component: lazy(() => import('@/views/inventory-management/indent/indentUploader/IndentBulkUpload')),
@@ -561,6 +573,12 @@ const appsRoute: Routes = [
         key: 'appsInventoryManagement.stock_overview',
         path: `${APP_PREFIX_PATH}/stockOverview/`,
         component: lazy(() => import('@/views/inventory-management/stock-overview/StockOverview')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsInventoryManagement.inventoryLocation',
+        path: `${APP_PREFIX_PATH}/inventoryLocation`,
+        component: lazy(() => import('@/views/inventory-management/inventory/inventoryTable/InventoryTable')),
         authority: [ADMIN, USER],
     },
     {
@@ -858,6 +876,18 @@ const appsRoute: Routes = [
 
     // ...............................APP SETTINGS...................................................
 
+    {
+        key: 'appsAppSettings.offers',
+        path: `${APP_PREFIX_PATH}/appSettings/offers`,
+        component: lazy(() => import('@/views/offerEngine/offers/offersTable/OffersTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.offers',
+        path: `${APP_PREFIX_PATH}/appSettings/offers/add`,
+        component: lazy(() => import('@/views/offerEngine/offers/offersAdd/OffersAdd')),
+        authority: [ADMIN, USER],
+    },
     {
         key: 'appsAppSettings.coupons',
         path: `${APP_PREFIX_PATH}/appSettings/coupons`,

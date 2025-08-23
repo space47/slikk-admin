@@ -48,6 +48,8 @@ import productReducer from './slices/productData/productData.slice'
 import pageSettingsMainReducer from './slices/mainPageSettings/mainPageSettingsSlice'
 import qualityCheckReducer from './slices/qualityCheckSlice/qualityCheckList.slice'
 import productLockReducer from './slices/productData/productLock.slice'
+import offersReducer from './slices/offerSlice/offerSlice'
+import indentReducer from './slices/indentSlice/indentSlice'
 
 export type RootState = CombinedState<{
     authorization: CombinedState<Authorization>
@@ -110,6 +112,8 @@ const staticReducers = {
     pageSettingsMain: pageSettingsMainReducer,
     qualityCheck: qualityCheckReducer,
     productLock: productLockReducer,
+    offers: offersReducer,
+    indent: indentReducer,
     [remitanceApi.reducerPath]: remitanceApi.reducer,
     [RtkQueryService.reducerPath]: RtkQueryService.reducer,
 }
