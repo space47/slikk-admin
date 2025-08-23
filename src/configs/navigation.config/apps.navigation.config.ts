@@ -189,6 +189,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         subMenu: [],
                     },
                     {
+                        key: 'appsVendorManagement.inventoryLocation',
+                        path: `${APP_PREFIX_PATH}/inventoryLocation`,
+                        title: 'Inventory Location',
+                        translateKey: 'nav.appsVendorManagement.inventoryLocation',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
                         key: 'appsInventoryManagement.printer',
                         path: `${APP_PREFIX_PATH}/printer`,
                         title: 'Sku Tag Printer',
@@ -203,6 +213,17 @@ const appsNavigationConfig: NavigationTree[] = [
                         path: `${APP_PREFIX_PATH}/material`,
                         title: 'Location CSV Download',
                         translateKey: 'nav.appsInventoryManagement.material',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+
+                    {
+                        key: 'appsInventoryManagement.indent',
+                        path: `${APP_PREFIX_PATH}/goods/indent/`,
+                        title: 'Indent ',
+                        translateKey: 'nav.appsInventoryManagement.indent',
                         icon: '',
                         type: NAV_ITEM_TYPE_ITEM,
                         authority: [ADMIN, USER],
@@ -294,6 +315,7 @@ const appsNavigationConfig: NavigationTree[] = [
                         authority: [ADMIN, USER],
                         subMenu: [],
                     },
+
                     {
                         key: 'appsVendorManagement.orders',
                         path: `${APP_PREFIX_PATH}/vendor/orders`,
@@ -559,6 +581,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         authority: [ADMIN, USER],
                         subMenu: [],
                     },
+                    // {
+                    //     key: 'appsAppSettings.offers',
+                    //     path: `${APP_PREFIX_PATH}/appSettings/offers`,
+                    //     title: 'Offers',
+                    //     translateKey: 'nav.appsAppSettings.offers',
+                    //     icon: '',
+                    //     type: NAV_ITEM_TYPE_ITEM,
+                    //     authority: [ADMIN, USER],
+                    //     subMenu: [],
+                    // },
                     {
                         key: 'appsAppSettings.eventSeries',
                         path: `${APP_PREFIX_PATH}/appSettings/eventSeries`,
