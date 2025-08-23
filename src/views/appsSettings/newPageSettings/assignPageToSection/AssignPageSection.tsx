@@ -84,6 +84,8 @@ const AssignPageSection = () => {
 
     const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
 
+    console.log('storeResults', storeResults)
+
     const initialState = {
         page: pageState || '',
         sub_page: subPageState || '',
