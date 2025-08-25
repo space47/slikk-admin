@@ -296,8 +296,8 @@ const EditUrlShortner = () => {
             ios_url: !values.select_filter
                 ? values.ios_url
                     ? `${values.ios_url}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
-                    : `${`slikk:/`}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
-                : `${`slikk:/`}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
+                    : `${`slikk://page`}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
+                : `${`slikk://page`}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
             web_url: !values.select_filter
                 ? values.web_url
                     ? `${values.web_url}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
@@ -306,8 +306,8 @@ const EditUrlShortner = () => {
             android_url: !values.select_filter
                 ? values.android_url
                     ? `${values.android_url}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
-                    : `${`slikk:/`}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
-                : `${`slikk:/`}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
+                    : `${`slikk://Page`}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
+                : `${`slikk://Page`}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
         }
 
         const webPageUrl = `${baseUrl}/s/${values?.page?.name === undefined ? values?.page : encodeURIComponent(values?.page?.name) || ''}${
