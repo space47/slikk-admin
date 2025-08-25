@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo } from 'react'
 import { ColumnDef } from '@tanstack/react-table'
-import { FaSync } from 'react-icons/fa'
+import { FaEdit } from 'react-icons/fa'
 
 type ItemType = {
     intent_note: number
@@ -55,7 +55,7 @@ export const useItemsColumns = ({ handleUpdate }: props) => {
                 cell: ({ row }) => {
                     return (
                         <button className="flex justify-center  items-center" onClick={() => handleUpdate(row?.original)}>
-                            <FaSync className="text-2xl text-green-600" />
+                            <FaEdit className="text-2xl text-green-600" />
                         </button>
                     )
                 },

@@ -46,3 +46,8 @@ export interface IndentDetailsTypes {
     notes: string
     items: IndentItem[]
 }
+
+export interface IndentDetailsResponseTypes {
+    data: IndentDetailsTypes
+    success: string
+}

@@ -24,7 +24,7 @@ export const useIndentColumns = ({ storeList, store_type }: IndentColumnsProps) 
                 accessorKey: 'intent_number',
                 cell: ({ row }) => (
                     <div
-                        className="p-2 rounded-xl items-center bg-gray-600 text-white flex justify-center cursor-pointer hover:bg-gray-700"
+                        className="w-[230px] p-2 rounded-xl items-center bg-gray-600 text-white flex justify-center cursor-pointer hover:bg-gray-700"
                         onClick={() =>
                             navigate(`/app/goods/indentDetails/${row.original.id}`, {
                                 state: {
