@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
-import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 import { IndentDetailsTypes, IndentItem } from '@/store/types/indent.types'
 import { useItemsColumns } from '../../indentUtils/useItemsColumns'
 import EasyTable from '@/common/EasyTable'
@@ -9,51 +8,47 @@ import AccessDenied from '@/views/pages/AccessDenied'
 import { Button } from '@/components/ui'
 import AssignPicker from '@/common/AssignPicker'
 import IndentUpdateModal from './IndentUpdateModal'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { notification } from 'antd'
-import { AxiosError } from 'axios'
+import { indentService } from '@/store/services/indentService'
+import { DetailsData } from '../../indentUtils/indent.types'
+import { BsFillPatchCheckFill } from 'react-icons/bs'
+import DialogConfirm from '@/common/DialogConfirm'
+import { useIndentFunctions } from '../../indentUtils/useIndentFunctions'
 
-const IndentDetails: React.FC = () => {
+const IndentDetails = () => {
     const { id } = useParams()
+    const [data, setData] = useState<IndentDetailsTypes | null>(null)
     const location = useLocation()
     const { store_type } = location.state || ''
-    const query = useMemo(() => `/indent?id=${id}`, [id])
     const [isPickerModal, setIsPickerModal] = useState(false)
     const [rowData, setRowData] = useState<IndentItem | null>(null)
     const [isEditModal, setIsEditModal] = useState(false)
     const [selectedUsers, setSelectedUsers] = useState<string[]>([])
+    const [isStatusConformation, setIsStatusConformation] = useState('')
+    const { data: detailResponseData, isLoading, error, isSuccess } = indentService.useIndentDetailsQuery({ id: id as string })
 
-    console.log('store type in details', store_type)
-
-    const { data, loading, responseStatus } = useFetchSingleData<IndentDetailsTypes>({ url: query })
+    useEffect(() => {
+        if (isSuccess) {
+            setData(detailResponseData?.data || null)
+        }
+    }, [isSuccess, detailResponseData])
 
     const handleUpdate = (row: IndentItem) => {
         setIsEditModal(true)
         setRowData(row as any)
     }
 
-    const handleAssign = async () => {
-        console.log('Selected Users:', selectedUsers)
-        const body = {
-            action: 'assign_pickers',
-            pickers: selectedUsers,
-            indent_number: data?.intent_number,
-        }
-        try {
-            const response = await axioisInstance.patch('/indent', body)
-            notification.success({ message: response?.data?.data?.message || 'Pickers assigned successfully' })
-            setIsPickerModal(false)
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                notification.error({ message: error?.response?.data?.message || 'Error assigning pickers' })
-            }
-            console.error('Error assigning pickers:', error)
-        }
-    }
+    const { handleAssign, handleStatus } = useIndentFunctions({
+        selectedUsers,
+        setIsPickerModal,
+        data,
+        isStatusConformation,
+        setIsStatusConformation,
+    })
 
+    const { detailsArray } = DetailsData(data as IndentDetailsTypes)
     const columns = useItemsColumns({ handleUpdate, store_type })
 
-    if (loading) {
+    if (isLoading) {
         return (
             <div className="flex items-center justify-center h-screen">
                 <p className="text-gray-600 animate-pulse">Loading indent details…</p>
@@ -61,21 +56,76 @@ const IndentDetails: React.FC = () => {
         )
     }
 
-    if (responseStatus === 403) {
+    if ((error && 'status' in error && (error.status === 403 || error.status === 401)) || (!isLoading && !data)) {
         return <AccessDenied />
     }
 
     return (
         <div className="p-3 bg-white rounded-xl shadow-md border">
-            {/* Header */}
             <div className="flex justify-between items-center mb-6">
                 <div className="border-b pb-4 mb-6">
                     <h1 className="text-2xl font-bold text-gray-800">Indent Details</h1>
-                    <p className="text-gray-500 text-sm">
-                        Indent Number: <span className="font-medium text-gray-700">{data?.intent_number}</span>
-                    </p>
+                    <div className="flex gap-2">
+                        <p className="text-gray-500 text-sm mt-1">
+                            Indent Number: <span className="font-medium text-gray-700">{data?.intent_number}</span>
+                        </p>
+                        <div className="mb-6">
+                            <span
+                                className={`px-3 py-1 text-sm rounded-full font-medium  flex gap-2 items-center ${
+                                    data?.status === 'approved'
+                                        ? 'bg-green-100 text-green-700'
+                                        : data?.status === 'pending'
+                                          ? 'bg-yellow-100 text-yellow-700'
+                                          : 'bg-gray-100 text-gray-600'
+                                }`}
+                            >
+                                {data?.status === 'approved' && <BsFillPatchCheckFill className="text-green-500" />}
+                                {data?.status}
+                            </span>
+                        </div>
+                    </div>
                 </div>
+            </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+                    <h2 className="text-lg font-semibold text-gray-800 mb-2">Source Store</h2>
+                    {data?.source_store ? (
+                        <ul className="text-sm text-gray-600 space-y-1">
+                            <li>
+                                {detailsArray?.slice(0, 4).map((detail) => (
+                                    <div key={detail.label}>
+                                        <span className="font-medium">{detail.label}:</span> {detail.value}
+                                    </div>
+                                ))}
+                            </li>
+                        </ul>
+                    ) : (
+                        <p className="text-gray-400 italic">Not available</p>
+                    )}
+                </div>
+                <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+                    <h2 className="text-lg font-semibold text-gray-800 mb-2">Target Store</h2>
+                    {data?.target_store ? (
+                        <ul className="text-sm text-gray-600 space-y-1">
+                            <li>
+                                {detailsArray?.slice(4).map((detail) => (
+                                    <div key={detail.label}>
+                                        <span className="font-medium">{detail.label}:</span> {detail.value}
+                                    </div>
+                                ))}
+                            </li>
+                        </ul>
+                    ) : (
+                        <p className="text-gray-400 italic">Not available</p>
+                    )}
+                </div>
+            </div>
+            <div className="mt-8 bg-gray-50 p-4 rounded-lg shadow-sm">
+                <h2 className="text-lg font-semibold text-gray-800 mb-2">Notes</h2>
+                <p className="text-sm text-gray-600">{data?.notes || 'No notes available.'}</p>
+            </div>
+            <div className="flex justify-end gap-4 mt-6">
                 {data?.source_store?.id ? (
                     <div>
                         <Button variant="new" size="sm" onClick={() => setIsPickerModal(true)}>
@@ -87,78 +137,24 @@ const IndentDetails: React.FC = () => {
                         <div className="text-gray-500 font-bold">No Store Assigned</div>
                     </>
                 )}
-            </div>
+                {data?.status !== 'approved' && (
+                    <>
+                        <Button
+                            variant={data?.status === 'created' ? 'accept' : 'pending'}
+                            size="sm"
+                            onClick={() => setIsStatusConformation('forward')}
+                        >
+                            {data?.status === 'created' ? 'Approve' : 'Create'}
+                        </Button>
+                        <Button variant="reject" size="sm" onClick={() => setIsStatusConformation('reject')}>
+                            Reject
+                        </Button>
+                    </>
+                )}
 
-            {/* Status */}
-            <div className="mb-6">
-                <span
-                    className={`px-3 py-1 text-sm rounded-full font-medium ${
-                        data?.status === 'fulfilled'
-                            ? 'bg-green-100 text-green-700'
-                            : data?.status === 'pending'
-                              ? 'bg-yellow-100 text-yellow-700'
-                              : 'bg-gray-100 text-gray-600'
-                    }`}
-                >
-                    {data?.status}
-                </span>
-            </div>
-
-            {/* Store Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Source Store */}
-                <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
-                    <h2 className="text-lg font-semibold text-gray-800 mb-2">Source Store</h2>
-                    {data?.source_store ? (
-                        <ul className="text-sm text-gray-600 space-y-1">
-                            <li>
-                                <span className="font-medium">ID:</span> {data?.source_store.id}
-                            </li>
-                            <li>
-                                <span className="font-medium">Code:</span> {data?.source_store.code}
-                            </li>
-                            <li>
-                                <span className="font-medium">Name:</span> {data?.source_store.name}
-                            </li>
-                            <li>
-                                <span className="font-medium">Fulfillment Center:</span>{' '}
-                                {data?.source_store.is_fulfillment_center ? 'Yes' : 'No'}
-                            </li>
-                        </ul>
-                    ) : (
-                        <p className="text-gray-400 italic">Not available</p>
-                    )}
-                </div>
-
-                {/* Target Store */}
-                <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
-                    <h2 className="text-lg font-semibold text-gray-800 mb-2">Target Store</h2>
-                    {data?.target_store ? (
-                        <ul className="text-sm text-gray-600 space-y-1">
-                            <li>
-                                <span className="font-medium">ID:</span> {data?.target_store.id}
-                            </li>
-                            <li>
-                                <span className="font-medium">Code:</span> {data?.target_store.code}
-                            </li>
-                            <li>
-                                <span className="font-medium">Name:</span> {data?.target_store.name}
-                            </li>
-                            <li>
-                                <span className="font-medium">Fulfillment Center:</span>{' '}
-                                {data?.target_store.is_fulfillment_center ? 'Yes' : 'No'}
-                            </li>
-                        </ul>
-                    ) : (
-                        <p className="text-gray-400 italic">Not available</p>
-                    )}
-                </div>
-            </div>
-
-            {/* Notes */}
-            <div className="mt-8 bg-gray-50 p-4 rounded-lg shadow-sm">
-                <h2 className="text-lg font-semibold text-gray-800 mb-2">Notes</h2>
-                <p className="text-sm text-gray-600">{data?.notes || 'No notes available.'}</p>
+                <Button variant="new" size="sm">
+                    Download
+                </Button>
             </div>
 
             {data?.items && data.items.length > 0 ? (
@@ -175,10 +171,26 @@ const IndentDetails: React.FC = () => {
                     isOpen={isPickerModal}
                     setIsOpen={setIsPickerModal}
                     store_id={data?.source_store.id as number}
+                    handleAssign={handleAssign}
                     onChange={(selectedUsers) => {
                         setSelectedUsers(selectedUsers)
                     }}
-                    handleAssign={handleAssign}
+                />
+            )}
+            {isStatusConformation === 'forward' && (
+                <DialogConfirm
+                    IsConfirm
+                    IsOpen={!!isStatusConformation}
+                    closeDialog={() => setIsStatusConformation('')}
+                    onDialogOk={handleStatus}
+                />
+            )}
+            {isStatusConformation === 'reject' && (
+                <DialogConfirm
+                    IsDelete
+                    IsOpen={!!isStatusConformation}
+                    closeDialog={() => setIsStatusConformation('')}
+                    onDialogOk={handleStatus}
                 />
             )}
             {isEditModal && (
