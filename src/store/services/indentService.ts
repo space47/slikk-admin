@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import RtkQueryService from '@/services/RtkQueryService'
-import { IndentParamsTypes, IndentResponseTypes } from '../types/indent.types'
+import { IndentDetailsResponseTypes, IndentParamsTypes, IndentResponseTypes } from '../types/indent.types'
 
 export const indentService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
@@ -16,6 +16,17 @@ export const indentService = RtkQueryService.injectEndpoints({
                 if (params.source_type) parameters.store_type = params.source_type.toString()
                 return {
                     url: `indent`,
+                    method: 'GET',
+                    params: parameters,
+                }
+            },
+        }),
+        indentDetails: builder.query<IndentDetailsResponseTypes, { id: string }>({
+            query: (params) => {
+                const parameters: Record<string, string | string[]> = {}
+                if (params.id) parameters.id = params.id.toString()
+                return {
+                    url: `/indent?id=${params.id}`,
                     method: 'GET',
                     params: parameters,
                 }
