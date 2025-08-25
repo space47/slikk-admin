@@ -11,13 +11,7 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import QRcodeModal from './QRcodeModal'
 import EasyTable from '@/common/EasyTable'
 import { notification } from 'antd'
-
-const pageSizeOptions = [
-    { value: 10, label: '10 / page' },
-    { value: 25, label: '25 / page' },
-    { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
-]
+import { pageSizeOptions } from '@/constants/pageUtils.constants'
 
 const GetUrlShortner = () => {
     const [globalFilter, setGlobalFilter] = useState('')
@@ -134,7 +128,7 @@ const GetUrlShortner = () => {
     }
 
     return (
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-5 p-3 shadow-lg rounded-xl">
             {' '}
             <div>
                 <div>
@@ -156,8 +150,8 @@ const GetUrlShortner = () => {
                         size="sm"
                         value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
-                        onChange={(option) => dispatch(setPageSize(option?.value))}
                         className="w-full flex justify-end"
+                        onChange={(option) => dispatch(setPageSize(option?.value))}
                     />
                 </div>
             </div>
