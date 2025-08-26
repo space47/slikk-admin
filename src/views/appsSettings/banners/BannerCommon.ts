@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 type BRANDTYPES = {
     image: string
     name: string
@@ -12,58 +13,53 @@ type DIVTYPES = {
     id: number
 }
 
-type TAGSTYPE = {
-    id: string
-    name: string
-}
-
 export interface BANNER_MODEL {
-    id: number
-    name: string
-    section_heading: string
+    id?: number
+    name?: string
+    section_heading?: string
     parent_banner?: string | number
-    quick_filter_tags: string[]
-    brand: BRANDTYPES[]
-    division: DIVTYPES[]
-    category: DIVTYPES[]
-    image_web_array: []
-    image_mobile_array: []
-    video_web_array: []
-    video_mobile_array: []
-    lottie_web_array: []
-    lottie_mobile_array: []
-    sub_category: DIVTYPES[]
-    product_type: DIVTYPES[]
-    type: string | null
-    image_web: string
-    image_mobile: string
-    video_web: string
-    video_mobile: string
-    offers: boolean
-    offer_id: string
-    page: string
-    extra_attributes: Record<string, never>
-    from_date: Date | null
-    to_date: Date | null
-    uptooff: string
-    tags: string[]
-    footer: string | null
-    coupon_code: string | null
-    is_clickable: boolean
-    section_background_web: string
-    section_background_mobile: string
-    section_background_web_array: []
-    section_background_mobile_array: []
-    max_price: number
-    min_price: number
-    max_off: number
-    min_off: number
-    barcodes: string
-    redirection_url: string | null
-    tags_input: string
-    position: number | null
-    lottie_web: string
-    lottie_mobile: string
+    quick_filter_tags?: string[]
+    brand?: BRANDTYPES[]
+    division?: DIVTYPES[]
+    category?: DIVTYPES[]
+    image_web_array?: []
+    image_mobile_array?: []
+    video_web_array?: []
+    video_mobile_array?: []
+    lottie_web_array?: []
+    lottie_mobile_array?: []
+    sub_category?: DIVTYPES[]
+    product_type?: DIVTYPES[]
+    type?: string | null
+    image_web?: string
+    image_mobile?: string
+    video_web?: string
+    video_mobile?: string
+    offers?: boolean
+    offer_id?: string
+    page?: string
+    extra_attributes?: Record<string, never>
+    from_date?: Date | null
+    to_date?: Date | null
+    uptooff?: string
+    tags?: string[]
+    footer?: string | null
+    coupon_code?: string | null
+    is_clickable?: boolean
+    section_background_web?: string
+    section_background_mobile?: string
+    section_background_web_array?: []
+    section_background_mobile_array?: []
+    max_price?: number
+    min_price?: number
+    max_off?: number
+    min_off?: number
+    barcodes?: string
+    redirection_url?: string | null
+    tags_input?: string
+    position?: number | null
+    lottie_web?: string
+    lottie_mobile?: string
     sub_page?: any
     sort?: string
     filter_id?: number

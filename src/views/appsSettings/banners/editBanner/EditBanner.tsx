@@ -325,8 +325,8 @@ const EditBanner = () => {
                                                         placeholder="Select Filter Tags"
                                                         options={bannerFile}
                                                         value={selectedTag}
-                                                        getOptionLabel={(option) => option.name}
-                                                        getOptionValue={(option) => option.id}
+                                                        getOptionLabel={(option) => option.name as string}
+                                                        getOptionValue={(option) => option.id as any}
                                                         onChange={(newVal) => {
                                                             form.setFieldValue('parent_banner', newVal?.id)
                                                         }}
