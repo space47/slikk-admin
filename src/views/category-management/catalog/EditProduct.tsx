@@ -136,8 +136,8 @@ const EditProduct = () => {
             size_chart_url = temp.filter((t) => t).join(',')
         }
 
-        const { color_code, size_chart_image_array, images, ...rest } = values
-        console.log(color_code, size_chart_image_array, images)
+        const { color_code, size_chart_image_array, images, filter_tags, ...rest } = values
+        console.log(color_code, size_chart_image_array, images, filter_tags)
         const formData = Object.fromEntries(
             Object.entries({
                 ...rest,
@@ -151,7 +151,7 @@ const EditProduct = () => {
                 includes: textParser(values?.description.includes || ''),
                 other_info: textParser(values?.description.other_info || ''),
                 size_chart_image: size_chart_url,
-            }).filter(([, value]) => value !== '' && value !== null && value !== undefined),
+            }).filter(([, value]) => value !== null && value !== undefined),
         )
 
         console.log('formdata us', formData)
