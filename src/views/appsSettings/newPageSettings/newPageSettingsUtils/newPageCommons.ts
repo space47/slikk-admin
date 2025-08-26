@@ -8,6 +8,11 @@ export const BackGroundArray = [
     { label: 'Redirection Url', type: 'text', key: 'redirection_url', placeholder: 'Place Redirection Url' },
 ]
 
+export const GradientDirectionArray = [
+    { label: 'VERTICAL', value: 'VERTICAL' },
+    { label: 'HORIZONTAL', value: 'HORIZONTAL' },
+]
+
 export const getBackgroundArray = (prefix: string) => {
     return BackGroundArray?.map((item) => ({
         label: item?.label,

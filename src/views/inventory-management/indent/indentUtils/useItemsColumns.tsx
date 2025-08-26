@@ -2,6 +2,9 @@
 import React, { useMemo } from 'react'
 import { ColumnDef } from '@tanstack/react-table'
 import { FaEdit } from 'react-icons/fa'
+import { IndentDetailsTypes } from '@/store/types/indent.types'
+import { MdOutlineEditOff } from 'react-icons/md'
+import { Tooltip } from '@/components/ui'
 
 type ItemType = {
     intent_note: number
@@ -10,14 +13,18 @@ type ItemType = {
     quantity_required: number
     quantity_accepted: number
     notes: string
+    is_packed: boolean
 }
 
 interface props {
     store_type?: string
     handleUpdate: (item: any) => void
+    data: IndentDetailsTypes
 }
 
-export const useItemsColumns = ({ handleUpdate }: props) => {
+export const useItemsColumns = ({ handleUpdate, data }: props) => {
+    const currentStatus = data?.status
+    console.log('currentStatus', currentStatus, 'and data is', data)
     return useMemo<ColumnDef<ItemType, any>[]>(
         () => [
             {
@@ -58,10 +65,19 @@ export const useItemsColumns = ({ handleUpdate }: props) => {
                 header: 'Update',
                 accessorKey: '',
                 cell: ({ row }) => {
-                    return (
-                        <button className="flex justify-center  items-center" onClick={() => handleUpdate(row?.original)}>
-                            <FaEdit className="text-2xl text-green-600" />
-                        </button>
+                    console.log('currentStatus', currentStatus)
+                    return currentStatus === 'approved' ? (
+                        <>
+                            <Tooltip title="Approved Items cannot be edited">
+                                <MdOutlineEditOff className="text-2xl text-gray-600" />
+                            </Tooltip>
+                        </>
+                    ) : (
+                        <>
+                            <button className="flex justify-center  items-center" onClick={() => handleUpdate(row?.original)}>
+                                <FaEdit className="text-2xl text-green-600" />
+                            </button>
+                        </>
                     )
                 },
             },

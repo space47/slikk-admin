@@ -3,7 +3,6 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import { AxiosError } from 'axios'
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
 
 interface props {
     selectedUsers: string[]
@@ -11,10 +10,17 @@ interface props {
     data: IndentDetailsTypes | null
     isStatusConformation: string
     setIsStatusConformation: React.Dispatch<React.SetStateAction<string>>
+    refetch: () => void
 }
 
-export const useIndentFunctions = ({ selectedUsers, setIsPickerModal, data, isStatusConformation, setIsStatusConformation }: props) => {
-    const navigate = useNavigate()
+export const useIndentFunctions = ({
+    selectedUsers,
+    setIsPickerModal,
+    data,
+    isStatusConformation,
+    setIsStatusConformation,
+    refetch,
+}: props) => {
     const handleAssign = async () => {
         const body = {
             action: 'assign_pickers',
@@ -25,6 +31,7 @@ export const useIndentFunctions = ({ selectedUsers, setIsPickerModal, data, isSt
             const response = await axioisInstance.patch('/indent', body)
             notification.success({ message: response?.data?.data?.message || 'Pickers assigned successfully' })
             setIsPickerModal(false)
+            refetch()
         } catch (error) {
             if (error instanceof AxiosError) {
                 notification.error({ message: error?.response?.data?.message || 'Error assigning pickers' })
@@ -46,7 +53,7 @@ export const useIndentFunctions = ({ selectedUsers, setIsPickerModal, data, isSt
             const response = await axioisInstance.patch('/indent', body)
             notification.success({ message: response?.data?.data?.message || 'Status updated successfully' })
             setIsStatusConformation('')
-            navigate(0)
+            refetch()
         } catch (error) {
             if (error instanceof AxiosError) {
                 notification.error({ message: error?.response?.data?.message || 'Error updating status' })
@@ -57,8 +64,9 @@ export const useIndentFunctions = ({ selectedUsers, setIsPickerModal, data, isSt
 
     const handleSyncToGDN = async () => {
         try {
-            const response = await axioisInstance.patch(`/indent-note/gdn/sync/${data?.intent_number}`)
+            const response = await axioisInstance.post(`/indent-note/gdn/sync/${data?.intent_number}`)
             notification.success({ message: response?.data?.data?.message || 'Sync to GDN successful' })
+            refetch()
         } catch (error) {
             if (error instanceof AxiosError) {
                 notification.error({ message: error?.response?.data?.message || 'Error syncing to GDN' })

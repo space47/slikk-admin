@@ -9,37 +9,43 @@ interface Props {
     isOpen: boolean
     onClose: () => void
     rowData: IndentItem
-    store_type?: string
+    status?: string
     indent_number: string
+    refetch?: () => void
 }
 
-const IndentUpdateModal = ({ isOpen, onClose, rowData, store_type, indent_number }: Props) => {
+const IndentUpdateModal = ({ isOpen, onClose, rowData, status, indent_number, refetch }: Props) => {
     const [value, setValue] = useState('')
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
-        if (store_type === 'source') {
+        if (status === 'created') {
             setValue(rowData.quantity_accepted.toString())
         }
-        if (store_type === 'target') {
+        if (status === 'draft') {
             setValue(rowData.quantity_required.toString())
         }
     }, [])
 
     const handleUpdate = async () => {
+        if (rowData?.quantity_required < Number(value)) {
+            notification.error({ message: 'Quantity required cannot be less than quantity accepted' })
+            return
+        }
+
         let body: Record<string, any> = {
             sku: rowData.sku,
             company: rowData.company,
         }
 
-        if (store_type === 'source') {
+        if (status === 'created') {
             body = {
                 ...body,
                 quantity_accepted: Number(value),
             }
         }
 
-        if (store_type === 'target') {
+        if (status === 'draft') {
             body = {
                 ...body,
                 quantity_required: Number(value),
@@ -56,6 +62,7 @@ const IndentUpdateModal = ({ isOpen, onClose, rowData, store_type, indent_number
             notification.error({ message: error?.response?.data?.message || 'Failed to update indent' })
         } finally {
             setLoading(false)
+            refetch && refetch()
         }
     }
 
@@ -64,10 +71,13 @@ const IndentUpdateModal = ({ isOpen, onClose, rowData, store_type, indent_number
             <div className="p-4 space-y-4">
                 <h2 className="text-lg font-semibold">Update Indent</h2>
                 <p className="text-sm text-gray-500">
-                    Updating SKU <span className="font-medium">{rowData.sku}</span>
+                    Updating SKU: <span className="font-medium">{rowData.sku}</span>
                 </p>
-                <div>{store_type === 'source' ? 'Quantity Accepted' : 'Quantity Required'}</div>
+                <div>{status === 'created' ? 'Quantity Accepted' : 'Quantity Required'}</div>
                 <Input placeholder="Enter update value..." value={value} onChange={(e) => setValue(e.target.value)} />
+                {rowData?.quantity_required < Number(value) && (
+                    <p className="text-red-500 text-sm">Quantity required cannot be less than quantity accepted</p>
+                )}
 
                 <div className="flex justify-end gap-2">
                     <Button variant="reject" onClick={onClose}>

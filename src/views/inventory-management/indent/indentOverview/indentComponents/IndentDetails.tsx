@@ -24,7 +24,7 @@ const IndentDetails = () => {
     const [isEditModal, setIsEditModal] = useState(false)
     const [selectedUsers, setSelectedUsers] = useState<string[]>([])
     const [isStatusConformation, setIsStatusConformation] = useState('')
-    const { data: detailResponseData, isLoading, error, isSuccess } = indentService.useIndentDetailsQuery({ id: id as string })
+    const { data: detailResponseData, isLoading, error, isSuccess, refetch } = indentService.useIndentDetailsQuery({ id: id as string })
 
     useEffect(() => {
         if (isSuccess) {
@@ -43,10 +43,11 @@ const IndentDetails = () => {
         data,
         isStatusConformation,
         setIsStatusConformation,
+        refetch,
     })
 
     const { detailsArray } = DetailsData(data as IndentDetailsTypes)
-    const columns = useItemsColumns({ handleUpdate, store_type })
+    const columns = useItemsColumns({ handleUpdate, store_type, data: data as IndentDetailsTypes })
 
     if (isLoading) {
         return (
@@ -200,7 +201,8 @@ const IndentDetails = () => {
                 <IndentUpdateModal
                     isOpen={isEditModal}
                     rowData={rowData as IndentItem}
-                    store_type={store_type}
+                    status={data?.status}
+                    refetch={refetch}
                     indent_number={data?.intent_number as string}
                     onClose={() => setIsEditModal(false)}
                 />
