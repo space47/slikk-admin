@@ -236,28 +236,32 @@ const ProductFormCommon = ({
                         )
                     })}
                 </FormContainer>
-                {initialValues?.filter_tags && (
-                    <>
-                        {Object.entries(initialValues.filter_tags).map(([key, value], index) => {
-                            const joinedValue = Array.isArray(value) ? value.join(', ') : value
+                <FormContainer className="grid grid-cols-2 gap-6">
+                    {initialValues?.filter_tags && (
+                        <>
+                            {Object.entries(initialValues.filter_tags).map(([key, value], index) => {
+                                const joinedValue = Array.isArray(value) ? value.join(', ') : value
 
-                            return (
-                                <FormItem key={index} label={key} className="col-span-1 w-full">
-                                    <Field name={key}>
-                                        {({ field, form }: FieldProps) => (
-                                            <Input
-                                                {...field}
-                                                placeholder={key}
-                                                value={field.value || joinedValue}
-                                                onChange={(e) => form.setFieldValue(key, e.target.value)}
-                                            />
-                                        )}
-                                    </Field>
-                                </FormItem>
-                            )
-                        })}
-                    </>
-                )}
+                                console.log('joinedValue', key)
+
+                                return (
+                                    <FormItem key={index} label={key} className="col-span-1 w-full">
+                                        <Field name={key}>
+                                            {({ field, form }: FieldProps) => (
+                                                <Input
+                                                    {...field}
+                                                    placeholder={key}
+                                                    value={field.value ?? joinedValue}
+                                                    onChange={(e) => form.setFieldValue(key, e.target.value)}
+                                                />
+                                            )}
+                                        </Field>
+                                    </FormItem>
+                                )
+                            })}
+                        </>
+                    )}
+                </FormContainer>
             </FormContainer>
         </div>
     )
