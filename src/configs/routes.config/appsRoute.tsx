@@ -889,6 +889,12 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsAppSettings.offers',
+        path: `${APP_PREFIX_PATH}/appSettings/offers/:id`,
+        component: lazy(() => import('@/views/offerEngine/offers/offersEdit/OffersEdit')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsAppSettings.coupons',
         path: `${APP_PREFIX_PATH}/appSettings/coupons`,
         component: lazy(() => import('@/views/appsSettings/coupons/AppCoupons')),

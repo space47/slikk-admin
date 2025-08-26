@@ -55,5 +55,17 @@ export const useIndentFunctions = ({ selectedUsers, setIsPickerModal, data, isSt
         }
     }
 
-    return { handleAssign, handleStatus }
+    const handleSyncToGDN = async () => {
+        try {
+            const response = await axioisInstance.patch(`/indent-note/gdn/sync/${data?.intent_number}`)
+            notification.success({ message: response?.data?.data?.message || 'Sync to GDN successful' })
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                notification.error({ message: error?.response?.data?.message || 'Error syncing to GDN' })
+            }
+            console.error('Error syncing to GDN:', error)
+        }
+    }
+
+    return { handleAssign, handleStatus, handleSyncToGDN }
 }

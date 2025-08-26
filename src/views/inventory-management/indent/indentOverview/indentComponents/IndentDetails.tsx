@@ -37,7 +37,7 @@ const IndentDetails = () => {
         setRowData(row as any)
     }
 
-    const { handleAssign, handleStatus } = useIndentFunctions({
+    const { handleAssign, handleStatus, handleSyncToGDN } = useIndentFunctions({
         selectedUsers,
         setIsPickerModal,
         data,
@@ -152,8 +152,11 @@ const IndentDetails = () => {
                     </>
                 )}
 
-                <Button variant="new" size="sm">
+                {/* <Button variant="new" size="sm">
                     Download
+                </Button> */}
+                <Button variant="new" size="sm" onClick={handleSyncToGDN}>
+                    Sync To GDN
                 </Button>
             </div>
 
