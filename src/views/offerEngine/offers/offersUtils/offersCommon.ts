@@ -20,7 +20,11 @@ export const OfferDiscountType = [
     { label: 'FLAT', value: 'FLAT' },
     { label: 'BXGY', value: 'BXGY' },
 ]
-export const GET_REWARD_TYPE = [{ label: 'FREE', value: 'FREE' }]
+export const GET_REWARD_TYPE = [
+    { label: 'FREE', value: 'FREE' },
+    { label: 'PERCENTAGE', value: 'PERCENTAGE' },
+    { label: 'FLAT', value: 'FLAT' },
+]
 
 // Missing keys from offersFormList (present in JSON but not in array):
 // "daily_time_windows"

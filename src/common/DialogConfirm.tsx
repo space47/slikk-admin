@@ -1,29 +1,42 @@
-import { useState } from 'react'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Button from '@/components/ui/Button'
 import Dialog from '@/components/ui/Dialog'
-import type { MouseEvent } from 'react'
 
 interface ConfirmationDialogProps {
     IsOpen: boolean
-    setIsOpen: (value: React.SetStateAction<boolean>) => void
+    setIsOpen?: (value: React.SetStateAction<boolean>) => void
     onDialogOk: any
     IsDelete?: boolean
     IsConfirm?: boolean
     headingName?: string
     checkBox?: boolean
+    closeDialog?: () => void
 }
 
-const DialogConfirm = ({ IsOpen, setIsOpen, onDialogOk, IsDelete, IsConfirm, headingName, checkBox }: ConfirmationDialogProps) => {
+const DialogConfirm = ({
+    IsOpen,
+    setIsOpen,
+    onDialogOk,
+    IsDelete,
+    IsConfirm,
+    headingName,
+    checkBox,
+    closeDialog,
+}: ConfirmationDialogProps) => {
     const onDialogClose = () => {
         if (checkBox) {
             onDialogOk(false)
         }
-        setIsOpen(false)
+        if (setIsOpen) setIsOpen(false)
     }
 
     return (
         <div className="z-50">
-            <Dialog isOpen={IsOpen} onClose={onDialogClose} onRequestClose={onDialogClose}>
+            <Dialog
+                isOpen={IsOpen}
+                onClose={closeDialog ? closeDialog : onDialogClose}
+                onRequestClose={closeDialog ? closeDialog : onDialogClose}
+            >
                 {IsConfirm && (
                     <>
                         <div className="flex flex-col gap-4 font-bold">
@@ -41,7 +54,7 @@ const DialogConfirm = ({ IsOpen, setIsOpen, onDialogOk, IsDelete, IsConfirm, hea
                     </>
                 )}
                 <div className="text-right mt-6">
-                    <Button className="ltr:mr-2 rtl:ml-2" variant="plain" onClick={onDialogClose}>
+                    <Button className="ltr:mr-2 rtl:ml-2" variant="plain" onClick={closeDialog ? closeDialog : onDialogClose}>
                         Cancel
                     </Button>
                     {IsConfirm && (

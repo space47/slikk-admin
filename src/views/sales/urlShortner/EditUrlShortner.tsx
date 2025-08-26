@@ -196,6 +196,8 @@ const EditUrlShortner = () => {
         return filterParams
     }
 
+    console.log('Extracted Target Page 🚀🚀🚀', initialValues?.page, initialValues?.sub_page)
+
     useEffect(() => {
         if (urlFieldDatas?.android_url || urlFieldDatas?.web_url) {
             const filters = extractFilters(urlFieldDatas.android_url || urlFieldDatas?.web_url)
@@ -288,7 +290,7 @@ const EditUrlShortner = () => {
             subPage = `sub_page=${values?.sub_page}`
         }
 
-        console.log('Target Page', values?.target_page)
+        console.log('Target Page 🚀🚀🚀🚀🚀🚀', values?.target_page, values?.sub_page, subPage)
 
         const formData = {
             ...rest,

@@ -50,6 +50,11 @@ export const useItemsColumns = ({ handleUpdate }: props) => {
                 cell: ({ row }) => <span className="italic text-gray-500">{row?.original?.notes || 'N/A'}</span>,
             },
             {
+                header: 'Is Packed',
+                accessorKey: 'is_packed',
+                cell: ({ row }) => <span className="italic text-gray-500">{row?.original?.is_packed ? 'Yes' : 'No'}</span>,
+            },
+            {
                 header: 'Update',
                 accessorKey: '',
                 cell: ({ row }) => {
