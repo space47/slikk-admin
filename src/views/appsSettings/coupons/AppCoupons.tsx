@@ -38,7 +38,7 @@ const AppCoupons = () => {
     const [searchInput, setSearchInput] = useState<string>('')
     const { couponSeries } = useAppSelector<CouponSeriesInitialTypes>((state) => state.couponSeries)
     const [queryParams, setQueryParams] = useState({ page: 1, pageSize: 100, campaign: '' })
-    const [seriesValue, setSeriesValue] = useState<any>({})
+    const [seriesValue, setSeriesValue] = useState<any>('')
     const { data: couponSeriesData, isSuccess: getSuccess } = couponSeriesService.useCouponSeriesQuery(queryParams, {
         refetchOnMountOrArgChange: true,
     })
@@ -55,6 +55,8 @@ const AppCoupons = () => {
             return { label: item?.campaign, value: item?.id }
         })
 
+    console.log('Formatted Data:', var1, seriesValue)
+
     const { coupon, count, page, pageSize } = useAppSelector<CoupunInitialStateType>((state) => state.coupon)
     const {
         data: couponsData,
@@ -65,7 +67,7 @@ const AppCoupons = () => {
     } = couponService.useCouponQuery(
         {
             coupon_code: activateCodeButton ? activateCodeButton : undefined,
-            coupon_series: var1 ? var1 : seriesValue ? seriesValue : undefined,
+            coupon_series: var1 || seriesValue || '',
             page,
             pageSize,
             mobile: activateMobileButton ? activateMobileButton : undefined,
@@ -105,6 +107,8 @@ const AppCoupons = () => {
         setCouponCode(code)
         setDeleteModal(true)
     }
+
+    console.log('Selected Coupon Code:', seriesValue)
 
     const columns = CouponCoulumns({ handleDeleteCoupon })
 
