@@ -38,22 +38,6 @@ export const CouponCoulumns = ({ handleDeleteCoupon }: props) => {
             { header: 'Code', accessorKey: 'code' },
 
             {
-                header: 'Users',
-                accessorKey: 'user',
-                cell: ({ row }: any) => {
-                    const userArray = row.original.user
-                    return (
-                        <div>
-                            {userArray?.map((item: any, key: any) => (
-                                <div key={key} className="mb-1">
-                                    <div>{item?.mobile}</div>
-                                </div>
-                            ))}
-                        </div>
-                    )
-                },
-            },
-            {
                 header: 'Orders',
                 accessorKey: 'orders',
                 cell: ({ row }: any) => {
