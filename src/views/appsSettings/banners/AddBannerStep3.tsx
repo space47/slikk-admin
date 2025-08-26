@@ -140,7 +140,15 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
     const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
     const [filterId, setFilterId] = useState('')
     const [excludeFilterId, setExcludeFilterId] = useState('')
+    const [subPageIdStore, setSubPageIdStore] = useState<number[]>([])
 
+    useEffect(() => {
+        if (subPageId) {
+            setSubPageIdStore((prev) => {
+                return [...new Set([...prev, subPageId])]
+            })
+        }
+    }, [subPageId])
     useEffect(() => {
         dispatch(fetchCompanyStore())
     }, [dispatch])
@@ -157,7 +165,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
 
     let filteredCategories = category.categories
 
-    console.log('BannerForm division', bannerForm[index]['division'])
+    console.log('BannerForm division', bannerForm[index]['sub_page'])
     if (bannerForm[index]['division']) {
         filteredCategories = category.categories.filter((cat) => {
             return bannerForm[index]['division'].map((item: any) => item?.name).some((div: any) => div === cat.division_name)
@@ -240,16 +248,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
         }
     }, [excludeFilterId])
 
-    useEffect(() => {
-        if (subPageId) {
-            const tempBannerForm = [...bannerForm]
-            tempBannerForm[index] = {
-                ...bannerForm[index],
-                sub_page: [subPageId],
-            }
-            setBannerForm(tempBannerForm)
-        }
-    }, [subPageId])
+    console.log('Sub Page IDs:', subPageIdStore)
 
     const handleSetDataInForm = (key: string, value: any) => {
         const tempBannerForm = bannerForm
@@ -285,14 +284,24 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
         setBannerForm(tempBannerForm)
     }
 
+    useEffect(() => {
+        if (subPageId) {
+            const tempBannerForm = [...bannerForm]
+            if (!tempBannerForm[index]?.sub_page || tempBannerForm[index].sub_page.length === 0) {
+                tempBannerForm[index] = {
+                    ...bannerForm[index],
+                    sub_page: [subPageId],
+                }
+                setBannerForm(tempBannerForm)
+            }
+        }
+    }, [subPageId])
+
     const handleMultiSelect = (field: string, val: any) => {
-        console.log(val)
         const tempBannerForm = [...bannerForm]
 
         if (field === 'tags') {
-            const existingTags = tempBannerForm[index].tags || []
-            const updatedTags = [...new Set([...existingTags, ...val])]
-            tempBannerForm[index] = { ...tempBannerForm[index], tags: updatedTags }
+            tempBannerForm[index] = { ...tempBannerForm[index], tags: val || [] }
         } else {
             tempBannerForm[index] = { ...tempBannerForm[index], [field]: val }
         }
@@ -300,7 +309,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
         setBannerForm(tempBannerForm)
     }
 
-    console.log('here it us', subPageNamesData?.find((item) => item?.id === subPageId)?.name)
+    const flatOptions = useMemo(() => filters?.filters?.flatMap((group) => group.options) || [], [filters])
 
     return (
         <div className="flex flex-row flex-wrap gap-x-5 gap-y-2 p-4">
@@ -420,11 +429,20 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                         Sub Page <span className="text-red-600">*</span>
                     </div>
                     <Select
-                        isDisabled={true}
+                        isMulti
                         options={subPageNamesData}
                         getOptionLabel={(option) => option.name}
                         getOptionValue={(option) => option.id}
-                        value={subPageNamesData?.find((item) => item?.id === subPageId)}
+                        value={
+                            subPageNamesData?.filter(
+                                (item) => bannerForm[index]['sub_page']?.includes?.(item.id) || subPageIdStore.includes(item.id),
+                            ) || []
+                        }
+                        onChange={(selectedOptions) => {
+                            const ids = selectedOptions?.map((item) => item.id) || []
+                            setSubPageIdStore(ids)
+                            handleMultiSelect('sub_page', ids)
+                        }}
                     />
                 </div>
 
@@ -524,6 +542,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                         options={filters.filters}
                         getOptionLabel={(option) => option.label}
                         getOptionValue={(option) => option.value}
+                        value={flatOptions?.filter((item) => bannerForm[index]['quick_filter_tags']?.includes(item.value)) || []}
                         onChange={(newVal, actionMeta) => {
                             console.log(newVal, actionMeta)
                             handleMultiSelect(
@@ -541,8 +560,8 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                         options={filters.filters}
                         getOptionLabel={(option) => option.label}
                         getOptionValue={(option) => option.value}
-                        onChange={(newVal, actionMeta) => {
-                            console.log(newVal, actionMeta)
+                        value={flatOptions.filter((item) => bannerForm[index]['tags']?.includes(item.value)) || []}
+                        onChange={(newVal) => {
                             handleMultiSelect(
                                 'tags',
                                 newVal?.map((val) => val.value),
