@@ -29,3 +29,27 @@ export const EDITFIELDSARRAY = [
     //     placeholder: 'Enter Name',
     // },
 ]
+
+export type FieldType = 'string' | 'array' | 'object'
+export type FieldValue = string | number | boolean | Array<any> | Record<string, any>
+
+export interface RenderFieldsProps {
+    obj: FieldValue
+    parentKey: string
+    setFieldValue: (field: string, value: any) => void
+    editableKeys: Record<string, string>
+    setEditableKeys: (keys: Record<string, string>) => void
+    filters: {
+        filters: Array<{ value: string; label: string }>
+    }
+}
+
+export interface DraggableFieldProps {
+    items: any[]
+    type: 'object' | 'array'
+    parentKey: string
+    onDragEnd: (result: DropResult) => void
+    onAddField: (type?: FieldType) => void
+    isAddModalOpen: boolean
+    setIsAddModalOpen: (isOpen: boolean) => void
+}

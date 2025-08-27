@@ -75,6 +75,11 @@ const AddUrlShortner = () => {
             .map((item) => `${item.name.replace('_', '-')}=${values[item.name]}`)
             .join('&')
 
+        let utmFilters = noSelectFilters ? `&${noSelectFilters}` : ''
+        if (values?.is_custom) {
+            utmFilters = noSelectFilters ? `?${noSelectFilters}` : ''
+        }
+
         const { page_title, ...rest } = values
         let pageTitle = ''
         if (values.page_title && values?.target_page === 'products') {
@@ -100,23 +105,23 @@ const AddUrlShortner = () => {
             short_code: values?.short_code,
             ios_url: !values.select_filter
                 ? values.ios_url
-                    ? `${values.ios_url}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
-                    : `${`slikk://page`}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
+                    ? `${values.ios_url}${target_page}${pageTitle}?${subPage}${utmFilters}${appOnly}`
+                    : `${`slikk://page`}${target_page}${pageTitle}?${subPage}${utmFilters}${appOnly}`
                 : `${`slikk://page`}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
             web_url: !values.select_filter
                 ? values.web_url
-                    ? `${values.web_url}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
-                    : `${base_url}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
+                    ? `${values.web_url}${target_page}${pageTitle}?${subPage}${utmFilters}${appOnly}`
+                    : `${base_url}${target_page}${pageTitle}?${subPage}${utmFilters}${appOnly}`
                 : `${base_url}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
             android_url: !values.select_filter
                 ? values.android_url
                     ? `${values.android_url}${target_page}${pageTitle}?${subPage}${noSelectFilters}${appOnly}`
-                    : `${`slikk://page`}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
+                    : `${`slikk://page`}${target_page}${pageTitle}?${subPage}${utmFilters}${appOnly}`
                 : `${`slikk://page`}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
         }
 
-        const pageUrl = `${`slikk://page`}/s/${encodeURIComponent(values?.page?.name)}${values?.sub_page?.name ? `/${encodeURIComponent(values?.sub_page?.name)}` : ''}${pageTitle}?${noSelectFilters}${appOnly}`
-        const webPageUrl = `${base_url}/s/${encodeURIComponent(values?.page?.name)}${values?.sub_page?.name ? `/${encodeURIComponent(values?.sub_page?.name)}` : ''}${pageTitle}?${noSelectFilters}${appOnly}`
+        const pageUrl = `${`slikk://page`}/s/${encodeURIComponent(values?.page?.name)}${values?.sub_page?.name ? `/${encodeURIComponent(values?.sub_page?.name)}` : ''}${pageTitle}${utmFilters}${appOnly}`
+        const webPageUrl = `${base_url}/s/${encodeURIComponent(values?.page?.name)}${values?.sub_page?.name ? `/${encodeURIComponent(values?.sub_page?.name)}` : ''}${pageTitle}${utmFilters}${appOnly}`
         const customBody = {
             short_code: values?.short_code,
             ios_url: pageUrl,
