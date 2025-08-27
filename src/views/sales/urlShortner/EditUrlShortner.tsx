@@ -139,9 +139,12 @@ const EditUrlShortner = () => {
         })(),
         sub_page: (() => {
             const url = urlFieldDatas?.web_url || urlFieldDatas?.android_url || urlFieldDatas?.ios_url
-            if (url) {
+            if (url && !urlFieldDatas?.web_url?.includes('sub_page')) {
                 const match = url.match(/\/s\/[^/]+\/([^/?]+)/)
                 return match ? match[1]?.replace('?', '') : ''
+            }
+            if (urlFieldDatas?.web_url?.includes('sub_page')) {
+                return urlFieldDatas?.web_url?.match(/sub_page=([^&]+)/)?.[1] || ''
             }
             return ''
         })(),
@@ -264,7 +267,12 @@ const EditUrlShortner = () => {
             .map((item) => `${item.name.replace('_', '-')}=${values[item.name]}`)
             .join('&')
 
-        console.log('Filters', noSelectFilters)
+        let utmFilters = noSelectFilters ? `&${noSelectFilters}` : ''
+        if (values?.is_custom) {
+            utmFilters = noSelectFilters ? `?${noSelectFilters}` : ''
+        }
+
+        console.log('no select filter', noSelectFilters)
 
         const { page_title, rest } = values
 
@@ -297,18 +305,18 @@ const EditUrlShortner = () => {
             short_code: values?.short_code,
             ios_url: !values.select_filter
                 ? values.ios_url
-                    ? `${values.ios_url}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
-                    : `${`slikk://page`}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
+                    ? `${values.ios_url}${target_page}${pageTitle}?${subPage}${utmFilters}${appOnly}`
+                    : `${`slikk://page`}${target_page}${pageTitle}?${subPage}${utmFilters}${appOnly}`
                 : `${`slikk://page`}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
             web_url: !values.select_filter
                 ? values.web_url
-                    ? `${values.web_url}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
-                    : `${baseUrl}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
+                    ? `${values.web_url}${target_page}${pageTitle}?${subPage}${utmFilters}${appOnly}`
+                    : `${baseUrl}${target_page}${pageTitle}?${subPage}${utmFilters}${appOnly}`
                 : `${baseUrl}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
             android_url: !values.select_filter
                 ? values.android_url
-                    ? `${values.android_url}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
-                    : `${`slikk://Page`}${target_page}${pageTitle}?${subPage}&${noSelectFilters}${appOnly}`
+                    ? `${values.android_url}${target_page}${pageTitle}?${subPage}${utmFilters}${appOnly}`
+                    : `${`slikk://Page`}${target_page}${pageTitle}?${subPage}${utmFilters}${appOnly}`
                 : `${`slikk://Page`}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
         }
 
@@ -318,7 +326,7 @@ const EditUrlShortner = () => {
                 : values?.sub_page?.name === undefined
                   ? `/${values?.sub_page}`
                   : `/${encodeURIComponent(values?.sub_page?.name) || ''}`
-        }?${noSelectFilters}${appOnly}`
+        }${utmFilters}${appOnly}`
 
         const pageUrl = `slikk://page/s/${values?.page?.name === undefined ? values?.page : encodeURIComponent(values?.page?.name) || ''}${
             values?.sub_page == 'null' || values?.sub_page === null || values?.sub_page === 'undefined'
@@ -326,7 +334,7 @@ const EditUrlShortner = () => {
                 : values?.sub_page?.name === undefined
                   ? `/${values?.sub_page}`
                   : `/${encodeURIComponent(values?.sub_page?.name) || ''}`
-        }?${noSelectFilters}${appOnly}`
+        }${utmFilters}${appOnly}`
 
         const customBody = {
             short_code: values?.short_code,
