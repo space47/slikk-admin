@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, FormContainer, FormItem, Select } from '@/components/ui'
+import { FormContainer, FormItem, Select } from '@/components/ui'
 import { Field, FieldProps, Form, Formik } from 'formik'
 import React, { useEffect, useState } from 'react'
 import { couponSeriesService } from '@/store/services/couponSeriesService'
@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { CouponSeriesInitialTypes, setCouponSeriesData } from '@/store/slices/couponSeriesSlice/couponSeries'
 import CouponsGenerateForm from '../couponsGenerateUtils/CouponsGenerateForm'
+import FormButton from '@/components/ui/Button/FormButton'
 
 const GenerateCoupons = () => {
     const navigate = useNavigate()
@@ -17,6 +18,7 @@ const GenerateCoupons = () => {
     const { data: couponSeriesData, isSuccess } = couponSeriesService.useCouponSeriesQuery(queryParams, { refetchOnMountOrArgChange: true })
     const [generateCoupon, generateCouponResponse] = couponSeriesService.useGenerateCouponFromSeriesMutation()
     const [searchInput, setSearchInput] = useState<string>('')
+    const [showSpinner, setShowSpinner] = useState<boolean>(false)
 
     useEffect(() => {
         if (isSuccess) {
@@ -46,6 +48,7 @@ const GenerateCoupons = () => {
 
     const initialValue = {}
     const handleSubmit = async (values: any) => {
+        notification.info({ message: 'Coupon Generate in Process' })
         const formData = new FormData()
         const appendIfDefined = (key: string, value: any) => {
             if (value !== undefined && value !== null && value !== '') {
@@ -74,11 +77,14 @@ const GenerateCoupons = () => {
             formDataEntries[key] = value
         })
         try {
+            setShowSpinner(true)
             generateCoupon({ ...formDataEntries })
         } catch (error: any) {
             notification.error({
                 message: error?.response?.data?.message || 'Failed to add',
             })
+        } finally {
+            setShowSpinner(false)
         }
     }
 
@@ -114,11 +120,7 @@ const GenerateCoupons = () => {
                         <FormContainer className="">
                             <CouponsGenerateForm formattedOptions={formattedData} values={values} />
                         </FormContainer>
-                        <FormContainer>
-                            <Button variant="solid" type="submit" className="bg-blue-500 text-white">
-                                Submit
-                            </Button>
-                        </FormContainer>
+                        <FormButton isSpinning={showSpinner} value="Generate" />
                     </Form>
                 )}
             </Formik>
