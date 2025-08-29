@@ -13,7 +13,7 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useEffect, useState } from 'react'
 import { notification } from 'antd'
 import { StoreTypes } from '../commonStores'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import AccessDenied from '@/views/pages/AccessDenied'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
@@ -32,6 +32,7 @@ const options = [
 ]
 
 const EditCustomerProfile = () => {
+    const navigate = useNavigate()
     const [storeData, setStoreData] = useState<StoreTypes>()
     const [imagview, setImageView] = useState<string[]>([])
     const [descriptiontextarea, setDescriptiontextarea] = useState()
@@ -244,6 +245,7 @@ const EditCustomerProfile = () => {
                 ? await axioisInstance.post('merchant/store', formData)
                 : await axioisInstance.patch(`merchant/store`, formData)
             notification.success({ message: response?.data?.message || `successfully ${isCopy ? 'created' : 'updated'}` })
+            navigate(-1)
         } catch (error: any) {
             console.error('Error submitting form:', error)
             if (error instanceof AxiosError) {

@@ -90,6 +90,19 @@ const GdnDetails = () => {
         setShowSyncModal(false)
     }
 
+    const handleCreateShipment = async () => {
+        try {
+            const res = await axioisInstance.get(`/goods/dispatch/shipment/create/${id}`)
+            notification.success({ message: res?.data?.message || 'Shipment created successfully from GDN' })
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                notification.error({
+                    message: error?.response?.data?.message || error?.response?.data?.data?.message || 'Failed to create shipment from GDN',
+                })
+            }
+        }
+    }
+
     const handleRegenerateGrn = async (doc_number: string) => {
         try {
             let responseData = `/goods/dispatch/${id}/detail?download=true&regenerate=true&document_number=${doc_number}`
@@ -174,6 +187,14 @@ const GdnDetails = () => {
                                             className="flex gap-2 bg-gray-200 p-2 rounded-xl text-black hover:bg-gray-300 font-bold items-center justify-center"
                                         >
                                             <span className="font-bold">Export</span> <FaDownload className="" />
+                                        </button>
+                                    </div>
+                                    <div>
+                                        <button
+                                            onClick={handleCreateShipment}
+                                            className="flex gap-2 bg-gray-200 p-2 rounded-xl text-black hover:bg-gray-300 font-bold items-center justify-center"
+                                        >
+                                            Create Shipment from GDN
                                         </button>
                                     </div>
                                 </div>
