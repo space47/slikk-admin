@@ -15,7 +15,6 @@ import DialogConfirm from '@/common/DialogConfirm'
 import { useIndentFunctions } from '../../indentUtils/useIndentFunctions'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import TabList from '@/components/ui/Tabs/TabList'
-import TabContent from '@/components/ui/Tabs/TabContent'
 
 const IndentDetails = () => {
     const { id } = useParams()
@@ -27,7 +26,14 @@ const IndentDetails = () => {
     const [isEditModal, setIsEditModal] = useState(false)
     const [selectedUsers, setSelectedUsers] = useState<string[]>([])
     const [isStatusConformation, setIsStatusConformation] = useState('')
-    const { data: detailResponseData, isLoading, error, isSuccess, refetch } = indentService.useIndentDetailsQuery({ id: id as string })
+    const [tabValue, setTabValue] = useState('false')
+    const {
+        data: detailResponseData,
+        isLoading,
+        error,
+        isSuccess,
+        refetch,
+    } = indentService.useIndentDetailsQuery({ id: id as string, is_picked: tabValue })
 
     useEffect(() => {
         if (isSuccess) {
@@ -171,53 +177,33 @@ const IndentDetails = () => {
                 </Button>
             </div>
             <div className="w-full">
-                <Tabs defaultValue="active" className="flex flex-col">
+                <Tabs defaultValue="active" className="flex flex-col" value={tabValue} onChange={(value) => setTabValue(value)}>
                     <TabList className="flex gap-6 border-b border-gray-200">
                         <TabNav
-                            value="active"
+                            value="false"
                             className="px-4 py-2 text-gray-600 hover:text-blue-600 hover:border-blue-500 border-b-2 border-transparent data-[state=active]:text-blue-600 data-[state=active]:border-blue-600 transition-colors duration-200"
                         >
                             Active
                         </TabNav>
                         <TabNav
-                            value="completed"
+                            value="true"
                             className="px-4 py-2 text-gray-600 hover:text-blue-600 hover:border-blue-500 border-b-2 border-transparent data-[state=active]:text-blue-600 data-[state=active]:border-blue-600 transition-colors duration-200"
                         >
                             Completed
                         </TabNav>
                     </TabList>
-                    <TabContent value="active">
-                        {data?.items && data.items?.filter((item) => item.is_picked === false).length > 0 ? (
-                            <div className="mt-10">
-                                <h4 className="mb-4">Items Details</h4>
-                                <EasyTable
-                                    overflow
-                                    noPage
-                                    mainData={data?.items?.filter((item) => item.is_picked === false)}
-                                    columns={columns}
-                                />
-                            </div>
-                        ) : (
-                            <p className="text-gray-400 italic mt-10">No items available.</p>
-                        )}
-                    </TabContent>
-
-                    <TabContent value="completed">
-                        {data?.items && data.items?.filter((item) => item.is_picked === true).length > 0 ? (
-                            <div className="mt-10">
-                                <h4 className="mb-4">Items Details</h4>
-                                <EasyTable
-                                    overflow
-                                    noPage
-                                    mainData={data?.items?.filter((item) => item.is_picked === true)}
-                                    columns={columns}
-                                />
-                            </div>
-                        ) : (
-                            <p className="text-gray-400 italic mt-10">No completed items available.</p>
-                        )}
-                    </TabContent>
                 </Tabs>
+            </div>
+
+            <div>
+                {data?.items && data.items?.length > 0 ? (
+                    <div className="mt-10">
+                        <h4 className="mb-4">Items Details</h4>
+                        <EasyTable overflow noPage mainData={data?.items} columns={columns} />
+                    </div>
+                ) : (
+                    <p className="text-gray-400 italic mt-10">No items available.</p>
+                )}
             </div>
 
             {isPickerModal && (

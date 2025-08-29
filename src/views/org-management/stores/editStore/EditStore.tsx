@@ -17,6 +17,7 @@ import { useParams } from 'react-router-dom'
 import AccessDenied from '@/views/pages/AccessDenied'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+import { AxiosError } from 'axios'
 
 const MAX_UPLOAD = 8
 
@@ -50,6 +51,7 @@ const EditCustomerProfile = () => {
         return_city: '',
     })
     const [isSameAddress, setIsSameAddress] = useState(false)
+    const [isCopy, setIsCopy] = useState(false)
 
     const { id } = useParams()
 
@@ -238,18 +240,17 @@ const EditCustomerProfile = () => {
         console.log('formDaata', formData)
 
         try {
-            const response = await axioisInstance.patch('merchant/store', formData)
-
-            notification.success({
-                message: 'Success',
-                description: response?.data?.message || 'Store created successfully',
-            })
+            const response = isCopy
+                ? await axioisInstance.post('merchant/store', formData)
+                : await axioisInstance.patch(`merchant/store`, formData)
+            notification.success({ message: response?.data?.message || `successfully ${isCopy ? 'created' : 'updated'}` })
         } catch (error: any) {
             console.error('Error submitting form:', error)
-            notification.error({
-                message: 'Failure',
-                description: error?.response?.data?.message || 'Failed to create Store',
-            })
+            if (error instanceof AxiosError) {
+                notification.error({
+                    message: error?.response?.data?.message || `Error occurred while ${isCopy ? 'creating' : 'updating'} Store`,
+                })
+            }
         }
     }
 
@@ -259,7 +260,19 @@ const EditCustomerProfile = () => {
 
     return (
         <div>
-            <div className="text-xl mb-10 font-bold">Edit Fullfillment Center</div>
+            <div className="flex items-center justify-between mb-4">
+                <div className="text-xl font-bold">{isCopy ? 'New Store' : 'Edit Store'}</div>
+                <Button
+                    variant={isCopy ? 'twoTone' : 'solid'}
+                    type="button"
+                    size="sm"
+                    onClick={() => {
+                        setIsCopy(!isCopy)
+                    }}
+                >
+                    {isCopy ? 'Set to Edit Mode' : 'Set to Copy'}
+                </Button>
+            </div>
             <Formik
                 enableReinitialize
                 initialValues={initialValue}
