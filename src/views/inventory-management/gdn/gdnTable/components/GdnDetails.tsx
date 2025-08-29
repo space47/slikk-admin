@@ -92,7 +92,7 @@ const GdnDetails = () => {
 
     const handleCreateShipment = async () => {
         try {
-            const res = await axioisInstance.get(`/goods/dispatch/shipment/create/${id}`)
+            const res = await axioisInstance.get(`/goods/dispatch/shipment/create/${data?.id}`)
             notification.success({ message: res?.data?.message || 'Shipment created successfully from GDN' })
         } catch (error) {
             if (error instanceof AxiosError) {
