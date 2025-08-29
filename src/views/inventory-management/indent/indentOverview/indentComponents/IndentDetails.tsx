@@ -2,10 +2,10 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import { IndentDetailsTypes, IndentItem } from '@/store/types/indent.types'
-import { useItemsColumns } from '../../indentUtils/useItemsColumns'
+import { useItemsColumns, useItemsPickerColumns } from '../../indentUtils/useItemsColumns'
 import EasyTable from '@/common/EasyTable'
 import AccessDenied from '@/views/pages/AccessDenied'
-import { Button } from '@/components/ui'
+import { Button, Tabs } from '@/components/ui'
 import AssignPicker from '@/common/AssignPicker'
 import IndentUpdateModal from './IndentUpdateModal'
 import { indentService } from '@/store/services/indentService'
@@ -13,6 +13,9 @@ import { DetailsData } from '../../indentUtils/indent.types'
 import { BsFillPatchCheckFill } from 'react-icons/bs'
 import DialogConfirm from '@/common/DialogConfirm'
 import { useIndentFunctions } from '../../indentUtils/useIndentFunctions'
+import TabNav from '@/components/ui/Tabs/TabNav'
+import TabList from '@/components/ui/Tabs/TabList'
+import TabContent from '@/components/ui/Tabs/TabContent'
 
 const IndentDetails = () => {
     const { id } = useParams()
@@ -48,6 +51,7 @@ const IndentDetails = () => {
 
     const { detailsArray } = DetailsData(data as IndentDetailsTypes)
     const columns = useItemsColumns({ handleUpdate, store_type, data: data as IndentDetailsTypes })
+    const pickerColumns = useItemsPickerColumns()
 
     if (isLoading) {
         return (
@@ -126,6 +130,16 @@ const IndentDetails = () => {
                 <h2 className="text-lg font-semibold text-gray-800 mb-2">Notes</h2>
                 <p className="text-sm text-gray-600">{data?.notes || 'No notes available.'}</p>
             </div>
+
+            <div className="mt-10 mb-5">
+                {data?.picker_items && data?.picker_items.length > 0 && (
+                    <div>
+                        <h4 className="mb-4">Picker Packing Details</h4>
+                        <EasyTable overflow noPage mainData={data?.picker_items} columns={pickerColumns} />
+                    </div>
+                )}
+            </div>
+
             <div className="flex justify-end gap-4 mt-6">
                 {data?.source_store?.id ? (
                     <div>
@@ -152,23 +166,59 @@ const IndentDetails = () => {
                         </Button>
                     </>
                 )}
-
-                {/* <Button variant="new" size="sm">
-                    Download
-                </Button> */}
                 <Button variant="new" size="sm" onClick={handleSyncToGDN}>
                     Sync To GDN
                 </Button>
             </div>
+            <div className="w-full">
+                <Tabs defaultValue="active" className="flex flex-col">
+                    <TabList className="flex gap-6 border-b border-gray-200">
+                        <TabNav
+                            value="active"
+                            className="px-4 py-2 text-gray-600 hover:text-blue-600 hover:border-blue-500 border-b-2 border-transparent data-[state=active]:text-blue-600 data-[state=active]:border-blue-600 transition-colors duration-200"
+                        >
+                            Active
+                        </TabNav>
+                        <TabNav
+                            value="completed"
+                            className="px-4 py-2 text-gray-600 hover:text-blue-600 hover:border-blue-500 border-b-2 border-transparent data-[state=active]:text-blue-600 data-[state=active]:border-blue-600 transition-colors duration-200"
+                        >
+                            Completed
+                        </TabNav>
+                    </TabList>
+                    <TabContent value="active">
+                        {data?.items && data.items?.filter((item) => item.is_picked === false).length > 0 ? (
+                            <div className="mt-10">
+                                <h4 className="mb-4">Items Details</h4>
+                                <EasyTable
+                                    overflow
+                                    noPage
+                                    mainData={data?.items?.filter((item) => item.is_picked === false)}
+                                    columns={columns}
+                                />
+                            </div>
+                        ) : (
+                            <p className="text-gray-400 italic mt-10">No items available.</p>
+                        )}
+                    </TabContent>
 
-            {data?.items && data.items.length > 0 ? (
-                <div className="mt-10">
-                    <h4 className="mb-4">Items Details</h4>
-                    <EasyTable overflow noPage mainData={data?.items} columns={columns} />
-                </div>
-            ) : (
-                <p className="text-gray-400 italic">No items available.</p>
-            )}
+                    <TabContent value="completed">
+                        {data?.items && data.items?.filter((item) => item.is_picked === true).length > 0 ? (
+                            <div className="mt-10">
+                                <h4 className="mb-4">Items Details</h4>
+                                <EasyTable
+                                    overflow
+                                    noPage
+                                    mainData={data?.items?.filter((item) => item.is_picked === true)}
+                                    columns={columns}
+                                />
+                            </div>
+                        ) : (
+                            <p className="text-gray-400 italic mt-10">No completed items available.</p>
+                        )}
+                    </TabContent>
+                </Tabs>
+            </div>
 
             {isPickerModal && (
                 <AssignPicker
@@ -179,6 +229,7 @@ const IndentDetails = () => {
                     onChange={(selectedUsers) => {
                         setSelectedUsers(selectedUsers)
                     }}
+                    selectedPickers={data?.picker_items?.map((item) => item.picker) || []}
                 />
             )}
             {isStatusConformation === 'forward' && (

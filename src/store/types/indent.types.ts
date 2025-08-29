@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface IndentParamsTypes {
     from?: string
     to?: string
@@ -27,6 +28,8 @@ export interface IndentItem {
     quantity_required: number
     quantity_accepted: number
     notes: string | null
+    is_picked: boolean
+    box_mapping: Record<string, any>
 }
 
 export interface Store {
@@ -34,6 +37,12 @@ export interface Store {
     code: string
     name: string
     is_fulfillment_center: boolean
+}
+
+export interface IndentPickerItem {
+    picker: string
+    total_accepted: number
+    total_required: number
 }
 
 export interface IndentDetailsTypes {
@@ -45,6 +54,7 @@ export interface IndentDetailsTypes {
     status: string
     notes: string
     items: IndentItem[]
+    picker_items: IndentPickerItem[]
 }
 
 export interface IndentDetailsResponseTypes {

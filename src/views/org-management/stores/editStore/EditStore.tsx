@@ -12,36 +12,13 @@ import type { FieldProps } from 'formik'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useEffect, useState } from 'react'
 import { notification } from 'antd'
-
 import { StoreTypes } from '../commonStores'
 import { useParams } from 'react-router-dom'
 import AccessDenied from '@/views/pages/AccessDenied'
-// import EditCustomerProfile from '@/views/crm/CustomerDetail/components/EditCustomerProfile'
+import { useAppSelector } from '@/store'
+import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 
 const MAX_UPLOAD = 8
-
-// const validationSchema = Yup.object().shape({
-//     document_number: Yup.string().required('Document Number is required'),
-//     document_date: Yup.date().required('Document Date is required').nullable(),
-//     origin_address: Yup.string()
-//         .required('Supplier Address is required')
-//         .transform((value) => value.trim()),
-//     received_address: Yup.string()
-//         .required('Receiver Address is required')
-//         .transform((value) => value.trim()),
-//     received_by: Yup.string()
-//         .required('Received By is required')
-//         .matches(/^[6-9]\d{9}$/, 'Mobile Number is not valid'),
-//     total_sku: Yup.number()
-//         .required('Total SKUs is required')
-//         .integer('Must be an integer'),
-//     total_quantity: Yup.number()
-//         .required('Total Quantity is required')
-//         .integer('Must be an integer'),
-//     singleCheckbox: Yup.boolean(),
-//     // images: Yup.string().nullable(),
-//     // document: Yup.string().nullable(),
-// })
 
 const options = [
     { label: 'Mall', value: 'Mall' },
@@ -59,6 +36,7 @@ const EditCustomerProfile = () => {
     const [descriptiontextarea, setDescriptiontextarea] = useState()
     const [instructiontextarea, setInstructiontextarea] = useState()
     const [accessDenied, setAccessDenied] = useState(false)
+    const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
     const [address, setAddress] = useState({
         area: '',
         pincode: '',
@@ -299,12 +277,27 @@ const EditCustomerProfile = () => {
                                     errorMessage={errors.company}
                                     className="col-span-1 w-1/2"
                                 >
-                                    <Field
-                                        type="text"
-                                        name="company"
-                                        component={Input}
-                                        onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
-                                    />
+                                    <Field name="company">
+                                        {({ form }: FieldProps<any>) => {
+                                            const selectedCompany = companyList.find((option) => option.id === form.values.company)
+
+                                            return (
+                                                <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
+                                                    <Select
+                                                        isClearable
+                                                        className="w-full"
+                                                        options={companyList}
+                                                        getOptionLabel={(option) => option.name}
+                                                        getOptionValue={(option) => option.id}
+                                                        value={selectedCompany || null}
+                                                        onChange={(newVal) => {
+                                                            form.setFieldValue('company', newVal?.id)
+                                                        }}
+                                                    />
+                                                </div>
+                                            )
+                                        }}
+                                    </Field>
                                 </FormItem>
                                 <FormItem
                                     asterisk
