@@ -63,28 +63,21 @@ export const useIndentHistoryColumns = () => {
         console.log(`Action clicked `, errorFile, 'UPLOAD', uploadedFile, 'FAIL', failure)
         try {
             const requiredUrl = uploadedFile
-
-            const response = await axioisInstance.get(`file/presign?file_url=${requiredUrl}`)
-
+            const response = await axioisInstance.get(`file/presign?file_url=${encodeURIComponent(requiredUrl)}`)
             const preSignedUrl = response.data.data
             await fetch(preSignedUrl)
                 .then((res) => res.blob())
                 .then((blob) => {
                     const reader = new FileReader()
-
                     reader.onload = () => {
                         const utf8Blob = new Blob([reader.result as string], { type: 'text/csv;charset=utf-8;' })
-
                         const url = URL.createObjectURL(utf8Blob)
-
                         const a = document.createElement('a')
                         a.href = url
                         a.download = `Indent-pass-${moment().format('YYYY-MM-DD HH-mm-ss a')}`
-
                         document.body.appendChild(a)
                         a.click()
                         document.body.removeChild(a)
-
                         URL.revokeObjectURL(url)
                     }
 

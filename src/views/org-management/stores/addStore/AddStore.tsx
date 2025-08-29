@@ -14,6 +14,8 @@ import { useState } from 'react'
 import { notification } from 'antd'
 
 import { StoreTypes } from '../commonStores'
+import { useAppSelector } from '@/store'
+import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 
 const MAX_UPLOAD = 8
 
@@ -31,6 +33,7 @@ const AddStore = () => {
     const [imagview, setImageView] = useState<string[]>([])
     const [descriptiontextarea, setDescriptiontextarea] = useState()
     const [instructiontextarea, setInstructiontextarea] = useState()
+    const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
     const [address, setAddress] = useState({
         area: '',
         pincode: '',
@@ -244,12 +247,27 @@ const AddStore = () => {
                                     errorMessage={errors.company}
                                     className="col-span-1 w-1/2"
                                 >
-                                    <Field
-                                        type="text"
-                                        name="company"
-                                        component={Input}
-                                        onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
-                                    />
+                                    <Field name="company">
+                                        {({ form }: FieldProps<any>) => {
+                                            const selectedCompany = companyList.find((option) => option.id === form.values.company)
+
+                                            return (
+                                                <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
+                                                    <Select
+                                                        isClearable
+                                                        className="w-full"
+                                                        options={companyList}
+                                                        getOptionLabel={(option) => option.name}
+                                                        getOptionValue={(option) => option.id}
+                                                        value={selectedCompany || null}
+                                                        onChange={(newVal) => {
+                                                            form.setFieldValue('company', newVal?.id)
+                                                        }}
+                                                    />
+                                                </div>
+                                            )
+                                        }}
+                                    </Field>
                                 </FormItem>
                                 <FormItem
                                     asterisk

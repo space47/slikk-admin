@@ -21,11 +21,13 @@ export const useIndentFunctions = ({
     setIsStatusConformation,
     refetch,
 }: props) => {
-    const handleAssign = async () => {
+    const handleAssign = async (actionType: string) => {
+        console.log('Selected users in handleAssign:', actionType)
         const body = {
             action: 'assign_pickers',
             pickers: selectedUsers,
             indent_number: data?.intent_number,
+            assign_action: actionType,
         }
         try {
             const response = await axioisInstance.patch('/indent', body)
