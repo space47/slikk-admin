@@ -14,6 +14,12 @@ type ItemType = {
     quantity_accepted: number
     notes: string
     is_packed: boolean
+    picker: {
+        first_name: string
+        last_name: string
+        mobile?: string
+    }
+    box_mapping: any
 }
 
 interface props {
@@ -52,9 +58,23 @@ export const useItemsColumns = ({ handleUpdate, data }: props) => {
                 cell: ({ row }) => <span className="text-green-600 font-semibold">{row?.original?.quantity_accepted}</span>,
             },
             {
+                header: 'Picker Name',
+                accessorKey: 'picker',
+                cell: ({ row }) => (
+                    <span className="text-gray-600 font-semibold flex gap-2">
+                        {row?.original?.picker?.first_name} {row?.original?.picker?.last_name}
+                    </span>
+                ),
+            },
+            {
                 header: 'Notes',
                 accessorKey: 'notes',
                 cell: ({ row }) => <span className="italic text-gray-500">{row?.original?.notes || 'N/A'}</span>,
+            },
+            {
+                header: 'Box',
+                accessorKey: 'box_mapping',
+                cell: ({ row }) => <span className="italic text-gray-500">{JSON.stringify(row?.original?.box_mapping) || 'N/A'}</span>,
             },
             {
                 header: 'Is Packed',
@@ -80,6 +100,29 @@ export const useItemsColumns = ({ handleUpdate, data }: props) => {
                         </>
                     )
                 },
+            },
+        ],
+        [],
+    )
+}
+
+export const useItemsPickerColumns = () => {
+    return useMemo<ColumnDef<any, any>[]>(
+        () => [
+            {
+                header: 'Picker Number',
+                accessorKey: 'picker',
+                cell: ({ row }) => <span className="text-gray-600 font-semibold flex gap-2">{row?.original?.picker}</span>,
+            },
+            {
+                header: 'Total Required',
+                accessorKey: 'total_required',
+                cell: ({ row }) => <span className="text-gray-600">{row?.original?.total_required || 'N/A'}</span>,
+            },
+            {
+                header: 'Total Accepted',
+                accessorKey: 'total_accepted',
+                cell: ({ row }) => <span className="text-gray-600">{row?.original?.total_accepted || 'N/A'}</span>,
             },
         ],
         [],
