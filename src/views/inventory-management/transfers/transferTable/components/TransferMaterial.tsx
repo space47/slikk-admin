@@ -66,9 +66,9 @@ const TransferModule = () => {
         try {
             const response = await axioisInstance.get(`/merchant/products?${queryParam}${companyParam}`)
             const product = response?.data?.data?.results?.[0]
-            console.log('product is', product?.image_high_res?.split(',')[0])
+            console.log('product is', product?.image?.split(',')[0])
             if (product?.sku) {
-                handleAddOrUpdateRow(product.sku, product?.brand, product?.image_high_res?.split(','), product?.company)
+                handleAddOrUpdateRow(product.sku, product?.brand, product?.image?.split(','), product?.company)
             } else {
                 console.error('No product found, adding entry with globalFilter.')
                 handleAddOrUpdateRow(globalFilter, '', '', '')
@@ -89,7 +89,7 @@ const TransferModule = () => {
             const product = response?.data?.data?.results?.[0]
 
             if (product?.sku) {
-                handleAddOrUpdateRow(product.sku, product?.brand, product?.image_high_res?.split(','), product?.company)
+                handleAddOrUpdateRow(product.sku, product?.brand, product?.image?.split(','), product?.company)
             } else {
                 console.error('No product found, adding entry with globalFilter.')
                 handleAddOrUpdateRow(globalFilter, '', '', '')
