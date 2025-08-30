@@ -30,10 +30,14 @@ import { useFetchApi } from '@/commonHooks/useFetchApi'
 import CommonSelect from '../../pageSettings/CommonSelect'
 import { SortArrays } from '../../newPageSettings/newPageSettingsUtils/newPageCommons'
 import FormButton from '@/components/ui/Button/FormButton'
+import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
+import { companyStore } from '@/store/types/companyStore.types'
 
 const EditBanner = () => {
     const { id } = useParams()
     const navigate = useNavigate()
+
+    const dispatch = useAppDispatch()
     const [webImagview, setWebImageView] = useState<string[]>([])
     const [mobileImagview, setMobileImageView] = useState<string[]>([])
     const [weblottieview, setWeblottieView] = useState<string[]>([])
@@ -49,12 +53,17 @@ const EditBanner = () => {
     const [filterId, setFilterId] = useState<number | string>('')
     const [excludeFilterId, setExcludeFilterId] = useState<number | string>('')
 
+    const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
+
+    useEffect(() => {
+        dispatch(fetchCompanyStore())
+    }, [dispatch])
+
     const validationSchema = Yup.object().shape({
         min_off: Yup.number().max(Yup.ref('max_off'), 'min_off must be less than or equal to max_off'),
         max_off: Yup.number(),
     })
 
-    const dispatch = useAppDispatch()
     useEffect(() => {
         dispatch(getAllBrandsAPI())
         dispatch(getAllFiltersAPI())
@@ -362,6 +371,32 @@ const EditBanner = () => {
                                             }}
                                         </Field>
                                     </FormItem>
+                                    <FormContainer>
+                                        <FormItem label="Store">
+                                            <Field name="store">
+                                                {({ form, field }: FieldProps) => {
+                                                    const selectedStores = storeResults.filter((option) =>
+                                                        field.value?.some((store: any) => store?.id === option.id),
+                                                    )
+                                                    return (
+                                                        <div className="flex flex-col gap-1 w-full max-w-md">
+                                                            <Select
+                                                                isMulti
+                                                                className="w-full"
+                                                                options={storeResults}
+                                                                getOptionLabel={(option) => option.code}
+                                                                getOptionValue={(option) => option.id}
+                                                                value={selectedStores || null}
+                                                                onChange={(newVal) => {
+                                                                    form.setFieldValue('store', newVal)
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    )
+                                                }}
+                                            </Field>
+                                        </FormItem>
+                                    </FormContainer>
                                     <FormItem label="Show Subscription Popup">
                                         <Field type="checkbox" name="show_subscription_popup" component={Checkbox} />
                                     </FormItem>
