@@ -63,4 +63,5 @@ export interface BANNER_MODEL {
     sub_page?: any
     sort?: string
     filter_id?: number
+    store?: number[]
 }
