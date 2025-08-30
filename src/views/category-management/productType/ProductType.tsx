@@ -8,21 +8,21 @@ import { useProductTypeColummns } from './productTypeUtils/useProductTypeColummn
 import { Dropdown } from '@/components/ui'
 import { useSubCategoryFilter } from '../subCategory/subCategoryUtils/subCategoryFilter'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-import { useAppSelector } from '@/store'
+import { useAppDispatch, useAppSelector } from '@/store'
 import { DIVISION_STATE } from '@/store/types/division.types'
 import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
-import { useGetProductType } from './productTypeUtils/useGetProductTypes'
 import { useDeleteFromCatalog } from '@/commonHooks/useDeleteFromCatalog'
-import { Product_type_common_types } from './ProductTypeCommon'
 import { Option, pageSizeOptions } from '@/constants/pageUtils.constants'
 import CatalogDeleteModal from '@/common/CatalogDeleteModal'
 import { useLocalPaginateData } from '@/commonHooks/useLocalPaginateData'
+import { PRODUCTTYPE_STATE } from '@/store/types/productType.types'
+import { getAllProductTypeAPI } from '@/store/action/productType.action'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
 const ProductType = () => {
     const navigate = useNavigate()
-    const [data, setData] = useState<Product_type_common_types[]>([])
+    const dispatch = useAppDispatch()
     const [globalFilter, setGlobalFilter] = useState('')
     const [deleteModal, setDeleteModal] = useState(false)
     const [idStoreForDelete, setIdStoreForDelete] = useState()
@@ -34,6 +34,20 @@ const ProductType = () => {
     const DivisionArray = divisions?.divisions?.map((item) => item?.name)
     const categoryArray = useSubCategoryFilter({ selectedDivision })
 
+    console.log('Filtered Categories in array:', categoryArray)
+
+    const productTypeData = useAppSelector<PRODUCTTYPE_STATE>((state) => state.product_type)
+
+    useEffect(() => {
+        const divisionParam = selectedDivision && selectedDivision !== 'Select Division' ? selectedDivision : undefined
+        const categoryParam = selectedCategory && selectedCategory !== 'Select Category' ? selectedCategory : undefined
+        const subCategoryParam = selectedSubCategory && selectedSubCategory !== 'Select Sub Category' ? selectedSubCategory : undefined
+
+        const searchParam = globalFilter?.trim() ? globalFilter : undefined
+
+        dispatch(getAllProductTypeAPI(undefined, searchParam, divisionParam, categoryParam, subCategoryParam))
+    }, [dispatch, globalFilter, selectedDivision, selectedCategory, selectedSubCategory])
+
     const filteredSubCategories = useMemo(() => {
         if (selectedCategory === 'Select Category') {
             return subCategories?.subcategories
@@ -44,11 +58,9 @@ const ProductType = () => {
 
     const subCategoriesArray = filteredSubCategories?.map((item) => item?.name)
 
-    const productType = useGetProductType({ selectedDivision, selectedCategory, selectedSubCategory }) || []
-
-    useEffect(() => {
-        setData(productType.filter((item): item is Product_type_common_types => item !== undefined))
-    }, [globalFilter, selectedDivision, selectedCategory, selectedSubCategory, divisions?.divisions])
+    const data = useMemo(() => {
+        return productTypeData?.product_types
+    }, [productTypeData])
 
     const { page, pageSize, paginatedData, setPage, setPageSize, totalPages } = useLocalPaginateData({
         data,
@@ -142,7 +154,7 @@ const ProductType = () => {
                                 </div>
                                 <div
                                     className="flex mt-3 justify-center items-center rounded-lg cursor-pointer text-white bg-red-500 hover:bg-red-400"
-                                    onClick={() => setSelectedCategory('Select Category')}
+                                    onClick={() => setSelectedSubCategory('Select Sub Category')}
                                 >
                                     Clear
                                 </div>

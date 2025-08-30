@@ -1,33 +1,33 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import ClearCache from '@/common/ClearCache'
 import { useDivisionColumns } from './divisionUtils/useDivisionColumns'
-import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
-import { DataItem } from './divisionCommon'
 import { Option, pageSizeOptions } from '@/constants/pageUtils.constants'
 import { useDeleteFromCatalog } from '@/commonHooks/useDeleteFromCatalog'
 import { useLocalPaginateData } from '@/commonHooks/useLocalPaginateData'
 import CatalogDeleteModal from '@/common/CatalogDeleteModal'
+import { useAppDispatch, useAppSelector } from '@/store'
+import { DIVISION_STATE } from '@/store/types/division.types'
+import { getAllDivisionAPI } from '@/store/action/division.action'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
 const DivisionTable = () => {
+    const dispatch = useAppDispatch()
     const [globalFilter, setGlobalFilter] = useState<string>('')
     const [deleteModal, setDeleteModal] = useState(false)
     const [idStoreForDelete, setIdStoreForDelete] = useState<string | number | undefined>()
+    const division = useAppSelector<DIVISION_STATE>((state) => state.division)
 
-    const queryParams = useMemo(() => {
-        const filterValue = globalFilter ? `&name=${globalFilter}` : ''
-        return `division?dashboard=true${encodeURIComponent(filterValue)}`
-    }, [globalFilter])
-
-    const { data } = useFetchSingleData<DataItem[]>({ url: queryParams, initialData: [] })
+    useEffect(() => {
+        dispatch(getAllDivisionAPI(undefined, globalFilter))
+    }, [dispatch, globalFilter])
 
     const { page, pageSize, paginatedData, setPage, setPageSize, totalPages } = useLocalPaginateData({
-        data,
+        data: division?.divisions,
         globalFilter,
     })
 

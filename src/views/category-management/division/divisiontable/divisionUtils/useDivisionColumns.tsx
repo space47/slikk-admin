@@ -28,7 +28,7 @@ export const useDivisionColumns = ({ handleDeleteClick }: props) => {
                 accessor: 'create_date',
                 format: (value: any) => moment(value).format('YYYY-MM-DD'),
             },
-            { header: 'Title', accessor: 'title' },
+            { header: 'Product_count', accessor: 'count' },
             { header: 'Description', accessor: 'description' },
             {
                 header: 'Image',
@@ -55,7 +55,6 @@ export const useDivisionColumns = ({ handleDeleteClick }: props) => {
             // },
             // { header: 'Quick Filter Tags', accessor: 'quick_filter_tags' },
             { header: 'Position', accessor: 'position' },
-            { header: 'Gender', accessor: 'gender' },
             {
                 header: 'Active',
                 accessor: 'is_active',
@@ -71,7 +70,6 @@ export const useDivisionColumns = ({ handleDeleteClick }: props) => {
                 accessor: 'is_try_and_buy',
                 format: (value: any) => (value ? 'Yes' : 'No'),
             },
-            { header: 'Product_count', accessor: 'product_count' },
             { header: 'Last Updated By', accessor: 'last_updated_by' },
 
             {
