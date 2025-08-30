@@ -188,6 +188,7 @@ export const bannerBodyFile = (
         video_mobile: values?.video_mobile || '',
         video_web: values?.video_web || '',
         sub_page: values?.sub_page || [],
+        store: values?.store?.map((item: any) => item.id) || [],
     }
 
     return bodyFile

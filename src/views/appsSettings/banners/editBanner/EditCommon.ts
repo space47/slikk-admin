@@ -252,4 +252,5 @@ export const getInitialBannerValue = (bannerData: BANNER_MODEL | undefined) => (
     tags_input: bannerData?.tags?.join(',') || '',
     show_subscription_popup: bannerData?.extra_attributes?.show_subscription_popup || false,
     position: bannerData?.position || null,
+    store: bannerData?.store || null,
 })
