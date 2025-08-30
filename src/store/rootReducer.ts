@@ -50,6 +50,8 @@ import qualityCheckReducer from './slices/qualityCheckSlice/qualityCheckList.sli
 import productLockReducer from './slices/productData/productLock.slice'
 import offersReducer from './slices/offerSlice/offerSlice'
 import indentReducer from './slices/indentSlice/indentSlice'
+import OfferQueryService from '@/services/OfferQueryService'
+import storeSelectReducer from './slices/storeSelect/storeSelect.slice'
 
 export type RootState = CombinedState<{
     authorization: CombinedState<Authorization>
@@ -114,8 +116,10 @@ const staticReducers = {
     productLock: productLockReducer,
     offers: offersReducer,
     indent: indentReducer,
+    storeSelect: storeSelectReducer,
     [remitanceApi.reducerPath]: remitanceApi.reducer,
     [RtkQueryService.reducerPath]: RtkQueryService.reducer,
+    [OfferQueryService.reducerPath]: OfferQueryService.reducer,
 }
 
 const rootReducer = (asyncReducers?: AsyncReducers) => (state: RootState, action: AnyAction) => {

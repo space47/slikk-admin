@@ -1,21 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import { useNavigate } from 'react-router-dom'
-import { categoryItem, Option, pageSizeOptions } from './categoryCommon'
+import { Option, pageSizeOptions } from './categoryCommon'
 import EasyTable from '@/common/EasyTable'
 import { Dropdown } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { useCategoryColumns } from './categoryUtils/useCategoryColumns'
-import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
-import { useAppSelector } from '@/store'
+import { useAppDispatch, useAppSelector } from '@/store'
 import { DIVISION_STATE } from '@/store/types/division.types'
 import { useDeleteFromCatalog } from '@/commonHooks/useDeleteFromCatalog'
 import CatalogDeleteModal from '@/common/CatalogDeleteModal'
+import { CATEGORY_STATE } from '@/store/types/category.types'
+import { getAllCategoryAPI } from '@/store/action/category.action'
 
 const CategoryTable = () => {
     const navigate = useNavigate()
+    const dispatch = useAppDispatch()
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
@@ -23,16 +25,22 @@ const CategoryTable = () => {
     const [deleteModal, setDeleteModal] = useState(false)
     const [idStoreForDelete, setIdStoreForDelete] = useState()
     const [selectedDivision, setSelectedDivision] = useState('Select Division')
+    const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
+
+    const data = useMemo(() => {
+        return category?.categories
+    }, [category])
 
     const DivisionArray = divisions?.divisions?.map((item) => item?.name)
+    console.log('divisions array are', DivisionArray)
 
-    const queryParams = useMemo(() => {
-        const filterValue = globalFilter ? `&name=${encodeURIComponent(globalFilter)}` : ''
-        const divisionFilter = selectedDivision !== 'Select Division' ? `&division=${encodeURIComponent(selectedDivision)}` : ''
-        return `category?dashboard=true${filterValue}${divisionFilter}`
-    }, [globalFilter, selectedDivision])
+    useEffect(() => {
+        const divisionParam = selectedDivision && selectedDivision !== 'Select Division' ? selectedDivision : undefined
 
-    const { data } = useFetchSingleData<categoryItem[]>({ url: queryParams })
+        const searchParam = globalFilter?.trim() ? globalFilter : undefined
+
+        dispatch(getAllCategoryAPI(undefined, searchParam, divisionParam))
+    }, [dispatch, globalFilter, selectedDivision])
 
     const paginatedData = useMemo(() => {
         const start = (page - 1) * pageSize

@@ -1,13 +1,22 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { getAllCategoryRequest } from '../types/category.types'
 
-export const getAllCategoryAPI = () => async (dispatch: any) => {
+export const getAllCategoryAPI = (storeCodes?: string | string[], searchName?: string, division?: string) => async (dispatch: any) => {
+    let params: any = {}
+
+    if (storeCodes) params.store_codes = storeCodes
+    if (searchName) params.name = encodeURIComponent(searchName)
+    if (division) params.division = encodeURIComponent(division)
+
     try {
         dispatch({
             type: getAllCategoryRequest,
         })
 
-        const response = await axioisInstance.get('category?view=short&dashboard=true')
+        const response = await axioisInstance.get('category?view=short&dashboard=true', {
+            params: params,
+        })
         dispatch({
             type: 'getAllCategorySuccess',
             payload: {

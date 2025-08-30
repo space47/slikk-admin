@@ -191,6 +191,12 @@ const IndentDetails = () => {
                         >
                             Completed
                         </TabNav>
+                        <TabNav
+                            value="true"
+                            className="px-4 py-2 text-gray-600 hover:text-blue-600 hover:border-blue-500 border-b-2 border-transparent data-[state=active]:text-blue-600 data-[state=active]:border-blue-600 transition-colors duration-200"
+                        >
+                            Force Completed
+                        </TabNav>
                     </TabList>
                 </Tabs>
             </div>
@@ -205,6 +211,18 @@ const IndentDetails = () => {
                     <p className="text-gray-400 italic mt-10">No items available.</p>
                 )}
             </div>
+
+            {tabValue === 'true' && data?.items && data?.items?.length > 0 ? (
+                <div className="mt-10">
+                    <h4 className="mb-4">Picked Items</h4>
+                    <EasyTable
+                        overflow
+                        noPage
+                        mainData={data?.items?.filter((item) => item?.quantity_accepted < item?.quantity_required)}
+                        columns={columns}
+                    />
+                </div>
+            ) : null}
 
             {isPickerModal && (
                 <AssignPicker

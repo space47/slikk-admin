@@ -1,4 +1,4 @@
-import { configureStore, Action, Reducer, AnyAction, Store } from '@reduxjs/toolkit'
+import { configureStore, Action, Reducer, AnyAction, Store, createListenerMiddleware } from '@reduxjs/toolkit'
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import { PERSIST_STORE_NAME } from '@/constants/app.constant'
@@ -10,6 +10,18 @@ import { eventNameService } from './services/eventNameSerices'
 import { couponSeriesService } from './services/couponSeriesService'
 import { returnOrderDataService } from './services/returnOrderService'
 import { couponService } from './services/couponService'
+import OfferQueryService from '@/services/OfferQueryService'
+import { setStoreIds } from './slices/storeSelect/storeSelect.slice'
+
+const listenerMiddleware = createListenerMiddleware()
+
+listenerMiddleware.startListening({
+    actionCreator: setStoreIds,
+    effect: async (action, listenerApi) => {
+        listenerApi.cancelActiveListeners()
+        window.location.reload()
+    },
+})
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const middlewares: any[] = [
@@ -20,13 +32,15 @@ const middlewares: any[] = [
     couponSeriesService.middleware,
     returnOrderDataService.middleware,
     couponService.middleware,
+    OfferQueryService.middleware,
+    listenerMiddleware.middleware,
 ]
 
 const persistConfig = {
     key: PERSIST_STORE_NAME,
     keyPrefix: '',
     storage,
-    whitelist: ['auth', 'theme', 'locale'],
+    whitelist: ['auth', 'theme', 'locale', 'storeSelect'],
 }
 
 interface CustomStore extends Store<RootState, AnyAction> {

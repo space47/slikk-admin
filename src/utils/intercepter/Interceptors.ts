@@ -1,8 +1,10 @@
+import store from '@/store'
 import { notification } from 'antd'
 import { AxiosError, AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'axios'
 
 const onRequest = async (config: InternalAxiosRequestConfig): Promise<InternalAxiosRequestConfig<any>> => {
     const token = localStorage.getItem('accessToken')
+    const storeCodes = store.getState().storeSelect.store_ids
 
     if (token) {
         config.headers.Authorization = `Bearer ${token}`
@@ -10,6 +12,16 @@ const onRequest = async (config: InternalAxiosRequestConfig): Promise<InternalAx
     // if (config.url.includes("user/profile") || config.url.includes("/fileupload")) {
     //     config.headers["Content-Type"] = "multipart/form-data";
     // }
+
+    const ifGetCall = config.method?.toLocaleLowerCase() === 'get'
+
+    if (storeCodes && storeCodes.length > 0 && ifGetCall) {
+        config.params = {
+            ...(config.params || {}),
+            store_id: storeCodes.join(','),
+        }
+    }
+
     return config
 }
 
