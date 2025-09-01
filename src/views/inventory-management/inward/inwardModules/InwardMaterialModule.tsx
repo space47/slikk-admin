@@ -317,15 +317,6 @@ const InwardMaterialModule = ({ setRefreshTrigger, shipmentDetails }: props) => 
                 },
             },
             {
-                header: 'QC failed',
-                accessorKey: 'qc_failed',
-                cell: ({ row }: any) => {
-                    const quantityReceived = row?.original?.quantity_received ?? 0
-                    const quantitySent = row?.original?.quantity_sent ?? 0
-                    return <div>{quantitySent - quantityReceived}</div>
-                },
-            },
-            {
                 header: 'Created Date',
                 accessorKey: 'create_date',
                 cell: ({ row }: any) => {
@@ -442,7 +433,7 @@ const InwardMaterialModule = ({ setRefreshTrigger, shipmentDetails }: props) => 
                             <span>
                                 <FaSync className="text-green-500 text-xl" />
                             </span>
-                            <span className="font-bold  text-green-500">SYNC</span>
+                            <span className="font-bold  text-green-500">Create GRN</span>
                         </div>
                     )}
                 </div>
