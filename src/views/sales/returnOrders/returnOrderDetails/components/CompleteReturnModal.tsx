@@ -5,11 +5,18 @@ import { Modal, Button } from 'antd'
 interface ReturnItem {
     order_item: number
     quantity: number
+    location: string
+    product?: {
+        sku: string
+    }
 }
 
 interface LocationDetail {
     location: string
     quantity: number
+    product?: {
+        sku: string
+    }
 }
 
 interface Props {
@@ -30,8 +37,15 @@ const CompleteReturnModal: React.FC<Props> = ({
     handleInputChange,
 }) => {
     const [locationWiseDetails, setLocationWiseDetails] = useState<Record<number, LocationDetail[]>>({})
+    const [locationStore, setLocationStore] = useState<Record<number, string>>({})
 
-    // Ensure every order_item key always has an array when modal opens
+    useEffect(() => {
+        returnOrderItems.map((item) => {
+            console.log('item', item)
+            setLocationStore((prev) => ({ ...prev, [item.order_item]: item.location || '' }))
+        })
+    }, [isModalOpen])
+
     useEffect(() => {
         if (isModalOpen) {
             const init: Record<number, LocationDetail[]> = {}
@@ -86,11 +100,15 @@ const CompleteReturnModal: React.FC<Props> = ({
         >
             <div>Locations</div>
 
-            <div className="max-h-50 overflow-y-auto pr-2 bg-blue-50">
+            <div className="max-h-50 overflow-y-auto pr-2 bg-blue-50 p-2">
                 {returnOrderItems.map((item) => {
                     const assignedQty = (
                         Array.isArray(locationWiseDetails[item.order_item]) ? locationWiseDetails[item.order_item] : []
                     ).reduce((sum, l) => sum + (Number(l.quantity) || 0), 0)
+
+                    const findLocation = locationStore[item.order_item] || ''
+
+                    console.log('findLocation', findLocation)
 
                     return (
                         <div key={item.order_item} className="mb-4 border p-3 rounded">
@@ -131,10 +149,14 @@ const CompleteReturnModal: React.FC<Props> = ({
                                     </div>
                                 ),
                             )}
-
-                            <small className="text-gray-500">
-                                Max Qty: {item.quantity} | Assigned: {assignedQty}
-                            </small>
+                            <div className="flex flex-col gap-1">
+                                <small className="text-gray-500">
+                                    Location : <span className="font-bold">{findLocation}</span>
+                                </small>
+                                <small className="text-gray-500">
+                                    Max Qty: {item.quantity} | Assigned: {assignedQty}
+                                </small>
+                            </div>
                         </div>
                     )
                 })}
