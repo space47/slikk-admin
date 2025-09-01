@@ -6,20 +6,20 @@ import Card from '@/components/ui/Card'
 import moment from 'moment'
 import Button from '@/components/ui/Button'
 import React, { useState, useEffect } from 'react'
-import { Modal, notification } from 'antd'
-import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { Modal } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { PickedUpModal } from './RefundModal'
 import { useAppSelector } from '@/store'
 import { ReturnOrderState } from '@/store/types/returnDetails.types'
 import { getButtonAndModalContent } from './returnOrderCommon'
 import ReturnActionActivity from './ReturnActionActivity'
-import { AxiosError } from 'axios'
-import { Input } from '@/components/ui'
+import CompleteReturnModal from './CompleteReturnModal'
+import { useReturnOrderFunctions } from '../../returnOrderUtils/useReturnOrderFunctions'
 
 const RefundActivity = () => {
     const returnOrder = useAppSelector<ReturnOrderState>((state) => state.returnOrders)
     const returnDetails = returnOrder?.returnOrders
+    const returnOrderItems = returnOrder?.returnOrders?.return_order_items || []
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [action, setAction] = useState('')
     const [triggerPickedUpGenerate, setTriggerPickedUpGenerate] = useState<boolean>(false)
@@ -41,10 +41,15 @@ const RefundActivity = () => {
         setValueInsideModal((prev) => ({ ...prev, [name]: value }))
     }
 
+    const locationWiseArray = returnOrderItems.map((item) => ({
+        order_id: item.order_item,
+        quantity: item.quantity,
+    }))
+
     const [currentButton, setCurrentButton] = useState(false)
     const [forceCOD, setForceCOD] = useState(false)
-    const [packetsValue, setPacketsValue] = useState('')
-    const [packetsContainer, setPacketsContainer] = useState<string[]>([])
+    // const [packetsValue, setPacketsValue] = useState('')
+    // const [packetsContainer, setPacketsContainer] = useState<string[]>([])
     // const packetIdArray = returnOrder?.returnOrders?.packet_ids || ['r1456', 'r1234', 'r4444']
     // const packetIdArray = ['1', '2', '3', '4', '5']
 
@@ -53,97 +58,26 @@ const RefundActivity = () => {
         setTriggerPickedUpGenerate(true)
     }
 
+    const { sendApiRequest, triggerApiCall, handleForceCod, handleCompleteReturn } = useReturnOrderFunctions({
+        action,
+        returnDetails,
+        setForceCOD,
+        setIsModalOpen,
+        valueInsideModal,
+        setTriggerPickedUpGenerate,
+        locationWiseArray,
+    })
+
     useEffect(() => {
         if (triggerPickedUpGenerate) {
-            const sendApiRequest = async () => {
-                try {
-                    const body = {
-                        action,
-                        re_create: 'no',
-                    }
-
-                    const response = await axiosInstance.patch(`merchant/return_order/${returnDetails?.return_order_id}`, body)
-
-                    if (response.status === 400) {
-                        body.re_create = 'yes'
-                        await axiosInstance.patch(`merchant/return_order/${returnDetails?.return_order_id}`, body)
-                    }
-                    setIsModalOpen(false)
-                    setTriggerPickedUpGenerate(false)
-
-                    notification.success({
-                        message: 'Success',
-                        description: response?.data?.message || 'Rider status updated successfully.',
-                    })
-                    navigate(0)
-                } catch (error: any) {
-                    console.error(error)
-                    const errorMessage = error.response?.data?.message || 'There was an error updating the order status. Please try again.'
-
-                    if (error.response?.status === 400) {
-                        try {
-                            const bodyWithReCreate = {
-                                action,
-                                re_create: 'yes',
-                            }
-                            const retryResponse = await axiosInstance.patch(
-                                `merchant/return_order/${returnDetails?.return_order_id}`,
-                                bodyWithReCreate,
-                            )
-                            notification.success({
-                                message: 'Success',
-                                description: retryResponse?.data?.message || 'Rider status updated successfully.',
-                            })
-                            navigate(0)
-                        } catch (retryError: any) {
-                            console.error(retryError)
-                            notification.error({
-                                message: 'Error',
-                                description: retryError.response?.data?.message || 'Failed to update rider status with re_create.',
-                            })
-                        }
-                    } else {
-                        notification.error({
-                            message: 'Error',
-                            description: errorMessage,
-                        })
-                    }
-                } finally {
-                    setTriggerPickedUpGenerate(false)
-                }
-            }
-
             sendApiRequest()
         }
     }, [triggerPickedUpGenerate, navigate])
+
     const handleAction = (value: string) => {
         setAction(value)
         setTriggerAction(true)
         setCurrentButton(true)
-    }
-    const triggerApiCall = async () => {
-        try {
-            const body =
-                action === 'return_completed'
-                    ? {
-                          action,
-                          reference_id: valueInsideModal.refundId,
-                          return_amount: valueInsideModal.refundAmount,
-                      }
-                    : { action }
-
-            const response = await axiosInstance.patch(`merchant/return_order/${returnDetails?.return_order_id}`, body)
-            notification.success({ message: response?.data?.message || 'Rider status updated successfully.' })
-            setForceCOD(false)
-            navigate(0)
-        } catch (error: any) {
-            console.error(error)
-            const errorMessage = error.response?.data?.message || 'There was an error updating the order status. Please try again.'
-            notification.error({ message: 'Error', description: errorMessage })
-            setForceCOD(true)
-        } finally {
-            setIsModalOpen(false)
-        }
     }
 
     useEffect(() => {
@@ -151,26 +85,6 @@ const RefundActivity = () => {
             triggerApiCall()
         }
     }, [triggerAction])
-
-    const handleForceCod = async () => {
-        const body = {
-            action: 'return_completed',
-            reference_id: valueInsideModal.refundId,
-            return_amount: valueInsideModal.refundAmount,
-            cod_force: true,
-        }
-        try {
-            const response = await axiosInstance.patch(`merchant/return_order/${returnDetails?.return_order_id}`, body)
-            notification.success({ message: response?.data?.message || 'Rider status updated successfully.' })
-            setForceCOD(false)
-            navigate(0)
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                notification.error({ message: error?.message || 'Failed to Update' })
-            }
-            console.error(error)
-        }
-    }
 
     // const handlePacketsCount = (e: any) => {
     //     if (e.key === 'Enter') {
@@ -275,30 +189,14 @@ const RefundActivity = () => {
 
             {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'DELIVERED' &&
                 !returnDetails?.log?.some((item) => item?.status === 'REFUNDED') && (
-                    <Modal
-                        open={isModalOpen}
-                        onOk={() => handleAction('return_completed')}
-                        onCancel={() => setIsModalOpen(false)}
-                        okText={'Return Order'}
-                    >
-                        <div className="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-gray-300 pb-2">INPUTS</div>
-                        <div className="italic text-lg flex flex-row items-center justify-start gap-5">
-                            <input
-                                type="text"
-                                name="refundAmount"
-                                value={valueInsideModal.refundAmount}
-                                placeholder="Enter Refund Amount"
-                                onChange={handleInputChange}
-                            />
-                            <input
-                                type="text"
-                                name="refundId"
-                                value={valueInsideModal.refundId}
-                                placeholder="Enter Refund Id"
-                                onChange={handleInputChange}
-                            />
-                        </div>
-                    </Modal>
+                    <CompleteReturnModal
+                        handleAction={handleCompleteReturn}
+                        returnOrderItems={returnOrderItems as any}
+                        isModalOpen={isModalOpen}
+                        setIsModalOpen={setIsModalOpen}
+                        valueInsideModal={valueInsideModal}
+                        handleInputChange={handleInputChange}
+                    />
                 )}
             {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'REFUNDED' ||
                 (returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'DELIVERED' &&
