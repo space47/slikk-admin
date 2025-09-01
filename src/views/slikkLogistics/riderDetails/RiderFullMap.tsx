@@ -118,8 +118,6 @@ const MarkerComponent = ({ markers, currLat, currLong, handleDetails }: MarkerCo
 }
 
 const RiderFullMap: React.FC<RiderFullMapProps> = ({ riderDetails, currentStore }) => {
-    // const [currLat, setCurrLat] = useState(currentStore?.lat ?? 0)
-    // const [currLong, setCurrLong] = useState(currentStore?.long ?? 0)
     const R = 6371
     const [location, setLocation] = useState('')
     const [suggestions, setSuggestions] = useState<any>([])
@@ -139,7 +137,7 @@ const RiderFullMap: React.FC<RiderFullMapProps> = ({ riderDetails, currentStore 
 
     const markers = useMemo(() => {
         const result = latitudes.map((lat, index) => {
-            const lon = longitudes[index]
+            const lon = longitudes[index] || 0
             const ridersName = namesOfRiders[index]
             const riderMobile = mobileOfRiders[index]
             const riderStatus = ifStatusTrue[index]
@@ -193,8 +191,8 @@ const RiderFullMap: React.FC<RiderFullMapProps> = ({ riderDetails, currentStore 
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
                     <MarkerComponent
-                        currLat={currentStore?.lat}
-                        currLong={currentStore?.long}
+                        currLat={currentStore?.lat || 12.920225}
+                        currLong={currentStore?.long || 77.649393}
                         markers={markers}
                         setShowRiderModal={setShowRiderModal}
                         handleDetails={handleDetails}
