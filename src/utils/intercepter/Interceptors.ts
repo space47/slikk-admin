@@ -13,12 +13,16 @@ const onRequest = async (config: InternalAxiosRequestConfig): Promise<InternalAx
     //     config.headers["Content-Type"] = "multipart/form-data";
     // }
 
-    const ifGetCall = config.method?.toLocaleLowerCase() === 'get'
+    const ifGetCall = config.method?.toLowerCase() === 'get'
+
+    const excludedUrls = ['user/profile', 'merchant/store']
 
     if (storeCodes && storeCodes.length > 0 && ifGetCall) {
-        config.params = {
-            ...(config.params || {}),
-            store_id: storeCodes.join(','),
+        if (!excludedUrls.some((url) => config.url?.includes(url))) {
+            config.params = {
+                ...(config.params || {}),
+                store_id: storeCodes.join(','),
+            }
         }
     }
 

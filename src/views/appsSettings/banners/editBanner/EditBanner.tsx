@@ -375,7 +375,7 @@ const EditBanner = () => {
                                         <FormItem label="Store">
                                             <Field name="store">
                                                 {({ form, field }: FieldProps) => {
-                                                    const selectedStores = storeResults.filter((option) =>
+                                                    const selectedStores = storeResults?.filter((option) =>
                                                         field.value?.some((store: any) => store?.id === option.id),
                                                     )
                                                     return (
