@@ -62,6 +62,7 @@ const CouponSeriesEdit = () => {
         series_type: couponSeriesActive?.series_type,
         event_name: couponSeriesActive?.event_name,
         coupon_active_event_name: couponSeriesActive?.coupon_active_event_name,
+        store_id: couponSeriesActive?.store_id,
     }
 
     // useEffect(() => {
@@ -94,6 +95,7 @@ const CouponSeriesEdit = () => {
                 coupon_active_event_name: values?.coupon_active_event_name,
                 max_coupons_per_user: values?.max_coupons_per_user,
                 is_public: values?.is_public ?? false,
+                store_id: values?.store?.map((store: any) => store.id).join(',') || '',
                 extra_attributes: {
                     new_users_only: values?.extra_attributes?.new_users_only,
                     filters: {
