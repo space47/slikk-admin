@@ -19,6 +19,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { CouponDiscountTypeArray, CouponTypeArray } from '@/constants/commonArray.constant'
 import CommonDropdown from '@/common/commonDropdown'
 import { handleSelectCoupons } from '../couponSeriesUtils/couponSeriesFunctions'
+import NotFoundData from '@/views/pages/NotFound/Notfound'
 
 const CouponSeriesTable = () => {
     const dispatch = useAppDispatch()
@@ -108,33 +109,44 @@ const CouponSeriesTable = () => {
             </div>
 
             <div>
-                <EasyTable columns={columns} mainData={couponSeries} page={page} pageSize={pageSize} />
-                <div className="flex flex-col md:flex-row items-center justify-between mt-4">
-                    <Pagination
-                        pageSize={pageSize}
-                        currentPage={page}
-                        total={count}
-                        className="mb-4 md:mb-0"
-                        onChange={(page) => {
-                            dispatch(setPage(page))
-                        }}
-                    />
-
-                    <div className="min-w-[130px] flex gap-5">
-                        <Select<Option>
-                            size="sm"
-                            isSearchable={false}
-                            value={pageSizeOptions.find((option) => option.value === pageSize)}
-                            options={pageSizeOptions}
-                            onChange={(option) => {
-                                if (option) {
-                                    dispatch(setPageSize(option.value))
-                                    dispatch(setPage(1))
-                                }
+                {couponSeries && couponSeries.length > 0 ? (
+                    <EasyTable columns={columns} mainData={couponSeries || []} page={page} pageSize={pageSize} />
+                ) : (
+                    <>
+                        <div className="flex flex-col items-center justify-center mt-20">
+                            <NotFoundData />
+                            <p className="text-gray-500 text-lg">Select Store to access Coupon Series </p>
+                        </div>
+                    </>
+                )}
+                {couponSeries && couponSeries.length > 0 && (
+                    <div className="flex flex-col md:flex-row items-center justify-between mt-4">
+                        <Pagination
+                            pageSize={pageSize}
+                            currentPage={page}
+                            total={count}
+                            className="mb-4 md:mb-0"
+                            onChange={(page) => {
+                                dispatch(setPage(page))
                             }}
                         />
+
+                        <div className="min-w-[130px] flex gap-5">
+                            <Select<Option>
+                                size="sm"
+                                isSearchable={false}
+                                value={pageSizeOptions.find((option) => option.value === pageSize)}
+                                options={pageSizeOptions}
+                                onChange={(option) => {
+                                    if (option) {
+                                        dispatch(setPageSize(option.value))
+                                        dispatch(setPage(1))
+                                    }
+                                }}
+                            />
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
         </div>
     )
