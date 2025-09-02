@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react'
-import { Dropdown } from '@/components/ui'
+import { Dialog, Dropdown } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import moment from 'moment'
 
@@ -148,31 +148,33 @@ const UltimateDatePicker = ({ setFrom, setTo, handleDateChange, dispatch }: DATE
             </div>
 
             {showingDatePicker && (
-                <div className="xl:w-[280px] w-[200px] bg-white border rounded-2xl shadow-md p-3 mt-2">
-                    <div className="mb-3 font-semibold text-gray-700 text-sm">Select Date Range</div>
+                <Dialog isOpen={showingDatePicker} onClose={() => setShowingDatePicker(false)}>
+                    <div className="w-full bg-white border rounded-2xl shadow-md p-3 mt-5">
+                        <div className="mb-3 font-semibold text-gray-700 text-sm">Select Date Range</div>
 
-                    <DatePickerRange
-                        placeholder="Choose dates"
-                        onChange={(val) => setTempRange(val)} // store temp value
-                        singleDate
-                        className="w-full border rounded-lg px-2 py-1"
-                    />
+                        <DatePickerRange
+                            placeholder="Choose dates"
+                            onChange={(val) => setTempRange(val)} // store temp value
+                            singleDate
+                            className="w-full border rounded-lg px-2 py-1"
+                        />
 
-                    <div className="flex justify-end mt-4 gap-2">
-                        <button
-                            onClick={() => setShowingDatePicker(false)}
-                            className="px-3 py-1.5 text-sm rounded-lg border border-gray-300 hover:bg-gray-100"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            onClick={applyCustomRange}
-                            className="px-4 py-1.5 text-sm bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
-                        >
-                            Apply
-                        </button>
+                        <div className="flex justify-end mt-4 gap-2">
+                            <button
+                                onClick={() => setShowingDatePicker(false)}
+                                className="px-3 py-1.5 text-sm rounded-lg border border-gray-300 hover:bg-gray-100"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={applyCustomRange}
+                                className="px-4 py-1.5 text-sm bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
+                            >
+                                Apply
+                            </button>
+                        </div>
                     </div>
-                </div>
+                </Dialog>
             )}
         </div>
     )

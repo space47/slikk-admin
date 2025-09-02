@@ -72,7 +72,7 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
     const [state, dispatchState] = useReducer(reducer, initialState)
     const [csvFile, setCsvFile] = useState<File[]>([])
     const { setFieldValue } = useFormikContext()
-    console.log('initial values', filtersData)
+    const [extraFields, setExtraFields] = useState(false)
     const [skuInput, setSkuInput] = useState('')
 
     const TabsArray = [
@@ -391,7 +391,11 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
                 </TabContent>
             </Tabs>
 
-            {
+            <Button variant="twoTone" size="sm" onClick={() => setExtraFields(!extraFields)} type="button">
+                {extraFields ? 'Hide' : 'Show'} Extra Filters
+            </Button>
+
+            {extraFields && (
                 <>
                     <div className="grid grid-cols-2 gap-4 mt-4">
                         <FormItem label="Max Discount for Filters">
@@ -468,7 +472,7 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
                         </FormItem>
                     </div>
                 </>
-            }
+            )}
             <div className="flex flex-col gap-3 xl:flex-row  mt-4 justify-center">
                 <Field>
                     {({ form }: FieldProps<any>) => (
