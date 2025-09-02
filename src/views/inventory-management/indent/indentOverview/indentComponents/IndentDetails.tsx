@@ -201,6 +201,17 @@ const IndentDetails = () => {
                 </Tabs>
             </div>
 
+            <div className="mt-7">
+                <div>
+                    Total quantity Required :{' '}
+                    <span className="font-semibold">{data?.items?.reduce((acc, item) => acc + item.quantity_required, 0)}</span>
+                </div>
+                <div>
+                    Quantity Accepted :{' '}
+                    <span className="font-semibold">{data?.items?.reduce((acc, item) => acc + item.quantity_accepted, 0)}</span>
+                </div>
+            </div>
+
             <div>
                 {data?.items && data.items?.length > 0 ? (
                     <div className="mt-10">
