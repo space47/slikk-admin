@@ -266,6 +266,7 @@ const GdnDetails = () => {
                                     </button>
                                 </div>
                             </div>
+                            <br />
                             {/* <QCtable data={data.grn_quality_check} totalData={data.grn_quality_check.length} /> */}
                             {data?.gdn_products?.length === 0 ? (
                                 <>
@@ -290,7 +291,7 @@ const GdnDetails = () => {
                                 onOk={syncGRN}
                                 onCancel={handleCloseModal}
                             >
-                                <div className="italic text-lg font-semibold">SYNC YOUR GRN NUMBER</div>
+                                <div className="italic text-lg font-semibold">Are you sure you want to sync this GDN?</div>
                             </Modal>
                         )}
                         {isSyncing && <Loading loading={isSyncing} />}

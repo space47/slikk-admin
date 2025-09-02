@@ -56,7 +56,7 @@ const PaginationTable = () => {
     if (responseStatus === 403) return <AccessDenied />
 
     return (
-        <div>
+        <div className="p-2 shadow-xl rounded-xl ">
             <div>
                 <Tabs defaultValue="tab2" onChange={handleChange}>
                     <TabList>
