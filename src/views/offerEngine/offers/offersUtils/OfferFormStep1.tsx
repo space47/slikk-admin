@@ -1,14 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Checkbox, FormContainer, FormItem, Input, Select } from '@/components/ui'
+import { Checkbox, FormItem, Input, Select } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
 import { companyStore } from '@/store/types/companyStore.types'
 import { Field, FieldArray, FieldProps } from 'formik'
 import React, { useEffect } from 'react'
-import { OfferFromList1 } from './offersCommon'
+import { APPLY_TYPE, OfferFromList1 } from './offersCommon'
 import FullDateForm from '@/common/FullDateForm'
 import { FaPlus, FaTrash } from 'react-icons/fa'
 import FullTimePicker from '@/common/FullTimePicker'
+import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 
 interface props {
     values: any
@@ -23,93 +24,151 @@ const OfferFormStep1 = ({ values }: props) => {
     }, [dispatch])
 
     return (
-        <div>
-            <FormItem label="Store">
-                <Field name="store">
-                    {({ form, field }: FieldProps) => {
-                        const selectedStore = storeResults.find((option) => option.id === field.value?.id)
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+            {/* Store Selection Field */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <FormItem label="Store" className="mb-6">
+                    <Field name="store">
+                        {({ form, field }: FieldProps) => {
+                            const selectedStore = storeResults.find((option) => option.id === field.value?.id)
 
-                        return (
-                            <div className="flex flex-col gap-1 w-full max-w-md">
-                                <Select
-                                    className="w-full"
-                                    options={storeResults}
-                                    getOptionLabel={(option) => option.code}
-                                    getOptionValue={(option) => option.id}
-                                    value={selectedStore || null}
-                                    onChange={(newVal) => {
-                                        form.setFieldValue('store', newVal)
-                                    }}
-                                />
-                            </div>
-                        )
-                    }}
-                </Field>
-            </FormItem>
-            <FormContainer className="grid grid-cols-2 gap-6">
-                {OfferFromList1?.slice(0, 2)?.map((item, key) => {
-                    return (
-                        <FormItem label={item.label} asterisk={item?.required} key={key}>
-                            <Field
-                                name={item.name}
-                                component={item.type === 'checkbox' ? Checkbox : Input}
-                                placeholder={`Enter ${item.label}`}
-                                type={item.type}
-                            />
-                        </FormItem>
-                    )
-                })}
-            </FormContainer>
-            <FormContainer className="grid grid-cols-2 gap-6 mt-7">
-                <FullDateForm label="Start Date" name="start_date" fieldname="start_date" />
-                <FullDateForm label="End Date" name="end_date" fieldname="end_date" />
-            </FormContainer>
-            <FormContainer className="grid grid-cols-2 gap-6">
-                {OfferFromList1?.slice(2)?.map((item, key) => {
-                    return (
-                        <FormItem label={item.label} asterisk={item?.required} key={key}>
-                            <Field
-                                name={item.name}
-                                component={item.type === 'checkbox' ? Checkbox : Input}
-                                placeholder={`Enter ${item.label}`}
-                                type={item.type}
-                            />
-                        </FormItem>
-                    )
-                })}
-            </FormContainer>
-            <FormItem label="Daily Time Windows">
+                            return (
+                                <div className="w-full max-w-md">
+                                    <Select
+                                        className="w-full"
+                                        options={storeResults}
+                                        getOptionLabel={(option) => option.code}
+                                        getOptionValue={(option) => option.id as any}
+                                        value={selectedStore || null}
+                                        onChange={(newVal) => {
+                                            form.setFieldValue('store', newVal)
+                                        }}
+                                        styles={{
+                                            control: (base) => ({
+                                                ...base,
+                                                borderRadius: '0.5rem',
+                                                borderColor: '#e5e7eb',
+                                                padding: '0.2rem',
+                                                minHeight: '44px',
+                                                '&:hover': {
+                                                    borderColor: '#93c5fd',
+                                                },
+                                            }),
+                                        }}
+                                    />
+                                </div>
+                            )
+                        }}
+                    </Field>
+                </FormItem>
+                <div>
+                    <CommonSelect label="Apply Type" name="apply_type" options={APPLY_TYPE} />
+                </div>
+            </div>
+
+            {/* First Row of Form Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                {OfferFromList1?.slice(0, 2)?.map((item, key) => (
+                    <FormItem
+                        label={item.label}
+                        asterisk={item?.required}
+                        key={key}
+                        className="bg-gray-50 p-4 rounded-lg border border-gray-100"
+                    >
+                        <Field
+                            name={item.name}
+                            component={item.type === 'checkbox' ? Checkbox : Input}
+                            placeholder={`Enter ${item.label}`}
+                            type={item.type}
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-shadow shadow-sm hover:shadow-md"
+                        />
+                    </FormItem>
+                ))}
+            </div>
+
+            {/* Date Range Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                    <FullDateForm label="Start Date" name="start_date" fieldname="start_date" />
+                </div>
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                    <FullDateForm label="End Date" name="end_date" fieldname="end_date" />
+                </div>
+            </div>
+
+            {/* Second Row of Form Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                {OfferFromList1?.slice(2)?.map((item, key) => (
+                    <FormItem
+                        label={item.label}
+                        asterisk={item?.required}
+                        key={key}
+                        className="bg-gray-50 p-4 rounded-lg border border-gray-100"
+                    >
+                        <Field
+                            name={item.name}
+                            component={item.type === 'checkbox' ? Checkbox : Input}
+                            placeholder={`Enter ${item.label}`}
+                            type={item.type}
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-shadow shadow-sm hover:shadow-md"
+                        />
+                    </FormItem>
+                ))}
+            </div>
+
+            {/* Daily Time Windows Section */}
+            <FormItem label="Daily Time Windows" className="bg-gray-50 p-5 rounded-xl border border-gray-200">
                 <FieldArray name="daily_time_windows">
                     {({ push, remove }) => (
                         <div className="xl:w-[500px]">
                             <button
                                 type="button"
-                                className="flex items-center gap-1 p-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 mb-8"
+                                className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 mb-6 transition-colors shadow-sm hover:shadow-md"
                                 onClick={() => push({ start_date: '', end_date: '' })}
                             >
-                                <FaPlus size={18} /> Add
+                                <FaPlus size={16} /> Add Time Window
                             </button>
-                            {values?.daily_time_windows?.map((_, index: number) => (
-                                <div key={index} className="flex  gap-2 mb-2 ">
-                                    <FullTimePicker
-                                        needClass
-                                        customClass="w-full"
-                                        label="Start Date"
-                                        name={`daily_time_windows.${index}.start`}
-                                        fieldname={`daily_time_windows.${index}.start`}
-                                    />
-                                    <FullTimePicker
-                                        needClass
-                                        customClass="w-full"
-                                        label="End Date"
-                                        name={`daily_time_windows.${index}.end`}
-                                        fieldname={`daily_time_windows.${index}.end`}
-                                    />
-                                    <button type="button" onClick={() => remove(index)} className="p-1 text-red-500 hover:text-red-700">
-                                        <FaTrash size={18} />
-                                    </button>
-                                </div>
-                            ))}
+
+                            <div className="space-y-4">
+                                {values?.daily_time_windows?.map((_, index: number) => (
+                                    <div
+                                        key={index}
+                                        className="flex flex-col sm:flex-row gap-3 p-4 bg-white rounded-lg border border-gray-200 shadow-sm"
+                                    >
+                                        <div className="flex-grow grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                            <FullTimePicker
+                                                needClass
+                                                customClass="w-full"
+                                                label="Start Time"
+                                                name={`daily_time_windows.${index}.start`}
+                                                fieldname={`daily_time_windows.${index}.start`}
+                                            />
+                                            <FullTimePicker
+                                                needClass
+                                                customClass="w-full"
+                                                label="End Time"
+                                                name={`daily_time_windows.${index}.end`}
+                                                fieldname={`daily_time_windows.${index}.end`}
+                                            />
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => remove(index)}
+                                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors self-center"
+                                            aria-label="Remove time window"
+                                        >
+                                            <FaTrash size={18} />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {values?.daily_time_windows?.length > 0 && (
+                                <p className="text-sm text-gray-500 mt-4">
+                                    {values.daily_time_windows.length} time window{values.daily_time_windows.length !== 1 ? 's' : ''}{' '}
+                                    configured
+                                </p>
+                            )}
                         </div>
                     )}
                 </FieldArray>

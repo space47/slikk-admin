@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo } from 'react'
 import moment from 'moment'
+import { FaEdit } from 'react-icons/fa'
 
 interface DailyTimeWindow {
     start: string
@@ -32,6 +33,22 @@ interface OfferRow {
 export const useOfferColumns = () => {
     return useMemo(
         () => [
+            {
+                header: 'Edit',
+                accessorKey: 'id',
+                cell: ({ row }: { row: { original: OfferRow } }) => {
+                    return (
+                        <a
+                            href={`/app/appSettings/offers/${row.original.id}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-blue-600 hover:underline"
+                        >
+                            <FaEdit size={16} className="text-blue-500" />
+                        </a>
+                    )
+                },
+            },
             {
                 header: 'Offer Name',
                 accessorKey: 'offer_name',
@@ -127,7 +144,7 @@ export const useOfferColumns = () => {
                 accessorKey: 'daily_time_windows',
                 cell: ({ row }: { row: { original: OfferRow } }) =>
                     Array.isArray(row.original.daily_time_windows)
-                        ? row.original.daily_time_windows.map((tw: DailyTimeWindow, i: number) => `${tw.start} - ${tw.end}`).join(', ')
+                        ? row.original.daily_time_windows.map((tw: DailyTimeWindow) => `${tw.start} - ${tw.end}`).join(', ')
                         : '-',
             },
         ],

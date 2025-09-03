@@ -62,7 +62,18 @@ export interface OfferGetData {
 
 export interface OfferResponse {
     body: {
-        data: OfferGetData[]
+        data: {
+            offers: OfferGetData[]
+            total: number
+        }
+        message: string
+        success: boolean
+    }
+    httpStatus: number
+}
+export interface OfferDetailResponse {
+    body: {
+        data: OfferGetData
         message: string
         success: boolean
     }
