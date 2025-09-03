@@ -19,8 +19,10 @@ export const beforeUpload = (file: FileList | null, fileList: File[]) => {
         'application/json',
         'application/zip',
         'image/gif',
+        'application/lottie+json',
+        'application/vnd.lottie+json',
+        'application/x-lottie',
         'video/lottie+json',
-        'application/json+Lottie,',
     ]
     const MAX_FILE_SIZE = 50000000000000
 

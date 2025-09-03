@@ -30,18 +30,26 @@ const OfferFormStep1 = ({ values }: props) => {
                 <FormItem label="Store" className="mb-6">
                     <Field name="store">
                         {({ form, field }: FieldProps) => {
-                            const selectedStore = storeResults.find((option) => option.id === field.value?.id)
+                            // Convert IDs from Formik into matching option objects
+                            const selectedOptions = Array.isArray(field.value)
+                                ? storeResults.filter((option) => field.value.includes(option.id))
+                                : []
 
                             return (
                                 <div className="w-full max-w-md">
                                     <Select
+                                        isMulti
                                         className="w-full"
                                         options={storeResults}
-                                        getOptionLabel={(option) => option.code}
-                                        getOptionValue={(option) => option.id as any}
-                                        value={selectedStore || null}
+                                        getOptionLabel={(option) => option?.code}
+                                        getOptionValue={(option) => String(option?.id)}
+                                        value={selectedOptions}
                                         onChange={(newVal) => {
-                                            form.setFieldValue('store', newVal)
+                                            // Save only IDs into Formik
+                                            form.setFieldValue(
+                                                'store',
+                                                newVal.map((option: any) => option.id),
+                                            )
                                         }}
                                         styles={{
                                             control: (base) => ({
@@ -61,6 +69,7 @@ const OfferFormStep1 = ({ values }: props) => {
                         }}
                     </Field>
                 </FormItem>
+
                 <div>
                     <CommonSelect label="Apply Type" name="apply_type" options={APPLY_TYPE} />
                 </div>

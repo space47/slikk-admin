@@ -64,7 +64,7 @@ const SkuUpdate = ({ data }: props) => {
         if (skuWiseData || refreshTable) {
             fetchSkuData()
         }
-    }, [page, pageSize, globalFilter, skuWiseData, refreshTable, counter])
+    }, [page, pageSize, globalFilter, refreshTable, counter])
 
     const [formData, setFormData] = useState({ location: '', sku: '' })
 
@@ -347,9 +347,7 @@ const SkuUpdate = ({ data }: props) => {
             <SkuDataInputs
                 formData={formData}
                 setBatchNumberInput={setBatchNumberInput}
-                getSkuData={getSkuData}
                 skuWiseData={skuWiseData}
-                data={data}
                 setQualitySentInput={setQualitySentInput}
                 setSkuWiseData={setSkuWiseData}
                 batchNumberInput={batchNumberInput}
