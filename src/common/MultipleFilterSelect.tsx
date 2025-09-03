@@ -15,6 +15,7 @@ import EasyTable from './EasyTable'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabContent from '@/components/ui/Tabs/TabContent'
+import { HiMinusSm, HiPlusSm } from 'react-icons/hi'
 
 interface props {
     setFilterId: (x: any) => void
@@ -252,11 +253,13 @@ const MultiFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, isE
     }
 
     return (
-        <div>
-            <div className="font-bold mb-7">{isExclude ? 'Exclude Filters:' : 'Filters:'}</div>
+        <div className="bg-white rounded-xl shadow-md p-6 mb-8">
+            <div className="font-bold text-xl text-gray-800 mb-6 pb-2 border-b border-gray-200">
+                {isExclude ? 'Exclude Filters' : 'Filters'}
+            </div>
 
             <Tabs defaultValue="method_1">
-                <TabList className="flex items-center justify-center gap-4 bg-blue-50 rounded-xl shadow-md p-3 mb-10 sticky z-10 top-16">
+                <TabList className="flex items-center gap-2 bg-gray-100 rounded-lg p-1 mb-8 sticky z-10 top-16">
                     {TabsArray.filter((tab) => {
                         if (tab.value === 'method_3' && !isCsv) return false
                         if (tab.value === 'method_2' && !isSku) return false
@@ -265,112 +268,144 @@ const MultiFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, isE
                         <TabNav
                             key={index}
                             value={tab.value}
-                            className="relative px-4 py-2 text-sm sm:text-base font-semibold text-gray-700 rounded-xl transition-all duration-300 hover:text-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-400"
+                            className="relative px-5 py-3 text-sm font-medium rounded-md transition-all duration-300 flex-1 text-center data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm data-[state=active]:font-semibold text-gray-600 hover:text-gray-900"
                         >
                             {tab.label}
                         </TabNav>
                     ))}
                 </TabList>
 
-                <TabContent value="method_1">
-                    <FormContainer className="items-center mt-4 justify-between flex">
-                        <button type="button" onClick={handleAddFilter}>
-                            <IoMdAddCircle className="text-3xl text-green-500" />
-                        </button>
-                        <Button type="button" variant="reject" size="sm" onClick={handleRemoveAllFilters}>
-                            Remove
-                        </Button>
-                    </FormContainer>
-                    {showAddFilter.map((_, index: any) => (
-                        <FormItem key={index} className="flex gap-2">
-                            <div className="flex gap-3 items-center">
-                                <Field key={index} name={`${fieldName}[${index}]`}>
-                                    {({ field, form }: FieldProps<any>) => {
-                                        const selectedOptions =
-                                            field.value?.flatMap((value: any) =>
-                                                filters?.filters?.flatMap((filterGroup) =>
-                                                    filterGroup?.options?.filter((option: any) => option.value === value),
-                                                ),
-                                            ) || []
-                                        return (
-                                            <Select
-                                                isMulti
-                                                placeholder={`Filter Tags ${index + 1}`}
-                                                options={filters.filters || []}
-                                                value={selectedOptions}
-                                                getOptionLabel={(option) => option.label}
-                                                getOptionValue={(option) => option.value}
-                                                className={`${!!customClass === true ? customClass : 'w-3/4'}`}
-                                                onChange={
-                                                    isOnchange
-                                                        ? isOnchange
-                                                        : (newVal) => {
-                                                              const newValues = newVal ? newVal.map((val) => val.value) : []
+                <div className="bg-gray-50 rounded-xl p-5 mb-6">
+                    <TabContent value="method_1">
+                        <div className="flex justify-between items-center mb-4">
+                            <button
+                                type="button"
+                                onClick={handleAddFilter}
+                                className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium transition-colors"
+                            >
+                                <IoMdAddCircle className="text-xl" />
+                                Add Filter
+                            </button>
+                            <Button
+                                type="button"
+                                variant="reject"
+                                size="sm"
+                                onClick={handleRemoveAllFilters}
+                                className="flex items-center gap-1"
+                            >
+                                <MdCancel className="text-lg" />
+                                Remove All
+                            </Button>
+                        </div>
 
-                                                              form.setFieldValue(field.name, JSON.parse(JSON.stringify(newValues)))
-                                                          }
-                                                }
-                                            />
-                                        )
-                                    }}
-                                </Field>
-
-                                <div className="">
+                        <div className="space-y-4">
+                            {showAddFilter.map((_, index) => (
+                                <div
+                                    key={index}
+                                    className="flex items-start gap-3 p-3 bg-white rounded-lg border border-gray-200 shadow-sm"
+                                >
+                                    <div className="flex-grow">
+                                        <Field name={`${fieldName}[${index}]`}>
+                                            {({ field, form }: FieldProps<any>) => {
+                                                const selectedOptions =
+                                                    field.value?.flatMap((value: any) =>
+                                                        filters?.filters?.flatMap((filterGroup) =>
+                                                            filterGroup?.options?.filter((option: any) => option.value === value),
+                                                        ),
+                                                    ) || []
+                                                return (
+                                                    <Select
+                                                        isMulti
+                                                        placeholder={`Select filter tags ${index + 1}`}
+                                                        options={filters.filters || []}
+                                                        value={selectedOptions}
+                                                        getOptionLabel={(option) => option.label}
+                                                        getOptionValue={(option) => option.value}
+                                                        className="w-full"
+                                                        styles={{
+                                                            control: (base) => ({
+                                                                ...base,
+                                                                borderRadius: '0.5rem',
+                                                                borderColor: '#e5e7eb',
+                                                                padding: '0.2rem',
+                                                                '&:hover': {
+                                                                    borderColor: '#93c5fd',
+                                                                },
+                                                            }),
+                                                        }}
+                                                        onChange={
+                                                            isOnchange
+                                                                ? isOnchange
+                                                                : (newVal) => {
+                                                                      const newValues = newVal ? newVal.map((val) => val.value) : []
+                                                                      form.setFieldValue(field.name, JSON.parse(JSON.stringify(newValues)))
+                                                                  }
+                                                        }
+                                                    />
+                                                )
+                                            }}
+                                        </Field>
+                                    </div>
                                     <button
                                         type="button"
-                                        className=""
                                         onClick={isExclude ? () => handleRemoveExcludeFilter(index) : () => handleRemoveFilter(index)}
+                                        className="p-2 text-gray-400 hover:text-red-500 transition-colors rounded-full hover:bg-red-50"
+                                        aria-label="Remove filter"
                                     >
-                                        <MdCancel className="text-xl text-red-500" />
+                                        <MdCancel className="text-xl" />
                                     </button>
                                 </div>
-                            </div>
-                        </FormItem>
-                    ))}
-                </TabContent>
-
-                <TabContent value="method_2">
-                    <div className="flex flex-col md:flex-row items-center gap-3">
-                        <input
-                            name="sku"
-                            type="search"
-                            placeholder="Enter SKU"
-                            className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                            value={skuInput}
-                            onChange={(e) => setSkuInput(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    e.preventDefault()
-                                    handleAddSku()
-                                }
-                            }}
-                        />
-                        <button
-                            className="bg-blue-600 hover:bg-blue-700 transition text-white px-4 py-2 rounded-xl flex items-center gap-2"
-                            onClick={handleAddSku}
-                        >
-                            <FaSearch className="text-lg" /> Search
-                        </button>
-                    </div>
-
-                    {/* SKU Table */}
-                    {skuSearchData.length > 0 && (
-                        <div className="w-full overflow-x-auto rounded-lg border border-gray-200 shadow-sm mt-2">
-                            <EasyTable mainData={skuSearchData} columns={columns} overflow />
+                            ))}
                         </div>
-                    )}
-                </TabContent>
-                <TabContent value="method_3">
-                    {isCsv && (
-                        <>
-                            <FormItem label="CSV File" className="mt-10">
+                    </TabContent>
+
+                    <TabContent value="method_2">
+                        <div className="mb-6">
+                            <div className="flex flex-col md:flex-row items-center gap-3 mb-4">
+                                <div className="relative flex-grow">
+                                    <input
+                                        name="sku"
+                                        type="search"
+                                        placeholder="Enter SKU code"
+                                        className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-shadow shadow-sm hover:shadow-md"
+                                        value={skuInput}
+                                        onChange={(e) => setSkuInput(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault()
+                                                handleAddSku()
+                                            }
+                                        }}
+                                    />
+                                </div>
+                                <button
+                                    className="bg-blue-600 hover:bg-blue-700 transition-all text-white px-5 py-3 rounded-lg flex items-center gap-2 font-medium shadow-sm hover:shadow-md"
+                                    onClick={handleAddSku}
+                                >
+                                    <FaSearch className="text-lg" /> Search
+                                </button>
+                            </div>
+
+                            {/* SKU Table */}
+                            {skuSearchData.length > 0 && (
+                                <div className="w-full overflow-x-auto rounded-lg border border-gray-200 shadow-sm mt-4">
+                                    <EasyTable mainData={skuSearchData} columns={columns} overflow />
+                                </div>
+                            )}
+                        </div>
+                    </TabContent>
+
+                    <TabContent value="method_3">
+                        {isCsv && (
+                            <div className="bg-white p-5 rounded-lg border border-gray-200 shadow-sm">
+                                <h3 className="font-medium text-gray-700 mb-4">Upload CSV File</h3>
                                 <Field name="csvList">
                                     {({ form }: FieldProps<any>) => (
-                                        <>
+                                        <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 transition-colors bg-gray-50">
                                             <Upload
                                                 beforeUpload={beforeUpload}
                                                 fileList={values.csvList || []}
-                                                className="flex justify-center mt-6"
+                                                className="w-full"
                                                 onFileRemove={(files) => {
                                                     form.setFieldValue('csvList', files)
                                                 }}
@@ -379,106 +414,131 @@ const MultiFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, isE
                                                     setCsvFile(files as any)
                                                 }}
                                             />
-                                        </>
+                                            <p className="text-sm text-gray-500 mt-3">Supported formats: .csv, .xlsx</p>
+                                        </div>
                                     )}
                                 </Field>
-                            </FormItem>
-                        </>
+                            </div>
+                        )}
+                    </TabContent>
+                </div>
+
+                <div className="mb-6">
+                    <Button
+                        variant="yellow"
+                        size="sm"
+                        onClick={() => setExtraFields(!extraFields)}
+                        className="flex items-center gap-2 mx-auto"
+                    >
+                        {extraFields ? (
+                            <>
+                                <HiMinusSm className="text-lg" /> Hide Extra Filters
+                            </>
+                        ) : (
+                            <>
+                                <HiPlusSm className="text-lg" /> Show Extra Filters
+                            </>
+                        )}
+                    </Button>
+
+                    {extraFields && (
+                        <div className="mt-6 bg-gray-50 p-5 rounded-xl border border-gray-200">
+                            <h3 className="font-semibold text-gray-700 mb-4">Price & Discount Filters</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <FormItem label="Max Discount (%)" className="mb-0">
+                                    <Field name="max_discount">
+                                        {({ field }: FieldProps<any>) => (
+                                            <div className="relative">
+                                                <input
+                                                    type="number"
+                                                    placeholder="Enter maximum discount"
+                                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-shadow shadow-sm hover:shadow-md"
+                                                    {...field}
+                                                    onChange={(e) =>
+                                                        localDispatchState({
+                                                            type: 'SET_MAX_DISCOUNT',
+                                                            payload: e.target.value ? parseFloat(e.target.value) : null,
+                                                        })
+                                                    }
+                                                />
+                                            </div>
+                                        )}
+                                    </Field>
+                                </FormItem>
+                                <FormItem label="Min Discount (%)" className="mb-0">
+                                    <Field name="min_discount">
+                                        {({ field }: FieldProps<any>) => (
+                                            <input
+                                                type="number"
+                                                placeholder="Enter minimum discount"
+                                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-shadow shadow-sm hover:shadow-md"
+                                                {...field}
+                                                onChange={(e) =>
+                                                    localDispatchState({
+                                                        type: 'SET_MIN_DISCOUNT',
+                                                        payload: e.target.value ? parseFloat(e.target.value) : null,
+                                                    })
+                                                }
+                                            />
+                                        )}
+                                    </Field>
+                                </FormItem>
+                                <FormItem label="Max Price ($)" className="mb-0">
+                                    <Field name="max_price">
+                                        {({ field }: FieldProps<any>) => (
+                                            <input
+                                                type="number"
+                                                placeholder="Enter maximum price"
+                                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-shadow shadow-sm hover:shadow-md"
+                                                {...field}
+                                                onChange={(e) =>
+                                                    localDispatchState({
+                                                        type: 'SET_MAX_PRICE',
+                                                        payload: e.target.value ? parseFloat(e.target.value) : null,
+                                                    })
+                                                }
+                                            />
+                                        )}
+                                    </Field>
+                                </FormItem>
+                                <FormItem label="Min Price ($)" className="mb-0">
+                                    <Field name="min_price">
+                                        {({ field }: FieldProps<any>) => (
+                                            <input
+                                                type="number"
+                                                placeholder="Enter minimum price"
+                                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-shadow shadow-sm hover:shadow-md"
+                                                {...field}
+                                                onChange={(e) =>
+                                                    localDispatchState({
+                                                        type: 'SET_MIN_PRICE',
+                                                        payload: e.target.value ? parseFloat(e.target.value) : null,
+                                                    })
+                                                }
+                                            />
+                                        )}
+                                    </Field>
+                                </FormItem>
+                            </div>
+                        </div>
                     )}
-                </TabContent>
+                </div>
+
+                <div className="flex justify-center mt-8 pt-4 border-t border-gray-200">
+                    <Field>
+                        {({ form }: FieldProps<any>) => (
+                            <Button
+                                type="button"
+                                variant="new"
+                                onClick={() => handleAddFilters(form.values)}
+                                className="px-8 py-3 text-lg font-medium shadow-md hover:shadow-lg transition-shadow"
+                            >
+                                Apply Filters
+                            </Button>
+                        )}
+                    </Field>
+                </div>
             </Tabs>
-
-            <Button variant="yellow" size="sm" onClick={() => setExtraFields(!extraFields)}>
-                {extraFields ? 'Hide' : 'Show'} Extra Filters
-            </Button>
-
-            {extraFields && (
-                <>
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                        <FormItem label="Max Discount for Filters">
-                            <Field name="max_discount">
-                                {({ field }: FieldProps<any>) => (
-                                    <input
-                                        type="number"
-                                        placeholder="Max Discount"
-                                        className="w-full p-2 border rounded"
-                                        {...field}
-                                        onChange={(e) =>
-                                            localDispatchState({
-                                                type: 'SET_MAX_DISCOUNT',
-                                                payload: e.target.value ? parseFloat(e.target.value) : null,
-                                            })
-                                        }
-                                    />
-                                )}
-                            </Field>
-                        </FormItem>
-                        <FormItem label="Min Discount for Filters">
-                            <Field name="min_discount">
-                                {({ field }: FieldProps<any>) => (
-                                    <input
-                                        type="number"
-                                        placeholder="Min Discount"
-                                        className="w-full p-2 border rounded"
-                                        {...field}
-                                        onChange={(e) =>
-                                            localDispatchState({
-                                                type: 'SET_MIN_DISCOUNT',
-                                                payload: e.target.value ? parseFloat(e.target.value) : null,
-                                            })
-                                        }
-                                    />
-                                )}
-                            </Field>
-                        </FormItem>
-                        <FormItem label="Max Price for Filters">
-                            <Field name="max_price">
-                                {({ field }: FieldProps<any>) => (
-                                    <input
-                                        type="number"
-                                        placeholder="Max Price"
-                                        className="w-full p-2 border rounded"
-                                        {...field}
-                                        onChange={(e) =>
-                                            localDispatchState({
-                                                type: 'SET_MAX_PRICE',
-                                                payload: e.target.value ? parseFloat(e.target.value) : null,
-                                            })
-                                        }
-                                    />
-                                )}
-                            </Field>
-                        </FormItem>
-                        <FormItem label="Min Price for Filters">
-                            <Field name="min_price">
-                                {({ field }: FieldProps<any>) => (
-                                    <input
-                                        type="number"
-                                        placeholder="Min Price"
-                                        className="w-full p-2 border rounded"
-                                        {...field}
-                                        onChange={(e) =>
-                                            localDispatchState({
-                                                type: 'SET_MIN_PRICE',
-                                                payload: e.target.value ? parseFloat(e.target.value) : null,
-                                            })
-                                        }
-                                    />
-                                )}
-                            </Field>
-                        </FormItem>
-                    </div>
-                </>
-            )}
-            <div className="flex flex-col gap-3 xl:flex-row  mt-4 justify-center">
-                <Field>
-                    {({ form }: FieldProps<any>) => (
-                        <Button type="button" variant="new" onClick={() => handleAddFilters(form.values)}>
-                            Search Strings
-                        </Button>
-                    )}
-                </Field>
-            </div>
         </div>
     )
 }

@@ -2,14 +2,14 @@
 import { Button, FormContainer, Steps } from '@/components/ui'
 import { Form, Formik } from 'formik'
 import React, { useEffect, useState, useRef } from 'react'
-import OfferForms from '../offersUtils/OfferForms'
 import { useParams } from 'react-router-dom'
-import axios from 'axios'
 import { OfferFormTypes } from '../../offerEngineCommon'
 import { useOfferFunctions } from '../offersUtils/useOfferFunctions'
-import { getChangedValues, hasChanges } from '@/common/objectDiff'
+import { getChangedValues } from '@/common/objectDiff'
 import OfferFormStep1 from '../offersUtils/OfferFormStep1'
 import OfferFormStep2 from '../offersUtils/OfferFormStep2'
+import { offersService } from '@/store/services/offersService'
+import { notification } from 'antd'
 
 const OffersEdit = () => {
     const { id } = useParams()
@@ -17,20 +17,32 @@ const OffersEdit = () => {
     const [buyFilterId, setBuyFilterId] = useState<any>(undefined)
     const [getFilterId, setGetFilterId] = useState<any>(undefined)
     const [currentStep, setCurrentStep] = useState(0)
+    const [editOffer, offerResponse] = offersService.useOffersEditMutation()
     const initialValuesRef = useRef<any>(null)
-
-    const fetchOfferDetails = async () => {
-        try {
-            const response = await axios.get(`http://slikk-offer-lb-new-431979695.ap-south-1.elb.amazonaws.com/v1/offers/${id}`)
-            setOffersData(response?.data?.body?.data)
-        } catch (error) {
-            console.error('Error fetching offer details:', error)
-        }
-    }
+    const { data, isSuccess } = offersService.useOffersDetailQuery(
+        {
+            id: id as string,
+        },
+        { skip: !id },
+    )
 
     useEffect(() => {
-        fetchOfferDetails()
-    }, [id])
+        if (isSuccess) {
+            setOffersData(data?.body?.data || null)
+        }
+    }, [id, data, isSuccess])
+
+    useEffect(() => {
+        if (offerResponse.isSuccess) {
+            console.log('offerResponse', offerResponse)
+            notification.success({ message: offerResponse?.data?.message || 'Offer updated successfully' })
+            setCurrentStep(0)
+        }
+        if (offerResponse.isError) {
+            notification.error({ message: (offerResponse?.error as any)?.data?.message || 'Something went wrong' })
+            console.log('offerResponse error', offerResponse)
+        }
+    }, [offerResponse])
 
     useEffect(() => {
         if (offersData) {
@@ -50,23 +62,27 @@ const OffersEdit = () => {
     const handleSubmit = async (values: any) => {
         if (!initialValuesRef.current) return
 
-        const changedValues = getChangedValues(values, initialValuesRef.current)
-        if (!hasChanges(values, initialValuesRef.current)) {
-            alert('No changes detected')
-            return
+        const mandatoryFields = {
+            offer_name: values?.offer_name,
+            store_ids: values?.store?.id ? [values?.store?.id] : [],
+            slab_id: values?.slab_id,
+            discount_type: values?.discount_type,
+            discount_value: values?.discount_value,
+            start_date: values?.start_date,
+            end_date: values?.end_date,
+            buy_quantity: values?.buy_quantity,
+            buy_filter_id: values?.buy_filter_id || buyFilterId,
         }
 
-        try {
-            const response = await axios.patch(
-                `http://slikk-offer-lb-new-431979695.ap-south-1.elb.amazonaws.com/v1/offers/${id}`,
-                changedValues,
-            )
-            console.log('Update successful:', response.data)
-            initialValuesRef.current = { ...values }
-            fetchOfferDetails()
-        } catch (error) {
-            console.error('Error updating offer:', error)
+        const changedValues = getChangedValues(values, initialValuesRef.current)
+
+        const finalPayload = {
+            id: id,
+            ...mandatoryFields,
+            ...changedValues,
         }
+
+        await editOffer({ finalPayload })
     }
 
     return (
@@ -116,8 +132,8 @@ const OffersEdit = () => {
                                     <Button
                                         type="button"
                                         variant="pending"
-                                        onClick={() => setCurrentStep((prev) => prev - 1)}
                                         className="mr-2 bg-gray-600"
+                                        onClick={() => setCurrentStep((prev) => prev - 1)}
                                     >
                                         Previous
                                     </Button>
@@ -126,8 +142,8 @@ const OffersEdit = () => {
                                     <Button
                                         type="button"
                                         variant="accept"
-                                        onClick={() => setCurrentStep((prev) => prev + 1)}
                                         className="mr-2 bg-gray-600"
+                                        onClick={() => setCurrentStep((prev) => prev + 1)}
                                     >
                                         Next
                                     </Button>
@@ -140,8 +156,8 @@ const OffersEdit = () => {
                                         <Button
                                             type="button"
                                             variant="pending"
-                                            onClick={() => setCurrentStep((prev) => prev - 1)}
                                             className="mr-2 mt-5 bg-gray-600"
+                                            onClick={() => setCurrentStep((prev) => prev - 1)}
                                         >
                                             Previous
                                         </Button>

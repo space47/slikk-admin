@@ -14,7 +14,7 @@ const OffersTable = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const [globalFilter, setGlobalFilter] = useState('')
-    const { offers, page, pageSize, setPage, setPageSize, isError, error } = useOffersApi()
+    const { offers, page, pageSize, setPage, setPageSize, isError, error, count } = useOffersApi()
 
     const columns = useOfferColumns()
 
@@ -41,6 +41,8 @@ const OffersTable = () => {
         }
     }
 
+    console.log('offers', offers)
+
     return (
         <div className="p-2 shadow-md rounded-lg">
             <div className="flex justify-between mb-4">
@@ -65,9 +67,9 @@ const OffersTable = () => {
                 <TablePagination
                     page={page}
                     pageSize={pageSize}
+                    count={count}
                     onPageChange={onPageChange}
                     onSelectChange={onSelectChange}
-                    count={offers.length}
                 />
             </div>
         </div>

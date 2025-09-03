@@ -28,6 +28,10 @@ export const GET_REWARD_TYPE = [
     { label: 'PERCENTAGE', value: 'PERCENTAGE' },
     { label: 'FLAT', value: 'FLAT' },
 ]
+export const APPLY_TYPE = [
+    { label: 'PRODUCT', value: 'PRODUCT' },
+    { label: 'USER', value: 'USER' },
+]
 
 // Missing keys from offersFormList (present in JSON but not in array):
 // "daily_time_windows"
