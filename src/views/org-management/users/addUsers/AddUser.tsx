@@ -509,14 +509,12 @@ const AddUser = () => {
                                 )}
                             </div>
 
-                            {storeAssign && (
-                                <StoreAssignComponent
-                                    storePicker={storePicker}
-                                    setStorePicker={setStorePicker}
-                                    mobile={mobileNumber}
-                                    profile={[]}
-                                />
-                            )}
+                            <StoreAssignComponent
+                                storePicker={storePicker}
+                                setStorePicker={setStorePicker}
+                                mobile={mobileNumber}
+                                profile={[]}
+                            />
 
                             {/* User Permissions Section */}
                             <div className="mb-10">

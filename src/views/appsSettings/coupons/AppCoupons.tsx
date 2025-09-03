@@ -114,7 +114,7 @@ const AppCoupons = () => {
 
     const hanldeDelete = async () => {
         const body = {
-            expiry_date: moment().format('YYYY-MM-DD'),
+            is_active: false,
         }
         try {
             const res = await axioisInstance.patch(`merchant/coupon?coupon_code=${couponCode}`, body)

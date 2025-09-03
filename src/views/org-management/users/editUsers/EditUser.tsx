@@ -194,7 +194,9 @@ const BrandUserEdit = () => {
 
     // permissions.................................................................
     const handlePermissionSelect = (id: number) => {
-        setSelectedPermissions((prevSelected) => (prevSelected.includes(id) ? prevSelected.filter((permId) => permId !== id) : [...prevSelected, id]))
+        setSelectedPermissions((prevSelected) =>
+            prevSelected.includes(id) ? prevSelected.filter((permId) => permId !== id) : [...prevSelected, id],
+        )
     }
     const handleAddPermissions = async () => {
         const alreadyAdded = selectedPermissions.filter((permId) => addedPermissions.some((added) => added.id === permId))
@@ -206,7 +208,9 @@ const BrandUserEdit = () => {
             })
         }
 
-        const selected = getPermission?.filter((perm) => selectedPermissions.includes(perm.id) && !addedPermissions.some((added) => added.id === perm.id))
+        const selected = getPermission?.filter(
+            (perm) => selectedPermissions.includes(perm.id) && !addedPermissions.some((added) => added.id === perm.id),
+        )
 
         console.log('Permission Data', selected)
 
@@ -324,7 +328,9 @@ const BrandUserEdit = () => {
             })
         }
 
-        const selected = companyList?.filter((perm) => selectedCompany.includes(perm.id) && !addedCompany.some((added) => added.id === perm.id))
+        const selected = companyList?.filter(
+            (perm) => selectedCompany.includes(perm.id) && !addedCompany.some((added) => added.id === perm.id),
+        )
 
         setAddedCompany((prevAdded) => [...prevAdded, ...selected])
 
@@ -441,7 +447,10 @@ const BrandUserEdit = () => {
                     onSubmit={handleSubmit}
                 >
                     {({ values, touched, errors, resetForm }) => (
-                        <Form className="w-full bg-blue-50 shadow-xl rounded-xl p-6 transition-all duration-200 hover:shadow-2xl" onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}>
+                        <Form
+                            className="w-full bg-blue-50 shadow-xl rounded-xl p-6 transition-all duration-200 hover:shadow-2xl"
+                            onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
+                        >
                             <div className="text-2xl font-bold text-gray-800 mb-8 pb-2 border-b border-gray-200">EDIT USER DETAILS</div>
 
                             <FormContainer>
@@ -504,7 +513,12 @@ const BrandUserEdit = () => {
                                     </FormContainer>
                                 )}
 
-                                {storeAssign && <StoreAssignComponent storePicker={storePicker} setStorePicker={setStorePicker} mobile={mobile} profile={userData?.store} />}
+                                <StoreAssignComponent
+                                    storePicker={storePicker}
+                                    setStorePicker={setStorePicker}
+                                    mobile={mobile}
+                                    profile={userData?.store}
+                                />
 
                                 {accessDenied?.permission ? (
                                     <AccessDenied particularName="User Permissions" />
@@ -530,7 +544,11 @@ const BrandUserEdit = () => {
 
                                 {/* Submit & Reset Buttons */}
                                 <FormItem className="mt-10 flex justify-center gap-4">
-                                    <Button variant="new" type="submit" className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-md">
+                                    <Button
+                                        variant="new"
+                                        type="submit"
+                                        className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-md"
+                                    >
                                         Submit
                                     </Button>
                                 </FormItem>
