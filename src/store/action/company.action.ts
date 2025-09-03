@@ -1,5 +1,6 @@
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { SINGLE_COMPANY_DATA, companyRequest, companyRequestSuccess } from '../types/company.types'
+import axios from 'axios'
 
 export const getUserProfileAPI = () => async (dispatch: any) => {
     try {
@@ -7,7 +8,7 @@ export const getUserProfileAPI = () => async (dispatch: any) => {
             type: companyRequest,
         })
 
-        const response = await axioisInstance.get('dashboard/user/profile')
+        const response = await axios.get('dashboard/user/profile')
 
         dispatch({
             type: 'companyRequestSuccess',

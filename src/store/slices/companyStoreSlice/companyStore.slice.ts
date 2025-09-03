@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { companyStore } from '@/store/types/companyStore.types'
+import axios from 'axios'
 
 const initialState: companyStore = {
     storeResults: [],
@@ -10,7 +11,7 @@ const initialState: companyStore = {
 
 export const fetchCompanyStore = createAsyncThunk('companyStore/fetchCompanyStore', async (_, { getState, rejectWithValue }) => {
     try {
-        const response = await axioisInstance.get(`/merchant/store`)
+        const response = await axios.get(`/merchant/store`)
 
         return {
             data: response.data?.data,

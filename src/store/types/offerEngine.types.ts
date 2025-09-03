@@ -30,3 +30,41 @@ export type OfferDataTypes = {
     get_reward_value: number
     daily_time_windows: DailyTimeWindow[]
 }
+
+export interface OfferGetData {
+    id: number
+    store_id: number
+    slab_id: number
+    offer_name: string
+    offer_scope: string // could be union if limited values, e.g. "USER" | "STORE"
+    discount_type: string // e.g. "FLAT" | "PERCENTAGE"
+    discount_value: number
+    min_purchase_amount: number
+    max_discount_amount: number
+    start_date: string // ISO datetime
+    end_date: string // ISO datetime
+    is_active: boolean
+    created_at: string // ISO datetime
+    updated_at: string // ISO datetime
+    min_order_quantity: number
+    max_order_quantity: number
+    is_multi_unit_eligible: boolean
+    set_size: number
+    max_sets: number
+    buy_quantity: number
+    buy_filter_id: number
+    get_quantity: number
+    get_filter_id: number
+    get_reward_type: string // e.g. "FREE"
+    get_reward_value: number
+    daily_time_windows: DailyTimeWindow[]
+}
+
+export interface OfferResponse {
+    body: {
+        data: OfferGetData[]
+        message: string
+        success: boolean
+    }
+    httpStatus: number
+}

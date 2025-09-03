@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { OfferDataTypes } from '@/store/types/offerEngine.types'
+import { OfferGetData } from '@/store/types/offerEngine.types'
 
 export interface OffersInitialStateType {
-    offers: OfferDataTypes[]
+    offers: OfferGetData[]
     count: number
     page: number
     pageSize: number
@@ -19,7 +19,7 @@ export const offersSlice = createSlice({
     name: 'offers',
     initialState,
     reducers: {
-        setOffersData: (state, action: PayloadAction<OfferDataTypes[]>) => {
+        setOffersData: (state, action: PayloadAction<OfferGetData[]>) => {
             state.offers = action.payload
         },
         setCount: (state, action: PayloadAction<number>) => {

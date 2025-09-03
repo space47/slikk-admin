@@ -269,7 +269,7 @@ const StockOverview = () => {
     }
 
     return (
-        <div className="p-4">
+        <div className="p-2 shadow-xl rounded-xl ">
             <div className="upper flex flex-col md:flex-row justify-between mb-5 items-center">
                 <button
                     className="xl:hidden bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg flex mb-4 justify-end items-end"

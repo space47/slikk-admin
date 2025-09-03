@@ -58,6 +58,7 @@ const CouponSeriesAdd = () => {
                 event_name: values?.event_name,
                 coupon_active_event_name: values?.coupon_active_event_name,
                 max_coupons_per_user: values?.max_coupons_per_user,
+                store_id: values?.store?.map((store: any) => store.id).join(',') || '',
                 extra_attributes: {
                     new_users_only: values?.extra_attributes?.new_users_only,
                     filters: {

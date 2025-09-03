@@ -149,6 +149,7 @@ export const useReturnOrderFunctions = ({
         try {
             const response = await axioisInstance.patch(`merchant/return_order/${returnDetails?.return_order_id}`, body)
             notification.success({ message: response?.data?.message || 'Return order created successfully.' })
+            navigate(0)
         } catch (error) {
             if (error instanceof AxiosError) {
                 notification.error({ message: error?.message || 'Failed to create return order' })

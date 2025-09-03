@@ -131,7 +131,7 @@ const TransferTable = () => {
     }
 
     return (
-        <div>
+        <div className="p-2 shadow-xl rounded-xl ">
             <div className="flex justify-between mb-5">
                 <div>
                     <Input

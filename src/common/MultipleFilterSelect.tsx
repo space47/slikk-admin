@@ -77,6 +77,7 @@ const MultiFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, isE
     const [skuInput, setSkuInput] = useState('')
     // Defensive: clone values if passed, so each instance gets its own copy
     const instanceValues = useMemo(() => (values ? JSON.parse(JSON.stringify(values)) : {}), [values])
+    const [extraFields, setExtraFields] = useState(false)
 
     const TabsArray = [
         { label: `SELECT ${isExclude ? 'EXCLUDE' : ''} FILTERS`, value: 'method_1' },
@@ -387,7 +388,11 @@ const MultiFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, isE
                 </TabContent>
             </Tabs>
 
-            {
+            <Button variant="yellow" size="sm" onClick={() => setExtraFields(!extraFields)}>
+                {extraFields ? 'Hide' : 'Show'} Extra Filters
+            </Button>
+
+            {extraFields && (
                 <>
                     <div className="grid grid-cols-2 gap-4 mt-4">
                         <FormItem label="Max Discount for Filters">
@@ -464,7 +469,7 @@ const MultiFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, isE
                         </FormItem>
                     </div>
                 </>
-            }
+            )}
             <div className="flex flex-col gap-3 xl:flex-row  mt-4 justify-center">
                 <Field>
                     {({ form }: FieldProps<any>) => (

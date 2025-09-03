@@ -151,7 +151,7 @@ const CompleteReturnModal: React.FC<Props> = ({
                             )}
                             <div className="flex flex-col gap-1">
                                 <small className="text-gray-500">
-                                    Location : <span className="font-bold">{findLocation}</span>
+                                    Location from which the item picked : <span className="font-bold">{findLocation}</span>
                                 </small>
                                 <small className="text-gray-500">
                                     Max Qty: {item.quantity} | Assigned: {assignedQty}

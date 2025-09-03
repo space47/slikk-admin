@@ -9,13 +9,11 @@ import Activity from './components/Activity'
 import CustomerInfo from './components/CustomerInfo'
 import { HiOutlineCalendar } from 'react-icons/hi'
 import isEmpty from 'lodash/isEmpty'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import moment from 'moment'
 import ReturnOrderDrawer from './components/ReturnOrderDrawer'
 import CancelModal from './components/CancelModal'
 import { FaDownload } from 'react-icons/fa'
-import { notification } from 'antd'
 import { SalesOrderDetailsResponse, scheduleSlots } from './orderList.common'
 import { Button, Dialog } from '@/components/ui'
 import TrackModal from '@/views/slikkLogistics/taskTracking/TrackModal'
@@ -25,12 +23,9 @@ import UtmModal from './components/UtmModal'
 import TwoPointMap from './components/TwoPointMap'
 import OrdersRiderActivity from './components/OrdersRiderActivity'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
-import { commonDownload } from '@/common/commonDownload'
-import { AxiosError } from 'axios'
-// import { string } from 'yup'
+import { useOrderDetailFunctions } from './orderDetailsUtils/useOrderDetailFunctions'
 
 const OrderDetails = () => {
-    const navigate = useNavigate()
     const { invoice_id } = useParams()
     const [returnOrderDrawer, setReturnOrderDrawer] = useState(false)
     const [showCancelModal, setShowCancelModal] = useState(false)
@@ -53,63 +48,10 @@ const OrderDetails = () => {
         pollingInterval: query ? 60000 : undefined,
     })
 
-    const handlemarkAsPaid = async () => {
-        try {
-            const response = await axioisInstance.post(`/user/order/${invoice_id}/payment/status`)
-            notification.success({ message: response.data.message || 'Successfully markded as Paid' })
-            navigate(0)
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    const handlePODAction = async () => {
-        try {
-            const body = { action: 'MARK_POD_COMPLETE' }
-            const response = await axioisInstance.patch(`/merchant/order/${invoice_id}`, body)
-            notification.success({ message: response.data.message || 'POD COMPLETED SUCCESSFULLY' })
-            navigate(0)
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    const handleDownload = async () => {
-        try {
-            const response = await axioisInstance.get(`/user/order/invoice/${invoice_id}`)
-            commonDownload(response, `invoice-${invoice_id}.pdf`)
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    const handleConvert = async () => {
-        const body = { action: 'EXCHANGE_TO_RETURN' }
-        try {
-            const response = await axioisInstance.patch(`/merchant/order/${invoice_id}`, body)
-            notification.success({ message: response?.data?.message || 'Successfully converted' })
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                notification.error({ message: error?.response?.data?.message || error?.message || 'Failed to convert' })
-            }
-        } finally {
-            setShowCancelExchangeModal(false)
-        }
-    }
-    const handleMarketingOrder = async () => {
-        const body = { action: 'MARK_INTERNAL_ORDER', is_internal_order: !data?.is_internal_order }
-        try {
-            const response = await axioisInstance.patch(`/merchant/order/${invoice_id}`, body)
-            notification.success({ message: response?.data?.message || 'Marketing order status updated' })
-            navigate(0)
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                notification.error({
-                    message: error?.response?.data?.message || error?.message || 'Failed to update marketing order status',
-                })
-            }
-        }
-    }
+    const { handlemarkAsPaid, handlePODAction, handleDownload, handleConvert, handleMarketingOrder } = useOrderDetailFunctions({
+        data,
+        setShowCancelExchangeModal,
+    })
 
     useEffect(() => {
         if (data?.status === 'DELIVERY_CREATED' && data?.logistic?.partner === 'Slikk' && data?.logistic?.runner_phone_number === '') {
@@ -119,13 +61,8 @@ const OrderDetails = () => {
         }
     }, [data?.logistic, data?.status])
 
-    const handleCloseTrackModal = () => {
-        setShowRiderData(false)
-    }
-
     const ReturnOrderList = ({ title, items }: { title: string; items: any[] }) => {
         if (!items || items.length === 0) return null
-
         return (
             <div className="flex flex-col xl:flex-row gap-2 items-center">
                 <span className="text-gray-700">{title}:</span>
@@ -145,7 +82,7 @@ const OrderDetails = () => {
     }
 
     return (
-        <Container className="p-4 xl:px-10 overflow-scroll scrollbar-hide ">
+        <Container className="overflow-scroll scrollbar-hide ">
             <Loading loading={loading}>
                 {!isEmpty(data) && (
                     <>
@@ -354,7 +291,7 @@ const OrderDetails = () => {
                                         />
                                     </div>
                                     {data?.logistic && (
-                                        <div className="mt-6">
+                                        <div className="mt-6 xl:w-[280px] md:w-[250px] flex-wrap break-words">
                                             <OrdersRiderActivity eventLogs={taskData} />
                                         </div>
                                     )}
@@ -442,7 +379,7 @@ const OrderDetails = () => {
                                     showTaskModal={showRiderData}
                                     setShowAssignModal={setShowRiderData}
                                     taskId={data?.logistic?.task_id}
-                                    handleCloseModal={handleCloseTrackModal}
+                                    handleCloseModal={() => setShowRiderData(false)}
                                     storeLat={data?.latitude}
                                     storeLong={data?.longitude}
                                 />

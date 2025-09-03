@@ -9,6 +9,7 @@ import Search from '@/components/template/Search'
 import SideNav from '@/components/template/SideNav'
 import View from '@/views'
 import Infor from '../template/VerticalMenuContent/Infor'
+import StoreSelect from '../template/VerticalMenuContent/StoreSelect'
 
 const HeaderActionsStart = () => {
     return (
@@ -20,6 +21,7 @@ const HeaderActionsStart = () => {
                 <div className="text-xl ">
                     <Infor />
                 </div>
+                <StoreSelect />
             </div>
         </>
     )
@@ -30,6 +32,7 @@ const HeaderActionsEnd = () => {
         <>
             {/* <LanguageSelector /> */}
             {/* <Notification /> */}
+
             <SidePanel />
             <UserDropdown hoverable={false} />
         </>

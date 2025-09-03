@@ -1,13 +1,22 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { getAllDivisionRequest } from '../types/division.types'
 
-export const getAllDivisionAPI = () => async (dispatch: any) => {
+export const getAllDivisionAPI = (storeCodes?: string | string[], searchName?: string) => async (dispatch: any) => {
+    let params: any = {}
+
+    if (storeCodes) params.store_codes = storeCodes
+    if (searchName) params.name = encodeURIComponent(searchName)
+
     try {
         dispatch({
             type: getAllDivisionRequest,
         })
 
-        const response = await axioisInstance.get('division?view=detail&dashboard=true')
+        const response = await axioisInstance.get('division?view=detail&dashboard=true', {
+            params: params,
+        })
+
         dispatch({
             type: 'getAllDivisionSuccess',
             payload: {
@@ -18,7 +27,7 @@ export const getAllDivisionAPI = () => async (dispatch: any) => {
         dispatch({
             type: 'getAllDivisionFailure',
             payload: {
-                message: err?.response.data.data,
+                message: err?.response?.data?.data ?? 'Something went wrong',
             },
         })
     }

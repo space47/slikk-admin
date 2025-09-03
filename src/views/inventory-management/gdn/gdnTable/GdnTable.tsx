@@ -141,7 +141,7 @@ const GdnTable = () => {
     }
 
     return (
-        <div>
+        <div className="p-2 shadow-xl rounded-xl ">
             <div className="flex justify-end mb-10">
                 <Button variant="new" onClick={hanldeAddGDN}>
                     Add GDN
