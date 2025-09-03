@@ -137,8 +137,10 @@ const CategoryEdit = () => {
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             'application/zip',
             'application/json',
+            'application/lottie+json',
+            'application/vnd.lottie+json',
+            'application/x-lottie',
             'video/lottie+json',
-            'application/json+Lottie,',
         ]
         const MAX_FILE_SIZE = 5000000
 
