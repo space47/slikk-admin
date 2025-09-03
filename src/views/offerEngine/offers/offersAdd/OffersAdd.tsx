@@ -6,6 +6,7 @@ import OfferFormStep1 from '../offersUtils/OfferFormStep1'
 import OfferFormStep2 from '../offersUtils/OfferFormStep2'
 import { offersService } from '@/store/services/offersService'
 import { notification } from 'antd'
+import moment from 'moment'
 
 const OffersAdd = () => {
     const [buyFilterId, setBuyFilterId] = useState<string | undefined>(undefined)
@@ -27,32 +28,18 @@ const OffersAdd = () => {
     }, [offerResponse])
 
     const handleSubmit = async (values: any) => {
-        if (
-            !values?.offer_name ||
-            !values?.slab_id ||
-            !values?.discount_type ||
-            !values?.discount_value ||
-            !values?.start_date ||
-            !values?.end_date ||
-            !values?.buy_quantity ||
-            !values?.buy_filter_id
-        ) {
-            notification.error({ message: 'Incomplete fields' })
-            return
-        }
-
         console.log(values)
         const body = {
             offer_name: values?.offer_name, // mandatory
-            store_ids: values?.store?.id ? [values?.store?.id] : [], // mandatory
-            slab_id: values?.slab_id, // mandatory
+            store_ids: values?.store?.id ? values?.store_id?.join(',') : '', // mandatory
+            slab_id: values?.slab_id ? Number(values?.slab_id) : null, // mandatory
             apply_type: values?.apply_type, // PRODUCT / USER
             discount_type: values?.discount_type, //PERCENTAGE FLAT BXGY  // mandatory
             discount_value: values?.discount_value, // mandatory
             min_purchase_amount: values?.min_purchase_amount,
             max_discount_amount: values?.max_discount_amount,
-            start_date: values?.start_date, // mandatory
-            end_date: values?.end_date, // mandatory
+            start_date: moment(values?.start_date, 'YYYY-MM-DD HH:mm:ss').utc().format(), // mandatory
+            end_date: moment(values?.end_date, 'YYYY-MM-DD HH:mm:ss').utc().format(), // mandatory
             is_active: values?.is_active || false,
             min_order_quantity: values?.min_order_quantity,
             max_order_quantity: values?.max_order_quantity,

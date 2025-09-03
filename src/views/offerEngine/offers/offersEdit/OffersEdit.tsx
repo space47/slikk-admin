@@ -64,7 +64,7 @@ const OffersEdit = () => {
 
         const mandatoryFields = {
             offer_name: values?.offer_name,
-            store_ids: values?.store?.id ? [values?.store?.id] : [],
+            store_ids: values?.store?.id ? values?.store_id?.join(',') : '',
             slab_id: values?.slab_id,
             discount_type: values?.discount_type,
             discount_value: values?.discount_value,
@@ -76,13 +76,11 @@ const OffersEdit = () => {
 
         const changedValues = getChangedValues(values, initialValuesRef.current)
 
-        const finalPayload = {
+        await editOffer({
             id: id,
             ...mandatoryFields,
             ...changedValues,
-        }
-
-        await editOffer({ finalPayload })
+        })
     }
 
     return (
