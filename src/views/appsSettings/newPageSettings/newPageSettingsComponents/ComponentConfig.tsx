@@ -19,6 +19,7 @@ import {
     componentSectionBorderArray,
     componentWebNameFieldArray,
     componentWebSectionBorderArray,
+    ExtraComponentFieldsArray,
 } from '../newPageSettingsUtils/componentPageUtils'
 import { Checkbox, FormContainer, FormItem, Input } from '@/components/ui'
 import { Field } from 'formik'
@@ -121,6 +122,17 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                     </>
                 )}
 
+                {ExtraComponentFieldsArray.slice(0, 4).map((item, key) => (
+                    <FormItem key={key} label={item.label} className="w-full">
+                        <Field
+                            type={item.type}
+                            name={item.key as string}
+                            component={item?.type === 'checkbox' ? Checkbox : Input}
+                            min="0"
+                            step={0.01}
+                        />
+                    </FormItem>
+                ))}
                 <CommonSelect
                     name={`${typeName}.font_style` as string}
                     label="Font Style"
@@ -303,6 +315,19 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                         />
                     </FormItem>
                 ))}
+
+                {ExtraComponentFieldsArray.slice(4).map((item, key) => (
+                    <FormItem key={key} label={item.label} className="w-full">
+                        <Field
+                            type={item.type}
+                            name={item.key as string}
+                            component={item?.type === 'checkbox' ? Checkbox : Input}
+                            min="0"
+                            step={0.01}
+                        />
+                    </FormItem>
+                ))}
+
                 <CommonSelect
                     name={`${typeName}.web_font_style`}
                     label="Font Style"

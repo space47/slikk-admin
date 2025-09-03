@@ -190,6 +190,58 @@ const ComponentConfigArray = [
     },
 ]
 
+export const ExtraComponentFieldsArray = [
+    {
+        label: 'Component Top Padding',
+        key: 'extra_info.component_topPadding',
+        type: 'number',
+        component: { Input },
+    },
+    {
+        label: 'Component Bottom Padding',
+        key: 'extra_info.component_bottomPadding',
+        type: 'number',
+        component: { Input },
+    },
+    {
+        label: 'Component Left Padding',
+        key: 'extra_info.component_leftPadding',
+        type: 'number',
+        component: { Input },
+    },
+    {
+        label: 'Component Right Padding',
+        key: 'extra_info.component_rightPadding',
+        type: 'number',
+        component: { Input },
+    },
+
+    {
+        label: 'Web Component Top Padding',
+        key: 'extra_info.web_component_topPadding',
+        type: 'number',
+        component: { Input },
+    },
+    {
+        label: 'Web Component Bottom Padding',
+        key: 'extra_info.web_component_bottomPadding',
+        type: 'number',
+        component: { Input },
+    },
+    {
+        label: 'Web Component Left Padding',
+        key: 'extra_info.web_component_leftPadding',
+        type: 'number',
+        component: { Input },
+    },
+    {
+        label: 'Web Component Right Padding',
+        key: 'extra_info.web_component_rightPadding',
+        type: 'number',
+        component: { Input },
+    },
+]
+
 export const getComponentConfigArray = (prefix: string) => {
     return ComponentConfigArray?.map((item) => ({
         label: item?.label,
