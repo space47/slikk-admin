@@ -62,6 +62,8 @@ const AddStore = () => {
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             'application/zip',
             'application/json',
+            'video/lottie+json',
+            'application/json+Lottie,',
         ]
         const MAX_FILE_SIZE = 5000000
 
@@ -258,7 +260,7 @@ const AddStore = () => {
                                                         className="w-full"
                                                         options={companyList}
                                                         getOptionLabel={(option) => option.name}
-                                                        getOptionValue={(option) => option.id}
+                                                        getOptionValue={(option) => option.id as any}
                                                         value={selectedCompany || null}
                                                         onChange={(newVal) => {
                                                             form.setFieldValue('company', newVal?.id)
