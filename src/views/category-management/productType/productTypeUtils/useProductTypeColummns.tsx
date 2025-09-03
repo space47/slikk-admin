@@ -36,7 +36,7 @@ export const useProductTypeColummns = ({ handleDeleteClick }: props) => {
 
             { header: 'Quick Filter Tags', accessor: 'quick_filter_tags' },
             { header: 'Position', accessor: 'position' },
-            { header: 'Product Count', accessor: 'product_count' },
+            { header: 'Product Count', accessor: 'count' },
             { header: 'Gender', accessor: 'gender' },
             {
                 header: 'Active',
