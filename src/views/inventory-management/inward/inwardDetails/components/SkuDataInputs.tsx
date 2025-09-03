@@ -21,24 +21,15 @@ interface props {
     setCounter: (x: any) => number
 }
 
-const SkuDataInputs = ({
-    formData,
-    skuWiseData,
-    setQualitySentInput,
-    setBatchNumberInput,
-    setSkuWiseData,
-    batchNumberInput,
-    company,
-    setFormData,
-    setCounter,
-}: props) => {
+const SkuDataInputs = ({ formData, setQualitySentInput, setBatchNumberInput, setSkuWiseData, company, setFormData, setCounter }: props) => {
     const { document_number } = useParams()
     const handleAddSku = async () => {
         try {
             const response = await axioisInstance.get(`/goods/qualitycheck?grn_number=${document_number}&sku=${formData.sku}`)
-            const datax = response?.data?.data?.results?.find(
-                (item: any) => item?.sku === formData.sku && item?.location?.toLowerCase() === formData.location?.toLowerCase(),
-            )
+            const dataToBeMatched =
+                response?.data?.data?.results?.find(
+                    (item: any) => item?.sku === formData.sku && item?.location?.toLowerCase() === formData.location?.toLowerCase(),
+                ) || response?.data?.data?.results?.find((item: any) => item?.sku === formData.sku)
 
             if (response?.data?.data && response?.data?.data?.results?.length > 0) {
                 const newSkuData = {
@@ -47,17 +38,17 @@ const SkuDataInputs = ({
                     quantity_received: 1,
                     qc_failed: 0,
                     location: formData?.location || '',
-                    document_number: datax?.document_number,
+                    document_number: dataToBeMatched?.document_number,
                     company_id: Number(company),
-                    quantity_sent: datax?.quantity_sent || 1,
-                    batch_number: datax?.batch_number ?? '',
+                    quantity_sent: dataToBeMatched?.quantity_sent || 1,
+                    batch_number: dataToBeMatched?.batch_number ?? '',
                 }
 
                 // Update state
                 setSkuWiseData([newSkuData])
 
                 // Call handleAddGrn with fresh skuData
-                await handleAddGrn(newSkuData, datax?.sent_to_inventory, datax?.qc_done_by?.mobile)
+                await handleAddGrn(newSkuData, dataToBeMatched?.sent_to_inventory, dataToBeMatched?.qc_done_by?.mobile)
             } else {
                 notification.error({
                     message: 'Item not found in this GRN',
