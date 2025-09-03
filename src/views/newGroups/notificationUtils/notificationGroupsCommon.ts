@@ -14,14 +14,14 @@ export const OperatorArray = [
 ]
 
 export const ConditionArray = [
-    { label: 'Equal', value: 'Equal' },
-    { label: 'Not Equal', value: 'Not Equal' },
-    { label: 'Greater Than', value: 'Greater Than' },
-    { label: 'Greater or Equal', value: 'Greater or Equal' },
-    { label: 'Less Than', value: 'Less Than' },
-    { label: 'Less or Equal', value: 'Less or Equal' },
-    { label: 'Between', value: 'Between' },
-    { label: 'Not Between', value: 'Not Between' },
+    { label: 'Equal', value: '=' },
+    { label: 'Not Equal', value: '!=' },
+    { label: 'Greater Than', value: '>' },
+    { label: 'Greater or Equal', value: '>=' },
+    { label: 'Less Than', value: '<' },
+    { label: 'Less or Equal', value: '<=' },
+    { label: 'Between', value: 'BETWEEN' },
+    { label: 'Not Between', value: 'NOT BETWEEN' },
 ]
 
 export const PropertiesArray = [
