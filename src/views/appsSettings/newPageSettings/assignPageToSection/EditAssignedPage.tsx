@@ -68,7 +68,7 @@ const EditAssignedPage = () => {
 
     const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
 
-    const query = useMemo(() => `/page-sections?page_section_id=${section_id}`, [section_id])
+    const query = useMemo(() => `/page-sections?page_section_id=${section_id}&p=1&page_size=1000`, [section_id])
     const { data } = useFetchSingleData<any>({ url: query })
 
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
