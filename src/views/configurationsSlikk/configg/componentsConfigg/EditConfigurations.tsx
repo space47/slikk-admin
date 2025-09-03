@@ -52,7 +52,16 @@ const EditConfigurations = () => {
                 const entries = await Promise.all(
                     Object.entries(obj).map(async ([key, val]: any) => {
                         console.log('Value is......', val)
-                        const value = /^[0-9]+$/.test(val) ? Number(val) : val === 'true' ? true : val === 'false' ? false : val
+                        const value = key.includes('DLT_NUMBER')
+                            ? val
+                            : /^[0-9]+$/.test(val)
+                              ? Number(val)
+                              : val === 'true'
+                                ? true
+                                : val === 'false'
+                                  ? false
+                                  : val
+
                         console.log('Values to check is  number', value)
                         if (key.toLowerCase().includes('image') && Array.isArray(val)) {
                             const processedImage = await handleimage('product', val)
