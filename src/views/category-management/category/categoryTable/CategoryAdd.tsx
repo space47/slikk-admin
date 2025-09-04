@@ -143,6 +143,10 @@ const CategoryAdd = () => {
             'application/vnd.lottie+json',
             'application/x-lottie',
             'video/lottie+json',
+            'application/x-zip',
+            'application/x-zip-compressed',
+            'application/octet-stream',
+            'multipart/x-zip',
         ]
         const MAX_FILE_SIZE = 5000000
 
