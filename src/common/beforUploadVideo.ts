@@ -14,7 +14,10 @@ export const beforeVideoUpload = (file: FileList | null, fileList: File[]) => {
         'video/MOV',
         'video/quicktime',
         'video/lottie+json',
-        'application/json+Lottie,',
+        'application/x-zip',
+        'application/x-zip-compressed',
+        'application/octet-stream',
+        'multipart/x-zip',
     ]
     const MAX_FILE_SIZE = 9000000000000000
     const MAX_UPLOAD = 70000000000000
