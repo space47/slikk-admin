@@ -1,24 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, FormContainer, Steps } from '@/components/ui'
 import { Form, Formik } from 'formik'
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { OfferFormTypes } from '../../offerEngineCommon'
 import { useOfferFunctions } from '../offersUtils/useOfferFunctions'
-import { getChangedValues } from '@/common/objectDiff'
 import OfferFormStep1 from '../offersUtils/OfferFormStep1'
 import OfferFormStep2 from '../offersUtils/OfferFormStep2'
 import { offersService } from '@/store/services/offersService'
 import { notification } from 'antd'
+import { filterEmptyValues, getChangedValues } from '@/utils/apiBodyUtility'
+import { offerBodyFile } from '../offersUtils/offersCommon'
 
 const OffersEdit = () => {
     const { id } = useParams()
     const [offersData, setOffersData] = useState<OfferFormTypes | null>(null)
-    const [buyFilterId, setBuyFilterId] = useState<any>(undefined)
-    const [getFilterId, setGetFilterId] = useState<any>(undefined)
+    const [buyFilterId, setBuyFilterId] = useState<any>('')
+    const [getFilterId, setGetFilterId] = useState<any>('')
     const [currentStep, setCurrentStep] = useState(0)
     const [editOffer, offerResponse] = offersService.useOffersEditMutation()
-    const initialValuesRef = useRef<any>(null)
     const { data, isSuccess } = offersService.useOffersDetailQuery(
         {
             id: id as string,
@@ -39,7 +39,7 @@ const OffersEdit = () => {
             setCurrentStep(0)
         }
         if (offerResponse.isError) {
-            notification.error({ message: (offerResponse?.error as any)?.data?.message || 'Something went wrong' })
+            notification.error({ message: (offerResponse?.error as any)?.data?.body?.message || 'Something went wrong' })
             console.log('offerResponse error', offerResponse)
         }
     }, [offerResponse])
@@ -53,36 +53,23 @@ const OffersEdit = () => {
 
     const { initialValues } = useOfferFunctions({ offersData })
 
-    useEffect(() => {
-        if (initialValues && Object.keys(initialValues).length > 0) {
-            initialValuesRef.current = { ...initialValues }
-        }
-    }, [initialValues])
-
     const handleSubmit = async (values: any) => {
-        if (!initialValuesRef.current) return
+        console.log('values', values)
+        const { body } = offerBodyFile(values, buyFilterId, getFilterId)
+        const filteredBody = filterEmptyValues(body)
+        const changedValues = getChangedValues(initialValues, filteredBody as any)
 
-        const mandatoryFields = {
-            offer_name: values?.offer_name,
-            store_ids: values?.store?.id ? [values?.store?.id] : [],
-            slab_id: values?.slab_id,
-            discount_type: values?.discount_type,
-            discount_value: values?.discount_value,
-            start_date: values?.start_date,
-            end_date: values?.end_date,
-            buy_quantity: values?.buy_quantity,
-            buy_filter_id: values?.buy_filter_id || buyFilterId,
+        if (Object.keys(changedValues).length === 0) {
+            notification.info({
+                message: 'No changes detected',
+                description: 'You have not modified any fields.',
+            })
+            return
         }
 
-        const changedValues = getChangedValues(values, initialValuesRef.current)
+        const finalPayload = { id: Number(id), ...changedValues }
 
-        const finalPayload = {
-            id: id,
-            ...mandatoryFields,
-            ...changedValues,
-        }
-
-        await editOffer({ finalPayload })
+        await editOffer(finalPayload)
     }
 
     return (

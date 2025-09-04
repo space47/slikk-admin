@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, FormContainer, FormItem, Select, Tabs, Upload } from '@/components/ui'
+import { Button, FormItem, Select, Tabs, Upload } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { FILTER_STATE } from '@/store/types/filters.types'
@@ -66,7 +66,7 @@ const reducer = (state: state, action: Action): state => {
     }
 }
 
-const MultiFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, isExclude, isCsv, values, isSku, fieldName }: props) => {
+const MultiFilterSelect = ({ setFilterId, filterId, isOnchange, isExclude, isCsv, values, isSku, fieldName }: props) => {
     const dispatch = useAppDispatch()
     // All state is now local to each instance
     const [showAddFilter, setShowAddFilter] = useState<number[]>([])
@@ -125,7 +125,7 @@ const MultiFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, isE
             {
                 header: 'Actions',
                 cell: ({ row }: any) => (
-                    <button className="text-red-500" onClick={() => handleRemoveSku(row.original.sku)}>
+                    <button className="text-red-500" type="button" onClick={() => handleRemoveSku(row.original.sku)}>
                         Remove
                     </button>
                 ),
@@ -280,8 +280,8 @@ const MultiFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, isE
                         <div className="flex justify-between items-center mb-4">
                             <button
                                 type="button"
-                                onClick={handleAddFilter}
                                 className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium transition-colors"
+                                onClick={handleAddFilter}
                             >
                                 <IoMdAddCircle className="text-xl" />
                                 Add Filter
@@ -290,8 +290,9 @@ const MultiFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, isE
                                 type="button"
                                 variant="reject"
                                 size="sm"
-                                onClick={handleRemoveAllFilters}
                                 className="flex items-center gap-1"
+                                disabled={showAddFilter.length === 0}
+                                onClick={handleRemoveAllFilters}
                             >
                                 <MdCancel className="text-lg" />
                                 Remove All
@@ -348,9 +349,9 @@ const MultiFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, isE
                                     </div>
                                     <button
                                         type="button"
-                                        onClick={isExclude ? () => handleRemoveExcludeFilter(index) : () => handleRemoveFilter(index)}
                                         className="p-2 text-gray-400 hover:text-red-500 transition-colors rounded-full hover:bg-red-50"
                                         aria-label="Remove filter"
+                                        onClick={isExclude ? () => handleRemoveExcludeFilter(index) : () => handleRemoveFilter(index)}
                                     >
                                         <MdCancel className="text-xl" />
                                     </button>
@@ -380,6 +381,7 @@ const MultiFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, isE
                                 </div>
                                 <button
                                     className="bg-blue-600 hover:bg-blue-700 transition-all text-white px-5 py-3 rounded-lg flex items-center gap-2 font-medium shadow-sm hover:shadow-md"
+                                    type="button"
                                     onClick={handleAddSku}
                                 >
                                     <FaSearch className="text-lg" /> Search
@@ -427,8 +429,9 @@ const MultiFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, isE
                     <Button
                         variant="yellow"
                         size="sm"
-                        onClick={() => setExtraFields(!extraFields)}
+                        type="button"
                         className="flex items-center gap-2 mx-auto"
+                        onClick={() => setExtraFields(!extraFields)}
                     >
                         {extraFields ? (
                             <>
@@ -530,8 +533,8 @@ const MultiFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, isE
                             <Button
                                 type="button"
                                 variant="new"
-                                onClick={() => handleAddFilters(form.values)}
                                 className="px-8 py-3 text-lg font-medium shadow-md hover:shadow-lg transition-shadow"
+                                onClick={() => handleAddFilters(form.values)}
                             >
                                 Apply Filters
                             </Button>

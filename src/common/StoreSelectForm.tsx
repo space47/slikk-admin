@@ -6,13 +6,14 @@ import { companyStore } from '@/store/types/companyStore.types'
 import { Field, FieldProps } from 'formik'
 import React, { useEffect } from 'react'
 
-interface props {
+interface Props {
     label: string
     name: string
     customCss?: string
+    isSingle?: boolean
 }
 
-const StoreSelectForm = ({ label, name, customCss }: props) => {
+const StoreSelectForm = ({ label, name, customCss, isSingle = false }: Props) => {
     const dispatch = useAppDispatch()
     const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
 
@@ -26,20 +27,22 @@ const StoreSelectForm = ({ label, name, customCss }: props) => {
                 <FormItem label={label}>
                     <Field name={name}>
                         {({ form, field }: FieldProps) => {
-                            const selectedStores = storeResults.filter((option) =>
-                                field.value?.some((store: any) => store?.id === option.id),
-                            )
+                            // handle selected values based on isSingle
+                            const selectedValue = isSingle
+                                ? storeResults.find((option) => option.id === field.value?.id)
+                                : storeResults.filter((option) => field.value?.some((store: any) => store?.id === option.id))
+
                             return (
                                 <div className="flex flex-col gap-1 w-full max-w-md">
                                     <Select
-                                        isMulti
-                                        className={`${customCss ? customCss : 'w-full'}`}
+                                        isMulti={!isSingle}
+                                        className={customCss ?? 'w-full'}
                                         options={storeResults}
                                         getOptionLabel={(option) => option.code}
                                         getOptionValue={(option) => option.id}
-                                        value={selectedStores || null}
+                                        value={selectedValue || (isSingle ? null : [])}
                                         onChange={(newVal) => {
-                                            form.setFieldValue('store', newVal)
+                                            form.setFieldValue(name, newVal)
                                         }}
                                     />
                                 </div>

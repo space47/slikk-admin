@@ -11,6 +11,7 @@ import { ridersService } from '@/store/services/riderServices'
 import { RiMotorbikeFill } from 'react-icons/ri'
 import { TaskDetails } from './TaskCommonType'
 import { calculateDistance } from '../riderDetails/RiderUtils/RiderDetailsColumns'
+import StoreSelectComponent from '@/common/StoreSelectComponent'
 
 type ModalProps = {
     showTaskModal: boolean
@@ -42,6 +43,7 @@ const TrackModal = ({
     const [globalFilter, setGlobalFilter] = useState<string | undefined>('')
     const [mobileFilter, setMobileFilter] = useState<string | undefined>('')
     const { riderDetails } = useAppSelector<RiderDetailType>((state) => state.riderDetails)
+    const [storeId, setStoreId] = useState<any>(null)
 
     console.log('task id is', taskId)
 
@@ -75,6 +77,7 @@ const TrackModal = ({
             const riderBody = {
                 action: 'assign_rider',
                 rider_mobile: selectedRiderMobile,
+                store_id: storeId?.id,
             }
 
             const field = isOrder ? taskId : storeData?.task_id
@@ -144,6 +147,7 @@ const TrackModal = ({
                                 onChange={(e) => setMobileFilter(e.target.value)}
                             />
                         </div>
+                        <StoreSelectComponent isSingle label="Select Store" store={storeId} setStore={setStoreId} />
                     </div>
 
                     {riderDetails && (

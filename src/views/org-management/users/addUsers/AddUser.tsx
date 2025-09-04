@@ -61,8 +61,11 @@ const AddUser = () => {
     const [showSpinner, setShowSpinner] = useState(false)
     const [accessDenied, setAccessDenied] = useState({ groups: false, permission: false, company: false })
     const [storeAssign, setStoreAssign] = useState(false)
-    const [storePicker, setStorePicker] = useState('')
+    const [storePicker, setStorePicker] = useState<any>()
     const [mobileNumber, setMobileNumber] = useState('')
+    const [triggerAfter, setTriggerAfter] = useState(false)
+
+    console.log('trigger after is.....................', triggerAfter)
 
     const navigate = useNavigate()
 
@@ -215,6 +218,28 @@ const AddUser = () => {
     const handleRemoveCompany = (id: number) => {
         setAddedCompanyList((prevAdded) => prevAdded.filter((perm) => perm.id !== id))
     }
+
+    const hanldePicker = async (selectedOptions: any[] = []) => {
+        const body = {
+            mobile: mobileNumber,
+            store: storePicker?.join(','),
+        }
+
+        try {
+            const response = await axioisInstance.post(`/merchant/store/user`, body)
+            notification.success({
+                message: response?.data?.data?.message || 'Store(s) Assigned Successfully',
+            })
+            return true
+        } catch (error) {
+            notification.error({
+                message: 'Failed to assign store(s)',
+            })
+            console.error(error)
+            return false
+        }
+    }
+
     const handleSubmit = async (values: any) => {
         const groupIds = addedGroups.map((item) => item.id)
         const permissionIds = addedPermissions.map((item) => item.id)
@@ -226,15 +251,30 @@ const AddUser = () => {
             group_id: `${groupIds.join(',')}`,
             permission_id: `${permissionIds.join(',')}`,
         }
-        console.log('body', bodyData)
+
         try {
             setShowSpinner(true)
+
+            // First, create the user
             const response = await axioisInstance.post(`company/users/add`, bodyData)
             console.log('response of add users', response)
 
-            navigate('/app/users')
+            // Then assign stores if needed
+            if (storePicker.length > 0) {
+                const storeAssignmentSuccess = await hanldePicker()
+                if (!storeAssignmentSuccess) {
+                    notification.warning({
+                        message: 'User created but store assignment failed',
+                    })
+                }
+            }
+
+            notification.success({ message: response?.data?.message || 'User added successfully' })
+            setTimeout(() => {
+                navigate('/app/orgManagement/users')
+            }, 1000)
         } catch (error: any) {
-            notification.error({ message: error?.response?.data?.message || 'Failed to add' })
+            notification.error({ message: error?.response?.data?.message || 'Failed to add user' })
             console.log(error)
         } finally {
             setShowSpinner(false)
@@ -510,8 +550,9 @@ const AddUser = () => {
                             </div>
 
                             <StoreAssignComponent
-                                storePicker={storePicker}
-                                setStorePicker={setStorePicker}
+                                isAfter
+                                storePicker={storePicker as any}
+                                setStorePicker={setStorePicker as any}
                                 mobile={mobileNumber}
                                 profile={[]}
                             />

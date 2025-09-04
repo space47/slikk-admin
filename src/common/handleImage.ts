@@ -27,6 +27,10 @@ export const handleimage = async (fileType: string, files: File[]) => {
         return newData
     } catch (error) {
         console.error('Error uploading files:', error)
+        notification.error({
+            message: 'Error',
+            description: (error as any)?.response?.data?.message || 'Failed to upload image',
+        })
         return 'Error'
     }
 }

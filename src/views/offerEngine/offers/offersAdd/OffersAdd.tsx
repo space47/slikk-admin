@@ -6,6 +6,7 @@ import OfferFormStep1 from '../offersUtils/OfferFormStep1'
 import OfferFormStep2 from '../offersUtils/OfferFormStep2'
 import { offersService } from '@/store/services/offersService'
 import { notification } from 'antd'
+import { offerBodyFile } from '../offersUtils/offersCommon'
 
 const OffersAdd = () => {
     const [buyFilterId, setBuyFilterId] = useState<string | undefined>(undefined)
@@ -21,68 +22,23 @@ const OffersAdd = () => {
             setCurrentStep(0)
         }
         if (offerResponse.isError) {
-            notification.error({ message: (offerResponse?.error as any)?.data?.message || 'Something went wrong' })
+            notification.error({ message: (offerResponse?.error as any)?.data?.body?.message || 'Something went wrong' })
             console.log('offerResponse error', offerResponse)
         }
     }, [offerResponse])
 
     const handleSubmit = async (values: any) => {
-        if (
-            !values?.offer_name ||
-            !values?.slab_id ||
-            !values?.discount_type ||
-            !values?.discount_value ||
-            !values?.start_date ||
-            !values?.end_date ||
-            !values?.buy_quantity ||
-            !values?.buy_filter_id
-        ) {
-            notification.error({ message: 'Incomplete fields' })
-            return
-        }
-
         console.log(values)
-        const body = {
-            offer_name: values?.offer_name, // mandatory
-            store_ids: values?.store?.id ? [values?.store?.id] : [], // mandatory
-            slab_id: values?.slab_id, // mandatory
-            apply_type: values?.apply_type, // PRODUCT / USER
-            discount_type: values?.discount_type, //PERCENTAGE FLAT BXGY  // mandatory
-            discount_value: values?.discount_value, // mandatory
-            min_purchase_amount: values?.min_purchase_amount,
-            max_discount_amount: values?.max_discount_amount,
-            start_date: values?.start_date, // mandatory
-            end_date: values?.end_date, // mandatory
-            is_active: values?.is_active || false,
-            min_order_quantity: values?.min_order_quantity,
-            max_order_quantity: values?.max_order_quantity,
-            is_multi_unit_eligible: values?.is_multi_unit_eligible || false,
-            set_size: values?.set_size,
-            max_sets: values?.max_sets,
-            buy_quantity: values?.buy_quantity, // mandatory
-            buy_filter_id: values?.buy_filter_id || buyFilterId, // mandatory
-            get_quantity: values?.get_quantity,
-            get_filter_id: values?.get_filter_id || getFilterId,
-            get_reward_type: values?.get_reward_type, //PERCENTAGE / FLAT / CONSTANT_PRICE
-            get_reward_value: values?.get_reward_value,
-            daily_time_windows: values?.daily_time_windows?.length
-                ? values?.daily_time_windows?.map((timeWindow: any) => ({
-                      start_time: timeWindow?.start_time,
-                      end_time: timeWindow?.end_time,
-                  }))
-                : [],
-        }
-
-        console.log('body', body)
+        const { body } = offerBodyFile(values, buyFilterId, getFilterId)
         await addOffers(body)
     }
 
     return (
         <div>
             <div className="bg-gray-50 rounded-2xl">
-                <div className="mb-10">
+                <div className="mb-8 p-4">
                     <Steps current={currentStep} className="flex flex-col items-start xl:flex-row">
-                        {['Names', 'Type'].map((stepTitle, index) => (
+                        {['Offer Details', 'Discount Options'].map((stepTitle, index) => (
                             <Steps.Item
                                 key={index}
                                 title={

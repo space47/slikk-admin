@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
-import React from 'react'
-import { uniq } from 'lodash'
+import React, { useState } from 'react'
+import { useParams } from 'react-router-dom'
 
 type formData = {
     location: string
@@ -12,9 +11,7 @@ type formData = {
 
 interface props {
     formData: formData
-    getSkuData: any[]
     skuWiseData: any[]
-    data: any
     setQualitySentInput: any
     setBatchNumberInput: any
     setSkuWiseData: any
@@ -24,87 +21,73 @@ interface props {
     setCounter: (x: any) => number
 }
 
-const SkuDataInputs = ({
-    formData,
-
-    getSkuData,
-    skuWiseData,
-    data,
-    setQualitySentInput,
-    setBatchNumberInput,
-    setSkuWiseData,
-    batchNumberInput,
-    company,
-    setFormData,
-    setCounter,
-}: props) => {
-    const handleAddSku = () => {
-        const { sku, location } = formData
-        if (!sku.trim()) return
-
-        const getSameData = getSkuData?.find((item) => item.sku === sku && item?.location?.toLowerCase() === location?.toLowerCase())
-
-        const updatedData = skuWiseData.map((item) => {
-            if (item.sku === sku) {
-                return {
-                    ...item,
-                    qc_passed: item.qc_passed + 1,
-                    quantity_received: item.quantity_received + 1,
-                    qc_failed: item.quantity_received + 1 - (item.qc_passed + 1),
-                    location: location || item.location,
-                }
-            }
-            return item
-        })
-
-        if (getSameData) {
-            updatedData[0] = {
-                sku,
-                qc_passed: getSameData.qc_passed + 1,
-                quantity_received: getSameData.quantity_received + 1,
-                qc_failed: getSameData.quantity_received + 1 - (getSameData.qc_passed + 1),
-                location: getSameData?.location,
-            }
-        }
-
-        if (!updatedData.find((item) => item.sku === sku) && !getSameData) {
-            updatedData[0] = {
-                sku,
-                qc_passed: 1,
-                quantity_received: 1,
-                qc_failed: 0,
-                location: location || '',
-                document_number: data?.document_number,
-                company_id: Number(company),
-                quantity_sent: 1,
-                batch_number: batchNumberInput ?? '',
-            }
-        }
-
-        setSkuWiseData(updatedData)
-    }
-
-    const handleAddGrn = async () => {
-        const skuData = skuWiseData[0]
-        console.log('formadta', !formData?.sku)
-        const getSameData = getSkuData?.find((item) => item.sku === formData.sku)
+const SkuDataInputs = ({ formData, setQualitySentInput, setBatchNumberInput, setSkuWiseData, company, setFormData, setCounter }: props) => {
+    const [qcFailed, setQcFailed] = useState(false)
+    const { document_number } = useParams()
+    const handleAddSku = async () => {
         try {
-            if (getSameData || !formData.sku) {
-                const response = await axioisInstance.patch(`/goods/qualitycheck/${getSameData.id}`, skuData)
-                notification.success({
-                    message: response?.data?.message || 'Successfully Updated',
-                })
-                setCounter((prev: number) => prev + 1)
+            const response = await axioisInstance.get(`/goods/qualitycheck?grn_number=${document_number}&sku=${formData.sku}`)
+            const dataToBeMatched =
+                response?.data?.data?.results?.find(
+                    (item: any) => item?.sku === formData.sku && item?.location?.toLowerCase() === formData.location?.toLowerCase(),
+                ) || response?.data?.data?.results?.find((item: any) => item?.sku === formData.sku)
+
+            if (response?.data?.data && response?.data?.data?.results?.length > 0) {
+                const newSkuData = {
+                    sku: formData.sku,
+                    qc_passed: 1,
+                    quantity_received: 1,
+                    qc_failed: 0,
+                    location: formData?.location || '',
+                    document_number: dataToBeMatched?.document_number,
+                    company_id: Number(company),
+                    quantity_sent: dataToBeMatched?.quantity_sent || 1,
+                    batch_number: dataToBeMatched?.batch_number ?? '',
+                    id: dataToBeMatched?.id,
+                }
+
+                // Update state
+                setSkuWiseData([newSkuData])
+
+                // Call handleAddGrn with fresh skuData
+                await handleAddGrn(newSkuData, dataToBeMatched?.sent_to_inventory, dataToBeMatched?.qc_done_by?.mobile)
             } else {
-                const response = await axioisInstance.post(`/goods/qualitycheck`, skuData)
-                notification.success({
-                    message: response?.data?.message || 'Successfully Added',
+                notification.error({
+                    message: 'Item not found in this GRN',
                 })
-                setCounter((prev: number) => prev + 1)
             }
         } catch (error) {
+            console.error('Error during API call:', error)
+        }
+    }
+
+    const handleAddGrn = async (skuData: any, is_inventory: boolean, qcBy: string) => {
+        let qc_failed = 0
+        let qc_Set = 1
+        if (qcFailed) {
+            qc_failed = 1
+            qc_Set = -1
+        }
+
+        const body = {
+            sku: skuData?.sku || '',
+            location: skuData?.location || '',
+            quantity_sent: skuData?.quantity_sent || 1,
+            quantity_received: qc_Set,
+            qc_passed: qc_Set,
+            qc_failed: qc_failed,
+            action: 'add',
+        }
+
+        try {
+            const response = await axioisInstance.patch(`/goods/qualitycheck/${skuData?.id}`, body)
+            notification.success({
+                message: response?.data?.message || 'Successfully Added',
+            })
+            setCounter((prev: number) => prev + 1)
+        } catch (error) {
             notification.error({
-                message: getSameData ? 'Failed to Update' : 'Failed to Add',
+                message: 'Failed to Add',
             })
             console.error('Error during API call:', error)
         }
@@ -138,6 +121,18 @@ const SkuDataInputs = ({
                     onChange={handleInputChange}
                 />
             </div>
+            <div className="mb-4">
+                <label className="block text-gray-700">Is Qc Failed</label>
+                <input
+                    name="qc_failed"
+                    type="checkbox"
+                    className="ml-2"
+                    checked={qcFailed}
+                    onChange={(e) => {
+                        setQcFailed(e.target.checked)
+                    }}
+                />
+            </div>
             <div className="grid grid-cols-4 gap-2">
                 <div className="mb-4">
                     <label className="block text-gray-700">SKU</label>
@@ -145,7 +140,7 @@ const SkuDataInputs = ({
                         name="sku"
                         type="search"
                         placeholder="Enter SKU"
-                        className="w-2/3 border border-gray-300 rounded p-2"
+                        className="xl:w-[400px] border border-gray-300 rounded p-2"
                         value={formData.sku}
                         onChange={handleInputChange}
                         onKeyDown={(e) => {
@@ -155,10 +150,6 @@ const SkuDataInputs = ({
                         }}
                     />
                 </div>
-            </div>
-
-            <div className=" flex justify-end" onClick={handleAddGrn}>
-                <Button variant="accept">Add</Button>
             </div>
         </div>
     )

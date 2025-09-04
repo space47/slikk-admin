@@ -9,15 +9,10 @@ import { Pagination, Select } from '@/components/ui'
 import { Option } from '../../inwardCommon'
 import SkuDataInputs from './SkuDataInputs'
 import { FaSync } from 'react-icons/fa'
-import { inwardDetailsResponse } from '../inwardCommon'
 import LoadingSpinner from '@/common/LoadingSpinner'
 import PrinterComp from './PrinterComp'
 
-interface props {
-    data: inwardDetailsResponse
-}
-
-const SkuUpdate = ({ data }: props) => {
+const SkuUpdate = () => {
     const { document_number, company } = useParams()
     const [skuWiseData, setSkuWiseData] = useState<skuUpdateType[]>([])
     const [getSkuData, setGetSkuData] = useState<any[]>([])
@@ -64,7 +59,7 @@ const SkuUpdate = ({ data }: props) => {
         if (skuWiseData || refreshTable) {
             fetchSkuData()
         }
-    }, [page, pageSize, globalFilter, skuWiseData, refreshTable, counter])
+    }, [page, pageSize, globalFilter, refreshTable, counter])
 
     const [formData, setFormData] = useState({ location: '', sku: '' })
 
@@ -343,13 +338,11 @@ const SkuUpdate = ({ data }: props) => {
     }
 
     return (
-        <div className="p-4 flex flex-col gap-6">
+        <div className="p-4 flex flex-col gap-6 shadow-xl">
             <SkuDataInputs
                 formData={formData}
                 setBatchNumberInput={setBatchNumberInput}
-                getSkuData={getSkuData}
                 skuWiseData={skuWiseData}
-                data={data}
                 setQualitySentInput={setQualitySentInput}
                 setSkuWiseData={setSkuWiseData}
                 batchNumberInput={batchNumberInput}
