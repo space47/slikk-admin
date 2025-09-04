@@ -63,7 +63,10 @@ const AddStore = () => {
             'application/zip',
             'application/json',
             'video/lottie+json',
-            'application/json+Lottie,',
+            'application/x-zip',
+            'application/x-zip-compressed',
+            'application/octet-stream',
+            'multipart/x-zip',
         ]
         const MAX_FILE_SIZE = 5000000
 
