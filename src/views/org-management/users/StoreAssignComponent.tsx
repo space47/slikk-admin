@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FormItem, Select } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
@@ -13,9 +14,10 @@ interface props {
     mobile: string | undefined
     profile?: USER_PROFILE_DATA['store']
     customClass?: string
+    isAfter?: boolean
 }
 
-const StoreAssignComponent = ({ setStorePicker, storePicker, mobile, profile, customClass }: props) => {
+const StoreAssignComponent = ({ setStorePicker, storePicker, mobile, profile, customClass, isAfter }: props) => {
     console.log('mobile Number is ', mobile)
     const dispatch = useAppDispatch()
     const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
@@ -31,7 +33,7 @@ const StoreAssignComponent = ({ setStorePicker, storePicker, mobile, profile, cu
         dispatch(fetchCompanyStore())
     }, [dispatch])
 
-    const selectedCompanies = storeResults.filter((option) => storePicker.includes(option.id))
+    const selectedCompanies = storeResults?.filter((option) => storePicker?.includes(option.id))
 
     const handleStorePicker = async (selectedOptions: any[]) => {
         const idsArray = selectedOptions.map((opt) => opt.id)
@@ -68,7 +70,9 @@ const StoreAssignComponent = ({ setStorePicker, storePicker, mobile, profile, cu
                             getOptionLabel={(option) => option.code}
                             getOptionValue={(option) => option.id}
                             value={selectedCompanies}
-                            onChange={(newVals) => handleStorePicker(newVals || [])}
+                            onChange={(newVals) => {
+                                isAfter ? setStorePicker(newVals.map((opt) => opt.id)) : handleStorePicker(newVals || [])
+                            }}
                         />
                     </div>
                 </div>
