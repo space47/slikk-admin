@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
-import React from 'react'
+import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 type formData = {
@@ -22,6 +22,7 @@ interface props {
 }
 
 const SkuDataInputs = ({ formData, setQualitySentInput, setBatchNumberInput, setSkuWiseData, company, setFormData, setCounter }: props) => {
+    const [qcFailed, setQcFailed] = useState(false)
     const { document_number } = useParams()
     const handleAddSku = async () => {
         try {
@@ -42,6 +43,7 @@ const SkuDataInputs = ({ formData, setQualitySentInput, setBatchNumberInput, set
                     company_id: Number(company),
                     quantity_sent: dataToBeMatched?.quantity_sent || 1,
                     batch_number: dataToBeMatched?.batch_number ?? '',
+                    id: dataToBeMatched?.id,
                 }
 
                 // Update state
@@ -60,23 +62,25 @@ const SkuDataInputs = ({ formData, setQualitySentInput, setBatchNumberInput, set
     }
 
     const handleAddGrn = async (skuData: any, is_inventory: boolean, qcBy: string) => {
+        let qc_failed = 0
+        let qc_Set = 1
+        if (qcFailed) {
+            qc_failed = 1
+            qc_Set = -1
+        }
+
         const body = {
-            document_number: document_number,
-            company_id: company,
             sku: skuData?.sku || '',
             location: skuData?.location || '',
             quantity_sent: skuData?.quantity_sent || 1,
-            quantity_received: 1,
-            qc_passed: 1,
-            qc_failed: 0,
-            batch_number: skuData?.batch_number || '',
-            sent_to_inventory: is_inventory || false,
-            qc_done_by: qcBy || '',
+            quantity_received: qc_Set,
+            qc_passed: qc_Set,
+            qc_failed: qc_failed,
             action: 'add',
         }
 
         try {
-            const response = await axioisInstance.post(`/goods/qualitycheck`, body)
+            const response = await axioisInstance.patch(`/goods/qualitycheck/${skuData?.id}`, body)
             notification.success({
                 message: response?.data?.message || 'Successfully Added',
             })
@@ -115,6 +119,18 @@ const SkuDataInputs = ({ formData, setQualitySentInput, setBatchNumberInput, set
                     className="w-auto xl:w-1/6 border border-gray-300 rounded p-2"
                     value={formData.location}
                     onChange={handleInputChange}
+                />
+            </div>
+            <div className="mb-4">
+                <label className="block text-gray-700">Is Qc Failed</label>
+                <input
+                    name="qc_failed"
+                    type="checkbox"
+                    className="ml-2"
+                    checked={qcFailed}
+                    onChange={(e) => {
+                        setQcFailed(e.target.checked)
+                    }}
                 />
             </div>
             <div className="grid grid-cols-4 gap-2">
