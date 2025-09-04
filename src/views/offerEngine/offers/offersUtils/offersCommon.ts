@@ -1,3 +1,6 @@
+import moment from 'moment'
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const offersFormList = [
     { name: 'discount_value', label: 'Discount Value', type: 'number', required: true },
     { name: 'min_purchase_amount', label: 'Min Purchase Amount', type: 'number', required: false },
@@ -13,7 +16,7 @@ export const offersFormList = [
 
 export const OfferFromList1 = [
     { name: 'offer_name', label: 'Offer Name', type: 'text', required: true },
-    { name: 'slab_id', label: 'Priority List', type: 'text', required: true },
+    { name: 'slab_id', label: 'Slab', type: 'text', required: true },
     { name: 'is_active', label: 'Is Active', type: 'checkbox', required: false },
     { name: 'is_multi_unit_eligible', label: 'Is Multi Unit Eligible', type: 'checkbox', required: false },
 ]
@@ -33,5 +36,37 @@ export const APPLY_TYPE = [
     { label: 'USER', value: 'USER' },
 ]
 
-// Missing keys from offersFormList (present in JSON but not in array):
-// "daily_time_windows"
+export const offerBodyFile = (values: any, buyFilterId: number | string | undefined, getFilterId: number | string | undefined) => {
+    const body = {
+        offer_name: values?.offer_name, // mandatory
+        store_ids: values?.store?.id ? values?.store?.join(',') : '', // mandatory
+        slab_id: values?.slab_id ? Number(values?.slab_id) : null, // mandatory
+        apply_type: values?.apply_type, // PRODUCT / USER
+        discount_type: values?.discount_type, //PERCENTAGE FLAT BXGY  // mandatory
+        discount_value: values?.discount_value, // mandatory
+        min_purchase_amount: values?.min_purchase_amount,
+        max_discount_amount: values?.max_discount_amount,
+        start_date: moment(values?.start_date, 'YYYY-MM-DD HH:mm:ss').utc().format(), // mandatory
+        end_date: moment(values?.end_date, 'YYYY-MM-DD HH:mm:ss').utc().format(), // mandatory
+        is_active: values?.is_active || false,
+        min_order_quantity: values?.min_order_quantity,
+        max_order_quantity: values?.max_order_quantity,
+        is_multi_unit_eligible: values?.is_multi_unit_eligible || false,
+        set_size: values?.set_size,
+        max_sets: values?.max_sets,
+        buy_quantity: values?.buy_quantity, // mandatory
+        buy_filter_id: values?.buy_filter_id || buyFilterId, // mandatory
+        get_quantity: values?.get_quantity,
+        get_filter_id: values?.get_filter_id || getFilterId,
+        get_reward_type: values?.get_reward_type, //PERCENTAGE / FLAT / CONSTANT_PRICE
+        get_reward_value: values?.get_reward_value,
+        daily_time_windows: values?.daily_time_windows?.length
+            ? values?.daily_time_windows?.map((timeWindow: any) => ({
+                  start_time: timeWindow?.start_time,
+                  end_time: timeWindow?.end_time,
+              }))
+            : [],
+    }
+
+    return { body }
+}

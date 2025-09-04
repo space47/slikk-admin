@@ -21,6 +21,7 @@ export const beforeVideoUpload = (file: FileList | null, fileList: File[]) => {
         'application/x-zip-compressed',
         'application/octet-stream',
         'multipart/x-zip',
+        'application/zip',
     ]
     const MAX_FILE_SIZE = 9000000000000000
     const MAX_UPLOAD = 70000000000000

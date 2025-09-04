@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useParams } from 'react-router-dom'
+import StoreSelectComponent from '@/common/StoreSelectComponent'
 
 interface OrderPickerSummaryProps {
     data: any
@@ -16,6 +17,7 @@ interface OrderPickerSummaryProps {
 const OrderPickerSummary = ({ data }: OrderPickerSummaryProps) => {
     const [pickerChange, setPickerChange] = useState<string | undefined>('')
     const [pickerData, setPickerData] = useState<any[] | undefined>([])
+    const [storeId, setStoreId] = useState<any>(null)
     const { invoice_id } = useParams()
 
     const fetchPickerData = async () => {
@@ -34,12 +36,11 @@ const OrderPickerSummary = ({ data }: OrderPickerSummaryProps) => {
 
     const options = pickerData?.map((item) => ({ label: item.name, value: item.mobile }))
 
-    console.log('picker data', pickerData)
-
     const handlePickerChange = async () => {
         const body = {
             action: 'ASSIGN_PICKER',
             picker: pickerChange,
+            store_id: storeId?.id,
         }
         try {
             const response = await axioisInstance.patch(`/merchant/order/${invoice_id}`, body)
@@ -55,52 +56,59 @@ const OrderPickerSummary = ({ data }: OrderPickerSummaryProps) => {
     }
 
     return (
-        <Card className="mb-4">
-            <h5 className="mb-4 text-lg font-semibold">PICKER</h5>
+        <Card className="mb-6 rounded-2xl shadow-md border border-gray-200 bg-white">
+            <h5 className="mb-6 text-lg font-semibold text-gray-800 border-b pb-3">Order Picker</h5>
+
             <div className="flex flex-col gap-6">
-                <span className="font-bold text-sm sm:text-base">PICKER DETAILS:</span>
-                <div className="flex flex-col sm:flex-row gap-3 items-center sm:items-start">
+                {/* Picker Details */}
+                <span className="font-semibold text-sm text-gray-600">Current Picker</span>
+                <div className="flex flex-col sm:flex-row gap-4 items-center sm:items-start">
                     <Avatar shape="circle" src={data?.picker?.image} size="lg" />
-                    <div className="sm:ml-3">
-                        <div className="flex flex-col gap-1">
-                            <div className="flex gap-2 items-center">
-                                <FaUserAlt /> <span className="text-sm sm:text-base">{data?.picker?.name}</span>
+                    <div className="sm:ml-3 text-center sm:text-left">
+                        <div className="flex flex-col gap-2">
+                            <div className="flex items-center gap-2 text-gray-700">
+                                <FaUserAlt className="text-gray-500" />
+                                <span className="font-medium">{data?.picker?.name || 'N/A'}</span>
                             </div>
-                            <div className="flex gap-2 items-center">
-                                <HiPhone className="font-bold" /> <span className="text-sm sm:text-base">{data?.picker?.mobile}</span>
+                            <div className="flex items-center gap-2 text-gray-700">
+                                <HiPhone className="text-gray-500" />
+                                <span className="font-medium">{data?.picker?.mobile || 'N/A'}</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <hr className="border-t" />
-                <div className="font-bold">
-                    <div>
-                        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                            <div className="flex gap-2 text-sm sm:text-base">Change Picker:</div>
-                            <div className="w-full max-w-md">
-                                <Select
-                                    isClearable
-                                    className="w-full sm:w-1/2"
-                                    options={options}
-                                    getOptionLabel={(option) => option.label}
-                                    getOptionValue={(option) => option.value}
-                                    onChange={(newVal) => {
-                                        setPickerChange(newVal?.value)
-                                    }}
-                                />
-                            </div>
-                            <div>
-                                <Button
-                                    variant="accept"
-                                    size="sm"
-                                    disabled={!pickerChange}
-                                    className="w-full sm:w-auto"
-                                    onClick={handlePickerChange}
-                                >
-                                    Change
-                                </Button>
-                            </div>
-                        </div>
+
+                <hr className="border-gray-200" />
+
+                {/* Change Picker Section */}
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div className="flex flex-col gap-3 w-full sm:w-2/3">
+                        <Select
+                            isClearable
+                            className="w-full"
+                            options={options}
+                            placeholder="Select a new picker..."
+                            getOptionLabel={(option) => option.label}
+                            getOptionValue={(option) => option.value}
+                            onChange={(newVal) => {
+                                setPickerChange(newVal?.value)
+                            }}
+                        />
+                        <StoreSelectComponent isSingle label="Select Store" store={storeId} setStore={setStoreId} />
+                    </div>
+
+                    <div className="w-full sm:w-auto">
+                        <Button
+                            variant="accept"
+                            size="sm"
+                            disabled={!pickerChange}
+                            className="w-full sm:w-auto px-6 py-2 rounded-xl shadow-sm font-medium transition-all duration-200 
+                                       disabled:opacity-50 disabled:cursor-not-allowed 
+                                       hover:shadow-md hover:scale-[1.02]"
+                            onClick={handlePickerChange}
+                        >
+                            Change Picker
+                        </Button>
                     </div>
                 </div>
             </div>
