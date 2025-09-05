@@ -174,8 +174,6 @@ const QCtable = () => {
                 onChange={(value) => setGlobalFilter(String(value))}
             />
 
-            <div>this table</div>
-
             <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
 
             <div className="flex xl:justify-between xl:flex-row flex-col gap-3 justify-center items-center mt-3 ">
