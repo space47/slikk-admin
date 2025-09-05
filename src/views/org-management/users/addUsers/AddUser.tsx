@@ -232,9 +232,7 @@ const AddUser = () => {
             })
             return true
         } catch (error) {
-            notification.error({
-                message: 'Failed to assign store(s)',
-            })
+            notification.info({ message: 'NOTE:Store for a particular user has not been assigned' })
             console.error(error)
             return false
         }
@@ -274,7 +272,7 @@ const AddUser = () => {
                 navigate('/app/orgManagement/users')
             }, 1000)
         } catch (error: any) {
-            notification.error({ message: error?.response?.data?.message || 'Failed to add user' })
+            notification.error({ message: error?.response?.data?.message || 'User not created' })
             console.log(error)
         } finally {
             setShowSpinner(false)
