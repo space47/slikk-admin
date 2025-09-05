@@ -92,7 +92,7 @@ const QcTabs = ({
                             </div>
                         </div>
 
-                        <QCtable data={data.grn_quality_check} totalData={data.grn_quality_check.length} />
+                        <QCtable />
                     </div>
                     {showSyncModal && (
                         <Modal
@@ -117,7 +117,7 @@ const QcTabs = ({
             )}
             {tabSelect === 'sku_select' && (
                 <div>
-                    <SkuUpdate data={data} />
+                    <SkuUpdate />
                 </div>
             )}
         </div>
