@@ -19,9 +19,19 @@ interface props {
     company: any
     setFormData: any
     setCounter: (x: any) => number
+    setFailedQc: (x: any) => void
 }
 
-const SkuDataInputs = ({ formData, setQualitySentInput, setBatchNumberInput, setSkuWiseData, company, setFormData, setCounter }: props) => {
+const SkuDataInputs = ({
+    formData,
+    setQualitySentInput,
+    setBatchNumberInput,
+    setSkuWiseData,
+    company,
+    setFormData,
+    setCounter,
+    setFailedQc,
+}: props) => {
     const [qcFailed, setQcFailed] = useState(false)
     const { document_number } = useParams()
     const handleAddSku = async () => {
@@ -45,13 +55,36 @@ const SkuDataInputs = ({ formData, setQualitySentInput, setBatchNumberInput, set
                     batch_number: dataToBeMatched?.batch_number ?? '',
                     id: dataToBeMatched?.id,
                 }
-
-                // Update state
                 setSkuWiseData([newSkuData])
-
-                // Call handleAddGrn with fresh skuData
-                await handleAddGrn(newSkuData, dataToBeMatched?.sent_to_inventory, dataToBeMatched?.qc_done_by?.mobile)
+                await handleAddGrn(newSkuData)
             } else {
+                const results = response?.data?.data?.results ?? response?.data?.results ?? null
+
+                if (Array.isArray(results) && results.length === 0) {
+                    setFailedQc((prev: any) => {
+                        const arr = Array.isArray(prev) ? prev : []
+                        const idx = arr.findIndex((item) => item.sku === formData?.sku && item.location === (formData?.location ?? ''))
+
+                        if (idx !== -1) {
+                            const updated = [...arr]
+                            const currentQty = Number(updated[idx]?.quantity_sent) || 0
+                            updated[idx] = {
+                                ...updated[idx],
+                                quantity_sent: currentQty + 1,
+                            }
+                            return updated
+                        }
+
+                        return [
+                            ...arr,
+                            {
+                                sku: formData?.sku || '',
+                                location: formData?.location || '',
+                                quantity_sent: 1,
+                            },
+                        ]
+                    })
+                }
                 notification.error({
                     message: 'Item not found in this GRN',
                 })
@@ -61,13 +94,15 @@ const SkuDataInputs = ({ formData, setQualitySentInput, setBatchNumberInput, set
         }
     }
 
-    const handleAddGrn = async (skuData: any, is_inventory: boolean, qcBy: string) => {
+    const handleAddGrn = async (skuData: any) => {
         let qc_failed = 0
         let qc_Set = 1
         if (qcFailed) {
             qc_failed = 1
             qc_Set = -1
         }
+
+        console.log('here')
 
         const body = {
             sku: skuData?.sku || '',
@@ -79,8 +114,14 @@ const SkuDataInputs = ({ formData, setQualitySentInput, setBatchNumberInput, set
             action: 'add',
         }
 
+        console.log('body')
+
         try {
+            console.log('body')
             const response = await axioisInstance.patch(`/goods/qualitycheck/${skuData?.id}`, body)
+
+            // robustly resolve results
+
             notification.success({
                 message: response?.data?.message || 'Successfully Added',
             })
@@ -89,6 +130,7 @@ const SkuDataInputs = ({ formData, setQualitySentInput, setBatchNumberInput, set
             notification.error({
                 message: 'Failed to Add',
             })
+
             console.error('Error during API call:', error)
         }
 
