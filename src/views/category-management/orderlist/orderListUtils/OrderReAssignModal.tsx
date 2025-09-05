@@ -1,4 +1,5 @@
 import { Button, Dialog, Spinner } from '@/components/ui'
+import store from '@/store'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import { AxiosError } from 'axios'
@@ -11,15 +12,19 @@ interface props {
 
 const OrderReAssignModal = ({ isReAssign, setIsReAssign }: props) => {
     const [loadingAction, setLoadingAction] = useState<'picker' | 'partner' | null>(null)
+    const storeCodes = store.getState().storeSelect.store_ids
 
     const handleReassignPickerOrder = async (text: 'picker' | 'partner') => {
-        const body: { action?: string } = {}
+        const body: { action?: string; store_id?: string } = {}
 
         if (text === 'picker') {
             body.action = 'reassign_picker_orders'
         }
         if (text === 'partner') {
             body.action = 'reassign_delivery_partner'
+        }
+        if (storeCodes && storeCodes.length > 0) {
+            body.store_id = storeCodes.join(',')
         }
 
         try {
@@ -40,7 +45,7 @@ const OrderReAssignModal = ({ isReAssign, setIsReAssign }: props) => {
     return (
         <Dialog isOpen={isReAssign} onClose={() => setIsReAssign(false)}>
             <div className="flex flex-col justify-center mt-10 gap-3">
-                <Button variant="new" size="sm" disabled={loadingAction === 'picker'} onClick={() => handleReassignPickerOrder('picker')}>
+                <Button variant="new" size="sm" disabled={loadingAction === 'picker'} onClick={() => handleRePassignPickerOrder('picker')}>
                     <span className="flex justify-center items-center gap-2">
                         {loadingAction === 'picker' && <Spinner size={20} />}
                         Reassign Picker Orders
