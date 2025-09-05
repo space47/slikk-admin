@@ -45,7 +45,7 @@ const OrderReAssignModal = ({ isReAssign, setIsReAssign }: props) => {
     return (
         <Dialog isOpen={isReAssign} onClose={() => setIsReAssign(false)}>
             <div className="flex flex-col justify-center mt-10 gap-3">
-                <Button variant="new" size="sm" disabled={loadingAction === 'picker'} onClick={() => handleRePassignPickerOrder('picker')}>
+                <Button variant="new" size="sm" disabled={loadingAction === 'picker'} onClick={() => handleReassignPickerOrder('picker')}>
                     <span className="flex justify-center items-center gap-2">
                         {loadingAction === 'picker' && <Spinner size={20} />}
                         Reassign Picker Orders
