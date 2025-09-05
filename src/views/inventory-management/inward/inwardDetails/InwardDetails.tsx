@@ -1,36 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react'
-// import classNames from 'classnames'
-// import Tag from '@/components/ui/Tag'
 import Loading from '@/components/shared/Loading'
 import Container from '@/components/shared/Container'
 import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
-// import OrderProducts from './components/OrderProducts'
 import PaymentSummary from './components/PaymentSummary'
 import ShippingInfo from './components/ShippingInfo'
-// import Activity from './components/Activity'
 import CustomerInfo from './components/CustomerInfo'
 import { HiOutlineCalendar } from 'react-icons/hi'
-// import { apiGetSalesOrderDetails } from '@/services/SalesService'
-// import { useLocation } from 'react-router-dom'
 import isEmpty from 'lodash/isEmpty'
-import QCtable from './components/QCtable'
-
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-// import { ordercommon } from '@/views/category-management/orderlist/commontypes'
 import { useParams, useNavigate } from 'react-router-dom'
 import moment from 'moment'
-import { Modal, notification } from 'antd'
+import { notification } from 'antd'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
-import { FaDownload, FaSync } from 'react-icons/fa'
+import { FaDownload } from 'react-icons/fa'
 import { inwardDetailsResponse } from './inwardCommon'
 import QcTabs from './components/QcTabs'
-// import { string } from 'yup'
 
 const InwardDetails = () => {
-    // const location = useLocation()
-
     const [loading, setLoading] = useState(true)
     const [data, setData] = useState<inwardDetailsResponse>()
     const { document_number } = useParams()
