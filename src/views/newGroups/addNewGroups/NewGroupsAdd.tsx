@@ -7,6 +7,7 @@ import Papa from 'papaparse'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 import {
     ConditionArray,
+    ConditionsForEvent,
     DidAndNotArray,
     OperatorArray,
     PropertiesArray,
@@ -48,22 +49,7 @@ const NewGroupsAdd = () => {
             <Formik
                 enableReinitialize
                 initialValues={{
-                    conditions: [
-                        {
-                            didDidNot: '',
-                            event: '',
-                            operator: '',
-                            property: '',
-                            condition: '',
-                            value: '',
-                            value_a: '',
-                            value_b: '',
-                            timeFrame: '',
-                            start_date: '',
-                            end_date: '',
-                            relation: '', // AND / OR
-                        },
-                    ],
+                    conditions: [ConditionsForEvent],
                 }}
                 onSubmit={handleSubmit}
             >
@@ -100,120 +86,123 @@ const NewGroupsAdd = () => {
                         <FieldArray name="conditions">
                             {({ push, remove }) => (
                                 <>
-                                    {values.conditions.map((cond, index) => (
-                                        <div key={index}>
-                                            <FormContainer className="grid grid-cols-6 gap-3 bg-blue-50 p-4 rounded-lg mt-4">
-                                                <CommonSelect
-                                                    label="Did/Did Not"
-                                                    options={DidAndNotArray}
-                                                    name={`conditions[${index}].didDidNot`}
-                                                />
-                                                <FormItem label="Action/Event">
-                                                    <Field
-                                                        name={`conditions[${index}].event`}
-                                                        placeholder="Action/Event"
-                                                        component={Input}
+                                    {values.conditions.map((cond, index) => {
+                                        console.log('Condition:', cond)
+                                        return (
+                                            <div key={index}>
+                                                <FormContainer className="grid grid-cols-6 gap-3 bg-blue-50 p-4 rounded-lg mt-4">
+                                                    <CommonSelect
+                                                        label="Did/Did Not"
+                                                        options={DidAndNotArray}
+                                                        name={`conditions[${index}].didDidNot`}
                                                     />
-                                                </FormItem>
-                                                <CommonSelect
-                                                    label="Operator"
-                                                    options={OperatorArray}
-                                                    name={`conditions[${index}].operator`}
-                                                />
-                                                <CommonSelect
-                                                    label="Property"
-                                                    options={PropertiesArray}
-                                                    name={`conditions[${index}].property`}
-                                                />
-                                                <CommonSelect
-                                                    label="Condition"
-                                                    options={ConditionArray}
-                                                    name={`conditions[${index}].condition`}
-                                                />
-
-                                                {cond?.condition?.includes('Between') || cond?.condition?.includes('Not Between') ? (
-                                                    <FormContainer className="grid grid-cols-2 gap-2 col-span-2">
-                                                        <FormItem label="value(A)">
-                                                            <Field
-                                                                name={`conditions[${index}].value_a`}
-                                                                placeholder="Value A"
-                                                                component={Input}
-                                                            />
-                                                        </FormItem>
-                                                        <FormItem label="value(B)">
-                                                            <Field
-                                                                name={`conditions[${index}].value_b`}
-                                                                placeholder="Value B"
-                                                                component={Input}
-                                                            />
-                                                        </FormItem>
-                                                    </FormContainer>
-                                                ) : (
-                                                    <FormItem label="value">
-                                                        <Field name={`conditions[${index}].value`} placeholder="Value " component={Input} />
+                                                    <FormItem label="Action/Event">
+                                                        <Field
+                                                            name={`conditions[${index}].event`}
+                                                            placeholder="Action/Event"
+                                                            component={Input}
+                                                        />
                                                     </FormItem>
-                                                )}
-
-                                                <CommonSelect
-                                                    label="Time Frame"
-                                                    options={TimeFrameArray}
-                                                    name={`conditions[${index}].timeFrame`}
-                                                />
-                                                {cond?.timeFrame === 'custom_range' && (
-                                                    <FormContainer className="grid grid-cols-2 gap-2 items-center col-span-2">
-                                                        <FullDateForm
-                                                            name={`conditions[${index}].start_date`}
-                                                            fieldname={`conditions[${index}].start_date`}
-                                                            label="Start"
-                                                            needClass
-                                                            customClass="w-full"
-                                                        />
-                                                        <FullDateForm
-                                                            name={`conditions[${index}].end_date`}
-                                                            fieldname={`conditions[${index}].end_date`}
-                                                            label="End"
-                                                            needClass
-                                                            customClass="w-full"
-                                                        />
-                                                    </FormContainer>
-                                                )}
-                                            </FormContainer>
-
-                                            {/* AND / OR Buttons */}
-                                            <div className="flex gap-4 mt-4 justify-center items-center">
-                                                <Button
-                                                    variant="twoTone"
-                                                    type="button"
-                                                    onClick={() =>
-                                                        push({
-                                                            ...cond,
-                                                            relation: 'AND',
-                                                        })
-                                                    }
-                                                >
-                                                    AND
-                                                </Button>
-                                                <Button
-                                                    variant="twoTone"
-                                                    type="button"
-                                                    onClick={() =>
-                                                        push({
-                                                            ...cond,
-                                                            relation: 'OR',
-                                                        })
-                                                    }
-                                                >
-                                                    OR
-                                                </Button>
-                                                {index > 0 && (
-                                                    <MdDelete
-                                                        className="text-xl text-red-500 cursor-pointer hover:text-red-700"
-                                                        onClick={() => remove(index)}
+                                                    <CommonSelect
+                                                        label="Operator"
+                                                        options={OperatorArray}
+                                                        name={`conditions[${index}].operator`}
                                                     />
-                                                )}
+                                                    <CommonSelect
+                                                        label="Property"
+                                                        options={PropertiesArray}
+                                                        name={`conditions[${index}].property`}
+                                                    />
+                                                    <CommonSelect
+                                                        label="Condition"
+                                                        options={ConditionArray}
+                                                        name={`conditions[${index}].condition`}
+                                                    />
+
+                                                    {cond?.condition?.includes('BETWEEN') || cond?.condition?.includes('Not Between') ? (
+                                                        <FormContainer className="grid grid-cols-2 gap-2 col-span-2">
+                                                            <FormItem label="value(A)">
+                                                                <Field
+                                                                    name={`conditions[${index}].value_a`}
+                                                                    placeholder="Value A"
+                                                                    component={Input}
+                                                                />
+                                                            </FormItem>
+                                                            <FormItem label="value(B)">
+                                                                <Field
+                                                                    name={`conditions[${index}].value_b`}
+                                                                    placeholder="Value B"
+                                                                    component={Input}
+                                                                />
+                                                            </FormItem>
+                                                        </FormContainer>
+                                                    ) : (
+                                                        <FormItem label="value">
+                                                            <Field
+                                                                name={`conditions[${index}].value`}
+                                                                placeholder="Value "
+                                                                component={Input}
+                                                            />
+                                                        </FormItem>
+                                                    )}
+
+                                                    <CommonSelect
+                                                        label="Time Frame"
+                                                        options={TimeFrameArray}
+                                                        name={`conditions[${index}].timeFrame`}
+                                                    />
+                                                    {cond?.timeFrame === 'custom_range' && (
+                                                        <FormContainer className="grid grid-cols-2 gap-2 items-center col-span-2">
+                                                            <FullDateForm
+                                                                name={`conditions[${index}].start_date`}
+                                                                fieldname={`conditions[${index}].start_date`}
+                                                                label="Start"
+                                                            />
+                                                            <FullDateForm
+                                                                name={`conditions[${index}].end_date`}
+                                                                fieldname={`conditions[${index}].end_date`}
+                                                                label="End"
+                                                            />
+                                                        </FormContainer>
+                                                    )}
+                                                </FormContainer>
+
+                                                {/* AND / OR Buttons */}
+                                                <div className="flex gap-4 mt-4 justify-center items-center">
+                                                    <Button
+                                                        variant="twoTone"
+                                                        type="button"
+                                                        onClick={() =>
+                                                            push({
+                                                                ...cond,
+                                                                relation: 'AND',
+                                                            })
+                                                        }
+                                                    >
+                                                        AND
+                                                    </Button>
+                                                    <Button
+                                                        variant="twoTone"
+                                                        type="button"
+                                                        onClick={() =>
+                                                            push({
+                                                                ...cond,
+                                                                relation: 'OR',
+                                                            })
+                                                        }
+                                                    >
+                                                        OR
+                                                    </Button>
+                                                    {index > 0 && (
+                                                        <MdDelete
+                                                            className="text-xl text-red-500 cursor-pointer hover:text-red-700"
+                                                            onClick={() => remove(index)}
+                                                        />
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        )
+                                    })}
                                 </>
                             )}
                         </FieldArray>

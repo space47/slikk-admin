@@ -68,3 +68,18 @@ export const TimeFrameArray = [
     { label: 'Last 7 Days', value: 'last_7_days' },
     { label: 'Custom Range', value: 'custom_range' },
 ]
+
+export const ConditionsForEvent = {
+    didDidNot: '',
+    event: '',
+    operator: '',
+    property: '',
+    condition: '',
+    value: '',
+    value_a: '',
+    value_b: '',
+    timeFrame: '',
+    start_date: '',
+    end_date: '',
+    relation: '',
+}
