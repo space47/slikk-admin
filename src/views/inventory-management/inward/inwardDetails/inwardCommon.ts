@@ -46,3 +46,8 @@ export type inwardDetailsResponse = {
     total_quantity: number
     grn_quality_check: GRN_QUALITY_CHECK[]
 }
+
+export const InwardTabs = [
+    { label: 'Passed QC', value: 'passed' },
+    { label: 'Failed', value: 'failed' },
+]
