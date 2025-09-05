@@ -105,7 +105,7 @@ export const useStockOverViewColumns = ({
             {
                 header: 'Size',
                 accessorKey: 'product.size',
-                cell: ({ getValue }: any) => <span>{getValue().toUpperCase()}</span>,
+                cell: ({ getValue }: any) => <span>{getValue()?.toUpperCase() || 'N/A'}</span>,
             },
             {
                 header: 'Stock',
