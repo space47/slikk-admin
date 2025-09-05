@@ -58,16 +58,16 @@ const StockOverview = () => {
         try {
             let filterValue = ''
             if (currentSelectedPage?.value === 'sku' && globalFilter) {
-                filterValue = `&sku=${encodeURIComponent(globalFilter)}`
+                filterValue = `&sku=${encodeURIComponent(globalFilter ?? '')}`
             }
             if (currentSelectedPage?.value === 'name' && globalFilter) {
-                filterValue = `&name=${encodeURIComponent(globalFilter)}`
+                filterValue = `&name=${encodeURIComponent(globalFilter ?? '')}`
             }
             if (currentSelectedPage?.value === 'barcode' && globalFilter) {
-                filterValue = `&barcode=${encodeURIComponent(globalFilter)}`
+                filterValue = `&barcode=${encodeURIComponent(globalFilter ?? '')}`
             }
             if (currentSelectedPage?.value === 'skid' && globalFilter) {
-                filterValue = `&skid=${encodeURIComponent(globalFilter)}`
+                filterValue = `&skid=${encodeURIComponent(globalFilter ?? '')}`
             }
 
             const response = await axiosInstance.get(`inventory?p=${page}&page_size=${pageSize}&${typeFetch}${filterValue}`)
@@ -183,9 +183,6 @@ const StockOverview = () => {
             }
 
             const filteredObjects = Object.fromEntries(Object.entries(body).filter(([, val]) => val !== ''))
-
-            console.log('BODY', body)
-
             const response = await axiosInstance.patch(`inventory/${id}`, filteredObjects)
             notification.success({
                 message: 'SUCCESS',
@@ -335,7 +332,7 @@ const StockOverview = () => {
                 <span className="text-gray-500 text-lg font-bold">Stock Count:</span>
                 <span className="text-gray-900 font-normal  text-lg">{stockCount || 0}</span>
             </div>
-            <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} overflow />
+            <EasyTable mainData={data || []} columns={columns} page={page} pageSize={pageSize} overflow />
             <div className="flex flex-col md:flex-row items-center justify-between mt-4">
                 <Pagination
                     pageSize={pageSize}
