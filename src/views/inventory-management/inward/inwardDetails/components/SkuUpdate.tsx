@@ -11,6 +11,10 @@ import SkuDataInputs from './SkuDataInputs'
 import { FaSync } from 'react-icons/fa'
 import LoadingSpinner from '@/common/LoadingSpinner'
 import PrinterComp from './PrinterComp'
+import TabsCommon from '@/common/TabsCommon'
+import { InwardTabs } from '../inwardCommon'
+import { useMaterialFailedColumns } from './materialUtils/useMaterialColumns'
+import { handleDownloadCsv } from '@/common/allTypesCommon'
 
 const SkuUpdate = () => {
     const { document_number, company } = useParams()
@@ -31,7 +35,11 @@ const SkuUpdate = () => {
     const [refreshTable, setRefreshTable] = useState(false)
     const [showSpinner, setShowSpinner] = useState(false)
     const [dataForPrinter, setDataForPrinter] = useState([])
+    const [failedQc, setFailedQc] = useState<any>([])
+    const [activeTab, setActiveTab] = useState('passed')
     const [counter, setCounter] = useState(0)
+
+    console.log('failedQc', failedQc)
 
     const fetchSkuData = async () => {
         try {
@@ -290,11 +298,39 @@ const SkuUpdate = () => {
         [updatedPassed, updatedReceived, updatedLocation, skuWiseData],
     )
 
+    const failedColumns = useMaterialFailedColumns()
+
     const handleChanges = (id: number, newQuantity: number | string, setValue: any) => {
         setValue((prevQuantities: any) => ({
             ...prevQuantities,
             [id]: newQuantity,
         }))
+    }
+
+    const convertToCSV = (data: any[], columns: any[]) => {
+        const header = columns.map((col) => col.header).join(',')
+        const rows = data
+            .map((row) => {
+                return columns
+                    .map((col) => {
+                        if (col.accessorKey === 'sku') {
+                            return `${row?.sku}`
+                        } else if (col.accessorKey === 'quantity_sent') {
+                            return row?.quantity_sent
+                        } else if (col.accessorKey === 'location') {
+                            return row?.location
+                        } else {
+                            return ''
+                        }
+                    })
+                    .join(',')
+            })
+            .join('\n')
+        return `${header}\n${rows}`
+    }
+
+    const handleDownloadFailedCsv = () => {
+        handleDownloadCsv(failedQc, failedColumns, convertToCSV, 'failedQC.csv')
     }
 
     const handleEditSku = async (oLocation: string, oPassed: number, oReceived: number, oFailed: number, oSku: string) => {
@@ -349,6 +385,7 @@ const SkuUpdate = () => {
                 company={company}
                 setFormData={setFormData}
                 setCounter={setCounter as any}
+                setFailedQc={setFailedQc}
             />
             {<EasyTable noPage overflow mainData={skuWiseData} columns={columns} />}
             <div className="flex justify-start items-center mb-10">
@@ -372,25 +409,59 @@ const SkuUpdate = () => {
                         onChange={(e) => setGlobalFilter(e.target?.value)}
                     />
                 </div>
-                {showSpinner ? (
-                    <>
-                        <LoadingSpinner />
-                    </>
-                ) : (
-                    <EasyTable noPage overflow mainData={getSkuData} columns={columns2} />
-                )}
-                <div className="flex items-center justify-between mt-4">
-                    <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={(page) => setPage(page)} />
-                    <div style={{ minWidth: 130 }}>
-                        <Select<Option>
-                            size="sm"
-                            isSearchable={false}
-                            value={pageSizeOptions.find((option) => option.value === pageSize)}
-                            options={pageSizeOptions}
-                            onChange={(option) => onSelectChange(option?.value)}
-                        />
-                    </div>
+
+                <div>
+                    <TabsCommon
+                        tabLists={InwardTabs}
+                        activeTab={activeTab}
+                        handleChange={(val) => {
+                            console.log('val', val)
+                            setActiveTab(val)
+                        }}
+                    />
                 </div>
+
+                {activeTab === 'passed' && (
+                    <>
+                        {showSpinner ? (
+                            <>
+                                <LoadingSpinner />
+                            </>
+                        ) : (
+                            <EasyTable noPage overflow mainData={getSkuData} columns={columns2} />
+                        )}
+                        <div className="flex items-center justify-between mt-4">
+                            <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={(page) => setPage(page)} />
+                            <div style={{ minWidth: 130 }}>
+                                <Select<Option>
+                                    size="sm"
+                                    isSearchable={false}
+                                    value={pageSizeOptions.find((option) => option.value === pageSize)}
+                                    options={pageSizeOptions}
+                                    onChange={(option) => onSelectChange(option?.value)}
+                                />
+                            </div>
+                        </div>
+                    </>
+                )}
+                {activeTab === 'failed' && (
+                    <div className="space-y-4">
+                        {/* Action Bar */}
+                        <div className="flex justify-end">
+                            <button
+                                className="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg shadow hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
+                                onClick={handleDownloadFailedCsv}
+                            >
+                                Download Failed Files
+                            </button>
+                        </div>
+
+                        {/* Table */}
+                        <div className="rounded-2xl border border-gray-200 shadow-sm bg-white p-4">
+                            <EasyTable noPage overflow mainData={failedQc} columns={failedColumns} />
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     )
