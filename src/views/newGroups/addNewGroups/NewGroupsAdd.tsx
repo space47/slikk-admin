@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, FormContainer, FormItem, Input } from '@/components/ui'
 import { notification } from 'antd'
 import { Field, Form, Formik, FieldArray } from 'formik'
@@ -14,11 +15,13 @@ import {
     TimeFrameArray,
 } from '../notificationUtils/notificationGroupsCommon'
 import FullDateForm from '@/common/FullDateForm'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 const NewGroupsAdd = () => {
     const [spinner, setSpinner] = useState(false)
     const [csvFile, setCSVFile] = useState<any>()
     const [mobileNumbers, setMobileNumbers] = useState<string[]>([])
+    const [selectedRelation, setSelectedRelation] = useState<string | null>(null)
 
     const handleCSVFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files ? e.target.files[0] : null
@@ -40,7 +43,101 @@ const NewGroupsAdd = () => {
     }
 
     const handleSubmit = async (values: any) => {
-        console.log('Form submitted', values)
+        console.log('Form values before transformation:', values)
+        try {
+            const requestBody = {
+                name: values.cohort_name,
+                rules: {
+                    type: 'group',
+                    op: selectedRelation?.toLowerCase() || 'and',
+                    rules: values.conditions.map((condition: any) => {
+                        let propertyValue: any
+
+                        if (condition.condition?.includes('BETWEEN') || condition.condition?.includes('Not Between')) {
+                            propertyValue = [condition.value_a, condition.value_b]
+                        } else if (condition.value === 'true' || condition.value === 'false') {
+                            propertyValue = condition.value === 'true'
+                        } else if (!isNaN(condition.value) && condition.value !== '') {
+                            propertyValue = Number(condition.value)
+                        } else {
+                            propertyValue = condition.value
+                        }
+                        const timeFrame: any = {}
+                        if (condition.timeFrame && condition.timeFrame !== 'custom_range') {
+                            timeFrame.time_frame = condition.timeFrame
+                        } else if (condition.timeFrame === 'custom_range' && condition.start_date && condition.end_date) {
+                            timeFrame.start_date = condition.start_date
+                            timeFrame.end_date = condition.end_date
+                        }
+
+                        return {
+                            type: 'rule',
+                            include: condition.didDidNot === 'did',
+                            event: condition.event,
+                            properties: [
+                                {
+                                    path: condition.property,
+                                    op: mapConditionToOperator(condition.condition),
+                                    value: propertyValue,
+                                },
+                            ],
+                            ...(Object.keys(timeFrame).length > 0 && { time_frame: timeFrame }),
+                        }
+                    }),
+                },
+                ...(values.user
+                    ? { user: values.user }
+                    : csvFile
+                      ? { user: Array.isArray(mobileNumbers) ? mobileNumbers.join(',') : '' }
+                      : {}),
+            }
+
+            console.log('Transformed request body:', requestBody)
+            const res = await axioisInstance.post(' /notification/groups', requestBody)
+
+            notification.success({
+                message: res?.data?.data?.message || res?.data?.message || 'Cohort created successfully',
+            })
+        } catch (error) {
+            console.error('Error submitting form:', error)
+            notification.error({
+                message: 'Failed to create cohort',
+            })
+        } finally {
+            setSpinner(false)
+        }
+    }
+
+    // Helper function to map condition values to operator strings
+    const mapConditionToOperator = (condition: string): string => {
+        const operatorMap: { [key: string]: string } = {
+            equals: '=',
+            not_equals: '!=',
+            contains: 'contains',
+            not_contains: 'not_contains',
+            starts_with: 'starts_with',
+            ends_with: 'ends_with',
+            greater_than: '>',
+            less_than: '<',
+            greater_than_equal: '>=',
+            less_than_equal: '<=',
+            BETWEEN: 'between',
+            'Not Between': 'not_between',
+            exists: 'exists',
+            not_exists: 'not_exists',
+        }
+
+        return operatorMap[condition] || '='
+    }
+
+    const handleAddCondition = (push: any, relation: string) => {
+        if (!selectedRelation) {
+            setSelectedRelation(relation)
+        }
+        push({
+            ...ConditionsForEvent,
+            relation: relation,
+        })
     }
 
     return (
@@ -56,6 +153,9 @@ const NewGroupsAdd = () => {
                 {({ values }) => (
                     <Form className="w-full shadow-xl p-3 rounded-2xl">
                         {/* CSV Upload */}
+                        <FormItem label="Cohort Name" asterisk={true}>
+                            <Field name="cohort_name" placeholder="Enter cohort name " component={Input} />
+                        </FormItem>
                         <FormContainer className="grid grid-cols-2 gap-4">
                             <FormItem label="Users">
                                 <Field name="user" placeholder="Enter user " component={Input} />
@@ -172,31 +272,29 @@ const NewGroupsAdd = () => {
                                                     <Button
                                                         variant="twoTone"
                                                         type="button"
-                                                        onClick={() =>
-                                                            push({
-                                                                ...cond,
-                                                                relation: 'AND',
-                                                            })
-                                                        }
+                                                        disabled={selectedRelation && selectedRelation !== 'AND'}
+                                                        onClick={() => handleAddCondition(push, 'AND')}
                                                     >
                                                         AND
                                                     </Button>
                                                     <Button
                                                         variant="twoTone"
                                                         type="button"
-                                                        onClick={() =>
-                                                            push({
-                                                                ...cond,
-                                                                relation: 'OR',
-                                                            })
-                                                        }
+                                                        disabled={selectedRelation && selectedRelation !== 'OR'}
+                                                        onClick={() => handleAddCondition(push, 'OR')}
                                                     >
                                                         OR
                                                     </Button>
                                                     {index > 0 && (
                                                         <MdDelete
                                                             className="text-xl text-red-500 cursor-pointer hover:text-red-700"
-                                                            onClick={() => remove(index)}
+                                                            onClick={() => {
+                                                                // If we're removing the last condition, reset the relation type
+                                                                if (values.conditions.length === 2) {
+                                                                    setSelectedRelation(null)
+                                                                }
+                                                                remove(index)
+                                                            }}
                                                         />
                                                     )}
                                                 </div>
