@@ -11,10 +11,6 @@ import { Modal, notification } from 'antd'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { FaSync } from 'react-icons/fa'
-import PaymentSummary from '@/views/inventory-management/inward/inwardDetails/components/PaymentSummary'
-import CustomerInfo from '@/views/inventory-management/inward/inwardDetails/components/CustomerInfo'
-import ShippingInfo from '@/views/inventory-management/inward/inwardDetails/components/ShippingInfo'
-import { Card } from '@/components/ui'
 import TransferDetailsTable from './TransferDetailsTable'
 
 // import { string } from 'yup'
@@ -175,7 +171,7 @@ const TransferDetails = () => {
                                     <div className="flex justify-center items-center text-xl font-bold text-red-700">NO GDN PRODUCTS</div>
                                 </>
                             ) : (
-                                <TransferDetailsTable data={data?.transfer_products || []} />
+                                <TransferDetailsTable />
                             )}
                         </div>
                         {showSyncModal && (

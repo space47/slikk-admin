@@ -273,7 +273,7 @@ const GdnDetails = () => {
                                     <div className="flex justify-center items-center text-xl font-bold text-red-700">NO GDN PRODUCTS</div>
                                 </>
                             ) : (
-                                <GDNdetailTable data={data?.gdn_products || []} />
+                                <GDNdetailTable />
                             )}
                         </div>
                         {showSyncModal && (
