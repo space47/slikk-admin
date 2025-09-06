@@ -255,6 +255,7 @@ const NewGroupsAdd = () => {
                                         console.log('Condition:', cond)
                                         return (
                                             <div key={index}>
+                                                <div className="font-bold text-sl">ADD RULES</div>
                                                 <FormContainer className="grid grid-cols-6 gap-3 bg-blue-50 p-4 rounded-lg mt-4">
                                                     <CommonSelect
                                                         label="Did/Did Not"
