@@ -78,7 +78,7 @@ const OffersEdit = () => {
             <div className="bg-gray-50 rounded-2xl">
                 <div className="mb-10">
                     <Steps current={currentStep} className="flex flex-col items-start xl:flex-row">
-                        {['Names', 'Type'].map((stepTitle, index) => (
+                        {['Offer Details', 'Discount Options'].map((stepTitle, index) => (
                             <Steps.Item
                                 key={index}
                                 title={

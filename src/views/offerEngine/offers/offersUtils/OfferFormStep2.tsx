@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Checkbox, FormContainer, FormItem, Input } from '@/components/ui'
-import { GET_REWARD_TYPE, OfferDiscountType, offersFormList } from './offersCommon'
+import { APPLY_TYPE, GET_REWARD_TYPE, GetTypesList, OfferDiscountType, offersFormList } from './offersCommon'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 import { Field } from 'formik'
 import MultiFilterSelect from '@/common/MultipleFilterSelect'
@@ -25,39 +25,55 @@ const OfferFormStep2 = ({ buyFilterId, getFilterId, setBuyFilterId, setGetFilter
     return (
         <div>
             <FormContainer>
-                <CommonSelect needClassName className="w-1/2" options={OfferDiscountType} name="discount_type" label="Offer Type(X Type)" />
-                {values?.discount_type === 'BXGY' && (
-                    <FormItem label="Buy Quantity(X)">
-                        <Field name="buy_quantity" placeholder="Enter Buy Quantity" type="number" component={Input} className="w-1/2" />
-                    </FormItem>
-                )}
+                <FormContainer className="grid grid-cols-2 gap-6">
+                    <CommonSelect
+                        needClassName
+                        className={values?.discount_type === 'BXGY' ? 'w-full' : 'w-1/2'}
+                        options={OfferDiscountType}
+                        name="discount_type"
+                        label="Offer Type(X Type)"
+                    />
+                    {values?.discount_type === 'BXGY' && (
+                        <FormItem label="Buy Quantity(X)">
+                            <Field
+                                name="buy_quantity"
+                                placeholder="Enter Buy Quantity"
+                                type="number"
+                                component={Input}
+                                className="w-full"
+                            />
+                        </FormItem>
+                    )}
+                </FormContainer>
                 {values?.discount_type !== 'BXGY' && (
                     <FormContainer className="grid grid-cols-3 gap-6">
-                        <FormItem label="Discount Value (x)">
+                        <FormItem label="Discount Value">
                             <Field name="discount_value" placeholder="Enter Discount Value" type="number" component={Input} />
                         </FormItem>
+                        <div>
+                            <CommonSelect label="Apply Type" name="apply_type" options={APPLY_TYPE} />
+                        </div>
                         <FormItem label="Min Item Quantity">
                             <Field name="min_order_quantity" placeholder="Enter Min Order Quantity" type="number" component={Input} />
                         </FormItem>
                         <FormItem label="Max Item Quantity">
                             <Field name="max_order_quantity" placeholder="Enter Max Order Quantity" type="number" component={Input} />
                         </FormItem>
+
+                        {offersFormList?.map((item, key) => {
+                            return (
+                                <FormItem label={item.label} asterisk={item?.required} key={key}>
+                                    <Field
+                                        name={item.name}
+                                        component={item.type === 'checkbox' ? Checkbox : Input}
+                                        placeholder={`Enter ${item.label}`}
+                                        type={item.type}
+                                    />
+                                </FormItem>
+                            )
+                        })}
                     </FormContainer>
                 )}
-                <FormContainer className="grid grid-cols-3 gap-6">
-                    {offersFormList?.slice(0, 4)?.map((item, key) => {
-                        return (
-                            <FormItem label={item.label} asterisk={item?.required} key={key}>
-                                <Field
-                                    name={item.name}
-                                    component={item.type === 'checkbox' ? Checkbox : Input}
-                                    placeholder={`Enter ${item.label}`}
-                                    type={item.type}
-                                />
-                            </FormItem>
-                        )
-                    })}
-                </FormContainer>
 
                 <FormItem label="Buy Filter" asterisk={true}>
                     <MultiFilterSelect
@@ -78,18 +94,11 @@ const OfferFormStep2 = ({ buyFilterId, getFilterId, setBuyFilterId, setGetFilter
                             className="w-1/2"
                             options={GET_REWARD_TYPE}
                             name="get_reward_type"
-                            label="Y Offer Type"
+                            label="Get(Y) Discount Type"
                         />
-                        <FormItem label="Is Same as Buy Filter">
-                            <Field
-                                name="is_same_as_buy_filter"
-                                component={Checkbox}
-                                type="checkbox"
-                                className="w-1/4 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-shadow shadow-sm hover:shadow-md"
-                            />
-                        </FormItem>
+
                         <FormContainer className="grid grid-cols-3 gap-6">
-                            {offersFormList?.slice(4)?.map((item, key) => {
+                            {GetTypesList?.map((item, key) => {
                                 return (
                                     <FormItem label={item.label} asterisk={item?.required} key={key}>
                                         <Field
@@ -102,6 +111,14 @@ const OfferFormStep2 = ({ buyFilterId, getFilterId, setBuyFilterId, setGetFilter
                                 )
                             })}
                         </FormContainer>
+                        <FormItem label="Is Same as Buy Filter">
+                            <Field
+                                name="is_same_as_buy_filter"
+                                component={Checkbox}
+                                type="checkbox"
+                                className="w-1/4 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-shadow shadow-sm hover:shadow-md"
+                            />
+                        </FormItem>
                         <FormItem label="Y Filter" asterisk={true}>
                             <MultiFilterSelect
                                 isCsv
