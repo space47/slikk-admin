@@ -8,6 +8,7 @@ export const useOfferFunctions = ({ offersData }: props) => {
     console.log('offersData in useOfferFunctions', offersData?.store_ids?.split(','))
     const initialValues = {
         store: offersData?.store_ids ? offersData.store_ids.split(',').map((id: string) => Number(id)) : [],
+        apply_type: offersData?.apply_type || '',
         offer_name: offersData?.offer_name || '',
         buy_filter_id: offersData?.buy_filter_id ? offersData?.buy_filter_id : '',
         get_filter_id: offersData?.get_filter_id ? offersData?.get_filter_id : '',
