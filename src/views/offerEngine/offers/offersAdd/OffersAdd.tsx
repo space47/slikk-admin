@@ -7,6 +7,7 @@ import OfferFormStep2 from '../offersUtils/OfferFormStep2'
 import { offersService } from '@/store/services/offersService'
 import { notification } from 'antd'
 import { offerBodyFile } from '../offersUtils/offersCommon'
+import { filterEmptyValues } from '@/utils/apiBodyUtility'
 
 const OffersAdd = () => {
     const [buyFilterId, setBuyFilterId] = useState<string | undefined>(undefined)
@@ -30,10 +31,8 @@ const OffersAdd = () => {
     const handleSubmit = async (values: any) => {
         console.log(values)
         const { body } = offerBodyFile(values, buyFilterId, getFilterId)
-
-        console.log('body to be sent', body)
-
-        // await addOffers(body)
+        const filteredBody = filterEmptyValues(body)
+        await addOffers(filteredBody)
     }
 
     return (
@@ -115,7 +114,7 @@ const OffersAdd = () => {
                                         <div className="flex gap-20 mt-5">
                                             <FormContainer>
                                                 <Button variant="solid" type="submit" className="bg-blue-500 text-white">
-                                                    Update Offer
+                                                    Save
                                                 </Button>
                                             </FormContainer>
                                         </div>

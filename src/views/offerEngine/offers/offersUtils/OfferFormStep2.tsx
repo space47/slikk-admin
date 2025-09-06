@@ -33,7 +33,7 @@ const OfferFormStep2 = ({ buyFilterId, getFilterId, setBuyFilterId, setGetFilter
                     label="Discount Type(X Type)"
                 />
                 <FormContainer className="grid grid-cols-3 gap-6">
-                    {offersFormList?.slice(0, 5)?.map((item, key) => {
+                    {offersFormList?.slice(0, 4)?.map((item, key) => {
                         return (
                             <FormItem label={item.label} asterisk={item?.required} key={key}>
                                 <Field
@@ -52,6 +52,9 @@ const OfferFormStep2 = ({ buyFilterId, getFilterId, setBuyFilterId, setGetFilter
                     )}
                     {values?.discount_type !== 'BXGY' && (
                         <>
+                            <FormItem label="Discount Value">
+                                <Field name="discount_value" placeholder="Enter Discount Value" type="number" component={Input} />
+                            </FormItem>
                             <FormItem label="Min Item Quantity">
                                 <Field name="min_order_quantity" placeholder="Enter Min Order Quantity" type="number" component={Input} />
                             </FormItem>
@@ -81,7 +84,7 @@ const OfferFormStep2 = ({ buyFilterId, getFilterId, setBuyFilterId, setGetFilter
                             className="w-1/2"
                             options={GET_REWARD_TYPE}
                             name="get_reward_type"
-                            label="Get(Y) Reward Type"
+                            label="Y Discount Type"
                         />
                         <FormItem label="Is Same as Buy Filter">
                             <Field
@@ -92,7 +95,7 @@ const OfferFormStep2 = ({ buyFilterId, getFilterId, setBuyFilterId, setGetFilter
                             />
                         </FormItem>
                         <FormContainer className="grid grid-cols-3 gap-6">
-                            {offersFormList?.slice(5)?.map((item, key) => {
+                            {offersFormList?.slice(4)?.map((item, key) => {
                                 return (
                                     <FormItem label={item.label} asterisk={item?.required} key={key}>
                                         <Field
@@ -105,7 +108,7 @@ const OfferFormStep2 = ({ buyFilterId, getFilterId, setBuyFilterId, setGetFilter
                                 )
                             })}
                         </FormContainer>
-                        <FormItem label="Get Filter" asterisk={true}>
+                        <FormItem label="Y Filter" asterisk={true}>
                             <MultiFilterSelect
                                 isCsv
                                 isSku
