@@ -31,6 +31,7 @@ export type OfferFormTypes = {
     id?: number
     store_ids?: string
     slab_id?: number
+    apply_type?: string
     offer_name?: string
     discount_type?: 'PERCENTAGE' | 'FLAT' | string // you can refine allowed values
     discount_value?: number

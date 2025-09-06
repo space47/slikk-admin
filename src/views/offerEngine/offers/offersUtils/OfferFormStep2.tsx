@@ -55,8 +55,8 @@ const OfferFormStep2 = ({ buyFilterId, getFilterId, setBuyFilterId, setGetFilter
                             <FormItem label="Min Item Quantity">
                                 <Field name="min_order_quantity" placeholder="Enter Min Order Quantity" type="number" component={Input} />
                             </FormItem>
-                            <FormItem label="Min Item Quantity">
-                                <Field name="min_order_quantity" placeholder="Enter Min Order Quantity" type="number" component={Input} />
+                            <FormItem label="Max Item Quantity">
+                                <Field name="max_order_quantity" placeholder="Enter Max Order Quantity" type="number" component={Input} />
                             </FormItem>
                         </>
                     )}
