@@ -30,7 +30,10 @@ const OffersAdd = () => {
     const handleSubmit = async (values: any) => {
         console.log(values)
         const { body } = offerBodyFile(values, buyFilterId, getFilterId)
-        await addOffers(body)
+
+        console.log('body to be sent', body)
+
+        // await addOffers(body)
     }
 
     return (
