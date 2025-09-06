@@ -57,6 +57,8 @@ export type OfferFormTypes = {
         start?: string // HH?:mm?:ss
         end?: string // HH:mm:ss
     }[]
+    user_filter_id?: number
+    get_reward_limit?: number | null
 }
 
 export const offerFormArray = [

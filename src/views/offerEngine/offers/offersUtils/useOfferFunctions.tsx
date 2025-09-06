@@ -30,6 +30,8 @@ export const useOfferFunctions = ({ offersData }: props) => {
         end_date: offersData?.end_date || '',
         discount_type: offersData?.discount_type || '',
         get_reward_type: offersData?.get_reward_type || '',
+        groupId: offersData?.user_filter_id || '',
+        get_reward_limit: offersData?.get_reward_limit || '',
     }
     return { initialValues }
 }

@@ -25,13 +25,25 @@ const OfferFormStep2 = ({ buyFilterId, getFilterId, setBuyFilterId, setGetFilter
     return (
         <div>
             <FormContainer>
-                <CommonSelect
-                    needClassName
-                    className="w-1/2"
-                    options={OfferDiscountType}
-                    name="discount_type"
-                    label="Discount Type(X Type)"
-                />
+                <CommonSelect needClassName className="w-1/2" options={OfferDiscountType} name="discount_type" label="Offer Type(X Type)" />
+                {values?.discount_type === 'BXGY' && (
+                    <FormItem label="Buy Quantity(X)">
+                        <Field name="buy_quantity" placeholder="Enter Buy Quantity" type="number" component={Input} className="w-1/2" />
+                    </FormItem>
+                )}
+                {values?.discount_type !== 'BXGY' && (
+                    <FormContainer className="grid grid-cols-3 gap-6">
+                        <FormItem label="Discount Value (x)">
+                            <Field name="discount_value" placeholder="Enter Discount Value" type="number" component={Input} />
+                        </FormItem>
+                        <FormItem label="Min Item Quantity">
+                            <Field name="min_order_quantity" placeholder="Enter Min Order Quantity" type="number" component={Input} />
+                        </FormItem>
+                        <FormItem label="Max Item Quantity">
+                            <Field name="max_order_quantity" placeholder="Enter Max Order Quantity" type="number" component={Input} />
+                        </FormItem>
+                    </FormContainer>
+                )}
                 <FormContainer className="grid grid-cols-3 gap-6">
                     {offersFormList?.slice(0, 4)?.map((item, key) => {
                         return (
@@ -45,24 +57,6 @@ const OfferFormStep2 = ({ buyFilterId, getFilterId, setBuyFilterId, setGetFilter
                             </FormItem>
                         )
                     })}
-                    {values?.discount_type === 'BXGY' && (
-                        <FormItem label="Buy Quantity">
-                            <Field name=" buy_quantity" placeholder="Enter Buy Quantity" type="number" component={Input} />
-                        </FormItem>
-                    )}
-                    {values?.discount_type !== 'BXGY' && (
-                        <>
-                            <FormItem label="Discount Value">
-                                <Field name="discount_value" placeholder="Enter Discount Value" type="number" component={Input} />
-                            </FormItem>
-                            <FormItem label="Min Item Quantity">
-                                <Field name="min_order_quantity" placeholder="Enter Min Order Quantity" type="number" component={Input} />
-                            </FormItem>
-                            <FormItem label="Max Item Quantity">
-                                <Field name="max_order_quantity" placeholder="Enter Max Order Quantity" type="number" component={Input} />
-                            </FormItem>
-                        </>
-                    )}
                 </FormContainer>
 
                 <FormItem label="Buy Filter" asterisk={true}>
@@ -84,7 +78,7 @@ const OfferFormStep2 = ({ buyFilterId, getFilterId, setBuyFilterId, setGetFilter
                             className="w-1/2"
                             options={GET_REWARD_TYPE}
                             name="get_reward_type"
-                            label="Y Discount Type"
+                            label="Y Offer Type"
                         />
                         <FormItem label="Is Same as Buy Filter">
                             <Field

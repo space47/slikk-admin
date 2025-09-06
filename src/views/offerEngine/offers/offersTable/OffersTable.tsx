@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Input } from 'antd'
 import React, { useState } from 'react'
 import { useOffersApi } from '../offersUtils/useOffersApi'
@@ -9,14 +10,36 @@ import AccessDenied from '@/views/pages/AccessDenied'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 import TablePagination from '@/common/TablePagination'
 import { useDispatch } from 'react-redux'
+import BulkOfferUpdateModal from '../offersUtils/BulkOfferUpdateModal'
 
 const OffersTable = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const [globalFilter, setGlobalFilter] = useState('')
+    const [offerIdStore, setOfferIdStore] = useState<number[]>([])
     const { offers, page, pageSize, setPage, setPageSize, isError, error, count } = useOffersApi()
+    const [isBulkEditModal, setIsBulkEditModal] = useState(false)
 
-    const columns = useOfferColumns()
+    const handleSelectAllOfferId = (e: any) => {
+        if (e.target.checked) {
+            const allIds = offers?.map((item) => item?.id)
+            setOfferIdStore(allIds as number[])
+        } else {
+            setOfferIdStore([])
+        }
+    }
+
+    const handleSelectIds = (mobiles: number, isChecked: boolean) => {
+        setOfferIdStore((prev) => {
+            if (isChecked) {
+                return [...prev, mobiles]
+            } else {
+                return prev.filter((item) => item !== mobiles)
+            }
+        })
+    }
+
+    const columns = useOfferColumns({ offerData: offers, handleSelectAllOfferId, handleSelectIds, offerIdStore })
 
     const onPageChange = (page: number) => {
         dispatch(setPage(page))
@@ -59,6 +82,13 @@ const OffersTable = () => {
                         Add
                     </Button>
                 </div>
+                <div className="xl:mt-8">
+                    {offerIdStore?.length > 0 && (
+                        <Button variant="new" size="sm" onClick={() => setIsBulkEditModal(true)}>
+                            Bulk Update
+                        </Button>
+                    )}
+                </div>
             </div>
             <div>
                 <EasyTable overflow noPage mainData={offers} columns={columns} filterValue={globalFilter} />
@@ -72,6 +102,9 @@ const OffersTable = () => {
                     onSelectChange={onSelectChange}
                 />
             </div>
+            {isBulkEditModal && (
+                <BulkOfferUpdateModal isOpen={isBulkEditModal} setIsOpen={setIsBulkEditModal} offerIdStore={offerIdStore} />
+            )}
         </div>
     )
 }

@@ -2,20 +2,18 @@ import moment from 'moment'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const offersFormList = [
-    // { name: 'discount_value', label: 'Discount Value', type: 'number', required: true },
     { name: 'min_purchase_amount', label: 'Min Purchase Amount', type: 'number', required: false },
     { name: 'max_discount_amount', label: 'Max Discount Amount', type: 'number', required: false },
-
     { name: 'set_size', label: 'Set Size', type: 'number', required: false },
     { name: 'max_sets', label: 'Max Sets', type: 'number', required: false },
-    // { name: 'buy_quantity', label: 'Buy Quantity', type: 'number', required: true },
-    { name: 'get_quantity', label: 'Y Quantity', type: 'number', required: false },
-    { name: 'get_reward_value', label: 'Y Value', type: 'number', required: false },
+    { name: 'get_quantity', label: 'Get(Y) Quantity', type: 'number', required: false },
+    { name: 'get_reward_value', label: 'Get(Y) Discount Value', type: 'number', required: false },
+    { name: 'get_reward_limit', label: 'Get(Y) Limit', type: 'number', required: false },
 ]
 
 export const OfferFromList1 = [
     { name: 'offer_name', label: 'Offer Name', type: 'text', required: true },
-    { name: 'slab_id', label: 'Slab', type: 'text', required: true },
+    { name: 'slab_id', label: 'Slab', type: 'number', required: true },
     { name: 'is_active', label: 'Is Active', type: 'checkbox', required: false },
     // { name: 'is_multi_unit_eligible', label: 'Is Multi Unit Eligible', type: 'checkbox', required: false },
 ]
@@ -39,7 +37,7 @@ export const offerBodyFile = (values: any, buyFilterId: number | string | undefi
     console.log('values', values)
     const body = {
         offer_name: values?.offer_name || '', // mandatory
-        store_ids: values?.store?.id ? values?.store?.join(',') : '', // mandatory
+        store_ids: values?.store ? values?.store?.join(',') : '', // mandatory
         slab_id: values?.slab_id ? Number(values?.slab_id) : 1, // mandatory
         apply_type: values?.apply_type || '', // PRODUCT / USER
         discount_type: values?.discount_type || '', //PERCENTAGE FLAT BXGY  // mandatory
