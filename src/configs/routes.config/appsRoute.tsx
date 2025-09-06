@@ -1146,6 +1146,18 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsCommuncication.cohorts',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/cohorts`,
+        component: lazy(() => import('@/views/newGroups/notificationGroupsTable/NotificationGroupsTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCommuncication.cohorts',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/cohorts/add`,
+        component: lazy(() => import('@/views/newGroups/addNewGroups/NewGroupsAdd')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsCommuncication.groups',
         path: `${APP_PREFIX_PATH}/appsCommuncication/editGroups/:groupId`,
         component: lazy(() => import('@/views/sales/groupNotification/editGroup/EditGroup')),
