@@ -4,12 +4,13 @@ import { useAppDispatch, useAppSelector } from '@/store'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
 import { companyStore } from '@/store/types/companyStore.types'
 import { Field, FieldArray, FieldProps } from 'formik'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { APPLY_TYPE, OfferFromList1 } from './offersCommon'
 import FullDateForm from '@/common/FullDateForm'
 import { FaPlus, FaTrash } from 'react-icons/fa'
 import FullTimePicker from '@/common/FullTimePicker'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 interface props {
     values: any
@@ -18,6 +19,21 @@ interface props {
 const OfferFormStep1 = ({ values }: props) => {
     const dispatch = useAppDispatch()
     const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
+    const [groupDataToSend, setGroupDataToSend] = useState<any[]>([])
+
+    const fetchGroupValue = async () => {
+        try {
+            const response = await axioisInstance.get(`/notification/groups?p=1&page_size=1000&is_active=true`)
+            const data = response?.data?.data.results
+            setGroupDataToSend(data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        fetchGroupValue()
+    }, [])
 
     useEffect(() => {
         dispatch(fetchCompanyStore())
@@ -68,6 +84,33 @@ const OfferFormStep1 = ({ values }: props) => {
                             )
                         }}
                     </Field>
+                </FormItem>
+
+                <FormItem label={'Group Ids'} className={'col-span-1 w-full'}>
+                    <Field name="groupId">
+                        {({ field, form }: FieldProps<any>) => {
+                            return (
+                                <Select
+                                    isClearable
+                                    options={groupDataToSend}
+                                    value={groupDataToSend.find((option) => option.name === field.value)}
+                                    getOptionLabel={(option: any) => option.name}
+                                    getOptionValue={(option: any) => option.name}
+                                    onChange={(option) => {
+                                        const value = option ? option.value : ''
+                                        form.setFieldValue(field.name, option)
+                                        console.log('FIELD.NAME', value)
+                                    }}
+                                    onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+                                />
+                            )
+                        }}
+                    </Field>
+                    {values?.groupId && (
+                        <div className="mt-4 px-4 py-2 rounded-md bg-blue-50 border border-blue-200 text-blue-800 font-medium shadow-sm w-fit">
+                            Users: {values?.groupId?.user?.length || 0}
+                        </div>
+                    )}
                 </FormItem>
 
                 <div>
@@ -133,7 +176,7 @@ const OfferFormStep1 = ({ values }: props) => {
                             <button
                                 type="button"
                                 className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 mb-6 transition-colors shadow-sm hover:shadow-md"
-                                onClick={() => push({ start_date: '', end_date: '' })}
+                                onClick={() => push({ start: '', end: '' })}
                             >
                                 <FaPlus size={16} /> Add Time Window
                             </button>

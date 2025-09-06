@@ -2,23 +2,22 @@ import moment from 'moment'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const offersFormList = [
-    { name: 'discount_value', label: 'Discount Value', type: 'number', required: true },
+    // { name: 'discount_value', label: 'Discount Value', type: 'number', required: true },
     { name: 'min_purchase_amount', label: 'Min Purchase Amount', type: 'number', required: false },
     { name: 'max_discount_amount', label: 'Max Discount Amount', type: 'number', required: false },
-    { name: 'min_order_quantity', label: 'Min Item Quantity', type: 'number', required: false },
-    { name: 'max_order_quantity', label: 'Max Item Quantity', type: 'number', required: false },
+
     { name: 'set_size', label: 'Set Size', type: 'number', required: false },
     { name: 'max_sets', label: 'Max Sets', type: 'number', required: false },
-    { name: 'buy_quantity', label: 'Buy Quantity', type: 'number', required: true },
-    { name: 'get_quantity', label: 'Get Quantity', type: 'number', required: false },
-    { name: 'get_reward_value', label: 'Get Reward Value', type: 'number', required: false },
+    // { name: 'buy_quantity', label: 'Buy Quantity', type: 'number', required: true },
+    { name: 'get_quantity', label: 'Y Quantity', type: 'number', required: false },
+    { name: 'get_reward_value', label: 'Y Value', type: 'number', required: false },
 ]
 
 export const OfferFromList1 = [
     { name: 'offer_name', label: 'Offer Name', type: 'text', required: true },
     { name: 'slab_id', label: 'Slab', type: 'text', required: true },
     { name: 'is_active', label: 'Is Active', type: 'checkbox', required: false },
-    { name: 'is_multi_unit_eligible', label: 'Is Multi Unit Eligible', type: 'checkbox', required: false },
+    // { name: 'is_multi_unit_eligible', label: 'Is Multi Unit Eligible', type: 'checkbox', required: false },
 ]
 
 export const OfferDiscountType = [
@@ -27,43 +26,45 @@ export const OfferDiscountType = [
     { label: 'BXGY', value: 'BXGY' },
 ]
 export const GET_REWARD_TYPE = [
-    { label: 'FREE', value: 'FREE' },
     { label: 'PERCENTAGE', value: 'PERCENTAGE' },
-    { label: 'FLAT', value: 'FLAT' },
+    { label: 'AMOUNT OFF', value: 'FLAT' },
+    { label: 'FLAT PRICE', value: 'CONSTANT_PRICE' },
 ]
 export const APPLY_TYPE = [
     { label: 'PRODUCT', value: 'PRODUCT' },
-    { label: 'USER', value: 'USER' },
+    { label: 'CART', value: 'CART' },
 ]
 
 export const offerBodyFile = (values: any, buyFilterId: number | string | undefined, getFilterId: number | string | undefined) => {
+    console.log('values', values)
     const body = {
-        offer_name: values?.offer_name, // mandatory
+        offer_name: values?.offer_name || '', // mandatory
         store_ids: values?.store?.id ? values?.store?.join(',') : '', // mandatory
-        slab_id: values?.slab_id ? Number(values?.slab_id) : null, // mandatory
-        apply_type: values?.apply_type, // PRODUCT / USER
-        discount_type: values?.discount_type, //PERCENTAGE FLAT BXGY  // mandatory
-        discount_value: values?.discount_value, // mandatory
-        min_purchase_amount: values?.min_purchase_amount,
+        slab_id: values?.slab_id ? Number(values?.slab_id) : 1, // mandatory
+        apply_type: values?.apply_type || '', // PRODUCT / USER
+        discount_type: values?.discount_type || '', //PERCENTAGE FLAT BXGY  // mandatory
+        discount_value: values?.discount_value || '', // mandatory
+        min_purchase_amount: values?.min_purchase_amount || '',
         max_discount_amount: values?.max_discount_amount,
-        start_date: moment(values?.start_date, 'YYYY-MM-DD HH:mm:ss').utc().format(), // mandatory
-        end_date: moment(values?.end_date, 'YYYY-MM-DD HH:mm:ss').utc().format(), // mandatory
+        start_date: moment(values?.start_date, 'YYYY-MM-DD HH:mm:ss').utc().format() || '', // mandatory
+        end_date: moment(values?.end_date, 'YYYY-MM-DD HH:mm:ss').utc().format() || '', // mandatory
         is_active: values?.is_active || false,
-        min_order_quantity: values?.min_order_quantity,
-        max_order_quantity: values?.max_order_quantity,
+        min_order_quantity: values?.min_order_quantity || '',
+        max_order_quantity: values?.max_order_quantity || '',
         is_multi_unit_eligible: values?.is_multi_unit_eligible || false,
-        set_size: values?.set_size,
-        max_sets: values?.max_sets,
-        buy_quantity: values?.buy_quantity, // mandatory
-        buy_filter_id: values?.buy_filter_id || buyFilterId, // mandatory
-        get_quantity: values?.get_quantity,
-        get_filter_id: values?.get_filter_id || getFilterId,
-        get_reward_type: values?.get_reward_type, //PERCENTAGE / FLAT / CONSTANT_PRICE
-        get_reward_value: values?.get_reward_value,
+        set_size: values?.set_size || '',
+        max_sets: values?.max_sets || '',
+        buy_quantity: values?.buy_quantity || '', // mandatory
+        buy_filter_id: values?.buy_filter_id || buyFilterId || '', // mandatory
+        get_quantity: values?.get_quantity || '',
+        user_filter_id: values?.groupId || '',
+        get_filter_id: values?.is_same_as_buy_filter ? values?.buy_filter_id : values?.get_filter_id || getFilterId || '',
+        get_reward_type: values?.get_reward_type || '', //PERCENTAGE / FLAT / CONSTANT_PRICE
+        get_reward_value: values?.get_reward_value || '',
         daily_time_windows: values?.daily_time_windows?.length
             ? values?.daily_time_windows?.map((timeWindow: any) => ({
-                  start_time: timeWindow?.start_time,
-                  end_time: timeWindow?.end_time,
+                  start: timeWindow?.start,
+                  end: timeWindow?.end,
               }))
             : [],
     }
