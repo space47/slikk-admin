@@ -45,14 +45,15 @@ const OfferFormStep2 = ({ buyFilterId, getFilterId, setBuyFilterId, setGetFilter
                         </FormItem>
                     )}
                 </FormContainer>
+                <div className="w-1/3">
+                    <CommonSelect label="Apply Type" name="apply_type" options={APPLY_TYPE} />
+                </div>
                 {values?.discount_type !== 'BXGY' && (
                     <FormContainer className="grid grid-cols-3 gap-6">
                         <FormItem label="Discount Value">
                             <Field name="discount_value" placeholder="Enter Discount Value" type="number" component={Input} />
                         </FormItem>
-                        <div>
-                            <CommonSelect label="Apply Type" name="apply_type" options={APPLY_TYPE} />
-                        </div>
+
                         <FormItem label="Min Item Quantity">
                             <Field name="min_order_quantity" placeholder="Enter Min Order Quantity" type="number" component={Input} />
                         </FormItem>
