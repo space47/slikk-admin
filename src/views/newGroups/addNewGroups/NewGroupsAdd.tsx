@@ -145,14 +145,17 @@ const NewGroupsAdd = () => {
         } else {
             propertyValue = condition.value
         }
-        const timeFrame: any = {}
+
+        const range: any = {}
         if (condition.timeFrame && condition.timeFrame !== 'custom_range') {
-            timeFrame.start_date = moment().startOf('isoWeek').format('YYYY-MM-DD')
-            timeFrame.end_date = moment().endOf('isoWeek').format('YYYY-MM-DD')
+            range.start = moment().startOf('isoWeek').format('YYYY-MM-DD')
+            range.end = moment().endOf('isoWeek').format('YYYY-MM-DD')
         } else if (condition.timeFrame === 'custom_range' && condition.start_date && condition.end_date) {
-            timeFrame.start_date = condition.start_date
-            timeFrame.end_date = condition.end_date
+            range.start = condition.start_date
+            range.end = condition.end_date
         }
+
+        const timeFrame: any = { range }
 
         const rule: any = {
             type: 'rule',
