@@ -114,27 +114,27 @@ const OfferFormStep1 = ({ values }: props) => {
                         }}
                     </Field>
                 </FormItem>
+                <div className="">
+                    {OfferFromList1?.slice(2)?.map((item, key) => (
+                        <FormItem
+                            label={item.label}
+                            asterisk={item?.required}
+                            key={key}
+                            className="bg-gray-50 p-4 rounded-lg border border-gray-100"
+                        >
+                            <Field
+                                name={item.name}
+                                component={item.type === 'checkbox' ? Checkbox : Input}
+                                placeholder={`Enter ${item.label}`}
+                                type={item.type}
+                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-shadow shadow-sm hover:shadow-md"
+                            />
+                        </FormItem>
+                    ))}
+                </div>
             </div>
 
             {/* Second Row of Form Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                {OfferFromList1?.slice(2)?.map((item, key) => (
-                    <FormItem
-                        label={item.label}
-                        asterisk={item?.required}
-                        key={key}
-                        className="bg-gray-50 p-4 rounded-lg border border-gray-100"
-                    >
-                        <Field
-                            name={item.name}
-                            component={item.type === 'checkbox' ? Checkbox : Input}
-                            placeholder={`Enter ${item.label}`}
-                            type={item.type}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-shadow shadow-sm hover:shadow-md"
-                        />
-                    </FormItem>
-                ))}
-            </div>
 
             {/* Daily Time Windows Section */}
             <FormItem label="Daily Time Windows" className="bg-gray-50 p-5 rounded-xl border border-gray-200">
