@@ -739,6 +739,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         subMenu: [],
                     },
                     {
+                        key: 'appsCommuncication.cohorts',
+                        path: `${APP_PREFIX_PATH}/appsCommuncication/cohorts`,
+                        title: 'User Cohorts',
+                        translateKey: 'nav.appsCommuncication.cohorts',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
                         key: 'appsCommuncication.sendNotification',
                         path: `${APP_PREFIX_PATH}/appsCommuncication/sendNotification`,
                         title: 'Send Notification',

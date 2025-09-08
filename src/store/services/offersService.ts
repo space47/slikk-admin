@@ -62,5 +62,16 @@ export const offersService = OfferQueryService.injectEndpoints({
                 }
             },
         }),
+        offersEditBulk: builder.mutation<{ success: string; message: string }, any>({
+            query: (params) => {
+                return {
+                    url: `/v1/offers/status`,
+                    method: 'PATCH',
+                    body: {
+                        ...params,
+                    },
+                }
+            },
+        }),
     }),
 })

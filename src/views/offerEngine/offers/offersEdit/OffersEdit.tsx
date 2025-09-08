@@ -2,7 +2,7 @@
 import { Button, FormContainer, Steps } from '@/components/ui'
 import { Form, Formik } from 'formik'
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { OfferFormTypes } from '../../offerEngineCommon'
 import { useOfferFunctions } from '../offersUtils/useOfferFunctions'
 import OfferFormStep1 from '../offersUtils/OfferFormStep1'
@@ -14,6 +14,7 @@ import { offerBodyFile } from '../offersUtils/offersCommon'
 
 const OffersEdit = () => {
     const { id } = useParams()
+    const navigate = useNavigate()
     const [offersData, setOffersData] = useState<OfferFormTypes | null>(null)
     const [buyFilterId, setBuyFilterId] = useState<any>('')
     const [getFilterId, setGetFilterId] = useState<any>('')
@@ -36,7 +37,7 @@ const OffersEdit = () => {
         if (offerResponse.isSuccess) {
             console.log('offerResponse', offerResponse)
             notification.success({ message: offerResponse?.data?.message || 'Offer updated successfully' })
-            setCurrentStep(0)
+            navigate(-1)
         }
         if (offerResponse.isError) {
             notification.error({ message: (offerResponse?.error as any)?.data?.body?.message || 'Something went wrong' })
@@ -77,7 +78,7 @@ const OffersEdit = () => {
             <div className="bg-gray-50 rounded-2xl">
                 <div className="mb-10">
                     <Steps current={currentStep} className="flex flex-col items-start xl:flex-row">
-                        {['Names', 'Type'].map((stepTitle, index) => (
+                        {['Offer Details', 'Discount Options'].map((stepTitle, index) => (
                             <Steps.Item
                                 key={index}
                                 title={

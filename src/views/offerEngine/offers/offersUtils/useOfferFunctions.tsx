@@ -8,6 +8,7 @@ export const useOfferFunctions = ({ offersData }: props) => {
     console.log('offersData in useOfferFunctions', offersData?.store_ids?.split(','))
     const initialValues = {
         store: offersData?.store_ids ? offersData.store_ids.split(',').map((id: string) => Number(id)) : [],
+        weekday_number: offersData?.weekday_number ? offersData.weekday_number.split(',').map((day) => Number(day)) : [],
         apply_type: offersData?.apply_type || '',
         offer_name: offersData?.offer_name || '',
         buy_filter_id: offersData?.buy_filter_id ? offersData?.buy_filter_id : '',
@@ -30,6 +31,9 @@ export const useOfferFunctions = ({ offersData }: props) => {
         end_date: offersData?.end_date || '',
         discount_type: offersData?.discount_type || '',
         get_reward_type: offersData?.get_reward_type || '',
+        groupId: offersData?.user_filter_id || '',
+        get_reward_limit: offersData?.get_reward_limit || '',
+        user_filter_id: offersData?.user_filter_id || '',
     }
     return { initialValues }
 }

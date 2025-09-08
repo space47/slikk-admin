@@ -30,9 +30,42 @@ interface OfferRow {
     [key: string]: any
 }
 
-export const useOfferColumns = () => {
+interface ColumnProps {
+    offerData: any[]
+    offerIdStore: number[]
+    handleSelectAllOfferId: (e: React.ChangeEvent<HTMLInputElement>) => void
+    handleSelectIds: (id: number, isSelected: boolean) => void
+}
+
+export const useOfferColumns = ({ offerData, handleSelectAllOfferId, handleSelectIds, offerIdStore }: ColumnProps) => {
     return useMemo(
         () => [
+            {
+                header: (
+                    <div className="flex flex-col gap-2 items-center justify-center">
+                        <input
+                            type="checkbox"
+                            name="selectAll"
+                            checked={offerData?.length > 0 && offerIdStore?.length === offerData?.length}
+                            onChange={handleSelectAllOfferId}
+                        />
+                    </div>
+                ),
+                accessorKey: 'x',
+                cell: ({ row }: { row: { original: any } }) => {
+                    const ids = row.original.id
+                    return (
+                        <div className="flex items-center justify-center">
+                            <input
+                                type="checkbox"
+                                name="mobiles"
+                                checked={offerIdStore.includes(ids)}
+                                onChange={(e) => handleSelectIds(ids, e.target.checked)}
+                            />
+                        </div>
+                    )
+                },
+            },
             {
                 header: 'Edit',
                 accessorKey: 'id',
@@ -148,6 +181,6 @@ export const useOfferColumns = () => {
                         : '-',
             },
         ],
-        [],
+        [offerIdStore],
     )
 }
