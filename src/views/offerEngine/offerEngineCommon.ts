@@ -45,6 +45,7 @@ export type OfferFormTypes = {
     min_order_quantity?: number | null
     max_order_quantity?: number | null
     is_multi_unit_eligible?: boolean
+    weekday_number?: string
     set_size?: number
     max_sets?: number
     buy_quantity?: number
@@ -57,6 +58,8 @@ export type OfferFormTypes = {
         start?: string // HH?:mm?:ss
         end?: string // HH:mm:ss
     }[]
+    user_filter_id?: number
+    get_reward_limit?: number | null
 }
 
 export const offerFormArray = [

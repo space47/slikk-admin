@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Checkbox, FormItem, Input, Select } from '@/components/ui'
+import { Checkbox, FormContainer, FormItem, Input, Select } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
 import { companyStore } from '@/store/types/companyStore.types'
 import { Field, FieldArray, FieldProps } from 'formik'
 import React, { useEffect, useState } from 'react'
-import { APPLY_TYPE, OfferFromList1 } from './offersCommon'
+import { OfferFromList1, WEEKDAY_ARRAY } from './offersCommon'
 import FullDateForm from '@/common/FullDateForm'
 import { FaPlus, FaTrash } from 'react-icons/fa'
 import FullTimePicker from '@/common/FullTimePicker'
-import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import GroupsCommon from '@/common/GroupsCommon'
 
 interface props {
     values: any
@@ -19,21 +19,6 @@ interface props {
 const OfferFormStep1 = ({ values }: props) => {
     const dispatch = useAppDispatch()
     const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
-    const [groupDataToSend, setGroupDataToSend] = useState<any[]>([])
-
-    const fetchGroupValue = async () => {
-        try {
-            const response = await axioisInstance.get(`/notification/groups?p=1&page_size=1000&is_active=true`)
-            const data = response?.data?.data.results
-            setGroupDataToSend(data)
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    useEffect(() => {
-        fetchGroupValue()
-    }, [])
 
     useEffect(() => {
         dispatch(fetchCompanyStore())
@@ -41,12 +26,10 @@ const OfferFormStep1 = ({ values }: props) => {
 
     return (
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-            {/* Store Selection Field */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <FormItem label="Store" className="mb-6">
+            <FormContainer className="grid grid-cols-3 md:grid-cols-2 gap-6 mb-6">
+                <FormItem label="Store" className="col-span-1 w-full mb-6 bg-gray-50 p-4 rounded-lg border border-gray-100">
                     <Field name="store">
                         {({ form, field }: FieldProps) => {
-                            // Convert IDs from Formik into matching option objects
                             const selectedOptions = Array.isArray(field.value)
                                 ? storeResults.filter((option) => field.value.includes(option.id))
                                 : []
@@ -61,23 +44,38 @@ const OfferFormStep1 = ({ values }: props) => {
                                         getOptionValue={(option) => String(option?.id)}
                                         value={selectedOptions}
                                         onChange={(newVal) => {
-                                            // Save only IDs into Formik
                                             form.setFieldValue(
                                                 'store',
                                                 newVal.map((option: any) => option.id),
                                             )
                                         }}
-                                        styles={{
-                                            control: (base) => ({
-                                                ...base,
-                                                borderRadius: '0.5rem',
-                                                borderColor: '#e5e7eb',
-                                                padding: '0.2rem',
-                                                minHeight: '44px',
-                                                '&:hover': {
-                                                    borderColor: '#93c5fd',
-                                                },
-                                            }),
+                                    />
+                                </div>
+                            )
+                        }}
+                    </Field>
+                </FormItem>
+                <FormItem label="WeekDays" className="col-span-1 w-full mb-6 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                    <Field name="weekday_number">
+                        {({ form, field }: FieldProps) => {
+                            const selectedOptions = Array.isArray(field.value)
+                                ? WEEKDAY_ARRAY.filter((option) => field.value.includes(option.value))
+                                : []
+
+                            return (
+                                <div className="w-full max-w-md">
+                                    <Select
+                                        isMulti
+                                        className="w-full"
+                                        options={WEEKDAY_ARRAY}
+                                        getOptionLabel={(option) => option?.label}
+                                        getOptionValue={(option) => String(option?.value)}
+                                        value={selectedOptions}
+                                        onChange={(newVal) => {
+                                            form.setFieldValue(
+                                                'weekday_number',
+                                                newVal.map((option: any) => option.value),
+                                            )
                                         }}
                                     />
                                 </div>
@@ -86,37 +84,8 @@ const OfferFormStep1 = ({ values }: props) => {
                     </Field>
                 </FormItem>
 
-                <FormItem label={'Group Ids'} className={'col-span-1 w-full'}>
-                    <Field name="groupId">
-                        {({ field, form }: FieldProps<any>) => {
-                            return (
-                                <Select
-                                    isClearable
-                                    options={groupDataToSend}
-                                    value={groupDataToSend.find((option) => option.name === field.value)}
-                                    getOptionLabel={(option: any) => option.name}
-                                    getOptionValue={(option: any) => option.name}
-                                    onChange={(option) => {
-                                        const value = option ? option.value : ''
-                                        form.setFieldValue(field.name, option)
-                                        console.log('FIELD.NAME', value)
-                                    }}
-                                    onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
-                                />
-                            )
-                        }}
-                    </Field>
-                    {values?.groupId && (
-                        <div className="mt-4 px-4 py-2 rounded-md bg-blue-50 border border-blue-200 text-blue-800 font-medium shadow-sm w-fit">
-                            Users: {values?.groupId?.user?.length || 0}
-                        </div>
-                    )}
-                </FormItem>
-
-                <div>
-                    <CommonSelect label="Apply Type" name="apply_type" options={APPLY_TYPE} />
-                </div>
-            </div>
+                <GroupsCommon values={values} />
+            </FormContainer>
 
             {/* First Row of Form Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">

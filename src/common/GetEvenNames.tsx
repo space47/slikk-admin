@@ -12,9 +12,11 @@ import EditEventNamesModal from '@/views/sales/Notification/EditEventNameModal'
 interface props {
     label: string
     name: string
+    hideButtons?: boolean
+    customClassName?: string
 }
 
-const GetEvenNames = ({ label, name }: props) => {
+const GetEvenNames = ({ label, name, hideButtons, customClassName }: props) => {
     const dispatch = useAppDispatch()
     const { eventNamesData } = useAppSelector<EventNamesSliceType>((state) => state.eventNames)
     const [isModalOpen, setIsModalOpen] = useState({ add: false, edit: false })
@@ -32,15 +34,19 @@ const GetEvenNames = ({ label, name }: props) => {
     }))
     return (
         <div>
-            <FormItem label={label} className="col-span-1 w-1/2">
-                <div className="flex items-center gap-2 mb-5">
-                    <span onClick={() => setIsModalOpen({ ...isModalOpen, add: true })}>
-                        <FaPlusCircle className="text-xl text-green-500 cursor-pointer" />
-                    </span>
-                    <span onClick={() => setIsModalOpen({ ...isModalOpen, edit: true })}>
-                        <FaEdit className="text-xl text-blue-600 cursor-pointer" />
-                    </span>
-                </div>
+            <FormItem label={label} className={customClassName ? customClassName : 'col-span-1 w-1/2'}>
+                {!hideButtons && (
+                    <>
+                        <div className="flex items-center gap-2 mb-5">
+                            <span onClick={() => setIsModalOpen({ ...isModalOpen, add: true })}>
+                                <FaPlusCircle className="text-xl text-green-500 cursor-pointer" />
+                            </span>
+                            <span onClick={() => setIsModalOpen({ ...isModalOpen, edit: true })}>
+                                <FaEdit className="text-xl text-blue-600 cursor-pointer" />
+                            </span>
+                        </div>
+                    </>
+                )}
                 <Field name={name}>
                     {({ field, form }: FieldProps<any>) => {
                         return (

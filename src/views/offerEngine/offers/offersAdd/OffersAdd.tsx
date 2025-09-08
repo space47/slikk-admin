@@ -8,8 +8,10 @@ import { offersService } from '@/store/services/offersService'
 import { notification } from 'antd'
 import { offerBodyFile } from '../offersUtils/offersCommon'
 import { filterEmptyValues } from '@/utils/apiBodyUtility'
+import { useNavigate } from 'react-router-dom'
 
 const OffersAdd = () => {
+    const navigate = useNavigate()
     const [buyFilterId, setBuyFilterId] = useState<string | undefined>(undefined)
     const [getFilterId, setGetFilterId] = useState<string | undefined>(undefined)
     const [currentStep, setCurrentStep] = useState(0)
@@ -20,7 +22,7 @@ const OffersAdd = () => {
         if (offerResponse.isSuccess) {
             console.log('offerResponse', offerResponse)
             notification.success({ message: offerResponse?.data?.message || 'Offer added successfully' })
-            setCurrentStep(0)
+            navigate(-1)
         }
         if (offerResponse.isError) {
             notification.error({ message: (offerResponse?.error as any)?.data?.body?.message || 'Something went wrong' })

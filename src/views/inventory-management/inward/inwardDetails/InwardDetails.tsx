@@ -39,7 +39,7 @@ const InwardDetails = () => {
                 setLoading(false)
 
                 setData(ordersData)
-                setCompanyId(ordersData?.company?.id)
+                setCompanyId(ordersData?.company)
             } catch (error) {
                 console.log(error)
             }
