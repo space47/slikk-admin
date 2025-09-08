@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, FormContainer, FormItem, Select, Tabs, Upload } from '@/components/ui'
+import { Button, FormItem, Select, Tabs, Upload } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { FILTER_STATE } from '@/store/types/filters.types'
@@ -64,7 +64,7 @@ const reducer = (state: state, action: Action): state => {
     }
 }
 
-const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, isExclude, isCsv, values, isSku }: props) => {
+const CommonFilterSelect = ({ setFilterId, filterId, isOnchange, isExclude, isCsv, values, isSku }: props) => {
     const dispatch = useAppDispatch()
     const [showAddFilter, setShowAddFilter] = useState<number[]>([])
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
@@ -254,11 +254,11 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
     }
 
     return (
-        <div>
-            <div className="font-bold mb-7">{isExclude ? 'Exclude Filters:' : 'Filters:'}</div>
+        <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="font-bold text-lg mb-7 text-gray-800 border-b pb-2">{isExclude ? 'Exclude Filters' : 'Filters'}</div>
 
             <Tabs defaultValue="method_1">
-                <TabList className="flex items-center justify-center gap-4 bg-blue-50 rounded-xl shadow-md p-3 mb-10 sticky z-10 top-16">
+                <TabList className="flex items-center justify-center gap-2 bg-gray-50 rounded-lg p-1 mb-8 sticky z-10 top-16 shadow-sm">
                     {TabsArray.filter((tab) => {
                         if (tab.value === 'method_3' && !isCsv) return false
                         if (tab.value === 'method_2' && !isSku) return false
@@ -267,28 +267,33 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
                         <TabNav
                             key={index}
                             value={tab.value}
-                            className="relative px-4 py-2 text-sm sm:text-base font-semibold text-gray-700 rounded-xl transition-all duration-300 hover:text-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-400"
+                            className="relative px-5 py-2.5 text-sm font-medium rounded-md transition-all duration-200 data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-600 text-gray-600 hover:text-blue-500"
                         >
                             {tab.label}
                         </TabNav>
                     ))}
                 </TabList>
 
-                <TabContent value="method_1">
-                    <FormContainer className="items-center mt-4 justify-between flex">
-                        <button type="button" onClick={handleAddFilter}>
-                            <IoMdAddCircle className="text-3xl text-green-500" />
+                <TabContent value="method_1" className="space-y-4">
+                    <div className="flex items-center justify-between mb-4">
+                        <button
+                            type="button"
+                            onClick={handleAddFilter}
+                            className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 font-medium"
+                        >
+                            <IoMdAddCircle className="text-xl" />
+                            Add Filter
                         </button>
-                        <Button type="button" variant="reject" size="sm" onClick={handleRemoveAllFilters}>
-                            Remove
+                        <Button type="button" variant="reject" size="sm" onClick={handleRemoveAllFilters} className="px-3 py-1.5">
+                            Remove All
                         </Button>
-                    </FormContainer>
-                    {showAddFilter.map((_, index: any) => (
-                        <FormItem key={index} className="flex gap-2">
-                            <div className="flex gap-3 items-center">
-                                <Field key={index} name={isExclude ? `filtersRemove[${index}]` : `filtersAdd[${index}]`}>
+                    </div>
+
+                    <div className="space-y-3">
+                        {showAddFilter.map((_, index) => (
+                            <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                                <Field name={isExclude ? `filtersRemove[${index}]` : `filtersAdd[${index}]`}>
                                     {({ field, form }: FieldProps<any>) => {
-                                        console.log('field', field, filterId)
                                         const selectedOptions =
                                             field.value?.flatMap((value: any) =>
                                                 filters?.filters?.flatMap((filterGroup) =>
@@ -297,59 +302,63 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
                                             ) || []
 
                                         return (
-                                            <Select
-                                                isMulti
-                                                placeholder={`Filter Tags ${index + 1}`}
-                                                options={filters.filters || []}
-                                                value={selectedOptions}
-                                                getOptionLabel={(option) => option.label}
-                                                getOptionValue={(option) => option.value}
-                                                className={`${!!customClass === true ? customClass : 'w-3/4'}`}
-                                                onChange={
-                                                    isOnchange
-                                                        ? isOnchange
-                                                        : (newVal) => {
-                                                              const newValues = newVal ? newVal.map((val) => val.value) : []
-                                                              form.setFieldValue(field.name, newValues)
-                                                          }
-                                                }
-                                            />
+                                            <div className="flex-grow">
+                                                <Select
+                                                    isMulti
+                                                    placeholder={`Select filter tags ${index + 1}`}
+                                                    options={filters.filters || []}
+                                                    value={selectedOptions}
+                                                    getOptionLabel={(option) => option.label}
+                                                    getOptionValue={(option) => option.value}
+                                                    className="w-full"
+                                                    classNamePrefix="select"
+                                                    onChange={
+                                                        isOnchange
+                                                            ? isOnchange
+                                                            : (newVal) => {
+                                                                  const newValues = newVal ? newVal.map((val) => val.value) : []
+                                                                  form.setFieldValue(field.name, newValues)
+                                                              }
+                                                    }
+                                                />
+                                            </div>
                                         )
                                     }}
                                 </Field>
 
-                                <div className="">
-                                    <button
-                                        type="button"
-                                        className=""
-                                        onClick={isExclude ? () => handleRemoveExcludeFilter(index) : () => handleRemoveFilter(index)}
-                                    >
-                                        <MdCancel className="text-xl text-red-500" />
-                                    </button>
-                                </div>
+                                <button
+                                    type="button"
+                                    onClick={isExclude ? () => handleRemoveExcludeFilter(index) : () => handleRemoveFilter(index)}
+                                    className="text-gray-400 hover:text-red-500 transition-colors"
+                                    aria-label="Remove filter"
+                                >
+                                    <MdCancel className="text-xl" />
+                                </button>
                             </div>
-                        </FormItem>
-                    ))}
+                        ))}
+                    </div>
                 </TabContent>
 
-                <TabContent value="method_2">
-                    <div className="flex flex-col md:flex-row items-center gap-3">
-                        <input
-                            name="sku"
-                            type="search"
-                            placeholder="Enter SKU"
-                            className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                            value={skuInput}
-                            onChange={(e) => setSkuInput(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    e.preventDefault()
-                                    handleAddSku()
-                                }
-                            }}
-                        />
+                <TabContent value="method_2" className="space-y-4">
+                    <div className="flex flex-col sm:flex-row items-center gap-3">
+                        <div className="relative flex-grow">
+                            <input
+                                name="sku"
+                                type="search"
+                                placeholder="Enter SKU code"
+                                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-shadow"
+                                value={skuInput}
+                                onChange={(e) => setSkuInput(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault()
+                                        handleAddSku()
+                                    }
+                                }}
+                            />
+                        </div>
                         <button
-                            className="bg-blue-600 hover:bg-blue-700 transition text-white px-4 py-2 rounded-xl flex items-center gap-2"
+                            className="bg-blue-600 hover:bg-blue-700 transition-all text-white px-5 py-2.5 rounded-lg flex items-center gap-2 font-medium shadow-sm hover:shadow-md"
                             onClick={handleAddSku}
                         >
                             <FaSearch className="text-lg" /> Search
@@ -358,22 +367,23 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
 
                     {/* SKU Table */}
                     {skuSearchData.length > 0 && (
-                        <div className="w-full overflow-x-auto rounded-lg border border-gray-200 shadow-sm mt-2">
+                        <div className="w-full overflow-x-auto rounded-lg border border-gray-200 shadow-sm mt-4">
                             <EasyTable mainData={skuSearchData} columns={columns} overflow />
                         </div>
                     )}
                 </TabContent>
-                <TabContent value="method_3">
+
+                <TabContent value="method_3" className="space-y-4">
                     {isCsv && (
                         <>
-                            <FormItem label="CSV File" className="mt-10">
+                            <FormItem label="Upload CSV File" className="mt-4">
                                 <Field name="csvList">
                                     {({ form }: FieldProps<any>) => (
-                                        <>
+                                        <div className="mt-3">
                                             <Upload
                                                 beforeUpload={beforeUpload}
                                                 fileList={values.csvList || []}
-                                                className="flex justify-center mt-6"
+                                                className="flex justify-center"
                                                 onFileRemove={(files) => {
                                                     form.setFieldValue('csvList', files)
                                                 }}
@@ -382,7 +392,7 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
                                                     setCsvFile(files as any)
                                                 }}
                                             />
-                                        </>
+                                        </div>
                                     )}
                                 </Field>
                             </FormItem>
@@ -391,93 +401,137 @@ const CommonFilterSelect = ({ setFilterId, filterId, customClass, isOnchange, is
                 </TabContent>
             </Tabs>
 
-            <Button variant="twoTone" size="sm" onClick={() => setExtraFields(!extraFields)} type="button">
-                {extraFields ? 'Hide' : 'Show'} Extra Filters
-            </Button>
+            <div className="mt-8 pt-5 border-t border-gray-100">
+                <Button
+                    variant="twoTone"
+                    size="sm"
+                    onClick={() => setExtraFields(!extraFields)}
+                    type="button"
+                    className="flex items-center gap-2"
+                >
+                    {extraFields ? (
+                        <>
+                            <span>Hide Extra Filters</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path
+                                    fillRule="evenodd"
+                                    d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                                    clipRule="evenodd"
+                                />
+                            </svg>
+                        </>
+                    ) : (
+                        <>
+                            <span>Show Extra Filters</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path
+                                    fillRule="evenodd"
+                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                    clipRule="evenodd"
+                                />
+                            </svg>
+                        </>
+                    )}
+                </Button>
 
-            {extraFields && (
-                <>
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                        <FormItem label="Max Discount for Filters">
-                            <Field name="max_discount">
-                                {({ field }: FieldProps<any>) => (
-                                    <input
-                                        type="number"
-                                        placeholder="Max Discount"
-                                        className="w-full p-2 border rounded"
-                                        {...field}
-                                        onChange={(e) =>
-                                            dispatchState({
-                                                type: 'SET_MAX_DISCOUNT',
-                                                payload: e.target.value ? parseFloat(e.target.value) : null,
-                                            })
-                                        }
-                                    />
-                                )}
-                            </Field>
-                        </FormItem>
-                        <FormItem label="Min Discount for Filters">
-                            <Field name="min_discount">
-                                {({ field }: FieldProps<any>) => (
-                                    <input
-                                        type="number"
-                                        placeholder="Min Discount"
-                                        className="w-full p-2 border rounded"
-                                        {...field}
-                                        onChange={(e) =>
-                                            dispatchState({
-                                                type: 'SET_MIN_DISCOUNT',
-                                                payload: e.target.value ? parseFloat(e.target.value) : null,
-                                            })
-                                        }
-                                    />
-                                )}
-                            </Field>
-                        </FormItem>
-                        <FormItem label="Max Price for Filters">
-                            <Field name="max_price">
-                                {({ field }: FieldProps<any>) => (
-                                    <input
-                                        type="number"
-                                        placeholder="Max Price"
-                                        className="w-full p-2 border rounded"
-                                        {...field}
-                                        onChange={(e) =>
-                                            dispatchState({
-                                                type: 'SET_MAX_PRICE',
-                                                payload: e.target.value ? parseFloat(e.target.value) : null,
-                                            })
-                                        }
-                                    />
-                                )}
-                            </Field>
-                        </FormItem>
-                        <FormItem label="Min Price for Filters">
-                            <Field name="min_price">
-                                {({ field }: FieldProps<any>) => (
-                                    <input
-                                        type="number"
-                                        placeholder="Min Price"
-                                        className="w-full p-2 border rounded"
-                                        {...field}
-                                        onChange={(e) =>
-                                            dispatchState({
-                                                type: 'SET_MIN_PRICE',
-                                                payload: e.target.value ? parseFloat(e.target.value) : null,
-                                            })
-                                        }
-                                    />
-                                )}
-                            </Field>
-                        </FormItem>
+                {extraFields && (
+                    <div className="mt-5 bg-blue-50 p-5 rounded-lg">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <FormItem label="Max Discount (%)" className="m-0">
+                                <Field name="max_discount">
+                                    {({ field }: FieldProps<any>) => (
+                                        <input
+                                            type="number"
+                                            placeholder="e.g. 30"
+                                            className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            min="0"
+                                            max="100"
+                                            {...field}
+                                            onChange={(e) =>
+                                                dispatchState({
+                                                    type: 'SET_MAX_DISCOUNT',
+                                                    payload: e.target.value ? parseFloat(e.target.value) : null,
+                                                })
+                                            }
+                                        />
+                                    )}
+                                </Field>
+                            </FormItem>
+                            <FormItem label="Min Discount (%)" className="m-0">
+                                <Field name="min_discount">
+                                    {({ field }: FieldProps<any>) => (
+                                        <input
+                                            type="number"
+                                            placeholder="e.g. 10"
+                                            className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            min="0"
+                                            max="100"
+                                            {...field}
+                                            onChange={(e) =>
+                                                dispatchState({
+                                                    type: 'SET_MIN_DISCOUNT',
+                                                    payload: e.target.value ? parseFloat(e.target.value) : null,
+                                                })
+                                            }
+                                        />
+                                    )}
+                                </Field>
+                            </FormItem>
+                            <FormItem label="Max Price ($)" className="m-0">
+                                <Field name="max_price">
+                                    {({ field }: FieldProps<any>) => (
+                                        <input
+                                            type="number"
+                                            placeholder="e.g. 100"
+                                            className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            min="0"
+                                            step="0.01"
+                                            {...field}
+                                            onChange={(e) =>
+                                                dispatchState({
+                                                    type: 'SET_MAX_PRICE',
+                                                    payload: e.target.value ? parseFloat(e.target.value) : null,
+                                                })
+                                            }
+                                        />
+                                    )}
+                                </Field>
+                            </FormItem>
+                            <FormItem label="Min Price ($)" className="m-0">
+                                <Field name="min_price">
+                                    {({ field }: FieldProps<any>) => (
+                                        <input
+                                            type="number"
+                                            placeholder="e.g. 20"
+                                            className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            min="0"
+                                            step="0.01"
+                                            {...field}
+                                            onChange={(e) =>
+                                                dispatchState({
+                                                    type: 'SET_MIN_PRICE',
+                                                    payload: e.target.value ? parseFloat(e.target.value) : null,
+                                                })
+                                            }
+                                        />
+                                    )}
+                                </Field>
+                            </FormItem>
+                        </div>
                     </div>
-                </>
-            )}
-            <div className="flex flex-col gap-3 xl:flex-row  mt-4 justify-center">
+                )}
+            </div>
+
+            <div className="mt-8 flex justify-center">
                 <Field>
                     {({ form }: FieldProps<any>) => (
-                        <Button type="button" variant="new" onClick={() => handleAddFilters(form.values)}>
-                            Search Strings
+                        <Button
+                            type="button"
+                            variant="solid"
+                            onClick={() => handleAddFilters(form.values)}
+                            className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-all"
+                        >
+                            Apply Filters
                         </Button>
                     )}
                 </Field>

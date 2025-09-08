@@ -30,7 +30,7 @@ const ProductType = () => {
     const [selectedCategory, setSelectedCategory] = useState('Select Category')
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const subCategories = useAppSelector<SUBCATEGORY_STATE>((state) => state.subCategory)
-    const [selectedSubCategory, setSelectedSubCategory] = useState('Select SubCategory')
+    const [selectedSubCategory, setSelectedSubCategory] = useState('')
     const DivisionArray = divisions?.divisions?.map((item) => item?.name)
     const categoryArray = useSubCategoryFilter({ selectedDivision })
 
@@ -41,7 +41,7 @@ const ProductType = () => {
     useEffect(() => {
         const divisionParam = selectedDivision && selectedDivision !== 'Select Division' ? selectedDivision : undefined
         const categoryParam = selectedCategory && selectedCategory !== 'Select Category' ? selectedCategory : undefined
-        const subCategoryParam = selectedSubCategory && selectedSubCategory !== 'Select Sub Category' ? selectedSubCategory : undefined
+        const subCategoryParam = selectedSubCategory ? selectedSubCategory : undefined
 
         const searchParam = globalFilter?.trim() ? globalFilter : undefined
 
@@ -142,7 +142,7 @@ const ProductType = () => {
                         <div className="bg-gray-200 max-h-[140px] px-1 rounded-lg font-bold text-[15px]">
                             <Dropdown
                                 className="border   text-black text-lg font-semibold "
-                                title={selectedSubCategory}
+                                title={selectedSubCategory || 'Select Sub Category'}
                                 onSelect={(selectedKey) => setSelectedSubCategory(selectedKey)}
                             >
                                 <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide max-h-[400px]  xl:overflow-y-scroll font-bold ">
@@ -154,7 +154,7 @@ const ProductType = () => {
                                 </div>
                                 <div
                                     className="flex mt-3 justify-center items-center rounded-lg cursor-pointer text-white bg-red-500 hover:bg-red-400"
-                                    onClick={() => setSelectedSubCategory('Select Sub Category')}
+                                    onClick={() => setSelectedSubCategory('')}
                                 >
                                     Clear
                                 </div>

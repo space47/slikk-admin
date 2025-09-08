@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, FormContainer, FormItem, Input } from '@/components/ui'
+import { Button, FormContainer, FormItem, Input, Tooltip } from '@/components/ui'
 import { notification } from 'antd'
 import { Field, Form, Formik, FieldArray } from 'formik'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { MdDelete } from 'react-icons/md'
 import Papa from 'papaparse'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
@@ -16,12 +16,31 @@ import {
 } from '../notificationUtils/notificationGroupsCommon'
 import FullDateForm from '@/common/FullDateForm'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import GetEvenNames from '@/common/GetEvenNames'
+import { useAppDispatch, useAppSelector } from '@/store'
+import { DIVISION_STATE } from '@/store/types/division.types'
+import { CATEGORY_STATE } from '@/store/types/category.types'
+import { BRAND_STATE } from '@/store/types/brand.types'
+import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
+import FiltersSelect from '../notificationUtils/FiltersSelect'
+import { BiSolidDuplicate } from 'react-icons/bi'
+import { getAllBrandsAPI } from '@/store/action/brand.action'
+import moment from 'moment'
 
 const NewGroupsAdd = () => {
+    const dispatch = useAppDispatch()
     const [spinner, setSpinner] = useState(false)
     const [csvFile, setCSVFile] = useState<any>()
     const [mobileNumbers, setMobileNumbers] = useState<string[]>([])
     const [selectedRelation, setSelectedRelation] = useState<string | null>(null)
+    const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
+    const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
+    const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
+    const subCategoryData = useAppSelector<SUBCATEGORY_STATE>((state) => state.subCategory)
+
+    useEffect(() => {
+        dispatch(getAllBrandsAPI())
+    }, [])
 
     const handleCSVFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files ? e.target.files[0] : null
@@ -57,8 +76,6 @@ const NewGroupsAdd = () => {
             }
 
             console.log('Transformed request body:', JSON.stringify(requestBody, null, 2))
-
-            ///
             const response = await axioisInstance.post('/notification/groups', requestBody)
 
             notification.success({
@@ -74,7 +91,6 @@ const NewGroupsAdd = () => {
         }
     }
 
-    // Recursive function to transform conditions into nested rules structure
     const transformConditionsToRules = (conditions: any[]) => {
         if (conditions.length === 0) {
             return {
@@ -83,20 +99,14 @@ const NewGroupsAdd = () => {
                 rules: [],
             }
         }
-
-        // If there's only one condition, return it as a single rule
         if (conditions.length === 1) {
             return transformConditionToRule(conditions[0])
         }
-
-        // Group consecutive conditions with the same relation
         const groupedRules: any[] = []
         let currentGroup: any = null
 
         conditions.forEach((condition, index) => {
             const relation = condition.relation || 'AND'
-
-            // If this is the first condition or relation changed, start a new group
             if (index === 0 || (currentGroup && currentGroup.op !== relation.toLowerCase())) {
                 currentGroup = {
                     type: 'group',
@@ -105,7 +115,6 @@ const NewGroupsAdd = () => {
                 }
                 groupedRules.push(currentGroup)
             } else {
-                // Add to current group
                 currentGroup.rules.push(transformConditionToRule(condition))
             }
         })
@@ -118,8 +127,6 @@ const NewGroupsAdd = () => {
                 rules: groupedRules.flatMap((group) => group.rules),
             }
         }
-
-        // Otherwise, nest the groups under an AND operation
         return {
             type: 'group',
             op: 'and',
@@ -127,29 +134,21 @@ const NewGroupsAdd = () => {
         }
     }
 
-    // Transform a single condition to rule format
     const transformConditionToRule = (condition: any) => {
-        // Handle different value formats based on condition type
         let propertyValue: any
-
         if (condition.condition?.includes('BETWEEN') || condition.condition?.includes('Not Between')) {
-            // For between conditions, create an array of values
             propertyValue = [condition.value_a, condition.value_b]
         } else if (condition.value === 'true' || condition.value === 'false') {
-            // Convert string boolean to actual boolean
             propertyValue = condition.value === 'true'
         } else if (!isNaN(condition.value) && condition.value !== '') {
-            // Convert numeric strings to numbers
             propertyValue = Number(condition.value)
         } else {
-            // Keep as string for other cases
             propertyValue = condition.value
         }
-
-        // Handle time frame if present
         const timeFrame: any = {}
         if (condition.timeFrame && condition.timeFrame !== 'custom_range') {
-            timeFrame.time_frame = condition.timeFrame
+            timeFrame.start_date = moment().startOf('isoWeek').format('YYYY-MM-DD')
+            timeFrame.end_date = moment().endOf('isoWeek').format('YYYY-MM-DD')
         } else if (condition.timeFrame === 'custom_range' && condition.start_date && condition.end_date) {
             timeFrame.start_date = condition.start_date
             timeFrame.end_date = condition.end_date
@@ -157,7 +156,7 @@ const NewGroupsAdd = () => {
 
         const rule: any = {
             type: 'rule',
-            include: condition.didDidNot === 'did', // true for "did", false for "did not"
+            include: condition.didDidNot === 'did',
             event: condition.event,
             properties: [
                 {
@@ -167,16 +166,12 @@ const NewGroupsAdd = () => {
                 },
             ],
         }
-
-        // Add time frame if it exists
         if (Object.keys(timeFrame).length > 0) {
             rule.time_frame = timeFrame
         }
-
         return rule
     }
 
-    // Helper function to map condition values to operator strings
     const mapConditionToOperator = (condition: string): string => {
         const operatorMap: { [key: string]: string } = {
             equals: '=',
@@ -190,7 +185,7 @@ const NewGroupsAdd = () => {
             greater_than_equal: '>=',
             less_than_equal: '<=',
             BETWEEN: 'between',
-            'Not Between': 'not_between',
+            NOT_BETWEEN: 'not_between',
             exists: 'exists',
             not_exists: 'not_exists',
         }
@@ -237,9 +232,8 @@ const NewGroupsAdd = () => {
                                 />
                             </div>
                         </FormItem>
-                        {/* CSV Upload */}
                         <FormItem label="Cohort Name" asterisk={true}>
-                            <Field name="cohort_name" placeholder="Enter cohort name " component={Input} className="w-2/3" />
+                            <Field name="cohort_name" placeholder="Enter cohort name " component={Input} className="w-1/2" />
                         </FormItem>
                         <FormContainer className="grid grid-cols-2 gap-4">
                             <FormItem label="Users">
@@ -247,7 +241,6 @@ const NewGroupsAdd = () => {
                             </FormItem>
                         </FormContainer>
 
-                        {/* Dynamic Conditions */}
                         <FieldArray name="conditions">
                             {({ push, remove }) => (
                                 <>
@@ -255,20 +248,30 @@ const NewGroupsAdd = () => {
                                         console.log('Condition:', cond)
                                         return (
                                             <div key={index}>
-                                                <div className="font-bold text-sl">ADD RULES</div>
+                                                <div className="flex justify-between items-center mb-2">
+                                                    <div className="font-bold text-sl">ADD RULES</div>
+                                                    <div>
+                                                        <Tooltip title="Duplicate Rule">
+                                                            <BiSolidDuplicate
+                                                                className="text-2xl cursor-pointer hover:text-blue-500"
+                                                                onClick={() => push({ ...cond })}
+                                                            />
+                                                        </Tooltip>
+                                                    </div>
+                                                </div>
                                                 <FormContainer className="grid grid-cols-6 gap-3 bg-blue-50 p-4 rounded-lg mt-4">
                                                     <CommonSelect
                                                         label="Did/Did Not"
                                                         options={DidAndNotArray}
                                                         name={`conditions[${index}].didDidNot`}
                                                     />
-                                                    <FormItem label="Action/Event">
-                                                        <Field
-                                                            name={`conditions[${index}].event`}
-                                                            placeholder="Action/Event"
-                                                            component={Input}
-                                                        />
-                                                    </FormItem>
+
+                                                    <GetEvenNames
+                                                        hideButtons
+                                                        customClassName="w-full "
+                                                        label="Event Names"
+                                                        name={`conditions[${index}].event`}
+                                                    />
                                                     <CommonSelect
                                                         label="Operator"
                                                         options={OperatorArray}
@@ -285,32 +288,62 @@ const NewGroupsAdd = () => {
                                                         name={`conditions[${index}].condition`}
                                                     />
 
-                                                    {cond?.condition?.includes('BETWEEN') || cond?.condition?.includes('Not Between') ? (
-                                                        <FormContainer className="grid grid-cols-2 gap-2 col-span-2">
-                                                            <FormItem label="value(A)">
-                                                                <Field
-                                                                    name={`conditions[${index}].value_a`}
-                                                                    placeholder="Value A"
-                                                                    component={Input}
-                                                                />
-                                                            </FormItem>
-                                                            <FormItem label="value(B)">
-                                                                <Field
-                                                                    name={`conditions[${index}].value_b`}
-                                                                    placeholder="Value B"
-                                                                    component={Input}
-                                                                />
-                                                            </FormItem>
-                                                        </FormContainer>
-                                                    ) : (
+                                                    {cond?.property?.toLocaleLowerCase()?.includes('category') && (
                                                         <FormItem label="value">
-                                                            <Field
-                                                                name={`conditions[${index}].value`}
-                                                                placeholder="Value "
-                                                                component={Input}
-                                                            />
+                                                            <FiltersSelect index={index} filter={category?.categories} />
                                                         </FormItem>
                                                     )}
+
+                                                    {cond?.property?.toLocaleLowerCase()?.includes('division') && (
+                                                        <FormItem label="value">
+                                                            <FiltersSelect index={index} filter={divisions?.divisions} />
+                                                        </FormItem>
+                                                    )}
+
+                                                    {cond?.property?.toLocaleLowerCase()?.includes('sub category') && (
+                                                        <FormItem label="value">
+                                                            <FiltersSelect index={index} filter={subCategoryData?.subcategories} />
+                                                        </FormItem>
+                                                    )}
+                                                    {cond?.property?.toLocaleLowerCase()?.includes('brand') && (
+                                                        <FormItem label="value">
+                                                            <FiltersSelect index={index} filter={brands?.brands} />
+                                                        </FormItem>
+                                                    )}
+
+                                                    {!(
+                                                        cond?.property?.toLocaleLowerCase()?.includes('category') ||
+                                                        cond?.property?.toLocaleLowerCase()?.includes('division') ||
+                                                        cond?.property?.toLocaleLowerCase()?.includes('sub category') ||
+                                                        cond?.property?.toLocaleLowerCase()?.includes('brand')
+                                                    ) &&
+                                                        (cond?.condition?.includes('BETWEEN') ||
+                                                        cond?.condition?.includes('Not Between') ? (
+                                                            <FormContainer className="grid grid-cols-2 gap-2 col-span-2">
+                                                                <FormItem label="value(A)">
+                                                                    <Field
+                                                                        name={`conditions[${index}].value_a`}
+                                                                        placeholder="Value A"
+                                                                        component={Input}
+                                                                    />
+                                                                </FormItem>
+                                                                <FormItem label="value(B)">
+                                                                    <Field
+                                                                        name={`conditions[${index}].value_b`}
+                                                                        placeholder="Value B"
+                                                                        component={Input}
+                                                                    />
+                                                                </FormItem>
+                                                            </FormContainer>
+                                                        ) : (
+                                                            <FormItem label="value">
+                                                                <Field
+                                                                    name={`conditions[${index}].value`}
+                                                                    placeholder="Value "
+                                                                    component={Input}
+                                                                />
+                                                            </FormItem>
+                                                        ))}
 
                                                     <CommonSelect
                                                         label="Time Frame"

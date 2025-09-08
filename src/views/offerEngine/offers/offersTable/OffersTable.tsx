@@ -77,17 +77,19 @@ const OffersTable = () => {
                         onChange={(e) => setGlobalFilter(e.target.value)}
                     />
                 </div>
-                <div className="">
-                    <Button variant="new" size="sm" onClick={() => navigate('/app/appSettings/offers/add')}>
-                        Add
-                    </Button>
-                </div>
-                <div className="xl:mt-8">
-                    {offerIdStore?.length > 0 && (
-                        <Button variant="new" size="sm" onClick={() => setIsBulkEditModal(true)}>
-                            Bulk Update
+                <div className="flex gap-4 items-center">
+                    <div className="">
+                        <Button variant="new" size="sm" onClick={() => navigate('/app/appSettings/offers/add')}>
+                            Add
                         </Button>
-                    )}
+                    </div>
+                    <div className="xl:mt-8">
+                        {offerIdStore?.length > 0 && (
+                            <Button variant="new" size="sm" onClick={() => setIsBulkEditModal(true)}>
+                                Bulk Update
+                            </Button>
+                        )}
+                    </div>
                 </div>
             </div>
             <div>
