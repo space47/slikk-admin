@@ -83,7 +83,7 @@ const OffersTable = () => {
                             Add
                         </Button>
                     </div>
-                    <div className="xl:mt-8">
+                    <div className="">
                         {offerIdStore?.length > 0 && (
                             <Button variant="new" size="sm" onClick={() => setIsBulkEditModal(true)}>
                                 Bulk Update
