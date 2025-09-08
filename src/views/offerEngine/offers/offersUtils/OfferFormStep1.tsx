@@ -4,12 +4,11 @@ import { useAppDispatch, useAppSelector } from '@/store'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
 import { companyStore } from '@/store/types/companyStore.types'
 import { Field, FieldArray, FieldProps } from 'formik'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { OfferFromList1, WEEKDAY_ARRAY } from './offersCommon'
 import FullDateForm from '@/common/FullDateForm'
 import { FaPlus, FaTrash } from 'react-icons/fa'
 import FullTimePicker from '@/common/FullTimePicker'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import GroupsCommon from '@/common/GroupsCommon'
 
 interface props {
@@ -55,34 +54,6 @@ const OfferFormStep1 = ({ values }: props) => {
                         }}
                     </Field>
                 </FormItem>
-                <FormItem label="WeekDays" className="col-span-1 w-full mb-6 bg-gray-50 p-4 rounded-lg border border-gray-100">
-                    <Field name="weekday_number">
-                        {({ form, field }: FieldProps) => {
-                            const selectedOptions = Array.isArray(field.value)
-                                ? WEEKDAY_ARRAY.filter((option) => field.value.includes(option.value))
-                                : []
-
-                            return (
-                                <div className="w-full max-w-md">
-                                    <Select
-                                        isMulti
-                                        className="w-full"
-                                        options={WEEKDAY_ARRAY}
-                                        getOptionLabel={(option) => option?.label}
-                                        getOptionValue={(option) => String(option?.value)}
-                                        value={selectedOptions}
-                                        onChange={(newVal) => {
-                                            form.setFieldValue(
-                                                'weekday_number',
-                                                newVal.map((option: any) => option.value),
-                                            )
-                                        }}
-                                    />
-                                </div>
-                            )
-                        }}
-                    </Field>
-                </FormItem>
 
                 <GroupsCommon values={values} />
             </FormContainer>
@@ -115,6 +86,34 @@ const OfferFormStep1 = ({ values }: props) => {
                 <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
                     <FullDateForm label="End Date" name="end_date" fieldname="end_date" />
                 </div>
+                <FormItem label="WeekDays" className="col-span-1 w-full mb-6 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                    <Field name="weekday_number">
+                        {({ form, field }: FieldProps) => {
+                            const selectedOptions = Array.isArray(field.value)
+                                ? WEEKDAY_ARRAY.filter((option) => field.value.includes(option.value))
+                                : []
+
+                            return (
+                                <div className="w-full max-w-md">
+                                    <Select
+                                        isMulti
+                                        className="w-full"
+                                        options={WEEKDAY_ARRAY}
+                                        getOptionLabel={(option) => option?.label}
+                                        getOptionValue={(option) => String(option?.value)}
+                                        value={selectedOptions}
+                                        onChange={(newVal) => {
+                                            form.setFieldValue(
+                                                'weekday_number',
+                                                newVal.map((option: any) => option.value),
+                                            )
+                                        }}
+                                    />
+                                </div>
+                            )
+                        }}
+                    </Field>
+                </FormItem>
             </div>
 
             {/* Second Row of Form Fields */}

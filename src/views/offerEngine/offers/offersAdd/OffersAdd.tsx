@@ -18,6 +18,10 @@ const OffersAdd = () => {
 
     const [addOffers, offerResponse] = offersService.useOffersAddMutation()
 
+    const initialValue = {
+        is_active: true,
+    }
+
     useEffect(() => {
         if (offerResponse.isSuccess) {
             console.log('offerResponse', offerResponse)
@@ -60,7 +64,7 @@ const OffersAdd = () => {
                         ))}
                     </Steps>
                 </div>
-                <Formik enableReinitialize initialValues={{}} onSubmit={handleSubmit}>
+                <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                     {({ values }) => (
                         <Form className="w-full shadow-xl p-3 rounded-2xl ">
                             {currentStep === 0 && (
