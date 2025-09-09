@@ -50,7 +50,7 @@ export const offerBodyFile = (values: any, buyFilterId: number | string | undefi
     const body = {
         offer_name: values?.offer_name || '', // mandatory
         store_ids: values?.store ? values?.store?.join(',') : '', // mandatory
-        weekday_number: values?.weekday_number ? values?.weekday_number?.join(',') : '',
+        week_day_number: values?.week_day_number ? values?.week_day_number?.join(',') : '',
         slab_id: values?.slab_id ? Number(values?.slab_id) : 1, // mandatory
         apply_type: values?.apply_type || '', // PRODUCT / USER
         discount_type: values?.discount_type || '', //PERCENTAGE FLAT BXGY  // mandatory
