@@ -87,7 +87,7 @@ const OfferFormStep1 = ({ values }: props) => {
                     <FullDateForm label="End Date" name="end_date" fieldname="end_date" />
                 </div>
                 <FormItem label="WeekDays" className="col-span-1 w-full mb-6 bg-gray-50 p-4 rounded-lg border border-gray-100">
-                    <Field name="weekday_number">
+                    <Field name="week_day_number">
                         {({ form, field }: FieldProps) => {
                             const selectedOptions = Array.isArray(field.value)
                                 ? WEEKDAY_ARRAY.filter((option) => field.value.includes(option.value))
@@ -104,7 +104,7 @@ const OfferFormStep1 = ({ values }: props) => {
                                         value={selectedOptions}
                                         onChange={(newVal) => {
                                             form.setFieldValue(
-                                                'weekday_number',
+                                                'week_day_number',
                                                 newVal.map((option: any) => option.value),
                                             )
                                         }}
