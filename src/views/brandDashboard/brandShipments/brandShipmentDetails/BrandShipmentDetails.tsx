@@ -14,7 +14,6 @@ const BrandShipmentDetails = () => {
     const [shipmentDetails, setShipmentDetails] = useState<any>()
     const [showAddCsv, setShowAddCsv] = useState(false)
     const [csvEmptyArray, setCsvEmptyArray] = useState<any[]>([])
-    const [refreshTrigger, setRefreshTrigger] = useState(0)
 
     useEffect(() => {
         const fetchShipmentDetails = async () => {
@@ -26,7 +25,7 @@ const BrandShipmentDetails = () => {
             }
         }
         fetchShipmentDetails()
-    }, [id, refreshTrigger])
+    }, [id])
 
     const handleCsvUpload = async () => {
         try {
@@ -114,7 +113,7 @@ const BrandShipmentDetails = () => {
 
                         <div className="flex justify-between items-center py-2 border-b border-gray-100">
                             <span className="text-gray-600 font-bold">Items Count:</span>
-                            <span className="font-semibold">{shipmentDetails?.items_count ?? '0'}</span>
+                            <span className="font-semibold">{shipmentDetails?.upload_count ?? '0'}</span>
                         </div>
 
                         <div className="pt-4">
@@ -158,12 +157,10 @@ const BrandShipmentDetails = () => {
                 </Card>
             </div>
 
-            {shipmentDetails?.shipment_items?.length > 0 && (
-                <div className="mt-12">
-                    <h2 className="text-xl font-semibold text-gray-800">Shipment Items</h2>
-                    <InwardMaterialModule setRefreshTrigger={setRefreshTrigger} shipmentDetails={shipmentDetails} />
-                </div>
-            )}
+            <div className="mt-12">
+                <h2 className="text-xl font-semibold text-gray-800">Shipment Items</h2>
+                <InwardMaterialModule />
+            </div>
         </div>
     )
 }
