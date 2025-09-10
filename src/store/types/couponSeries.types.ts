@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export type CouponResults = {
     id?: number
     discount_type?: string
@@ -58,16 +59,7 @@ export type CouponSeriesBodyType = {
     event_name?: string
     coupon_active_event_name?: string
     store_id?: string
-    extra_attributes?: {
-        applicable_categories?: string[]
-        new_users_only?: boolean
-        filters?: Record<string, string | number>
-        min_filters_products_amount?: number
-        filter_id_exclude?: string
-        min_item_quantity?: number
-        max_item_quantity?: number
-        terms_and_conditions?: string
-    }
+    extra_attributes?: any
 }
 
 export type CouponGenerateBodyType = {
