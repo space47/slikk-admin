@@ -10,6 +10,7 @@ import FullDateForm from '@/common/FullDateForm'
 import { FaPlus, FaTrash } from 'react-icons/fa'
 import FullTimePicker from '@/common/FullTimePicker'
 import GroupsCommon from '@/common/GroupsCommon'
+import { RichTextEditor } from '@/components/shared'
 
 interface props {
     values: any
@@ -135,6 +136,14 @@ const OfferFormStep1 = ({ values }: props) => {
             </div>
 
             {/* Second Row of Form Fields */}
+
+            <FormItem label="Terms And Conditions" className="mt-6">
+                <Field name="terms_and_conditions">
+                    {({ field, form }: FieldProps) => (
+                        <RichTextEditor value={field.value} onChange={(val) => form.setFieldValue(field.name, val)} />
+                    )}
+                </Field>
+            </FormItem>
 
             {/* Daily Time Windows Section */}
             <FormItem label="Daily Time Windows" className="bg-gray-50 p-5 rounded-xl border border-gray-200">
