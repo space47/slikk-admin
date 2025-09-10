@@ -152,7 +152,7 @@ export const useReturnOrderFunctions = ({
             navigate(0)
         } catch (error) {
             if (error instanceof AxiosError) {
-                notification.error({ message: error?.message || 'Failed to create return order' })
+                notification.error({ message: error?.response?.data?.message || error?.message || 'Failed to create return order' })
             }
         }
     }

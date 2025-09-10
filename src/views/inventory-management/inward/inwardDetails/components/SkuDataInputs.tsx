@@ -95,7 +95,7 @@ const SkuDataInputs = ({
                     ]
                 })
                 notification.error({
-                    message: 'Item not found by SKU or Barcode in this GRN',
+                    message: error?.response?.data?.message || 'Item not found by SKU or Barcode in this GRN',
                 })
             }
         } catch (error) {
@@ -173,7 +173,7 @@ const SkuDataInputs = ({
         } catch (error: any) {
             notification.error({
                 message: 'Error',
-                description: error?.data?.message || error?.data?.data?.message || 'Something went wrong',
+                description: error?.response?.data?.message || error?.data?.message || error?.data?.data?.message || 'Something went wrong',
             })
 
             console.error('Error during API call:', error)

@@ -252,13 +252,8 @@ const AddUser = () => {
 
         try {
             setShowSpinner(true)
-
-            // First, create the user
             const response = await axioisInstance.post(`company/users/add`, bodyData)
-            console.log('response of add users', response)
-
-            // Then assign stores if needed
-            if (storePicker.length > 0) {
+            if (storePicker?.length > 0) {
                 const storeAssignmentSuccess = await hanldePicker()
                 if (!storeAssignmentSuccess) {
                     notification.warning({
@@ -269,9 +264,10 @@ const AddUser = () => {
 
             notification.success({ message: response?.data?.message || 'User added successfully' })
             setTimeout(() => {
-                navigate('/app/orgManagement/users')
+                navigate(-1)
             }, 1000)
         } catch (error: any) {
+            console.log('error', error)
             notification.error({ message: error?.response?.data?.message || 'User not created' })
             console.log(error)
         } finally {
