@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Dropdown } from '@/components/ui'
-import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import React, { useState } from 'react'
@@ -14,12 +12,6 @@ type formData = {
     [key: string]: string | undefined
 }
 
-const TypeOptionsArray = [
-    { label: 'sku', value: 'sku' },
-    { label: 'barcode', value: 'barcode' },
-    { label: 'skid', value: 'skid' },
-]
-
 interface props {
     formData: formData
     skuWiseData: any[]
@@ -31,6 +23,7 @@ interface props {
     setFormData: any
     setCounter: (x: any) => number
     setFailedQc: (x: any) => void
+    setQcFailedData: (x: any) => void
 }
 
 const SkuDataInputs = ({
@@ -42,29 +35,22 @@ const SkuDataInputs = ({
     setFormData,
     setCounter,
     setFailedQc,
+    setQcFailedData,
 }: props) => {
     const [qcFailed, setQcFailed] = useState(false)
     const { document_number } = useParams()
-    const [currentSelectedPage, setCurrentSelectedPage] = useState(TypeOptionsArray[0])
 
-    const handleProductSelect = (value: any) => {
-        const selected = TypeOptionsArray.find((item) => item.value === value)
-        if (selected) {
-            setCurrentSelectedPage(selected)
-        }
-    }
     const handleAddSku = async () => {
         try {
-            const selectedKey = currentSelectedPage.value
-            const selectedValue = formData[selectedKey] || ''
-            const response = await axioisInstance.get(`/goods/qualitycheck?grn_number=${document_number}&${selectedKey}=${selectedValue}`)
-            const dataToBeMatched =
-                response?.data?.data?.results?.find((item: any) => item?.location?.toLowerCase() === formData.location?.toLowerCase()) ||
-                response?.data?.data?.results?.find((item: any) => item?.[selectedKey] === selectedValue)
+            let response = await axioisInstance.get(`/goods/qualitycheck?grn_number=${document_number}&sku=${formData?.sku}`)
+            let results = response?.data?.data?.results ?? response?.data?.results ?? []
+            if (!results || results.length === 0) {
+                response = await axioisInstance.get(`/goods/qualitycheck?grn_number=${document_number}&barcode=${formData?.sku}`)
+                results = response?.data?.data?.results ?? response?.data?.results ?? []
+            }
 
-            console.log('response', dataToBeMatched)
-
-            if (response?.data?.data && response?.data?.data?.results?.length > 0) {
+            if (results && results.length > 0) {
+                const dataToBeMatched = results[0]
                 const newSkuData = {
                     sku: dataToBeMatched?.sku,
                     qc_passed: 1,
@@ -80,43 +66,42 @@ const SkuDataInputs = ({
                 setSkuWiseData([newSkuData])
                 await handleAddGrn(newSkuData)
             } else {
-                const results = response?.data?.data?.results ?? response?.data?.results ?? null
+                setFailedQc((prev: any) => {
+                    const arr = Array.isArray(prev) ? prev : []
+                    const idx = arr.findIndex((item) => item.sku === formData?.sku && item.location === (formData?.location ?? ''))
 
-                if (Array.isArray(results) && results.length === 0) {
-                    setFailedQc((prev: any) => {
-                        const arr = Array.isArray(prev) ? prev : []
-                        const idx = arr.findIndex((item) => item.sku === selectedValue && item.location === (formData?.location ?? ''))
-
-                        if (idx !== -1) {
-                            const updated = [...arr]
-                            const currentQty = Number(updated[idx]?.quantity_sent) || 0
-                            updated[idx] = {
-                                ...updated[idx],
-                                quantity_sent: currentQty + 1,
-                            }
-                            return updated
+                    if (idx !== -1) {
+                        const updated = [...arr]
+                        const currentQty = Number(updated[idx]?.quantity_sent) || 0
+                        updated[idx] = {
+                            ...updated[idx],
+                            quantity_sent: currentQty + 1,
                         }
+                        return updated
+                    }
 
-                        localStorage.setItem(
-                            `failed_${document_number}`,
-                            JSON.stringify([...arr, { sku: selectedValue || '', location: formData?.location || '', quantity_sent: 1 }]),
-                        )
+                    localStorage.setItem(
+                        `failed_${document_number}`,
+                        JSON.stringify([...arr, { sku: formData?.sku || '', location: formData?.location || '', quantity_sent: 1 }]),
+                    )
 
-                        return [
-                            ...arr,
-                            {
-                                sku: selectedValue || '',
-                                location: formData?.location || '',
-                                quantity_sent: 1,
-                            },
-                        ]
-                    })
-                }
+                    return [
+                        ...arr,
+                        {
+                            sku: formData?.sku || '',
+                            location: formData?.location || '',
+                            quantity_sent: 1,
+                        },
+                    ]
+                })
                 notification.error({
-                    message: 'Item not found in this GRN',
+                    message: 'Item not found by SKU or Barcode in this GRN',
                 })
             }
         } catch (error) {
+            notification.error({
+                message: 'No SKU or Barcode found',
+            })
             console.error('Error during API call:', error)
         }
     }
@@ -139,6 +124,11 @@ const SkuDataInputs = ({
             qc_failed: qc_failed,
             action: 'add',
         }
+
+        setQcFailedData({
+            failed: qc_failed,
+            set: qc_Set,
+        })
 
         console.log('body')
 
@@ -203,42 +193,21 @@ const SkuDataInputs = ({
             </div>
 
             {/* Dynamic Search + Dropdown */}
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Sku/Barcode</label>
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-4 items-center">
                 {/* Search */}
                 <div className="space-y-2 col-span-3">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        {currentSelectedPage.label.toUpperCase()}
-                    </label>
                     <input
-                        name={currentSelectedPage.value}
+                        name="sku"
                         type="search"
-                        placeholder={`Enter ${currentSelectedPage.label}`}
+                        placeholder={`Enter SKU/BARCODE `}
                         className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 p-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-400 outline-none"
-                        value={formData[currentSelectedPage.value] || ''}
+                        value={formData?.sku || ''}
                         onChange={handleInputChange}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter') handleAddSku()
                         }}
                     />
-                </div>
-
-                {/* Dropdown */}
-                <div className="text-xl font-bold xl:mt-5">
-                    <Dropdown
-                        className="w-full  rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 px-4 py-2 text-xl  font-bold text-gray-800 dark:text-gray-200 shadow-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition"
-                        title={currentSelectedPage?.value ? currentSelectedPage.label : 'Select'}
-                        onSelect={(val) => handleProductSelect(val)}
-                    >
-                        {TypeOptionsArray?.map((item, key) => (
-                            <DropdownItem
-                                key={key}
-                                eventKey={item.value}
-                                className="px-4 py-2 hover:bg-blue-100 dark:hover:bg-gray-700 cursor-pointer"
-                            >
-                                <span>{item.label}</span>
-                            </DropdownItem>
-                        ))}
-                    </Dropdown>
                 </div>
             </div>
         </div>
