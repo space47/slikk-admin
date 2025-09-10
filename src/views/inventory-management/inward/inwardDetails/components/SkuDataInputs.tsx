@@ -99,6 +99,7 @@ const SkuDataInputs = ({
                 })
             }
         } catch (error) {
+            console.log('here lalaalal')
             setFailedQc((prev: any) => {
                 const arr = Array.isArray(prev) ? prev : []
                 const idx = arr.findIndex((item) => item.sku === formData?.sku && item.location === (formData?.location ?? ''))
@@ -171,6 +172,35 @@ const SkuDataInputs = ({
             })
             setCounter((prev: number) => prev + 1)
         } catch (error: any) {
+            console.log('error in here 2')
+            setFailedQc((prev: any) => {
+                const arr = Array.isArray(prev) ? prev : []
+                const idx = arr.findIndex((item) => item.sku === formData?.sku && item.location === (formData?.location ?? ''))
+
+                if (idx !== -1) {
+                    const updated = [...arr]
+                    const currentQty = Number(updated[idx]?.quantity_sent) || 0
+                    updated[idx] = {
+                        ...updated[idx],
+                        quantity_sent: currentQty + 1,
+                    }
+                    return updated
+                }
+
+                localStorage.setItem(
+                    `failed_${document_number}`,
+                    JSON.stringify([...arr, { sku: formData?.sku || '', location: formData?.location || '', quantity_sent: 1 }]),
+                )
+
+                return [
+                    ...arr,
+                    {
+                        sku: formData?.sku || '',
+                        location: formData?.location || '',
+                        quantity_sent: 1,
+                    },
+                ]
+            })
             notification.error({
                 message: 'Error',
                 description: error?.response?.data?.message || error?.data?.message || error?.data?.data?.message || 'Something went wrong',
