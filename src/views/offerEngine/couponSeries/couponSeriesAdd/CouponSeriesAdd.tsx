@@ -66,8 +66,9 @@ const CouponSeriesAdd = () => {
                         filter_id_exclude: excludeFilterId || '',
                         min_item_quantity: values?.extra_attributes?.filters?.min_item_quantity,
                         max_item_quantity: values?.extra_attributes?.filters?.max_item_quantity,
-                        min_filters_products_amount: values?.extra_attributes?.min_filters_products_amount,
                     },
+                    min_filters_products_amount: values?.extra_attributes?.min_filters_products_amount,
+                    terms_and_conditions: values?.extra_attributes?.terms_and_conditions,
                 },
             }).unwrap()
         } catch (error: any) {

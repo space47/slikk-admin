@@ -71,6 +71,13 @@ const CouponSeriesForm = ({ values, setFieldValue, setFilterId, filterValue, set
                         )}
                     </Field>
                 </FormItem>
+                <FormItem label="T&C" className="col-span-2">
+                    <Field name="extra_attributes.terms_and_conditions">
+                        {({ field, form }: FieldProps) => (
+                            <RichTextEditor value={field.value} onChange={(val) => form.setFieldValue(field.name, val)} />
+                        )}
+                    </Field>
+                </FormItem>
 
                 {/* Date Pickers */}
                 <FormItem label="Valid From">
