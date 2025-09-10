@@ -351,6 +351,7 @@ const SkuUpdate = () => {
             notification.success({ message: 'Successfully edited' })
             setRefreshTable(true)
         } catch (error) {
+            notification.error({ message: error?.response?.data?.message || 'Failed to edit' })
             console.error(error)
         }
     }

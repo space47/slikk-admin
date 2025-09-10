@@ -300,8 +300,21 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
     const handleMultiSelect = (field: string, val: any) => {
         const tempBannerForm = [...bannerForm]
 
+        // Preserve the existing sort tag if it exists
+        const existingSortTag = tempBannerForm[index]?.tags?.find((item) => item?.startsWith('sort_')) || null
+
         if (field === 'tags') {
-            tempBannerForm[index] = { ...tempBannerForm[index], tags: val || [] }
+            // Replace only the non-sort tags, but keep the sort tag (if exists)
+            tempBannerForm[index] = {
+                ...tempBannerForm[index],
+                tags: [...(val || []), ...(existingSortTag ? [existingSortTag] : [])],
+            }
+        } else if (field === 'sort') {
+            // Ensure only one sort_* tag
+            tempBannerForm[index] = {
+                ...tempBannerForm[index],
+                tags: [...(tempBannerForm[index]?.tags?.filter((item) => !item?.startsWith('sort_')) || []), `${val[0]}`],
+            }
         } else {
             tempBannerForm[index] = { ...tempBannerForm[index], [field]: val }
         }
@@ -512,7 +525,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                         value={bannerForm[index]['product_type'] || []}
                         options={filteredProductTypes}
                         getOptionLabel={(option) => option?.name}
-                        getOptionValue={(option) => option.id.toString()}
+                        getOptionValue={(option) => option?.id?.toString()}
                         onChange={(newVal, actionMeta) => {
                             console.log(newVal, actionMeta)
                             handleMultiSelect('product_type', newVal)
@@ -578,7 +591,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                         getOptionLabel={(option) => option.label}
                         getOptionValue={(option) => option.value}
                         onChange={(selectedOption) => {
-                            handleMultiSelect('tags', [selectedOption?.value])
+                            handleMultiSelect('sort', [selectedOption?.value])
                         }}
                     />
                 </div>

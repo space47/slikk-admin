@@ -59,7 +59,7 @@ const StoreAssignComponent = ({ setStorePicker, storePicker, mobile, profile, cu
     return (
         <div className={`${customClass ? customClass : 'mb-6 mt-10 xl:ml-20'}`}>
             <FormItem label="">
-                <div className="text-xl font-bold mb-2">Store Assign To Picker</div>
+                <div className="text-xl font-bold mb-2">Store Assign</div>
                 <div>
                     <div className="flex flex-col gap-1 w-full max-w-md">
                         <Select
