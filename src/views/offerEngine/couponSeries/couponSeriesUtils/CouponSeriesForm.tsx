@@ -176,6 +176,23 @@ const CouponSeriesForm = ({ values, setFieldValue, setFilterId, filterValue, set
                     />
                 </FormItem>
 
+                <FormItem label=" Y Discount Type">
+                    <Select
+                        isClearable
+                        className="w-full"
+                        options={DiscountType}
+                        getOptionLabel={(option) => option.name}
+                        getOptionValue={(option) => option.value}
+                        value={
+                            DiscountType.find((option: any) => option.value === values?.extra_attributes?.bxgy_config?.y_discount_type) ||
+                            null
+                        }
+                        onChange={(selectedOption) =>
+                            setFieldValue('extra_attributes.bxgy_config.y_discount_type', selectedOption?.value || '')
+                        }
+                    />
+                </FormItem>
+
                 {/* Event-based fields */}
                 {values?.series_type === 'event' && (
                     <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
