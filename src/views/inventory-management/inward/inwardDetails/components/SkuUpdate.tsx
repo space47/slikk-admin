@@ -344,6 +344,7 @@ const SkuUpdate = () => {
             quantity_received: updatedReceived[id] ?? oReceived,
             qc_failed: (updatedReceived[id] ?? oReceived) - (updatedPassed[id] ?? oPassed),
             sku: oSku,
+            action: 'replace',
         }
 
         try {
