@@ -41,6 +41,7 @@ const SkuUpdate = () => {
     const [qcFailedData, setQcFailedData] = useState<any>({
         failed: 0,
         set: 0,
+        passed: 0,
     }) // not a nice idea but using as my brain is not braining now
 
     console.log('failedQc', failedQc)
@@ -66,8 +67,12 @@ const SkuUpdate = () => {
             setGetSkuData(data?.results)
             setTotalData(data?.count)
             setRefreshTable(false)
-        } catch (error) {
+        } catch (error: any) {
             console.log(error)
+            notification.error({
+                message: 'Error',
+                description: error?.data?.message || error?.data?.data?.message || 'Something went wrong',
+            })
         } finally {
             setShowSpinner(false)
         }
@@ -117,7 +122,7 @@ const SkuUpdate = () => {
                 header: 'QC PASSED',
                 accessorKey: 'qc_passed',
                 cell: ({ row }: any) => {
-                    return qcFailedData?.set
+                    return qcFailedData?.passed
                 },
             },
 
@@ -307,8 +312,6 @@ const SkuUpdate = () => {
 
     const handleDownloadFailedCsv = () => {
         handleDownloadCsv(failedQc, failedColumns, convertToCSV, 'failedQC.csv')
-        localStorage.removeItem(`failed_${document_number}`)
-        setFailedQc([])
     }
 
     const handleEditSku = async (oLocation: string, oPassed: number, oReceived: number, oFailed: number, oSku: string) => {
@@ -340,6 +343,7 @@ const SkuUpdate = () => {
             quantity_received: updatedReceived[id] ?? oReceived,
             qc_failed: (updatedReceived[id] ?? oReceived) - (updatedPassed[id] ?? oPassed),
             sku: oSku,
+            action: 'replace',
         }
 
         try {

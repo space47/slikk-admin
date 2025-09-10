@@ -99,6 +99,34 @@ const SkuDataInputs = ({
                 })
             }
         } catch (error) {
+            setFailedQc((prev: any) => {
+                const arr = Array.isArray(prev) ? prev : []
+                const idx = arr.findIndex((item) => item.sku === formData?.sku && item.location === (formData?.location ?? ''))
+
+                if (idx !== -1) {
+                    const updated = [...arr]
+                    const currentQty = Number(updated[idx]?.quantity_sent) || 0
+                    updated[idx] = {
+                        ...updated[idx],
+                        quantity_sent: currentQty + 1,
+                    }
+                    return updated
+                }
+
+                localStorage.setItem(
+                    `failed_${document_number}`,
+                    JSON.stringify([...arr, { sku: formData?.sku || '', location: formData?.location || '', quantity_sent: 1 }]),
+                )
+
+                return [
+                    ...arr,
+                    {
+                        sku: formData?.sku || '',
+                        location: formData?.location || '',
+                        quantity_sent: 1,
+                    },
+                ]
+            })
             notification.error({
                 message: 'No SKU or Barcode found',
             })
@@ -109,9 +137,11 @@ const SkuDataInputs = ({
     const handleAddGrn = async (skuData: any) => {
         let qc_failed = 0
         let qc_Set = 1
+        let qc_passed = 1
         if (qcFailed) {
             qc_failed = 1
-            qc_Set = -1
+            qc_Set = 1
+            qc_passed = 0
         }
 
         console.log('here')
@@ -120,7 +150,7 @@ const SkuDataInputs = ({
             sku: skuData?.sku || '',
             location: skuData?.location || '',
             quantity_received: qc_Set,
-            qc_passed: qc_Set,
+            qc_passed: qc_passed,
             qc_failed: qc_failed,
             action: 'add',
         }
@@ -128,6 +158,7 @@ const SkuDataInputs = ({
         setQcFailedData({
             failed: qc_failed,
             set: qc_Set,
+            passed: qc_passed,
         })
 
         console.log('body')
@@ -139,9 +170,10 @@ const SkuDataInputs = ({
                 message: response?.data?.message || 'Successfully Added',
             })
             setCounter((prev: number) => prev + 1)
-        } catch (error) {
+        } catch (error: any) {
             notification.error({
-                message: 'Failed to Add',
+                message: 'Error',
+                description: error?.data?.message || error?.data?.data?.message || 'Something went wrong',
             })
 
             console.error('Error during API call:', error)
