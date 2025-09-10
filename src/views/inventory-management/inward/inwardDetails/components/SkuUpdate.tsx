@@ -38,6 +38,10 @@ const SkuUpdate = () => {
     const [failedQc, setFailedQc] = useState<any>([])
     const [activeTab, setActiveTab] = useState('passed')
     const [counter, setCounter] = useState(0)
+    const [qcFailedData, setQcFailedData] = useState<any>({
+        failed: 0,
+        set: 0,
+    }) // not a nice idea but using as my brain is not braining now
 
     console.log('failedQc', failedQc)
 
@@ -106,35 +110,14 @@ const SkuUpdate = () => {
                 accessorKey: 'quantity_received',
                 cell: ({ row }: any) => {
                     const value = qcReceived ?? row?.original?.quantity_received
-                    return (
-                        <div className="flex gap-1 items-center">
-                            <input
-                                className="w-[60px] "
-                                type="number"
-                                min={0}
-                                value={value}
-                                onChange={(e) => setQcReceived(Number(e.target.value))}
-                            />
-                        </div>
-                    )
+                    return qcFailedData?.set
                 },
             },
             {
                 header: 'QC PASSED',
                 accessorKey: 'qc_passed',
                 cell: ({ row }: any) => {
-                    const value = qcPass ?? row?.original?.qc_passed
-                    return (
-                        <div className="flex gap-1 items-center">
-                            <input
-                                className="w-[60px] "
-                                type="number"
-                                min={0}
-                                value={value}
-                                onChange={(e) => setQcPass(Number(e.target.value))}
-                            />
-                        </div>
-                    )
+                    return qcFailedData?.set
                 },
             },
 
@@ -142,11 +125,7 @@ const SkuUpdate = () => {
                 header: 'QC FAILED',
                 accessorKey: 'qc_failed',
                 cell: ({ row }: any) => {
-                    const received = qcReceived ?? row?.original?.quantity_received ?? 0
-                    const passed = qcPass ?? row?.original?.qc_passed ?? 0
-
-                    const qcFail = received - passed
-                    return <div>{qcFail}</div>
+                    return <div>{qcFailedData?.failed}</div>
                 },
             },
             {
@@ -163,17 +142,7 @@ const SkuUpdate = () => {
                                 ? `${getSame?.location}/${formData?.location}`
                                 : getSame?.location
                     }
-                    return (
-                        <div className="flex gap-1 items-center">
-                            <input
-                                className="w-[100px] "
-                                type="text"
-                                min={0}
-                                value={value}
-                                onChange={(e) => setLocationInput(e.target.value)}
-                            />
-                        </div>
-                    )
+                    return <div className="flex gap-1 items-center">{value}</div>
                 },
             },
             {
@@ -395,6 +364,7 @@ const SkuUpdate = () => {
                 setFormData={setFormData}
                 setCounter={setCounter as any}
                 setFailedQc={setFailedQc}
+                setQcFailedData={setQcFailedData}
             />
             {<EasyTable noPage overflow mainData={skuWiseData} columns={columns} />}
             <div className="flex justify-start items-center mb-10">
