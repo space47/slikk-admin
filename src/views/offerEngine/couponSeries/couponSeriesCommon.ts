@@ -145,6 +145,14 @@ export const COUPON_SERIES_FORM = [
         component: { Input },
     },
     {
+        label: 'X Quantity',
+        classname: 'col-span-1 w-full',
+        type: 'number',
+        name: 'extra_attributes.bxgy_config.x_quantity',
+        placeholder: 'Enter X Quantity',
+        component: { Input },
+    },
+    {
         label: 'Y Quantity',
         classname: 'col-span-1 w-full',
         type: 'number',
