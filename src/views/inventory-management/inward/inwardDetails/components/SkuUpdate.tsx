@@ -312,8 +312,6 @@ const SkuUpdate = () => {
 
     const handleDownloadFailedCsv = () => {
         handleDownloadCsv(failedQc, failedColumns, convertToCSV, 'failedQC.csv')
-        localStorage.removeItem(`failed_${document_number}`)
-        setFailedQc([])
     }
 
     const handleEditSku = async (oLocation: string, oPassed: number, oReceived: number, oFailed: number, oSku: string) => {
