@@ -70,6 +70,7 @@ const CouponSeriesAdd = () => {
                     bxgy_config: {
                         max_groups: values?.extra_attributes?.bxgy_config?.max_groups,
                         y_quantity: values?.extra_attributes?.bxgy_config?.y_quantity,
+                        x_quantity: values?.extra_attributes?.bxgy_config?.x_quantity,
                         y_discount_value: values?.extra_attributes?.bxgy_config?.y_discount_value,
                         y_discount_type: values?.extra_attributes?.bxgy_config?.y_discount_type,
                     },
