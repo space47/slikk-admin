@@ -45,7 +45,7 @@ const SkuDataInputs = ({
 }: props) => {
     const [qcFailed, setQcFailed] = useState(false)
     const { document_number } = useParams()
-    const [curremtSelectedPage, setCurrentSelectedPage] = useState(TypeOptionsArray[0])
+    const [currentSelectedPage, setCurrentSelectedPage] = useState(TypeOptionsArray[0])
 
     const handleProductSelect = (value: any) => {
         const selected = TypeOptionsArray.find((item) => item.value === value)
@@ -55,7 +55,7 @@ const SkuDataInputs = ({
     }
     const handleAddSku = async () => {
         try {
-            const selectedKey = curremtSelectedPage.value
+            const selectedKey = currentSelectedPage.value
             const selectedValue = formData[selectedKey] || ''
             const response = await axioisInstance.get(`/goods/qualitycheck?grn_number=${document_number}&${selectedKey}=${selectedValue}`)
             const dataToBeMatched =
@@ -96,6 +96,11 @@ const SkuDataInputs = ({
                             }
                             return updated
                         }
+
+                        localStorage.setItem(
+                            `failed_${document_number}`,
+                            JSON.stringify([...arr, { sku: selectedValue || '', location: formData?.location || '', quantity_sent: 1 }]),
+                        )
 
                         return [
                             ...arr,
@@ -202,14 +207,14 @@ const SkuDataInputs = ({
                 {/* Search */}
                 <div className="space-y-2 col-span-3">
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        {curremtSelectedPage.label.toUpperCase()}
+                        {currentSelectedPage.label.toUpperCase()}
                     </label>
                     <input
-                        name={curremtSelectedPage.value}
+                        name={currentSelectedPage.value}
                         type="search"
-                        placeholder={`Enter ${curremtSelectedPage.label}`}
+                        placeholder={`Enter ${currentSelectedPage.label}`}
                         className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 p-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-400 outline-none"
-                        value={formData[curremtSelectedPage.value] || ''}
+                        value={formData[currentSelectedPage.value] || ''}
                         onChange={handleInputChange}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter') handleAddSku()
@@ -221,7 +226,7 @@ const SkuDataInputs = ({
                 <div className="text-xl font-bold xl:mt-5">
                     <Dropdown
                         className="w-full  rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 px-4 py-2 text-xl  font-bold text-gray-800 dark:text-gray-200 shadow-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition"
-                        title={curremtSelectedPage?.value ? curremtSelectedPage.label : 'Select'}
+                        title={currentSelectedPage?.value ? currentSelectedPage.label : 'Select'}
                         onSelect={(val) => handleProductSelect(val)}
                     >
                         {TypeOptionsArray?.map((item, key) => (
