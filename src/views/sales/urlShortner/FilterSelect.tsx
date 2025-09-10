@@ -176,22 +176,22 @@ const FilterSelect = ({
                 <div>Sort By</div>
                 <Field name="discountTags">
                     {({ field, form }: FieldProps<any>) => {
-                        console.log('Field Value', field)
+                        console.log('Field Value inside sort', field)
                         console.log('Sort', sortValue)
                         const selectedValue = DISCOUNTOPTIONS.find((option) => option.value === `sort_${sortValue}`)
                         console.log('Selected Value', selectedValue)
                         return (
                             <Select
-                                isMulti
+                                isClearable
                                 placeholder="Discount Tags"
                                 options={DISCOUNTOPTIONS}
                                 getOptionLabel={(option) => option.label}
                                 getOptionValue={(option) => option.value}
                                 // defaultValue={selectedValue}
+                                defaultValue={selectedValue}
                                 onChange={(newVal) => {
-                                    const newValues = newVal ? newVal.map((val) => val.value) : []
                                     console.log('onChange Values', newVal)
-                                    form.setFieldValue(field.name, newValues)
+                                    form.setFieldValue(field.name, newVal?.value)
                                 }}
                             />
                         )

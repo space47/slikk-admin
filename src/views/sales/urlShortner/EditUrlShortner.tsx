@@ -17,6 +17,7 @@ import { MAXMINARRAY, OFFARRAY, UtmArray } from '../groupNotification/sendNotifi
 import { Checkbox, Select } from '@/components/ui'
 import { pageNameTypes } from '@/store/types/pageSettings.types'
 import { pageSettingsService } from '@/store/services/pageSettingService'
+import { filter } from 'lodash'
 
 const EditUrlShortner = () => {
     const [urlFieldDatas, setUrlFieldDatas] = useState<any>()
@@ -182,6 +183,7 @@ const EditUrlShortner = () => {
         utm_source: filterParamsx['utm_source'],
         utm_campaign: filterParamsx['utm_campaign'],
         utm_tags: filterParamsx['utm_tags'],
+        filter_id: filterParamsx['filter_id'],
     }
 
     useEffect(() => {
@@ -259,8 +261,8 @@ const EditUrlShortner = () => {
             ),
             ...MAXMINARRAY.filter((item) => values[item.name] !== undefined).map((item) => `${item.name}_${values[item.name]}`),
             ...OFFARRAY.filter((item) => values[item.name] !== undefined).map((item) => `${item.name}_${values[item.name]}`),
-            ...(values.discountTags || []),
-            ...(filterId ? [`filterId_${filterId}`] : []),
+            ...(filterId ? [`filterId_${filterId}`] : values.filter_id ? [`filterId_${values.filter_id}`] : []),
+            values?.discountTags?.includes('sort_') ? values?.discountTags : '',
         ].join(',')
 
         const noSelectFilters = UtmArray.filter((item) => values[item.name] !== undefined && values[item.name] !== '')
@@ -295,10 +297,10 @@ const EditUrlShortner = () => {
         if (values?.sub_page && values?.target_page === 'home') {
             subPage = `sub_page=${values?.sub_page?.name}`
         } else if (values?.sub_page?.name === undefined && values?.target_page === 'home') {
-            subPage = `sub_page=${values?.sub_page}`
+            if (values?.sub_page) {
+                subPage = `sub_page=${values.sub_page}`
+            }
         }
-
-        console.log('Target Page 🚀🚀🚀🚀🚀🚀', values?.target_page, values?.sub_page, subPage)
 
         const formData = {
             ...rest,
