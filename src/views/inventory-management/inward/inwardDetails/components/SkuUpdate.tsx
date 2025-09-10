@@ -41,6 +41,7 @@ const SkuUpdate = () => {
     const [qcFailedData, setQcFailedData] = useState<any>({
         failed: 0,
         set: 0,
+        passed: 0,
     }) // not a nice idea but using as my brain is not braining now
 
     console.log('failedQc', failedQc)
@@ -121,7 +122,7 @@ const SkuUpdate = () => {
                 header: 'QC PASSED',
                 accessorKey: 'qc_passed',
                 cell: ({ row }: any) => {
-                    return qcFailedData?.set
+                    return qcFailedData?.passed
                 },
             },
 

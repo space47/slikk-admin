@@ -109,9 +109,11 @@ const SkuDataInputs = ({
     const handleAddGrn = async (skuData: any) => {
         let qc_failed = 0
         let qc_Set = 1
+        let qc_passed = 1
         if (qcFailed) {
             qc_failed = 1
-            qc_Set = -1
+            qc_Set = 1
+            qc_passed = 0
         }
 
         console.log('here')
@@ -120,7 +122,7 @@ const SkuDataInputs = ({
             sku: skuData?.sku || '',
             location: skuData?.location || '',
             quantity_received: qc_Set,
-            qc_passed: qc_Set,
+            qc_passed: qc_passed,
             qc_failed: qc_failed,
             action: 'add',
         }
@@ -128,6 +130,7 @@ const SkuDataInputs = ({
         setQcFailedData({
             failed: qc_failed,
             set: qc_Set,
+            passed: qc_passed,
         })
 
         console.log('body')
