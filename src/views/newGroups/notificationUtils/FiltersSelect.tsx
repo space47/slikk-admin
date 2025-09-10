@@ -16,7 +16,7 @@ const FiltersSelect = ({ filter, index }: FiltersSelectProps) => {
                     const options =
                         filter?.map((c: any) => ({
                             label: c.name,
-                            value: c.id || c.name, // use id if available
+                            value: c.name, // use id if available
                         })) || []
                     return (
                         <Select
