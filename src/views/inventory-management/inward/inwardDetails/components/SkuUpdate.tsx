@@ -66,8 +66,12 @@ const SkuUpdate = () => {
             setGetSkuData(data?.results)
             setTotalData(data?.count)
             setRefreshTable(false)
-        } catch (error) {
+        } catch (error: any) {
             console.log(error)
+            notification.error({
+                message: 'Error',
+                description: error?.data?.message || error?.data?.data?.message || 'Something went wrong',
+            })
         } finally {
             setShowSpinner(false)
         }

@@ -139,9 +139,10 @@ const SkuDataInputs = ({
                 message: response?.data?.message || 'Successfully Added',
             })
             setCounter((prev: number) => prev + 1)
-        } catch (error) {
+        } catch (error: any) {
             notification.error({
-                message: 'Failed to Add',
+                message: 'Error',
+                description: error?.data?.message || error?.data?.data?.message || 'Something went wrong',
             })
 
             console.error('Error during API call:', error)
