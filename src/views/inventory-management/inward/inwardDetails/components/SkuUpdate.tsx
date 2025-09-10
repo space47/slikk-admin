@@ -41,6 +41,13 @@ const SkuUpdate = () => {
 
     console.log('failedQc', failedQc)
 
+    useEffect(() => {
+        if (document_number) {
+            localStorage.getItem(`failed_${document_number}`)
+            setFailedQc(JSON.parse(localStorage.getItem(`failed_${document_number}`) || '[]'))
+        }
+    }, [document_number])
+
     const fetchSkuData = async () => {
         try {
             setShowSpinner(true)
@@ -331,6 +338,8 @@ const SkuUpdate = () => {
 
     const handleDownloadFailedCsv = () => {
         handleDownloadCsv(failedQc, failedColumns, convertToCSV, 'failedQC.csv')
+        localStorage.removeItem(`failed_${document_number}`)
+        setFailedQc([])
     }
 
     const handleEditSku = async (oLocation: string, oPassed: number, oReceived: number, oFailed: number, oSku: string) => {
