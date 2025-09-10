@@ -69,7 +69,7 @@ const SkuUpdate = () => {
         }
     }, [page, pageSize, globalFilter, refreshTable, counter])
 
-    const [formData, setFormData] = useState({ location: '', sku: '' })
+    const [formData, setFormData] = useState({ location: '', sku: '', barcode: '', skid: '' })
 
     const fetchDataForPrinter = async () => {
         try {
