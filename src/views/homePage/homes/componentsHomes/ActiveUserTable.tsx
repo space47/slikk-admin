@@ -2,7 +2,6 @@
 import { Card, Spinner } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import React, { useEffect, useState } from 'react'
-import ActiveChart from './ActiveChart' // Import your ActiveChart component
 
 interface ActiveUserProps {
     from: string
@@ -18,7 +17,9 @@ const ActiveUserFlow = ({ from, to }: ActiveUserProps) => {
     const fetchUserTable = async () => {
         try {
             setShowSpinner(true)
-            const response = await axioisInstance.get(`query/execute/Daily_user_stats?end_date=${to}&start_date=${from}`)
+            const response = await axioisInstance.get(
+                `query/execute/Daily_user_stats?query_name=Overall_stats&end_date=${to}&start_date=${from}`,
+            )
             const data = response.data.data
 
             const tab = Object.keys(data).map((key) => ({
