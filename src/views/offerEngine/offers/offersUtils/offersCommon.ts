@@ -73,6 +73,7 @@ export const offerBodyFile = (values: any, buyFilterId: number | string | undefi
         get_reward_type: values?.get_reward_type || '', //PERCENTAGE / FLAT / CONSTANT_PRICE
         get_reward_value: values?.get_reward_value || '',
         get_reward_limit: values?.get_reward_limit || '',
+        terms_and_conditions: values?.terms_and_conditions || '',
         daily_time_windows: values?.daily_time_windows?.length
             ? values?.daily_time_windows?.map((timeWindow: any) => ({
                   start: timeWindow?.start,

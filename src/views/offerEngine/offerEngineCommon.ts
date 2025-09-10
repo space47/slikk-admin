@@ -60,6 +60,7 @@ export type OfferFormTypes = {
     }[]
     user_filter_id?: number
     get_reward_limit?: number | null
+    terms_and_conditions?: string
 }
 
 export const offerFormArray = [
