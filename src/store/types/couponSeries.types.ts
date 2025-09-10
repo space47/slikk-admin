@@ -66,6 +66,7 @@ export type CouponSeriesBodyType = {
         filter_id_exclude?: string
         min_item_quantity?: number
         max_item_quantity?: number
+        terms_and_conditions?: string
     }
 }
 
