@@ -31,6 +31,7 @@ const GetEvenNames = ({ label, name, hideButtons, customClassName }: props) => {
     const EventNamesArray = eventNamesData?.map((item) => ({
         label: item.name,
         value: item.name,
+        id: item.id,
     }))
     return (
         <div>
@@ -57,8 +58,10 @@ const GetEvenNames = ({ label, name, hideButtons, customClassName }: props) => {
                                 options={EventNamesArray || []}
                                 value={EventNamesArray?.find((option) => option.value === field.value)}
                                 onChange={(newVal) => {
-                                    console.log(newVal?.value)
-                                    form.setFieldValue(field.name, newVal?.value)
+                                    form.setFieldValue(field.name, {
+                                        value: newVal?.value,
+                                        id: newVal?.id,
+                                    })
                                 }}
                             />
                         )

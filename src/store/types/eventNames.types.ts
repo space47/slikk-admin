@@ -4,6 +4,7 @@ export type EventNamesData = {
     title?: string | null
     create_date?: string
     update_date?: string
+    attributes?: Record<string, string>
 }
 
 export type EventNamesResponseType = {
