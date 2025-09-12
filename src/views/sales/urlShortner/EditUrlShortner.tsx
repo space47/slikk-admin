@@ -323,7 +323,7 @@ const EditUrlShortner = () => {
         }
 
         const webPageUrl = `${baseUrl}/s/${values?.page?.name === undefined ? values?.page : encodeURIComponent(values?.page?.name) || ''}${
-            values?.sub_page == 'null' || values?.sub_page === null || values?.sub_page?.name === 'undefined'
+            values?.sub_page == 'null' || values?.sub_page === null || values?.sub_page?.name === 'undefined' || values?.sub_page === ''
                 ? ''
                 : values?.sub_page?.name === undefined
                   ? `/${values?.sub_page}`
@@ -331,7 +331,7 @@ const EditUrlShortner = () => {
         }${utmFilters}${appOnly}`
 
         const pageUrl = `slikk://page/s/${values?.page?.name === undefined ? values?.page : encodeURIComponent(values?.page?.name) || ''}${
-            values?.sub_page == 'null' || values?.sub_page === null || values?.sub_page === 'undefined'
+            values?.sub_page == 'null' || values?.sub_page === null || values?.sub_page === 'undefined' || values?.sub_page === ''
                 ? ''
                 : values?.sub_page?.name === undefined
                   ? `/${values?.sub_page}`
