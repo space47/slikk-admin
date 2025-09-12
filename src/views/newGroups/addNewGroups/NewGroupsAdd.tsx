@@ -159,7 +159,7 @@ const NewGroupsAdd = () => {
 
         const rule: any = {
             type: 'rule',
-            include: condition.didDidNot === 'did',
+            include: condition.didDidNot === 'Did',
             event: condition.event,
             properties: [
                 {
