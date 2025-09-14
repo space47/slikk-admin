@@ -1122,6 +1122,24 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsCommuncication.events',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/events`,
+        component: lazy(() => import('@/views/sales/eventAnalytics/eventTable/EventTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCommuncication.notification',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/eventsAdd`,
+        component: lazy(() => import('@/views/sales/eventAnalytics/eventAdd/EventAdd')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCommuncication.notification',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/events/:id`,
+        component: lazy(() => import('@/views/sales/eventAnalytics/eventEdit/EventEdit')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsCommuncication.notification',
         path: `${APP_PREFIX_PATH}/appsCommuncication/notification`,
         component: lazy(() => import('@/views/sales/Notification/getNotification/NotificationTable')),

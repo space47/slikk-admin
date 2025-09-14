@@ -137,20 +137,20 @@ const MarkdownPrices = () => {
     return (
         <div>
             <div className="flex flex-col gap-4">
-                <div className="flex justify-between">
-                    <div>
+                <div className="flex xl:justify-between xl:flex-row md:flex-row md:justify-between flex-col gap-2">
+                    <div className="xl:order-none order-2 ">
                         <input
                             type="search"
                             placeholder="Enter offer codes"
                             className="w-full border border-gray-300 rounded p-2"
-                            value={globalFilter}
+                            value={globalFilter as string}
                             onChange={(e) => setGlobalFilter(e.target?.value)}
                         />
                     </div>
                     <div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 ">
                             <button
-                                className=" px-4 py-2 xl:flex items-center gap-2 hidden hover:bg-green-600 rounded-lg text-white bg-green-500"
+                                className=" px-4 py-2  xl:flex-row flex flex-row items-center gap-2  hover:bg-green-600 rounded-lg text-white bg-green-500"
                                 onClick={() => setShowSync(true)}
                             >
                                 <span className="font-bold">Sync</span> <RxUpdate className="text-xl" />
