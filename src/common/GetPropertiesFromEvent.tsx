@@ -2,8 +2,6 @@
 import { FormItem, Select } from '@/components/ui'
 import { Field, FieldProps } from 'formik'
 import React, { useEffect, useState } from 'react'
-import { useAppDispatch, useAppSelector } from '@/store'
-import { EventNamesSliceType, setEventNamesData } from '@/store/slices/eventNameSlice/eventName.slice'
 import { eventNameService } from '@/store/services/eventNameSerices'
 
 interface props {
@@ -23,13 +21,15 @@ const GetPropertiesFromEvent = ({ label, name, customClassName, eventId }: props
 
     useEffect(() => {
         if (isSuccess) {
-            setEventNamesDataState(eventNameList || [])
+            if (eventId) {
+                setEventNamesDataState(eventNameList || [])
+            } else {
+                setEventNamesDataState(eventNameList?.results ? eventNameList?.results[0] : [])
+            }
         }
     }, [isSuccess, eventNameList, eventId])
 
     const properties = eventNamesData?.attributes
-
-    console.log('properties', eventNamesData)
 
     const propertyArray = properties
         ? Object.keys(properties).map((key) => ({
