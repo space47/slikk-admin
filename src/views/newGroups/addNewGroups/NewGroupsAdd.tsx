@@ -11,7 +11,6 @@ import {
     ConditionsForEvent,
     DidAndNotArray,
     OperatorArray,
-    PropertiesArray,
     TimeFrameArray,
 } from '../notificationUtils/notificationGroupsCommon'
 import FullDateForm from '@/common/FullDateForm'
@@ -26,6 +25,7 @@ import FiltersSelect from '../notificationUtils/FiltersSelect'
 import { BiSolidDuplicate } from 'react-icons/bi'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
 import moment from 'moment'
+import GetPropertiesFromEvent from '@/common/GetPropertiesFromEvent'
 
 const NewGroupsAdd = () => {
     const dispatch = useAppDispatch()
@@ -160,7 +160,7 @@ const NewGroupsAdd = () => {
         const rule: any = {
             type: 'rule',
             include: condition.didDidNot === 'Did',
-            event: condition.event,
+            event: condition.event?.value,
             properties: [
                 {
                     path: condition.property,
@@ -275,16 +275,25 @@ const NewGroupsAdd = () => {
                                                         label="Event Names"
                                                         name={`conditions[${index}].event`}
                                                     />
+
                                                     <CommonSelect
                                                         label="Operator"
                                                         options={OperatorArray}
                                                         name={`conditions[${index}].operator`}
                                                     />
-                                                    <CommonSelect
+                                                    {/* <CommonSelect
                                                         label="Property"
                                                         options={PropertiesArray}
                                                         name={`conditions[${index}].property`}
+                                                    /> */}
+
+                                                    <GetPropertiesFromEvent
+                                                        eventId={values.conditions[index]?.event?.id}
+                                                        customClassName="w-full "
+                                                        label="Property"
+                                                        name={`conditions[${index}].property`}
                                                     />
+
                                                     <CommonSelect
                                                         label="Condition"
                                                         options={ConditionArray}

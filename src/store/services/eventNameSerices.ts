@@ -4,15 +4,16 @@ import { EventNamesResponseType } from '../types/eventNames.types'
 
 export const eventNameService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
-        eventNamesData: builder.query<EventNamesResponseType, { name?: string }>({
+        eventNamesData: builder.query<EventNamesResponseType, { name?: string; id?: number }>({
             query: (params) => {
                 const parameters: Record<string, string | string[]> = {}
 
                 if (params.name) {
                     parameters.name = params.name?.toString()
                 }
+
                 return {
-                    url: `/notification/event`,
+                    url: `/notification/event${params.id ? `/${params.id}` : ''}`,
                     method: 'GET',
                     params: parameters,
                 }

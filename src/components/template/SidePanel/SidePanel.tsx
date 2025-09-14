@@ -31,7 +31,7 @@ const _SidePanel = (props: SidePanelProps) => {
 
     return (
         <>
-            <div className={classNames('text-2xl', className)} onClick={openPanel} {...rest}>
+            <div className={classNames('text-2xl xl:block hidden', className)} onClick={openPanel} {...rest}>
                 <HiOutlineCog />
             </div>
             <Drawer
