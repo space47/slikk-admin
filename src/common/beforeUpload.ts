@@ -30,7 +30,7 @@ export const beforeUpload = (file: FileList | null, fileList: File[]) => {
         'application/zip',
         'application/lottie+json',
     ]
-    const MAX_FILE_SIZE = 50000000 // 50MB - fixed to reasonable size (was 50TB before)
+    const MAX_FILE_SIZE = 5000000000000 // 50MB - fixed to reasonable size (was 50TB before)
 
     if (fileList.length >= MAX_UPLOAD) {
         return `You can only upload ${MAX_UPLOAD} file(s)`
