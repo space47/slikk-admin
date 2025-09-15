@@ -31,6 +31,7 @@ import {
     setCount,
 } from '@/store/slices/productData/productData.slice'
 import LoadingSpinner from '@/common/LoadingSpinner'
+import AddFrameModal from './AddFrameModal'
 
 const Products = () => {
     const dispatch = useAppDispatch()
@@ -45,6 +46,7 @@ const Products = () => {
     const [brandList, setBrandList] = useState([])
     const [showFacebookDialog, setShowFacebookDialog] = useState(false)
     const [showRandomizeDialog, setShowRandomizeDialog] = useState(false)
+    const [showAddFrameDialog, setShowAddFrameDialog] = useState(false)
     const [selectFilterString, setFilterString] = useState('')
     const [showDrawer, setShowDrawer] = useState(false)
     const [showViewModal, setShowViewModal] = useState(false)
@@ -156,6 +158,9 @@ const Products = () => {
 
                 <div className="flex flex-col  items-center gap-4 w-full xl:flex-row xl:justify-end ">
                     <div className="flex gap-3">
+                        <Button variant="new" onClick={() => setShowAddFrameDialog(true)}>
+                            <span className="font-bold">Add Frame</span>
+                        </Button>
                         <button
                             className=" px-4 py-2 xl:flex items-center gap-2  hover:bg-purple-600 rounded-lg text-white bg-purple-700"
                             onClick={() => setShowRandomizeDialog(true)}
@@ -169,13 +174,13 @@ const Products = () => {
                             <span className="font-bold">SiteMap</span>
                         </button>
                         <button
-                            className=" px-4 py-2 xl:flex items-center gap-2  hover:bg-blue-600 rounded-lg text-white bg-blue-700"
+                            className=" px-4 py-2 xl:flex items-center gap-2  hover:bg-blue-600 rounded-lg hidden text-white bg-blue-700"
                             onClick={() => setShowFacebookDialog(true)}
                         >
                             <span className="font-bold">Sync</span> <FaFacebook className="text-xl" />
                         </button>
                         <button
-                            className="bg-green-500 text-white px-4 py-2 xl:flex items-center gap-2  hover:bg-green-400 rounded-lg font-bold"
+                            className="bg-green-500 text-white px-4 py-2 xl:flex items-center gap-2 hidden   hover:bg-green-400 rounded-lg font-bold"
                             onClick={() => handleDownload(currentSelectedPage, globalFilter!, typeFetch)}
                         >
                             <IoMdDownload className="text-xl" /> Export
@@ -190,6 +195,20 @@ const Products = () => {
                         </Button>
                     </div>
 
+                    <div className="flex gap-3 w-full justify-center md:w-auto">
+                        <button
+                            className=" px-4 py-2 items-center gap-2  hover:bg-blue-600 rounded-lg xl:hidden text-white bg-blue-700"
+                            onClick={() => setShowFacebookDialog(true)}
+                        >
+                            <span className="font-bold">Sync</span> <FaFacebook className="text-xl" />
+                        </button>
+                        <button
+                            className="bg-green-500 text-white px-4 py-2 items-center gap-2 xl:hidden   hover:bg-green-400 rounded-lg font-bold"
+                            onClick={() => handleDownload(currentSelectedPage, globalFilter!, typeFetch)}
+                        >
+                            <IoMdDownload className="text-xl" /> Export
+                        </button>
+                    </div>
                     <div className="flex gap-3 w-full justify-between md:w-auto">
                         <Button
                             variant="new"
@@ -274,6 +293,7 @@ const Products = () => {
                 />
             )}
             {showViewModal && <ProductViewModal row={rowData as ProductTypes} isOpen={showViewModal} setIsOpen={setShowViewModal} />}
+            {showAddFrameDialog && <AddFrameModal isOpen={showAddFrameDialog} setIsOpen={setShowAddFrameDialog} />}
         </div>
     )
 }
