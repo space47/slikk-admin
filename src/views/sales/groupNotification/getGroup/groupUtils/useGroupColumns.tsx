@@ -3,7 +3,8 @@ import { Spinner } from '@/components/ui'
 import { Switch } from 'antd'
 import moment from 'moment'
 import React, { useMemo } from 'react'
-import { FaDownload, FaEdit } from 'react-icons/fa'
+import { FaDownload, FaEdit, FaEye } from 'react-icons/fa'
+import { useNavigate } from 'react-router-dom'
 
 interface GroupColumn {
     handleEditClick: any
@@ -13,6 +14,7 @@ interface GroupColumn {
 }
 
 export const useGroupColumns = ({ handleEditClick, handleDownloadUserCsv, downloadSpinner, handleActiveCareer }: GroupColumn) => {
+    const navigate = useNavigate()
     return useMemo(
         () => [
             {
@@ -34,9 +36,22 @@ export const useGroupColumns = ({ handleEditClick, handleDownloadUserCsv, downlo
                 header: 'Edit',
                 accessorKey: 'id',
                 cell: ({ getValue }: any) => (
-                    <button onClick={() => handleEditClick(getValue())}>
+                    // <button onClick={() => handleEditClick(getValue())}>
+                    //     <FaEdit className="text-blue-500 text-xl" />
+                    ///appsCommuncication/events/:id`
+                    // </button>
+                    <a href={`/app/appsCommuncication/events/${getValue()}`} target="_blank" rel="noreferrer" className="">
                         <FaEdit className="text-blue-500 text-xl" />
-                    </button>
+                    </a>
+                ),
+            },
+            {
+                header: 'View Users',
+                accessorKey: 'group users',
+                cell: ({ row }: any) => (
+                    <a href={`/app/appsCommuncication/eventUsers/${row?.original?.id}`} target="_blank" rel="noreferrer" className="">
+                        <FaEye className="text-blue-500 text-xl cursor-pointer" />
+                    </a>
                 ),
             },
             {
@@ -61,141 +76,141 @@ export const useGroupColumns = ({ handleEditClick, handleDownloadUserCsv, downlo
                     return <div>{row?.original.user?.length || 0} Users</div>
                 },
             },
-            {
-                header: 'USER INFO',
-                accessorKey: 'rules?.userInfo',
-                cell: ({ getValue }: any) => {
-                    const orders = getValue()
+            // {
+            //     header: 'USER INFO',
+            //     accessorKey: 'rules?.userInfo',
+            //     cell: ({ getValue }: any) => {
+            //         const orders = getValue()
 
-                    return (
-                        <div className="flex flex-col gap-2">
-                            {orders?.map((item: any, key: any) => {
-                                return (
-                                    <div key={key} className="flex gap-2">
-                                        <div>
-                                            <strong>{item.type}:</strong>
-                                        </div>
-                                        <div>{JSON.stringify(item.value)}</div>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    )
-                },
-            },
-            {
-                header: 'CART',
-                accessorKey: 'rules.cart',
-                cell: ({ getValue }: any) => {
-                    const orders = getValue()
+            //         return (
+            //             <div className="flex flex-col gap-2">
+            //                 {orders?.map((item: any, key: any) => {
+            //                     return (
+            //                         <div key={key} className="flex gap-2">
+            //                             <div>
+            //                                 <strong>{item.type}:</strong>
+            //                             </div>
+            //                             <div>{JSON.stringify(item.value)}</div>
+            //                         </div>
+            //                     )
+            //                 })}
+            //             </div>
+            //         )
+            //     },
+            // },
+            // {
+            //     header: 'CART',
+            //     accessorKey: 'rules.cart',
+            //     cell: ({ getValue }: any) => {
+            //         const orders = getValue()
 
-                    return (
-                        <div className="flex flex-col gap-2">
-                            {orders?.map((item: any, key: any) => {
-                                return (
-                                    <div key={key} className="flex gap-2">
-                                        <div>
-                                            <strong>{item.type}:</strong>
-                                        </div>
-                                        <div>{JSON.stringify(item.value)}</div>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    )
-                },
-            },
-            {
-                header: 'Order',
-                accessorKey: 'rules.order',
-                cell: ({ getValue }: any) => {
-                    const orders = getValue()
+            //         return (
+            //             <div className="flex flex-col gap-2">
+            //                 {orders?.map((item: any, key: any) => {
+            //                     return (
+            //                         <div key={key} className="flex gap-2">
+            //                             <div>
+            //                                 <strong>{item.type}:</strong>
+            //                             </div>
+            //                             <div>{JSON.stringify(item.value)}</div>
+            //                         </div>
+            //                     )
+            //                 })}
+            //             </div>
+            //         )
+            //     },
+            // },
+            // {
+            //     header: 'Order',
+            //     accessorKey: 'rules.order',
+            //     cell: ({ getValue }: any) => {
+            //         const orders = getValue()
 
-                    return (
-                        <div className="flex flex-col gap-2">
-                            {orders?.map((item: any, key: any) => {
-                                return (
-                                    <div key={key} className="flex gap-2">
-                                        <div>
-                                            <strong>{item.type}:</strong>
-                                        </div>
-                                        <div>{JSON.stringify(item.value)}</div>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    )
-                },
-            },
+            //         return (
+            //             <div className="flex flex-col gap-2">
+            //                 {orders?.map((item: any, key: any) => {
+            //                     return (
+            //                         <div key={key} className="flex gap-2">
+            //                             <div>
+            //                                 <strong>{item.type}:</strong>
+            //                             </div>
+            //                             <div>{JSON.stringify(item.value)}</div>
+            //                         </div>
+            //                     )
+            //                 })}
+            //             </div>
+            //         )
+            //     },
+            // },
 
-            {
-                header: 'Order Items',
-                accessorKey: 'rules.order_item',
-                cell: ({ getValue }: any) => {
-                    const orders = getValue()
+            // {
+            //     header: 'Order Items',
+            //     accessorKey: 'rules.order_item',
+            //     cell: ({ getValue }: any) => {
+            //         const orders = getValue()
 
-                    return (
-                        <div className="flex flex-col gap-2">
-                            {orders?.map((item: any, key: any) => {
-                                return (
-                                    <div key={key} className="flex gap-2">
-                                        <div>
-                                            <strong>{item.type}:</strong>
-                                        </div>
-                                        <div>{JSON.stringify(item.value)}</div>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    )
-                },
-            },
+            //         return (
+            //             <div className="flex flex-col gap-2">
+            //                 {orders?.map((item: any, key: any) => {
+            //                     return (
+            //                         <div key={key} className="flex gap-2">
+            //                             <div>
+            //                                 <strong>{item.type}:</strong>
+            //                             </div>
+            //                             <div>{JSON.stringify(item.value)}</div>
+            //                         </div>
+            //                     )
+            //                 })}
+            //             </div>
+            //         )
+            //     },
+            // },
 
-            {
-                header: 'Loyalty',
-                accessorKey: 'rules.loyalty',
-                cell: ({ getValue }: any) => {
-                    const orders = getValue()
+            // {
+            //     header: 'Loyalty',
+            //     accessorKey: 'rules.loyalty',
+            //     cell: ({ getValue }: any) => {
+            //         const orders = getValue()
 
-                    return (
-                        <div className="flex flex-col gap-2">
-                            {orders?.map((item: any, key: any) => {
-                                return (
-                                    <div key={key} className="flex gap-2">
-                                        <div>
-                                            <strong>{item.type}:</strong>
-                                        </div>
-                                        <div>{JSON.stringify(item.value)}</div>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    )
-                },
-            },
+            //         return (
+            //             <div className="flex flex-col gap-2">
+            //                 {orders?.map((item: any, key: any) => {
+            //                     return (
+            //                         <div key={key} className="flex gap-2">
+            //                             <div>
+            //                                 <strong>{item.type}:</strong>
+            //                             </div>
+            //                             <div>{JSON.stringify(item.value)}</div>
+            //                         </div>
+            //                     )
+            //                 })}
+            //             </div>
+            //         )
+            //     },
+            // },
 
-            {
-                header: 'Location',
-                accessorKey: 'rules.location',
-                cell: ({ getValue }: any) => {
-                    const orders = getValue()
+            // {
+            //     header: 'Location',
+            //     accessorKey: 'rules.location',
+            //     cell: ({ getValue }: any) => {
+            //         const orders = getValue()
 
-                    return (
-                        <div className="flex flex-col gap-2">
-                            {orders?.map((item: any, key: any) => {
-                                return (
-                                    <div key={key} className="flex gap-2">
-                                        <div>
-                                            <strong>{item.type}:</strong>
-                                        </div>
-                                        <div>{item.value}</div>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    )
-                },
-            },
+            //         return (
+            //             <div className="flex flex-col gap-2">
+            //                 {orders?.map((item: any, key: any) => {
+            //                     return (
+            //                         <div key={key} className="flex gap-2">
+            //                             <div>
+            //                                 <strong>{item.type}:</strong>
+            //                             </div>
+            //                             <div>{item.value}</div>
+            //                         </div>
+            //                     )
+            //                 })}
+            //             </div>
+            //         )
+            //     },
+            // },
 
             {
                 header: 'Create Date',

@@ -35,15 +35,6 @@ const CommonSelect = ({
     return (
         <FormContainer>
             <FormItem label={label || ''} className={needClassName ? className : 'col-span-1 w-full'}>
-                {/* {isSearch && (
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                        className="mb-2 w-full border rounded px-2 py-1 text-sm"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                )} */}
                 <Field name={name}>
                     {({ field, form }: FieldProps<any>) => {
                         return requireOnChange ? (

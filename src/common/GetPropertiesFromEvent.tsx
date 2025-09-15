@@ -43,13 +43,14 @@ const GetPropertiesFromEvent = ({ label, name, customClassName, eventId }: props
             <FormItem label={label} className={customClassName ? customClassName : 'col-span-1 w-1/2'}>
                 <Field name={name}>
                     {({ field, form }: FieldProps<any>) => {
+                        console.log('field for properties', field)
                         return (
                             <Select
                                 isClearable
                                 field={field}
                                 form={form}
                                 options={propertyArray || []}
-                                value={propertyArray?.find((option) => option.value === field.value)}
+                                value={propertyArray?.find((option) => option.value?.toLocaleLowerCase() === field.value)}
                                 onChange={(newVal) => {
                                     console.log(newVal?.value)
                                     form.setFieldValue(field.name, newVal?.value)

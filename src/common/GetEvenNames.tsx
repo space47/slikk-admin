@@ -50,13 +50,14 @@ const GetEvenNames = ({ label, name, hideButtons, customClassName }: props) => {
                 )}
                 <Field name={name}>
                     {({ field, form }: FieldProps<any>) => {
+                        console.log('field', field)
                         return (
                             <Select
                                 isClearable
                                 field={field}
                                 form={form}
                                 options={EventNamesArray || []}
-                                value={EventNamesArray?.find((option) => option.value === field.value)}
+                                value={EventNamesArray?.find((option) => option.value?.toLocaleLowerCase() === field?.value)}
                                 onChange={(newVal) => {
                                     form.setFieldValue(field.name, {
                                         value: newVal?.value,
