@@ -32,7 +32,6 @@ const NewGroupsAdd = () => {
     const [spinner, setSpinner] = useState(false)
     const [csvFile, setCSVFile] = useState<any>()
     const [mobileNumbers, setMobileNumbers] = useState<string[]>([])
-    const [selectedRelation, setSelectedRelation] = useState<string | null>(null)
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
@@ -150,9 +149,9 @@ const NewGroupsAdd = () => {
         if (condition.timeFrame && condition.timeFrame !== 'custom_range') {
             range.start = moment().startOf('isoWeek').format('YYYY-MM-DD')
             range.end = moment().endOf('isoWeek').format('YYYY-MM-DD')
-        } else if (condition.timeFrame === 'custom_range' && condition.start_date && condition.end_date) {
-            range.start = condition.start_date
-            range.end = condition.end_date
+        } else if (condition?.timeFrame === 'custom_range' && condition.start_date && condition.end_date) {
+            range.start = condition?.start_date
+            range.end = condition?.end_date
         }
 
         const timeFrame: any = { range }
@@ -163,7 +162,7 @@ const NewGroupsAdd = () => {
             event: condition.event?.value,
             properties: [
                 {
-                    path: condition.property,
+                    path: condition?.property?.toLowerCase(),
                     op: mapConditionToOperator(condition.condition),
                     value: propertyValue,
                 },
@@ -281,11 +280,6 @@ const NewGroupsAdd = () => {
                                                         options={OperatorArray}
                                                         name={`conditions[${index}].operator`}
                                                     />
-                                                    {/* <CommonSelect
-                                                        label="Property"
-                                                        options={PropertiesArray}
-                                                        name={`conditions[${index}].property`}
-                                                    /> */}
 
                                                     <GetPropertiesFromEvent
                                                         eventId={values.conditions[index]?.event?.id}
@@ -390,10 +384,6 @@ const NewGroupsAdd = () => {
                                                         <MdDelete
                                                             className="text-xl text-red-500 cursor-pointer hover:text-red-700"
                                                             onClick={() => {
-                                                                // If we're removing the last condition, reset the relation type
-                                                                if (values.conditions.length === 2) {
-                                                                    setSelectedRelation(null)
-                                                                }
                                                                 remove(index)
                                                             }}
                                                         />

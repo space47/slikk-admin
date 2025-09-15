@@ -7,14 +7,14 @@ import { eventNameService } from '@/store/services/eventNameSerices'
 interface props {
     label: string
     name: string
-    eventId?: string
+    eventId?: string | number
     customClassName?: string
 }
 
 const GetPropertiesFromEvent = ({ label, name, customClassName, eventId }: props) => {
     const [eventNamesData, setEventNamesDataState] = useState<any>(null)
     const { data: eventNameList, isSuccess } = eventNameService.useEventNamesDataQuery({
-        id: eventId ? parseInt(eventId) : undefined,
+        id: eventId ? parseInt(eventId as string) : undefined,
     })
 
     console.log('eventId', eventId)
