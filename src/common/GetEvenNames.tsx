@@ -59,10 +59,7 @@ const GetEvenNames = ({ label, name, hideButtons, customClassName }: props) => {
                                 options={EventNamesArray || []}
                                 value={EventNamesArray?.find((option) => option.value?.toLocaleLowerCase() === field?.value)}
                                 onChange={(newVal) => {
-                                    form.setFieldValue(field.name, {
-                                        value: newVal?.value,
-                                        id: newVal?.id,
-                                    })
+                                    form.setFieldValue(field.name, newVal?.value)
                                 }}
                             />
                         )

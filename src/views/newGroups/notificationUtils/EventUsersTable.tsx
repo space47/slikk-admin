@@ -1,5 +1,4 @@
 import EasyTable from '@/common/EasyTable'
-import { useFetchApi } from '@/commonHooks/useFetchApi'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
@@ -41,18 +40,22 @@ const EventUsersTable = () => {
                 accessorKey: 'mobile',
             },
             {
-                header: 'Checked In Status',
-                accessorKey: 'checked_in_status',
-                cell: (info: any) => (info.getValue() ? 'Yes' : 'No'), // convert boolean to Yes/No
+                header: 'Gender',
+                accessorKey: 'gender',
             },
-            {
-                header: 'Latitude',
-                accessorKey: 'latitude',
-            },
-            {
-                header: 'Longitude',
-                accessorKey: 'longitude',
-            },
+            // {
+            //     header: 'Checked In Status',
+            //     accessorKey: 'checked_in_status',
+            //     cell: (info: any) => (info.getValue() ? 'Yes' : 'No'), // convert boolean to Yes/No
+            // },
+            // {
+            //     header: 'Latitude',
+            //     accessorKey: 'latitude',
+            // },
+            // {
+            //     header: 'Longitude',
+            //     accessorKey: 'longitude',
+            // },
         ],
         [],
     )

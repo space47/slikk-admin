@@ -28,6 +28,7 @@ import { getAllBrandsAPI } from '@/store/action/brand.action'
 import moment from 'moment'
 import GetPropertiesFromEvent from '@/common/GetPropertiesFromEvent'
 import { FiFilter } from 'react-icons/fi'
+import FormButton from '@/components/ui/Button/FormButton'
 
 const NewGroupsAdd = () => {
     const dispatch = useAppDispatch()
@@ -94,6 +95,7 @@ const NewGroupsAdd = () => {
     }
 
     const handleSubmit = async (values: any) => {
+        console.log('Form values on submit:', values)
         try {
             setSpinner(true)
 
@@ -193,7 +195,7 @@ const NewGroupsAdd = () => {
         const rule: any = {
             type: 'rule',
             include: condition.didDidNot === 'Did',
-            event: condition.event?.value,
+            event: condition.event,
             properties: [
                 {
                     path: condition?.property?.toLowerCase(),
@@ -206,10 +208,10 @@ const NewGroupsAdd = () => {
             rule.time_frame = timeFrame
         }
         if (condition.includeExclude === true && condition.cohort_id) {
-            rule.include_filters_id = [condition.cohort_id]
+            rule.include_cohort_id = [condition.cohort_id]
         }
         if (condition.includeExclude === false && condition.cohort_id) {
-            rule.exclude_filters_id = [condition.cohort_id]
+            rule.exclude_cohort_id = [condition.cohort_id]
         }
 
         return rule
@@ -245,7 +247,10 @@ const NewGroupsAdd = () => {
 
     return (
         <div className="w-full">
-            <div className="font-semibold">Create New Cohorts</div>
+            <div className="mb-8 ">
+                <h1 className="text-3xl font-bold text-gray-800 mb-2">Create New Cohorts</h1>
+                <p className="text-gray-500">Define rules to build targeted user groups</p>
+            </div>
             <Formik
                 enableReinitialize
                 initialValues={{
@@ -256,29 +261,66 @@ const NewGroupsAdd = () => {
                 {({ values }) => (
                     <Form className="w-full shadow-xl p-3 rounded-2xl">
                         <FormItem label="" className="flex flex-col gap-2">
-                            <div className="flex items-center gap-4">
-                                <input
-                                    type="file"
-                                    accept=".csv"
-                                    className="file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                                    onChange={handleCSVFileChange}
-                                />
-                                <MdDelete
-                                    className="text-xl text-red-500 cursor-pointer hover:text-red-700"
-                                    onClick={() => {
-                                        setMobileNumbers([])
-                                        setCSVFile('')
-                                        notification.info({
-                                            message: 'CSV file cleared',
-                                        })
-                                    }}
-                                />
+                            <div className="mb-8 p-4 flex justify-center rounded-lg border border-blue-100">
+                                <FormItem label="" className="flex flex-col gap-2">
+                                    <div className="flex items-center gap-4">
+                                        <label className="flex flex-col items-center justify-center w-64 h-32 px-4 py-6 bg-white text-blue-500 rounded-lg border-2 border-dashed border-blue-300 cursor-pointer hover:bg-blue-50 transition-colors">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className="h-10 w-10 mb-2"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                                                />
+                                            </svg>
+                                            <span className="text-sm font-medium">Click to upload CSV for Users</span>
+                                            <span className="text-xs text-gray-500 mt-1">or drag and drop</span>
+                                            <input type="file" accept=".csv" className="hidden" onChange={handleCSVFileChange} />
+                                        </label>
+                                        {csvFile && (
+                                            <div className="flex items-center gap-2 bg-green-50 text-green-700 px-3 py-2 rounded-md">
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="h-5 w-5"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    stroke="currentColor"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={2}
+                                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                    />
+                                                </svg>
+                                                <span className="text-sm">{csvFile.name}</span>
+                                                <MdDelete
+                                                    className="text-xl text-red-500 cursor-pointer hover:text-red-700 ml-2"
+                                                    onClick={() => {
+                                                        setMobileNumbers([])
+                                                        setCSVFile('')
+                                                        notification.info({
+                                                            message: 'CSV file cleared',
+                                                        })
+                                                    }}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </FormItem>
                             </div>
                         </FormItem>
-                        <FormItem label="Cohort Name" asterisk={true}>
-                            <Field name="cohort_name" placeholder="Enter cohort name " component={Input} className="w-1/2" />
-                        </FormItem>
-                        <FormContainer className="grid grid-cols-2 gap-4">
+                        <FormContainer className="grid grid-cols-2 gap-4 mb-4">
+                            <FormItem label="Cohort Name" asterisk={true}>
+                                <Field name="cohort_name" placeholder="Enter cohort name " component={Input} className="w-full" />
+                            </FormItem>
+
                             <FormItem label="Users">
                                 <Field name="user" placeholder="Enter user " component={Input} />
                             </FormItem>
@@ -292,7 +334,7 @@ const NewGroupsAdd = () => {
                                         return (
                                             <div key={index}>
                                                 <div className="flex justify-between items-center mb-2">
-                                                    <div className="font-bold text-sl">ADD RULES</div>
+                                                    <div className="font-bold text-sl">ADD RULES #{index + 1}</div>
                                                     <div className="flex gap-4 items-center">
                                                         <div>
                                                             {quickFilter[index] ? (
@@ -351,6 +393,7 @@ const NewGroupsAdd = () => {
                                                         customClassName="w-full "
                                                         label="Property"
                                                         name={`conditions[${index}].property`}
+                                                        eventName={values.conditions[index]?.event}
                                                     />
 
                                                     <CommonSelect
@@ -495,13 +538,7 @@ const NewGroupsAdd = () => {
                                 </>
                             )}
                         </FieldArray>
-
-                        {/* Submit */}
-                        <FormContainer>
-                            <Button variant="solid" type="submit" className="bg-blue-500 text-white mt-4">
-                                Submit
-                            </Button>
-                        </FormContainer>
+                        <FormButton isSpinning={spinner} value="Submit" />
                     </Form>
                 )}
             </Formik>

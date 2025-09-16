@@ -3,21 +3,24 @@ import { FormItem, Select } from '@/components/ui'
 import { Field, FieldProps } from 'formik'
 import React, { useEffect, useState } from 'react'
 import { eventNameService } from '@/store/services/eventNameSerices'
+import { FieldType } from '@/views/configurationsSlikk/configg/componentsConfigg/commonConfigTypes'
 
 interface props {
     label: string
     name: string
     eventId?: string | number
     customClassName?: string
+    eventName?: string
 }
 
-const GetPropertiesFromEvent = ({ label, name, customClassName, eventId }: props) => {
+const GetPropertiesFromEvent = ({ label, name, customClassName, eventId, eventName }: props) => {
+    console.log('eventId in get properties', eventName)
     const [eventNamesData, setEventNamesDataState] = useState<any>(null)
     const { data: eventNameList, isSuccess } = eventNameService.useEventNamesDataQuery({
-        id: eventId ? parseInt(eventId as string) : undefined,
+        event_name: eventName && typeof eventName !== 'object' ? eventName?.toString() : '',
     })
 
-    console.log('eventId', eventId)
+    console.log('eventId', eventName)
 
     useEffect(() => {
         if (isSuccess) {
@@ -27,9 +30,19 @@ const GetPropertiesFromEvent = ({ label, name, customClassName, eventId }: props
                 setEventNamesDataState(eventNameList?.results ? eventNameList?.results[0] : [])
             }
         }
-    }, [isSuccess, eventNameList, eventId])
+    }, [isSuccess, eventNameList, eventName])
 
-    const properties = eventNamesData?.attributes
+    const merged = eventNameList?.results
+        ?.map((item: any) => item.attributes)
+        ?.flatMap((i: any) => i)
+        .reduce<Record<string, FieldType>>((acc, obj) => {
+            Object.assign(acc, obj)
+            return acc
+        }, {})
+
+    const properties = eventName ? eventNamesData?.attributes : merged
+
+    console.log('properties', properties)
 
     const propertyArray = properties
         ? Object.keys(properties).map((key) => ({

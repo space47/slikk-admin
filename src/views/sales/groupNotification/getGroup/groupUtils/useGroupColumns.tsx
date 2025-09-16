@@ -40,7 +40,7 @@ export const useGroupColumns = ({ handleEditClick, handleDownloadUserCsv, downlo
                     //     <FaEdit className="text-blue-500 text-xl" />
                     ///appsCommuncication/events/:id`
                     // </button>
-                    <a href={`/app/appsCommuncication/events/${getValue()}`} target="_blank" rel="noreferrer" className="">
+                    <a href={`/app/appsCommuncication/cohorts/${getValue()}`} target="_blank" rel="noreferrer" className="">
                         <FaEdit className="text-blue-500 text-xl" />
                     </a>
                 ),
