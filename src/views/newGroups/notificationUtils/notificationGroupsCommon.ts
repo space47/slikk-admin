@@ -24,6 +24,15 @@ export const ConditionArray = [
     { label: 'Not Between', value: 'NOT BETWEEN' },
 ]
 
+export const QuickFilterArray = [
+    { label: 'Registered', value: 'registered' },
+    { label: 'Non-Registered', value: 'non_registered' },
+
+    { label: 'First Time', value: 'first_time' },
+    { label: 'Try&Buy', value: 'try_and_buy' },
+    { label: 'Express', value: 'express' },
+]
+
 export const PropertiesArray = [
     { label: 'Cart Value', value: 'cart_value' },
     { label: 'Cart Create Date (Start)', value: 'cart_create_date_start' },

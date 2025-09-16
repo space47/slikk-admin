@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, FormContainer, FormItem, Input, Select, Tooltip } from '@/components/ui'
+import { Button, FormContainer, FormItem, Input, Select, Switcher, Tooltip } from '@/components/ui'
 import { notification } from 'antd'
 import { Field, Form, Formik, FieldArray, FieldProps } from 'formik'
 import React, { useEffect, useMemo, useState } from 'react'
@@ -39,15 +39,42 @@ const EditNewGroups = () => {
     const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const subCategoryData = useAppSelector<SUBCATEGORY_STATE>((state) => state.subCategory)
+    const [groupData, setGroupData] = useState<any[]>([])
+    const [searchInputs, setSearchInputs] = useState<{ [key: number]: string }>({})
+
+    const fetchGroupNotification = async (inputValue = '') => {
+        let filter = ''
+        if (inputValue) {
+            filter = `&name=${inputValue}`
+        }
+        try {
+            const response = await axioisInstance.get(`/notification/groups?p=1&page_size=10&is_active=true${filter}`)
+            const data = response?.data?.data
+            setGroupData(data?.results)
+        } catch (error: any) {
+            console.log(error)
+        }
+    }
+
+    const formattedData = groupData.map((group) => ({
+        value: group.id,
+        label: group.name,
+    }))
+
+    // handleSearch per index
+    const handleSearch = (inputValue: string, index: number) => {
+        setSearchInputs((prev) => ({ ...prev, [index]: inputValue }))
+        fetchGroupNotification(inputValue)
+    }
+
+    useEffect(() => {
+        fetchGroupNotification()
+    }, [])
 
     const urlReq = useMemo(() => {
         return `/notification/groups?group_id=${id}`
     }, [id])
-
-    // Fetch API data; some endpoints return an array like [{...}] or wrap in { data: [...] }
     const { data: apiData } = useFetchApi<any>({ url: urlReq })
-
-    // Normalize fetched data to a single cohort/group object for initial form values
     const initialGroupData = useMemo(() => {
         const d: any = apiData as any
         if (!d) return undefined
@@ -60,17 +87,20 @@ const EditNewGroups = () => {
         dispatch(getAllBrandsAPI())
     }, [dispatch])
 
-    // Helper function to transform API data to form initial values
     const transformRulesToConditions = (rules: any) => {
         if (!rules) return [ConditionsForEvent]
+        if (rules.type === 'group' && Array.isArray(rules.rules)) {
+            return rules.rules.flatMap((rule: any) => {
+                const arr = transformRulesToConditions(rule)
+                return arr.map((c: any) => ({ ...c, relation: (rules.op || 'and').toUpperCase() }))
+            })
+        }
 
         if (rules.type === 'rule') {
             const condition = {
                 didDidNot: rules.include ? 'Did' : 'Did Not',
-                // Ensure event has an id fallback so dependent components can load
                 event: { id: '', value: rules.event, label: rules.event },
                 property: rules.properties?.[0]?.path || '',
-                // Prefill both condition and operator for UI even if only condition is used in submit
                 condition: mapOperatorToCondition(rules.properties?.[0]?.op || '='),
                 operator: mapOperatorToCondition(rules?.[0]?.op || '='),
                 value: Array.isArray(rules.properties?.[0]?.value) ? rules.properties?.[0]?.value[0] : rules.properties?.[0]?.value,
@@ -80,6 +110,8 @@ const EditNewGroups = () => {
                 start_date: rules.time_frame?.range?.start || '',
                 end_date: rules.time_frame?.range?.end || '',
                 relation: 'AND',
+                includeExclude: rules?.include_filters_id ? true : rules?.exclude_filters_id ? false : undefined,
+                cohort_id: rules?.include_filters_id?.[0] || rules?.exclude_filters_id?.[0] || '',
             }
             return [condition]
         }
@@ -142,7 +174,7 @@ const EditNewGroups = () => {
             }
 
             console.log('Transformed request body:', JSON.stringify(requestBody, null, 2))
-            const response = await axioisInstance.put(`/notification/groups/${id}`, requestBody)
+            const response = await axioisInstance.patch(`/notification/groups/${id}`, requestBody)
 
             notification.success({
                 message: response?.data?.data?.message || response?.data?.message || 'Cohort updated successfully',
@@ -226,7 +258,7 @@ const EditNewGroups = () => {
         const rule: any = {
             type: 'rule',
             include: condition.didDidNot === 'Did',
-            event: condition.event?.value,
+            event: typeof condition.event.value === 'object' ? condition.event?.value?.value : condition.event.value,
             properties: [
                 {
                     path: condition?.property?.toLowerCase(),
@@ -237,6 +269,12 @@ const EditNewGroups = () => {
         }
         if (Object.keys(timeFrame).length > 0) {
             rule.time_frame = timeFrame
+        }
+        if (condition.includeExclude === true && condition.cohort_id) {
+            rule.include_filters_id = [condition.cohort_id]
+        }
+        if (condition.includeExclude === false && condition.cohort_id) {
+            rule.exclude_filters_id = [condition.cohort_id]
         }
         return rule
     }
@@ -315,7 +353,7 @@ const EditNewGroups = () => {
                         <FieldArray name="conditions">
                             {({ push, remove }) => (
                                 <>
-                                    {values.conditions.map((cond, index) => {
+                                    {values.conditions.map((cond: any, index: any) => {
                                         return (
                                             <div key={index}>
                                                 <div className="flex justify-between items-center mb-2">
@@ -343,12 +381,6 @@ const EditNewGroups = () => {
                                                         name={`conditions[${index}].event.value`}
                                                     />
 
-                                                    {/* <CommonSelect
-                                                        label="Operator"
-                                                        options={OperatorArray}
-                                                        name={`conditions[${index}].operator`}
-                                                    /> */}
-
                                                     <FormItem label="Operator" className={'col-span-1 w-full'}>
                                                         <Field name={`conditions[${index}].operator`}>
                                                             {({ field, form }: FieldProps<any>) => {
@@ -375,27 +407,19 @@ const EditNewGroups = () => {
                                                     </FormItem>
 
                                                     <GetPropertiesFromEvent
-                                                        eventId={
-                                                            typeof values.conditions[index]?.event === 'string'
-                                                                ? (values.conditions[index]?.event as string)
-                                                                : ((values.conditions[index]?.event as any)?.id ??
-                                                                  (values.conditions[index]?.event as any)?.value)
-                                                        }
+                                                        eventId={values.conditions[index]?.event?.value?.id}
                                                         customClassName="w-full "
                                                         label="Property"
                                                         name={`conditions[${index}].property`}
                                                     />
 
-                                                    {/* <CommonSelect
-                                                        label="Condition"
-                                                        options={ConditionArray}
-                                                        name={`conditions[${index}].condition`}
-                                                    /> */}
-
                                                     <FormItem label="Condition" className={'col-span-1 w-full'}>
                                                         <Field name={`conditions[${index}].condition`}>
                                                             {({ field, form }: FieldProps<any>) => {
-                                                                console.log('field for condition', field)
+                                                                console.log(
+                                                                    'field for condition and event id',
+                                                                    values.conditions[index]?.event,
+                                                                )
                                                                 return (
                                                                     <Select
                                                                         isClearable
@@ -492,6 +516,39 @@ const EditNewGroups = () => {
                                                             />
                                                         </FormContainer>
                                                     )}
+                                                    <FormItem label="Include/Exclude" className="flex justify-center items-center">
+                                                        <Field
+                                                            type="checkbox"
+                                                            name={`conditions[${index}].includeExclude`}
+                                                            component={Switcher}
+                                                        />
+                                                    </FormItem>
+
+                                                    <FormItem label="Cohorts" className="col-span-1 w-full">
+                                                        <Field name={`conditions[${index}].cohort_id`}>
+                                                            {({ form, field }: FieldProps) => {
+                                                                return (
+                                                                    <Select
+                                                                        isSearchable
+                                                                        isClearable
+                                                                        inputValue={searchInputs[index] || ''}
+                                                                        options={formattedData}
+                                                                        value={formattedData?.find(
+                                                                            (option) => option.value === field.value,
+                                                                        )}
+                                                                        onInputChange={(inputValue: string) =>
+                                                                            handleSearch(inputValue, index)
+                                                                        }
+                                                                        onChange={(selectedOption: any) => {
+                                                                            const value = selectedOption ? selectedOption.value : ''
+                                                                            form.setFieldValue(field.name, value)
+                                                                        }}
+                                                                        onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+                                                                    />
+                                                                )
+                                                            }}
+                                                        </Field>
+                                                    </FormItem>
                                                 </FormContainer>
 
                                                 {/* AND / OR Buttons */}

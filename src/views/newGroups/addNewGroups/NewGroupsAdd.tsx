@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, FormContainer, FormItem, Input, Tooltip } from '@/components/ui'
+import { Button, FormContainer, FormItem, Input, Select, Switcher, Tooltip } from '@/components/ui'
 import { notification } from 'antd'
-import { Field, Form, Formik, FieldArray } from 'formik'
+import { Field, Form, Formik, FieldArray, FieldProps } from 'formik'
 import React, { useEffect, useState } from 'react'
-import { MdDelete } from 'react-icons/md'
+import { MdDelete, MdOutlineFilterAltOff } from 'react-icons/md'
 import Papa from 'papaparse'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 import {
@@ -11,6 +11,7 @@ import {
     ConditionsForEvent,
     DidAndNotArray,
     OperatorArray,
+    QuickFilterArray,
     TimeFrameArray,
 } from '../notificationUtils/notificationGroupsCommon'
 import FullDateForm from '@/common/FullDateForm'
@@ -26,16 +27,48 @@ import { BiSolidDuplicate } from 'react-icons/bi'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
 import moment from 'moment'
 import GetPropertiesFromEvent from '@/common/GetPropertiesFromEvent'
+import { FiFilter } from 'react-icons/fi'
 
 const NewGroupsAdd = () => {
     const dispatch = useAppDispatch()
     const [spinner, setSpinner] = useState(false)
+    const [groupData, setGroupData] = useState<any[]>([])
     const [csvFile, setCSVFile] = useState<any>()
     const [mobileNumbers, setMobileNumbers] = useState<string[]>([])
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const subCategoryData = useAppSelector<SUBCATEGORY_STATE>((state) => state.subCategory)
+    const [searchInputs, setSearchInputs] = useState<{ [key: number]: string }>({})
+    const [quickFilter, setQuickFilter] = useState<{ [key: number]: boolean }>({})
+
+    const fetchGroupNotification = async (inputValue = '') => {
+        let filter = ''
+        if (inputValue) {
+            filter = `&name=${inputValue}`
+        }
+        try {
+            const response = await axioisInstance.get(`/notification/groups?p=1&page_size=10&is_active=true${filter}`)
+            const data = response?.data?.data
+            setGroupData(data?.results)
+        } catch (error: any) {
+            console.log(error)
+        }
+    }
+
+    const formattedData = groupData.map((group) => ({
+        value: group.id,
+        label: group.name,
+    }))
+
+    const handleSearch = (inputValue: string, index: number) => {
+        setSearchInputs((prev) => ({ ...prev, [index]: inputValue }))
+        fetchGroupNotification(inputValue)
+    }
+
+    useEffect(() => {
+        fetchGroupNotification()
+    }, [])
 
     useEffect(() => {
         dispatch(getAllBrandsAPI())
@@ -134,6 +167,7 @@ const NewGroupsAdd = () => {
     }
 
     const transformConditionToRule = (condition: any) => {
+        console.log('Transforming condition:', condition)
         let propertyValue: any
         if (condition.condition?.includes('BETWEEN') || condition.condition?.includes('Not Between')) {
             propertyValue = [condition.value_a, condition.value_b]
@@ -171,6 +205,13 @@ const NewGroupsAdd = () => {
         if (Object.keys(timeFrame).length > 0) {
             rule.time_frame = timeFrame
         }
+        if (condition.includeExclude === true && condition.cohort_id) {
+            rule.include_filters_id = [condition.cohort_id]
+        }
+        if (condition.includeExclude === false && condition.cohort_id) {
+            rule.exclude_filters_id = [condition.cohort_id]
+        }
+
         return rule
     }
 
@@ -252,7 +293,31 @@ const NewGroupsAdd = () => {
                                             <div key={index}>
                                                 <div className="flex justify-between items-center mb-2">
                                                     <div className="font-bold text-sl">ADD RULES</div>
-                                                    <div>
+                                                    <div className="flex gap-4 items-center">
+                                                        <div>
+                                                            {quickFilter[index] ? (
+                                                                <MdOutlineFilterAltOff
+                                                                    className="text-3xl"
+                                                                    onClick={() => setQuickFilter((prev) => ({ ...prev, [index]: false }))}
+                                                                />
+                                                            ) : (
+                                                                <FiFilter
+                                                                    className="text-2xl"
+                                                                    onClick={() => setQuickFilter((prev) => ({ ...prev, [index]: true }))}
+                                                                />
+                                                            )}
+                                                        </div>
+                                                        <div>
+                                                            {quickFilter[index] && (
+                                                                <CommonSelect
+                                                                    needClassName
+                                                                    name={`conditions[${index}].operator`}
+                                                                    label="QuickFilter"
+                                                                    className="w-[200px]"
+                                                                    options={QuickFilterArray}
+                                                                />
+                                                            )}
+                                                        </div>
                                                         <Tooltip title="Duplicate Rule">
                                                             <BiSolidDuplicate
                                                                 className="text-2xl cursor-pointer hover:text-blue-500"
@@ -370,6 +435,41 @@ const NewGroupsAdd = () => {
                                                             />
                                                         </FormContainer>
                                                     )}
+
+                                                    {/* Includes/excludes */}
+                                                    <FormItem label="Include/Exclude" className="flex justify-center items-center">
+                                                        <Field
+                                                            type="checkbox"
+                                                            name={`conditions[${index}].includeExclude`}
+                                                            component={Switcher}
+                                                        />
+                                                    </FormItem>
+
+                                                    <FormItem label="Cohorts" className="col-span-1 w-full">
+                                                        <Field name={`conditions[${index}].cohort_id`}>
+                                                            {({ form, field }: FieldProps) => {
+                                                                return (
+                                                                    <Select
+                                                                        isSearchable
+                                                                        isClearable
+                                                                        inputValue={searchInputs[index] || ''}
+                                                                        options={formattedData}
+                                                                        value={formattedData?.find(
+                                                                            (option) => option.value === field.value,
+                                                                        )}
+                                                                        onInputChange={(inputValue: string) =>
+                                                                            handleSearch(inputValue, index)
+                                                                        }
+                                                                        onChange={(selectedOption: any) => {
+                                                                            const value = selectedOption ? selectedOption.value : ''
+                                                                            form.setFieldValue(field.name, value)
+                                                                        }}
+                                                                        onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+                                                                    />
+                                                                )
+                                                            }}
+                                                        </Field>
+                                                    </FormItem>
                                                 </FormContainer>
 
                                                 {/* AND / OR Buttons */}
