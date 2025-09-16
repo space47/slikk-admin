@@ -45,7 +45,7 @@ const EditNewGroups = () => {
     const fetchGroupNotification = async (inputValue = '') => {
         let filter = ''
         if (inputValue) {
-            filter = `&name=${inputValue}`
+            filter = `&group_name=${inputValue}`
         }
         try {
             const response = await axioisInstance.get(`/notification/groups?p=1&page_size=10&is_active=true${filter}`)
