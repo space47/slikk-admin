@@ -109,6 +109,7 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
                                                     return (
                                                         <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
                                                             <Select
+                                                                isClearable
                                                                 className="w-full"
                                                                 options={storeResults}
                                                                 getOptionLabel={(option) => option.code}
@@ -127,6 +128,7 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
                                                     return (
                                                         <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
                                                             <Select
+                                                                isClearable
                                                                 className="w-full"
                                                                 options={FashionList}
                                                                 getOptionLabel={(option) => option.name}
