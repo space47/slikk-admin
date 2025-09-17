@@ -62,7 +62,6 @@ const EditNewGroups = () => {
         label: group.name,
     }))
 
-    // handleSearch per index
     const handleSearch = (inputValue: string, index: number) => {
         setSearchInputs((prev) => ({ ...prev, [index]: inputValue }))
         fetchGroupNotification(inputValue)
@@ -281,24 +280,6 @@ const EditNewGroups = () => {
     }
 
     const mapConditionToOperator = (condition: string): string => {
-        // const operatorMap: { [key: string]: string } = {
-        //     equal: '=',
-        //     not_equals: '!=',
-        //     contains: 'contains',
-        //     not_contains: 'not_contains',
-        //     starts_with: 'starts_with',
-        //     ends_with: 'ends_with',
-        //     greater_than: '>',
-        //     less_than: '<',
-        //     greater_than_equal: '>=',
-        //     less_than_equal: '<=',
-        //     BETWEEN: 'between',
-        //     NOT_BETWEEN: 'not_between',
-        //     exists: 'exists',
-        //     not_exists: 'not_exists',
-        // }
-
-        // return operatorMap[condition] || '=''
         return condition
     }
 
@@ -423,7 +404,7 @@ const EditNewGroups = () => {
                                                         name={`conditions[${index}].event.value`}
                                                     />
 
-                                                    <FormItem label="Operator" className={'col-span-1 w-full'}>
+                                                    {/* <FormItem label="Operator" className={'col-span-1 w-full'}>
                                                         <Field name={`conditions[${index}].operator`}>
                                                             {({ field, form }: FieldProps<any>) => {
                                                                 console.log('field for operator', field)
@@ -446,7 +427,7 @@ const EditNewGroups = () => {
                                                                 )
                                                             }}
                                                         </Field>
-                                                    </FormItem>
+                                                    </FormItem> */}
 
                                                     <GetPropertiesFromEvent
                                                         eventId={values.conditions[index]?.event?.value?.id}

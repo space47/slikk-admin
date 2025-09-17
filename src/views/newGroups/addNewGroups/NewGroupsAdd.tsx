@@ -218,24 +218,6 @@ const NewGroupsAdd = () => {
     }
 
     const mapConditionToOperator = (condition: string): string => {
-        console.log('Mapping condition to operator:', condition)
-        // const operatorMap: { [key: string]: string } = {
-        //     equals: '=',
-        //     not_equals: '!=',
-        //     contains: 'contains',
-        //     not_contains: 'not_contains',
-        //     starts_with: 'starts_with',
-        //     ends_with: 'ends_with',
-        //     greater_than: '>',
-        //     less_than: '<',
-        //     greater_than_equal: '>=',
-        //     less_than_equal: '<=',
-        //     BETWEEN: 'between',
-        //     NOT_BETWEEN: 'not_between',
-        //     exists: 'exists',
-        //     not_exists: 'not_exists',
-        // }
-
         return condition
     }
 
@@ -383,11 +365,11 @@ const NewGroupsAdd = () => {
                                                         name={`conditions[${index}].event`}
                                                     />
 
-                                                    <CommonSelect
+                                                    {/* <CommonSelect
                                                         label="Operator"
                                                         options={OperatorArray}
                                                         name={`conditions[${index}].operator`}
-                                                    />
+                                                    /> */}
 
                                                     <GetPropertiesFromEvent
                                                         eventId={values.conditions[index]?.event?.id}
