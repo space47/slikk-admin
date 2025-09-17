@@ -23,6 +23,7 @@ const EditProduct = () => {
     const [allVideo, setAllVideo] = useState<string[]>([])
     const [allColor, setAllColor] = useState<string[]>([])
     const [allSizeChart, setAllSizeChart] = useState<string[]>([])
+    const [allFrame, setAllFrame] = useState<string[]>([])
     const [showSpinner, setShowSpinner] = useState(false)
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
     const [companyData, setCompanyData] = useState<number>()
@@ -40,10 +41,12 @@ const EditProduct = () => {
             const imageList = userData.image.split(',')
             const videoList = userData.video_link ? userData.video_link.split(',') : []
             const sizeList = userData.size_chart_image ? userData.size_chart_image.split(',') : []
+            const frameList = userData.framed_image_url ? userData.framed_image_url.split(',') : []
             setAllImage(imageList)
             setAllVideo(videoList)
             setAllColor(colorList)
             setAllSizeChart(sizeList)
+            setAllFrame(frameList)
         } catch (error) {
             console.log(error)
         }
@@ -106,6 +109,7 @@ const EditProduct = () => {
             color_code_url = allColor.join(',')
 
         let size_chart_url = allSizeChart?.join(',')
+        let frame_image = allFrame?.join(',')
         const imageUpload = await handleimage(values.images)
         if (values.images && values.images.length && !imageUpload) {
             console.log('image Upload return', values.images)
@@ -135,9 +139,16 @@ const EditProduct = () => {
             const temp = [size_chart_url, sizeLink]
             size_chart_url = temp.filter((t) => t).join(',')
         }
+        const frame = await handleimage(values.frame_image_array)
+        if (values.frame_image_array && values.frame_image_array.length && !frame) {
+            return
+        } else if (values.frame_image_array && frame) {
+            const temp = [frame_image, frame]
+            frame_image = temp.filter((t) => t).join(',')
+        }
 
-        const { color_code, size_chart_image_array, images, filter_tags, ...rest } = values
-        console.log(color_code, size_chart_image_array, images, filter_tags)
+        const { color_code, size_chart_image_array, frame_image_array, images, filter_tags, ...rest } = values
+        console.log(color_code, size_chart_image_array, images, filter_tags, frame_image_array)
         const formData = Object.fromEntries(
             Object.entries({
                 ...rest,
@@ -151,6 +162,7 @@ const EditProduct = () => {
                 includes: textParser(values?.description.includes || ''),
                 other_info: textParser(values?.description.other_info || ''),
                 size_chart_image: size_chart_url,
+                framed_image_url: frame_image,
             }).filter(([, value]) => value !== null && value !== undefined),
         )
 
@@ -216,6 +228,8 @@ const EditProduct = () => {
                             setAllImage={setAllImage}
                             setAllSizeChart={setAllSizeChart}
                             setAllVideo={setAllVideo}
+                            allFrameImage={allFrame}
+                            setAllFrameImage={setAllFrame}
                             initialValues={InitialValues(productData, segmentOptions)}
                         />
                         <FormContainer className="flex justify-end mt-5">
