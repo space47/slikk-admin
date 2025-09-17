@@ -27,6 +27,10 @@ const AddFrameModal = ({ isOpen, setIsOpen }: props) => {
     }
 
     const handleSubmit = async (values: any) => {
+        notification.info({
+            message: 'Processing',
+            description: 'Your request is being processed. Please wait...',
+        })
         let image = ''
         if (values?.frame_array && values?.frame_array.length) {
             image = await handleimage('frame', values?.frame_array)
@@ -54,7 +58,6 @@ const AddFrameModal = ({ isOpen, setIsOpen }: props) => {
                     description: error?.response?.data?.message || 'Frame not added',
                 })
             }
-            return 'Error'
         }
     }
 
@@ -98,21 +101,21 @@ const AddFrameModal = ({ isOpen, setIsOpen }: props) => {
                                                 setFilterId={setFilterId}
                                             />
                                         </div>
+                                        <div className="px-6 py-4 border-t border-gray-200 flex justify-end bg-white">
+                                            <Button
+                                                variant="solid"
+                                                type="submit"
+                                                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow-md transition"
+                                            >
+                                                Submit
+                                            </Button>
+                                        </div>
                                     </Form>
                                 )}
                             </Formik>
                         </div>
 
                         {/* Footer */}
-                        <div className="px-6 py-4 border-t border-gray-200 flex justify-end bg-white">
-                            <Button
-                                variant="solid"
-                                type="submit"
-                                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow-md transition"
-                            >
-                                Submit
-                            </Button>
-                        </div>
                     </div>
                 </Dialog>
             </div>
