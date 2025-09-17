@@ -281,24 +281,25 @@ const EditNewGroups = () => {
     }
 
     const mapConditionToOperator = (condition: string): string => {
-        const operatorMap: { [key: string]: string } = {
-            equal: '=',
-            not_equals: '!=',
-            contains: 'contains',
-            not_contains: 'not_contains',
-            starts_with: 'starts_with',
-            ends_with: 'ends_with',
-            greater_than: '>',
-            less_than: '<',
-            greater_than_equal: '>=',
-            less_than_equal: '<=',
-            BETWEEN: 'between',
-            NOT_BETWEEN: 'not_between',
-            exists: 'exists',
-            not_exists: 'not_exists',
-        }
+        // const operatorMap: { [key: string]: string } = {
+        //     equal: '=',
+        //     not_equals: '!=',
+        //     contains: 'contains',
+        //     not_contains: 'not_contains',
+        //     starts_with: 'starts_with',
+        //     ends_with: 'ends_with',
+        //     greater_than: '>',
+        //     less_than: '<',
+        //     greater_than_equal: '>=',
+        //     less_than_equal: '<=',
+        //     BETWEEN: 'between',
+        //     NOT_BETWEEN: 'not_between',
+        //     exists: 'exists',
+        //     not_exists: 'not_exists',
+        // }
 
-        return operatorMap[condition] || '='
+        // return operatorMap[condition] || '=''
+        return condition
     }
 
     const handleAddCondition = (push: any, relation: string) => {

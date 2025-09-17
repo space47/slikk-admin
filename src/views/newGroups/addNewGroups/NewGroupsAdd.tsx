@@ -95,7 +95,7 @@ const NewGroupsAdd = () => {
     }
 
     const handleSubmit = async (values: any) => {
-        console.log('Form values on submit:', values)
+        console.log('Form values on submit: 🚀🚀🚀🚀🚀', values)
         try {
             setSpinner(true)
 
@@ -218,24 +218,25 @@ const NewGroupsAdd = () => {
     }
 
     const mapConditionToOperator = (condition: string): string => {
-        const operatorMap: { [key: string]: string } = {
-            equals: '=',
-            not_equals: '!=',
-            contains: 'contains',
-            not_contains: 'not_contains',
-            starts_with: 'starts_with',
-            ends_with: 'ends_with',
-            greater_than: '>',
-            less_than: '<',
-            greater_than_equal: '>=',
-            less_than_equal: '<=',
-            BETWEEN: 'between',
-            NOT_BETWEEN: 'not_between',
-            exists: 'exists',
-            not_exists: 'not_exists',
-        }
+        console.log('Mapping condition to operator:', condition)
+        // const operatorMap: { [key: string]: string } = {
+        //     equals: '=',
+        //     not_equals: '!=',
+        //     contains: 'contains',
+        //     not_contains: 'not_contains',
+        //     starts_with: 'starts_with',
+        //     ends_with: 'ends_with',
+        //     greater_than: '>',
+        //     less_than: '<',
+        //     greater_than_equal: '>=',
+        //     less_than_equal: '<=',
+        //     BETWEEN: 'between',
+        //     NOT_BETWEEN: 'not_between',
+        //     exists: 'exists',
+        //     not_exists: 'not_exists',
+        // }
 
-        return operatorMap[condition] || '='
+        return condition
     }
 
     const handleAddCondition = (push: any, relation: string) => {
