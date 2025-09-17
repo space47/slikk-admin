@@ -16,7 +16,7 @@ import UltimateDatePicker from '@/common/UltimateDateFilter'
 import AccessDenied from '@/views/pages/AccessDenied'
 import ActiveUserTable from './componentsHomes/ActiveUserTable'
 import { IoBagCheck } from 'react-icons/io5'
-import { Tabs } from '@/components/ui'
+import { Button, Tabs } from '@/components/ui'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import { FiEye, FiEyeOff } from 'react-icons/fi'
@@ -34,6 +34,7 @@ const Home = () => {
     const [viewMap, setViewMap] = useState(false)
     const navigate = useNavigate()
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
+    const [analyticsShow, setAnalyticsShow] = useState(false)
 
     const { data: homeData, refetch } = useFetchSingleData<SalesData>({
         url: `/merchant/analytics/order?from=${from}&to=${To_Date}`,
@@ -264,9 +265,16 @@ const Home = () => {
             </div>
 
             {/* CHART */}
-            <div className="mt-4">
-                <ActiveUserTable from={from} to={to} />
+            <div className="p-3">
+                <Button variant={analyticsShow ? 'reject' : 'pending'} size="sm" onClick={() => setAnalyticsShow((prev) => !prev)}>
+                    {analyticsShow ? 'Hide Sessions' : 'Show Sessions'}
+                </Button>
             </div>
+            {analyticsShow && (
+                <div className="mt-4">
+                    <ActiveUserTable from={from} to={to} />
+                </div>
+            )}
 
             <div className="mt-5 w-[320px] xl:w-full">
                 {homeData?.brand_wise_sale && <BrandDataChart brandData={homeData?.brand_wise_sale} from={from} to={to} />}
