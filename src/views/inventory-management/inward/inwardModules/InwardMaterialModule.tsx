@@ -57,6 +57,7 @@ const InwardMaterialModule = () => {
     const [dataTobeEdited, setDataTobeEdited] = useState<any>()
     const [isGenerateGrn, setIsGenerateGrn] = useState(false)
     const [receivedBy, setReceivedBy] = useState('')
+    const [isSyncing, setIsSyncing] = useState(false)
 
     const shipmentsItemsQuery = useMemo(() => {
         return `/shipment/item?shipment_id=${id}&page_size=${pageSize}&p=${page}`
@@ -387,6 +388,7 @@ const InwardMaterialModule = () => {
             shipment_id: id,
             received_by: receivedBy,
         }
+        setIsSyncing(true)
         try {
             const response = await axioisInstance.post(`/shipment/grn/sync`, body)
             notification.success({ message: response?.data?.message || 'Synced successfully' })
@@ -396,6 +398,8 @@ const InwardMaterialModule = () => {
             if (error instanceof AxiosError) {
                 notification.error({ message: error?.response?.data?.message || 'Failed to sync' })
             }
+        } finally {
+            setIsSyncing(false)
         }
     }
 
@@ -455,7 +459,7 @@ const InwardMaterialModule = () => {
             <div className="mt-8">
                 <div className="text-xl font-bold mb-8">Items Received</div>
                 <div>
-                    {isDashboard && (
+                    {isDashboard && !isSyncing && (
                         <div className="flex gap-2 mb-7 justify-end cursor-pointer" onClick={() => setIsGenerateGrn(true)}>
                             <span>
                                 <FaSync className="text-green-500 text-xl" />

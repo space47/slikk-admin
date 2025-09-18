@@ -5,7 +5,7 @@ import { FaDownload, FaSync } from 'react-icons/fa'
 import QCtable from './QCtable'
 import { Modal } from 'antd'
 import SkuUpdate from './SkuUpdate'
-import { Select } from '@/components/ui'
+import { Select, Spinner } from '@/components/ui'
 
 interface props {
     handleSyncClick: any
@@ -85,9 +85,15 @@ const QcTabs = ({
                             <div>
                                 <button onClick={() => handleSyncClick(data.grn_number)} className="border-none bg-none flex gap-5">
                                     {' '}
-                                    <div className="flex gap-2 font-bold text-green-600">
-                                        SYNC GRN <FaSync className="text-2xl" />
-                                    </div>{' '}
+                                    {isSyncing ? (
+                                        <Spinner size="sm" />
+                                    ) : (
+                                        <>
+                                            <div className="flex gap-2 font-bold text-green-600">
+                                                SYNC GRN <FaSync className="text-2xl" />
+                                            </div>
+                                        </>
+                                    )}
                                 </button>
                             </div>
                         </div>
