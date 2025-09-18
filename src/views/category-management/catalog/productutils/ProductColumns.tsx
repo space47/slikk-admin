@@ -105,6 +105,23 @@ export const useProductColumns = ({ handleOpenModal, handleViewProducts }: props
                 },
             },
             {
+                header: 'Frame Image',
+                accessorKey: 'framed_image_url',
+                cell: ({ row }: any) => {
+                    const imageUrl = row?.original?.framed_image_url?.split(',')[0]
+                    return (
+                        <>
+                            <img
+                                src={imageUrl}
+                                alt="Image"
+                                className="w-24 h-20 object-cover cursor-pointer"
+                                onClick={() => handleOpenModal(row.original.framed_image_url)}
+                            />
+                        </>
+                    )
+                },
+            },
+            {
                 header: 'Price',
                 accessorKey: 'mrp',
                 cell: (info) => info.getValue(),

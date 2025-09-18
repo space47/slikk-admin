@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Card, Spinner } from '@/components/ui'
+import { Button, Card, Spinner } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import React, { useEffect, useState } from 'react'
+import { FaSync } from 'react-icons/fa'
 
 interface ActiveUserProps {
     from: string
@@ -13,8 +14,9 @@ const ActiveUserFlow = ({ from, to }: ActiveUserProps) => {
     const [showSpinner, setShowSpinner] = useState(false)
     const [isPageActive, setIsPageActive] = useState(true)
     const [dynamicKeys, setDynamicKeys] = useState<string[]>([])
+    const [refreshToggle, setRefreshToggle] = useState(false)
 
-    const fetchUserTable = async () => {
+    const fetchUserTable = React.useCallback(async () => {
         try {
             setShowSpinner(true)
             const response = await axioisInstance.get(
@@ -37,8 +39,9 @@ const ActiveUserFlow = ({ from, to }: ActiveUserProps) => {
             console.error('Error fetching data:', error)
         } finally {
             setShowSpinner(false)
+            setRefreshToggle(false)
         }
-    }
+    }, [from, to])
 
     useEffect(() => {
         const handleVisibilityChange = () => {
@@ -59,21 +62,8 @@ const ActiveUserFlow = ({ from, to }: ActiveUserProps) => {
     }, [])
 
     useEffect(() => {
-        let interval: NodeJS.Timeout
-
-        if (isPageActive) {
-            fetchUserTable()
-            interval = setInterval(fetchUserTable, 60000)
-        } else {
-            console.log('Clearing interval as page is inactive')
-        }
-
-        return () => {
-            if (interval) {
-                clearInterval(interval)
-            }
-        }
-    }, [isPageActive, from, to])
+        fetchUserTable()
+    }, [isPageActive, from, to, refreshToggle])
 
     if (showSpinner) {
         return (
@@ -83,18 +73,21 @@ const ActiveUserFlow = ({ from, to }: ActiveUserProps) => {
         )
     }
 
-    const chartData = dynamicKeys.slice(6).reduce(
-        (acc, key) => {
-            acc[key.replace(/_/g, ' ')] = userData[0]?.[key] || 0
-            return acc
-        },
-        {} as { [key: string]: number },
-    )
-
     return (
         <div className="flex flex-col gap-6 p-6 bg-gray-100 dark:bg-gray-600 rounded-lg shadow-lg">
-            <div className="font-bold text-2xl text-blue-900 dark:text-blue-300 mb-6">Active User Stats</div>
-
+            <div className="flex justify-between items-center">
+                <div className="font-bold text-2xl text-blue-900 dark:text-blue-300 mb-6">Active User Stats</div>
+                <div>
+                    <Button
+                        className="flex flex-row gap-2 items-center"
+                        size="sm"
+                        variant="pending"
+                        onClick={() => setRefreshToggle((prev) => !prev)}
+                    >
+                        <FaSync /> Refresh
+                    </Button>
+                </div>
+            </div>
             <div className="">
                 <div className="flex flex-wrap xl:gap-4 gap-0 justify-center">
                     {dynamicKeys.map((key, index) => (
@@ -113,11 +106,6 @@ const ActiveUserFlow = ({ from, to }: ActiveUserProps) => {
                         </div>
                     ))}
                 </div>
-                {/* <div className="flex justify-center mb-8 ">
-                    <div className="w-full max-w-3xl xl:ml-10 mt-20">
-                        <ActiveChart data={chartData} />
-                    </div>
-                </div> */}
             </div>
         </div>
     )
