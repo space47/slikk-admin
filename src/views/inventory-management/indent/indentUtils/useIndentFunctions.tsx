@@ -11,6 +11,7 @@ interface props {
     isStatusConformation: string
     setIsStatusConformation: React.Dispatch<React.SetStateAction<string>>
     refetch: () => void
+    setIsSyncing?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const useIndentFunctions = ({
@@ -20,6 +21,7 @@ export const useIndentFunctions = ({
     isStatusConformation,
     setIsStatusConformation,
     refetch,
+    setIsSyncing,
 }: props) => {
     const handleAssign = async (actionType: string) => {
         console.log('Selected users in handleAssign:', actionType)
@@ -65,6 +67,7 @@ export const useIndentFunctions = ({
     }
 
     const handleSyncToGDN = async () => {
+        setIsSyncing && setIsSyncing(true)
         try {
             const response = await axioisInstance.post(`/indent-note/gdn/sync/${data?.intent_number}`)
             notification.success({ message: response?.data?.data?.message || 'Sync to GDN successful' })
@@ -74,6 +77,8 @@ export const useIndentFunctions = ({
                 notification.error({ message: error?.response?.data?.message || 'Error syncing to GDN' })
             }
             console.error('Error syncing to GDN:', error)
+        } finally {
+            setIsSyncing && setIsSyncing(false)
         }
     }
 

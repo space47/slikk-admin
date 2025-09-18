@@ -13,7 +13,7 @@ import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { FaDownload, FaSync } from 'react-icons/fa'
 import CustomerInfo from '@/views/inventory-management/inward/inwardDetails/components/CustomerInfo'
-import { Select } from '@/components/ui'
+import { Select, Spinner } from '@/components/ui'
 import GDNdetailTable from './GDNdetailTable'
 import { AxiosError } from 'axios'
 // import { string } from 'yup'
@@ -257,14 +257,25 @@ const GdnDetails = () => {
                                         </button>
                                     </div>
                                 </div>
-                                <div>
-                                    <button onClick={() => handleSyncClick(data.grn_number)} className="border-none bg-none flex gap-5">
-                                        {' '}
-                                        <div className="flex gap-2 font-bold text-green-600">
-                                            SYNC GDN <FaSync className="text-2xl" />
-                                        </div>{' '}
-                                    </button>
-                                </div>
+                                {isSyncing ? (
+                                    <>
+                                        <Spinner size={30} />
+                                    </>
+                                ) : (
+                                    <>
+                                        <div>
+                                            <button
+                                                onClick={() => handleSyncClick(data.grn_number)}
+                                                className="border-none bg-none flex gap-5"
+                                            >
+                                                {' '}
+                                                <div className="flex gap-2 font-bold text-green-600">
+                                                    SYNC GDN <FaSync className="text-2xl" />
+                                                </div>{' '}
+                                            </button>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                             <br />
                             {/* <QCtable data={data.grn_quality_check} totalData={data.grn_quality_check.length} /> */}
