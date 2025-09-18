@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react'
 import Loading from '@/components/shared/Loading'
 import Container from '@/components/shared/Container'
@@ -8,24 +9,19 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useParams, useNavigate } from 'react-router-dom'
 import moment from 'moment'
 import { Modal, notification } from 'antd'
-import { useAppSelector } from '@/store'
-import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { FaSync } from 'react-icons/fa'
 import TransferDetailsTable from './TransferDetailsTable'
-
-// import { string } from 'yup'
+import { Spinner } from '@/components/ui'
 
 const TransferDetails = () => {
-    // const location = useLocation()
-
     const [loading, setLoading] = useState(true)
     const [data, setData] = useState<any>([])
     const { document_number } = useParams()
     const [showSyncModal, setShowSyncModal] = useState(false)
     const [isSyncing, setIsSyncing] = useState(false)
     const [grnNumber, setGrnNumber] = useState('')
+    console.log(grnNumber)
     const navigate = useNavigate()
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -75,16 +71,6 @@ const TransferDetails = () => {
 
     const handleCloseModal = () => {
         setShowSyncModal(false)
-    }
-
-    const handleUrl = async (document_url: string) => {
-        try {
-            const response = await axioisInstance.get(`file/presign?file_url=${document_url}`)
-            const val = response.data?.data
-            window.open(val)
-        } catch (error) {
-            console.error(error)
-        }
     }
 
     return (
@@ -157,14 +143,25 @@ const TransferDetails = () => {
                         <div className="mt-5 flex flex-col">
                             {/* TABLE..................................................... */}
 
-                            <div className="flex justify-end mt-5 text-xl mr-7">
-                                <button onClick={() => handleSyncClick(data.document_number)} className="border-none bg-none flex gap-5">
-                                    {' '}
-                                    <div className="flex gap-2 font-bold text-green-600">
-                                        SYNC Transfers <FaSync className="text-2xl" />
-                                    </div>{' '}
-                                </button>
-                            </div>
+                            {isSyncing ? (
+                                <>
+                                    <Spinner size={30} />
+                                </>
+                            ) : (
+                                <>
+                                    <div className="flex justify-end mt-5 text-xl mr-7">
+                                        <button
+                                            onClick={() => handleSyncClick(data.document_number)}
+                                            className="border-none bg-none flex gap-5"
+                                        >
+                                            {' '}
+                                            <div className="flex gap-2 font-bold text-green-600">
+                                                SYNC Transfers <FaSync className="text-2xl" />
+                                            </div>{' '}
+                                        </button>
+                                    </div>
+                                </>
+                            )}
                             {/* <QCtable data={data.grn_quality_check} totalData={data.grn_quality_check.length} /> */}
                             {data?.gdn_products?.length === 0 ? (
                                 <>

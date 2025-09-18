@@ -5,7 +5,7 @@ import { IndentDetailsTypes, IndentItem } from '@/store/types/indent.types'
 import { useItemsColumns, useItemsPickerColumns } from '../../indentUtils/useItemsColumns'
 import EasyTable from '@/common/EasyTable'
 import AccessDenied from '@/views/pages/AccessDenied'
-import { Button, Tabs } from '@/components/ui'
+import { Button, Spinner, Tabs } from '@/components/ui'
 import AssignPicker from '@/common/AssignPicker'
 import IndentUpdateModal from './IndentUpdateModal'
 import { indentService } from '@/store/services/indentService'
@@ -22,6 +22,7 @@ const IndentDetails = () => {
     const location = useLocation()
     const { store_type } = location.state || ''
     const [isPickerModal, setIsPickerModal] = useState(false)
+    const [isSyncing, setIsSyncing] = useState(false)
     const [rowData, setRowData] = useState<IndentItem | null>(null)
     const [isEditModal, setIsEditModal] = useState(false)
     const [selectedUsers, setSelectedUsers] = useState<string[]>([])
@@ -53,6 +54,7 @@ const IndentDetails = () => {
         isStatusConformation,
         setIsStatusConformation,
         refetch,
+        setIsSyncing,
     })
 
     const { detailsArray } = DetailsData(data as IndentDetailsTypes)
@@ -172,9 +174,17 @@ const IndentDetails = () => {
                         </Button>
                     </>
                 )}
-                <Button variant="new" size="sm" onClick={handleSyncToGDN}>
-                    Sync To GDN
-                </Button>
+                {isSyncing ? (
+                    <>
+                        <Spinner size={20} />
+                    </>
+                ) : (
+                    <>
+                        <Button variant="new" size="sm" onClick={handleSyncToGDN}>
+                            Sync To GDN
+                        </Button>
+                    </>
+                )}
             </div>
             <div className="w-full">
                 <Tabs defaultValue="active" className="flex flex-col" value={tabValue} onChange={(value) => setTabValue(value)}>
