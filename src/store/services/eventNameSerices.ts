@@ -4,12 +4,12 @@ import { EventNamesResponseType } from '../types/eventNames.types'
 
 export const eventNameService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
-        eventNamesData: builder.query<EventNamesResponseType, { name?: string; id?: number }>({
+        eventNamesData: builder.query<EventNamesResponseType, { event_name?: string; id?: number }>({
             query: (params) => {
                 const parameters: Record<string, string | string[]> = {}
 
-                if (params.name) {
-                    parameters.name = params.name?.toString()
+                if (params.event_name) {
+                    parameters.event_name = params.event_name?.toString()
                 }
 
                 return {
@@ -38,6 +38,14 @@ export const eventNameService = RtkQueryService.injectEndpoints({
                     body: {
                         name: params.name,
                     },
+                }
+            },
+        }),
+        deleteEventnames: builder.mutation<{ success: string }, { id: string | number }>({
+            query: (params) => {
+                return {
+                    url: `/notification/event/${params.id}`,
+                    method: 'DELETE',
                 }
             },
         }),

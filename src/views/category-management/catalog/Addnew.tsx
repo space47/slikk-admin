@@ -55,10 +55,12 @@ const AddProduct = () => {
         const colorlink = await handleImageCheck(values.color_code)
         const videoUpload = await handleVideoCheck(values.video)
         const sizeUpload = await handleImageCheck(values.size_chart_image_array)
+        const frameUpload = await handleImageCheck(values.frame_image_array)
 
         const imageShow = fileShow(imageUpload, values.image)
         const videoShow = fileShow(videoUpload, values.video_link)
         const sizeShow = fileShow(sizeUpload, values.size_chart_image_array)
+        const frameShow = fileShow(frameUpload, values.frame_image)
 
         const formData = {
             ...values,
@@ -68,6 +70,7 @@ const AddProduct = () => {
             company: companyData,
             colorfamily: values.colorfamily,
             video_link: videoShow,
+            framed_image_url: frameShow,
             description: textParser(values?.description.description || ''),
             about: textParser(values?.description.about || ''),
             use_cases: textParser(values?.description.use_cases || ''),

@@ -34,6 +34,8 @@ interface props {
     allName?: string[]
     initialValues?: any
     setFieldValue?: any
+    allFrameImage?: string[] | undefined
+    setAllFrameImage?: (x: string[]) => void
 }
 
 const ProductFormCommon = ({
@@ -52,6 +54,8 @@ const ProductFormCommon = ({
     setAllImage,
     setAllSizeChart,
     initialValues,
+    allFrameImage,
+    setAllFrameImage,
 }: props) => {
     return (
         <div>
@@ -66,7 +70,7 @@ const ProductFormCommon = ({
                                         className="w-full"
                                         options={companyList}
                                         getOptionLabel={(option) => option.name}
-                                        getOptionValue={(option) => option.id}
+                                        getOptionValue={(option) => option.id as any}
                                         value={selectedCompany || null}
                                         onChange={(newVal) => {
                                             form.setFieldValue('company', newVal?.id)
@@ -191,6 +195,17 @@ const ProductFormCommon = ({
                                 placeholder="Enter Size Chart Image"
                                 setAllName={setAllSizeChart}
                             />
+                            <ImageCommonProduct
+                                label="Frame Image"
+                                allName={allFrameImage || []}
+                                handleRemove={handleRemove}
+                                name="frame_image_array"
+                                fieldname="frame_image_array"
+                                fileLists={values.frame_image_array}
+                                textName="frame_image"
+                                placeholder="Enter Frame Image Image"
+                                setAllName={setAllFrameImage}
+                            />
                         </>
                     ) : (
                         <>
@@ -221,6 +236,13 @@ const ProductFormCommon = ({
                                 fileList={values.size_chart_image_array}
                                 beforeUpload={beforeUpload}
                                 fieldNames="size_chart_image_array"
+                            />
+                            <AddProductImages
+                                label="Frame Image"
+                                name="frame_image"
+                                fileList={values.frame_image_array}
+                                beforeUpload={beforeUpload}
+                                fieldNames="frame_image_array"
                             />
                         </>
                     )}

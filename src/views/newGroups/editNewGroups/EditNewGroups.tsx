@@ -2,8 +2,8 @@
 import { Button, FormContainer, FormItem, Input, Select, Switcher, Tooltip } from '@/components/ui'
 import { notification } from 'antd'
 import { Field, Form, Formik, FieldArray, FieldProps } from 'formik'
-import React, { useEffect, useState } from 'react'
-import { MdDelete, MdOutlineFilterAltOff } from 'react-icons/md'
+import React, { useEffect, useMemo, useState } from 'react'
+import { MdDelete } from 'react-icons/md'
 import Papa from 'papaparse'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 import {
@@ -11,7 +11,6 @@ import {
     ConditionsForEvent,
     DidAndNotArray,
     OperatorArray,
-    QuickFilterArray,
     TimeFrameArray,
 } from '../notificationUtils/notificationGroupsCommon'
 import FullDateForm from '@/common/FullDateForm'
@@ -27,21 +26,22 @@ import { BiSolidDuplicate } from 'react-icons/bi'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
 import moment from 'moment'
 import GetPropertiesFromEvent from '@/common/GetPropertiesFromEvent'
-import { FiFilter } from 'react-icons/fi'
+import { useParams } from 'react-router-dom'
+import { useFetchApi } from '@/commonHooks/useFetchApi'
 import FormButton from '@/components/ui/Button/FormButton'
 
-const NewGroupsAdd = () => {
+const EditNewGroups = () => {
     const dispatch = useAppDispatch()
+    const { id } = useParams()
     const [spinner, setSpinner] = useState(false)
-    const [groupData, setGroupData] = useState<any[]>([])
     const [csvFile, setCSVFile] = useState<any>()
     const [mobileNumbers, setMobileNumbers] = useState<string[]>([])
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const subCategoryData = useAppSelector<SUBCATEGORY_STATE>((state) => state.subCategory)
+    const [groupData, setGroupData] = useState<any[]>([])
     const [searchInputs, setSearchInputs] = useState<{ [key: number]: string }>({})
-    const [quickFilter, setQuickFilter] = useState<{ [key: number]: boolean }>({})
 
     const fetchGroupNotification = async (inputValue = '') => {
         let filter = ''
@@ -71,9 +71,74 @@ const NewGroupsAdd = () => {
         fetchGroupNotification()
     }, [])
 
+    const urlReq = useMemo(() => {
+        return `/notification/groups?group_id=${id}`
+    }, [id])
+    const { data: apiData } = useFetchApi<any>({ url: urlReq })
+    const initialGroupData = useMemo(() => {
+        const d: any = apiData as any
+        if (!d) return undefined
+        if (Array.isArray(d)) return d[0]
+        if (Array.isArray(d?.data)) return d.data[0]
+        return d?.data || d
+    }, [apiData])
+
     useEffect(() => {
         dispatch(getAllBrandsAPI())
-    }, [])
+    }, [dispatch])
+
+    const transformRulesToConditions = (rules: any) => {
+        if (!rules) return [ConditionsForEvent]
+        if (rules.type === 'group' && Array.isArray(rules.rules)) {
+            return rules.rules.flatMap((rule: any) => {
+                const arr = transformRulesToConditions(rule)
+                return arr.map((c: any) => ({ ...c, relation: (rules.op || 'and').toUpperCase() }))
+            })
+        }
+
+        if (rules.type === 'rule') {
+            const condition = {
+                didDidNot: rules.include ? 'Did' : 'Did Not',
+                event: { id: '', value: rules.event, label: rules.event },
+                property: rules.properties?.[0]?.path || '',
+                condition: mapOperatorToCondition(rules.properties?.[0]?.op || '='),
+                operator: mapOperatorToCondition(rules?.[0]?.op || '='),
+                value: Array.isArray(rules.properties?.[0]?.value) ? rules.properties?.[0]?.value[0] : rules.properties?.[0]?.value,
+                value_a: Array.isArray(rules.properties?.[0]?.value) ? rules.properties?.[0]?.value[0] : '',
+                value_b: Array.isArray(rules.properties?.[0]?.value) ? rules.properties?.[0]?.value[1] : '',
+                timeFrame: rules.time_frame ? 'custom_range' : '',
+                start_date: rules.time_frame?.range?.start || '',
+                end_date: rules.time_frame?.range?.end || '',
+                relation: 'AND',
+                includeExclude: rules?.include_filters_id ? true : rules?.exclude_filters_id ? false : undefined,
+                cohort_id: rules?.include_cohort_id?.[0] || rules?.exclude_cohort_id?.[0] || '',
+            }
+            return [condition]
+        }
+
+        return [ConditionsForEvent]
+    }
+
+    const mapOperatorToCondition = (operator: string): string => {
+        const conditionMap: { [key: string]: string } = {
+            '=': 'equal',
+            '!=': 'not_equal',
+            contains: 'contains',
+            not_contains: 'not_contains',
+            starts_with: 'starts_with',
+            ends_with: 'ends_with',
+            '>': 'greater_than',
+            '<': 'less_than',
+            '>=': 'greater_than_equal',
+            '<=': 'less_than_equal',
+            between: 'BETWEEN',
+            not_between: 'NOT_BETWEEN',
+            exists: 'exists',
+            not_exists: 'not_exists',
+        }
+
+        return conditionMap[operator] || 'equals'
+    }
 
     const handleCSVFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files ? e.target.files[0] : null
@@ -95,7 +160,6 @@ const NewGroupsAdd = () => {
     }
 
     const handleSubmit = async (values: any) => {
-        console.log('Form values on submit: 🚀🚀🚀🚀🚀', values)
         try {
             setSpinner(true)
 
@@ -110,15 +174,15 @@ const NewGroupsAdd = () => {
             }
 
             console.log('Transformed request body:', JSON.stringify(requestBody, null, 2))
-            const response = await axioisInstance.post('/notification/groups', requestBody)
+            const response = await axioisInstance.patch(`/notification/groups/${id}`, requestBody)
 
             notification.success({
-                message: response?.data?.data?.message || response?.data?.message || 'Cohort created successfully',
+                message: response?.data?.data?.message || response?.data?.message || 'Cohort updated successfully',
             })
         } catch (error) {
             console.error('Error submitting form:', error)
             notification.error({
-                message: 'Failed to create cohort',
+                message: 'Failed to update cohort',
             })
         } finally {
             setSpinner(false)
@@ -169,7 +233,6 @@ const NewGroupsAdd = () => {
     }
 
     const transformConditionToRule = (condition: any) => {
-        console.log('Transforming condition:', condition)
         let propertyValue: any
         if (condition.condition?.includes('BETWEEN') || condition.condition?.includes('Not Between')) {
             propertyValue = [condition.value_a, condition.value_b]
@@ -195,7 +258,7 @@ const NewGroupsAdd = () => {
         const rule: any = {
             type: 'rule',
             include: condition.didDidNot === 'Did',
-            event: condition.event,
+            event: typeof condition.event.value === 'object' ? condition.event?.value?.value : condition.event.value,
             properties: [
                 {
                     path: condition?.property?.toLowerCase(),
@@ -213,7 +276,6 @@ const NewGroupsAdd = () => {
         if (condition.includeExclude === false && condition.cohort_id) {
             rule.exclude_cohort_id = [condition.cohort_id]
         }
-
         return rule
     }
 
@@ -231,13 +293,15 @@ const NewGroupsAdd = () => {
     return (
         <div className="w-full">
             <div className="mb-8 ">
-                <h1 className="text-3xl font-bold text-gray-800 mb-2">Create New Cohorts</h1>
-                <p className="text-gray-500">Define rules to build targeted user groups</p>
+                <h1 className="text-3xl font-bold text-gray-800 mb-2">Update Existing Cohorts</h1>
+                <p className="text-gray-500">Define rules to update targeted user groups</p>
             </div>
             <Formik
                 enableReinitialize
                 initialValues={{
-                    conditions: [ConditionsForEvent],
+                    cohort_name: initialGroupData?.name || '',
+                    user: '',
+                    conditions: initialGroupData?.rules ? transformRulesToConditions(initialGroupData.rules) : [ConditionsForEvent],
                 }}
                 onSubmit={handleSubmit}
             >
@@ -312,37 +376,12 @@ const NewGroupsAdd = () => {
                         <FieldArray name="conditions">
                             {({ push, remove }) => (
                                 <>
-                                    {values.conditions.map((cond, index) => {
-                                        console.log('Condition:', cond)
+                                    {values.conditions.map((cond: any, index: any) => {
                                         return (
                                             <div key={index}>
                                                 <div className="flex justify-between items-center mb-2">
                                                     <div className="font-bold text-sl">ADD RULES #{index + 1}</div>
-                                                    <div className="flex gap-4 items-center">
-                                                        <div>
-                                                            {quickFilter[index] ? (
-                                                                <MdOutlineFilterAltOff
-                                                                    className="text-3xl"
-                                                                    onClick={() => setQuickFilter((prev) => ({ ...prev, [index]: false }))}
-                                                                />
-                                                            ) : (
-                                                                <FiFilter
-                                                                    className="text-2xl"
-                                                                    onClick={() => setQuickFilter((prev) => ({ ...prev, [index]: true }))}
-                                                                />
-                                                            )}
-                                                        </div>
-                                                        <div>
-                                                            {quickFilter[index] && (
-                                                                <CommonSelect
-                                                                    needClassName
-                                                                    name={`conditions[${index}].operator`}
-                                                                    label="QuickFilter"
-                                                                    className="w-[200px]"
-                                                                    options={QuickFilterArray}
-                                                                />
-                                                            )}
-                                                        </div>
+                                                    <div>
                                                         <Tooltip title="Duplicate Rule">
                                                             <BiSolidDuplicate
                                                                 className="text-2xl cursor-pointer hover:text-blue-500"
@@ -362,28 +401,68 @@ const NewGroupsAdd = () => {
                                                         hideButtons
                                                         customClassName="w-full "
                                                         label="Event Names"
-                                                        name={`conditions[${index}].event`}
+                                                        name={`conditions[${index}].event.value`}
                                                     />
 
-                                                    {/* <CommonSelect
-                                                        label="Operator"
-                                                        options={OperatorArray}
-                                                        name={`conditions[${index}].operator`}
-                                                    /> */}
+                                                    {/* <FormItem label="Operator" className={'col-span-1 w-full'}>
+                                                        <Field name={`conditions[${index}].operator`}>
+                                                            {({ field, form }: FieldProps<any>) => {
+                                                                console.log('field for operator', field)
+
+                                                                return (
+                                                                    <Select
+                                                                        isClearable
+                                                                        isSearchable
+                                                                        options={OperatorArray}
+                                                                        value={OperatorArray?.find(
+                                                                            (option) => option.value?.toLocaleLowerCase() === field.value,
+                                                                        )}
+                                                                        onChange={(option) => {
+                                                                            const value = option ? option.value : ''
+                                                                            form.setFieldValue(field.name, value)
+                                                                            console.log('FIELD.NAME', field.name, value)
+                                                                        }}
+                                                                        onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+                                                                    />
+                                                                )
+                                                            }}
+                                                        </Field>
+                                                    </FormItem> */}
 
                                                     <GetPropertiesFromEvent
-                                                        eventId={values.conditions[index]?.event?.id}
+                                                        eventId={values.conditions[index]?.event?.value?.id}
                                                         customClassName="w-full "
                                                         label="Property"
                                                         name={`conditions[${index}].property`}
-                                                        eventName={values.conditions[index]?.event}
+                                                        eventName={values.conditions[index]?.event?.value}
                                                     />
 
-                                                    <CommonSelect
-                                                        label="Condition"
-                                                        options={ConditionArray}
-                                                        name={`conditions[${index}].condition`}
-                                                    />
+                                                    <FormItem label="Condition" className={'col-span-1 w-full'}>
+                                                        <Field name={`conditions[${index}].condition`}>
+                                                            {({ field, form }: FieldProps<any>) => {
+                                                                console.log(
+                                                                    'field for condition and event id',
+                                                                    values.conditions[index]?.event,
+                                                                )
+                                                                return (
+                                                                    <Select
+                                                                        isClearable
+                                                                        isSearchable
+                                                                        options={ConditionArray}
+                                                                        value={ConditionArray?.find(
+                                                                            (option) => option.label?.toLocaleLowerCase() === field.value,
+                                                                        )}
+                                                                        onChange={(option) => {
+                                                                            const value = option ? option.value : ''
+                                                                            form.setFieldValue(field.name, value)
+                                                                            console.log('FIELD.NAME', field.name, value)
+                                                                        }}
+                                                                        onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+                                                                    />
+                                                                )
+                                                            }}
+                                                        </Field>
+                                                    </FormItem>
 
                                                     {cond?.property?.toLocaleLowerCase()?.includes('category') && (
                                                         <FormItem label="value">
@@ -461,8 +540,6 @@ const NewGroupsAdd = () => {
                                                             />
                                                         </FormContainer>
                                                     )}
-
-                                                    {/* Includes/excludes */}
                                                     <FormItem label="Include/Exclude" className="flex justify-center items-center">
                                                         <Field
                                                             type="checkbox"
@@ -521,7 +598,8 @@ const NewGroupsAdd = () => {
                                 </>
                             )}
                         </FieldArray>
-                        <FormButton isSpinning={spinner} value="Submit" />
+
+                        <FormButton isSpinning={spinner} value="Update" />
                     </Form>
                 )}
             </Formik>
@@ -529,4 +607,4 @@ const NewGroupsAdd = () => {
     )
 }
 
-export default NewGroupsAdd
+export default EditNewGroups
