@@ -52,7 +52,7 @@ const DivisionTable = () => {
                     />
                 </div>
                 <div>
-                    <ClearCache cacheKey="division" />
+                    <ClearCache cacheKey="tree" />
                 </div>
             </div>
             <Table overflow className="scrollbar-hide">
