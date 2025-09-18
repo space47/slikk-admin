@@ -3,11 +3,11 @@ import { beforeUpload } from '@/common/beforeUpload'
 import CommonImageUpload from '@/common/CommonImageUpload'
 import CommonFilterSelect from '@/common/ComonFilterSelect'
 import { handleimage } from '@/common/handleImage'
-import { Button, Dialog, FormContainer } from '@/components/ui'
+import { Button, Checkbox, Dialog, FormContainer, FormItem } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import { AxiosError } from 'axios'
-import { Form, Formik } from 'formik'
+import { Field, Form, Formik } from 'formik'
 import React, { useState } from 'react'
 
 interface props {
@@ -37,13 +37,13 @@ const AddFrameModal = ({ isOpen, setIsOpen }: props) => {
         }
         const filter_id = filterId
         const body = {
-            task_name: 'add_frame_to_product_images',
+            is_price_tag_required: values?.is_price_tag_required || false,
             filter_id: filter_id,
             frame_path: image || '',
         }
 
         try {
-            const res = await axioisInstance.post('https://dev-api.slikk.club/backend/task/process', body)
+            const res = await axioisInstance.post('product/framed/task', body)
             console.log('res of add frame to product images', res)
             notification.success({
                 message: 'Success',
@@ -89,6 +89,10 @@ const AddFrameModal = ({ isOpen, setIsOpen }: props) => {
                                                 name="frame_array"
                                             />
                                         </div>
+
+                                        <FormItem label="Price Tag">
+                                            <Field name="is_price_tag_required" component={Checkbox} />
+                                        </FormItem>
 
                                         {/* Filter Select */}
                                         <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-sm">
