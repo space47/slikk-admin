@@ -1,6 +1,7 @@
 export const InventoryFilters = [
     { label: 'SKU', value: 'sku' },
     { label: 'SKID', value: 'skid' },
+    { label: 'Barcode', value: 'barcode' },
 ]
 
 export type InventoryType = {

@@ -13,8 +13,9 @@ export const useInventoryApi = ({ searchType }: props) => {
 
     const query = useMemo(() => {
         let searchParams = ''
-        if (globalFilter && searchType.value === 'sku') searchParams = `sku=${encodeURIComponent(globalFilter)}`
-        if (globalFilter && searchType.value === 'skid') searchParams = `skid=${encodeURIComponent(globalFilter)}`
+        if (globalFilter) {
+            searchParams = `${searchType.value}=${encodeURIComponent(globalFilter)}`
+        }
 
         return `/inventory-location?page=${page}&pageSize=${pageSize}${searchParams ? `&${searchParams}` : ''}`
     }, [page, pageSize, globalFilter, searchType])
