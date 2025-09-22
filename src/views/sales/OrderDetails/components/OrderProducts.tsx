@@ -48,6 +48,7 @@ type productProps = {
 const ProductColumn = ({ row, status }: productProps) => {
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularROwImage] = useState('')
+    const headerLink = import.meta.env.VITE_WEBSITE_URL
 
     const segregatedNames = (value: string) => {
         return encodeURIComponent(value?.replace(/\s+/g, '-'))
@@ -84,7 +85,7 @@ const ProductColumn = ({ row, status }: productProps) => {
                     Product Name:
                     <h4 className="font-light text-[14px] flex-wrap">
                         <a
-                            href={`https://slikk.club/${segregatedNames(row.category || '')}/${segregatedNames(row.sub_category || '')}/${segregatedNames(row.brand || '')}/${segregatedNames(row.name || '')}/${row.barcode}`}
+                            href={`${headerLink}${segregatedNames(row.category || '')}/${segregatedNames(row.sub_category || '')}/${segregatedNames(row.brand || '')}/${segregatedNames(row.name || '')}/${row.barcode}`}
                             className="hover:text-blue-500 hover:underline"
                             target="_blank"
                             rel="noopener noreferrer"
