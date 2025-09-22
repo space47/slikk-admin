@@ -27,7 +27,7 @@ const GetPropertiesFromEvent = ({ label, name, customClassName, eventId, eventNa
             if (eventId) {
                 setEventNamesDataState(eventNameList || [])
             } else {
-                setEventNamesDataState(eventNameList?.results ? eventNameList?.results[0] : [])
+                setEventNamesDataState(eventNameList?.results ? eventNameList?.results?.find((item) => item?.name === eventName) : [])
             }
         }
     }, [isSuccess, eventNameList, eventName])
