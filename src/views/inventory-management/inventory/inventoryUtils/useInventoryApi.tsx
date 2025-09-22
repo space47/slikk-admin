@@ -2,22 +2,23 @@ import { useFetchApi } from '@/commonHooks/useFetchApi'
 import { useMemo, useState } from 'react'
 import { InventoryType } from './inventoryCommon'
 
-interface props {
-    searchType: Record<string, string>
+interface Props {
+    searchType: { value: string; label?: string }
 }
 
-export const useInventoryApi = ({ searchType }: props) => {
+export const useInventoryApi = ({ searchType }: Props) => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
 
     const query = useMemo(() => {
         let searchParams = ''
-        if (globalFilter && searchType.value === 'sku') searchParams = `sku=${encodeURIComponent(globalFilter)}`
-        if (globalFilter && searchType.value === 'skid') searchParams = `skid=${encodeURIComponent(globalFilter)}`
+        if (globalFilter) {
+            searchParams = `${searchType.value}=${encodeURIComponent(globalFilter)}`
+        }
 
         return `/inventory-location?page=${page}&pageSize=${pageSize}${searchParams ? `&${searchParams}` : ''}`
-    }, [page, pageSize, globalFilter, searchType])
+    }, [page, pageSize, globalFilter, searchType.value])
 
     const { data, responseStatus, totalData } = useFetchApi<InventoryType>({ url: query, initialData: [] })
 

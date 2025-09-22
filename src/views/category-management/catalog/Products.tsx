@@ -159,7 +159,7 @@ const Products = () => {
                 <div className="flex flex-col  items-center gap-4 w-full xl:flex-row xl:justify-end ">
                     <div className="flex gap-3">
                         <Button variant="new" onClick={() => setShowAddFrameDialog(true)}>
-                            <span className="font-bold">Add Frame</span>
+                            <span className="font-bold">Add/Remove Frame</span>
                         </Button>
                         <button
                             className=" px-4 py-2 xl:flex items-center gap-2  hover:bg-purple-600 rounded-lg text-white bg-purple-700"

@@ -2,6 +2,7 @@
 import { useMemo } from 'react'
 import { TaskDetails } from '../TaskCommonType'
 import { MdAssignment, MdAssignmentLate } from 'react-icons/md'
+import moment from 'moment'
 
 interface columnProps {
     handleAssignClick: (task_id: TaskDetails) => void
@@ -49,14 +50,14 @@ export const TaskTrackingColumns = ({ handleAssignClick, handleReAssignClick, ha
             { header: 'Status', accessor: 'status' },
             {
                 header: 'Payment Mode',
-                accessor: 'client_order_details',
+                accessor: 'client_order_details.payment_mode',
                 format: (_: any, row: TaskDetails) => {
                     return <div>{row?.client_order_details?.payment_mode}</div>
                 },
             },
             {
                 header: 'Cash to be Collected',
-                accessor: 'client_order_details',
+                accessor: 'client_order_details.cash_to_be_collected',
                 format: (_: any, row: TaskDetails) => {
                     return (
                         <div>
@@ -73,7 +74,7 @@ export const TaskTrackingColumns = ({ handleAssignClick, handleReAssignClick, ha
             },
             {
                 header: 'Cash Collected',
-                accessor: 'client_order_details',
+                accessor: 'client_order_details?.cash_collected',
                 format: (_: any, row: TaskDetails) => {
                     return <div>{row?.client_order_details?.cash_collected ? 'Yes' : 'No'}</div>
                 },
@@ -163,6 +164,16 @@ export const TaskTrackingColumns = ({ handleAssignClick, handleReAssignClick, ha
                 header: 'Client Order ID',
                 accessor: 'client_order_id',
                 format: (_: any, row: TaskDetails) => row.client_order_id || '',
+            },
+            {
+                header: 'Create Update',
+                accessor: 'create_date',
+                cell: ({ getValue }: any) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
+            },
+            {
+                header: 'Last Update',
+                accessor: 'update_date',
+                cell: ({ getValue }: any) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
             },
         ],
         [],
