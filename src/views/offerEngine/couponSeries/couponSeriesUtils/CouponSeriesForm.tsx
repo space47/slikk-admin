@@ -25,6 +25,7 @@ interface CouponProps {
 const DiscountType = [
     { name: 'PERCENT_OFF', value: 'PERCENT_OFF' },
     { name: 'FLAT_OFF', value: 'FLAT_OFF' },
+    { name: 'BXGY', value: 'BXGY' },
 ]
 const SeriesType = [
     { name: 'PROMOTION', value: 'promotion' },
