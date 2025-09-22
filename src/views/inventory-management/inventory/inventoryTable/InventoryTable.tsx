@@ -19,7 +19,7 @@ const InventoryTable = () => {
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularRowImage] = useState<string | null>('')
 
-    const [searchType, setSearchType] = useState<Record<string, string>>(InventoryFilters[0])
+    const [searchType, setSearchType] = useState<{ value: string; label?: string }>(InventoryFilters[0])
 
     const { data, responseStatus, totalData, setPage, setPageSize, setGlobalFilter, page, pageSize, globalFilter } = useInventoryApi({
         searchType,

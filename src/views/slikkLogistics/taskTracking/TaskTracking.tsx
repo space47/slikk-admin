@@ -14,6 +14,7 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import FilterByRunner from './FilterByRunner'
 import { TaskTrackingColumns } from './taskUtils/TaskTrakingColumns'
 import { useFetchApi } from '@/commonHooks/useFetchApi'
+import { escapeCsvValue } from '@/common/allTypesCommon'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
@@ -120,6 +121,37 @@ const TaskTracking = () => {
         handleRiderProfile,
     })
 
+    const convertToCSV = (data: any[], columns: any) => {
+        const filteredColumns = columns?.filter((item: any) => item.header !== 'Edit')
+        const header = filteredColumns.map((col: any) => col.header).join(',')
+        const rows = data
+            .map((row: any) => {
+                return filteredColumns
+                    .map((col: any) => {
+                        const accessor = col.accessor
+                        if (accessor.includes('.')) {
+                            return accessor.split('.').reduce((acc, key) => acc?.[key], row) ?? ''
+                        }
+                        return row[col.accessor] ?? ''
+                    })
+                    .join(',')
+            })
+            .join('\n')
+
+        return `${header}\n${rows}`
+    }
+
+    const handleDownloadCsv = () => {
+        const csvData = convertToCSV(data, columns)
+        const blob = new Blob([csvData], { type: 'text/csv' })
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `task-runner.csv`
+        a.click()
+        window.URL.revokeObjectURL(url)
+    }
+
     if (responseStatus === '403') {
         return <AccessDenied />
     }
@@ -181,6 +213,11 @@ const TaskTracking = () => {
                     <div className=" items-center xl:mt-9 md:mt-9 ">
                         <Button variant="new" size="sm" onClick={() => handleFilterRunner()}>
                             Filter by Runner
+                        </Button>
+                    </div>
+                    <div className=" items-center xl:mt-9 md:mt-9 ">
+                        <Button variant="new" size="sm" onClick={handleDownloadCsv}>
+                            Download CSV
                         </Button>
                     </div>
                     <div className="">
