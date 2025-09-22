@@ -14,6 +14,9 @@ const ReportCustomQuery = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [customReportData, setCustomReportData] = useState<any[]>([])
+    const [errorData, setErrorData] = useState<string>('')
+
+    console.log('customReportData', errorData)
 
     const handleGenerateCustomQuery = async () => {
         notification.info({ message: 'Generating Custom Query' })
@@ -31,6 +34,7 @@ const ReportCustomQuery = () => {
         } catch (error: any) {
             console.log(error)
             notification.error({ message: error?.response?.data?.message || 'Failed to generate custom query' })
+            setErrorData(error?.response?.data?.message || 'Failed to generate custom query')
         }
     }
 
@@ -101,6 +105,7 @@ const ReportCustomQuery = () => {
                     </div>
                 </>
             )}
+            {errorData && <div className="mt-10 mb-8 font-bold text-xl text-red-500">Error: {errorData}</div>}
         </div>
     )
 }

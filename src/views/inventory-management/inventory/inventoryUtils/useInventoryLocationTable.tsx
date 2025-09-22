@@ -148,6 +148,6 @@ export const useInventoryLocationColumns = ({ handleOpenModal, locationInputRef,
                 },
             },
         ],
-        [updatedQuantities, updatedLocation],
+        [updatedQuantities, updatedLocation, storeCode],
     )
 }
