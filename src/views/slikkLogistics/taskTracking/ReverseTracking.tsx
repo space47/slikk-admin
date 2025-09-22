@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
@@ -7,19 +7,18 @@ import TrackModal from './TrackModal'
 import { Option, pageSizeOptions, SEARCHOPTIONS, STATUSARRAY, TaskDetails } from './TaskCommonType'
 import { useNavigate } from 'react-router-dom'
 import AccessDenied from '@/views/pages/AccessDenied'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 import moment from 'moment'
 import { Button, Dropdown } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import FilterByRunner from './FilterByRunner'
 import { TaskTrackingColumns } from './taskUtils/TaskTrakingColumns'
+import { useFetchApi } from '@/commonHooks/useFetchApi'
+import { escapeCsvValue } from '@/common/allTypesCommon'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
 const TaskTracking = () => {
-    const [data, setData] = useState<TaskDetails[]>([])
-    const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
@@ -27,7 +26,6 @@ const TaskTracking = () => {
     const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
     const [showAssignModal, setShowAssignModal] = useState(false)
     const [storeTaskId, setStoreTaskId] = useState<TaskDetails>()
-    const [accessDenied, setAccessDenied] = useState(false)
     const navigate = useNavigate()
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(SEARCHOPTIONS[0])
@@ -36,50 +34,34 @@ const TaskTracking = () => {
     const [particularMobileOfRunner, SetParticularMobileOfRunner] = useState<string>('')
     const [statusName, setStatusName] = useState('')
 
-    const fetchData = async () => {
-        try {
-            let searchData = ''
-            let deliveryType = ''
-            let fromDate = ''
+    const queryUrl = useMemo(() => {
+        let searchData = ''
+        let deliveryType = ''
+        let fromDate = ''
 
-            const filterRunnerName = particularMobileOfRunner ? `&runner_mobile=${particularMobileOfRunner}` : ''
+        const filterRunnerName = particularMobileOfRunner ? `&runner_mobile=${particularMobileOfRunner}` : ''
 
-            if (currentSelectedPage.value === 'client_order_id' && globalFilter) {
-                searchData = `&client_order_id=${globalFilter}`
-            } else if (currentSelectedPage.value === 'mobile' && globalFilter) {
-                searchData = `&runner_mobile=${globalFilter}`
-            }
-
-            const currentStatusName = statusName ? `&current_status=${statusName}` : ''
-
-            if (!globalFilter) {
-                deliveryType = `task_type=REVERSE`
-            }
-            if (from && to && !globalFilter && !particularMobileOfRunner) {
-                fromDate = `&from=${from}&to=${To_Date}`
-            }
-
-            const response = await axioisInstance.get(
-                `logistic/slikk/task?${deliveryType}&p=${page}&page_size=${pageSize}${fromDate}${searchData}${filterRunnerName}${currentStatusName}`,
-            )
-            const data = response.data.data.results
-            const total = response.data.data.count
-
-            setData(data)
-            setTotalData(total)
-        } catch (error: any) {
-            if (error.response && error.response.status === 403) {
-                setAccessDenied(true)
-            }
-            console.error(error)
+        if (currentSelectedPage.value === 'client_order_id' && globalFilter) {
+            searchData = `&client_order_id=${globalFilter}`
+        } else if (currentSelectedPage.value === 'mobile' && globalFilter) {
+            searchData = `&runner_mobile=${globalFilter}`
         }
-    }
+
+        const currentStatusName = statusName ? `&current_status=${statusName}` : ''
+
+        if (!globalFilter) {
+            deliveryType = `task_type=REVERSE`
+        }
+        if (from && to && !globalFilter && !particularMobileOfRunner) {
+            fromDate = `&from=${from}&to=${To_Date}`
+        }
+
+        return `logistic/slikk/task?${deliveryType}&p=${page}&page_size=${pageSize}${fromDate}${searchData}${filterRunnerName}${currentStatusName}`
+    }, [from, to, particularMobileOfRunner, globalFilter, currentStatus, page, pageSize])
+
+    const { data, totalData, responseStatus } = useFetchApi<TaskDetails>({ url: queryUrl, initialData: [] })
 
     console.log('data of results', data)
-
-    useEffect(() => {
-        fetchData()
-    }, [from, to, particularMobileOfRunner, globalFilter, currentStatus, page, pageSize])
 
     const totalPages = Math.ceil(totalData / pageSize)
 
@@ -139,16 +121,44 @@ const TaskTracking = () => {
         handleRiderProfile,
     })
 
-    if (accessDenied) {
+    const convertToCSV = (data: any[], columns: any) => {
+        const filteredColumns = columns?.filter((item: any) => item.header !== 'Edit')
+        const header = filteredColumns.map((col: any) => col.header).join(',')
+        const rows = data
+            .map((row: any) => {
+                return filteredColumns
+                    .map((col: any) => {
+                        const accessor = col.accessor
+                        if (accessor.includes('.')) {
+                            return accessor.split('.').reduce((acc, key) => acc?.[key], row) ?? ''
+                        }
+                        return row[col.accessor] ?? ''
+                    })
+                    .join(',')
+            })
+            .join('\n')
+
+        return `${header}\n${rows}`
+    }
+
+    const handleDownloadCsv = () => {
+        const csvData = convertToCSV(data, columns)
+        const blob = new Blob([csvData], { type: 'text/csv' })
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `task-runner.csv`
+        a.click()
+        window.URL.revokeObjectURL(url)
+    }
+
+    if (responseStatus === '403') {
         return <AccessDenied />
     }
     return (
-        <div className="px-2 sm:px-4">
-            {/* Search and Filter Section */}
+        <div className="px-2 sm:px-4 shadow-xl rounded-xl">
             <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4 mb-7">
-                {/* Left Side - Search and Dropdowns */}
                 <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto xl:mt-9">
-                    {/* Search Input */}
                     <div className="w-full sm:w-64">
                         <input
                             type="text"
@@ -158,10 +168,7 @@ const TaskTracking = () => {
                             onChange={(e) => setGlobalFilter(e.target.value)}
                         />
                     </div>
-
-                    {/* Dropdowns Container */}
                     <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                        {/* Page Select Dropdown */}
                         <div className="w-full sm:w-auto bg-gray-100 rounded-md dark:bg-blue-600 dark:text-white">
                             <Dropdown
                                 className="w-full sm:w-auto text-black bg-gray-200 font-bold px-4 py-2 rounded-md"
@@ -175,8 +182,6 @@ const TaskTracking = () => {
                                 ))}
                             </Dropdown>
                         </div>
-
-                        {/* Status Dropdown */}
                         <div className="w-full sm:w-auto bg-gray-100 rounded-md dark:bg-blue-600 dark:text-white">
                             <Dropdown
                                 className="w-full sm:w-auto text-black bg-gray-200 font-bold px-4 py-2 rounded-md"
@@ -210,13 +215,16 @@ const TaskTracking = () => {
                             Filter by Runner
                         </Button>
                     </div>
+                    <div className=" items-center xl:mt-9 md:mt-9 ">
+                        <Button variant="new" size="sm" onClick={handleDownloadCsv}>
+                            Download CSV
+                        </Button>
+                    </div>
                     <div className="">
                         <UltimateDatePicker from={from} setFrom={setFrom} to={to} setTo={setTo} handleDateChange={handleDateChange} />
                     </div>
                 </div>
             </div>
-
-            {/* Table Section */}
             <div className="overflow-x-auto">
                 <Table>
                     <THead>
@@ -239,8 +247,6 @@ const TaskTracking = () => {
                     </TBody>
                 </Table>
             </div>
-
-            {/* Pagination Section */}
             <div className="mt-4 flex flex-col sm:flex-row justify-between items-center gap-4">
                 <Pagination currentPage={page} total={totalPages} onChange={(newPage: any) => setPage(newPage)} />
                 <div className="w-full sm:w-32">
@@ -256,11 +262,8 @@ const TaskTracking = () => {
                     />
                 </div>
             </div>
-
-            {/* Modals */}
             {showAssignModal && (
                 <TrackModal
-                    isReturn
                     showTaskModal={showAssignModal}
                     handleCloseModal={handleCloseModal}
                     storeData={storeTaskId!}

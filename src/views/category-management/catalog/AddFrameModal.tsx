@@ -3,7 +3,7 @@ import { beforeUpload } from '@/common/beforeUpload'
 import CommonImageUpload from '@/common/CommonImageUpload'
 import CommonFilterSelect from '@/common/ComonFilterSelect'
 import { handleimage } from '@/common/handleImage'
-import { Button, Checkbox, Dialog, FormContainer, FormItem } from '@/components/ui'
+import { Button, Checkbox, Dialog, FormItem } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import { AxiosError } from 'axios'
@@ -36,15 +36,20 @@ const AddFrameModal = ({ isOpen, setIsOpen }: props) => {
             image = await handleimage('frame', values?.frame_array)
         }
         const filter_id = filterId
-        const body = {
-            is_price_tag_required: values?.is_price_tag_required || false,
-            filter_id: filter_id,
-            frame_path: image || '',
-        }
+        const body = values?.is_delete
+            ? {
+                  filter_id: filter_id,
+              }
+            : {
+                  is_price_tag_required: values?.is_price_tag_required || false,
+                  filter_id: filter_id,
+                  frame_path: image || '',
+              }
 
         try {
-            const res = await axioisInstance.post('product/framed/task', body)
-            console.log('res of add frame to product images', res)
+            const res = values?.is_delete
+                ? await axioisInstance.delete('/product/framed/task ', { data: body })
+                : await axioisInstance.post('product/framed/task', body)
             notification.success({
                 message: 'Success',
                 description: res?.data?.message || 'Frame added successfully',
@@ -92,6 +97,9 @@ const AddFrameModal = ({ isOpen, setIsOpen }: props) => {
 
                                         <FormItem label="Price Tag">
                                             <Field name="is_price_tag_required" component={Checkbox} />
+                                        </FormItem>
+                                        <FormItem label="Delete Existing Frames">
+                                            <Field name="is_delete" component={Checkbox} />
                                         </FormItem>
 
                                         {/* Filter Select */}
