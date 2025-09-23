@@ -303,6 +303,12 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/category-management/uploader/Uploader')),
         authority: [ADMIN, USER],
     },
+    {
+        key: 'appsCategory.scrapper',
+        path: `${APP_PREFIX_PATH}/category/scrapper`,
+        component: lazy(() => import('@/views/category-management/scrapper/Scrapper')),
+        authority: [ADMIN, USER],
+    },
 
     // ......................................
     {
