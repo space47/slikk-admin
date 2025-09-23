@@ -461,6 +461,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         authority: [ADMIN, USER],
                         subMenu: [],
                     },
+                    {
+                        key: 'appsCategory.scrapper',
+                        path: `${APP_PREFIX_PATH}/category/scrapper`,
+                        title: 'Scrapper',
+                        translateKey: 'nav.appsCategory.scrapper',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
                 ],
             },
             //..........................................................................................................
