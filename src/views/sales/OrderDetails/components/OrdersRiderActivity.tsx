@@ -32,7 +32,7 @@ const OrdersRiderActivity = ({ eventLogs }: props) => {
                 <li className="mb-6 ml-4 mt-5">
                     <p className=" font-bold">Cash Collected : {eventLogs?.client_order_details?.cash_collected ?? 'N/F'}</p>
                     <p className=" font-bold">Cash To Be Collected : {eventLogs?.client_order_details?.cash_to_be_collected ?? 'N/F'}</p>
-                    <p className=" font-bold">Payment: {eventLogs?.client_order_details?.payment ?? 'N/F'}</p>
+                    <p className=" font-bold">Payment: {eventLogs?.client_order_details?.payment_mode ?? 'N/F'}</p>
                 </li>
             </Timeline>
         </Card>
