@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react'
 import { useInventoryApi } from '../inventoryUtils/useInventoryApi'
-import { Dropdown, Pagination, Select } from '@/components/ui'
+import { Button, Dropdown, Pagination, Select } from '@/components/ui'
 import { useAppSelector } from '@/store'
 import { USER_PROFILE_DATA } from '@/store/types/company.types'
 import { InventoryFilters } from '../inventoryUtils/inventoryCommon'
@@ -10,11 +10,15 @@ import ImageMODAL from '@/common/ImageModal'
 import EasyTable from '@/common/EasyTable'
 import { Option, pageSizeOptions } from '@/constants/pageUtils.constants'
 import AccessDenied from '@/views/pages/AccessDenied'
+import { AxiosError } from 'axios'
+import { notification } from 'antd'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 const InventoryTable = () => {
     const locationInputRef = useRef<{ [key: number]: HTMLInputElement | null }>({})
     const qtyInputRef = useRef<{ [key: number]: HTMLInputElement | null }>({})
     const [storeCode, setStoreCode] = useState('')
+    const [storeId, setStoreId] = useState<number | null>(null)
     const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularRowImage] = useState<string | null>('')
@@ -23,6 +27,7 @@ const InventoryTable = () => {
 
     const { data, responseStatus, totalData, setPage, setPageSize, setGlobalFilter, page, pageSize, globalFilter } = useInventoryApi({
         searchType,
+        store_code: storeCode,
     })
 
     const handleOpenModal = (img: string) => {
@@ -39,6 +44,25 @@ const InventoryTable = () => {
 
     console.log('COLUMNS', storeCode)
 
+    const hanldeSync = async () => {
+        const body = {
+            store_id: storeId,
+        }
+        try {
+            const res = await axioisInstance.post(`/inventory-location/sync/inventory`, body)
+            notification.success({
+                message: 'Success',
+                description: res?.data?.message || 'Sync initiated successfully',
+            })
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                notification.error({
+                    message: error?.response?.data?.message || 'Something went wrong',
+                })
+            }
+        }
+    }
+
     if (responseStatus === '403') {
         return <AccessDenied />
     }
@@ -46,7 +70,7 @@ const InventoryTable = () => {
     return (
         <div>
             <div>
-                <div className="flex justify-between items-center mb-10">
+                <div className="flex flex-col xl:flex-row xl:justify-between items-center mb-10">
                     <div className="flex gap-2">
                         <div className="mb-4 w-full md:w-auto">
                             <input
@@ -83,17 +107,27 @@ const InventoryTable = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="flex flex-col w-full max-w-[400px]">
-                        <label className="font-semibold text-gray-700 mb-1">Select Store</label>
-                        <Select
-                            isClearable
-                            options={storeList}
-                            getOptionLabel={(option) => option.name}
-                            getOptionValue={(option) => option.id}
-                            onChange={(selectedOptions) => {
-                                setStoreCode(selectedOptions?.code || '')
-                            }}
-                        />
+                    <div className="flex gap-4 flex-col xl:flex-row items-center">
+                        {storeCode && storeCode !== '' && (
+                            <div className="xl:mt-6">
+                                <Button variant="accept" size="sm" onClick={hanldeSync}>
+                                    Sync Inventory to Location
+                                </Button>
+                            </div>
+                        )}
+                        <div className="flex flex-col w-full max-w-[600px]">
+                            <label className="font-semibold text-gray-700 mb-1">Select Store</label>
+                            <Select
+                                isClearable
+                                options={storeList}
+                                getOptionLabel={(option) => option.name}
+                                getOptionValue={(option) => option.id.toString()}
+                                onChange={(selectedOptions) => {
+                                    setStoreId(selectedOptions?.id || null)
+                                    setStoreCode(selectedOptions?.code || '')
+                                }}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
