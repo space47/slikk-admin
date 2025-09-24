@@ -27,7 +27,7 @@ const Scrapper = () => {
         try {
             const res = await axioisInstance.get(`/scrape-data`, {
                 params: {
-                    url: url,
+                    url: decodeURIComponent(url),
                     product_count: count,
                     company_name: companyName,
                 },
