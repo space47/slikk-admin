@@ -358,6 +358,7 @@ const CommonFilterSelect = ({ setFilterId, filterId, isOnchange, isExclude, isCs
                             />
                         </div>
                         <button
+                            type="button"
                             className="bg-blue-600 hover:bg-blue-700 transition-all text-white px-5 py-2.5 rounded-lg flex items-center gap-2 font-medium shadow-sm hover:shadow-md"
                             onClick={handleAddSku}
                         >
