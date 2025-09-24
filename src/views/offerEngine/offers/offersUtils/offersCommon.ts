@@ -36,13 +36,13 @@ export const APPLY_TYPE = [
     { label: 'Apply on Group of Items', value: 'CART' },
 ]
 export const WEEKDAY_ARRAY = [
-    { label: 'Monday', value: 1 },
-    { label: 'TuesDay', value: 2 },
-    { label: 'Wednesday', value: 3 },
-    { label: 'Thursday', value: 4 },
-    { label: 'Friday', value: 5 },
-    { label: 'Saturday', value: 6 },
-    { label: 'Sunday', value: 7 },
+    { label: 'Sunday', value: '1' },
+    { label: 'Monday', value: '2' },
+    { label: 'Tuesday', value: '3' },
+    { label: 'Wednesday', value: '4' },
+    { label: 'Thursday', value: '5' },
+    { label: 'Friday', value: '6' },
+    { label: 'Saturday', value: '7' },
 ]
 
 export const offerBodyFile = (values: any, buyFilterId: number | string | undefined, getFilterId: number | string | undefined) => {

@@ -6,13 +6,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { MdDelete } from 'react-icons/md'
 import Papa from 'papaparse'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
-import {
-    ConditionArray,
-    ConditionsForEvent,
-    DidAndNotArray,
-    OperatorArray,
-    TimeFrameArray,
-} from '../notificationUtils/notificationGroupsCommon'
+import { ConditionArray, ConditionsForEvent, DidAndNotArray, TimeFrameArray } from '../notificationUtils/notificationGroupsCommon'
 import FullDateForm from '@/common/FullDateForm'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import GetEvenNames from '@/common/GetEvenNames'
@@ -101,8 +95,8 @@ const EditNewGroups = () => {
                 didDidNot: rules.include ? 'Did' : 'Did Not',
                 event: { id: '', value: rules.event, label: rules.event },
                 property: rules.properties?.[0]?.path || '',
-                condition: mapOperatorToCondition(rules.properties?.[0]?.op || '='),
-                operator: mapOperatorToCondition(rules?.[0]?.op || '='),
+                condition: rules.properties?.[0]?.op,
+                operator: rules?.[0]?.op,
                 value: Array.isArray(rules.properties?.[0]?.value) ? rules.properties?.[0]?.value[0] : rules.properties?.[0]?.value,
                 value_a: Array.isArray(rules.properties?.[0]?.value) ? rules.properties?.[0]?.value[0] : '',
                 value_b: Array.isArray(rules.properties?.[0]?.value) ? rules.properties?.[0]?.value[1] : '',
@@ -119,26 +113,7 @@ const EditNewGroups = () => {
         return [ConditionsForEvent]
     }
 
-    const mapOperatorToCondition = (operator: string): string => {
-        const conditionMap: { [key: string]: string } = {
-            '=': 'equal',
-            '!=': 'not_equal',
-            contains: 'contains',
-            not_contains: 'not_contains',
-            starts_with: 'starts_with',
-            ends_with: 'ends_with',
-            '>': 'greater_than',
-            '<': 'less_than',
-            '>=': 'greater_than_equal',
-            '<=': 'less_than_equal',
-            between: 'BETWEEN',
-            not_between: 'NOT_BETWEEN',
-            exists: 'exists',
-            not_exists: 'not_exists',
-        }
-
-        return conditionMap[operator] || 'equals'
-    }
+    console.log('lalalalalalalalalaa', initialGroupData)
 
     const handleCSVFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files ? e.target.files[0] : null
@@ -442,7 +417,7 @@ const EditNewGroups = () => {
                                                             {({ field, form }: FieldProps<any>) => {
                                                                 console.log(
                                                                     'field for condition and event id',
-                                                                    values.conditions[index]?.event,
+                                                                    values.conditions[index]?.condition,
                                                                 )
                                                                 return (
                                                                     <Select
@@ -450,7 +425,7 @@ const EditNewGroups = () => {
                                                                         isSearchable
                                                                         options={ConditionArray}
                                                                         value={ConditionArray?.find(
-                                                                            (option) => option.label?.toLocaleLowerCase() === field.value,
+                                                                            (option) => option.value?.toLocaleLowerCase() === field.value,
                                                                         )}
                                                                         onChange={(option) => {
                                                                             const value = option ? option.value : ''

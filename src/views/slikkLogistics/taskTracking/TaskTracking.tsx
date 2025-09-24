@@ -47,7 +47,7 @@ const TaskTracking = () => {
             searchData = `&runner_mobile=${globalFilter}`
         }
 
-        const currentStatusName = statusName ? `&current_status=${statusName}` : ''
+        const currentStatusName = statusName ? `&status=${statusName}` : ''
 
         if (!globalFilter) {
             deliveryType = `task_type=FORWARD,EXCHANGE`
