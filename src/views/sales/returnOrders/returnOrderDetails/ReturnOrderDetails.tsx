@@ -14,6 +14,7 @@ import RefundActivity from './components/RefundActivity'
 import OrderMap from '../../OrderDetails/OrderMap'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 import OrdersRiderActivity from '../../OrderDetails/components/OrdersRiderActivity'
+import { Card } from '@/components/ui'
 
 const ReturnOrderDetails = () => {
     const { return_order_id } = useParams()
@@ -33,7 +34,7 @@ const ReturnOrderDetails = () => {
 
     return (
         <div>
-            <div className="flex flex-col justify-between xl:flex-row xl:justify-between">
+            <div className="flex flex-col gap-4 ">
                 <div className="flex flex-col gap-1">
                     <div className="flex gap-2 font-bold text-xl">
                         Return Order: #<span className="font-normal">{returnDetails?.return_order_id}</span>
@@ -79,6 +80,26 @@ const ReturnOrderDetails = () => {
                         ''
                     )}
                 </div>
+                {returnDetails?.order?.store && (
+                    <>
+                        <div className="w-full xl:w-1/2 md:w-1/2">
+                            <Card className="shadow-md">
+                                <div>
+                                    <span className="font-semibold">Store Name</span>: {returnDetails?.order?.store?.name}
+                                </div>
+                                <div>
+                                    {' '}
+                                    <span className="font-semibold">Store code:</span> {returnDetails?.order?.store?.code}
+                                </div>
+                                <div>
+                                    {' '}
+                                    <span className="font-semibold">FulFillment Center:</span>{' '}
+                                    {returnDetails?.order?.store?.is_fulfillment_center ? 'Yes' : 'No'}
+                                </div>
+                            </Card>
+                        </div>
+                    </>
+                )}
             </div>
 
             {/* Components */}
