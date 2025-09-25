@@ -309,6 +309,12 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/category-management/scrapper/Scrapper')),
         authority: [ADMIN, USER],
     },
+    {
+        key: 'appsCategory.filters',
+        path: `${APP_PREFIX_PATH}/category/filters`,
+        component: lazy(() => import('@/views/category-management/filterList/FilterTable')),
+        authority: [ADMIN, USER],
+    },
 
     // ......................................
     {
