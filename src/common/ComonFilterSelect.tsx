@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, FormItem, Select, Tabs, Upload } from '@/components/ui'
+import { Button, FormItem, Input, Select, Tabs, Upload } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { FILTER_STATE } from '@/store/types/filters.types'
@@ -27,6 +27,8 @@ interface props {
     noExtra?: boolean
     values?: any
     isSku?: boolean
+    requireName?: boolean
+    setData?: (x: any) => void
 }
 
 type state = {
@@ -64,7 +66,7 @@ const reducer = (state: state, action: Action): state => {
     }
 }
 
-const CommonFilterSelect = ({ setFilterId, filterId, isOnchange, isExclude, isCsv, values, isSku }: props) => {
+const CommonFilterSelect = ({ setFilterId, filterId, isOnchange, isExclude, isCsv, values, isSku, requireName, setData }: props) => {
     const dispatch = useAppDispatch()
     const [showAddFilter, setShowAddFilter] = useState<number[]>([])
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
@@ -74,6 +76,8 @@ const CommonFilterSelect = ({ setFilterId, filterId, isOnchange, isExclude, isCs
     const { setFieldValue } = useFormikContext()
     const [extraFields, setExtraFields] = useState(false)
     const [skuInput, setSkuInput] = useState('')
+    const [nameInput, setNameInput] = useState('')
+    console.log(filtersData)
 
     const TabsArray = [
         { label: `SELECT ${isExclude ? 'EXCLUDE' : ''} FILTERS`, value: 'method_1' },
@@ -135,6 +139,7 @@ const CommonFilterSelect = ({ setFilterId, filterId, isOnchange, isExclude, isCs
 
             try {
                 const res = await axioisInstance.get(`/product/search/criteria?id=${filterId}`)
+                setData && setData(res?.data?.data)
                 const searchData = res?.data?.data?.search_data
                 if (!searchData) return
 
@@ -234,6 +239,9 @@ const CommonFilterSelect = ({ setFilterId, filterId, isOnchange, isExclude, isCs
         } else {
             formData.append('barcodes', '')
         }
+        if (requireName) {
+            formData.append('name', nameInput || `Filter_${new Date().getTime()}`)
+        }
 
         try {
             const response = await axioisInstance.post(`/product/search/criteria`, formData, {
@@ -274,6 +282,13 @@ const CommonFilterSelect = ({ setFilterId, filterId, isOnchange, isExclude, isCs
                     ))}
                 </TabList>
 
+                <div>
+                    {requireName && (
+                        <FormItem label="Name">
+                            <Input value={nameInput} onChange={(e) => setNameInput(e.target.value)} placeholder="Enter Name" />
+                        </FormItem>
+                    )}
+                </div>
                 <TabContent value="method_1" className="space-y-4">
                     <div className="flex items-center justify-between mb-4">
                         <button

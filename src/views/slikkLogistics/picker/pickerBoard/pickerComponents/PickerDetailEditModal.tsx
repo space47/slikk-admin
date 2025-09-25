@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Dialog from '@/components/ui/Dialog'
 import { pickerBoardData } from '@/store/types/picker.types'
 import { Field, Form, Formik } from 'formik'
@@ -8,6 +9,7 @@ import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 import { AxiosError } from 'axios'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import StoreSelectForm from '@/common/StoreSelectForm'
 
 interface initialValueProps {
     first_name?: string
@@ -15,6 +17,7 @@ interface initialValueProps {
     mobile?: string
     shift_start_time?: string
     shift_end_time?: string
+    store?: { id: number; code: string }[]
 }
 
 interface props {
@@ -39,6 +42,7 @@ const PickerDetailEditModal = ({ dialogIsOpen, setIsOpen, rowDetails, isEdit }: 
         mobile: isEdit && pickerData ? pickerData[0]?.user?.mobile : '', //
         shift_start_time: isEdit && pickerData ? pickerData[0]?.shift_start_time : '',
         shift_end_time: isEdit && pickerData ? pickerData[0]?.shift_end_time : '',
+        store: isEdit && pickerData ? pickerData[0]?.stores?.map((item: any) => ({ id: item.id, code: item.code })) : [],
     }
 
     const handleSubmit = async (values: initialValueProps) => {
@@ -49,6 +53,7 @@ const PickerDetailEditModal = ({ dialogIsOpen, setIsOpen, rowDetails, isEdit }: 
             mobile: values?.mobile,
             shift_start_time: values?.shift_start_time,
             shift_end_time: values?.shift_end_time,
+            store_id: values?.store?.map((item: any) => item.id),
         }
         console.log('body', body)
 
@@ -86,6 +91,7 @@ const PickerDetailEditModal = ({ dialogIsOpen, setIsOpen, rowDetails, isEdit }: 
                                         <Field type="text" component={Input} placeholder="Enter Name" name="mobile" />
                                     </FormItem>
                                 </FormContainer>
+                                <StoreSelectForm label="Store" name="store" />
                                 <FormContainer className="grid grid-cols-2 gap-2">
                                     <FullTimePicker
                                         needClass

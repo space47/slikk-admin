@@ -47,7 +47,6 @@ const AddFrameModal = ({ isOpen, setIsOpen }: props) => {
               }
 
         try {
-            return
             const res = values?.is_delete
                 ? await axioisInstance.delete('/product/framed/task ', { data: body })
                 : await axioisInstance.post('product/framed/task', body)
