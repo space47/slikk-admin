@@ -182,13 +182,13 @@ export const useProductColumns = ({ handleOpenModal, handleViewProducts }: props
                     return <div>{moment(info.getValue() as string).format('YYYY-MM-DD HH:mm:ss')}</div>
                 },
             },
-            {
-                header: 'Return Amount',
-                accessorKey: 'return_amount',
-                cell: (info) => {
-                    return <div>{moment(info.getValue() as string).format('YYYY-MM-DD HH:mm:ss')}</div>
-                },
-            },
+            // {
+            //     header: 'Return Amount',
+            //     accessorKey: 'return_amount',
+            //     cell: (info) => {
+            //         return <div>{moment(info.getValue() as string).format('YYYY-MM-DD HH:mm:ss')}</div>
+            //     },
+            // },
         ],
         [],
     )
