@@ -68,7 +68,7 @@ const EditSubPage = () => {
             notification.success({
                 message: response?.data?.message || 'Successfully updated sub page',
             })
-            // navigate(0)
+            navigate(-1)
         } catch (error: any) {
             notification.error({
                 message: error?.response?.data?.message || error?.response?.data?.data?.message || 'Failed to update sub page',

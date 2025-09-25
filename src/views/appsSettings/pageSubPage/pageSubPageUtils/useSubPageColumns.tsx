@@ -41,6 +41,18 @@ export const useSubPageColumns = () => {
                 },
             },
             {
+                header: 'Image',
+                accessorKey: 'image',
+                cell: ({ row }: any) => {
+                    const imageUrl = row?.original?.image?.split(',')[0]
+                    return (
+                        <>
+                            <img src={imageUrl} alt="Image" className="w-24 h-20 object-cover cursor-pointer" />
+                        </>
+                    )
+                },
+            },
+            {
                 header: 'update Date',
                 accessorKey: 'update_date',
                 cell: ({ row }: any) => {
