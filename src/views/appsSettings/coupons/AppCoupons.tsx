@@ -20,9 +20,9 @@ import DialogConfirm from '@/common/DialogConfirm'
 import { AxiosError } from 'axios'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import moment from 'moment'
 import { CouponSeriesInitialTypes, setCouponSeriesData } from '@/store/slices/couponSeriesSlice/couponSeries'
 import { couponSeriesService } from '@/store/services/couponSeriesService'
+import CouponReleaseModal from './couponUtils/CouponReleaseModal'
 
 const AppCoupons = () => {
     // const navigate = useNavigate()
@@ -35,6 +35,8 @@ const AppCoupons = () => {
     const [activateCodeButton, setActivateCodeButton] = useState('')
     const [couponCode, setCouponCode] = useState<string>('')
     const [deleteModal, setDeleteModal] = useState<boolean>(false)
+    const [couponId, setCouponId] = useState<any>('')
+    const [isCouponReleaseModal, setIsCouponReleaseModal] = useState<boolean>(false)
     const [searchInput, setSearchInput] = useState<string>('')
     const { couponSeries } = useAppSelector<CouponSeriesInitialTypes>((state) => state.couponSeries)
     const [queryParams, setQueryParams] = useState({ page: 1, pageSize: 100, campaign: '' })
@@ -108,9 +110,14 @@ const AppCoupons = () => {
         setDeleteModal(true)
     }
 
+    const handleCouponRelease = (code: string | number) => {
+        setCouponId(code)
+        setIsCouponReleaseModal(true)
+    }
+
     console.log('Selected Coupon Code:', seriesValue)
 
-    const columns = CouponCoulumns({ handleDeleteCoupon })
+    const columns = CouponCoulumns({ handleDeleteCoupon, handleCouponRelease })
 
     const hanldeDelete = async () => {
         const body = {
@@ -250,6 +257,9 @@ const AppCoupons = () => {
                             headingName="Delete Modal"
                             onDialogOk={hanldeDelete}
                         />
+                    )}
+                    {isCouponReleaseModal && (
+                        <CouponReleaseModal couponCode={couponId} isOpen={isCouponReleaseModal} setIsOpen={setIsCouponReleaseModal} />
                     )}
                 </>
             )}

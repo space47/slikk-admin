@@ -3,13 +3,15 @@ import { Button } from '@/components/ui'
 import moment from 'moment'
 import { useMemo } from 'react'
 import { FaEdit, FaTrash } from 'react-icons/fa'
+import { RiCoupon2Fill } from 'react-icons/ri'
 import { useNavigate } from 'react-router-dom'
 
 interface props {
     handleDeleteCoupon: any
+    handleCouponRelease: any
 }
 
-export const CouponCoulumns = ({ handleDeleteCoupon }: props) => {
+export const CouponCoulumns = ({ handleDeleteCoupon, handleCouponRelease }: props) => {
     const navigate = useNavigate()
     return useMemo(() => {
         return [
@@ -146,11 +148,22 @@ export const CouponCoulumns = ({ handleDeleteCoupon }: props) => {
                 accessorKey: 'create_date',
                 cell: ({ row }: any) => moment(row.original?.create_date).format('DD-MM-YYYY') || 'N/A',
             },
-            // {
-            //     header: 'Updated Date',
-            //     accessorKey: 'update_date',
-            //     cell: ({ row }: any) => moment(row.original?.update_date).format || 'N/A',
-            // },
+            {
+                header: 'Coupon Release',
+                accessorKey: 'code',
+                cell: ({ row }: any) => {
+                    return (
+                        <span>
+                            {
+                                <RiCoupon2Fill
+                                    className="text-2xl cursor-pointer text-blue-600"
+                                    onClick={() => handleCouponRelease(row?.original?.code)}
+                                />
+                            }
+                        </span>
+                    )
+                },
+            },
         ]
     }, [])
 }
