@@ -11,7 +11,7 @@ export type StoreTypes = {
     area: string
     city: string
     state: string
-    pincode: number | null
+    pincode: number | string | null
     latitude: number | null
     longitude: number | null
     contactNumber: string
@@ -64,3 +64,13 @@ export type STORETABLE = {
     update_date: string
     location_url: string
 }
+
+export const StoreOption = [
+    { label: 'Mall', value: 'Mall' },
+    {
+        label: 'Independent Commercial Complex',
+        value: 'Independent Commercial Complex',
+    },
+    { label: 'Standalone', value: 'Standalone' },
+    { label: 'Warehouse', value: 'Warehouse' },
+]
