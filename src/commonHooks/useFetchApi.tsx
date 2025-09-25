@@ -34,8 +34,10 @@ export const useFetchApi = <T,>({ url, initialData = [], typeOfData, pollingInte
                 setData(response.data?.data?.results ?? [])
                 setTotalData(response.data?.data?.count ?? 0)
             }
+            setResponseStatus(response.status)
         } catch (error) {
             if (error instanceof AxiosError) {
+                setData([])
                 setResponseStatus(error.response?.status)
             }
         } finally {
