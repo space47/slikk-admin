@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Button } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { ColumnDef } from '@tanstack/react-table'
 import { notification } from 'antd'
@@ -10,9 +11,16 @@ interface props {
     locationInputRef: React.MutableRefObject<{ [key: number]: HTMLInputElement | null }>
     qtyInputRef: React.MutableRefObject<{ [key: number]: HTMLInputElement | null }>
     storeCode: string
+    setLocationTransferModal: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export const useInventoryLocationColumns = ({ handleOpenModal, locationInputRef, qtyInputRef, storeCode }: props) => {
+export const useInventoryLocationColumns = ({
+    handleOpenModal,
+    locationInputRef,
+    qtyInputRef,
+    storeCode,
+    setLocationTransferModal,
+}: props) => {
     const [updatedQuantities, setUpdatedQuantities] = useState<{ [key: number]: number }>({})
     const [updatedLocation, setUpdatedLocation] = useState<{ [key: number]: string }>({})
 
@@ -82,6 +90,19 @@ export const useInventoryLocationColumns = ({ handleOpenModal, locationInputRef,
                     </button>
                 ),
             },
+            // {
+            //     header: 'Location Transfer',
+            //     accessorKey: 'sku',
+            //     cell: ({ row }) => {
+            //         return (
+            //             <div>
+            //                 <Button variant="twoTone" size="sm" onClick={() => setLocationTransferModal(true)}>
+            //                     Transfer
+            //                 </Button>
+            //             </div>
+            //         )
+            //     },
+            // },
             {
                 header: 'SKU',
                 accessorKey: 'sku',
@@ -119,14 +140,20 @@ export const useInventoryLocationColumns = ({ handleOpenModal, locationInputRef,
                 accessorKey: 'location',
                 cell: ({ row }) => {
                     const stockId = row.original.id
-                    return (
-                        <input
-                            type="text"
-                            className="rounded-xl w-[150px]"
-                            value={updatedLocation[stockId] ?? row.original.location}
-                            onChange={(e) => handleLocationChange(stockId, e.target.value)}
-                            ref={(el) => (locationInputRef.current[stockId] = el)}
-                        />
+                    return row.original.location ? (
+                        <>
+                            <input
+                                type="text"
+                                className="rounded-xl w-[150px]"
+                                value={updatedLocation[stockId] ?? row.original.location}
+                                onChange={(e) => handleLocationChange(stockId, e.target.value)}
+                                ref={(el) => (locationInputRef.current[stockId] = el)}
+                            />
+                        </>
+                    ) : (
+                        <>
+                            <div>N/A</div>
+                        </>
                     )
                 },
             },
@@ -136,18 +163,22 @@ export const useInventoryLocationColumns = ({ handleOpenModal, locationInputRef,
                 accessorKey: 'quantity',
                 cell: ({ row }) => {
                     const stockId = row.original.id
-                    return (
-                        <input
-                            className="w-[70px] rounded-xl"
-                            type="number"
-                            value={updatedQuantities[stockId] ?? row.original.quantity}
-                            onChange={(e) => handleQuantityChange(stockId, Number(e.target.value))}
-                            ref={(el) => (qtyInputRef.current[stockId] = el)}
-                        />
+                    return row.original.quantity ? (
+                        <>
+                            <input
+                                className="w-[70px] rounded-xl"
+                                type="number"
+                                value={updatedQuantities[stockId] ?? row.original.quantity}
+                                onChange={(e) => handleQuantityChange(stockId, Number(e.target.value))}
+                                ref={(el) => (qtyInputRef.current[stockId] = el)}
+                            />
+                        </>
+                    ) : (
+                        <>N/A</>
                     )
                 },
             },
         ],
-        [updatedQuantities, updatedLocation, storeCode],
+        [updatedQuantities, updatedLocation],
     )
 }

@@ -13,6 +13,8 @@ import AccessDenied from '@/views/pages/AccessDenied'
 import { AxiosError } from 'axios'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import LocationTransferModal from '../inventoryUtils/locationTransferModal'
+import NotFoundData from '@/views/pages/NotFound/Notfound'
 
 const InventoryTable = () => {
     const locationInputRef = useRef<{ [key: number]: HTMLInputElement | null }>({})
@@ -22,7 +24,7 @@ const InventoryTable = () => {
     const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularRowImage] = useState<string | null>('')
-
+    const [locationTrabsferModal, setLocationTransferModal] = useState(false)
     const [searchType, setSearchType] = useState<{ value: string; label?: string }>(InventoryFilters[0])
 
     const { data, responseStatus, totalData, setPage, setPageSize, setGlobalFilter, page, pageSize, globalFilter } = useInventoryApi({
@@ -40,9 +42,8 @@ const InventoryTable = () => {
         locationInputRef,
         qtyInputRef,
         storeCode,
+        setLocationTransferModal,
     })
-
-    console.log('COLUMNS', storeCode)
 
     const hanldeSync = async () => {
         const body = {
@@ -63,7 +64,7 @@ const InventoryTable = () => {
         }
     }
 
-    if (responseStatus === '403') {
+    if (responseStatus === 403) {
         return <AccessDenied />
     }
 
@@ -131,35 +132,45 @@ const InventoryTable = () => {
                     </div>
                 </div>
             </div>
-            <div>
-                <EasyTable overflow mainData={data} columns={columns} page={page} pageSize={pageSize} />
-            </div>
-            <div className="flex flex-col md:flex-row items-center justify-between mt-4">
-                <Pagination
-                    pageSize={pageSize}
-                    currentPage={page}
-                    total={totalData}
-                    onChange={(page) => {
-                        setPage(page)
-                    }}
-                    className="w-[400px] md:w-auto mb-4 md:mb-0 "
-                />
-                <div className="flex flex-row items-center justify-between xl:justify-normal w-full md:w-auto xl:gap-5">
-                    <Select<Option>
-                        size="sm"
-                        isSearchable={false}
-                        value={pageSizeOptions.find((option) => option.value === pageSize)}
-                        options={pageSizeOptions}
-                        className="w-1/2 md:w-auto"
-                        onChange={(option) => {
-                            if (option) {
-                                setPageSize(option.value)
-                                setPage(1)
-                            }
-                        }}
-                    />
+            {data?.length > 0 && (
+                <>
+                    <div>
+                        <EasyTable overflow mainData={data} columns={columns} page={page} pageSize={pageSize} />
+                    </div>
+                    <div className="flex flex-col md:flex-row items-center justify-between mt-4">
+                        <Pagination
+                            pageSize={pageSize}
+                            currentPage={page}
+                            total={totalData}
+                            onChange={(page) => {
+                                setPage(page)
+                            }}
+                            className="w-[400px] md:w-auto mb-4 md:mb-0 "
+                        />
+                        <div className="flex flex-row items-center justify-between xl:justify-normal w-full md:w-auto xl:gap-5">
+                            <Select<Option>
+                                size="sm"
+                                isSearchable={false}
+                                value={pageSizeOptions.find((option) => option.value === pageSize)}
+                                options={pageSizeOptions}
+                                className="w-1/2 md:w-auto"
+                                onChange={(option) => {
+                                    if (option) {
+                                        setPageSize(option.value)
+                                        setPage(1)
+                                    }
+                                }}
+                            />
+                        </div>
+                    </div>
+                </>
+            )}
+            {(responseStatus === 400 || responseStatus === 404) && (
+                <div>
+                    <NotFoundData />
                 </div>
-            </div>
+            )}
+
             {showImageModal && (
                 <ImageMODAL
                     dialogIsOpen={showImageModal}
@@ -167,6 +178,7 @@ const InventoryTable = () => {
                     image={particularRowImage && particularRowImage?.split(',')}
                 />
             )}
+            {locationTrabsferModal && <LocationTransferModal isOpen={locationTrabsferModal} setIsOpen={setLocationTransferModal} />}
         </div>
     )
 }
