@@ -210,7 +210,13 @@ const ReportCustomQuery = () => {
                                                 >
                                                     {columnLoading && <Spinner size={20} color="blue" />}
                                                     <div className="flex gap-2 items-center">
-                                                        <span onClick={() => setSelectedTable(table)}>{table}</span>
+                                                        <span
+                                                            onClick={() => {
+                                                                setSelectedTable(table === selectedTable ? null : table)
+                                                            }}
+                                                        >
+                                                            {table}
+                                                        </span>
                                                         <Button
                                                             type="button"
                                                             variant="twoTone"

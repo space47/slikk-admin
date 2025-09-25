@@ -25,7 +25,7 @@ export const useInventoryApi = ({ searchType, store_code }: Props) => {
         return `/inventory-location?p=${page}&page_size=${pageSize}${storeCode}${searchParams ? `&${searchParams}` : ''}`
     }, [page, pageSize, globalFilter, searchType.value, store_code])
 
-    const { data, responseStatus, totalData } = useFetchApi<InventoryType>({ url: query, initialData: [] })
+    const { data, responseStatus, totalData } = useFetchApi<InventoryType>({ url: query })
 
     return { data, responseStatus, totalData, setPage, setPageSize, setGlobalFilter, page, pageSize, globalFilter }
 }
