@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, Checkbox, FormContainer, FormItem, Input, Select } from '@/components/ui'
+import { Button, Checkbox, Dropdown, FormContainer, FormItem, Input, Select } from '@/components/ui'
 // import { ridersService } from '@/store/services/riderServices'
 import { Field, FieldProps, Form, Formik } from 'formik'
 import React, { useEffect, useState } from 'react'
-import { RiderFieldArray, RiderTypeArray } from './riderUtils'
+import { RiderFieldArray, RiderTypeArray, SearchRider } from './riderUtils'
 import AddRiderMap from './AddRiderMap'
 import { notification } from 'antd'
 import FullTimePicker from '@/common/FullTimePicker'
@@ -14,6 +14,8 @@ import { useAppDispatch, useAppSelector } from '@/store'
 import { RiderDetailType, setRiderProfile } from '@/store/slices/riderDetails/riderDetails.slice'
 import { GenericCommonTypes } from '@/common/allTypesCommon'
 import AssignStoreToUser from '@/common/AssignStoreToUser'
+import { HiSearch } from 'react-icons/hi'
+import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 
 const AddRider = () => {
     const navigate = useNavigate()
@@ -25,33 +27,52 @@ const AddRider = () => {
     const [editRiders, riderEditResponse] = ridersService.useEditRidersMutation()
     const { riderProfile } = useAppSelector<RiderDetailType>((state) => state.riderDetails)
     const [isAddRider, setIsAddRider] = useState(false)
+    const [searchInput, setSearchInput] = useState('')
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(SearchRider[0])
 
     const { data: riders, isSuccess } = ridersService.useRiderProfileQuery(
         {
             page: 1,
             pageSize: 100,
-            mobile: selectedRider?.toString(),
+            mobile: currentSelectedPage?.value === 'mobile' ? selectedRider?.toString() : '',
+            name: currentSelectedPage?.value === 'name' ? selectedRider?.toString() : '',
         },
         { refetchOnMountOrArgChange: true },
     )
-
-    console.log('object', riderProfile)
-
     useEffect(() => {
         if (isSuccess) {
             dispatch(setRiderProfile(riders?.data || []))
         }
     }, [riders, isSuccess, dispatch, selectedRider])
-    const initialValue = {
-        last_name: selectedRider && !isAddRider ? riderProfile[0].user?.last_name : '',
-        mobile: selectedRider && !isAddRider ? riderProfile[0]?.user?.mobile.toString() : '',
-        shift_start_time: selectedRider && !isAddRider ? riderProfile[0]?.shift_start_time : '',
-        shift_end_time: selectedRider && !isAddRider ? riderProfile[0]?.shift_end_time : '',
-        rider_type: selectedRider && !isAddRider ? riderProfile[0]?.rider_type : '',
-        is_active: selectedRider && !isAddRider ? riderProfile[0]?.is_active : false,
-        lat: riderProfile[0]?.service_latitude,
-        long: riderProfile[0]?.service_longitude,
+    const getRiderData = () => {
+        if (selectedRider && !isAddRider && riderProfile && riderProfile.length > 0) {
+            const user = riderProfile[0]?.user || {}
+            return {
+                first_name: user.first_name || '',
+                last_name: user.last_name || '',
+                mobile: user.mobile ? user.mobile.toString() : '',
+                shift_start_time: riderProfile[0]?.shift_start_time || '',
+                shift_end_time: riderProfile[0]?.shift_end_time || '',
+                rider_type: riderProfile[0]?.rider_type || '',
+                is_active: riderProfile[0]?.is_active || false,
+                lat: riderProfile[0]?.service_latitude,
+                long: riderProfile[0]?.service_longitude,
+            }
+        }
+        return {
+            first_name: '',
+            last_name: '',
+            mobile: '',
+            shift_start_time: '',
+            shift_end_time: '',
+            rider_type: '',
+            is_active: false,
+            lat: currLat,
+            long: currLong,
+        }
     }
+
+    const initialValue = getRiderData()
 
     useEffect(() => {
         if (riderDataResponse?.isSuccess) {
@@ -117,6 +138,21 @@ const AddRider = () => {
             }
         }
     }
+    const setSearchOnEnter = () => {
+        if (searchInput.trim()) {
+            setSelectedRider(searchInput.trim())
+        }
+    }
+
+    const handleSearchWithIcon = () => {
+        setSearchOnEnter()
+    }
+    const handleSelect = (e: any, setCurrent: any) => {
+        const selected = SearchRider.find((item) => item.value === e)
+        if (selected) {
+            setCurrent(selected)
+        }
+    }
 
     return (
         <div>
@@ -125,59 +161,62 @@ const AddRider = () => {
                     <Form className="w-full mx-auto p-6 bg-white rounded-lg shadow-md">
                         <FormContainer>
                             <FormContainer className="grid grid-cols-2 gap-6">
-                                <div className="col-span-2 flex justify-start">
-                                    <button
-                                        className={`${isAddRider ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'} p-2 flex items-center justify-center  text-white rounded-xl transition duration-200`}
+                                <div className="col-span-2 flex justify-start gap-6 items-center">
+                                    <Button
+                                        variant={isAddRider ? 'reject' : 'accept'}
                                         type="button"
+                                        size="sm"
+                                        className="flex items-center"
                                         onClick={() => setIsAddRider((item) => !item)}
                                     >
                                         {isAddRider ? (
-                                            <div className="text-xl ">Select Rider</div>
+                                            <div className="text-xl">Select Rider</div>
                                         ) : (
                                             <div className="text-xl ">New Rider</div>
                                         )}
-                                    </button>
+                                    </Button>
+                                    {!isAddRider && (
+                                        <>
+                                            <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center order-2 lg:order-1 w-full lg:w-auto">
+                                                <div className="flex items-center gap-2 bg-white dark:bg-gray-900 px-3 py-2 rounded-lg shadow-md w-full sm:w-auto">
+                                                    <Input
+                                                        type="search"
+                                                        name="search"
+                                                        placeholder="Search here..."
+                                                        value={searchInput}
+                                                        className="w-full sm:w-[180px] xl:w-[250px] rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-1 focus:outline-none focus:ring focus:ring-blue-500"
+                                                        onChange={(e) => setSearchInput(e.target.value)}
+                                                        onKeyDown={(e: any) => {
+                                                            if (e.key === 'Enter') {
+                                                                e.preventDefault()
+                                                                setSearchOnEnter()
+                                                            }
+                                                        }}
+                                                    />
+                                                    <div
+                                                        className="bg-blue-500 hover:bg-blue-400 p-2 rounded-xl cursor-pointer"
+                                                        onClick={handleSearchWithIcon}
+                                                    >
+                                                        <HiSearch className="text-white text-xl" />
+                                                    </div>
+                                                    <div className="bg-gray-100 dark:bg-blue-600 dark:text-white font-bold text-sm rounded-md">
+                                                        <Dropdown
+                                                            className="text-black bg-gray-200 font-bold"
+                                                            title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
+                                                            onSelect={(e) => handleSelect(e, setCurrentSelectedPage)}
+                                                        >
+                                                            {SearchRider?.map((item, key) => (
+                                                                <DropdownItem key={key} eventKey={item.value}>
+                                                                    <span>{item.label}</span>
+                                                                </DropdownItem>
+                                                            ))}
+                                                        </Dropdown>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
-                                <FormItem label="First Name" className="col-span-1">
-                                    <>
-                                        {isAddRider === false && (
-                                            <select
-                                                value={selectedRider || 'SELECT'}
-                                                className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                onChange={(e) => {
-                                                    const value = e.target.value
-                                                    if (value === 'CLEAR') {
-                                                        setSelectedRider('')
-                                                        dispatch(setRiderProfile([]))
-                                                    } else {
-                                                        setSelectedRider(value)
-                                                    }
-                                                }}
-                                            >
-                                                <option disabled value="SELECT">
-                                                    SELECT RIDER
-                                                </option>
-                                                {riderProfile?.map((item, key) => (
-                                                    <option key={key} value={item?.user?.mobile}>
-                                                        {item.user?.first_name}
-                                                    </option>
-                                                ))}
-                                                <option value="CLEAR" className="bg-red-500 hover:bg-red-400 text-white">
-                                                    <span className="flex justify-center items-center ">CLEAR</span>
-                                                </option>
-                                            </select>
-                                        )}
-                                        {isAddRider === true && (
-                                            <Field
-                                                type="text"
-                                                name="first_name"
-                                                placeholder="Enter First Name"
-                                                component={Input}
-                                                className="w-1/2 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            />
-                                        )}
-                                    </>
-                                </FormItem>
                                 {RiderFieldArray?.map((item, key) => (
                                     <FormItem key={key} label={item?.label} className="col-span-1">
                                         <Field
