@@ -183,6 +183,7 @@ const EditCustomerProfile = () => {
         image: storeData?.image || '',
         opening_hours: storeData?.opening_hours || [],
         images_array: storeData?.images_array || [],
+        is_volumetric_store: storeData?.is_volumetric_store || false,
     }
 
     const handleFileupload = async (files: File[]) => {
@@ -236,6 +237,7 @@ const EditCustomerProfile = () => {
             description: descriptiontextarea,
             instruction: instructiontextarea,
             image: uploadedImage ?? '',
+            is_volumetric_store: values.is_volumetric_store || false,
         }
 
         console.log('formDaata', formData)
@@ -613,6 +615,11 @@ const EditCustomerProfile = () => {
                             <FormItem label="FulFillment Center" invalid={errors.is_fulfillment_center && touched.is_fulfillment_center}>
                                 <Field name="is_fulfillment_center" component={Checkbox}>
                                     Require fulfillment center
+                                </Field>
+                            </FormItem>
+                            <FormItem label="Volumetric Store">
+                                <Field name="is_volumetric_store" component={Checkbox}>
+                                    Volumetric Store
                                 </Field>
                             </FormItem>
 

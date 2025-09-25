@@ -29,6 +29,7 @@ export type StoreTypes = {
     image: string
     opening_hours: OpeningHour[]
     images_array: []
+    is_volumetric_store?: boolean
 }
 
 export type STORETABLE = {
