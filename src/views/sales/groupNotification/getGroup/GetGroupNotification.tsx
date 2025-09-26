@@ -90,7 +90,9 @@ const GetGroupNotification = () => {
             setDownloadSpinner(true)
             const response = await axioisInstance.get(`/notification/groups/${groupId}`)
             const data = response?.data?.data || {}
-            userData = [...userData, ...data.group_users]
+            console.log(data)
+            const userList = data?.user || []
+            userData = [...userList, ...data.group_users]
             handleDownloadCsv(userData, columnsForCsv, convertToCSV, 'group_users.csv')
             notification.success({ message: 'Download complete' })
         } catch (error) {
