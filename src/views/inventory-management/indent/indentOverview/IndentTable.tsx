@@ -17,7 +17,7 @@ const IndentTable = () => {
     const dispatch = useAppDispatch()
     const { indent, count, page, pageSize } = useAppSelector<IndentStateType>((state) => state.indent)
     const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
-    const [storeCode, setStoreCode] = useState<any[]>(storeList[0]?.id ? [storeList[0].id] : [])
+    const [storeCode, setStoreCode] = useState<any[]>([1])
     const [activeTab, setActiveTab] = useState('target')
 
     useEffect(() => {

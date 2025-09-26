@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, FormContainer, Steps } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { getAllGroupAPI } from '@/store/action/group.action'
@@ -15,18 +16,12 @@ const SendWhatsAppMessage = () => {
     const dispatch = useAppDispatch()
     const [currentStep, setCurrentStep] = useState(0)
     const [messageTemplateData, setMessageTemplateData] = useState<any>([])
-    const [messageParticular, setMessageParticular] = useState<any>([])
+    const [messageParticular, setMessageParticular] = useState<any>()
     const [selectedTemplateName, setSelectedTemplateName] = useState<string | null>(null)
     const [headerImageLink, setHeaderImageLink] = useState('')
     const [headerVideoLink, setHeaderVideoLink] = useState('')
     const [headerVideoCaption, setHeaderVideoCaption] = useState('')
     const [headerVideoId, setHeaderVideoId] = useState('')
-    const group = useAppSelector<GroupData>((state) => state.group)
-    useEffect(() => {
-        dispatch(getAllGroupAPI())
-    }, [dispatch])
-
-    console.log('groups', group?.group)
 
     const fetchMessageTemplate = async () => {
         const params: Record<string, any> = {}
@@ -212,7 +207,7 @@ const SendWhatsAppMessage = () => {
 
                                 {currentStep === 1 && (
                                     <div>
-                                        <SecondStep group={group} values={values} />
+                                        <SecondStep />
                                     </div>
                                 )}
 

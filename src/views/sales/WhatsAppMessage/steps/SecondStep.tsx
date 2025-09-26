@@ -1,13 +1,15 @@
+import SearchableGroups from '@/common/SearchableGroups'
 import { FormContainer, FormItem, Input, Select } from '@/components/ui'
 import { Field, FieldProps } from 'formik'
-import React from 'react'
+import React, { useState } from 'react'
 
-interface props {
-    group: any
-    values: any
-}
+const SecondStep = () => {
+    const [searchInputs, setSearchInputs] = useState<string>('')
 
-const SecondStep = ({ group, values }: props) => {
+    const handleSearch = (inputValue: string) => {
+        setSearchInputs(inputValue)
+    }
+
     return (
         <div>
             <FormContainer>
@@ -21,29 +23,7 @@ const SecondStep = ({ group, values }: props) => {
                     <FormItem label="User">
                         <Field name="user" type="text" component={Input} placeholder="user " />
                     </FormItem>
-
-                    <FormItem label="Group Name">
-                        <Field
-                            name="group"
-                            onKeyDown={(e) => {
-                                e.key === 'Enter' && e.preventDefault()
-                            }}
-                        >
-                            {({ field, form }: FieldProps<any>) => (
-                                <Select
-                                    // defaultValue={bannerForm[index]['category'] || []}
-                                    options={group?.group}
-                                    getOptionLabel={(option) => option?.name}
-                                    getOptionValue={(option) => option?.name}
-                                    onChange={(newVal) => {
-                                        console.log(newVal?.name)
-                                        form.setFieldValue(field.name, newVal?.name)
-                                    }}
-                                    isClearable
-                                />
-                            )}
-                        </Field>
-                    </FormItem>
+                    <SearchableGroups label="Group Name" name="group" searchInputs={searchInputs} handleSearch={handleSearch} />
                 </FormItem>
             </FormContainer>
         </div>
