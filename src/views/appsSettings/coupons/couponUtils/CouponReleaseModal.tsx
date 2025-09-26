@@ -2,16 +2,21 @@ import { Button, Dialog } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import { AxiosError } from 'axios'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 interface Props {
     isOpen: boolean
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
     couponCode: string
+    mobileNumber?: string
 }
 
-const CouponReleaseModal = ({ couponCode, isOpen, setIsOpen }: Props) => {
+const CouponReleaseModal = ({ couponCode, isOpen, setIsOpen, mobileNumber }: Props) => {
     const [mobile, setMobile] = useState('')
+
+    useEffect(() => {
+        if (mobileNumber) setMobile(mobileNumber)
+    }, [mobileNumber])
 
     const handleConfirm = async () => {
         try {
