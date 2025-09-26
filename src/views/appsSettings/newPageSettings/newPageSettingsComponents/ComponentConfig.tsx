@@ -19,6 +19,8 @@ import {
     componentSectionBorderArray,
     componentWebNameFieldArray,
     componentWebSectionBorderArray,
+    contentFieldArray,
+    contentFieldWebArray,
     ExtraComponentFieldsArray,
 } from '../newPageSettingsUtils/componentPageUtils'
 import { Checkbox, FormContainer, FormItem, Input } from '@/components/ui'
@@ -133,6 +135,18 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                         />
                     </FormItem>
                 ))}
+                {contentFieldArray?.map((item, key) => (
+                    <FormItem key={key} label={item.label} className="w-full">
+                        <Field
+                            type={item.type}
+                            name={item.name}
+                            placeholder={`Enter ${item.label}`}
+                            component={item?.type === 'checkbox' ? Checkbox : Input}
+                            min="0"
+                            step={0.01}
+                        />
+                    </FormItem>
+                ))}
                 <CommonSelect
                     name={`${typeName}.font_style` as string}
                     label="Font Style"
@@ -192,6 +206,7 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                                 </FormContainer>
                             )}
                         </FormItem>
+
                         {/* Section Border */}
                         <FormItem label="Section Border" className="col-span-1 w-1/2">
                             <Field
@@ -328,6 +343,19 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                     </FormItem>
                 ))}
 
+                {contentFieldWebArray?.map((item, key) => (
+                    <FormItem key={key} label={item.label} className="w-full">
+                        <Field
+                            type={item.type}
+                            name={item.name}
+                            placeholder={`Enter ${item.label}`}
+                            component={item?.type === 'checkbox' ? Checkbox : Input}
+                            min="0"
+                            step={0.01}
+                        />
+                    </FormItem>
+                ))}
+
                 <CommonSelect
                     name={`${typeName}.web_font_style`}
                     label="Font Style"
@@ -394,6 +422,7 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                                 </FormContainer>
                             )}
                         </FormItem>
+
                         {/* Web Section Border */}
                         <FormItem label="Web Section Border" className="col-span-1 w-1/2">
                             <Field

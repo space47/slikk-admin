@@ -259,7 +259,12 @@ const AppCoupons = () => {
                         />
                     )}
                     {isCouponReleaseModal && (
-                        <CouponReleaseModal couponCode={couponId} isOpen={isCouponReleaseModal} setIsOpen={setIsCouponReleaseModal} />
+                        <CouponReleaseModal
+                            couponCode={couponId}
+                            isOpen={isCouponReleaseModal}
+                            setIsOpen={setIsCouponReleaseModal}
+                            mobileNumber={mobileFilter}
+                        />
                     )}
                 </>
             )}

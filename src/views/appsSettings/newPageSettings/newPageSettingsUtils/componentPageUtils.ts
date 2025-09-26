@@ -242,6 +242,53 @@ export const ExtraComponentFieldsArray = [
     },
 ]
 
+const ContentPaddingsArray = [
+    {
+        label: 'Content Top Padding',
+        key: 'content_topPadding',
+        type: 'number',
+        component: { Input },
+    },
+    {
+        label: 'Content Bottom Padding',
+        key: 'content_bottomPadding',
+        type: 'number',
+        component: { Input },
+    },
+    {
+        label: 'Content Left Padding',
+        key: 'content_leftPadding',
+        type: 'number',
+        component: { Input },
+    },
+    {
+        label: 'Content Right Padding',
+        key: 'content_rightPadding',
+        type: 'number',
+        component: { Input },
+    },
+]
+
+export const getContentPaddingArray = (prefix: string) => {
+    return ContentPaddingsArray?.map((item) => ({
+        label: item?.label,
+        name: `${prefix}.${item?.key}`,
+        component: item?.component,
+        type: item?.type,
+    }))
+}
+export const getContentWebPaddingArray = (prefix: string) => {
+    return ContentPaddingsArray?.map((item) => ({
+        label: `Web ${item?.label}`,
+        name: `${prefix}.web_${item?.key}`,
+        component: item?.component,
+        type: item?.type,
+    }))
+}
+
+export const contentFieldArray = getContentPaddingArray('extra_info')
+export const contentFieldWebArray = getContentWebPaddingArray('extra_info')
+
 export const getComponentConfigArray = (prefix: string) => {
     return ComponentConfigArray?.map((item) => ({
         label: item?.label,
