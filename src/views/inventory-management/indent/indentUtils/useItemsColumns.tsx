@@ -13,7 +13,7 @@ type ItemType = {
     quantity_required: number
     quantity_accepted: number
     notes: string
-    is_packed: boolean
+    is_picked: boolean
     picker: {
         first_name: string
         last_name: string
@@ -77,9 +77,9 @@ export const useItemsColumns = ({ handleUpdate, data }: props) => {
                 cell: ({ row }) => <span className="italic text-gray-500">{JSON.stringify(row?.original?.box_mapping) || 'N/A'}</span>,
             },
             {
-                header: 'Is Packed',
-                accessorKey: 'is_packed',
-                cell: ({ row }) => <span className="italic text-gray-500">{row?.original?.is_packed ? 'Yes' : 'No'}</span>,
+                header: 'Is Picked',
+                accessorKey: 'is_picked',
+                cell: ({ row }) => <span className="italic text-gray-500">{row?.original?.is_picked ? 'Yes' : 'No'}</span>,
             },
             {
                 header: 'Update',

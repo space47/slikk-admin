@@ -247,23 +247,21 @@ const SecondStepNotification = ({
                     </>
                 )}
 
-                {values?.is_custom === false && (
-                    <FormItem label="Target Page">
-                        <Field name="target_page">
-                            {({ field, form }: FieldProps<any>) => {
-                                return (
-                                    <Select
-                                        isClearable
-                                        placeholder="Select Target Page"
-                                        options={targetPageArray}
-                                        value={targetPageArray.find((option: any) => option.value === field.value)}
-                                        onChange={(option) => form.setFieldValue(field.name, option?.value)}
-                                    />
-                                )
-                            }}
-                        </Field>
-                    </FormItem>
-                )}
+                <FormItem label="Target Page">
+                    <Field name="target_page">
+                        {({ field, form }: FieldProps<any>) => {
+                            return (
+                                <Select
+                                    isClearable
+                                    placeholder="Select Target Page"
+                                    options={targetPageArray}
+                                    value={targetPageArray.find((option: any) => option.value === field.value)}
+                                    onChange={(option) => form.setFieldValue(field.name, option?.value)}
+                                />
+                            )
+                        }}
+                    </Field>
+                </FormItem>
             </div>
         </div>
     )
