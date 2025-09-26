@@ -1373,6 +1373,12 @@ const appsRoute: Routes = [
     },
     {
         key: 'appstryAndBuy.picker',
+        path: `${APP_PREFIX_PATH}/picker/Leaderboard`,
+        component: lazy(() => import('@/views/slikkLogistics/picker/pickerBoard/pickerComponents/LeaderBoard')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appstryAndBuy.picker',
         path: `${APP_PREFIX_PATH}/pickerDetails/:mobile`,
         component: lazy(() => import('@/views/slikkLogistics/picker/pickerDetails/PickerDetails')),
         authority: [ADMIN, USER],
