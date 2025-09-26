@@ -20,13 +20,14 @@ import { BiSolidDuplicate } from 'react-icons/bi'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
 import moment from 'moment'
 import GetPropertiesFromEvent from '@/common/GetPropertiesFromEvent'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useFetchApi } from '@/commonHooks/useFetchApi'
 import FormButton from '@/components/ui/Button/FormButton'
 
 const EditNewGroups = () => {
     const dispatch = useAppDispatch()
     const { id } = useParams()
+    const navigate = useNavigate()
     const [spinner, setSpinner] = useState(false)
     const [csvFile, setCSVFile] = useState<any>()
     const [mobileNumbers, setMobileNumbers] = useState<string[]>([])
@@ -154,6 +155,7 @@ const EditNewGroups = () => {
             notification.success({
                 message: response?.data?.data?.message || response?.data?.message || 'Cohort updated successfully',
             })
+            navigate(-1)
         } catch (error) {
             console.error('Error submitting form:', error)
             notification.error({

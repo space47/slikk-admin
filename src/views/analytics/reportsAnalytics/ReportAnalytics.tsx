@@ -94,7 +94,6 @@ const ReportAnalytics = () => {
                 required_fields: Object.entries(data?.required_fields || {})
                     ?.reverse()
                     ?.map(([key, fullValue]) => {
-                        console.log('full value', fullValue)
                         const [position, dataType, valueArray, prefix, suffix] = Array.isArray(fullValue) ? fullValue : []
                         let transformedValue = valueArray
                         if (key === 'start_date') {
@@ -145,7 +144,6 @@ const ReportAnalytics = () => {
                         }
 
                         const formattedValues = value.map((item: any) => {
-                            console.log('Items is', item)
                             const itemsEncoded = encodeURIComponent(item)
                             const transformedValue = item
                                 ? !['Date', 'Number', 'Boolean'].includes(dataType!)
@@ -196,6 +194,7 @@ const ReportAnalytics = () => {
             } else if (error.response && error.response.status === 400) {
                 setBadRequest(true)
             }
+            setShowTable(false)
             setErrorQuery(error?.response?.data?.message)
             console.log(error?.response?.data?.error_query)
         } finally {

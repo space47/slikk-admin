@@ -6,6 +6,8 @@ import {
     childBorderWebData,
     childConfigFieldsArray,
     childConfigWebFieldsArray,
+    childContentFieldArray,
+    childContentFieldWebArray,
     childNameFieldArray,
     childSectionBorderArray,
     childWebNameFieldArray,
@@ -55,6 +57,9 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
 
     const mainNameArray = typeName === 'component_config' ? componentNameFieldArray : childNameFieldArray
     const mainNameWebArray = typeName === 'component_config' ? componentWebNameFieldArray : childWebNameFieldArray
+
+    const contentData = typeName === 'component_config' ? contentFieldArray : childContentFieldArray
+    const contentWebData = typeName === 'component_config' ? contentFieldWebArray : childContentFieldWebArray
 
     return (
         <div className="bg-gray-50">
@@ -135,7 +140,7 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                         />
                     </FormItem>
                 ))}
-                {contentFieldArray?.map((item, key) => (
+                {contentData?.map((item, key) => (
                     <FormItem key={key} label={item.label} className="w-full">
                         <Field
                             type={item.type}
@@ -343,7 +348,7 @@ const ComponentConfig = ({ setFieldValue, typeName, typeValues }: PageCompProps)
                     </FormItem>
                 ))}
 
-                {contentFieldWebArray?.map((item, key) => (
+                {contentWebData?.map((item, key) => (
                     <FormItem key={key} label={item.label} className="w-full">
                         <Field
                             type={item.type}
