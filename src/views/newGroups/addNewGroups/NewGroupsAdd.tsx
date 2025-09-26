@@ -29,9 +29,11 @@ import moment from 'moment'
 import GetPropertiesFromEvent from '@/common/GetPropertiesFromEvent'
 import { FiFilter } from 'react-icons/fi'
 import FormButton from '@/components/ui/Button/FormButton'
+import { useNavigate } from 'react-router-dom'
 
 const NewGroupsAdd = () => {
     const dispatch = useAppDispatch()
+    const navigate = useNavigate()
     const [spinner, setSpinner] = useState(false)
     const [groupData, setGroupData] = useState<any[]>([])
     const [csvFile, setCSVFile] = useState<any>()
@@ -115,6 +117,7 @@ const NewGroupsAdd = () => {
             notification.success({
                 message: response?.data?.data?.message || response?.data?.message || 'Cohort created successfully',
             })
+            navigate(-1)
         } catch (error) {
             console.error('Error submitting form:', error)
             notification.error({
