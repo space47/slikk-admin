@@ -11,14 +11,15 @@ import moment from 'moment'
 import { Modal, notification } from 'antd'
 import { FaSync } from 'react-icons/fa'
 import TransferDetailsTable from './TransferDetailsTable'
-import { Spinner } from '@/components/ui'
+import { Button, Spinner } from '@/components/ui'
+import { AxiosError } from 'axios'
 
 const TransferDetails = () => {
     const [loading, setLoading] = useState(true)
     const [data, setData] = useState<any>([])
     const { document_number } = useParams()
     const [showSyncModal, setShowSyncModal] = useState(false)
-    const [isSyncing, setIsSyncing] = useState(false)
+    const [isSyncing, setIsSyncing] = useState<string>('')
     const [grnNumber, setGrnNumber] = useState('')
     console.log(grnNumber)
     const navigate = useNavigate()
@@ -49,7 +50,7 @@ const TransferDetails = () => {
             document_number: document_number,
         }
         setShowSyncModal(false)
-        setIsSyncing(true)
+        setIsSyncing('sync')
 
         try {
             await axioisInstance.post(`/internal/inventory-transfer/sync`, body)
@@ -64,8 +65,35 @@ const TransferDetails = () => {
                 description: 'Transfer sync Failed',
             })
         } finally {
-            setIsSyncing(false)
+            setIsSyncing('')
             navigate(-1)
+        }
+    }
+
+    const handleCreateGrn = async () => {
+        const body = {
+            inventory_transfer_id: data?.id,
+            force_create: true,
+        }
+        setIsSyncing('create')
+
+        try {
+            await axioisInstance.post(`/internal/inventory-transfer/grn/creation`, body)
+            notification.success({
+                message: 'Success',
+                description: 'GRN created successfully',
+            })
+            navigate(-1)
+        } catch (error) {
+            console.error(error)
+            if (error instanceof AxiosError) {
+                notification.error({
+                    message: 'FAILURE',
+                    description: error.response?.data?.message || 'GRN creation Failed',
+                })
+            }
+        } finally {
+            setIsSyncing('')
         }
     }
 
@@ -78,25 +106,33 @@ const TransferDetails = () => {
             <Loading loading={loading}>
                 {!isEmpty(data) && (
                     <>
-                        <div className="mb-6">
-                            <div className="flex flex-col  mb-2">
-                                <div>
-                                    <h3>
-                                        <span>Transfer Details:</span>
-                                        {/* <span className="ltr:ml-2 rtl:mr-2">#{data.gdn_number}</span> */}
-                                    </h3>
-                                    <div className="docs flex flex-col">
-                                        <div className="flex gap-2">
-                                            {' '}
-                                            Document Number : <span className="font-bold">{data.document_number}</span>
+                        <div className="flex justify-between items-center mb-6">
+                            <div className="mb-6">
+                                <div className="flex flex-col  mb-2">
+                                    <div>
+                                        <h3>
+                                            <span>Transfer Details:</span>
+                                            {/* <span className="ltr:ml-2 rtl:mr-2">#{data.gdn_number}</span> */}
+                                        </h3>
+                                        <div className="docs flex flex-col">
+                                            <div className="flex gap-2">
+                                                {' '}
+                                                Document Number : <span className="font-bold">{data.document_number}</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+                                <span className="flex items-center">
+                                    <HiOutlineCalendar className="text-lg" />
+                                    <span className="ltr:ml-1 rtl:mr-1">{moment(data.created_at).format('MM/DD/YYYY hh:mm:ss a')}</span>
+                                </span>
                             </div>
-                            <span className="flex items-center">
-                                <HiOutlineCalendar className="text-lg" />
-                                <span className="ltr:ml-1 rtl:mr-1">{moment(data.created_at).format('MM/DD/YYYY hh:mm:ss a')}</span>
-                            </span>
+                            <div>
+                                <Button variant="solid" size="sm" onClick={handleCreateGrn} disabled={isSyncing === 'create'}>
+                                    <span>Create GRN</span>
+                                    <span>{isSyncing === 'create' && <Spinner size={24} color="white" />}</span>
+                                </Button>
+                            </div>
                         </div>
                         <div className="xl:flex gap-6 p-6 bg-gray-50 rounded-lg shadow-lg">
                             {/* Address Card Section */}
@@ -143,7 +179,7 @@ const TransferDetails = () => {
                         <div className="mt-5 flex flex-col">
                             {/* TABLE..................................................... */}
 
-                            {isSyncing ? (
+                            {isSyncing === 'sync' ? (
                                 <>
                                     <Spinner size={30} />
                                 </>
@@ -189,7 +225,6 @@ const TransferDetails = () => {
                                 <div className="italic text-lg font-semibold">SYNC YOUR Transfer</div>
                             </Modal>
                         )}
-                        {isSyncing && <Loading loading={isSyncing} />}
                     </>
                 )}
             </Loading>

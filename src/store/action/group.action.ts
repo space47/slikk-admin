@@ -7,7 +7,7 @@ export const getAllGroupAPI = () => async (dispatch: any) => {
             type: 'getAllGroupRequest',
         })
 
-        const response = await axioisInstance.get('notification/groups')
+        const response = await axioisInstance.get('notification/groups?p=1&page_size=1000')
 
         dispatch({
             type: 'getAllGroupSuccess',

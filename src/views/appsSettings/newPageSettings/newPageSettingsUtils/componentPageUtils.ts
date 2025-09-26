@@ -289,6 +289,9 @@ export const getContentWebPaddingArray = (prefix: string) => {
 export const contentFieldArray = getContentPaddingArray('extra_info')
 export const contentFieldWebArray = getContentWebPaddingArray('extra_info')
 
+export const childContentFieldArray = getContentPaddingArray('extra_info.child_component_config')
+export const childContentFieldWebArray = getContentWebPaddingArray('extra_info.child_component_config')
+
 export const getComponentConfigArray = (prefix: string) => {
     return ComponentConfigArray?.map((item) => ({
         label: item?.label,
