@@ -23,6 +23,7 @@ import GetPropertiesFromEvent from '@/common/GetPropertiesFromEvent'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useFetchApi } from '@/commonHooks/useFetchApi'
 import FormButton from '@/components/ui/Button/FormButton'
+import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 
 const EditNewGroups = () => {
     const dispatch = useAppDispatch()
@@ -67,14 +68,14 @@ const EditNewGroups = () => {
     }, [])
 
     const urlReq = useMemo(() => {
-        return `/notification/groups?group_id=${id}`
+        return `/notification/groups/${id}`
     }, [id])
-    const { data: apiData } = useFetchApi<any>({ url: urlReq })
+    const { data: apiData } = useFetchSingleData<any>({ url: urlReq })
     const initialGroupData = useMemo(() => {
         const d: any = apiData as any
         if (!d) return undefined
-        if (Array.isArray(d)) return d[0]
-        if (Array.isArray(d?.data)) return d.data[0]
+        if (Array.isArray(d)) return d
+        if (Array.isArray(d?.data)) return d.data
         return d?.data || d
     }, [apiData])
 
