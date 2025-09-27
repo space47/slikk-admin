@@ -21,12 +21,11 @@ import { AxiosError } from 'axios'
 import { useNotificationFunc } from './sendNotificationsUtils/useNotificationFunc'
 import * as Yup from 'yup'
 
-const validationSchema = Yup.object({
-    utm_medium: Yup.string().matches(/^[^_]*$/, 'Underscores are not allowed'),
-    utm_source: Yup.string().matches(/^[^_]*$/, 'Underscores are not allowed'),
-    utm_campaign: Yup.string().matches(/^[^_]*$/, 'Underscores are not allowed'),
-    utm_tags: Yup.string().matches(/^[^_]*$/, 'Underscores are not allowed'),
-})
+const validation = UtmArray?.map((item) =>
+    Yup.object({
+        [item.name]: Yup.string().matches(/^[^_]*$/, 'Underscores are not allowed'),
+    }),
+)
 
 const EditNotification = () => {
     const { id } = useParams()
@@ -72,7 +71,10 @@ const EditNotification = () => {
     }, [initialValue?.filterId])
 
     const handleOk = async (val: any) => {
-        console.log('form values', val)
+        if (!val.title) {
+            notification.error({ message: 'Title is required' })
+            return
+        }
         setShowSpinner(true)
         const parser = new DOMParser()
         const htmlDoc = parser.parseFromString(val?.message ?? '', 'text/html')
@@ -147,7 +149,7 @@ const EditNotification = () => {
             </div>
 
             <div className="flex gap-10">
-                <Formik enableReinitialize initialValues={initialValue} onSubmit={handleOk} validationSchema={validationSchema}>
+                <Formik enableReinitialize initialValues={initialValue} onSubmit={handleOk} validationSchema={validation}>
                     {({ values, setFieldValue }) => (
                         <Form className="w-full lg:w-2/3 mx-auto xl:mx-0">
                             <FormContainer>

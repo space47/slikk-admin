@@ -27,7 +27,7 @@ const FirstStepNotification = ({
         <div className="space-y-6 shadow-lg rounded-lg px-6 py-4 xl:px-14 xl:py-9">
             <div className="text-lg font-bold xl:text-xl">Basic Information for Sending Notifications</div>
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 xl:gap-6">
-                <FormItem label="Notification Title" className="w-full rounded-[10px]">
+                <FormItem label="Notification Title" className="w-full rounded-[10px]" asterisk>
                     <Field
                         type="text"
                         name="title"
