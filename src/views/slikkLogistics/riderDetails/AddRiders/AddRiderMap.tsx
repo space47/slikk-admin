@@ -18,8 +18,8 @@ L.Marker.prototype.options.icon = DefaultIcon
 interface RiderAddProps {
     markLat: number
     markLong: number
-    setMarkLat: React.Dispatch<React.SetStateAction<number>>
-    setMarkLong: React.Dispatch<React.SetStateAction<number>>
+    setMarkLat: (val: number) => void
+    setMarkLong: (val: number) => void
 }
 
 const AddRiderMap = ({ setMarkLat, setMarkLong, markLat, markLong }: RiderAddProps) => {
