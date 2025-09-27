@@ -16,6 +16,7 @@ import { GenericCommonTypes } from '@/common/allTypesCommon'
 import AssignStoreToUser from '@/common/AssignStoreToUser'
 import { HiSearch } from 'react-icons/hi'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 
 const AddRider = () => {
     const navigate = useNavigate()
@@ -110,6 +111,7 @@ const AddRider = () => {
                     shift_start_time: values?.shift_start_time,
                     shift_end_time: values?.shift_end_time,
                     is_active: values?.is_active || false,
+                    agency: values?.agency || '',
                 })
                     .then(() => {})
                     .catch(() => {
@@ -128,6 +130,7 @@ const AddRider = () => {
                     shift_start_time: values?.shift_start_time,
                     shift_end_time: values?.shift_end_time,
                     is_active: values?.is_active || false,
+                    agency: values?.agency || '',
                 })
                     .then(() => {})
                     .catch(() => {
@@ -254,6 +257,14 @@ const AddRider = () => {
                                 <AssignStoreToUser mobile={values?.mobile || ''} customClass="mb-6 xl:ml-20" />
                                 <FullTimePicker label="SHIFT START" name="shift_start_time" fieldname="shift_start_time" />
                                 <FullTimePicker label="SHIFT END" name="shift_end_time" fieldname="shift_end_time" />
+                                <CommonSelect
+                                    label="Rider Agency"
+                                    name="agency"
+                                    options={[
+                                        { label: 'Pidge', value: 'pidge' },
+                                        { label: 'Pico', value: 'pico' },
+                                    ]}
+                                />
                             </FormContainer>
                             <div className="mt-8">
                                 <div className="text-xl font-bold mb-4 text-gray-700">ADD RIDER LOCATION</div>
