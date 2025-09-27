@@ -70,6 +70,7 @@ const SendNotification = () => {
                 page_title: val?.page_title ?? '',
             },
             mobiles: val?.users ?? [],
+            is_active: true,
         }
         const filteredBody = Object.fromEntries(Object.entries(body).filter(([, value]) => value !== undefined && value !== ''))
 
