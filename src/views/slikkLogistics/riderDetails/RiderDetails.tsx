@@ -26,6 +26,7 @@ import { Option, pageSizeOptions } from '../taskTracking/TaskCommonType'
 import { calculateDistance, RiderColumns } from './RiderUtils/RiderDetailsColumns'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import BulkEditRiderModal from './RiderComponents/BulkEditRiderModal'
+import { notification } from 'antd'
 
 const RiderDetails = () => {
     const navigate = useNavigate()
@@ -50,6 +51,7 @@ const RiderDetails = () => {
     const [isBulkRiderModal, setIsBulkRiderModal] = useState<boolean>(false)
     const [riderSearchByType, setRiderSearchByType] = useState('name')
     const [riderMobileStore, setRiderMobileStore] = useState<number[]>([])
+    const [currentStoreId, setCurrentStoreId] = useState<number | null>(null)
     const { data: riders, isSuccess } = ridersService.useRiderDetailsQuery(
         {
             from: from,
@@ -62,6 +64,7 @@ const RiderDetails = () => {
             rider_type: riderType === 'Select Rider Type' ? '' : riderType,
             user_type: 'rider',
             rider_status: busyTab ?? '',
+            store_id: currentStoreId || null,
         },
         { refetchOnMountOrArgChange: true, pollingInterval: 60000 },
     )
@@ -83,6 +86,7 @@ const RiderDetails = () => {
         value: {
             lat: item?.latitude || 0,
             long: item?.longitude || 0,
+            id: item?.id,
         },
     }))
 
@@ -207,6 +211,11 @@ const RiderDetails = () => {
         })
     }
 
+    const handleCopyLink = () => {
+        navigator.clipboard.writeText('https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/builds/Rider+App/rider-app-new.apk')
+        notification.success({ message: 'Copied' })
+    }
+
     const columns = RiderColumns({
         sortedRiderDetails,
         handleActiveCareer,
@@ -231,6 +240,7 @@ const RiderDetails = () => {
                             getOptionValue={(option) => option.value as any}
                             className="w-full"
                             onChange={(newVal) => {
+                                setCurrentStoreId(newVal?.value?.id || null)
                                 setCurrentStoreLocation({
                                     lat: newVal?.value?.lat,
                                     long: newVal?.value?.long,
@@ -262,7 +272,7 @@ const RiderDetails = () => {
                                 ADD / UPDATE RIDERS
                             </Button>
                         </div>
-                        <div className="xl:mt-8">
+                        <div className="xl:mt-8" onClick={handleCopyLink}>
                             <a
                                 className="p-2 rounded-xl bg-gradient-to-r from-blue-500/80 to-blue-700/80 hover:from-blue-600/90 hover:to-blue-800/90 text-white no-underline flex gap-2 font-bold backdrop-blur-sm"
                                 href="https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/builds/Rider+App/rider-app-new.apk"

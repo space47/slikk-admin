@@ -116,6 +116,7 @@ export const ridersService = RtkQueryService.injectEndpoints({
                 rider_type?: string
                 user_type?: string
                 rider_status?: string
+                store_id?: number | null
             }
         >({
             query: (params) => {
@@ -149,6 +150,9 @@ export const ridersService = RtkQueryService.injectEndpoints({
                 }
                 if (params.rider_status) {
                     parameters.rider_status = params.rider_status
+                }
+                if (params.store_id) {
+                    parameters.store_id = params.store_id
                 }
                 return {
                     url: `/logistic/riders`,
