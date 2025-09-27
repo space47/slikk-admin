@@ -6,7 +6,9 @@ import { NumericFormat } from 'react-number-format'
 import { useState } from 'react'
 import ImageMODAL from '@/common/ImageModal'
 import ReplaceDrawer from './ReplaceDrawer'
-import { Button } from '@/components/ui'
+import { Button, Dialog } from '@/components/ui'
+import QRCode from 'react-qr-code'
+import { MdQrCodeScanner } from 'react-icons/md'
 
 import.meta.env.VITE_WEB_URI
 
@@ -48,6 +50,7 @@ type productProps = {
 const ProductColumn = ({ row, status }: productProps) => {
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularROwImage] = useState('')
+    const [qrCode, setQrCode] = useState('')
     const headerLink = import.meta.env.VITE_WEBSITE_URL
 
     const segregatedNames = (value: string) => {
@@ -95,7 +98,15 @@ const ProductColumn = ({ row, status }: productProps) => {
                     </h4>
                 </div>
                 {/* skv */}
-                <h4 className="font-light text-[14px]"> SKU:{row.sku} </h4>
+                <div className="font-light text-[14px]">
+                    {' '}
+                    <div className="flex gap-2 items-center">
+                        <span>SKU:{row.sku} </span>
+                        <span className="rounded-full border p-2 bg-blue-100 hover:bg-gray-200" title="Click to view QR code">
+                            <MdQrCodeScanner onClick={() => setQrCode(row?.sku as string)} className="text-xl cursor-pointer" />
+                        </span>
+                    </div>{' '}
+                </div>
             </div>
             {showImageModal && (
                 <ImageMODAL
@@ -103,6 +114,16 @@ const ProductColumn = ({ row, status }: productProps) => {
                     setIsOpen={setShowImageModal}
                     image={particularRowImage && particularRowImage?.split(',')}
                 />
+            )}
+            {qrCode && (
+                <>
+                    <Dialog isOpen={!!qrCode} onClose={() => setQrCode('')} width={600}>
+                        <div className="bg-gray-100 mt-5 flex items-center justify-center dark:bg-gray-800 p-4 rounded-xl shadow-sm">
+                            <QRCode value={row?.sku ?? ''} size={200} />
+                        </div>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 font-medium mt-10">sku: {row?.sku}</p>
+                    </Dialog>
+                </>
             )}
         </div>
     )
