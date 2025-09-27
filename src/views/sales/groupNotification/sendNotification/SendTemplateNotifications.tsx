@@ -160,8 +160,8 @@ const SendTemplateNotifications: React.FC = () => {
                 }
                 const body = {
                     scheduler_config: modifiedValues,
-                    notification_group: values?.groups || [],
-                    mobiles: values?.users_all ? [] : values?.users || [],
+                    notification_group: values?.groups || '',
+                    mobiles: values?.users_all ? '' : values?.users || '',
                 }
 
                 const res = await axioisInstance.patch(`/user_notification/${id}`, body)
@@ -178,7 +178,7 @@ const SendTemplateNotifications: React.FC = () => {
                 const body = {
                     notification_id: Number(id),
                     users: values?.users || '',
-                    notification_group: values?.groups || [],
+                    notification_group: values?.groups || '',
                     notification_type: 'app',
                     send_to_all: values?.users_all ? true : false,
                 }

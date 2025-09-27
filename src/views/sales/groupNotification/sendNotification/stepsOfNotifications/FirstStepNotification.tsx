@@ -44,7 +44,7 @@ const FirstStepNotification = ({
                         <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                     </FormItem>
                 ))}
-                <FormItem label="Notification Type" className="col-span-1 w-full xl:col-span-2 xl:w-1/2">
+                {/* <FormItem label="Notification Type" className="col-span-1 w-full xl:col-span-2 xl:w-1/2">
                     <Field name="notification_type">
                         {({ field, form }: FieldProps) => (
                             <Select
@@ -57,7 +57,7 @@ const FirstStepNotification = ({
                             />
                         )}
                     </Field>
-                </FormItem>
+                </FormItem> */}
             </div>
 
             <FormItem label="Scheduler Message" labelClass="!justify-start" className="w-full">
