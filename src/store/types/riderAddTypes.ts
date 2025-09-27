@@ -11,6 +11,8 @@ export type RiderAddTypes = {
     shift_end_time?: string
     is_active?: boolean
     agency?: string
+    lat?: number
+    long?: number
 }
 
 type UserType = {
