@@ -1,17 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ColumnDef } from '@tanstack/react-table'
 import React, { useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { USER_PROFILE_DATA } from '@/store/types/company.types'
+import { FcViewDetails } from 'react-icons/fc'
 
 interface IndentColumnsProps {
     storeList: USER_PROFILE_DATA['store']
     store_type?: string
+    handleStatusClick: (id: number) => void
 }
 
-export const useIndentColumns = ({ storeList, store_type }: IndentColumnsProps) => {
-    const navigate = useNavigate()
-
+export const useIndentColumns = ({ storeList, handleStatusClick }: IndentColumnsProps) => {
     const findStoreName = (storeId: number) => {
         const store = storeList.find((store) => store?.id === storeId)
         return store ? store.name : 'Unknown Store'
@@ -23,18 +22,14 @@ export const useIndentColumns = ({ storeList, store_type }: IndentColumnsProps) 
                 header: 'Intent No.',
                 accessorKey: 'intent_number',
                 cell: ({ row }) => (
-                    <div
+                    <a
                         className="w-[230px] p-2 rounded-xl items-center bg-gray-600 text-white flex justify-center cursor-pointer hover:bg-gray-700"
-                        onClick={() =>
-                            navigate(`/app/goods/indentDetails/${row.original.id}`, {
-                                state: {
-                                    store_type: store_type,
-                                },
-                            })
-                        }
+                        href={`/app/goods/indentDetails/${row.original.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
                     >
                         {row.original.intent_number}
-                    </div>
+                    </a>
                 ),
             },
             {
@@ -67,6 +62,23 @@ export const useIndentColumns = ({ storeList, store_type }: IndentColumnsProps) 
                     >
                         {row.original.status}
                     </span>
+                ),
+            },
+            {
+                header: 'Status',
+                accessorKey: 'intent_number',
+                cell: ({ row }) => (
+                    // <a
+                    //     className="w-[230px] p-2 rounded-xl items-center bg-gray-600 text-white flex justify-center cursor-pointer hover:bg-gray-700"
+                    //     href={`/app/goods/indentDetails/${row.original.id}`}
+                    //     target="_blank"
+                    //     rel="noopener noreferrer"
+                    // >
+                    //     {row.original.intent_number}
+                    // </a>
+                    <button onClick={() => handleStatusClick(row.original.id)}>
+                        <FcViewDetails className="text-2xl" />
+                    </button>
                 ),
             },
         ],

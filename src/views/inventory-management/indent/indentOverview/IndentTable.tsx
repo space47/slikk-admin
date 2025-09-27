@@ -12,6 +12,7 @@ import { USER_PROFILE_DATA } from '@/store/types/company.types'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import { notification } from 'antd'
+import IndentStatusModal from './indentComponents/IndentStatusModal'
 
 const IndentTable = () => {
     const dispatch = useAppDispatch()
@@ -19,6 +20,13 @@ const IndentTable = () => {
     const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
     const [storeCode, setStoreCode] = useState<any[]>([1])
     const [activeTab, setActiveTab] = useState('target')
+    const [showStatusModal, setShowStatusModal] = useState(false)
+    const [selectedIndentId, setSelectedIndentId] = useState<number | null>(null)
+
+    const handleStatusClick = (id: number) => {
+        setSelectedIndentId(id)
+        setShowStatusModal(true)
+    }
 
     useEffect(() => {
         if (storeCode?.length <= 0) {
@@ -48,7 +56,7 @@ const IndentTable = () => {
         dispatch(setPage(1))
     }
 
-    const columns = useIndentColumns({ storeList, store_type: activeTab })
+    const columns = useIndentColumns({ storeList, store_type: activeTab, handleStatusClick })
 
     if (error && 'status' in error && error.status === 403) {
         return <AccessDenied />
@@ -64,7 +72,7 @@ const IndentTable = () => {
                     isMulti
                     options={storeList}
                     getOptionLabel={(option) => option.name}
-                    getOptionValue={(option) => option.id}
+                    getOptionValue={(option) => option.id?.toString()}
                     value={storeList.filter((opt) => storeCode.includes(opt.id))}
                     onChange={(selectedOptions) => {
                         setStoreCode(selectedOptions?.map((opt) => opt.id) || [])
@@ -116,6 +124,14 @@ const IndentTable = () => {
                     />
                 </div>
             </div>
+            {showStatusModal && (
+                <IndentStatusModal
+                    key={selectedIndentId}
+                    isOpen={showStatusModal}
+                    id={selectedIndentId}
+                    onClose={() => setShowStatusModal(false)}
+                />
+            )}
         </div>
     )
 }

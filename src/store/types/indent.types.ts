@@ -55,6 +55,8 @@ export interface IndentDetailsTypes {
     notes: string
     items: IndentItem[]
     picker_items: IndentPickerItem[]
+    total_items: number
+    items_picked: number
 }
 
 export interface IndentDetailsResponseTypes {
