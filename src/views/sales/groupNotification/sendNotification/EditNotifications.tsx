@@ -5,7 +5,7 @@ import Button from '@/components/ui/Button'
 import { Form, Formik } from 'formik'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { MAXMINARRAY, OFFARRAY, SendNotificationARRAY, UtmArray, initialValue } from './sendNotify.common'
+import { MAXMINARRAY, OFFARRAY, SendNotificationARRAY, UtmArray } from './sendNotify.common'
 import { useAppDispatch } from '@/store'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { handleimage } from '@/common/handleImage'
@@ -14,12 +14,14 @@ import SecondStepNotification from './stepsOfNotifications/SecondStepNotificatio
 import ThirdStepNotification from './stepsOfNotifications/ThirdStepNotification'
 import Steps from '@/components/ui/Steps'
 import MobilePreview from './mobilePreview/MobilePreview'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import MobileDrawer from './MobileDrawer'
 import FormButton from '@/components/ui/Button/FormButton'
 import { AxiosError } from 'axios'
+import { useNotificationFunc } from './sendNotificationsUtils/useNotificationFunc'
 
-const SendNotification = () => {
+const EditNotification = () => {
+    const { id } = useParams()
     const [showSpinner, setShowSpinner] = useState(false)
     const dispatch = useAppDispatch()
     const [currentStep, setCurrentStep] = useState(0)
@@ -28,13 +30,41 @@ const SendNotification = () => {
     const [imagePreview, setImagePreview] = useState('')
     const [titleView, setTitleView] = useState('')
     const [showMobileView, setShowMobileView] = useState(false)
+    const [data, setData] = useState<any>(null)
     const navigate = useNavigate()
+
+    const fetchData = async () => {
+        if (id) {
+            try {
+                const response = await axioisInstance.get(`/user_notification?id=${id}`)
+                console.log('fetched data', response.data)
+                setData(response.data)
+                setTitleView(response.data.message?.title || '')
+                setMessagePreview(response.data.message?.message || '')
+                setImagePreview(response.data.message?.image || '')
+                setData(response.data?.message)
+            } catch (error) {
+                console.error('Error fetching notification data:', error)
+            }
+        }
+    }
+
+    useEffect(() => {
+        fetchData()
+    }, [id])
 
     useEffect(() => {
         dispatch(getAllFiltersAPI())
     }, [dispatch])
 
+    const { initialValue } = useNotificationFunc({ data })
+
+    useEffect(() => {
+        setFilterId(initialValue?.filterId)
+    }, [initialValue?.filterId])
+
     const handleOk = async (val: any) => {
+        console.log('form values', val)
         setShowSpinner(true)
         const parser = new DOMParser()
         const htmlDoc = parser.parseFromString(val?.message ?? '', 'text/html')
@@ -46,7 +76,7 @@ const SendNotification = () => {
             title: titleView ?? '',
             message: plainTextMessage ?? '',
             name: val?.event_name ?? '',
-            ...(val?.image_url_array.length > 0 ? { image: imageUpload } : {}),
+            ...(val?.image_url_array?.length > 0 ? { image: imageUpload } : {}),
             other_config: {
                 filters: [
                     ...(val?.filters ?? []),
@@ -66,7 +96,7 @@ const SendNotification = () => {
         const filteredBody = Object.fromEntries(Object.entries(body).filter(([, value]) => value !== undefined && value !== ''))
 
         try {
-            const response = await axioisInstance.post(`/user_notification`, filteredBody)
+            const response = await axioisInstance.patch(`/user_notification/${id}`, filteredBody)
             notification.success({ message: response?.data?.data?.message || response?.data?.message || 'Scheduled successfully' })
             navigate(`/app/appsCommuncication/sendNotification/${response?.data?.data?.id}`)
         } catch (error) {
@@ -116,11 +146,14 @@ const SendNotification = () => {
                                 {currentStep === 0 && (
                                     <FirstStepNotification
                                         SendNotificationARRAY={SendNotificationARRAY}
-                                        values={values}
+                                        values={values as any}
                                         setImagePreview={setImagePreview}
                                         setMessagePreview={setMessagePreview}
                                         setTitleView={setTitleView}
                                         setFieldValue={setFieldValue}
+                                        editMode
+                                        initialValue={initialValue}
+                                        handleRemoveImage={() => setFieldValue('image_url_array', [])}
                                     />
                                 )}
 
@@ -224,4 +257,4 @@ const SendNotification = () => {
     )
 }
 
-export default SendNotification
+export default EditNotification
