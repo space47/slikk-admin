@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { beforeUpload } from '@/common/beforeUpload'
 import { RichTextEditor } from '@/components/shared'
-import { FormContainer, FormItem, Input, Select, Upload } from '@/components/ui'
+import { FormContainer, FormItem, Input, Upload } from '@/components/ui'
 import { Field, FieldProps } from 'formik'
 import React from 'react'
-import { notificationTypeArray, SendNotificationARRAYType, sendNotificationType } from '../sendNotify.common'
+import { SendNotificationARRAYType, sendNotificationType } from '../sendNotify.common'
 
 interface FirstStepProps {
     SendNotificationARRAY: SendNotificationARRAYType[]

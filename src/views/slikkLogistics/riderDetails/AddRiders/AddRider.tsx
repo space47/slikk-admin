@@ -2,7 +2,7 @@
 import { Button, Checkbox, Dropdown, FormContainer, FormItem, Input, Select } from '@/components/ui'
 // import { ridersService } from '@/store/services/riderServices'
 import { Field, FieldProps, Form, Formik } from 'formik'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { RiderFieldArray, RiderTypeArray, SearchRider } from './riderUtils'
 import AddRiderMap from './AddRiderMap'
 import { notification } from 'antd'
@@ -21,8 +21,7 @@ import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 const AddRider = () => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
-    const [currLat, setCurrLat] = useState<number>(12.920216)
-    const [currLong, setCurrLong] = useState<number>(77.649326)
+    // Remove separate lat/long state, will use Formik values instead
     const [selectedRider, setSelectedRider] = useState<string | number>()
     const [ridersData, riderDataResponse] = ridersService.useAddRidersMutation()
     const [editRiders, riderEditResponse] = ridersService.useEditRidersMutation()
@@ -45,7 +44,7 @@ const AddRider = () => {
             dispatch(setRiderProfile(riders?.data || []))
         }
     }, [riders, isSuccess, dispatch, selectedRider])
-    const getRiderData = () => {
+    const initialValue = useMemo(() => {
         if (selectedRider && !isAddRider && riderProfile && riderProfile.length > 0) {
             const user = riderProfile[0]?.user || {}
             return {
@@ -68,12 +67,10 @@ const AddRider = () => {
             shift_end_time: '',
             rider_type: '',
             is_active: false,
-            lat: currLat,
-            long: currLong,
+            lat: 12.920216,
+            long: 77.649326,
         }
-    }
-
-    const initialValue = getRiderData()
+    }, [selectedRider, isAddRider, riderProfile])
 
     useEffect(() => {
         if (riderDataResponse?.isSuccess) {
@@ -90,29 +87,28 @@ const AddRider = () => {
         }
     }, [riderDataResponse, riderEditResponse])
 
-    useEffect(() => {
-        setCurrLat(riderProfile[0]?.service_latitude)
-        setCurrLong(riderProfile[0]?.service_longitude)
-    }, [riders, selectedRider, riderProfile])
+    // Remove effect that sets currLat/currLong
 
     const handleSubmit = (values: RiderAddTypes) => {
+        console.log('values are', values)
         if (!values?.mobile) {
             notification.error({ message: 'Mobile is required' })
         }
         if (values?.mobile) {
+            const payload = {
+                mobile: values?.mobile,
+                first_name: selectedRider && !isAddRider ? riderProfile[0].user?.first_name : values?.first_name,
+                last_name: values?.last_name,
+                rider_type: values?.rider_type,
+                service_latitude: values?.lat,
+                service_longitude: values?.long,
+                shift_start_time: values?.shift_start_time,
+                shift_end_time: values?.shift_end_time,
+                is_active: values?.is_active || false,
+                agency: values?.agency || '',
+            }
             if (isAddRider) {
-                ridersData({
-                    mobile: values?.mobile,
-                    first_name: selectedRider && !isAddRider ? riderProfile[0].user?.first_name : values?.first_name,
-                    last_name: values?.last_name,
-                    rider_type: values?.rider_type,
-                    service_latitude: currLat,
-                    service_longitude: currLong,
-                    shift_start_time: values?.shift_start_time,
-                    shift_end_time: values?.shift_end_time,
-                    is_active: values?.is_active || false,
-                    agency: values?.agency || '',
-                })
+                ridersData(payload)
                     .then(() => {})
                     .catch(() => {
                         notification.error({
@@ -120,18 +116,7 @@ const AddRider = () => {
                         })
                     })
             } else {
-                editRiders({
-                    mobile: values?.mobile,
-                    first_name: selectedRider && !isAddRider ? riderProfile[0].user?.first_name : values?.first_name,
-                    last_name: values?.last_name,
-                    rider_type: values?.rider_type,
-                    service_latitude: currLat,
-                    service_longitude: currLong,
-                    shift_start_time: values?.shift_start_time,
-                    shift_end_time: values?.shift_end_time,
-                    is_active: values?.is_active || false,
-                    agency: values?.agency || '',
-                })
+                editRiders(payload)
                     .then(() => {})
                     .catch(() => {
                         notification.error({
@@ -160,7 +145,7 @@ const AddRider = () => {
     return (
         <div>
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
-                {({ values }) => (
+                {({ values, setFieldValue }) => (
                     <Form className="w-full mx-auto p-6 bg-white rounded-lg shadow-md">
                         <FormContainer>
                             <FormContainer className="grid grid-cols-2 gap-6">
@@ -273,24 +258,26 @@ const AddRider = () => {
                                         <Input
                                             name="lat"
                                             type="number"
-                                            value={currLat}
+                                            value={values.lat}
                                             placeholder="Enter latitude"
-                                            onChange={(e: GenericCommonTypes['InputEvent']) => setCurrLat(Number(e.target.value))}
+                                            onChange={(e: GenericCommonTypes['InputEvent']) => setFieldValue('lat', Number(e.target.value))}
                                         />
                                         <Input
                                             name="long"
                                             type="number"
-                                            value={currLong}
+                                            value={values.long}
                                             placeholder="Enter longitude"
-                                            onChange={(e: GenericCommonTypes['InputEvent']) => setCurrLong(Number(e.target.value))}
+                                            onChange={(e: GenericCommonTypes['InputEvent']) =>
+                                                setFieldValue('long', Number(e.target.value))
+                                            }
                                         />
                                     </div>
                                 </div>
                                 <AddRiderMap
-                                    setMarkLat={setCurrLat ?? 0}
-                                    setMarkLong={setCurrLong ?? 0}
-                                    markLat={currLat ?? 0}
-                                    markLong={currLong ?? 0}
+                                    setMarkLat={(lat: number) => setFieldValue('lat', lat)}
+                                    setMarkLong={(lng: number) => setFieldValue('long', lng)}
+                                    markLat={values.lat}
+                                    markLong={values.long}
                                 />
                             </div>
                         </FormContainer>
