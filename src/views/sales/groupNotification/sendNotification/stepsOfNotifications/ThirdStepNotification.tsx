@@ -10,7 +10,7 @@ const ThirdStepNotification = () => {
             {UtmArray.map((item, key) => (
                 <FormItem key={key} label={item.label} className={item.classname}>
                     <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
-                    <ErrorMessage name={item?.name} component="div" />
+                    <ErrorMessage name={item?.name} component="div" className="text-red-500" />
                 </FormItem>
             ))}
         </div>
