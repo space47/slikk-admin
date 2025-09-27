@@ -69,33 +69,13 @@ export type SendNotificationARRAYType = {
 
 export const SendNotificationARRAY = [
     {
-        label: 'Name',
+        label: 'Campaign Name',
         classname: 'col-span-1 w-1/2',
         type: 'text',
         name: 'event_name',
         placeholder: 'Enter Event name',
     },
-    {
-        label: 'Key',
-        classname: 'col-span-1 w-1/2',
-        type: 'text',
-        name: 'key',
-        placeholder: 'Place your key',
-    },
-    // {
-    //     label: 'Title',
-    //     classname: 'col-span-1 w-1/2',
-    //     type: 'text',
-    //     name: 'title',
-    //     placeholder: 'Place your Title',
-    // },
-    {
-        label: 'Page',
-        classname: 'col-span-1 w-1/2',
-        type: 'text',
-        name: 'page',
-        placeholder: 'Place page',
-    },
+
     {
         label: 'Page Title',
         classname: 'col-span-1 w-1/2',
@@ -211,3 +191,13 @@ export const USERNOTFARRAY = [
     //     placeholder: 'Enter Users',
     // },
 ]
+
+export const REPEATARRAY = [
+    { label: 'FIXED', value: 'no_repeat' },
+    { label: 'REPEAT', value: 'repeat' },
+]
+
+export const MINUTE_OPTIONS = Array.from({ length: 60 }, (_, i) => ({ label: i.toString(), value: i.toString() }))
+export const HOUR_OPTIONS = Array.from({ length: 24 }, (_, i) => ({ label: i.toString(), value: i.toString() }))
+export const DAY_OPTIONS = Array.from({ length: 31 }, (_, i) => ({ label: (i + 1).toString(), value: (i + 1).toString() }))
+export const MONTH_OPTIONS = Array.from({ length: 12 }, (_, i) => ({ label: (i + 1).toString(), value: (i + 1).toString() }))

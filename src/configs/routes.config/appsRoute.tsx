@@ -1226,8 +1226,20 @@ const appsRoute: Routes = [
     },
     {
         key: 'appsCommuncication.sendNotification',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/sendNotification/:id`,
+        component: lazy(() => import('@/views/sales/groupNotification/sendNotification/SendTemplateNotifications')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCommuncication.sendNotification',
         path: `${APP_PREFIX_PATH}/appsCommuncication/sendNotification/addNew`,
         component: lazy(() => import('@/views/sales/groupNotification/sendNotification/SendNotification')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCommuncication.sendNotification',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/sendNotification/edit/:id`,
+        component: lazy(() => import('@/views/sales/groupNotification/sendNotification/EditNotifications')),
         authority: [ADMIN, USER],
     },
     {

@@ -3,7 +3,7 @@ import { Button, Pagination, Select, Tabs } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { pageSizeOptions } from './groupComnmon'
+
 import EasyTable from '@/common/EasyTable'
 import AccessDenied from '@/views/pages/AccessDenied'
 import { handleDownloadCsv } from '@/common/allTypesCommon'
@@ -13,6 +13,7 @@ import { AxiosError } from 'axios'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import ActiveInactiveModal from '@/views/appsSettings/careers/careerDetails/ActiveInactiveModal'
+import { pageSizeOptions } from '@/constants/pageUtils.constants'
 
 const GetGroupNotification = () => {
     const [groupData, setGroupData] = useState<any[]>([])
