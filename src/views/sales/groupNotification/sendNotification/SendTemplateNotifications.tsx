@@ -181,7 +181,7 @@ const SendTemplateNotifications: React.FC = () => {
                     notification_group: values?.groups || [],
                     notification_type: 'app',
                 }
-                const res = await axioisInstance.post('/user_notification', body)
+                const res = await axioisInstance.post('/notification/send', body)
                 notification.success({ message: res?.data?.message || res?.data?.data?.message || 'Notification sent successfully' })
             } catch (error) {
                 if (error instanceof AxiosError) {

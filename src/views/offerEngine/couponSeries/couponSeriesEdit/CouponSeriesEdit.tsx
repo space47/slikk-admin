@@ -114,7 +114,7 @@ const CouponSeriesEdit = () => {
                     auto_apply: values?.extra_attributes?.auto_apply || false,
                     offer_text: values?.extra_attributes?.offer_text,
                     terms_and_conditions: values?.extra_attributes?.terms_and_conditions,
-
+                    free_delivery: values?.extra_attributes?.free_delivery || false,
                     min_filters_products_amount: values?.extra_attributes?.min_filters_products_amount,
                 },
             }).filter(([key, value]) => value !== undefined && value !== null && value !== ''),
