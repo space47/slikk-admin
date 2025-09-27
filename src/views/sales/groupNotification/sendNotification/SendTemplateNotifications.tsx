@@ -162,6 +162,7 @@ const SendTemplateNotifications: React.FC = () => {
                     scheduler_config: modifiedValues,
                     notification_group: values?.groups || '',
                     mobiles: values?.users_all ? '' : values?.users || '',
+                    is_active: true,
                 }
 
                 const res = await axioisInstance.patch(`/user_notification/${id}`, body)
@@ -181,6 +182,7 @@ const SendTemplateNotifications: React.FC = () => {
                     notification_group: values?.groups || '',
                     notification_type: 'app',
                     send_to_all: values?.users_all ? true : false,
+                    is_active: true,
                 }
                 const res = await axioisInstance.post('/notification/send', body)
                 notification.success({ message: res?.data?.message || res?.data?.data?.message || 'Notification sent successfully' })

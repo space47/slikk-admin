@@ -19,6 +19,14 @@ import MobileDrawer from './MobileDrawer'
 import FormButton from '@/components/ui/Button/FormButton'
 import { AxiosError } from 'axios'
 import { useNotificationFunc } from './sendNotificationsUtils/useNotificationFunc'
+import * as Yup from 'yup'
+
+const validationSchema = Yup.object({
+    utm_medium: Yup.string().matches(/^[^_]*$/, 'Underscores are not allowed'),
+    utm_source: Yup.string().matches(/^[^_]*$/, 'Underscores are not allowed'),
+    utm_campaign: Yup.string().matches(/^[^_]*$/, 'Underscores are not allowed'),
+    utm_tags: Yup.string().matches(/^[^_]*$/, 'Underscores are not allowed'),
+})
 
 const EditNotification = () => {
     const { id } = useParams()
@@ -139,21 +147,21 @@ const EditNotification = () => {
             </div>
 
             <div className="flex gap-10">
-                <Formik enableReinitialize initialValues={initialValue} onSubmit={handleOk}>
+                <Formik enableReinitialize initialValues={initialValue} onSubmit={handleOk} validationSchema={validationSchema}>
                     {({ values, setFieldValue }) => (
                         <Form className="w-full lg:w-2/3 mx-auto xl:mx-0">
                             <FormContainer>
                                 {currentStep === 0 && (
                                     <FirstStepNotification
+                                        // editMode={true}
                                         SendNotificationARRAY={SendNotificationARRAY}
                                         values={values as any}
                                         setImagePreview={setImagePreview}
                                         setMessagePreview={setMessagePreview}
                                         setTitleView={setTitleView}
                                         setFieldValue={setFieldValue}
-                                        editMode
-                                        initialValue={initialValue}
-                                        handleRemoveImage={() => setFieldValue('image_url_array', [])}
+                                        // initialValue={initialValue}
+                                        // handleRemoveImage={() => setFieldValue('image_url_array', [])}
                                     />
                                 )}
 

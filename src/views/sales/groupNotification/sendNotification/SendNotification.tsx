@@ -18,6 +18,14 @@ import { useNavigate } from 'react-router-dom'
 import MobileDrawer from './MobileDrawer'
 import FormButton from '@/components/ui/Button/FormButton'
 import { AxiosError } from 'axios'
+import * as Yup from 'yup'
+
+const validationSchema = Yup.object({
+    utm_medium: Yup.string().matches(/^[^_]*$/, 'Underscores are not allowed'),
+    utm_source: Yup.string().matches(/^[^_]*$/, 'Underscores are not allowed'),
+    utm_campaign: Yup.string().matches(/^[^_]*$/, 'Underscores are not allowed'),
+    utm_tags: Yup.string().matches(/^[^_]*$/, 'Underscores are not allowed'),
+})
 
 const SendNotification = () => {
     const [showSpinner, setShowSpinner] = useState(false)
@@ -109,7 +117,7 @@ const SendNotification = () => {
             </div>
 
             <div className="flex gap-10">
-                <Formik enableReinitialize initialValues={initialValue} onSubmit={handleOk}>
+                <Formik enableReinitialize initialValues={initialValue} onSubmit={handleOk} validationSchema={validationSchema}>
                     {({ values, setFieldValue }) => (
                         <Form className="w-full lg:w-2/3 mx-auto xl:mx-0">
                             <FormContainer>
