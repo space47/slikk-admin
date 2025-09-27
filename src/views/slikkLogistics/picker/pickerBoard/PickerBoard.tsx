@@ -76,6 +76,14 @@ const PickerBoard = () => {
                     />
                 </div>
                 <div className="mt-7 flex gap-2 flex-col xl:flex-row">
+                    <div className="">
+                        <a
+                            className="p-3 rounded-xl bg-gradient-to-r from-blue-500/80 to-blue-700/80 hover:from-blue-600/90 hover:to-blue-800/90 text-white no-underline flex gap-2 font-bold backdrop-blur-sm"
+                            href="https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/builds/Picker+App/slikkPicker.apk"
+                        >
+                            Picker App Link
+                        </a>
+                    </div>
                     <span>
                         <Button variant="new" onClick={() => setShowPickerAddModal(true)}>
                             Add Picker
@@ -83,6 +91,9 @@ const PickerBoard = () => {
                     </span>
                     <Button variant="new" onClick={() => navigate(`/app/riders/attendance/picker`)}>
                         Picker Attendance
+                    </Button>
+                    <Button variant="new" onClick={() => navigate('/app/picker/Leaderboard')}>
+                        Leader Board
                     </Button>
                 </div>
             </div>
@@ -96,6 +107,7 @@ const PickerBoard = () => {
                     >
                         Active Pickers
                     </div>
+
                     <div
                         onClick={() => setTabContent('in_active')}
                         className={`px-4 py-2 font-semibold text-lg transition-colors duration-300 ${

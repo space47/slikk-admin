@@ -19,6 +19,7 @@ export const ridersService = RtkQueryService.injectEndpoints({
                         shift_start_time: params.shift_start_time,
                         shift_end_time: params.shift_end_time,
                         is_active: params.is_active,
+                        agency: params.agency || '',
                     },
                 }
             },
@@ -52,6 +53,9 @@ export const ridersService = RtkQueryService.injectEndpoints({
                 }
                 if (typeof params.is_active === 'boolean') {
                     parameters.is_active = params.is_active
+                }
+                if (params.agency) {
+                    parameters.agency = params.agency
                 }
 
                 return {

@@ -263,6 +263,14 @@ const RiderDetails = () => {
                             </Button>
                         </div>
                         <div className="xl:mt-8">
+                            <a
+                                className="p-2 rounded-xl bg-gradient-to-r from-blue-500/80 to-blue-700/80 hover:from-blue-600/90 hover:to-blue-800/90 text-white no-underline flex gap-2 font-bold backdrop-blur-sm"
+                                href="https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/builds/Rider+App/rider-app-new.apk"
+                            >
+                                Rider App Link
+                            </a>
+                        </div>
+                        <div className="xl:mt-8">
                             <Button variant="new" size="sm" onClick={() => navigate(`/app/riders/attendance/rider`)}>
                                 Attendance
                             </Button>

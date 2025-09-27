@@ -195,4 +195,13 @@ export const COUPON_SERIES_FORM = [
         component: { Input },
         status: 'new_users_only',
     },
+    {
+        label: 'Free Delivery',
+        classname: 'col-span-1 w-full',
+        type: 'checkbox',
+        name: 'extra_attributes.free_delivery',
+        placeholder: 'Enter user',
+        component: { Input },
+        status: 'free_delivery',
+    },
 ]
