@@ -5,7 +5,7 @@ import Button from '@/components/ui/Button'
 import { Form, Formik } from 'formik'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { MAXMINARRAY, OFFARRAY, SendNotificationARRAY, UtmArray, initialValueAdd } from './sendNotify.common'
+import { MAXMINARRAY, OFFARRAY, SendNotificationARRAY, UtmArray, initialValue } from './sendNotify.common'
 import { useAppDispatch } from '@/store'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { handleimage } from '@/common/handleImage'
@@ -20,11 +20,12 @@ import FormButton from '@/components/ui/Button/FormButton'
 import { AxiosError } from 'axios'
 import * as Yup from 'yup'
 
-const validationSchema = UtmArray?.map((item) =>
-    Yup.object({
-        [item.name]: Yup.string().matches(/^[^_]*$/, 'Underscores are not allowed'),
-    }),
-)
+const validationSchema = Yup.object({
+    utm_medium: Yup.string().matches(/^[^_]*$/, 'Underscores are not allowed'),
+    utm_source: Yup.string().matches(/^[^_]*$/, 'Underscores are not allowed'),
+    utm_campaign: Yup.string().matches(/^[^_]*$/, 'Underscores are not allowed'),
+    utm_tags: Yup.string().matches(/^[^_]*$/, 'Underscores are not allowed'),
+})
 
 const SendNotification = () => {
     const [showSpinner, setShowSpinner] = useState(false)
@@ -42,10 +43,6 @@ const SendNotification = () => {
     }, [dispatch])
 
     const handleOk = async (val: any) => {
-        if (!val.title) {
-            notification.error({ message: 'Title is required' })
-            return
-        }
         setShowSpinner(true)
         const parser = new DOMParser()
         const htmlDoc = parser.parseFromString(val?.message ?? '', 'text/html')
@@ -121,7 +118,7 @@ const SendNotification = () => {
             </div>
 
             <div className="flex gap-10">
-                <Formik enableReinitialize initialValues={initialValueAdd} onSubmit={handleOk} validationSchema={validationSchema}>
+                <Formik enableReinitialize initialValues={initialValue} onSubmit={handleOk} validationSchema={validationSchema}>
                     {({ values, setFieldValue }) => (
                         <Form className="w-full lg:w-2/3 mx-auto xl:mx-0">
                             <FormContainer>
