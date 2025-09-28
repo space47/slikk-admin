@@ -12,7 +12,7 @@ export interface sendNotificationType {
     image_url_array: File[]
 }
 
-export const initialValueAdd: sendNotificationType = {
+export const initialValue: sendNotificationType = {
     page: '',
     notification_type: '',
     title: '',
