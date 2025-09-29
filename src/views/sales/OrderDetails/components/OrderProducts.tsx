@@ -138,6 +138,7 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
     const [itemId, setItemId] = useState<number>()
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularROwImage] = useState('')
+    const [qrCode, setQrCode] = useState('')
 
     const columns = [
         columnHelper.accessor('name', {
@@ -289,13 +290,31 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                                         className="w-28 xl:w-44 h-52 object-cover rounded-lg cursor-pointer"
                                         onClick={() => handleImageView(pdts?.image || '')}
                                     />
+                                    {qrCode && (
+                                        <div className="bg-gray-100 mt-5 flex items-center justify-center dark:bg-gray-800 p-4 rounded-xl shadow-sm">
+                                            <QRCode value={qrCode ?? ''} size={80} />
+                                        </div>
+                                    )}
                                 </div>
+
                                 <div className="ml-6 w-full ">
                                     <div className="font-bold text-[12px] xl:text-2xl">{pdts.brand}</div>
                                     <div className="font-normal text-[12px] text-gray-500 xl:text-2xl w-[100px] xl:w-full">{pdts.name}</div>
                                     <br />
                                     <div className="mb-3 xl:text-lg w-[80px] flex flex-wrap break-words text-red-700 xl:w-full dark:text-red-500">
                                         {pdts.sku}
+                                    </div>
+                                    <div>
+                                        <MdQrCodeScanner
+                                            onClick={() => {
+                                                if (qrCode) {
+                                                    setQrCode('')
+                                                } else {
+                                                    setQrCode(pdts?.sku as string)
+                                                }
+                                            }}
+                                            className="text-xl cursor-pointer"
+                                        />
                                     </div>
                                     <div className=" mb-3 xl:text-sm w-[100px] text-gray-700 xl:w-full dark:text-white">
                                         color:{pdts.color}
