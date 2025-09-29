@@ -29,6 +29,8 @@ const AddRider = () => {
     const [isAddRider, setIsAddRider] = useState(false)
     const [searchInput, setSearchInput] = useState('')
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(SearchRider[0])
+    const [showStore, setShowStore] = useState(false)
+    const [mobileStore, setMobileStore] = useState<string>('')
 
     const { data: riders, isSuccess } = ridersService.useRiderProfileQuery(
         {
@@ -89,6 +91,11 @@ const AddRider = () => {
 
     // Remove effect that sets currLat/currLong
 
+    const handleSetStore = (mobile: string) => {
+        setShowStore(true)
+        setMobileStore(mobile)
+    }
+
     const handleSubmit = (values: RiderAddTypes) => {
         console.log('values are', values)
         if (!values?.mobile) {
@@ -109,12 +116,15 @@ const AddRider = () => {
             }
             if (isAddRider) {
                 ridersData(payload)
-                    .then(() => {})
+                    .then(() => {
+                        handleSetStore(values?.mobile || '')
+                    })
                     .catch(() => {
                         notification.error({
                             message: 'Failed to add Rider',
                         })
                     })
+                s
             } else {
                 editRiders(payload)
                     .then(() => {})
@@ -213,6 +223,7 @@ const AddRider = () => {
                                             placeholder={`Enter ${item?.label}`}
                                             component={item.type === 'checkbox' ? Checkbox : Input}
                                             maxLength={item?.name === 'mobile' ? 10 : undefined}
+                                            disabled={item?.name === 'mobile' && !isAddRider}
                                             className="w-full"
                                         />
                                     </FormItem>
@@ -281,6 +292,7 @@ const AddRider = () => {
                                 />
                             </div>
                         </FormContainer>
+                        {showStore && <AssignStoreToUser mobile={mobileStore} customClass="mb-6 mt-10 xl:ml-20" />}
                         <FormContainer className="mt-8 flex justify-end">
                             <Button variant="accept" type="submit">
                                 Submit
