@@ -12,9 +12,10 @@ import React, { useEffect, useMemo, useState } from 'react'
 interface props {
     mobile: string | undefined
     customClass?: string
+    selectClass?: string
 }
 
-const AssignStoreToUser = ({ mobile, customClass }: props) => {
+const AssignStoreToUser = ({ mobile, customClass, selectClass }: props) => {
     const [storePicker, setStorePicker] = useState<(string | number)[]>([])
     const dispatch = useAppDispatch()
     const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
@@ -73,7 +74,7 @@ const AssignStoreToUser = ({ mobile, customClass }: props) => {
                         <Select
                             isClearable
                             isMulti
-                            className="w-3/4"
+                            className={selectClass ? selectClass : 'w-3/4'}
                             options={storeResults}
                             getOptionLabel={(option) => option.code}
                             getOptionValue={(option) => option.id}

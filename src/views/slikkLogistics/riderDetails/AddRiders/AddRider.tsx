@@ -236,7 +236,7 @@ const AddRider = () => {
                                                 <div className="w-full">
                                                     <Select
                                                         isClearable
-                                                        className="w-1/2"
+                                                        className="w-full"
                                                         options={RiderTypeArray}
                                                         getOptionLabel={(option) => option.label}
                                                         getOptionValue={(option) => option.value}
@@ -250,9 +250,23 @@ const AddRider = () => {
                                         }}
                                     </Field>
                                 </FormItem>
-                                {!isAddRider && <AssignStoreToUser mobile={values?.mobile || ''} customClass="mb-6 xl:ml-20" />}
-                                <FullTimePicker label="SHIFT START" name="shift_start_time" fieldname="shift_start_time" />
-                                <FullTimePicker label="SHIFT END" name="shift_end_time" fieldname="shift_end_time" />
+                                {!isAddRider && (
+                                    <AssignStoreToUser mobile={values?.mobile || ''} customClass="mb-6 xl:ml-20" selectClass=" w-full" />
+                                )}
+                                <FullTimePicker
+                                    needClass
+                                    customClass="w-full"
+                                    label="SHIFT START"
+                                    name="shift_start_time"
+                                    fieldname="shift_start_time"
+                                />
+                                <FullTimePicker
+                                    needClass
+                                    customClass="w-full"
+                                    label="SHIFT END"
+                                    name="shift_end_time"
+                                    fieldname="shift_end_time"
+                                />
                                 <CommonSelect
                                     label="Rider Agency"
                                     name="agency"
