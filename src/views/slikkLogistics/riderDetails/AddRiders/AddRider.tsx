@@ -239,7 +239,7 @@ const AddRider = () => {
                                         }}
                                     </Field>
                                 </FormItem>
-                                <AssignStoreToUser mobile={values?.mobile || ''} customClass="mb-6 xl:ml-20" />
+                                {!isAddRider && <AssignStoreToUser mobile={values?.mobile || ''} customClass="mb-6 xl:ml-20" />}
                                 <FullTimePicker label="SHIFT START" name="shift_start_time" fieldname="shift_start_time" />
                                 <FullTimePicker label="SHIFT END" name="shift_end_time" fieldname="shift_end_time" />
                                 <CommonSelect

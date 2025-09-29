@@ -27,6 +27,7 @@ import { calculateDistance, RiderColumns } from './RiderUtils/RiderDetailsColumn
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import BulkEditRiderModal from './RiderComponents/BulkEditRiderModal'
 import { notification } from 'antd'
+import AddBulk from './RiderComponents/AddBulk'
 
 const RiderDetails = () => {
     const navigate = useNavigate()
@@ -49,6 +50,7 @@ const RiderDetails = () => {
     const [isCheckModal, setIsCheckModal] = useState<boolean>(false)
     const [isCheckOutModal, setIsCheckOutModal] = useState<boolean>(false)
     const [isBulkRiderModal, setIsBulkRiderModal] = useState<boolean>(false)
+    const [isBulkAdd, setIsBulkAdd] = useState<boolean>(false)
     const [riderSearchByType, setRiderSearchByType] = useState('name')
     const [riderMobileStore, setRiderMobileStore] = useState<number[]>([])
     const [currentStoreId, setCurrentStoreId] = useState<number | null>(null)
@@ -268,6 +270,11 @@ const RiderDetails = () => {
                             )}
                         </div>
                         <div className="xl:mt-8">
+                            <Button variant="new" size="sm" onClick={() => setIsBulkAdd(true)}>
+                                Bulk Add Rider
+                            </Button>
+                        </div>
+                        <div className="xl:mt-8">
                             <Button variant="new" size="sm" onClick={() => navigate(`/app/riders/addNew`)}>
                                 ADD / UPDATE RIDERS
                             </Button>
@@ -280,6 +287,7 @@ const RiderDetails = () => {
                                 Rider App Link
                             </a>
                         </div>
+
                         <div className="xl:mt-8">
                             <Button variant="new" size="sm" onClick={() => navigate(`/app/riders/attendance/rider`)}>
                                 Attendance
@@ -451,6 +459,7 @@ const RiderDetails = () => {
             {isBulkRiderModal && (
                 <BulkEditRiderModal dialogIsOpen={isBulkRiderModal} setIsOpen={setIsBulkRiderModal} riderMobileStore={riderMobileStore} />
             )}
+            {isBulkAdd && <AddBulk isOpen={isBulkAdd} setIsOpen={setIsBulkAdd} />}
         </div>
     )
 }
