@@ -30,7 +30,7 @@ const IndentStatusModal = ({ isOpen, onClose, id }: Props) => {
             {isLoading ? (
                 <Spinner size={30} />
             ) : (
-                <div className="p-6 bg-gray-50 rounded-xl flex flex-col h-full overflow-y-scroll">
+                <div className="p-6 bg-gray-50 rounded-xl flex flex-col h-full">
                     <div className="grid grid-cols-2 gap-4 mb-6">
                         <div className="bg-white shadow-md rounded-lg p-4 text-center">
                             <p className="text-sm text-gray-500">Total Items</p>
@@ -42,7 +42,7 @@ const IndentStatusModal = ({ isOpen, onClose, id }: Props) => {
                         </div>
                     </div>
                     <h2 className="text-lg font-semibold text-gray-700 mb-3">Picker Details</h2>
-                    <div className="bg-white shadow-md rounded-lg flex-1 min-h-0 overflow-hidden">
+                    <div className="bg-white shadow-md rounded-lg flex-1 min-h-0 overflow-auto" style={{ maxHeight: 300 }}>
                         <EasyTable noPage overflow columns={pickerColumns} mainData={indentDetails?.picker_items || []} />
                     </div>
                 </div>
