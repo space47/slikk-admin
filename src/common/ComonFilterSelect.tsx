@@ -463,12 +463,13 @@ const CommonFilterSelect = ({ setFilterId, filterId, isOnchange, isExclude, isCs
                                             min="0"
                                             max="100"
                                             {...field}
-                                            onChange={(e) =>
+                                            onChange={(e) => {
+                                                field.onChange(e) // Update Formik field
                                                 dispatchState({
                                                     type: 'SET_MAX_DISCOUNT',
                                                     payload: e.target.value ? parseFloat(e.target.value) : null,
                                                 })
-                                            }
+                                            }}
                                         />
                                     )}
                                 </Field>
@@ -483,12 +484,13 @@ const CommonFilterSelect = ({ setFilterId, filterId, isOnchange, isExclude, isCs
                                             min="0"
                                             max="100"
                                             {...field}
-                                            onChange={(e) =>
+                                            onChange={(e) => {
+                                                field.onChange(e) // Update Formik field
                                                 dispatchState({
                                                     type: 'SET_MIN_DISCOUNT',
                                                     payload: e.target.value ? parseFloat(e.target.value) : null,
                                                 })
-                                            }
+                                            }}
                                         />
                                     )}
                                 </Field>
@@ -503,12 +505,13 @@ const CommonFilterSelect = ({ setFilterId, filterId, isOnchange, isExclude, isCs
                                             min="0"
                                             step="0.01"
                                             {...field}
-                                            onChange={(e) =>
+                                            onChange={(e) => {
+                                                field.onChange(e) // Update Formik field
                                                 dispatchState({
                                                     type: 'SET_MAX_PRICE',
                                                     payload: e.target.value ? parseFloat(e.target.value) : null,
                                                 })
-                                            }
+                                            }}
                                         />
                                     )}
                                 </Field>
@@ -523,12 +526,13 @@ const CommonFilterSelect = ({ setFilterId, filterId, isOnchange, isExclude, isCs
                                             min="0"
                                             step="0.01"
                                             {...field}
-                                            onChange={(e) =>
+                                            onChange={(e) => {
+                                                field.onChange(e) // Update Formik field
                                                 dispatchState({
                                                     type: 'SET_MIN_PRICE',
                                                     payload: e.target.value ? parseFloat(e.target.value) : null,
                                                 })
-                                            }
+                                            }}
                                         />
                                     )}
                                 </Field>
