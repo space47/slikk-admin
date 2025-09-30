@@ -23,7 +23,9 @@ export const pageSettingsService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
         mainPageSettings: builder.query<mainPageSettingsResponseTypes, PageSettingsDataTypes>({
             query: (params) => {
-                const parameters: Record<string, number | any> = {}
+                const parameters: Record<string, number | any> = {
+                    dashboard: true,
+                }
                 if (params.page) parameters.p = params.page
                 if (params.pageSize) parameters.page_size = params.pageSize
                 if (params.pageId) parameters.page = params.pageId
@@ -39,7 +41,9 @@ export const pageSettingsService = RtkQueryService.injectEndpoints({
         }),
         pageSettingsData: builder.query<pageSettingsResponseType, PageSettingsDataTypes>({
             query: (params) => {
-                const parameters: Record<string, number | string[] | any> = {}
+                const parameters: Record<string, number | string[] | any> = {
+                    dashboard: true,
+                }
                 if (params.page) parameters.p = params.page
                 if (params.pageSize) parameters.page_size = params.pageSize
                 if (params.pageId) parameters.page = params.pageId
