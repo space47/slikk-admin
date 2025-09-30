@@ -12,12 +12,15 @@ import { beforeUpload } from '@/common/beforeUpload'
 import { handleimage } from '@/common/handleImage'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 import PageEditVideo from '../pageSettings/PageEditVideo'
+import store, { useAppSelector } from '@/store'
+import { USER_PROFILE_DATA } from '@/store/types/company.types'
+import MultiSelect from '@/common/MultiSelect'
 
 const EditSubPage = () => {
     const { id } = useParams()
     const navigate = useNavigate()
     const [pageNamesData, setPageNamesData] = useState<pageNameTypes[] | undefined>([])
-
+    const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
     const query = `/subpage?sub_page_id=${id}`
     const { data: subPageData } = useFetchSingleData<any>({ url: query })
 
@@ -55,6 +58,7 @@ const EditSubPage = () => {
             position: Number(values?.position) || '',
             image: imageUpload || '',
             is_active: values?.is_active || false,
+            store: values?.store || [],
             extra_attributes: {
                 primaryColor: values?.extra_attributes?.primary_color || '',
                 accentColor: values?.extra_attributes?.accent_color || '',
@@ -131,6 +135,15 @@ const EditSubPage = () => {
                                     onChange={(val) => setFieldValue('page', val)}
                                 />
                             </div>
+
+                            <MultiSelect
+                                label="Store Select"
+                                name="store"
+                                setFieldValue={setFieldValue}
+                                customClass="w-full"
+                                options={storeList}
+                                compareKey="id"
+                            />
 
                             <FormItem label="Position" className="space-y-1">
                                 <Field

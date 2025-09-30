@@ -12,6 +12,9 @@ import { useNavigate } from 'react-router-dom'
 import PageAddVideo from '../../pageSettings/PageAddVideo'
 import { beforeUpload } from '@/common/beforeUpload'
 import { handleimage } from '@/common/handleImage'
+import MultiSelect from '@/common/MultiSelect'
+import store, { useAppSelector } from '@/store'
+import { USER_PROFILE_DATA } from '@/store/types/company.types'
 
 interface Props {
     dialogIsOpen: boolean
@@ -20,6 +23,7 @@ interface Props {
 
 const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: Props) => {
     const [pageNamesData, setPageNamesData] = useState<pageNameTypes[] | undefined>([])
+    const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
     const navigate = useNavigate()
 
     const { data: pageNames, isSuccess: isPageNamesSuccess } = pageSettingsService.usePageNamesQuery({
@@ -53,6 +57,7 @@ const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: Props) => {
             position: Number(values?.position) || '',
             image: imageUpload || '',
             is_active: values?.is_active || false,
+            store: values?.store || [],
             extra_attributes: {
                 primaryColor: values?.extra_attributes?.primary_color || '',
                 accentColor: values?.extra_attributes?.accent_color || '',
@@ -77,7 +82,7 @@ const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: Props) => {
     }
 
     return (
-        <Dialog isOpen={dialogIsOpen} onClose={onDialogClose} width={1000}>
+        <Dialog isOpen={dialogIsOpen} onClose={onDialogClose} width={1200}>
             <h5 className="mb-4 text-red-500">Add New Sub Page</h5>
             <Formik initialValues={initialValues} onSubmit={handleSubmit}>
                 {({ setFieldValue, values }) => (
@@ -140,7 +145,17 @@ const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: Props) => {
                             />
                         </FormItem>
 
+                        <MultiSelect
+                            label="Store Select"
+                            name="store"
+                            setFieldValue={setFieldValue}
+                            customClass="w-full"
+                            options={storeList}
+                            compareKey="id"
+                        />
+
                         <div>
+                            <div className="font-semibold"> Select Page</div>
                             <Select
                                 isClearable
                                 className="w-full"
@@ -152,8 +167,9 @@ const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: Props) => {
                                 onChange={(val) => setFieldValue('page', val)}
                             />
                         </div>
-                        <div className="flex justify-end mt-10">
-                            <Button className="ltr:mr-2 rtl:ml-2" variant="reject" onClick={onDialogClose}>
+
+                        <div className="flex justify-start mt-10 gap-6">
+                            <Button className="" variant="reject" onClick={onDialogClose}>
                                 Cancel
                             </Button>
                             <Button type="submit" variant="solid">
