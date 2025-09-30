@@ -13,6 +13,7 @@ export type RiderAddTypes = {
     agency?: string
     lat?: number
     long?: number
+    store?: number[]
 }
 
 type UserType = {
