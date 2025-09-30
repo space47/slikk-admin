@@ -36,7 +36,7 @@ export const useProductColumns = ({ handleOpenModal, handleViewProducts }: props
                 header: 'Edit',
                 accessorKey: '',
                 cell: ({ row }) => (
-                    <button className="border-none bg-none" onClick={() => navigate(`/app/catalog/products/${row.original.barcode}`)}>
+                    <button className="border-none bg-none" onClick={() => navigate(`/app/catalog/products/${row.original.skid}`)}>
                         {/* <a href={`/app/catalog/products/${row.original.barcode}`} target="_blank" rel="noreferrer">
                             {' '}
                             </a> */}

@@ -16,6 +16,7 @@ export type Product = Partial<{
     barcode: string
     hsn: string
     sku: string
+    skid: string
     usage: string
     imported_by: string
     shelf_life: number
