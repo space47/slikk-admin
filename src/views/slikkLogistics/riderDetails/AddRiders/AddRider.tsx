@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, Checkbox, Dropdown, FormContainer, FormItem, Input, Select } from '@/components/ui'
-// import { ridersService } from '@/store/services/riderServices'
 import { Field, FieldProps, Form, Formik } from 'formik'
 import React, { useEffect, useState, useMemo } from 'react'
 import { RiderFieldArray, RiderTypeArray, SearchRider } from './riderUtils'
@@ -13,15 +12,15 @@ import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { RiderDetailType, setRiderProfile } from '@/store/slices/riderDetails/riderDetails.slice'
 import { GenericCommonTypes } from '@/common/allTypesCommon'
-import AssignStoreToUser from '@/common/AssignStoreToUser'
 import { HiSearch } from 'react-icons/hi'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
+import MultiSelect from '@/common/MultiSelect'
+import { USER_PROFILE_DATA } from '@/store/types/company.types'
 
 const AddRider = () => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
-    // Remove separate lat/long state, will use Formik values instead
     const [selectedRider, setSelectedRider] = useState<string | number>()
     const [ridersData, riderDataResponse] = ridersService.useAddRidersMutation()
     const [editRiders, riderEditResponse] = ridersService.useEditRidersMutation()
@@ -29,8 +28,9 @@ const AddRider = () => {
     const [isAddRider, setIsAddRider] = useState(false)
     const [searchInput, setSearchInput] = useState('')
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(SearchRider[0])
-    const [showStore, setShowStore] = useState(false)
-    const [mobileStore, setMobileStore] = useState<string>('')
+    const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
+
+    console.log('storeResults are', storeList)
 
     const { data: riders, isSuccess } = ridersService.useRiderProfileQuery(
         {
@@ -89,13 +89,6 @@ const AddRider = () => {
         }
     }, [riderDataResponse, riderEditResponse])
 
-    // Remove effect that sets currLat/currLong
-
-    const handleSetStore = (mobile: string) => {
-        setShowStore(true)
-        setMobileStore(mobile)
-    }
-
     const handleSubmit = (values: RiderAddTypes) => {
         console.log('values are', values)
         if (!values?.mobile) {
@@ -113,18 +106,16 @@ const AddRider = () => {
                 shift_end_time: values?.shift_end_time,
                 is_active: values?.is_active || false,
                 agency: values?.agency || '',
+                store_id: values?.store?.join(',') || '',
             }
             if (isAddRider) {
                 ridersData(payload)
-                    .then(() => {
-                        handleSetStore(values?.mobile || '')
-                    })
+                    .then(() => {})
                     .catch(() => {
                         notification.error({
                             message: 'Failed to add Rider',
                         })
                     })
-                s
             } else {
                 editRiders(payload)
                     .then(() => {})
@@ -228,6 +219,14 @@ const AddRider = () => {
                                         />
                                     </FormItem>
                                 ))}
+                                <MultiSelect
+                                    label="Store Select"
+                                    name="store"
+                                    setFieldValue={setFieldValue}
+                                    customClass="w-full"
+                                    options={storeList}
+                                    compareKey="id"
+                                />
                                 <FormItem label="Rider Type" className="col-span-1">
                                     <Field name="rider_type">
                                         {({ form, field }: FieldProps) => {
@@ -250,9 +249,7 @@ const AddRider = () => {
                                         }}
                                     </Field>
                                 </FormItem>
-                                {!isAddRider && (
-                                    <AssignStoreToUser mobile={values?.mobile || ''} customClass="mb-6 xl:ml-20" selectClass=" w-full" />
-                                )}
+
                                 <FullTimePicker
                                     needClass
                                     customClass="w-full"
@@ -306,7 +303,6 @@ const AddRider = () => {
                                 />
                             </div>
                         </FormContainer>
-                        {showStore && <AssignStoreToUser mobile={mobileStore} customClass="mb-6 mt-10 xl:ml-20" />}
                         <FormContainer className="mt-8 flex justify-end">
                             <Button variant="accept" type="submit">
                                 Submit
