@@ -163,6 +163,7 @@ const SendTemplateNotifications: React.FC = () => {
                     notification_group: values?.groups || '',
                     mobiles: values?.users_all ? '' : values?.users || '',
                     is_active: true,
+                    send_to_all: values?.users_all ? true : false,
                 }
 
                 const res = await axioisInstance.patch(`/user_notification/${id}`, body)
