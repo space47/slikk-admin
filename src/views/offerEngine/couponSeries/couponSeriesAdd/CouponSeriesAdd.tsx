@@ -44,7 +44,7 @@ const CouponSeriesAdd = () => {
                 discount_type: values?.discount_type,
                 value: values?.value,
                 image: imageUpload,
-                min_cart_value: values?.min_cart_value,
+                min_cart_value: values?.min_cart_value || null,
                 max_count: values?.max_count,
                 maximum_discount: values?.maximum_discount,
                 valid_from: values?.valid_from,
@@ -83,7 +83,7 @@ const CouponSeriesAdd = () => {
             }).unwrap()
         } catch (error: any) {
             notification.error({
-                message: error?.data?.message || 'Failed to add Series',
+                message: error?.response?.data?.message || 'Failed to add Series',
             })
         }
     }

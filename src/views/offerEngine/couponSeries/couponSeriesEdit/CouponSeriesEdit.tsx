@@ -81,7 +81,7 @@ const CouponSeriesEdit = () => {
                 discount_type: values?.discount_type,
                 value: values?.value,
                 image: imageUpload,
-                min_cart_value: values?.min_cart_value,
+                min_cart_value: values?.min_cart_value || null,
                 max_count: values?.max_count,
                 maximum_discount: values?.maximum_discount,
                 valid_from: values?.valid_from,
