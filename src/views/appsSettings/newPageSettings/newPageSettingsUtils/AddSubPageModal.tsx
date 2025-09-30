@@ -57,7 +57,7 @@ const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: Props) => {
             position: Number(values?.position) || '',
             image: imageUpload || '',
             is_active: values?.is_active || false,
-            store: values?.store || [],
+            stores: values?.store || [],
             extra_attributes: {
                 primaryColor: values?.extra_attributes?.primary_color || '',
                 accentColor: values?.extra_attributes?.accent_color || '',
