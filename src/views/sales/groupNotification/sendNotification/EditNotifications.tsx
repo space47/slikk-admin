@@ -98,6 +98,7 @@ const EditNotification = () => {
                 ].filter((filter) => filter),
                 target_page: targetPage,
                 page_title: val?.page_title ?? '',
+                sub_page: val?.sub_page ?? '',
             },
             mobiles: val?.users ?? [],
         }
