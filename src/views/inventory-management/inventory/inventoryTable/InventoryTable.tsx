@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react'
 import { useInventoryApi } from '../inventoryUtils/useInventoryApi'
-import { Button, Dropdown, Pagination, Select } from '@/components/ui'
+import { Button, Dropdown, Pagination, Select, Spinner } from '@/components/ui'
 import { useAppSelector } from '@/store'
 import { USER_PROFILE_DATA } from '@/store/types/company.types'
 import { InventoryFilters } from '../inventoryUtils/inventoryCommon'
@@ -26,6 +26,7 @@ const InventoryTable = () => {
     const [particularRowImage, setParticularRowImage] = useState<string | null>('')
     const [locationTrabsferModal, setLocationTransferModal] = useState(false)
     const [searchType, setSearchType] = useState<{ value: string; label?: string }>(InventoryFilters[0])
+    const [spinner, setSpinner] = useState(false)
 
     const { data, responseStatus, totalData, setPage, setPageSize, setGlobalFilter, page, pageSize, globalFilter } = useInventoryApi({
         searchType,
@@ -46,6 +47,7 @@ const InventoryTable = () => {
     })
 
     const hanldeSync = async () => {
+        setSpinner(true)
         const body = {
             store_id: storeId,
         }
@@ -61,6 +63,8 @@ const InventoryTable = () => {
                     message: error?.response?.data?.message || 'Something went wrong',
                 })
             }
+        } finally {
+            setSpinner(false)
         }
     }
 
@@ -112,7 +116,10 @@ const InventoryTable = () => {
                         {storeCode && storeCode !== '' && (
                             <div className="xl:mt-6">
                                 <Button variant="accept" size="sm" onClick={hanldeSync}>
-                                    Sync Inventory to Location
+                                    <span className="flex items-center gap-2">
+                                        {spinner && <Spinner size={20} color="white" />}{' '}
+                                        <span>{spinner ? 'Syncing' : 'Sync'} Inventory to Location</span>
+                                    </span>
                                 </Button>
                             </div>
                         )}
