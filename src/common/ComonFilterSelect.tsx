@@ -190,34 +190,9 @@ const CommonFilterSelect = ({ setFilterId, filterId, isOnchange, isExclude, isCs
     }
 
     const handleAddFilters = async (values: any) => {
-        const priceValues: string[] = []
-        if (values.min_price) {
-            priceValues.push(`minprice_${values.min_price}`)
-        }
-        if (values.max_price) {
-            priceValues.push(`maxprice_${values.max_price}`)
-        }
-        if (values.min_discount) {
-            priceValues.push(`minoff_${values.min_discount}`)
-        }
-        if (values.max_discount) {
-            priceValues.push(`maxoff_${values.max_discount}`)
-        }
-        const baseFilters = isExclude
+        const newFilterData = isExclude
             ? showAddFilter.map((_, index) => values.filtersRemove[index] || [])
             : showAddFilter.map((_, index) => values.filtersAdd[index] || [])
-
-        const newFilterData = baseFilters.map((arr) => {
-            const cleanedArr = arr.filter(
-                (item: string) =>
-                    !item.startsWith('minprice_') &&
-                    !item.startsWith('maxprice_') &&
-                    !item.startsWith('minoff_') &&
-                    !item.startsWith('maxoff_'),
-            )
-            return [...cleanedArr, ...priceValues]
-        })
-
         setFiltersData((prev) => {
             const updatedFilters = [...prev, newFilterData]
             const lastElement = updatedFilters.at(-1)
@@ -238,12 +213,22 @@ const CommonFilterSelect = ({ setFilterId, filterId, isOnchange, isExclude, isCs
     }
 
     const sendFilterData = async (filterData: any) => {
+        const additionalData = Object.fromEntries(
+            Object.entries({
+                max_discount: state.max_discount || '',
+                min_discount: state.min_discount || '',
+                max_price: state.max_price || '',
+                min_price: state.min_price || '',
+            }).filter(([, value]) => value !== ''),
+        )
+
         const formData = new FormData()
         if (filterData && filterData.length > 0) {
             formData.append('filter_data', JSON.stringify(filterData))
         } else {
             formData.append('filter_data', '')
         }
+        formData.append('extra_filters', JSON.stringify(additionalData))
         if (isCsv && csvFile && csvFile.length > 0) {
             formData.append('skus', csvFile[0])
         } else {
@@ -325,7 +310,7 @@ const CommonFilterSelect = ({ setFilterId, filterId, isOnchange, isExclude, isCs
                                 <Field name={isExclude ? `filtersRemove[${index}]` : `filtersAdd[${index}]`}>
                                     {({ field, form }: FieldProps<any>) => {
                                         const selectedOptions =
-                                            field?.value?.flatMap((value: any) =>
+                                            field.value?.flatMap((value: any) =>
                                                 filters?.filters?.flatMap((filterGroup) =>
                                                     filterGroup?.options?.filter((option: any) => option.value === value),
                                                 ),
