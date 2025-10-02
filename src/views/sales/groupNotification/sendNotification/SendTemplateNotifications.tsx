@@ -166,7 +166,9 @@ const SendTemplateNotifications: React.FC = () => {
                     send_to_all: values?.users_all ? true : false,
                 }
 
-                const res = await axioisInstance.patch(`/user_notification/${id}`, body)
+                const filteredBody = Object.fromEntries(Object.entries(body).filter(([, v]) => v !== undefined && v !== null && v !== ''))
+
+                const res = await axioisInstance.patch(`/user_notification/${id}`, filteredBody)
                 notification.success({ message: res?.data?.message || res?.data?.data?.message || 'Notification scheduled successfully' })
             } catch (error) {
                 if (error instanceof AxiosError) {
@@ -184,7 +186,8 @@ const SendTemplateNotifications: React.FC = () => {
                     notification_type: 'app',
                     send_to_all: values?.users_all ? true : false,
                 }
-                const res = await axioisInstance.post('/notification/send', body)
+                const filteredBody = Object.fromEntries(Object.entries(body).filter(([, v]) => v !== undefined && v !== null && v !== ''))
+                const res = await axioisInstance.post('/notification/send', filteredBody)
                 notification.success({ message: res?.data?.message || res?.data?.data?.message || 'Notification sent successfully' })
             } catch (error) {
                 if (error instanceof AxiosError) {
