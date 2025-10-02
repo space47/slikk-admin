@@ -1441,6 +1441,24 @@ const appsRoute: Routes = [
     },
 
     {
+        key: 'appsConfiguration.storeConfigurations',
+        path: `${APP_PREFIX_PATH}/storeConfigurations`,
+        component: lazy(() => import('@/views/configurationsSlikk/storeConfig/storeConfigTable/StoreConfigTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsConfiguration.storeConfigurations',
+        path: `${APP_PREFIX_PATH}/storeConfigurations/edit/:id`,
+        component: lazy(() => import('@/views/configurationsSlikk/storeConfig/storeConfigEdit/StoreEditConfig')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsConfiguration.storeConfigurations',
+        path: `${APP_PREFIX_PATH}/storeConfigurations/add`,
+        component: lazy(() => import('@/views/configurationsSlikk/storeConfig/storeConfigAdd/StoreConfigAdd')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsConfiguration.configurations',
         path: `${APP_PREFIX_PATH}/configurations`,
         component: lazy(() => import('@/views/configurationsSlikk/configg/ConfigurationPage')),

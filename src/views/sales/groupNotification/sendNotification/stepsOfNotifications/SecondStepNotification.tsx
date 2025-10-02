@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Checkbox, FormContainer, FormItem, Select } from '@/components/ui'
+import { Checkbox, FormContainer, FormItem, Input, Select } from '@/components/ui'
 import { Field, FieldProps } from 'formik'
 import React, { useEffect, useState } from 'react'
 import { DISCOUNTOPTIONS, targetPageArray } from '../sendNotify.common'
@@ -69,6 +69,29 @@ const SecondStepNotification = ({ values, setFilterId, filterId }: SecondStepNot
                     </Field>
                 </div>
 
+                {!values?.is_custom && (
+                    <FormItem label="Target Page">
+                        <Field name="target_page">
+                            {({ field, form }: FieldProps<any>) => {
+                                return (
+                                    <Select
+                                        isClearable
+                                        placeholder="Select Target Page"
+                                        options={targetPageArray}
+                                        value={targetPageArray.find((option: any) => option.value === field.value)}
+                                        onChange={(option) => form.setFieldValue(field.name, option?.value)}
+                                    />
+                                )
+                            }}
+                        </Field>
+                    </FormItem>
+                )}
+                {values?.target_page?.toLowerCase() === 'home' && (
+                    <FormItem label="Target Sub Page">
+                        <Field type="text" name="sub" component={Input} placeholder="Enter target Sub Page" />
+                    </FormItem>
+                )}
+
                 <div>
                     <FormItem label="Is Custom" className="w-full xl:w-2/3">
                         <Field type="checkbox" name="is_custom" component={Checkbox} />
@@ -136,22 +159,6 @@ const SecondStepNotification = ({ values, setFilterId, filterId }: SecondStepNot
                         </FormContainer>
                     </>
                 )}
-
-                <FormItem label="Target Page">
-                    <Field name="target_page">
-                        {({ field, form }: FieldProps<any>) => {
-                            return (
-                                <Select
-                                    isClearable
-                                    placeholder="Select Target Page"
-                                    options={targetPageArray}
-                                    value={targetPageArray.find((option: any) => option.value === field.value)}
-                                    onChange={(option) => form.setFieldValue(field.name, option?.value)}
-                                />
-                            )
-                        }}
-                    </Field>
-                </FormItem>
             </div>
         </div>
     )

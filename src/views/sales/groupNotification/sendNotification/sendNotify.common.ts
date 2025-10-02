@@ -158,6 +158,7 @@ export const notificationTypeArray = [
 ]
 
 export const targetPageArray = [
+    { label: 'home', value: 'home' },
     { label: 'product', value: 'product' },
     { label: 'productListing', value: 'productListing' },
     { label: 'wishlist', value: 'wishlist' },
