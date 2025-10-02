@@ -45,12 +45,15 @@ const EditSubPage = () => {
         extra_attributes: {
             primary_color: subPageData?.extra_attributes?.primaryColor || '',
             accent_color: subPageData?.extra_attributes?.accentColor || '',
+            text_color: subPageData?.extra_attributes?.textColor || '',
+            text_color_inactive: subPageData?.extra_attributes?.textColorInactive || '',
         },
+        store: subPageData?.stores?.map((item) => item?.id) || [],
     }
 
     const handleSubmit = async (values: any) => {
         const imageUpload = values?.image_array?.length > 0 ? await handleimage('product', values?.image_array) : ''
-        console.log('here')
+        console.log('here', values)
         const body = {
             name: values.name || '',
             page: values.page?.id || '',
@@ -63,6 +66,7 @@ const EditSubPage = () => {
                 primaryColor: values?.extra_attributes?.primary_color || '',
                 accentColor: values?.extra_attributes?.accent_color || '',
                 textColor: values?.extra_attributes?.text_color || '',
+                textColorInactive: values?.extra_attributes?.text_color_inactive || '',
             },
         }
 
@@ -169,6 +173,15 @@ const EditSubPage = () => {
                                     type="text"
                                     placeholder="Enter Text Color"
                                     className="w-full rounded-lg px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition"
+                                />
+                            </FormItem>
+
+                            <FormItem label="Text Color Inactive">
+                                <Field
+                                    name="extra_attributes.text_color_inactive"
+                                    type="text"
+                                    placeholder="Enter Text Color Inactive"
+                                    className="rounded-xl px-3 py-2 w-full border border-gray-300"
                                 />
                             </FormItem>
 
