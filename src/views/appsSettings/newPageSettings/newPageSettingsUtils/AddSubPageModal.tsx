@@ -62,6 +62,7 @@ const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: Props) => {
                 primaryColor: values?.extra_attributes?.primary_color || '',
                 accentColor: values?.extra_attributes?.accent_color || '',
                 textColor: values?.extra_attributes?.text_color || '',
+                textColorInactive: values?.extra_attributes?.text_color_inactive || '',
             },
         }
 
@@ -125,6 +126,14 @@ const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: Props) => {
                                 name="extra_attributes.text_color"
                                 type="text"
                                 placeholder="Enter Text Color"
+                                className="rounded-xl px-3 py-2 w-full border border-gray-300"
+                            />
+                        </FormItem>
+                        <FormItem label="Text Color Inactive">
+                            <Field
+                                name="extra_attributes.text_color_inactive"
+                                type="text"
+                                placeholder="Enter Text Color Inactive"
                                 className="rounded-xl px-3 py-2 w-full border border-gray-300"
                             />
                         </FormItem>
