@@ -1019,6 +1019,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         subMenu: [],
                     },
                     {
+                        key: 'appsConfiguration.storeConfigurations',
+                        path: `${APP_PREFIX_PATH}/storeConfigurations`,
+                        title: 'Store Configurations',
+                        translateKey: 'nav.appsConfiguration.storeConfigurations',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
                         key: 'appsConfiguration.reportConfigurations',
                         path: `${APP_PREFIX_PATH}/reportConfigurations`,
                         title: 'Report Configurations',

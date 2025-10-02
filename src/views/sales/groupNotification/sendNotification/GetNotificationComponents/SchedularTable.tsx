@@ -10,6 +10,8 @@ import { TbPlayerTrackNextFilled } from 'react-icons/tb'
 import { FaEdit } from 'react-icons/fa'
 import { Switch } from 'antd'
 import ActiveInactiveModal from '@/views/appsSettings/careers/careerDetails/ActiveInactiveModal'
+import { BsFillInfoSquareFill } from 'react-icons/bs'
+import StatusModal from './StatusModal'
 
 interface SentProps {
     data: any[]
@@ -28,6 +30,8 @@ const SchedularTable = ({ data, page, pageSize, onPaginationChange, onSelectChan
     const [forActive, setForActive] = useState('')
     const [showModalForActive, setShowModalForActive] = useState(false)
     const [checkActive, setCheckActive] = useState(false)
+    const [idStore, setIdStore] = useState<number | string>('')
+    const [statusModal, setStatusModal] = useState(false)
 
     const handleActiveCareer = (id: number | string, e: React.MouseEvent, checked: boolean) => {
         setForActive(id as string)
@@ -113,7 +117,7 @@ const SchedularTable = ({ data, page, pageSize, onPaginationChange, onSelectChan
             {
                 header: 'Status Logs',
                 accessorKey: 'status_logs',
-                cell: (info) => JSON.stringify(info.getValue()), // You can adjust based on how you want to display status logs
+                cell: (info) => JSON.stringify(info.getValue()),
             },
             {
                 header: 'Expiry Date',
@@ -139,6 +143,21 @@ const SchedularTable = ({ data, page, pageSize, onPaginationChange, onSelectChan
                         className="text-blue-600 hover:underline"
                     >
                         <TbPlayerTrackNextFilled className="text-2xl" />
+                    </button>
+                ),
+            },
+            {
+                header: 'Stats',
+                accessorKey: 'name',
+                cell: (info) => (
+                    <button
+                        className="text-yellow-600 hover:underline cursor-pointer"
+                        onClick={() => {
+                            setIdStore(info.getValue() as string)
+                            setStatusModal(true)
+                        }}
+                    >
+                        <BsFillInfoSquareFill className="text-2xl" />
                     </button>
                 ),
             },
@@ -171,6 +190,7 @@ const SchedularTable = ({ data, page, pageSize, onPaginationChange, onSelectChan
                     label="Notification"
                 />
             )}
+            {statusModal && <StatusModal isOpen={statusModal} onClose={() => setStatusModal(false)} name={idStore as string} />}
         </div>
     )
 }
