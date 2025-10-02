@@ -30,6 +30,7 @@ const onRequest = async (config: InternalAxiosRequestConfig): Promise<InternalAx
 }
 
 const onRequestError = (error: AxiosError): Promise<AxiosError> => {
+    console.log('Error in request:', error)
     return Promise.reject(error)
 }
 
@@ -38,7 +39,16 @@ const onResponse = (response: AxiosResponse): AxiosResponse => {
 }
 
 const onResponseError = (error: AxiosError): Promise<AxiosError> => {
-    if (error.response?.status === 403) {
+    const method = error.config?.method?.toLowerCase()
+    console.log('Error in response:', method)
+    if ((method === 'post' || method === 'patch') && error.response) {
+        console.log('Error response:', error.response)
+        const message = error.response.data?.message || error.response.statusText || 'Something went wrong!'
+
+        notification.error({
+            message,
+        })
+    } else if (error.response?.status === 403) {
         notification.error({
             message: 'You have no access to this resource.',
         })
