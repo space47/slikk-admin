@@ -62,6 +62,7 @@ const EditSubPage = () => {
             extra_attributes: {
                 primaryColor: values?.extra_attributes?.primary_color || '',
                 accentColor: values?.extra_attributes?.accent_color || '',
+                textColor: values?.extra_attributes?.text_color || '',
             },
         }
 
