@@ -82,17 +82,17 @@ const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: Props) => {
     }
 
     return (
-        <Dialog isOpen={dialogIsOpen} onClose={onDialogClose} width={1200}>
+        <Dialog isOpen={dialogIsOpen} onClose={onDialogClose} width={1200} height={'80vh'}>
             <h5 className="mb-4 text-red-500">Add New Sub Page</h5>
             <Formik initialValues={initialValues} onSubmit={handleSubmit}>
                 {({ setFieldValue, values }) => (
-                    <Form className="grid grid-cols-2 xl:grid-cols-3 gap-2">
+                    <Form className="grid grid-cols-2 xl:grid-cols-2 gap-2 max-h-[70vh] overflow-y-auto ">
                         <FormItem label="Name">
                             <Field
                                 name="name"
                                 type="text"
                                 placeholder="Enter Name"
-                                className="rounded-xl px-3 py-2 border border-gray-300"
+                                className="rounded-xl px-3 py-2 w-full border border-gray-300"
                             />
                         </FormItem>
                         <FormItem label="Display Name">
@@ -100,7 +100,7 @@ const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: Props) => {
                                 name="display_name"
                                 type="text"
                                 placeholder="Enter Display Name"
-                                className="rounded-xl px-3 py-2 border border-gray-300"
+                                className="rounded-xl px-3 py-2 w-full border border-gray-300"
                             />
                         </FormItem>
                         <FormItem label="Position">
@@ -108,40 +108,31 @@ const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: Props) => {
                                 name="position"
                                 type="text"
                                 placeholder="Enter Position"
-                                className="rounded-xl px-3 py-2 border border-gray-300"
+                                className="rounded-xl px-3 py-2 w-full border border-gray-300"
                             />
                         </FormItem>
-                        <FormItem label="Primary Color">
+                        <FormItem label="Header Background Color">
                             <Field
                                 name="extra_attributes.primary_color"
                                 type="text"
-                                placeholder="Enter Position"
-                                className="rounded-xl px-3 py-2 border border-gray-300"
+                                placeholder="Enter Header Background Color"
+                                className="rounded-xl px-3 py-2 w-full border border-gray-300"
                             />
                         </FormItem>
-                        <FormItem label="Accent Color">
+                        <FormItem label="Text Color">
+                            <Field
+                                name="extra_attributes.text_color"
+                                type="text"
+                                placeholder="Enter Text Color"
+                                className="rounded-xl px-3 py-2 w-full border border-gray-300"
+                            />
+                        </FormItem>
+                        <FormItem label="Selected Background Color">
                             <Field
                                 name="extra_attributes.accent_color"
                                 type="text"
-                                placeholder="Enter Position"
-                                className="rounded-xl px-3 py-2 border border-gray-300"
-                            />
-                        </FormItem>
-
-                        <PageAddVideo
-                            label="Image"
-                            name="image_array"
-                            fieldName="image_array"
-                            fileList={values.image_array}
-                            beforeUpload={beforeUpload}
-                        />
-
-                        <FormItem label="Is Active">
-                            <Field
-                                name="is_active"
-                                type="checkbox"
-                                placeholder="Enter Accent Color"
-                                className="rounded-xl px-3 py-2 border border-gray-300"
+                                placeholder="Selected Background Color"
+                                className="rounded-xl px-3 py-2 w-full border border-gray-300"
                             />
                         </FormItem>
 
@@ -167,6 +158,23 @@ const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: Props) => {
                                 onChange={(val) => setFieldValue('page', val)}
                             />
                         </div>
+
+                        <PageAddVideo
+                            label="Image"
+                            name="image_array"
+                            fieldName="image_array"
+                            fileList={values.image_array}
+                            beforeUpload={beforeUpload}
+                        />
+
+                        <FormItem label="Is Active">
+                            <Field
+                                name="is_active"
+                                type="checkbox"
+                                placeholder="Enter Accent Color"
+                                className="rounded-xl px-3 py-2 border border-gray-300"
+                            />
+                        </FormItem>
 
                         <div className="flex justify-start mt-10 gap-6">
                             <Button className="" variant="reject" onClick={onDialogClose}>

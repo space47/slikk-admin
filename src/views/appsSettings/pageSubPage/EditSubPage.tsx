@@ -12,7 +12,7 @@ import { beforeUpload } from '@/common/beforeUpload'
 import { handleimage } from '@/common/handleImage'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 import PageEditVideo from '../pageSettings/PageEditVideo'
-import store, { useAppSelector } from '@/store'
+import { useAppSelector } from '@/store'
 import { USER_PROFILE_DATA } from '@/store/types/company.types'
 import MultiSelect from '@/common/MultiSelect'
 
@@ -129,7 +129,7 @@ const EditSubPage = () => {
                                     className="w-full text-sm rounded-lg border-gray-300 focus:border-blue-400 focus:ring-blue-100"
                                     options={pageNamesData}
                                     getOptionLabel={(option) => option.name}
-                                    getOptionValue={(option) => option.id}
+                                    getOptionValue={(option) => option.id?.toString()}
                                     value={values.page}
                                     placeholder="Select Page"
                                     onChange={(val) => setFieldValue('page', val)}
@@ -154,20 +154,28 @@ const EditSubPage = () => {
                                 />
                             </FormItem>
 
-                            <FormItem label="Primary Color" className="space-y-1">
+                            <FormItem label="Header Background Color" className="space-y-1">
                                 <Field
                                     name="extra_attributes.primary_color"
                                     type="text"
-                                    placeholder="Enter Primary Color"
+                                    placeholder="Enter Header Background  Color"
+                                    className="w-full rounded-lg px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition"
+                                />
+                            </FormItem>
+                            <FormItem label="Text Color" className="space-y-1">
+                                <Field
+                                    name="extra_attributes.text_color"
+                                    type="text"
+                                    placeholder="Enter Text Color"
                                     className="w-full rounded-lg px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition"
                                 />
                             </FormItem>
 
-                            <FormItem label="Accent Color" className="space-y-1">
+                            <FormItem label="Selected Background Color" className="space-y-1">
                                 <Field
                                     name="extra_attributes.accent_color"
                                     type="text"
-                                    placeholder="Enter Accent Color"
+                                    placeholder="Enter Selected Background Color"
                                     className="w-full rounded-lg px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition"
                                 />
                             </FormItem>
