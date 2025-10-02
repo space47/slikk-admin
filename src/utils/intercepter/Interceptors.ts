@@ -41,21 +41,28 @@ const onResponse = (response: AxiosResponse): AxiosResponse => {
 const onResponseError = (error: AxiosError): Promise<AxiosError> => {
     const method = error.config?.method?.toLowerCase()
     console.log('Error in response:', method)
-    if ((method === 'post' || method === 'patch') && error.response) {
-        console.log('Error response:', error.response)
-        const message = error.response.data?.message || error.response.statusText || 'Something went wrong!'
 
-        notification.error({
-            message,
-        })
-    } else if (error.response?.status === 403) {
-        notification.error({
-            message: 'You have no access to this resource.',
-        })
+    const url = error.config?.url || ''
+    console.log('Error URL:', url)
+
+    const restrictedPaths = ['https://api.olamaps.io/']
+    const excludeUrls = !restrictedPaths.some((path) => url.includes(path))
+
+    if (excludeUrls) {
+        if ((method === 'post' || method === 'patch') && error.response) {
+            console.log('Error response:', error.response)
+            const message = error.response.data?.message || error.response.statusText || 'Something went wrong!'
+
+            notification.error({
+                message,
+            })
+        } else if (error.response?.status === 403) {
+            notification.error({
+                message: 'You have no access to this resource.',
+            })
+        }
     }
-    // else if (error.response?.status === 500) {
-    //     window.location.href = '/internal-error'
-    // }
+
     return Promise.reject(error)
 }
 
