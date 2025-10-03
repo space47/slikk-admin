@@ -105,7 +105,7 @@ const EditConfigurations = () => {
             is_active: values?.is_active,
             config_name: values.name,
             config_value: await processValues(values.value),
-            store_id: typeof values.store === 'object' ? values.store : values.store?.id,
+            store_id: values.store,
         }
 
         try {
