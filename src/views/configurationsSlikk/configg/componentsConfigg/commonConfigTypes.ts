@@ -5,6 +5,7 @@ export interface ConfigInterface {
     create_date: string
     update_date: string
     last_updated_by: string
+    store?: number
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     value: any
 }

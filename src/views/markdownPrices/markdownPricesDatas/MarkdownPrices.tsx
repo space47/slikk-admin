@@ -48,7 +48,7 @@ const MarkdownPrices = () => {
                 accessorKey: 'name',
                 cell: ({ row }: any) => {
                     return (
-                        <div onClick={() => handleEditMarkdownPrice(row.original.name)}>
+                        <div onClick={() => handleEditMarkdownPrice(row.original.id)}>
                             <FaEdit className="text-2xl cursor-pointer text-blue-500" />
                         </div>
                     )
@@ -89,6 +89,12 @@ const MarkdownPrices = () => {
             {
                 header: 'products count',
                 accessorKey: 'products_count',
+                cell: ({ row }: any) => {
+                    const specificPrice = row?.original?.product_specific_price
+                    const count = Number(row.original.products_count) + specificPrice?.length || 0
+
+                    return <div>{count}</div>
+                },
             },
 
             {
