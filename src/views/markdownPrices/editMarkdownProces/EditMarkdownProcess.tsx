@@ -15,9 +15,9 @@ const EditMarkdownPrices = () => {
 
     const fetchEditMarkdown = async () => {
         try {
-            const response = await axioisInstance.get(`/product/offer/pricing?name=${name}`)
-            const data = response?.data?.data?.results
-            setEditMarkdownData(data[0])
+            const response = await axioisInstance.get(`/product/offer/pricing?id=${name}`)
+            const data = response?.data?.data
+            setEditMarkdownData(data)
         } catch (error) {
             console.error(error)
         }
