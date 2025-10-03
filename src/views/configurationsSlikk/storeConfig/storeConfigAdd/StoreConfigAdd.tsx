@@ -13,6 +13,7 @@ import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import RenderFields from '../../configg/componentsConfigg/RenderLogic'
 import { ConfigInterface, EDITFIELDSARRAY } from '../../configg/componentsConfigg/commonConfigTypes'
+import StoreSelectForm from '@/common/StoreSelectForm'
 
 const StoreConfigAdd = () => {
     const navigate = useNavigate()
@@ -76,6 +77,7 @@ const StoreConfigAdd = () => {
             is_active: values?.is_active,
             config_name: values.name,
             config_value: await processValues(values.value),
+            store_id: typeof values.store === 'object' ? values.store : values.store?.id,
         }
 
         console.log('body of the data is ', body)
@@ -116,7 +118,7 @@ const StoreConfigAdd = () => {
                             <FormItem label="Is Active" className="col-span-1 w-1/2">
                                 <Field type="checkbox" name="is_active" placeholder="Enter updated by" component={Checkbox} />
                             </FormItem>
-
+                            <StoreSelectForm label="Store" name="store" isSingle />
                             <FormContainer className="grid grid-cols-1 gap-10">
                                 <RenderFields
                                     obj={values.value}

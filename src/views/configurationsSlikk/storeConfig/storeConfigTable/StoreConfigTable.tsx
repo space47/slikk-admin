@@ -7,11 +7,21 @@ import { FaEdit } from 'react-icons/fa'
 import { renderValue } from '../../configg/componentsConfigg/ConfigurationRender'
 import { useNavigate } from 'react-router-dom'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { useAppDispatch, useAppSelector } from '@/store'
+import { companyStore } from '@/store/types/companyStore.types'
+import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
 
 const StoreConfigValue = () => {
+    const dispatch = useAppDispatch()
     const [searchConfig, setSearchConfig] = useState('')
     const [filteredData, setFilteredData] = useState<ConfigInterface[]>([])
     const [configurationData, storeConfigurationData] = useState<ConfigInterface[]>([])
+    const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
+
+    useEffect(() => {
+        dispatch(fetchCompanyStore())
+    }, [dispatch])
+
     const navigate = useNavigate()
 
     const fetchStoreConfig = async () => {
@@ -46,7 +56,7 @@ const StoreConfigValue = () => {
                         type="search"
                         value={searchConfig}
                         placeholder="Search Configuration by Name"
-                        className="w-1/2 max-w-md mb-6 rounded-xl"
+                        className="w-full max-w-md mb-6 rounded-xl"
                         onChange={(e) => setSearchConfig(e.target.value)}
                     />
                 </div>
@@ -75,8 +85,16 @@ const StoreConfigValue = () => {
                                         <FaEdit className="cursor-pointer text-blue-500" />
                                     </a>
                                 </div>
+
                                 <div className="text-lg font-medium text-gray-700 dark:text-gray-300">
                                     Name: <span className="text-green-600 break-words">{item?.name}</span>
+                                </div>
+
+                                <div className="text-lg font-medium text-gray-700 dark:text-gray-300">
+                                    Store:{' '}
+                                    <span className="text-blue-600 break-words">
+                                        {storeResults?.find((x) => x.id === item?.store)?.name}
+                                    </span>
                                 </div>
                                 <div className="text-sm text-gray-600 dark:text-gray-300 mt-2">{renderValue(item?.value)}</div>
                                 <div className="text-sm text-gray-500 mt-2 dark:text-gray-400">
