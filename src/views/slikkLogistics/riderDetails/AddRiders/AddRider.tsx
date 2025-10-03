@@ -270,6 +270,7 @@ const AddRider = () => {
                                     options={[
                                         { label: 'Pidge', value: 'pidge' },
                                         { label: 'Pico', value: 'pico' },
+                                        { label: 'Care Bazaar', value: 'careBazaar' },
                                     ]}
                                 />
                             </FormContainer>
