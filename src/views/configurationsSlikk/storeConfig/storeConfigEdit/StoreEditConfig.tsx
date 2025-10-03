@@ -5,7 +5,7 @@ import { Button, Checkbox, FormContainer, FormItem, Input } from '@/components/u
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate, useParams } from 'react-router-dom'
 import { notification } from 'antd'
-import _ from 'lodash'
+import _, { last } from 'lodash'
 import LoadingSpinner from '@/common/LoadingSpinner'
 import { handleimage } from '@/common/handleImage'
 import { useAppDispatch, useAppSelector } from '@/store'
@@ -14,6 +14,8 @@ import { FILTER_STATE } from '@/store/types/filters.types'
 import { USER_PROFILE_DATA } from '@/store/types/company.types'
 import { ConfigInterface, EDITFIELDSARRAY } from '../../configg/componentsConfigg/commonConfigTypes'
 import RenderFields from '../../configg/componentsConfigg/RenderLogic'
+import StoreSelectComponent from '@/common/StoreSelectComponent'
+import StoreSelectForm from '@/common/StoreSelectForm'
 
 const EditConfigurations = () => {
     const navigate = useNavigate()
@@ -41,6 +43,17 @@ const EditConfigurations = () => {
     useEffect(() => {
         if (id) fetchConfigurationApi()
     }, [id])
+
+    const initialValues = {
+        id: editConfigData?.id || '',
+        name: editConfigData?.name || '',
+        is_active: editConfigData?.is_active || false,
+        last_updated_by: editConfigData?.last_updated_by || selectedCompany?.email || '',
+        store: editConfigData?.store || 0,
+        value: editConfigData?.value || {},
+    }
+
+    console.log('Edit Config Data:', initialValues)
 
     const handleSubmit = async (values: ConfigInterface) => {
         const processValues = async (obj: any): Promise<any> => {
@@ -92,6 +105,7 @@ const EditConfigurations = () => {
             is_active: values?.is_active,
             config_name: values.name,
             config_value: await processValues(values.value),
+            store_id: typeof values.store === 'object' ? values.store : values.store?.id,
         }
 
         try {
@@ -113,21 +127,7 @@ const EditConfigurations = () => {
 
     return (
         <div className="w-full shadow-xl p-4 rounded-xl">
-            <Formik
-                enableReinitialize
-                initialValues={
-                    editConfigData || {
-                        id: '',
-                        name: '',
-                        is_active: false,
-                        last_updated_by: selectedCompany?.mobile || '',
-                        create_date: '',
-                        update_date: '',
-                        value: {},
-                    }
-                }
-                onSubmit={handleSubmit}
-            >
+            <Formik enableReinitialize initialValues={initialValues} onSubmit={handleSubmit}>
                 {({ values, setFieldValue }) => (
                     <Form className="w-4/5">
                         <FormContainer>
@@ -141,6 +141,7 @@ const EditConfigurations = () => {
                             <FormItem label="Last Updated By" className="col-span-1 w-1/2">
                                 <Field disabled type="text" name="last_updated_by" placeholder="Enter updated by" component={Input} />
                             </FormItem>
+                            <StoreSelectForm label="Store" name="store" isSingle />
                             <FormItem label="Is Active" className="col-span-1 w-1/2">
                                 <Field type="checkbox" name="is_active" placeholder="Enter updated by" component={Checkbox} />
                             </FormItem>
