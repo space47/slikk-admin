@@ -201,6 +201,17 @@ const OrderDetails = () => {
                                         </a>
                                     </div>
                                 )}
+                                {data?.split_order_id && (
+                                    <div>
+                                        <a
+                                            href={`/app/orders/${data?.split_order_id}`}
+                                            className="text-blue-600 hover:underline hover:text-blue-800 transition duration-200"
+                                        >
+                                            <span className="text-gray-700">Return Order:</span> {data?.split_order_id}
+                                        </a>
+                                    </div>
+                                )}
+
                                 {data?.exchange_order_id?.length > 0 && (
                                     <div className="flex flex-col xl:flex-row gap-2 items-center">
                                         <span className="text-gray-700">Exchange Orders:</span>
