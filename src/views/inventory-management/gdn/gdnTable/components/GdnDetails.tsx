@@ -31,6 +31,7 @@ const GdnDetails = () => {
     const { document_number, id } = useParams()
     const [showSyncModal, setShowSyncModal] = useState(false)
     const [isSyncing, setIsSyncing] = useState(false)
+    const [isRegenerating, setIsRegenerating] = useState(false)
     const [grnNumber, setGrnNumber] = useState('')
     const navigate = useNavigate()
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
@@ -91,6 +92,7 @@ const GdnDetails = () => {
     }
 
     const handleCreateShipment = async () => {
+        setIsRegenerating(true)
         try {
             const res = await axioisInstance.get(`/goods/dispatch/shipment/create/${data?.id}`)
             notification.success({ message: res?.data?.message || 'Shipment created successfully from GDN' })
@@ -100,10 +102,13 @@ const GdnDetails = () => {
                     message: error?.response?.data?.message || error?.response?.data?.data?.message || 'Failed to create shipment from GDN',
                 })
             }
+        } finally {
+            setIsRegenerating(false)
         }
     }
 
     const handleRegenerateGrn = async (doc_number: string) => {
+        notification.info({ message: 'Downloading, please wait...' })
         try {
             let responseData = `/goods/dispatch/${id}/detail?download=true&regenerate=true&document_number=${doc_number}`
             if (selectValue === 'csv') {
@@ -194,7 +199,7 @@ const GdnDetails = () => {
                                             onClick={handleCreateShipment}
                                             className="flex gap-2 bg-gray-200 p-2 rounded-xl text-black hover:bg-gray-300 font-bold items-center justify-center"
                                         >
-                                            Create Shipment from GDN
+                                            Create Shipment from GDN {isRegenerating && <Spinner size={20} color={'yellow'} />}
                                         </button>
                                     </div>
                                 </div>

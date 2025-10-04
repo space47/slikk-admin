@@ -1,13 +1,16 @@
+import { Tooltip } from '@/components/ui'
 import moment from 'moment'
 import React, { useState } from 'react'
+import { IoMdRefresh } from 'react-icons/io'
 import { useNavigate } from 'react-router-dom'
 
 interface props {
     orders: any
     handleNumberClick: any
+    handleSyncDistance: any
 }
 
-const OrderlistMobile = ({ orders, handleNumberClick }: props) => {
+const OrderlistMobile = ({ orders, handleNumberClick, handleSyncDistance }: props) => {
     const [isPending, setIsPending] = useState(false)
     const navigate = useNavigate()
 
@@ -63,7 +66,28 @@ const OrderlistMobile = ({ orders, handleNumberClick }: props) => {
                                             ),
                                         },
                                         { label: 'Customer', value: item?.user?.name },
-                                        { label: 'Delivery Type', value: item.delivery_type },
+                                        {
+                                            label: 'Delivery Type',
+                                            value: (
+                                                <div>
+                                                    item.delivery_type
+                                                    {item.distance > 0 ? (
+                                                        <span>{item?.distance} km</span>
+                                                    ) : (
+                                                        <>
+                                                            <Tooltip title="Refresh distance per user">
+                                                                <button
+                                                                    className="flex items-center justify-center bg-green-500 py-2 px-2 rounded-xl cursor-pointer"
+                                                                    onClick={() => handleSyncDistance(item?.invoice_id)}
+                                                                >
+                                                                    <IoMdRefresh className="text-2xl text-white font-bold" />
+                                                                </button>
+                                                            </Tooltip>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            ),
+                                        },
                                         { label: 'Payment Mode', value: item?.payment?.mode },
                                         { label: 'Payment Status', value: item?.payment?.status },
                                         { label: 'Picker', value: item?.picker?.name },

@@ -81,6 +81,28 @@ export const useOrderListColumns = ({
                 },
             },
             {
+                header: 'Split Order',
+                accessorKey: 'split_order_id',
+                cell: ({ getValue }: any) => {
+                    return getValue() ? (
+                        <>
+                            <div className="flex items-center gap-3">
+                                <a
+                                    href={`/app/orders/${getValue()}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-white bg-red-600 flex items-center justify-center px-2 py-1 rounded-[7px] font-semibold cursor-pointer"
+                                >
+                                    {getValue()}
+                                </a>
+                            </div>
+                        </>
+                    ) : (
+                        'N/A'
+                    )
+                },
+            },
+            {
                 header: 'Order Date',
                 accessorKey: 'create_date',
                 cell: ({ getValue }: any) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
