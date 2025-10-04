@@ -12,6 +12,7 @@ type RETURNORDER = {
 }
 
 export type SalesOrderDetailsResponse = {
+    split_order_id: string
     amount: string
     original_order: string
     exchange_order_id: string[]
