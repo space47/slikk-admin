@@ -163,7 +163,9 @@ const SendTemplateNotifications: React.FC = () => {
                     notification_group: values?.groups || '',
                     mobiles: values?.users_all ? '' : values?.users || '',
                     is_active: true,
-                    send_to_all: values?.users_all ? true : false,
+                    other_config: {
+                        send_to_all: values?.users_all ? true : false,
+                    },
                 }
 
                 const filteredBody = Object.fromEntries(Object.entries(body).filter(([, v]) => v !== undefined && v !== null && v !== ''))
