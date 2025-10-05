@@ -1,9 +1,7 @@
 import Upload from '@/components/ui/Upload'
 import Button from '@/components/ui/Button'
-// import { HiOutlineCloudUpload } from 'react-icons/hi';
 import { FcImageFile } from 'react-icons/fc'
 import { useState } from 'react'
-// import axios from 'axios';
 import FormData from 'form-data'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
@@ -13,10 +11,15 @@ import { useAppSelector } from '@/store'
 const GDNQCUploader = () => {
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const [file, setFile] = useState(null)
+    const [isSingle, setIsSingle] = useState(false)
 
     const onFileUpload = (fileList: any) => {
         console.log('File uploaded:', fileList[0])
         setFile(fileList[0])
+    }
+
+    const handleSingleGdn = () => {
+        setIsSingle((prev) => !prev)
     }
 
     const handleSave = async () => {
@@ -30,6 +33,7 @@ const GDNQCUploader = () => {
         const data = new FormData()
         data.append('dispatch_products_file', file)
         data.append('company', selectedCompany?.id)
+        data.append('create_single_gdn', isSingle)
 
         const config = {
             method: 'post',
@@ -73,9 +77,16 @@ const GDNQCUploader = () => {
                     <p className="mt-1 opacity-60 dark:text-white">Support: jpeg, png, gif, csv</p>
                 </div>
             </Upload>
-            <div className="flex flex-row w-full space-x-[2%] items-center justify-center">
-                <Button onClick={handleSave}>Save</Button>
-                <Button>Download</Button>
+            <div className="flex flex-row w-full space-x-[3%] items-center justify-center">
+                <Button onClick={handleSave} variant="twoTone">
+                    Save
+                </Button>
+                <div className="flex flex-col gap-2 items-center">
+                    <label htmlFor="" className="text-blue-700 font-semibold">
+                        Single GDN
+                    </label>
+                    <input type="checkbox" checked={isSingle} onChange={handleSingleGdn} className="cursor-pointer" />
+                </div>
             </div>
         </div>
     )
