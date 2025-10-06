@@ -2,7 +2,15 @@
 import { Field, Form, Formik } from 'formik'
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { DAY_OPTIONS, HOUR_OPTIONS, MINUTE_OPTIONS, MONTH_OPTIONS, REPEATARRAY, USERNOTFARRAY } from './sendNotify.common'
+import {
+    DAY_OPTIONS,
+    HOUR_OPTIONS,
+    MINUTE_OPTIONS,
+    MONTH_OPTIONS,
+    REPEATARRAY,
+    TemplateFormValues,
+    USERNOTFARRAY,
+} from './sendNotify.common'
 import { Checkbox, FormItem, Input } from '@/components/ui'
 import { DatePicker, Radio, Select, Checkbox as Checkbx, notification } from 'antd'
 import { MdTimer } from 'react-icons/md'
@@ -12,23 +20,6 @@ import SearchableGroups from '@/common/SearchableGroups'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { AxiosError } from 'axios'
 import FormButton from '@/components/ui/Button/FormButton'
-
-interface FormValues {
-    users_all?: boolean
-    schedule_notification?: boolean
-    repeat_type: 'repeat' | 'no_repeat'
-    minute_enabled?: boolean
-    minute_value?: number
-    hour_enabled?: boolean
-    hour_value?: number
-    day_enabled?: boolean
-    day_value?: number
-    month_enabled?: boolean
-    month_value?: number
-    get_date?: string
-    expiry_date?: string
-    [key: string]: any
-}
 
 const CronPreview: React.FC<{ cronExpression: string }> = ({ cronExpression }) => {
     const [nextOccurrences, setNextOccurrences] = useState<string[]>([])
@@ -105,7 +96,7 @@ const SendTemplateNotifications: React.FC = () => {
         setSearchInput(val)
     }
 
-    const updateCronExpression = (values: FormValues) => {
+    const updateCronExpression = (values: TemplateFormValues) => {
         if (values.repeat_type !== 'repeat') {
             setCronExpression('')
             return
@@ -163,9 +154,7 @@ const SendTemplateNotifications: React.FC = () => {
                     notification_group: values?.groups || '',
                     mobiles: values?.users_all ? '' : values?.users || '',
                     is_active: true,
-                    other_config: {
-                        send_to_all: values?.users_all ? true : false,
-                    },
+                    send_to_all: values?.users_all ? true : false,
                 }
 
                 const filteredBody = Object.fromEntries(Object.entries(body).filter(([, v]) => v !== undefined && v !== null && v !== ''))
@@ -201,7 +190,7 @@ const SendTemplateNotifications: React.FC = () => {
         }
     }
 
-    const initialValues: FormValues = {
+    const initialValues: TemplateFormValues = {
         repeat_type: 'no_repeat',
     }
 
