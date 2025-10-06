@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface sendNotificationType {
     title: string
     message: string
@@ -202,3 +203,20 @@ export const MINUTE_OPTIONS = Array.from({ length: 60 }, (_, i) => ({ label: i.t
 export const HOUR_OPTIONS = Array.from({ length: 24 }, (_, i) => ({ label: i.toString(), value: i.toString() }))
 export const DAY_OPTIONS = Array.from({ length: 31 }, (_, i) => ({ label: (i + 1).toString(), value: (i + 1).toString() }))
 export const MONTH_OPTIONS = Array.from({ length: 12 }, (_, i) => ({ label: (i + 1).toString(), value: (i + 1).toString() }))
+
+export interface TemplateFormValues {
+    users_all?: boolean
+    schedule_notification?: boolean
+    repeat_type: 'repeat' | 'no_repeat'
+    minute_enabled?: boolean
+    minute_value?: number
+    hour_enabled?: boolean
+    hour_value?: number
+    day_enabled?: boolean
+    day_value?: number
+    month_enabled?: boolean
+    month_value?: number
+    get_date?: string
+    expiry_date?: string
+    [key: string]: any
+}
