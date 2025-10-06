@@ -9,13 +9,10 @@ const onRequest = async (config: InternalAxiosRequestConfig): Promise<InternalAx
     if (token) {
         config.headers.Authorization = `Bearer ${token}`
     }
-    // if (config.url.includes("user/profile") || config.url.includes("/fileupload")) {
-    //     config.headers["Content-Type"] = "multipart/form-data";
-    // }
 
     const ifGetCall = config.method?.toLowerCase() === 'get'
 
-    const excludedUrls = ['user/profile', 'merchant/store']
+    const excludedUrls = ['user/profile', 'merchant/store', 'goods/received/', 'indent']
 
     if (storeCodes && storeCodes.length > 0 && ifGetCall) {
         if (!excludedUrls.some((url) => config.url?.includes(url))) {
