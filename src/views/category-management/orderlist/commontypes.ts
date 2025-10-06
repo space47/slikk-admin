@@ -77,7 +77,7 @@ export interface Order {
     create_date: string | Date
     user: {
         name: string
-        mobile: string
+        mobile: string | number
     }
     store: {
         address: string
@@ -89,6 +89,7 @@ export interface Order {
     payment: {
         mode: string
         amount: number
+        status?: string
     }
     order_items: OrderItem[]
     status: string
@@ -97,7 +98,16 @@ export interface Order {
     to: string
     latitude: any
     longitude: any
-    delivery_type: any
+    user_order_count: number
+
+    delivery_type: string
+    distance: number
+    picker?: {
+        name?: string
+    }
+
+    area: string
+    pincode: string
 }
 
 export const ORDER_STATUS = [
