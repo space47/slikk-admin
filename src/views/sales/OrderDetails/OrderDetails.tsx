@@ -207,7 +207,7 @@ const OrderDetails = () => {
                                             href={`/app/orders/${data?.split_order_id}`}
                                             className="text-blue-600 hover:underline hover:text-blue-800 transition duration-200"
                                         >
-                                            <span className="text-gray-700">Return Order:</span> {data?.split_order_id}
+                                            <span className="text-gray-700">Split Order:</span> {data?.split_order_id}
                                         </a>
                                     </div>
                                 )}
