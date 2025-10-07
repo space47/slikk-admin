@@ -13,6 +13,7 @@ import AccessDenied from '@/views/pages/AccessDenied'
 import LocationTransferModal from '../inventoryUtils/locationTransferModal'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 import SyncInventoryModal from '../inventoryUtils/SyncInventoryModal'
+import ClearInventoryModal from '../inventoryUtils/ClearInventoryModal'
 
 const InventoryTable = () => {
     const locationInputRef = useRef<{ [key: number]: HTMLInputElement | null }>({})
@@ -25,6 +26,7 @@ const InventoryTable = () => {
     const [locationTrabsferModal, setLocationTransferModal] = useState(false)
     const [searchType, setSearchType] = useState<{ value: string; label?: string }>(InventoryFilters[0])
     const [isInventorySync, setIsInventorySync] = useState(false)
+    const [clearInventory, setClearInventory] = useState(false)
 
     const { data, responseStatus, totalData, setPage, setPageSize, setGlobalFilter, page, pageSize, globalFilter } = useInventoryApi({
         searchType,
@@ -94,9 +96,12 @@ const InventoryTable = () => {
                     </div>
                     <div className="flex gap-4 flex-col xl:flex-row items-center">
                         {storeCode && storeCode !== '' && (
-                            <div className="xl:mt-6">
+                            <div className="xl:mt-6 flex gap-2">
+                                <Button variant="reject" size="sm" onClick={() => setClearInventory(true)}>
+                                    Clear Inventory
+                                </Button>
                                 <Button variant="accept" size="sm" onClick={hanldeSync}>
-                                    Sync Inventory to Location
+                                    Sync Inventory
                                 </Button>
                             </div>
                         )}
@@ -104,6 +109,7 @@ const InventoryTable = () => {
                             <label className="font-semibold text-gray-700 mb-1">Select Store</label>
                             <Select
                                 isClearable
+                                className="xl:w-[300px]"
                                 options={storeList}
                                 getOptionLabel={(option) => option.name}
                                 getOptionValue={(option) => option.id.toString()}
@@ -164,6 +170,7 @@ const InventoryTable = () => {
             )}
             {locationTrabsferModal && <LocationTransferModal isOpen={locationTrabsferModal} setIsOpen={setLocationTransferModal} />}
             {isInventorySync && <SyncInventoryModal isOpen={isInventorySync} setIsOpen={setIsInventorySync} storeId={storeId as number} />}
+            {clearInventory && <ClearInventoryModal isOpen={clearInventory} setIsOpen={setClearInventory} storeId={storeId as number} />}
         </div>
     )
 }

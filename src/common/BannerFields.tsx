@@ -16,7 +16,6 @@ interface Props {
 
 const BannerFields = ({ bannerData, setFieldValues, values }: Props) => {
     const [selectedBanner, setSelectedBanner] = useState<Banner | null>(bannerData.find((b) => values?.banners?.[0]?.id === b.id) || null)
-    console.log('values ', values)
     const [search, setSearch] = useState<string>('')
 
     useEffect(() => {
@@ -26,10 +25,8 @@ const BannerFields = ({ bannerData, setFieldValues, values }: Props) => {
     }, [bannerData, values?.banners])
 
     const handleSelect = (banner: Banner) => {
-        // Toggle selection
         const newSelection = selectedBanner?.id === banner.id ? null : banner
         setSelectedBanner(newSelection)
-        // Instantly update parent form
         setFieldValues('banners', newSelection ? [newSelection] : [])
     }
 
@@ -39,7 +36,6 @@ const BannerFields = ({ bannerData, setFieldValues, values }: Props) => {
 
     return (
         <div className="max-h-[60vh] overflow-y-auto mt-6 bg-white shadow-inner rounded-2xl border border-gray-200">
-            {/* Header */}
             <div className="sticky top-0 z-20 bg-white pt-6 pb-4 px-6 border-b border-gray-100 shadow-sm">
                 <h2 className="text-2xl font-semibold text-gray-800 mb-3">Select a Banner</h2>
                 <Input
@@ -50,8 +46,6 @@ const BannerFields = ({ bannerData, setFieldValues, values }: Props) => {
                     className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                 />
             </div>
-
-            {/* Banner List */}
             <div className="p-6 space-y-5">
                 {filteredBanners.length > 0 ? (
                     filteredBanners.map((banner) => (
