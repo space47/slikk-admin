@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react'
 import { useInventoryApi } from '../inventoryUtils/useInventoryApi'
-import { Button, Dropdown, Pagination, Select, Spinner } from '@/components/ui'
+import { Button, Dropdown, Pagination, Select } from '@/components/ui'
 import { useAppSelector } from '@/store'
 import { USER_PROFILE_DATA } from '@/store/types/company.types'
 import { InventoryFilters } from '../inventoryUtils/inventoryCommon'
@@ -10,11 +10,9 @@ import ImageMODAL from '@/common/ImageModal'
 import EasyTable from '@/common/EasyTable'
 import { Option, pageSizeOptions } from '@/constants/pageUtils.constants'
 import AccessDenied from '@/views/pages/AccessDenied'
-import { AxiosError } from 'axios'
-import { notification } from 'antd'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import LocationTransferModal from '../inventoryUtils/locationTransferModal'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
+import SyncInventoryModal from '../inventoryUtils/SyncInventoryModal'
 
 const InventoryTable = () => {
     const locationInputRef = useRef<{ [key: number]: HTMLInputElement | null }>({})
@@ -26,7 +24,7 @@ const InventoryTable = () => {
     const [particularRowImage, setParticularRowImage] = useState<string | null>('')
     const [locationTrabsferModal, setLocationTransferModal] = useState(false)
     const [searchType, setSearchType] = useState<{ value: string; label?: string }>(InventoryFilters[0])
-    const [spinner, setSpinner] = useState(false)
+    const [isInventorySync, setIsInventorySync] = useState(false)
 
     const { data, responseStatus, totalData, setPage, setPageSize, setGlobalFilter, page, pageSize, globalFilter } = useInventoryApi({
         searchType,
@@ -47,25 +45,7 @@ const InventoryTable = () => {
     })
 
     const hanldeSync = async () => {
-        setSpinner(true)
-        const body = {
-            store_id: storeId,
-        }
-        try {
-            const res = await axioisInstance.post(`/inventory-location/sync/inventory`, body)
-            notification.success({
-                message: 'Success',
-                description: res?.data?.message || 'Sync initiated successfully',
-            })
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                notification.error({
-                    message: error?.response?.data?.message || 'Something went wrong',
-                })
-            }
-        } finally {
-            setSpinner(false)
-        }
+        setIsInventorySync(true)
     }
 
     if (responseStatus === 403) {
@@ -116,10 +96,7 @@ const InventoryTable = () => {
                         {storeCode && storeCode !== '' && (
                             <div className="xl:mt-6">
                                 <Button variant="accept" size="sm" onClick={hanldeSync}>
-                                    <span className="flex items-center gap-2">
-                                        {spinner && <Spinner size={20} color="white" />}{' '}
-                                        <span>{spinner ? 'Syncing' : 'Sync'} Inventory to Location</span>
-                                    </span>
+                                    Sync Inventory to Location
                                 </Button>
                             </div>
                         )}
@@ -186,6 +163,7 @@ const InventoryTable = () => {
                 />
             )}
             {locationTrabsferModal && <LocationTransferModal isOpen={locationTrabsferModal} setIsOpen={setLocationTransferModal} />}
+            {isInventorySync && <SyncInventoryModal isOpen={isInventorySync} setIsOpen={setIsInventorySync} storeId={storeId as number} />}
         </div>
     )
 }

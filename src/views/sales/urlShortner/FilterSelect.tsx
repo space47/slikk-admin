@@ -16,8 +16,6 @@ interface FILTERPROPS {
     showAddFilter?: any
     handleRemoveFilter?: any
     handleAddFilters?: any
-    sortValue?: any
-    targetPagevalue?: any
     filterValue?: any
     setFilterId?: any
     isPageSettings?: boolean
@@ -77,7 +75,6 @@ export const targetPageArray = [
 ]
 
 const FilterSelect = ({
-    sortValue,
     filterValue,
     setFilterId,
     isPageSettings,
@@ -176,10 +173,7 @@ const FilterSelect = ({
                 <div>Sort By</div>
                 <Field name="discountTags">
                     {({ field, form }: FieldProps<any>) => {
-                        console.log('Field Value inside sort', field)
-                        console.log('Sort', sortValue)
-                        const selectedValue = DISCOUNTOPTIONS.find((option) => option.value === `sort_${sortValue}`)
-                        console.log('Selected Value', selectedValue)
+                        const selectedValue = DISCOUNTOPTIONS.find((option) => option.value === field.value)
                         return (
                             <Select
                                 isClearable
@@ -187,10 +181,8 @@ const FilterSelect = ({
                                 options={DISCOUNTOPTIONS}
                                 getOptionLabel={(option) => option.label}
                                 getOptionValue={(option) => option.value}
-                                // defaultValue={selectedValue}
                                 defaultValue={selectedValue}
                                 onChange={(newVal) => {
-                                    console.log('onChange Values', newVal)
                                     form.setFieldValue(field.name, newVal?.value)
                                 }}
                             />

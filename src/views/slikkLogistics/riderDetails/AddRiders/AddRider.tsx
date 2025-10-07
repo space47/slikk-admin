@@ -107,6 +107,7 @@ const AddRider = () => {
                 is_active: values?.is_active || false,
                 agency: values?.agency || '',
                 store_id: values?.store?.join(',') || '',
+                rider_delivery_type: values?.rider_delivery_type || 'standard',
             }
             if (isAddRider) {
                 ridersData(payload)
@@ -226,6 +227,14 @@ const AddRider = () => {
                                     customClass="w-full"
                                     options={storeList}
                                     compareKey="id"
+                                />
+                                <CommonSelect
+                                    label="Delivery Type"
+                                    name="rider_delivery_type"
+                                    options={[
+                                        { label: 'Standard', value: 'standard' },
+                                        { label: 'Express', value: 'express' },
+                                    ]}
                                 />
                                 <FormItem label="Rider Type" className="col-span-1">
                                     <Field name="rider_type">
