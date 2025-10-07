@@ -7,19 +7,30 @@ import PageCommon from '@/common/PageCommon'
 import { useStoreColumn } from './storeUtil/useStoreColumn'
 import { useFetchApi } from '@/commonHooks/useFetchApi'
 import { Button } from '@/components/ui'
+import ActiveStoreModal from './storesComponents/ActivateStoreModal'
 
 const Stores = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
+    const [currentStoreId, setCurrentStoreId] = useState<number | null>(null)
+    const [isStoreAvailableModal, setStoreAvailableModal] = useState(false)
+    const [checkActive, setCheckActive] = useState(false)
+
     const navigate = useNavigate()
 
     const query = useMemo(() => {
         return `merchant/store?p=${page}&page_size=${pageSize}`
     }, [page, pageSize])
 
+    const handleActiveCareer = (id: number, e, checked: boolean) => {
+        setCurrentStoreId(id)
+        setStoreAvailableModal(true)
+        setCheckActive(checked)
+    }
+
     const { data, totalData, responseStatus } = useFetchApi<STORETABLE>({ url: query, initialData: [] })
-    const columns = useStoreColumn()
+    const columns = useStoreColumn({ handleActiveCareer })
     if (responseStatus === 403) return <AccessDenied />
 
     return (
@@ -42,6 +53,14 @@ const Stores = () => {
             </div>
             <EasyTable overflow mainData={data} columns={columns} page={page} pageSize={pageSize} />
             <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={totalData} />
+            {isStoreAvailableModal && (
+                <ActiveStoreModal
+                    checked={checkActive}
+                    isOpen={isStoreAvailableModal}
+                    setIsOpen={setStoreAvailableModal}
+                    storeId={currentStoreId as number}
+                />
+            )}
         </div>
     )
 }
