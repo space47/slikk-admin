@@ -30,7 +30,7 @@ const RenderAdd = ({ obj, parentKey, setFieldValue, editableKeys, setEditableKey
     const handleTypeSelection = (type: 'string' | 'array' | 'object') => {
         setIsAddModalOpen(false)
 
-        const newKey = `new_key_${Date.now()}`
+        const newKey = ''
         let newValue
 
         switch (type) {
@@ -49,46 +49,6 @@ const RenderAdd = ({ obj, parentKey, setFieldValue, editableKeys, setEditableKey
 
         setFieldValue(parentKey, { ...obj, [newKey]: newValue })
     }
-
-    // Handle primitive types (string, number, boolean)
-    if (typeof obj === 'string' || typeof obj === 'number' || typeof obj === 'boolean') {
-        return (
-            <Field name={parentKey}>
-                {({ field }: FieldProps) => {
-                    // Determine input type based on the value
-                    let inputType = 'text'
-                    if (typeof obj === 'number') inputType = 'number'
-                    if (typeof obj === 'boolean') inputType = 'text'
-
-                    return (
-                        <div className="flex gap-4 items-center mb-2">
-                            <Input
-                                {...field}
-                                type={inputType}
-                                placeholder={`Enter value`}
-                                className="w-full"
-                                checked={typeof obj === 'boolean' ? field.value : undefined}
-                                onChange={(e) => {
-                                    let value: string | number | boolean = e.target.value
-                                    if (typeof obj === 'number') value = Number(value)
-                                    if (typeof obj === 'boolean') value = e.target.checked
-                                    setFieldValue(parentKey, value)
-                                }}
-                            />
-                            <button
-                                type="button"
-                                className="text-red-500"
-                                onClick={() => setFieldValue(parentKey, typeof obj === 'string' ? '' : typeof obj === 'number' ? 0 : false)}
-                            >
-                                <MdCancel className="text-xl" />
-                            </button>
-                        </div>
-                    )
-                }}
-            </Field>
-        )
-    }
-
     if (typeof obj === 'string' || typeof obj === 'number' || typeof obj === 'boolean') {
         return (
             <Field name={parentKey}>
@@ -125,6 +85,49 @@ const RenderAdd = ({ obj, parentKey, setFieldValue, editableKeys, setEditableKey
             </Field>
         )
     }
+
+    if (typeof obj === 'string' || typeof obj === 'number' || typeof obj === 'boolean') {
+        return (
+            <Field name={parentKey}>
+                {({ field }: FieldProps) => {
+                    let inputType = 'text'
+                    if (typeof obj === 'number') inputType = 'number'
+                    if (typeof obj === 'boolean') inputType = 'text'
+
+                    return (
+                        <div className="flex gap-4 items-center mb-2">
+                            <Input
+                                {...field}
+                                type={inputType}
+                                placeholder={`Enter value`}
+                                className="w-full"
+                                checked={typeof obj === 'boolean' ? field.value : undefined}
+                                onChange={(e) => {
+                                    let value: string | number | boolean = e.target.value
+                                    if (typeof obj === 'number') value = Number(value)
+                                    if (typeof obj === 'boolean') value = e.target.checked
+                                    setFieldValue(parentKey, value)
+                                }}
+                            />
+                            <button
+                                type="button"
+                                className="text-red-500"
+                                onClick={() => setFieldValue(parentKey, typeof obj === 'string' ? '' : typeof obj === 'number' ? 0 : false)}
+                            >
+                                <MdCancel className="text-xl" />
+                            </button>
+                        </div>
+                    )
+                }}
+            </Field>
+        )
+    }
+
+    const ModalOptions = [
+        { text: 'Single Line Text', value: 'string' },
+        { text: 'List', value: 'array' },
+        { text: 'Group', value: 'object' },
+    ]
 
     return (
         <div>
@@ -134,24 +137,15 @@ const RenderAdd = ({ obj, parentKey, setFieldValue, editableKeys, setEditableKey
 
             <Modal title="Select Field Type" open={isAddModalOpen} footer={null} onCancel={() => setIsAddModalOpen(false)}>
                 <div className="flex flex-col gap-2">
-                    <button
-                        className="p-2 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-lg "
-                        onClick={() => handleTypeSelection('string')}
-                    >
-                        String
-                    </button>
-                    <button
-                        className="p-2 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-lg "
-                        onClick={() => handleTypeSelection('array')}
-                    >
-                        Array
-                    </button>
-                    <button
-                        className="p-2 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-lg "
-                        onClick={() => handleTypeSelection('object')}
-                    >
-                        Object
-                    </button>
+                    {ModalOptions?.map((item, key) => (
+                        <button
+                            key={key}
+                            className="p-2 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-lg "
+                            onClick={() => handleTypeSelection(item?.value as 'string' | 'array' | 'object')}
+                        >
+                            {item?.text}
+                        </button>
+                    ))}
                 </div>
             </Modal>
             {_.isPlainObject(obj) && (

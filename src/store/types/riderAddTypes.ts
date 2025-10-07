@@ -14,6 +14,7 @@ export type RiderAddTypes = {
     lat?: number
     long?: number
     store?: number[]
+    rider_delivery_type?: string
 }
 
 type UserType = {
