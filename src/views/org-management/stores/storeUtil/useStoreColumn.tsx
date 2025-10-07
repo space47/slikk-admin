@@ -4,8 +4,13 @@ import { STORETABLE } from '../commonStores'
 import { FaEdit } from 'react-icons/fa'
 import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
+import { Switch } from 'antd'
 
-export const useStoreColumn = () => {
+interface props {
+    handleActiveCareer: any
+}
+
+export const useStoreColumn = ({ handleActiveCareer }: props) => {
     const navigate = useNavigate()
     return useMemo<ColumnDef<STORETABLE>[]>(
         () => [
@@ -13,10 +18,25 @@ export const useStoreColumn = () => {
                 header: 'Edit',
                 accessorKey: '',
                 cell: ({ row }) => (
-                    <button onClick={() => navigate(`/app/stores/${row.original.id}`)} className="border-none bg-none">
+                    <button className="border-none bg-none" onClick={() => navigate(`/app/stores/${row.original.id}`)}>
                         <FaEdit className="text-xl text-blue-600" />
                     </button>
                 ),
+            },
+            {
+                header: 'Store Availability',
+                accessorKey: 'is_accepting_orders',
+                cell: ({ row }: any) => {
+                    return (
+                        <div>
+                            <Switch
+                                className="bg-red-500"
+                                checked={row.original.is_accepting_orders}
+                                onChange={(checked) => handleActiveCareer(row.original.id, checked, row.original.is_accepting_orders)}
+                            />
+                        </div>
+                    )
+                },
             },
             {
                 header: 'Name',
@@ -157,6 +177,15 @@ export const useStoreColumn = () => {
                     </a>
                 ),
             },
+            // {
+            //     header: 'Store Availability',
+            //     accessorKey: '',
+            //     cell: ({ row }) => (
+            //         <button className="border-none bg-none" onClick={() => handleStoreAvailability(row?.original?.id)}>
+            //             <FaEdit className="text-xl text-blue-600" />
+            //         </button>
+            //     ),
+            // },
         ],
         [],
     )
