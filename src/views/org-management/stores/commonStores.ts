@@ -74,3 +74,8 @@ export const StoreOption = [
     { label: 'Standalone', value: 'Standalone' },
     { label: 'Warehouse', value: 'Warehouse' },
 ]
+
+export const StoreStatusForAvailability = [
+    { label: 'OPEN', value: 'open' },
+    { label: 'CLOSE', value: 'close' },
+]
