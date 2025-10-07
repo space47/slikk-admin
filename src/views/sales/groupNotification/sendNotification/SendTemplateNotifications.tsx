@@ -20,6 +20,7 @@ import SearchableGroups from '@/common/SearchableGroups'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { AxiosError } from 'axios'
 import FormButton from '@/components/ui/Button/FormButton'
+import { errorMessage } from '@/utils/responseMessages'
 
 const CronPreview: React.FC<{ cronExpression: string }> = ({ cronExpression }) => {
     const [nextOccurrences, setNextOccurrences] = useState<string[]>([])
@@ -29,12 +30,8 @@ const CronPreview: React.FC<{ cronExpression: string }> = ({ cronExpression }) =
             setNextOccurrences([])
             return
         }
-
         try {
-            const options = {
-                currentDate: moment().format('YYYY-MM-DD HH:mm:ss'),
-                tz: 'Asia/Kolkata',
-            }
+            const options = { currentDate: moment().format('YYYY-MM-DD HH:mm:ss'), tz: 'Asia/Kolkata' }
             const interval = CronExpressionParser.parse(cronExpression, options)
             const nextDates = interval.take(10).map((date) => date.toString())
             setNextOccurrences(nextDates)
@@ -104,20 +101,15 @@ const SendTemplateNotifications: React.FC = () => {
 
         const minute =
             values.minute_enabled && values.minute_value ? `*/${values.minute_value}` : values.minute_value ? `${values.minute_value}` : '0'
-
         const hour = values.hour_enabled && values.hour_value ? `*/${values.hour_value}` : values.hour_value ? `${values.hour_value}` : '0'
-
         const day = values.day_enabled && values.day_value ? `*/${values.day_value}` : values.day_value ? `${values.day_value}` : '0'
-
         const month =
             values.month_enabled && values.month_value ? `*/${values.month_value}` : values.month_value ? `${values.month_value}` : '0'
-
         const cron = `0 ${minute} ${hour} ${day} ${month} *`
         setCronExpression(cron)
     }
 
     const handleSubmit = async (values: any) => {
-        console.log('Form submitted:', values)
         setSpinner(true)
         if (values.schedule_notification) {
             try {
@@ -129,7 +121,6 @@ const SendTemplateNotifications: React.FC = () => {
                     year: dateTime.format('YYYY'),
                     hour: dateTime.format('HH'),
                 }
-
                 if (values.repeat_type === 'repeat') {
                     modifiedValues.minute =
                         values.minute_enabled && values.minute_value
@@ -158,13 +149,10 @@ const SendTemplateNotifications: React.FC = () => {
                 }
 
                 const filteredBody = Object.fromEntries(Object.entries(body).filter(([, v]) => v !== undefined && v !== null && v !== ''))
-
                 const res = await axioisInstance.patch(`/user_notification/${id}`, filteredBody)
                 notification.success({ message: res?.data?.message || res?.data?.data?.message || 'Notification scheduled successfully' })
             } catch (error) {
-                if (error instanceof AxiosError) {
-                    notification.error({ message: error?.response?.data?.message || 'Failed to schedule notification' })
-                }
+                errorMessage(error as AxiosError)
             } finally {
                 setSpinner(false)
             }
@@ -181,18 +169,19 @@ const SendTemplateNotifications: React.FC = () => {
                 const res = await axioisInstance.post('/notification/send', filteredBody)
                 notification.success({ message: res?.data?.message || res?.data?.data?.message || 'Notification sent successfully' })
             } catch (error) {
-                if (error instanceof AxiosError) {
-                    notification.error({ message: error?.response?.data?.message || 'Failed to send notification' })
-                }
+                errorMessage(error as AxiosError)
             } finally {
                 setSpinner(false)
             }
         }
     }
-
-    const initialValues: TemplateFormValues = {
-        repeat_type: 'no_repeat',
-    }
+    const initialValues: TemplateFormValues = { repeat_type: 'no_repeat' }
+    const RenderFieldsArray = [
+        { label: 'Minute', fieldName: 'minute', options: MINUTE_OPTIONS },
+        { label: 'Hour', fieldName: 'hour', options: HOUR_OPTIONS },
+        { label: 'Day', fieldName: 'day', options: DAY_OPTIONS },
+        { label: 'Month', fieldName: 'month', options: MONTH_OPTIONS },
+    ]
 
     return (
         <div className="max-w-10xl  p-6 bg-white rounded-lg shadow-sm">
@@ -200,7 +189,6 @@ const SendTemplateNotifications: React.FC = () => {
                 <h1 className="text-2xl font-bold text-gray-800">Send Template Notifications</h1>
                 {id && <p className="text-gray-600">Template ID: {id}</p>}
             </div>
-
             <Formik initialValues={initialValues} onSubmit={handleSubmit}>
                 {({ values, setFieldValue }) => (
                     <Form className="space-y-6">
@@ -212,23 +200,17 @@ const SendTemplateNotifications: React.FC = () => {
                                 </FormItem>
                             ))}
                         </div>
-
-                        {/* Send to all Users - Keeping exact field name */}
                         <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
                             <Field type="checkbox" name="users_all" component={Checkbox} />
                             <label className="font-semibold text-gray-700 cursor-pointer">Send to all Users</label>
                         </div>
-
-                        {/* Schedule Notification Section */}
                         <div className="border-t pt-6">
                             <div className="flex items-center gap-3 mb-6">
                                 <Field type="checkbox" name="schedule_notification" component={Checkbox} />
                                 <label className="font-semibold text-gray-700 cursor-pointer">Schedule Notification for Later</label>
                             </div>
-
                             {values.schedule_notification && (
                                 <div className="ml-6 space-y-6">
-                                    {/* Schedule Type Selection - Keeping exact field name */}
                                     <FormItem label="Schedule Type" className="mb-2">
                                         <Radio.Group
                                             options={REPEATARRAY}
@@ -239,64 +221,35 @@ const SendTemplateNotifications: React.FC = () => {
                                             className="flex gap-2 mt-6"
                                         />
                                     </FormItem>
-
-                                    {/* Recurrence Settings - Keeping exact field names */}
                                     {values.repeat_type === 'repeat' && (
                                         <div className="bg-gray-50 p-4 rounded-lg">
                                             <h3 className="text-lg font-semibold mb-4 text-gray-800">Recurrence Settings</h3>
-
                                             <div className="grid md:grid-cols-2 gap-3">
-                                                <RecurrenceField
-                                                    fieldName="minute"
-                                                    label="Minute"
-                                                    options={MINUTE_OPTIONS}
-                                                    values={values}
-                                                    setFieldValue={setFieldValue}
-                                                />
-
-                                                <RecurrenceField
-                                                    fieldName="hour"
-                                                    label="Hour"
-                                                    options={HOUR_OPTIONS}
-                                                    values={values}
-                                                    setFieldValue={setFieldValue}
-                                                />
-
-                                                <RecurrenceField
-                                                    fieldName="day"
-                                                    label="Day"
-                                                    options={DAY_OPTIONS}
-                                                    values={values}
-                                                    setFieldValue={setFieldValue}
-                                                />
-
-                                                <RecurrenceField
-                                                    fieldName="month"
-                                                    label="Month"
-                                                    options={MONTH_OPTIONS}
-                                                    values={values}
-                                                    setFieldValue={setFieldValue}
-                                                />
+                                                {RenderFieldsArray.map((item, key) => (
+                                                    <div key={key}>
+                                                        <RecurrenceField
+                                                            fieldName={item?.fieldName}
+                                                            label={item?.label}
+                                                            options={item?.options}
+                                                            values={values}
+                                                            setFieldValue={setFieldValue}
+                                                        />
+                                                    </div>
+                                                ))}
                                             </div>
-
-                                            {/* Generate Cron Button */}
                                             <div className="flex justify-end mt-4">
                                                 <button
                                                     type="button"
-                                                    onClick={() => updateCronExpression(values)}
                                                     className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                                                    onClick={() => updateCronExpression(values)}
                                                 >
                                                     <MdTimer className="text-lg" />
                                                     Generate Schedule Preview
                                                 </button>
                                             </div>
-
-                                            {/* Cron Preview */}
                                             <CronPreview cronExpression={cronExpression} />
                                         </div>
                                     )}
-
-                                    {/* Date Selection - Keeping exact field names */}
                                     <div className="grid md:grid-cols-2 gap-6">
                                         {values.repeat_type === 'no_repeat' && (
                                             <FormItem label="Start Date">
@@ -318,7 +271,6 @@ const SendTemplateNotifications: React.FC = () => {
                                                 </Field>
                                             </FormItem>
                                         )}
-
                                         <FormItem label="Expiry Date">
                                             <Field name="expiry_date">
                                                 {({ field, form }: any) => (
@@ -334,16 +286,12 @@ const SendTemplateNotifications: React.FC = () => {
                                             </Field>
                                         </FormItem>
                                     </div>
-
-                                    {/* Submit Button */}
                                     <div className="flex justify-end pt-4">
                                         <FormButton isSpinning={spinner} value="Schedule" />
                                     </div>
                                 </div>
                             )}
                         </div>
-
-                        {/* Submit Button for immediate sending */}
                         {!values.schedule_notification && <FormButton isSpinning={spinner} value="Send Now" />}
                     </Form>
                 )}

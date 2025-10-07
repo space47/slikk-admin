@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 import { FormContainer } from '@/components/ui/Form'
 import Button from '@/components/ui/Button'
 import { Form, Formik } from 'formik'
-import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { MAXMINARRAY, OFFARRAY, SendNotificationARRAY, UtmArray, initialValue } from './sendNotify.common'
 import { useAppDispatch } from '@/store'
@@ -19,6 +18,7 @@ import MobileDrawer from './MobileDrawer'
 import FormButton from '@/components/ui/Button/FormButton'
 import { AxiosError } from 'axios'
 import * as Yup from 'yup'
+import { errorMessage, successMessage } from '@/utils/responseMessages'
 
 const validationSchema = Yup.object({
     utm_medium: Yup.string().matches(/^[^_]*$/, 'Underscores are not allowed'),
@@ -74,16 +74,12 @@ const SendNotification = () => {
             is_active: true,
         }
         const filteredBody = Object.fromEntries(Object.entries(body).filter(([, value]) => value !== undefined && value !== ''))
-
         try {
             const response = await axioisInstance.post(`/user_notification`, filteredBody)
-            notification.success({ message: response?.data?.data?.message || response?.data?.message || 'Scheduled successfully' })
+            successMessage(response)
             navigate(`/app/appsCommuncication/sendNotification/${response?.data?.data?.id}`)
         } catch (error) {
-            console.log(error)
-            if (error instanceof AxiosError) {
-                notification.error({ message: error?.response?.data?.message || 'Failed to schedule' })
-            }
+            errorMessage(error as AxiosError)
         } finally {
             setShowSpinner(false)
         }
@@ -133,7 +129,6 @@ const SendNotification = () => {
                                         setFieldValue={setFieldValue}
                                     />
                                 )}
-
                                 {currentStep === 1 && (
                                     <SecondStepNotification
                                         values={values}
@@ -141,10 +136,8 @@ const SendNotification = () => {
                                         filterId={filterId as unknown as string}
                                     />
                                 )}
-
                                 {currentStep === 2 && <ThirdStepNotification />}
                             </FormContainer>
-
                             <FormContainer className="flex justify-end mt-5 mb-9 xl:mb-0">
                                 {currentStep > 0 && currentStep < 2 && (
                                     <Button
@@ -167,7 +160,6 @@ const SendNotification = () => {
                                     </Button>
                                 )}
                             </FormContainer>
-
                             {currentStep === 0 && (
                                 <FormContainer className="flex justify-end">
                                     <Button
@@ -180,7 +172,6 @@ const SendNotification = () => {
                                     </Button>
                                 </FormContainer>
                             )}
-
                             <FormContainer className="flex justify-start">
                                 {currentStep === 2 && (
                                     <div className="flex">

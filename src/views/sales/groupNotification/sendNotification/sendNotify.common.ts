@@ -185,13 +185,6 @@ export const USERNOTFARRAY = [
         name: 'users',
         placeholder: 'Enter Users',
     },
-    // {
-    //     label: 'Send to all Users',
-    //     classname: 'col-span-1 w-full',
-    //     type: 'checkbox',
-    //     name: 'users_all',
-    //     placeholder: 'Enter Users',
-    // },
 ]
 
 export const REPEATARRAY = [
