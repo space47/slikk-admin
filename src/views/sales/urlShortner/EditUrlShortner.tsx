@@ -89,7 +89,7 @@ const EditUrlShortner = () => {
             selectFilter: values?.select_filter,
             discount_tags: values?.discountTags,
             page_title: values?.page_title,
-            banner_id: values.banners[0]?.id,
+            banner_id: values?.banners && values.banners[0]?.id,
             is_banner: values?.is_banner,
         }
         const filters = [
@@ -104,14 +104,21 @@ const EditUrlShortner = () => {
             values?.discountTags && values?.discountTags,
         ].join(',')
 
+        console.log('1')
         const noSelectFilters = UtmArray.filter((item) => values[item.name] !== undefined && values[item.name] !== '')
             .map((item) => `${item.name.replace('_', '-')}=${values[item.name]}`)
             .join('&')
 
+        console.log('2')
+
         let utmFilters = noSelectFilters ? `&${noSelectFilters}` : ''
+        console.log('3')
         let filterSelect = values?.select_filter ? `&filters=${filters}` : `&${noSelectFilters}` || ''
+        console.log('4')
         if (values?.is_custom) utmFilters = noSelectFilters ? `?${noSelectFilters}` : ''
+        console.log('5')
         if (values?.is_custom) filterSelect = values?.select_filter ? `?filters=${filters}` : `?${noSelectFilters}` || ''
+        console.log('6')
 
         const { page_title, rest } = values
         let pageTitle = ''
@@ -128,6 +135,7 @@ const EditUrlShortner = () => {
                 subPage = `sub_page=${values.sub_page}`
             }
         }
+        console.log('7')
         const formData = {
             ...rest,
             extra_attributes: extra_attributes_fields,
