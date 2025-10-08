@@ -6,6 +6,7 @@ import { getAllBrandsAPI } from '@/store/action/brand.action'
 import { BRAND_STATE } from '@/store/types/brand.types'
 import { CATEGORY_STATE } from '@/store/types/category.types'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+import { DIVISION_STATE } from '@/store/types/division.types'
 import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
 import { filterEmptyValues } from '@/utils/apiBodyUtility'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -22,6 +23,7 @@ interface props {
 }
 
 const SyncInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
+    const division = useAppSelector<DIVISION_STATE>((state) => state.division)
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
     const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
     const subCategory = useAppSelector<SUBCATEGORY_STATE>((state) => state.subCategory)
@@ -41,6 +43,7 @@ const SyncInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
             brand_id: values?.brand?.id || '',
             company_id: values?.companyList?.map((item: any) => item?.id)?.join(','),
             category: values?.category?.name || '',
+            division: values?.division?.name || '',
             subcategory: values?.sub_categories?.name || '',
         }
         const filteredBody = filterEmptyValues(body)
@@ -102,6 +105,19 @@ const SyncInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
                                             className="w-full"
                                             onChange={(val) => {
                                                 setFieldValue('brand', val)
+                                            }}
+                                        />
+                                    </div>
+                                </FormItem>
+                                <FormItem label="Division">
+                                    <div className="flex flex-col xl:flex-row items-start gap-2">
+                                        <Select
+                                            options={division.divisions}
+                                            getOptionLabel={(option) => option.name}
+                                            getOptionValue={(option) => option?.id?.toString()}
+                                            className="w-full"
+                                            onChange={(val) => {
+                                                setFieldValue('division', val)
                                             }}
                                         />
                                     </div>
