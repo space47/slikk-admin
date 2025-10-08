@@ -31,3 +31,10 @@ export type RiderData = {
     profile: RiderProfile
     task_data: RiderTaskData
 }
+
+export const RiderAgency = [
+    { label: 'Pidge', value: 'pidge' },
+    { label: 'Pico', value: 'pico' },
+    { label: 'Care Bazaar', value: 'careBazaar' },
+    { label: 'Shadow Fax', value: 'shadowfax' },
+]

@@ -17,6 +17,7 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 import MultiSelect from '@/common/MultiSelect'
 import { USER_PROFILE_DATA } from '@/store/types/company.types'
+import { RiderAgency } from '../RiderDetailsCommon'
 
 const AddRider = () => {
     const navigate = useNavigate()
@@ -30,9 +31,11 @@ const AddRider = () => {
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(SearchRider[0])
     const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
 
-    console.log('storeResults are', storeList)
-
-    const { data: riders, isSuccess } = ridersService.useRiderProfileQuery(
+    const {
+        data: riders,
+        isSuccess,
+        refetch,
+    } = ridersService.useRiderProfileQuery(
         {
             page: 1,
             pageSize: 100,
@@ -46,6 +49,7 @@ const AddRider = () => {
             dispatch(setRiderProfile(riders?.data || []))
         }
     }, [riders, isSuccess, dispatch, selectedRider])
+
     const initialValue = useMemo(() => {
         if (selectedRider && !isAddRider && riderProfile && riderProfile.length > 0) {
             const user = riderProfile[0]?.user || {}
@@ -131,6 +135,7 @@ const AddRider = () => {
     const setSearchOnEnter = () => {
         if (searchInput.trim()) {
             setSelectedRider(searchInput.trim())
+            refetch()
         }
     }
 
@@ -273,16 +278,7 @@ const AddRider = () => {
                                     name="shift_end_time"
                                     fieldname="shift_end_time"
                                 />
-                                <CommonSelect
-                                    label="Rider Agency"
-                                    name="agency"
-                                    options={[
-                                        { label: 'Pidge', value: 'pidge' },
-                                        { label: 'Pico', value: 'pico' },
-                                        { label: 'Care Bazaar', value: 'careBazaar' },
-                                        { label: 'Shadow Fax', value: 'shadowfax' },
-                                    ]}
-                                />
+                                <CommonSelect label="Rider Agency" name="agency" options={RiderAgency} />
                             </FormContainer>
                             <div className="mt-8">
                                 <div className="text-xl font-bold mb-4 text-gray-700">ADD RIDER LOCATION</div>
