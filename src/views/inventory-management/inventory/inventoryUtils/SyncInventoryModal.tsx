@@ -11,7 +11,6 @@ import { filterEmptyValues } from '@/utils/apiBodyUtility'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { errorMessage, successMessage } from '@/utils/responseMessages'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
-import { notification } from 'antd'
 import { AxiosError } from 'axios'
 import { Field, Form, Formik } from 'formik'
 import React, { useEffect, useState } from 'react'
@@ -36,11 +35,6 @@ const SyncInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
     }, [dispatch])
 
     const handleSubmit = async (values: any) => {
-        console.log('va;ues', values, storeId)
-        if (values?.sync === 'hard' && !values?.companyList) {
-            notification.error({ message: 'Company is required' })
-            return
-        }
         const body = {
             store_id: storeId,
             sync_type: values?.sync || 'soft',

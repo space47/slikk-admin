@@ -10,7 +10,6 @@ import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
 import { filterEmptyValues } from '@/utils/apiBodyUtility'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { errorMessage, successMessage } from '@/utils/responseMessages'
-import { notification } from 'antd'
 import { AxiosError } from 'axios'
 import { Field, Form, Formik } from 'formik'
 import React, { useEffect, useState } from 'react'
@@ -35,10 +34,6 @@ const ClearInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
     }, [dispatch])
 
     const handleSubmit = async (values: any) => {
-        if (!values?.companyList) {
-            notification.error({ message: 'Company is required' })
-            return
-        }
         const body = {
             store_id: storeId,
             brand_id: values?.brand?.id || '',
