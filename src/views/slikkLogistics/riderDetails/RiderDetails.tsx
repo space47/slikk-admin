@@ -9,7 +9,7 @@ import { companyStore } from '@/store/types/companyStore.types'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
 import { Button, Dropdown, Pagination, Select } from '@/components/ui'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
-import { FaDownload, FaMapMarkedAlt } from 'react-icons/fa'
+import { FaDownload, FaFilter, FaMapMarkedAlt } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import RiderCheckinModal from './RiderCheckinModal'
 import { ridersService } from '@/store/services/riderServices'
@@ -26,8 +26,9 @@ import { Option, pageSizeOptions } from '../taskTracking/TaskCommonType'
 import { calculateDistance, RiderColumns } from './RiderUtils/RiderDetailsColumns'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import BulkEditRiderModal from './RiderComponents/BulkEditRiderModal'
-import { notification } from 'antd'
 import AddBulk from './RiderComponents/AddBulk'
+import { handleCopyLink, handleDownloadRiderCsv } from './RiderUtils/riderFunctions'
+import FilterRiderTableDrawer from './RiderUtils/FilterRiderTableDrawer'
 
 const RiderDetails = () => {
     const navigate = useNavigate()
@@ -54,6 +55,11 @@ const RiderDetails = () => {
     const [riderSearchByType, setRiderSearchByType] = useState('name')
     const [riderMobileStore, setRiderMobileStore] = useState<number[]>([])
     const [currentStoreId, setCurrentStoreId] = useState<number | null>(null)
+    const [isFilter, setIsFilter] = useState(false)
+    const [currentAgency, setCurrentAgency] = useState('')
+    const [shiftStart, setShiftStart] = useState('')
+    const [shiftEnd, setShiftEnd] = useState('')
+
     const { data: riders, isSuccess } = ridersService.useRiderDetailsQuery(
         {
             from: from,
@@ -67,6 +73,9 @@ const RiderDetails = () => {
             user_type: 'rider',
             rider_status: busyTab ?? '',
             store_id: currentStoreId || null,
+            rider_agency: currentAgency || '',
+            shift_end_time: shiftEnd || '',
+            shift_start_time: shiftStart || '',
         },
         { refetchOnMountOrArgChange: true, pollingInterval: 60000 },
     )
@@ -74,14 +83,6 @@ const RiderDetails = () => {
     useEffect(() => {
         dispatch(fetchCompanyStore())
     }, [dispatch])
-
-    const handleBusyTab = (value: string) => {
-        setBusyTab(value)
-    }
-
-    const handleSelectTab = (value: string) => {
-        setTabSelect(value)
-    }
 
     const formattedData = storeResults?.map((item) => ({
         label: item?.name,
@@ -104,25 +105,14 @@ const RiderDetails = () => {
         setNameForParticularRider(name)
         if (checked === true) {
             setIsCheckOutModal(true)
-        }
-        if (checked === false) {
+        } else {
             setIsCheckModal(true)
         }
     }
 
     useEffect(() => {
-        if (showRiderMap) {
-            dispatch(setPageSize(100))
-        }
+        if (showRiderMap) dispatch(setPageSize(100))
     }, [showRiderMap])
-
-    const onPaginationChange = (value: number) => {
-        dispatch(setPage(value))
-    }
-    const onSelectChange = (value?: number) => {
-        dispatch(setPage(1))
-        dispatch(setPageSize(Number(value)))
-    }
 
     const hanldeProfileClick = (mobile: string) => {
         setShowRiderDetailModal(true)
@@ -148,51 +138,8 @@ const RiderDetails = () => {
             currentStoreLocation?.lat ?? 0,
             currentStoreLocation?.long ?? 0,
         )
-
         return distance1 - distance2
     })
-
-    const columnsForCsv = [
-        { header: 'Name', accessorKey: 'name' },
-        { header: 'Mobile', accessorKey: 'mobile' },
-        { header: 'Latitude', accessorKey: 'latitude' },
-        { header: 'Longitude', accessorKey: 'longitude' },
-    ]
-
-    const convertToCSV = (data: any[], columns: any[]) => {
-        const header = columns.map((col) => col.header).join(',')
-        const rows = data
-            .map((row) => {
-                return columns
-                    .map((col) => {
-                        if (col.accessorKey === 'name') {
-                            return `${row?.profile?.first_name} ${row?.profile?.last_name}`
-                        } else if (col.accessorKey === 'mobile') {
-                            return row.profile?.mobile
-                        } else if (col.accessorKey === 'latitude') {
-                            return row?.profile?.current_location?.latitude
-                        } else if (col.accessorKey === 'longitude') {
-                            return row?.profile?.current_location?.longitude
-                        } else {
-                            return ''
-                        }
-                    })
-                    .join(',')
-            })
-            .join('\n')
-        return `${header}\n${rows}`
-    }
-
-    const handleDownloadRiderCsv = () => {
-        const csvData = convertToCSV(sortedRiderDetails, columnsForCsv)
-        const blob = new Blob([csvData], { type: 'text/csv' })
-        const url = window.URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = `riderData.csv`
-        a.click()
-        window.URL.revokeObjectURL(url)
-    }
 
     const handleSelectAllRiders = (e: any) => {
         if (e.target.checked) {
@@ -211,11 +158,6 @@ const RiderDetails = () => {
                 return prev.filter((item) => item !== mobiles)
             }
         })
-    }
-
-    const handleCopyLink = () => {
-        navigator.clipboard.writeText('https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/builds/Rider+App/rider-app-new.apk')
-        notification.success({ message: 'Copied' })
     }
 
     const columns = RiderColumns({
@@ -341,7 +283,7 @@ const RiderDetails = () => {
                         {['checkin', 'checkout'].map((tab) => (
                             <div
                                 key={tab}
-                                onClick={() => handleSelectTab(tab)}
+                                onClick={() => setTabSelect(tab)}
                                 className={`relative px-4 pb-2 cursor-pointer transition-colors duration-300 
         ${tabSelect === tab ? 'text-green-600 font-semibold' : 'text-gray-600 hover:text-green-500'}`}
                             >
@@ -358,7 +300,7 @@ const RiderDetails = () => {
                             {['', 'free', 'busy'].map((tab) => (
                                 <div
                                     key={tab}
-                                    onClick={() => handleBusyTab(tab)}
+                                    onClick={() => setBusyTab(tab)}
                                     className={`relative px-4 pb-2 cursor-pointer transition-colors duration-300 
           ${busyTab === tab ? 'text-blue-600 font-semibold' : 'text-gray-600 hover:text-blue-500'}`}
                                 >
@@ -404,8 +346,15 @@ const RiderDetails = () => {
                     </div>
                     <div className="flex justify-between items-center">
                         <div className="font-bold text-xl mb-5 mt-5">Total Riders : {count}</div>
-                        <div onClick={handleDownloadRiderCsv}>
-                            <FaDownload className="text-xl cursor-pointer" />
+                        <div className="flex gap-3 items-center">
+                            <div>
+                                <Button variant="new" size="sm" onClick={() => setIsFilter(true)}>
+                                    <FaFilter className="text-xl cursor-pointer" />
+                                </Button>
+                            </div>
+                            <Button variant="new" size="sm" onClick={() => handleDownloadRiderCsv(sortedRiderDetails)}>
+                                <FaDownload className="text-xl cursor-pointer" />
+                            </Button>
                         </div>
                     </div>
                     <EasyTable mainData={sortedRiderDetails} columns={columns} />
@@ -415,7 +364,7 @@ const RiderDetails = () => {
                             currentPage={page}
                             total={count}
                             className="mb-4 md:mb-0"
-                            onChange={onPaginationChange}
+                            onChange={(value) => dispatch(setPage(value))}
                         />
 
                         <span>
@@ -424,7 +373,12 @@ const RiderDetails = () => {
                                 isSearchable={false}
                                 value={pageSizeOptions.find((option) => option.value === pageSize)}
                                 options={pageSizeOptions}
-                                onChange={(option) => onSelectChange(option?.value)}
+                                onChange={(option) => {
+                                    if (option) {
+                                        dispatch(setPage(1))
+                                        dispatch(setPageSize(Number(option?.value)))
+                                    }
+                                }}
                             />
                         </span>
                     </div>
@@ -454,6 +408,18 @@ const RiderDetails = () => {
                     setIsOpen={setIsCheckOutModal}
                     mobile={mobileForParticularRider || ''}
                     name={nameForParticularRider || ''}
+                />
+            )}
+            {isFilter && (
+                <FilterRiderTableDrawer
+                    isOpen={isFilter}
+                    setIsOpen={setIsFilter}
+                    currentAgency={currentAgency}
+                    setCurrentAgency={setCurrentAgency}
+                    setShiftEnd={setShiftEnd}
+                    setShiftStart={setShiftStart}
+                    shiftEnd={shiftEnd}
+                    shiftStart={shiftStart}
                 />
             )}
             {isBulkRiderModal && (

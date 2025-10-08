@@ -2,7 +2,6 @@
 import { Switch } from 'antd'
 import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
-import { a } from 'vitest/dist/chunks/suite.B2jumIFP'
 
 interface RiderColumnsProps {
     sortedRiderDetails: any
@@ -107,6 +106,13 @@ export const RiderColumns = ({
             },
         },
         {
+            header: 'Agency',
+            accessorKey: 'profile.agency',
+            cell: ({ row }: any) => {
+                return <div>{row?.original?.profile?.agency ?? 'N/A'}</div>
+            },
+        },
+        {
             header: 'Distance From Store',
             accessorKey: 'profile.current_location',
             cell: ({ row }: any) => {
@@ -159,37 +165,45 @@ export const RiderColumns = ({
         { header: 'Mobile', accessorKey: 'profile.mobile' },
         {
             header: 'Checked In',
-            accessorKey: 'task_data.check_in_time',
+            accessorKey: 'attendance_status.check_in_time',
             cell: ({ row }: any) => {
-                const time = row?.original?.task_data?.check_in_time
+                const time = row?.original?.attendance_status?.check_in_time
                 return <div>{time?.split('.')[0] ?? 'N/A'}</div>
             },
         },
         {
             header: 'Checked Out',
-            accessorKey: 'task_data.checkout_time',
+            accessorKey: 'attendance_status.checkout_time',
             cell: ({ row }: any) => {
-                const time = row?.original?.task_data?.checkout_time
+                const time = row?.original?.attendance_status?.checkout_time
                 return <div>{time?.split('.')[0] ?? 'N/A'}</div>
             },
         },
         {
             header: 'Active Time',
-            accessorKey: 'task_data.active_time',
-            cell: ({ row }: any) => <div>{row?.original?.task_data?.active_time ?? 0} mins</div>,
+            accessorKey: 'attendance_status.active_time',
+            cell: ({ row }: any) => <div>{row?.original?.attendance_status?.active_time ?? 0} mins</div>,
         },
         {
             header: 'Distance Covered',
             accessorKey: 'task_data.distance_covered',
             cell: ({ row }: any) => <div>{row?.original?.task_data?.distance_covered ?? 0} km</div>,
         },
-        { header: 'Order Assigned', accessorKey: 'task_data.ASSIGNED' },
-        { header: 'Out for delivery', accessorKey: 'task_data.OUT_FOR_DELIVERY' },
-        { header: 'Out for Return pickup', accessorKey: 'task_data.OUT_FOR_PICKUP' },
-        { header: 'Return Pickup', accessorKey: 'task_data.PICKED_UP' },
-        { header: 'Return Pickup failed', accessorKey: 'task_data.PICKUP_FAILED' },
-        { header: 'Orders Completed', accessorKey: 'task_data.COMPLETED' },
-        { header: 'Return Delivered', accessorKey: 'task_data.DELIVERED' },
-        { header: 'Total Task', accessorKey: 'task_data.TOTAL' },
+        {
+            header: 'Assigned At',
+            accessorKey: 'recent_task_detail.assigned_at',
+            cell: ({ row }: any) => {
+                return <div>{moment(row?.original?.recent_task_detail.assigned_at).format('YYYY-MM-DD HH:mm:ss ')}</div>
+            },
+        },
+        {
+            header: 'Delivered At',
+            accessorKey: 'recent_task_detail.delivered_at',
+            cell: ({ row }: any) => {
+                return <div>{moment(row?.original?.recent_task_detail.delivered_at).format('YYYY-MM-DD HH:mm:ss ')}</div>
+            },
+        },
+        { header: 'Distance', accessorKey: 'recent_task_detail.distance' },
+        { header: 'Estimate Time', accessorKey: 'recent_task_detail.estimate_time' },
     ]
 }
