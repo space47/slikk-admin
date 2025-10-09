@@ -3,6 +3,7 @@ import { ColumnDef } from '@tanstack/react-table'
 import React, { useMemo } from 'react'
 import { USER_PROFILE_DATA } from '@/store/types/company.types'
 import { FcViewDetails } from 'react-icons/fc'
+import moment from 'moment'
 
 interface IndentColumnsProps {
     storeList: USER_PROFILE_DATA['store']
@@ -65,17 +66,19 @@ export const useIndentColumns = ({ storeList, handleStatusClick }: IndentColumns
                 ),
             },
             {
+                header: 'Create Update',
+                accessorKey: 'create_date',
+                cell: ({ getValue }: any) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
+            },
+            {
+                header: 'Last Update',
+                accessorKey: 'update_date',
+                cell: ({ getValue }: any) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
+            },
+            {
                 header: 'Status',
                 accessorKey: 'intent_number',
                 cell: ({ row }) => (
-                    // <a
-                    //     className="w-[230px] p-2 rounded-xl items-center bg-gray-600 text-white flex justify-center cursor-pointer hover:bg-gray-700"
-                    //     href={`/app/goods/indentDetails/${row.original.id}`}
-                    //     target="_blank"
-                    //     rel="noopener noreferrer"
-                    // >
-                    //     {row.original.intent_number}
-                    // </a>
                     <button onClick={() => handleStatusClick(row.original.id)}>
                         <FcViewDetails className="text-2xl" />
                     </button>
