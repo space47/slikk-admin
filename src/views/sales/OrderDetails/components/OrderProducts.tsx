@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import AdaptableCard from '@/components/shared/AdaptableCard'
 import Table from '@/components/ui/Table'
 
@@ -9,41 +10,21 @@ import ReplaceDrawer from './ReplaceDrawer'
 import { Button, Dialog } from '@/components/ui'
 import QRCode from 'react-qr-code'
 import { MdQrCodeScanner } from 'react-icons/md'
-
-import.meta.env.VITE_WEB_URI
-
-type Product = Partial<{
-    id: number
-    barcode: string
-    brand: string
-    name: string
-    color: string
-    size: string
-    product_type: string
-    image: string
-    sp: string | undefined | number
-    quantity: string
-    sub_category: string | undefined
-    location: string
-    mrp: string | undefined | number
-    fulfilled_quantity: string
-    final_price: number
-    sku: string
-    category: string | undefined
-}>
+import { CommonOrderProduct } from '../orderList.common'
+import Exchange from './Exchange'
 
 type OrderProductsProps = {
-    data: Product[]
+    data: CommonOrderProduct[]
     invoice_id: string | undefined
     status: string
 }
 
 const { Tr, Th, Td, THead, TBody } = Table
 
-const columnHelper = createColumnHelper<Product>()
+const columnHelper = createColumnHelper<CommonOrderProduct>()
 
 type productProps = {
-    row: Product
+    row: CommonOrderProduct
     status: string
 }
 
@@ -139,6 +120,8 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularROwImage] = useState('')
     const [qrCode, setQrCode] = useState('')
+    const [exchangeModal, setExchangeModal] = useState(false)
+    const [currentData, setCurrentData] = useState<CommonOrderProduct | null>()
 
     const columns = [
         columnHelper.accessor('name', {
@@ -220,7 +203,27 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                 )
             },
         }),
+        columnHelper.accessor('name', {
+            header: `Exchange`,
+            cell: (props) => {
+                const rowID = props.row.original
+                return (
+                    <>
+                        {status !== 'CANCELLED' && (
+                            <button className="text-white bg-orange-500 px-3 py-2 rounded-[10px]" onClick={() => handleExchange(rowID)}>
+                                Exchange
+                            </button>
+                        )}
+                    </>
+                )
+            },
+        }),
     ]
+
+    const handleExchange = (row: any) => {
+        setCurrentData(row)
+        setExchangeModal(true)
+    }
 
     const handleReplace = (itemId: number | undefined) => {
         setReplaceDrawer(true)
@@ -366,6 +369,14 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                     invoice_id={invoice_id}
                     setIsDialogOpen={setReplaceDrawer}
                     onDialogClose={handleReplaceClose}
+                />
+            )}
+            {exchangeModal && (
+                <Exchange
+                    isOpen={exchangeModal}
+                    setIsOpen={setExchangeModal}
+                    row={currentData as CommonOrderProduct}
+                    invoice_id={invoice_id}
                 />
             )}
         </AdaptableCard>
