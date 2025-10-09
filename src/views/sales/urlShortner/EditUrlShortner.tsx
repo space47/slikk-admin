@@ -64,7 +64,6 @@ const EditUrlShortner = () => {
     }, [initialValues?.page])
 
     const handleSubmit = async (values: any) => {
-        console.log('values are', values)
         const extra_attributes_fields = {
             utm_medium: values?.utm_medium,
             filter_id: filterId,
