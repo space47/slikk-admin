@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, Dialog, FormItem, Spinner } from '@/components/ui'
 import React, { useEffect, useMemo, useState } from 'react'
-
 import { productService } from '@/store/services/productService'
 import { ProductTypes } from '@/store/types/products.types'
 import { Form, Formik } from 'formik'
@@ -68,7 +67,7 @@ const Exchange = ({ isOpen, row, setIsOpen, invoice_id }: props) => {
                 accessorKey: 'barcode',
                 cell: ({ row }: any) => {
                     return (
-                        <Button type="submit" variant="blue" onClick={() => setCurrentBarcode(row?.original?.barcode)}>
+                        <Button type="button" variant="blue" onClick={() => setCurrentBarcode(row?.original?.barcode)}>
                             Add
                         </Button>
                     )

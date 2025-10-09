@@ -14,7 +14,10 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import FilterByRunner from './FilterByRunner'
 import { TaskTrackingColumns } from './taskUtils/TaskTrakingColumns'
 import { useFetchApi } from '@/commonHooks/useFetchApi'
-import { escapeCsvValue } from '@/common/allTypesCommon'
+import { AxiosError } from 'axios'
+import { errorMessage } from '@/utils/responseMessages'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { commonDownload } from '@/common/commonDownload'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
@@ -60,8 +63,6 @@ const TaskTracking = () => {
     }, [from, to, particularMobileOfRunner, globalFilter, currentStatus, page, pageSize])
 
     const { data, totalData, responseStatus } = useFetchApi<TaskDetails>({ url: queryUrl, initialData: [] })
-
-    console.log('data of results', data)
 
     const totalPages = Math.ceil(totalData / pageSize)
 
@@ -121,35 +122,16 @@ const TaskTracking = () => {
         handleRiderProfile,
     })
 
-    const convertToCSV = (data: any[], columns: any) => {
-        const filteredColumns = columns?.filter((item: any) => item.header !== 'Edit')
-        const header = filteredColumns.map((col: any) => col.header).join(',')
-        const rows = data
-            .map((row: any) => {
-                return filteredColumns
-                    .map((col: any) => {
-                        const accessor = col.accessor
-                        if (accessor.includes('.')) {
-                            return accessor.split('.').reduce((acc, key) => acc?.[key], row) ?? ''
-                        }
-                        return row[col.accessor] ?? ''
-                    })
-                    .join(',')
-            })
-            .join('\n')
-
-        return `${header}\n${rows}`
-    }
-
-    const handleDownloadCsv = () => {
-        const csvData = convertToCSV(data, columns)
-        const blob = new Blob([csvData], { type: 'text/csv' })
-        const url = window.URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = `task-runner.csv`
-        a.click()
-        window.URL.revokeObjectURL(url)
+    const handleDownloadCsv = async () => {
+        try {
+            const downloadUrl = `${queryUrl}&download=true`
+            const response = await axioisInstance.get(downloadUrl, { responseType: 'blob' })
+            commonDownload(response, 'Forward-Task.csv')
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                errorMessage(error)
+            }
+        }
     }
 
     if (responseStatus === '403') {
