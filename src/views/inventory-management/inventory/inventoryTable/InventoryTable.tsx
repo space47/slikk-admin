@@ -107,8 +107,8 @@ const InventoryTable = () => {
                                         Sync Inventory
                                     </Button>
                                 </div>
-                                <div>
-                                    <Button variant="new" size="sm" onClick={() => setDownloadModal(true)}>
+                                <div className="xl:mt-6">
+                                    <Button variant="new" color="yellow" size="sm" onClick={() => setDownloadModal(true)}>
                                         Download
                                     </Button>
                                 </div>
