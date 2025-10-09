@@ -162,9 +162,9 @@ const InventoryTable = () => {
 
                         <div className="flex flex-col xl:flex-row items-start gap-2">
                             <Select
-                                options={brands.brands}
                                 isMulti
                                 isClearable
+                                options={brands.brands}
                                 placeholder="Select Brands"
                                 getOptionLabel={(option) => option.name}
                                 getOptionValue={(option) => option.id.toString()}
