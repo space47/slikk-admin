@@ -132,3 +132,23 @@ export const scheduleSlots: any = {
     '3': { start: '04:00 PM', end: '07:00 PM' },
     '4': { start: '07:00 PM', end: '10:00 PM' },
 }
+
+export type CommonOrderProduct = Partial<{
+    id: number
+    barcode: string
+    brand: string
+    name: string
+    color: string
+    size: string
+    product_type: string
+    image: string
+    sp: string | undefined | number
+    quantity: string
+    sub_category: string | undefined
+    location: string
+    mrp: string | undefined | number
+    fulfilled_quantity: string
+    final_price: number
+    sku: string
+    category: string | undefined
+}>
