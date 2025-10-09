@@ -23,8 +23,6 @@ interface DATEPROPS {
     to: any
     setFrom: any
     setTo: any
-    handleFromChange?: any
-    handleToChange?: any
     handleDateChange: any
     dispatch?: any
     customChange?: string
