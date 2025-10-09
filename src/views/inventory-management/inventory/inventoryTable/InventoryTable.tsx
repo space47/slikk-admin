@@ -14,6 +14,7 @@ import LocationTransferModal from '../inventoryUtils/locationTransferModal'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 import SyncInventoryModal from '../inventoryUtils/SyncInventoryModal'
 import ClearInventoryModal from '../inventoryUtils/ClearInventoryModal'
+import DownloadInventoryModal from '../inventoryUtils/DownloadInventoryData'
 
 const InventoryTable = () => {
     const locationInputRef = useRef<{ [key: number]: HTMLInputElement | null }>({})
@@ -27,6 +28,7 @@ const InventoryTable = () => {
     const [searchType, setSearchType] = useState<{ value: string; label?: string }>(InventoryFilters[0])
     const [isInventorySync, setIsInventorySync] = useState(false)
     const [clearInventory, setClearInventory] = useState(false)
+    const [downloadModal, setDownloadModal] = useState(false)
 
     const { data, responseStatus, totalData, setPage, setPageSize, setGlobalFilter, page, pageSize, globalFilter } = useInventoryApi({
         searchType,
@@ -96,14 +98,21 @@ const InventoryTable = () => {
                     </div>
                     <div className="flex gap-4 flex-col xl:flex-row items-center">
                         {storeCode && storeCode !== '' && (
-                            <div className="xl:mt-6 flex gap-2">
-                                <Button variant="reject" size="sm" onClick={() => setClearInventory(true)}>
-                                    Clear Inventory
-                                </Button>
-                                <Button variant="accept" size="sm" onClick={hanldeSync}>
-                                    Sync Inventory
-                                </Button>
-                            </div>
+                            <>
+                                <div className="xl:mt-6 flex gap-2">
+                                    <Button variant="reject" size="sm" onClick={() => setClearInventory(true)}>
+                                        Clear Inventory
+                                    </Button>
+                                    <Button variant="accept" size="sm" onClick={hanldeSync}>
+                                        Sync Inventory
+                                    </Button>
+                                </div>
+                                <div>
+                                    <Button variant="new" size="sm" onClick={() => setDownloadModal(true)}>
+                                        Download
+                                    </Button>
+                                </div>
+                            </>
                         )}
                         <div className="flex flex-col w-full max-w-[600px]">
                             <label className="font-semibold text-gray-700 mb-1">Select Store</label>
@@ -171,6 +180,7 @@ const InventoryTable = () => {
             {locationTrabsferModal && <LocationTransferModal isOpen={locationTrabsferModal} setIsOpen={setLocationTransferModal} />}
             {isInventorySync && <SyncInventoryModal isOpen={isInventorySync} setIsOpen={setIsInventorySync} storeId={storeId as number} />}
             {clearInventory && <ClearInventoryModal isOpen={clearInventory} setIsOpen={setClearInventory} storeId={storeId as number} />}
+            {downloadModal && <DownloadInventoryModal isOpen={downloadModal} setIsOpen={setDownloadModal} storeId={storeId as number} />}
         </div>
     )
 }
