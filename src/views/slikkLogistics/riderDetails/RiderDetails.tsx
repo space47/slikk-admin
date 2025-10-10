@@ -73,7 +73,7 @@ const RiderDetails = () => {
             shift_end_time: shiftEnd || '',
             shift_start_time: shiftStart || '',
         },
-        { refetchOnMountOrArgChange: true, pollingInterval: 60000 },
+        { refetchOnMountOrArgChange: true },
     )
 
     useEffect(() => {
