@@ -143,7 +143,7 @@ const SendTemplateNotifications: React.FC = () => {
                 const body = {
                     scheduler_config: modifiedValues,
                     notification_group: values?.groups || '',
-                    mobiles: values?.users_all ? '' : values?.users || '',
+                    mobiles: values?.users_all ? '' : values?.users?.replaceAll(' ', '') || '',
                     is_active: true,
                     send_to_all: values?.users_all ? true : false,
                 }
@@ -160,7 +160,7 @@ const SendTemplateNotifications: React.FC = () => {
             try {
                 const body = {
                     notification_id: Number(id),
-                    users: values?.users || '',
+                    users: values?.users?.replaceAll(' ', '') || '',
                     notification_group: values?.groups || '',
                     notification_type: 'app',
                     send_to_all: values?.users_all ? true : false,

@@ -67,7 +67,7 @@ const SendNotification = () => {
                     ...(filterId ? [`filterId_${filterId}`] : []),
                 ].filter((filter) => filter),
                 target_page: targetPage,
-                page_title: val?.page_title ?? '',
+                page_title: encodeURIComponent(val?.page_title) ?? '',
                 sub_page: val?.sub ?? '',
             },
             mobiles: val?.users ?? [],

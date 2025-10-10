@@ -129,7 +129,7 @@ const GetNotificationStats = () => {
                     className={`flex   cursor-pointer  ${activeTab === 'schedule' ? ' border-b-4 border-black' : ''}`}
                     onClick={() => setActiveTab('schedule')}
                 >
-                    <span className="text-xl font-bold">Schedular Notifications</span>
+                    <span className="text-xl font-bold">Notification Templates</span>
                 </div>
                 <div
                     className={`flex  cursor-pointer ${activeTab === 'sent' ? ' border-b-4 border-black' : ''}`}
