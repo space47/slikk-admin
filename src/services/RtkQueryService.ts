@@ -18,16 +18,29 @@ const customBaseQuery: typeof baseQuery = async (args, api, extraOptions) => {
     const state = api.getState() as RootState
     const storeIds = state.storeSelect.store_ids
 
-    // Only add store_id if it's a non-empty array
+    const excludeUrls = ['indent', 'logistic/riders']
+
     if (Array.isArray(storeIds) && storeIds.length > 0) {
-        modifiedArgs = {
-            ...modifiedArgs,
-            params: {
-                ...(modifiedArgs as any).params,
-                store_id: storeIds.join(','),
-            },
+        if (!excludeUrls?.some((urls) => modifiedArgs.url.includes(urls))) {
+            modifiedArgs = {
+                ...modifiedArgs,
+                params: {
+                    ...(modifiedArgs as any).params,
+                    store_id: storeIds.join(','),
+                },
+            }
         }
     }
+
+    // if (Array.isArray(storeIds) && storeIds.length > 0) {
+    //     modifiedArgs = {
+    //         ...modifiedArgs,
+    //         params: {
+    //             ...(modifiedArgs as any).params,
+    //             store_id: storeIds.join(','),
+    //         },
+    //     }
+    // }
 
     return baseQuery(modifiedArgs, api, extraOptions)
 }
