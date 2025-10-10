@@ -95,6 +95,8 @@ const FullTripMap: React.FC<LogisticsMapProps> = ({ logistic_tasks }) => {
     const [sourceLatLong, setSourceLatLong] = useState<[number, number]>([0, 0])
     const [destinationLatLong, setDestinationLatLong] = useState<[number, number]>([0, 0])
 
+    const isNonEmpty = sourceLatLong[0] > 0 && sourceLatLong[1] > 0
+
     const { trip_id } = useParams()
 
     const decodedPolyline = polyline.decode(polyLine)
@@ -145,7 +147,9 @@ const FullTripMap: React.FC<LogisticsMapProps> = ({ logistic_tasks }) => {
     }
 
     useEffect(() => {
-        fetchMainData()
+        if (isNonEmpty) {
+            fetchMainData()
+        }
     }, [trip_id])
 
     useEffect(() => {

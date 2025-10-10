@@ -15,3 +15,10 @@ export type InventoryType = {
     image: string
     brand: string
 }
+
+export type InventoryCatalog = {
+    brand: number[]
+    division: string
+    category: string
+    subCategory: string
+}
