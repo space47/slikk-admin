@@ -18,6 +18,7 @@ import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 import MultiSelect from '@/common/MultiSelect'
 import { USER_PROFILE_DATA } from '@/store/types/company.types'
 import { RiderAgency } from '../RiderDetailsCommon'
+import AddBulk from '../RiderComponents/AddBulk'
 
 const AddRider = () => {
     const navigate = useNavigate()
@@ -30,6 +31,8 @@ const AddRider = () => {
     const [searchInput, setSearchInput] = useState('')
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(SearchRider[0])
     const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
+    const [isBulkAdd, setIsBulkAdd] = useState(false)
+    const [activeTab, setActiveTab] = useState<'edit' | 'add' | 'bulk-add'>('edit')
 
     const {
         data: riders,
@@ -155,21 +158,51 @@ const AddRider = () => {
                 {({ values, setFieldValue }) => (
                     <Form className="w-full mx-auto p-6 bg-white rounded-lg shadow-md">
                         <FormContainer>
+                            <div className="flex gap-6 items-center mb-8 border-b border-gray-200 font-bold">
+                                <div
+                                    className={`pb-2 cursor-pointer text-xl ${
+                                        activeTab === 'edit'
+                                            ? 'border-b-2 border-green-500 text-green-600 font-semibold'
+                                            : 'border-b-2 border-transparent text-gray-600 hover:text-green-600 hover:border-green-400'
+                                    }`}
+                                    onClick={() => {
+                                        setActiveTab('edit')
+                                        setIsAddRider(false)
+                                    }}
+                                >
+                                    Edit Existing Rider
+                                </div>
+
+                                <div
+                                    className={`pb-2 cursor-pointer text-xl ${
+                                        activeTab === 'add'
+                                            ? 'border-b-2 border-green-500 text-green-600 font-semibold'
+                                            : 'border-b-2 border-transparent text-gray-600 hover:text-green-600 hover:border-green-400'
+                                    }`}
+                                    onClick={() => {
+                                        setActiveTab('add')
+                                        setIsAddRider(true)
+                                    }}
+                                >
+                                    Add New Riders
+                                </div>
+                                <div
+                                    className={`pb-2 cursor-pointer text-xl ${
+                                        activeTab === 'bulk-add'
+                                            ? 'border-b-2 border-green-500 text-green-600 font-semibold'
+                                            : 'border-b-2 border-transparent text-gray-600 hover:text-green-600 hover:border-green-400'
+                                    }`}
+                                    onClick={() => {
+                                        setActiveTab('bulk-add')
+                                        setIsBulkAdd(true)
+                                    }}
+                                >
+                                    Bulk Add Rider
+                                </div>
+                            </div>
+
                             <FormContainer className="grid grid-cols-2 gap-6">
                                 <div className="col-span-2 flex justify-start gap-6 items-center">
-                                    <Button
-                                        variant={isAddRider ? 'reject' : 'accept'}
-                                        type="button"
-                                        size="sm"
-                                        className="flex items-center"
-                                        onClick={() => setIsAddRider((item) => !item)}
-                                    >
-                                        {isAddRider ? (
-                                            <div className="text-xl">Select Rider</div>
-                                        ) : (
-                                            <div className="text-xl ">New Rider</div>
-                                        )}
-                                    </Button>
                                     {!isAddRider && (
                                         <>
                                             <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center order-2 lg:order-1 w-full lg:w-auto">
@@ -318,6 +351,7 @@ const AddRider = () => {
                     </Form>
                 )}
             </Formik>
+            {isBulkAdd && <AddBulk isOpen={isBulkAdd} setIsOpen={setIsBulkAdd} />}
         </div>
     )
 }

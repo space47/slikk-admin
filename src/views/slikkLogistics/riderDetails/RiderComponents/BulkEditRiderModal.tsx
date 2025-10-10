@@ -107,7 +107,7 @@ const BulkEditRiderModal = ({ dialogIsOpen, setIsOpen, riderMobileStore }: Props
                                                             className="w-full"
                                                             options={storeResults}
                                                             getOptionLabel={(option) => option.code}
-                                                            getOptionValue={(option) => option.id}
+                                                            getOptionValue={(option) => option?.id?.toString()}
                                                             value={selectedStores || null}
                                                             onChange={(newVal) => {
                                                                 form.setFieldValue(

@@ -3,13 +3,12 @@ import React, { useEffect, useState } from 'react'
 import moment from 'moment'
 import EasyTable from '@/common/EasyTable'
 import RiderDetailModal from './RiderComponents/RiderDetailModal'
-import RiderFullMap from './RiderFullMap'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { companyStore } from '@/store/types/companyStore.types'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
 import { Button, Dropdown, Pagination, Select } from '@/components/ui'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
-import { FaDownload, FaFilter, FaMapMarkedAlt } from 'react-icons/fa'
+import { FaDownload, FaFilter } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import RiderCheckinModal from './RiderCheckinModal'
 import { ridersService } from '@/store/services/riderServices'
@@ -26,7 +25,6 @@ import { Option, pageSizeOptions } from '../taskTracking/TaskCommonType'
 import { calculateDistance, RiderColumns } from './RiderUtils/RiderDetailsColumns'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import BulkEditRiderModal from './RiderComponents/BulkEditRiderModal'
-import AddBulk from './RiderComponents/AddBulk'
 import { handleCopyLink, handleDownloadRiderCsv } from './RiderUtils/riderFunctions'
 import FilterRiderTableDrawer from './RiderUtils/FilterRiderTableDrawer'
 
@@ -40,7 +38,6 @@ const RiderDetails = () => {
         lat: 12.920216,
         long: 77.649326,
     })
-    const [showRiderMap, setShowRiderMap] = useState<boolean>(false)
     const { storeResults } = useAppSelector<companyStore>((state) => state.companyStore)
     const [globalFilter, setGlobalFilter] = useState('')
     const [tabSelect, setTabSelect] = useState('checkin')
@@ -51,7 +48,6 @@ const RiderDetails = () => {
     const [isCheckModal, setIsCheckModal] = useState<boolean>(false)
     const [isCheckOutModal, setIsCheckOutModal] = useState<boolean>(false)
     const [isBulkRiderModal, setIsBulkRiderModal] = useState<boolean>(false)
-    const [isBulkAdd, setIsBulkAdd] = useState<boolean>(false)
     const [riderSearchByType, setRiderSearchByType] = useState('name')
     const [riderMobileStore, setRiderMobileStore] = useState<number[]>([])
     const [currentStoreId, setCurrentStoreId] = useState<number | null>(null)
@@ -65,7 +61,7 @@ const RiderDetails = () => {
             from: from,
             to: To_Date,
             page: page,
-            pageSize: showRiderMap ? 300 : pageSize,
+            pageSize: pageSize,
             mobile: riderSearchByType === 'mobile' ? globalFilter : '',
             name: riderSearchByType === 'name' ? globalFilter : '',
             isActive: tabSelect === 'checkin' ? 'true' : 'false',
@@ -109,10 +105,6 @@ const RiderDetails = () => {
             setIsCheckModal(true)
         }
     }
-
-    useEffect(() => {
-        if (showRiderMap) dispatch(setPageSize(100))
-    }, [showRiderMap])
 
     const hanldeProfileClick = (mobile: string) => {
         setShowRiderDetailModal(true)
@@ -172,6 +164,22 @@ const RiderDetails = () => {
 
     return (
         <div>
+            <div className="flex gap-6 items-center mb-8 border-b border-gray-200 font-bold">
+                <div className="pb-2 border-b-2 border-green-500 text-green-600 font-semibold cursor-pointer text-xl">Rider Details</div>
+                <button
+                    className="pb-2 border-b-2 border-transparent text-gray-600 hover:text-green-600 hover:border-green-400  text-xl"
+                    onClick={() => navigate(`/app/riders/addNew`)}
+                >
+                    Add Riders
+                </button>
+                <button
+                    className="pb-2 border-b-2 border-transparent text-gray-600 hover:text-green-600 hover:border-green-400  text-xl"
+                    onClick={() => navigate(`/app/riders/attendance/rider`)}
+                >
+                    Rider Attendance
+                </button>
+            </div>
+
             <div className="flex flex-col gap-10">
                 <div className="flex flex-col gap-4 xl:gap-0 xl:flex-row xl:justify-between items-center">
                     <div className="flex flex-col gap-3">
@@ -194,16 +202,6 @@ const RiderDetails = () => {
                     </div>
 
                     <div className="flex flex-col gap-2 xl:flex-row xl:gap-5 items-center">
-                        <div onClick={() => setShowRiderMap((prev) => !prev)} className="items-center xl:mt-8 flex gap-1">
-                            <span className="text-xl font-bold cursor-pointer">{showRiderMap ? 'Close:' : 'Map:'}</span>
-                            <button>
-                                {showRiderMap ? (
-                                    <FaMapMarkedAlt className="text-4xl text-red-700 " />
-                                ) : (
-                                    <FaMapMarkedAlt className="text-4xl text-green-600 " />
-                                )}
-                            </button>
-                        </div>
                         <div className="xl:mt-8">
                             {riderMobileStore?.length > 0 && (
                                 <Button variant="new" size="sm" onClick={() => setIsBulkRiderModal(true)}>
@@ -211,30 +209,16 @@ const RiderDetails = () => {
                                 </Button>
                             )}
                         </div>
-                        <div className="xl:mt-8">
-                            <Button variant="new" size="sm" onClick={() => setIsBulkAdd(true)}>
-                                Bulk Add Rider
-                            </Button>
-                        </div>
-                        <div className="xl:mt-8">
-                            <Button variant="new" size="sm" onClick={() => navigate(`/app/riders/addNew`)}>
-                                ADD / UPDATE RIDERS
-                            </Button>
-                        </div>
+
                         <div className="xl:mt-8" onClick={handleCopyLink}>
                             <a
-                                className="p-2 rounded-xl bg-gradient-to-r from-blue-500/80 to-blue-700/80 hover:from-blue-600/90 hover:to-blue-800/90 text-white no-underline flex gap-2 font-bold backdrop-blur-sm"
+                                className="p-2 rounded-xl bg-gradient-to-r  bg-blue-700/80  text-white no-underline flex gap-2 font-bold backdrop-blur-sm"
                                 href="https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/builds/Rider+App/rider-app-new.apk"
                             >
-                                Rider App Link
+                                App Link
                             </a>
                         </div>
 
-                        <div className="xl:mt-8">
-                            <Button variant="new" size="sm" onClick={() => navigate(`/app/riders/attendance/rider`)}>
-                                Attendance
-                            </Button>
-                        </div>
                         <div>
                             <UltimateDatePicker
                                 dispatch={dispatch}
@@ -245,38 +229,8 @@ const RiderDetails = () => {
                                 handleDateChange={handleDateChange}
                             />
                         </div>
-
-                        <div className="bg-gray-200 max-h-[140px] px-1 rounded-lg font-bold text-[15px] mt-8">
-                            <Dropdown
-                                className="border   text-black text-lg font-semibold "
-                                title={riderType}
-                                onSelect={(selectedKey) => setRiderType(selectedKey)}
-                            >
-                                <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide xl:max-h-[600px]  xl:overflow-y-scroll font-bold ">
-                                    {['FORWARD', 'RETURN']?.map((item, key) => (
-                                        <DropdownItem key={key} eventKey={item} className="h-1">
-                                            {item}
-                                        </DropdownItem>
-                                    ))}
-                                </div>
-                                <div
-                                    className="flex mt-3 justify-center items-center rounded-lg cursor-pointer text-white bg-red-500 hover:bg-red-400"
-                                    onClick={() => setRiderType('Select Rider Type')}
-                                >
-                                    Clear
-                                </div>
-                            </Dropdown>
-                        </div>
                     </div>
                 </div>
-
-                {showRiderMap && (
-                    <div className="xl:w-[90%]  items-center">
-                        <div className="text-xl font-bold">Rider Location</div>
-                        <div className="flex flex-col gap-3"></div>
-                        <RiderFullMap riderDetails={riderDetails || []} currentStore={currentStoreLocation} />
-                    </div>
-                )}
 
                 <div className="flex flex-col gap-3">
                     <div className="flex gap-6 justify-start mb-6 border-b border-gray-300">
@@ -347,6 +301,27 @@ const RiderDetails = () => {
                     <div className="flex justify-between items-center">
                         <div className="font-bold text-xl mb-5 mt-5">Total Riders : {count}</div>
                         <div className="flex gap-3 items-center">
+                            <div className="bg-gray-200 max-h-[140px] px-1 rounded-lg font-bold text-[15px] ">
+                                <Dropdown
+                                    className="border   text-black text-lg font-semibold "
+                                    title={riderType}
+                                    onSelect={(selectedKey) => setRiderType(selectedKey)}
+                                >
+                                    <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide xl:max-h-[600px]  xl:overflow-y-scroll font-bold ">
+                                        {['FORWARD', 'RETURN']?.map((item, key) => (
+                                            <DropdownItem key={key} eventKey={item} className="h-1">
+                                                {item}
+                                            </DropdownItem>
+                                        ))}
+                                    </div>
+                                    <div
+                                        className="flex mt-3 justify-center items-center rounded-lg cursor-pointer text-white bg-red-500 hover:bg-red-400"
+                                        onClick={() => setRiderType('Select Rider Type')}
+                                    >
+                                        Clear
+                                    </div>
+                                </Dropdown>
+                            </div>
                             <div>
                                 <Button variant="new" size="sm" onClick={() => setIsFilter(true)}>
                                     <FaFilter className="text-xl cursor-pointer" />
@@ -425,7 +400,6 @@ const RiderDetails = () => {
             {isBulkRiderModal && (
                 <BulkEditRiderModal dialogIsOpen={isBulkRiderModal} setIsOpen={setIsBulkRiderModal} riderMobileStore={riderMobileStore} />
             )}
-            {isBulkAdd && <AddBulk isOpen={isBulkAdd} setIsOpen={setIsBulkAdd} />}
         </div>
     )
 }
