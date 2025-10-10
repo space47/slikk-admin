@@ -25,7 +25,7 @@ const customBaseQuery: typeof baseQuery = async (args, api, extraOptions) => {
             modifiedArgs = {
                 ...modifiedArgs,
                 params: {
-                    ...(modifiedArgs as any).params,
+                    ...modifiedArgs.params,
                     store_id: storeIds.join(','),
                 },
             }

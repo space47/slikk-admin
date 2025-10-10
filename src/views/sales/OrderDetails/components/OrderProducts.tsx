@@ -329,11 +329,16 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                                         size:{pdts.size}
                                     </div>
 
-                                    <div className="flex items-center justify-between">
+                                    <div className="flex items-center justify-between mb-4">
                                         <div className="flex flex-col xl:flex-row xl:gap-6 xl:items-center gap-2">
                                             <div className="text-md xl:text-md dark:text-white">
-                                                Qty:{' '}
-                                                {status !== 'PENDING' && status !== 'ACCEPTED' ? pdts.fulfilled_quantity : pdts?.quantity}
+                                                Qty:
+                                                {pdts?.quantity}
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-col xl:flex-row xl:gap-6 xl:items-center gap-2">
+                                            <div className="text-md xl:text-md dark:text-white">
+                                                Fulfilled Qty: {pdts.fulfilled_quantity}
                                             </div>
                                         </div>
                                     </div>

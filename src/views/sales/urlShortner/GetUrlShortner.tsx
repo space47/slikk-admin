@@ -6,7 +6,7 @@ import { Button, Pagination, Select } from '@/components/ui'
 import { useNavigate } from 'react-router-dom'
 import { URLSHORTNERTYPE } from '@/store/types/shortUrl.types'
 import { fetchUrlShortner, setPage, setPageSize } from '@/store/slices/urlShortner/urlShortner.slice'
-import { FaDotCircle, FaEdit } from 'react-icons/fa'
+import { FaEdit, FaQrcode } from 'react-icons/fa'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import QRcodeModal from './QRcodeModal'
 import EasyTable from '@/common/EasyTable'
@@ -16,7 +16,7 @@ import { pageSizeOptions } from '@/constants/pageUtils.constants'
 const GetUrlShortner = () => {
     const [globalFilter, setGlobalFilter] = useState('')
     const [urlData, setUrlData] = useState([])
-    const [storeUrl, setStoreUrl] = useState<string>()
+    const [storeUrl, setStoreUrl] = useState<Record<string, string>>()
     const [showQrModal, setShowQrModal] = useState(false)
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
@@ -89,10 +89,10 @@ const GetUrlShortner = () => {
                 header: 'Generate QR',
                 accessorKey: 'id',
                 cell: ({ row }) => {
-                    const urlName = row.original.web_url
+                    const data = row.original
                     return (
-                        <button onClick={() => hanldeGenerateQR(urlName)}>
-                            <FaDotCircle className="text-xl text-blue-600 hover:text-red-700 cursor-pointer" />
+                        <button className="bg-black rounded-[50px] p-2 hover:bg-white" onClick={() => hanldeGenerateQR(data)}>
+                            <FaQrcode className="text-xl text-white hover:text-gray-700 cursor-pointer" />
                         </button>
                     )
                 },
@@ -103,12 +103,10 @@ const GetUrlShortner = () => {
 
     const handleCopy = (file: any) => {
         navigator.clipboard.writeText(file)
-        notification.success({
-            message: 'Copied',
-        })
+        notification.success({ message: 'Copied' })
     }
 
-    const hanldeGenerateQR = (qr: string) => {
+    const hanldeGenerateQR = (qr: Record<string, string>) => {
         setStoreUrl(qr)
         setShowQrModal(true)
     }
@@ -129,12 +127,11 @@ const GetUrlShortner = () => {
 
     return (
         <div className="flex flex-col gap-5 p-3 shadow-lg rounded-xl">
-            {' '}
-            <div>
+            <div className="flex justify-between items-center mb-5">
                 <div>
                     <input placeholder="Search by short code" value={globalFilter} onChange={(e) => setGlobalFilter(e.target.value)} />
                 </div>
-                <div className="flex justify-end">
+                <div className="">
                     <Button variant="new" onClick={handleCreateUrl}>
                         CREATE URL
                     </Button>
@@ -155,7 +152,14 @@ const GetUrlShortner = () => {
                     />
                 </div>
             </div>
-            {showQrModal && <QRcodeModal dialogIsOpen={showQrModal} setIsOpen={setShowQrModal} value={storeUrl} />}
+            {showQrModal && (
+                <QRcodeModal
+                    dialogIsOpen={showQrModal}
+                    setIsOpen={setShowQrModal}
+                    value={storeUrl?.web_url}
+                    title={storeUrl?.short_code || 'url'}
+                />
+            )}
         </div>
     )
 }

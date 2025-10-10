@@ -126,12 +126,15 @@ const OrderMap = ({ taskData }: props) => {
     const [polyLine, setPolyLine] = useState('')
     const [sourceLatLong, setSourceLatLong] = useState<[number, number]>([0, 0])
     const [destinationLatLong, setDestinationLatLong] = useState<[number, number]>([0, 0])
+    const MAP_KEY = import.meta.env.VITE_OLA_API_KEY
+
+    const isNonEmpty = sourceLatLong[0] > 0 && sourceLatLong[1] > 0
+
+    console.log('source lat long', isNonEmpty)
 
     const decodedPolyline = polyline.decode(polyLine)
 
     const fetchRouteDetails = async () => {
-        const MAP_KEY = import.meta.env.VITE_OLA_API_KEY
-
         try {
             const response = await axios.post(`https://api.olamaps.io/routing/v1/directions/basic`, null, {
                 params: {
@@ -154,7 +157,9 @@ const OrderMap = ({ taskData }: props) => {
     }
 
     useEffect(() => {
-        fetchRouteDetails()
+        if (isNonEmpty) {
+            fetchRouteDetails()
+        }
     }, [sourceLatLong, destinationLatLong])
 
     useEffect(() => {

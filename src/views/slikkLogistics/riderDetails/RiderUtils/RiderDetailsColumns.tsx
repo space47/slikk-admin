@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Switch } from 'antd'
 import moment from 'moment'
-import { useNavigate } from 'react-router-dom'
 
 interface RiderColumnsProps {
     sortedRiderDetails: any
@@ -33,7 +32,6 @@ export const RiderColumns = ({
     handleSelectAllRiders,
     handleSelectRiderMobile,
 }: RiderColumnsProps) => {
-    const navigate = useNavigate()
     return [
         {
             header: (
@@ -106,10 +104,26 @@ export const RiderColumns = ({
             },
         },
         {
+            header: 'App Version',
+            accessorKey: 'app_version',
+            cell: ({ row }: any) => {
+                const version = row?.original?.app_version[0]
+                return <div>{version || 'N/A'}</div>
+            },
+        },
+        {
             header: 'Agency',
             accessorKey: 'profile.agency',
             cell: ({ row }: any) => {
                 return <div>{row?.original?.profile?.agency ?? 'N/A'}</div>
+            },
+        },
+        {
+            header: 'Store Name',
+            accessorKey: 'store',
+            cell: ({ row }: any) => {
+                const storeName = row?.original?.store?.map((item: any) => item?.name)?.join(', ')
+                return <div>{storeName ?? 'N/A'}</div>
             },
         },
         {
@@ -203,7 +217,7 @@ export const RiderColumns = ({
                 return <div>{moment(row?.original?.recent_task_detail.delivered_at).format('YYYY-MM-DD HH:mm:ss ')}</div>
             },
         },
-        { header: 'Distance', accessorKey: 'recent_task_detail.distance' },
+
         { header: 'Estimate Time', accessorKey: 'recent_task_detail.estimate_time' },
     ]
 }
