@@ -111,6 +111,8 @@ const TwoPointMap = ({ lat, long, storeLat, storeLong }: props) => {
     const [sourceLatLong, setSourceLatLong] = useState<[number, number]>([0, 0])
     const [destinationLatLong, setDestinationLatLong] = useState<[number, number]>([0, 0])
 
+    const isNonEmpty = sourceLatLong[0] > 0 && sourceLatLong[1] > 0
+
     const decodedPolyline = polyline.decode(polyLine)
 
     const fetchRouteDetails = async () => {
@@ -138,7 +140,9 @@ const TwoPointMap = ({ lat, long, storeLat, storeLong }: props) => {
     }
 
     useEffect(() => {
-        fetchRouteDetails()
+        if (isNonEmpty) {
+            fetchRouteDetails()
+        }
     }, [sourceLatLong, destinationLatLong])
 
     useEffect(() => {

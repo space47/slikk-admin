@@ -164,7 +164,7 @@ const OrderDetails = () => {
                                         )}{' '}
                                     {data.status !== 'DECLINED' && data.status !== 'CANCELLED' && (
                                         <button
-                                            className="bg-red-600 hover:bg-red-700 text-white px-2 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-full md:w-auto"
+                                            className="bg-gray-600 hover:bg-gray-700 text-white px-2 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-full md:w-auto"
                                             onClick={() => setShowCancelModal(true)}
                                         >
                                             CANCEL ORDER
@@ -302,7 +302,7 @@ const OrderDetails = () => {
                                         />
                                     </div>
                                     {data?.logistic && (
-                                        <div className="mt-6 xl:w-[280px] md:w-[250px] flex-wrap break-words">
+                                        <div className="mt-6 xl:w-[200px] md:w-[250px] flex-wrap break-words">
                                             <OrdersRiderActivity eventLogs={taskData} />
                                         </div>
                                     )}
