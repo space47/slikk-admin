@@ -468,3 +468,42 @@ export const ExchangeModal: React.FC<prop6> = ({ isModalOpen, handlePack, handle
         </Modal>
     )
 }
+
+export interface ConfirmationModalProps {
+    visible: boolean
+    onConfirm: () => void
+    onCancel: () => void
+    title: string
+    content: string
+    confirmText?: string
+}
+
+const MODAL_CONFIG = {
+    okButtonStyle: {
+        backgroundColor: '#D32F2F',
+        color: '#FFFFFF',
+        borderRadius: '8px',
+    },
+} as const
+
+export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
+    visible,
+    onConfirm,
+    onCancel,
+    title,
+    content,
+    confirmText = 'CONFIRM',
+}) => (
+    <Modal
+        title=""
+        open={visible}
+        okText={confirmText}
+        cancelText="CANCEL"
+        okButtonProps={MODAL_CONFIG.okButtonStyle}
+        onOk={onConfirm}
+        onCancel={onCancel}
+    >
+        <h1 className="text-center text-lg font-bold text-red-600">{title}</h1>
+        <p className="text-center text-xl font-semibold mb-10">{content}</p>
+    </Modal>
+)
