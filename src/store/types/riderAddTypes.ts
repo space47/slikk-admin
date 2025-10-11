@@ -174,6 +174,9 @@ export interface RiderProfileData {
     other_info: Record<string, any>
     create_date: string
     update_date: string
+    agency?: string
+    rider_delivery_type?: string
+    store: any
 }
 
 export type RiderProfileResponseType = {

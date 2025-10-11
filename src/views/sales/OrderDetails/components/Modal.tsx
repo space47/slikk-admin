@@ -3,7 +3,7 @@ import React from 'react'
 import { Modal, Select } from 'antd'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { Dropdown, Input } from '@/components/ui'
-import { FaRupeeSign } from 'react-icons/fa'
+import { FaRupeeSign, FaTrash } from 'react-icons/fa'
 import { LOGISTIC_PARTNER, Product } from './activityCommon'
 
 const { Option } = Select
@@ -26,6 +26,9 @@ type Props = {
     isButtonClick?: boolean
     bagsCount: string
     setBagsCount: (x: string) => void
+    handleLocationClick: any
+    selectedLocations: { [productId: number]: { [location: string]: number } }
+    handleRemoveLocation: (productId: number, location: string) => void
 }
 
 export const CustomModal: React.FC<Props> = ({
@@ -44,6 +47,9 @@ export const CustomModal: React.FC<Props> = ({
     isButtonClick,
     bagsCount,
     setBagsCount,
+    handleLocationClick,
+    selectedLocations,
+    handleRemoveLocation,
 }) => {
     return (
         <Modal
@@ -73,7 +79,6 @@ export const CustomModal: React.FC<Props> = ({
             className="custom-modal"
             open={isModalOpen}
             onCancel={handleCancel}
-            bodyStyle={{ maxHeight: '75vh', overflowY: 'auto', padding: '1rem' }}
         >
             <p className="text-lg font-bold mb-4">{modalContent}</p>
 
@@ -116,23 +121,64 @@ export const CustomModal: React.FC<Props> = ({
                                 <div className="font-semibold text-lg">{pdts.brand}</div>
                                 <div className="text-gray-600 text-md truncate">{pdts.name}</div>
                                 <div className="text-gray-800 text-sm mb-2">{pdts.sku}</div>
-                                <div className="flex flex-wrap gap-4 items-center text-md">
-                                    <span>Qty: {pdts.quantity}</span>
-                                    <div className="flex items-center">
-                                        <span>Fulfilled Qty:</span>
-                                        <Select
-                                            value={fulfilledQuantities[pdts.id] || 0}
-                                            className="ml-2 w-20 h-8"
-                                            onChange={(value: any) => handleSelectChange(pdts.id, value)}
-                                        >
-                                            {Array.from({ length: parseInt(pdts.quantity, 10) + 1 }, (_, i) => (
-                                                <Option key={i} value={i.toString()}>
-                                                    {i}
-                                                </Option>
-                                            ))}
-                                        </Select>
+                                <div className="text-gray-800 text-sm mb-2">Loc:{pdts.location}</div>
+                                <div className="text-gray-800 text-sm mb-2">Quantity:{pdts.quantity}</div>
+                                {pdts?.location && pdts?.location_details && Object.keys(pdts?.location_details).length <= 0 && (
+                                    <div className="flex flex-wrap gap-4 items-center text-md">
+                                        <div className="flex items-center">
+                                            <span>Fulfilled Qty:</span>
+                                            <Select
+                                                value={fulfilledQuantities[pdts.id] || 0}
+                                                className="ml-2 w-20 h-8"
+                                                onChange={(value: any) => handleSelectChange(pdts.id, value)}
+                                            >
+                                                {Array.from({ length: parseInt(pdts.quantity, 10) + 1 }, (_, i) => (
+                                                    <Option key={i} value={i.toString()}>
+                                                        {i}
+                                                    </Option>
+                                                ))}
+                                            </Select>
+                                        </div>
                                     </div>
-                                </div>
+                                )}
+                                {pdts.location_details && Object.keys(pdts.location_details).length > 0 && (
+                                    <div>
+                                        <div className="flex gap-10 text-md">
+                                            <div className="font-semibold mt-2">Select Location:</div>
+                                            <div className="flex gap-2 flex-wrap mt-1">
+                                                {Object.entries(pdts.location_details)?.map(([location, qty], index) => (
+                                                    <span
+                                                        key={index}
+                                                        className="text-white text-md cursor-pointer border px-2 py-1 rounded-md bg-blue-800 hover:bg-blue-400"
+                                                        onClick={() => handleLocationClick(pdts.id, location, qty, pdts.quantity)}
+                                                    >
+                                                        {location} ({qty})
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        {selectedLocations[pdts.id] && (
+                                            <div className="mt-2 flex flex-wrap gap-2">
+                                                {Object.entries(selectedLocations[pdts.id]).map(([loc, count]) => (
+                                                    <div
+                                                        key={loc}
+                                                        className="bg-green-100 text-blue-800 px-2 py-1 rounded-xl flex items-center gap-2"
+                                                    >
+                                                        <span>
+                                                            {loc}: {count}
+                                                        </span>
+                                                        <button
+                                                            className="text-red-500 hover:text-red-700"
+                                                            onClick={() => handleRemoveLocation(pdts.id, loc)}
+                                                        >
+                                                            <FaTrash className="text-xl font-bold " />
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ))}
@@ -422,3 +468,42 @@ export const ExchangeModal: React.FC<prop6> = ({ isModalOpen, handlePack, handle
         </Modal>
     )
 }
+
+export interface ConfirmationModalProps {
+    visible: boolean
+    onConfirm: () => void
+    onCancel: () => void
+    title: string
+    content: string
+    confirmText?: string
+}
+
+const MODAL_CONFIG = {
+    okButtonStyle: {
+        backgroundColor: '#D32F2F',
+        color: '#FFFFFF',
+        borderRadius: '8px',
+    },
+} as const
+
+export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
+    visible,
+    onConfirm,
+    onCancel,
+    title,
+    content,
+    confirmText = 'CONFIRM',
+}) => (
+    <Modal
+        title=""
+        open={visible}
+        okText={confirmText}
+        cancelText="CANCEL"
+        okButtonProps={MODAL_CONFIG.okButtonStyle}
+        onOk={onConfirm}
+        onCancel={onCancel}
+    >
+        <h1 className="text-center text-lg font-bold text-red-600">{title}</h1>
+        <p className="text-center text-xl font-semibold mb-10">{content}</p>
+    </Modal>
+)

@@ -21,6 +21,8 @@ export type Product = {
     name: string
     id: number
     brand: string
+    location?: string
+    location_details?: Record<string, number>
 }
 
 export type LOGISTIC = {
