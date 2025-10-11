@@ -152,3 +152,21 @@ export type CommonOrderProduct = Partial<{
     sku: string
     category: string | undefined
 }>
+
+export interface FulfilledQuantities {
+    [key: number]: number
+}
+
+export interface SelectedLocations {
+    [productId: number]: {
+        [location: string]: number
+    }
+}
+
+export interface LogisticPartner {
+    value: string
+    label: string
+}
+
+export const NOTIFICATION_DURATION = 3000
+export const NAVIGATION_DELAY = 2000
