@@ -174,13 +174,6 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                 )
             },
         }),
-        columnHelper.accessor('quantity', {
-            header: 'Quantity',
-        }),
-
-        columnHelper.accessor('fulfilled_quantity', {
-            header: 'Fullfilled Quantity',
-        }),
         columnHelper.accessor('final_price', {
             header: 'Final Price',
             cell: (props) => {
@@ -188,6 +181,21 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                 return <PriceAmount amount={row.final_price ?? 0} />
             },
         }),
+        columnHelper.accessor('quantity', {
+            header: 'Quantity',
+        }),
+
+        columnHelper.accessor('fulfilled_quantity', {
+            header: 'Fullfilled Quantity',
+        }),
+        columnHelper.accessor('is_gift_wrap', {
+            header: 'Gift Wrap',
+            cell: (props) => {
+                const row = props.row.original
+                return <div>{row?.is_gift_wrap ? 'Yes' : 'NO'}</div>
+            },
+        }),
+
         columnHelper.accessor('name', {
             header: `${status !== 'CANCELLED' ? 'Replace' : ''}`,
             cell: (props) => {
@@ -327,6 +335,9 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                                     </div>
                                     <div className=" mb-3 xl:text-sm w-[100px] text-gray-700 xl:w-full dark:text-white">
                                         size:{pdts.size}
+                                    </div>
+                                    <div className=" mb-3 xl:text-sm w-[100px] text-gray-700 xl:w-full dark:text-white">
+                                        Gift Wrap:{pdts.is_gift_wrap ? 'YES' : 'NO'}
                                     </div>
 
                                     <div className="flex items-center justify-between mb-4">
