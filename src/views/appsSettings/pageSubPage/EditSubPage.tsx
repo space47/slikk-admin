@@ -4,7 +4,7 @@ import { Formik, Form, Field } from 'formik'
 import Button from '@/components/ui/Button'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { FormItem, Select } from '@/components/ui'
+import { Checkbox, FormItem, Input, Select } from '@/components/ui'
 import { pageSettingsService } from '@/store/services/pageSettingService'
 import { pageNameTypes } from '@/store/types/pageSettings.types'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -15,6 +15,7 @@ import PageEditVideo from '../pageSettings/PageEditVideo'
 import { useAppSelector } from '@/store'
 import { USER_PROFILE_DATA } from '@/store/types/company.types'
 import MultiSelect from '@/common/MultiSelect'
+import { Extra_Fields_Subpage } from './pageSubPageUtils/subPageCommon'
 
 const EditSubPage = () => {
     const { id } = useParams()
@@ -47,8 +48,14 @@ const EditSubPage = () => {
             accent_color: subPageData?.extra_attributes?.accentColor || '',
             text_color: subPageData?.extra_attributes?.textColor || '',
             text_color_inactive: subPageData?.extra_attributes?.textColorInactive || '',
+            icon_color: subPageData?.extra_attributes?.icon_color || '',
+            icon_color_web: subPageData?.extra_attributes?.icon_color_web || '',
+            address_header_color_web: subPageData?.extra_attributes?.address_header_color_web || '',
+            address_header_color: subPageData?.extra_attributes?.address_header_color || '',
+            address_description_color: subPageData?.extra_attributes?.address_description_color || '',
+            address_description_color_web: subPageData?.extra_attributes?.address_description_color_web || '',
         },
-        store: subPageData?.stores?.map((item) => item?.id) || [],
+        store: subPageData?.stores?.map((item: any) => item?.id) || [],
     }
 
     const handleSubmit = async (values: any) => {
@@ -67,6 +74,12 @@ const EditSubPage = () => {
                 accentColor: values?.extra_attributes?.accent_color || '',
                 textColor: values?.extra_attributes?.text_color || '',
                 textColorInactive: values?.extra_attributes?.text_color_inactive || '',
+                icon_color: values?.extra_attributes?.icon_color || '',
+                icon_color_web: values?.extra_attributes?.icon_color_web || '',
+                address_header_color_web: values?.extra_attributes?.address_header_color_web || '',
+                address_header_color: values?.extra_attributes?.address_header_color || '',
+                address_description_color: values?.extra_attributes?.address_description_color || '',
+                address_description_color_web: values?.extra_attributes?.address_description_color_web || '',
             },
         }
 
@@ -194,6 +207,20 @@ const EditSubPage = () => {
                                 />
                             </FormItem>
 
+                            {Extra_Fields_Subpage?.map((item, key) => {
+                                return (
+                                    <FormItem label={item?.label} className="space-y-1" key={key}>
+                                        <Field
+                                            name={item?.name}
+                                            type={item?.type}
+                                            placeholder={`Enter ${item?.label}`}
+                                            component={item?.type === 'checkbox' ? Checkbox : Input}
+                                            className="w-full rounded-lg px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition"
+                                        />
+                                    </FormItem>
+                                )
+                            })}
+
                             <div className="space-y-1">
                                 <PageEditVideo
                                     isImage
@@ -202,7 +229,7 @@ const EditSubPage = () => {
                                     name="image_array"
                                     handleRemoveVideo={() => handleRemove(setFieldValue)}
                                     beforeVideoUpload={beforeUpload}
-                                    fileList={values.image_array as any}
+                                    fileList={values?.image_array as any}
                                     fieldName="image_array"
                                 />
                             </div>
