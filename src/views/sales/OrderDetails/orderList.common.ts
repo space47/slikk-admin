@@ -151,6 +151,7 @@ export type CommonOrderProduct = Partial<{
     final_price: number
     sku: string
     category: string | undefined
+    is_gift_wrap: boolean
 }>
 
 export interface FulfilledQuantities {

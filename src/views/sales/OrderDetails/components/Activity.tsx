@@ -9,16 +9,17 @@ import React, { useState, useEffect } from 'react'
 import { Modal, notification } from 'antd'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
-import { CustomModal, CustomModal2, CustomModal3, CustomModal4, CustomModal5, ExchangeModal } from './Modal'
+import { CustomModal, CustomModal2, CustomModal3, CustomModal4, CustomModal5, ExchangeModal, RejectModal } from './Modal'
 import { ActivityProps, LOGISTIC_PARTNER } from './activityCommon'
 import { getButtonAndModalContent, particularApiCall } from './activityFunctions'
 import { AxiosError } from 'axios'
+import { errorMessage, successMessage } from '@/utils/responseMessages'
 
 const Activity = ({ data = [], status, product = [], payment, invoice_id, mainData, delivery_type }: ActivityProps) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [modalContent, setModalContent] = useState<string>()
     const [fulfilledQuantities, setFulfilledQuantities] = useState<{ [key: number]: number }>({})
-    const [errorMessage, setErrorMessage] = useState<string | null>(null)
+    const [errorText, setErrorText] = useState<string | null>(null)
     const [action, setAction] = useState('')
     const [triggerApiCall, setTriggerApiCall] = useState(false)
     const [triggerAcceptedCall, setTriggerAcceptedCall] = useState(false)
@@ -41,6 +42,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
     const [rtoCancel, setRtoCancel] = useState(false)
     const [bagsCount, setBagsCount] = useState('1')
     const [binNumber, setBinNumber] = useState('1')
+    const [selectedLocations, setSelectedLocations] = useState<{ [productId: number]: { [location: string]: number } }>({})
 
     const rejectData = mainData.order_items?.filter((item) => !fulfilledIDs.includes(item.id.toString()))?.map((item) => item.id)
 
@@ -49,14 +51,58 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
         setIsModalOpen(true)
     }
 
+    const handleLocationClick = (productId: number, location: string, locationQuantity: number, totalQuantity: number) => {
+        setSelectedLocations((prev) => {
+            const productLocations = prev[productId] || {}
+            const currentCount = productLocations[location] || 0
+            const totalSelected = Object.values(productLocations).reduce((sum, count) => sum + count, 0)
+            if (currentCount > locationQuantity) {
+                notification.error({ message: 'Inventory exceeded' })
+                return
+            }
+            if (Number(totalSelected) === Number(totalQuantity)) {
+                notification.error({ message: 'item has already been fulfilled' })
+                return
+            }
+
+            if (currentCount < locationQuantity && totalSelected < totalQuantity) {
+                return {
+                    ...prev,
+                    [productId]: {
+                        ...productLocations,
+                        [location]: currentCount + 1,
+                    },
+                }
+            }
+            return prev
+        })
+    }
+
+    const handleRemoveLocation = (productId: number, location: string) => {
+        setSelectedLocations((prev) => {
+            const productLocations = { ...(prev[productId] || {}) }
+            if (productLocations[location] > 1) {
+                productLocations[location] -= 1
+            } else {
+                delete productLocations[location]
+            }
+            const updated = { ...prev }
+            if (Object.keys(productLocations).length > 0) {
+                updated[productId] = productLocations
+            } else {
+                delete updated[productId]
+            }
+
+            return updated
+        })
+    }
+
     const handleSelectChange = (id: number, value: string) => {
         setFulfilledQuantities((prevQuantities) => ({
             ...prevQuantities,
             [id]: parseInt(value, 10),
         }))
     }
-
-    console.log('Action is', status)
 
     useEffect(() => {
         if (triggerApiCall) {
@@ -69,25 +115,48 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                         }, 3000)
                         return
                     }
-                    const data = Object.entries(fulfilledQuantities).reduce(
-                        (acc, [id, quantity]: any) => {
-                            if (quantity > 0) {
-                                acc[id] = quantity
-                            }
-                            return acc
-                        },
-                        {} as { [key: number]: number },
+                    const itemsWithLocationDetails = product?.filter(
+                        (item) => item.location_details && Object.keys(item.location_details).length > 0,
                     )
+                    const itemsWithoutLocationDetails = product?.filter(
+                        (item) => !item.location_details || Object.keys(item.location_details).length === 0,
+                    )
+                    const data: Record<number, any> = {}
+                    if (itemsWithLocationDetails?.length > 0) {
+                        const locationData = Object.entries(selectedLocations).reduce(
+                            (acc, [productId, locations]) => {
+                                Object.entries(locations).forEach(([location, count]) => {
+                                    acc[productId as any] = acc[productId as any] || {}
+                                    acc[productId as any][location] = count
+                                })
+                                return acc
+                            },
+                            {} as { [key: number]: { [location: string]: number } },
+                        )
+                        Object.assign(data, locationData)
+                    }
+                    if (itemsWithoutLocationDetails?.length > 0) {
+                        const quantityData = Object.entries(fulfilledQuantities).reduce(
+                            (acc, [id, quantity]: any) => {
+                                if (quantity > 0) {
+                                    acc[id] = quantity
+                                }
+                                return acc
+                            },
+                            {} as { [key: number]: number },
+                        )
+                        Object.assign(data, quantityData)
+                    }
                     if (Object.keys(data).length === 0) {
                         setButtonAfterClick(false)
-                        notification.warning({
-                            message: 'No Quantities Selected',
-                            description: 'Please select at least one item with a valid quantity to proceed.',
-                        })
+                        notification.warning({ message: 'Please select at least one item with a valid quantity to proceed.' })
                         setTriggerApiCall(false)
                         return
                     }
-                    const hasZeroQuantity = Object.values(fulfilledQuantities).some((q) => q === 0)
+                    const hasZeroQuantity =
+                        Object.values(selectedLocations).some((locations) => Object.values(locations).some((count) => count === 0)) ||
+                        Object.values(fulfilledQuantities).some((quantity) => quantity === 0)
+
                     if (hasZeroQuantity) {
                         setButtonAfterClick(false)
                         Modal.confirm({
@@ -104,18 +173,22 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                         })
                         return
                     }
+                    const totalRequiredQuantity = product?.reduce((sum, item) => sum + Number(item?.quantity || 0), 0)
+                    const totalFulfilledQuantity =
+                        Object.values(selectedLocations)
+                            .flatMap((locs) => Object.values(locs))
+                            .reduce((sum, curr) => sum + curr, 0) + Object.values(fulfilledQuantities).reduce((sum, q) => sum + (q || 0), 0)
 
-                    const hasLessQuantity =
-                        product.reduce((sum, item) => sum + Number(item?.quantity || 0), 0) >
-                        Object.values(fulfilledQuantities).reduce((sum, q) => sum + (q || 0), 0)
+                    const hasLessQuantity = totalRequiredQuantity > totalFulfilledQuantity
                     if (hasLessQuantity && !hasZeroQuantity) {
                         setButtonAfterClick(false)
                         Modal.confirm({
                             title: 'Confirm Quantity for Packing',
-                            content: 'The number of fulfilled quantity is less then actual quantity !',
+                            content: 'The number of fulfilled quantity is less than actual quantity!',
                             okText: 'Yes',
                             cancelText: 'No',
                             onOk: async () => {
+                                console.log('data is', data)
                                 await makeApiCall(data)
                             },
                             onCancel: () => {
@@ -126,7 +199,6 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                     }
                     await makeApiCall(data)
                 } catch (error) {
-                    console.error(error)
                     setTriggerApiCall(false)
                 } finally {
                     setButtonAfterClick(false)
@@ -160,10 +232,9 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
 
     const handleReject = () => {
         const hasFulfilledQty = Object.values(fulfilledQuantities).some((item) => item > 0)
-
         if (hasFulfilledQty) {
             setTimeout(() => {
-                setErrorMessage('QUANTITY OF ITEMS SHOULD BE 0')
+                setErrorText('QUANTITY OF ITEMS SHOULD BE 0')
             }, 2000)
         } else {
             setRejectModal(true)
@@ -219,24 +290,16 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
     }
 
     const handleCancelOnRTO = async () => {
-        const body = {
-            return_reason: 'RTO Cancel',
-        }
+        const body = { return_reason: 'RTO Cancel' }
         try {
             const response = await axiosInstance.post(`merchant/cancelorder/${invoice_id}`, body)
-
-            notification.success({
-                message: 'SUCCESS',
-                description: response.data.message || 'Order successfully Cancelled',
-            })
+            successMessage(response)
             navigate(0)
             setIsModalOpen(false)
         } catch (error) {
-            console.error('Error:', error)
-            notification.error({
-                message: 'Failure',
-                description: 'Order failed to cancel',
-            })
+            if (error instanceof AxiosError) {
+                errorMessage(error)
+            }
         }
     }
 
@@ -277,7 +340,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                         </Button>
                         <div>
                             {data[data.length - 1]?.status === 'RTO_DELIVERED' && (
-                                <Button onClick={() => setRtoCancel(true)} className="ml-2" variant="reject">
+                                <Button className="ml-2" variant="reject" onClick={() => setRtoCancel(true)}>
                                     Cancel
                                 </Button>
                             )}
@@ -288,27 +351,17 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
 
             {rejectModal && (
                 <div className="flex justify-center items-center h-screen">
-                    <Modal
-                        title=""
-                        open={rejectModal}
-                        okText="REJECT"
-                        cancelText="CANCEL"
-                        okButtonProps={{
-                            style: {
-                                backgroundColor: '#D32F2F',
-                                color: '#FFFFFF',
-                                borderRadius: '8px',
-                            },
-                        }}
-                        onOk={() => {
+                    <RejectModal
+                        desc="Are you sure you want to reject this order"
+                        title="REJECT ORDER"
+                        isOpen={rejectModal}
+                        text="REJECT"
+                        handleOk={() => {
                             setAction('PACKED')
                             setCancelCall(true)
                         }}
-                        onCancel={() => setRejectModal(false)}
-                    >
-                        <h1 className="text-center text-lg font-bold text-red-600">REJECT ORDER</h1>
-                        <p className="text-center text-xl font-semibold mb-10">Are you sure you want to reject this order</p>
-                    </Modal>
+                        onClose={() => setRejectModal(false)}
+                    />
                 </div>
             )}
 
@@ -363,10 +416,13 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                     product={product}
                     fulfilledQuantities={fulfilledQuantities}
                     handleSelectChange={handleSelectChange}
-                    errorMessage={errorMessage || undefined}
+                    errorMessage={errorText || undefined}
                     isButtonClick={buttonAfterClick}
                     bagsCount={bagsCount}
                     setBagsCount={setBagsCount}
+                    handleLocationClick={handleLocationClick}
+                    handleRemoveLocation={handleRemoveLocation}
+                    selectedLocations={selectedLocations}
                 />
             )}
 
@@ -429,24 +485,14 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
             )}
 
             {rtoCancel && (
-                <Modal
-                    title=""
-                    open={rtoCancel}
-                    okText="CANCEL"
-                    cancelText="CANCEL"
-                    okButtonProps={{
-                        style: {
-                            backgroundColor: '#D32F2F',
-                            color: '#FFFFFF',
-                            borderRadius: '8px',
-                        },
-                    }}
-                    onOk={handleCancelOnRTO}
-                    onCancel={() => setRtoCancel(false)}
-                >
-                    <h1 className="text-center text-lg font-bold text-red-600">CANCEL ORDER</h1>
-                    <p className="text-center text-xl font-semibold mb-10">Are you sure you want to Cancel this order</p>
-                </Modal>
+                <RejectModal
+                    desc="Are you sure you want to Cancel this order"
+                    title="CANCEL ORDER"
+                    isOpen={rtoCancel}
+                    text="REJECT"
+                    handleOk={handleCancelOnRTO}
+                    onClose={() => setRtoCancel(false)}
+                />
             )}
         </Card>
     )
