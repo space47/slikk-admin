@@ -5,7 +5,7 @@ import Button from '@/components/ui/Button'
 import Dialog from '@/components/ui/Dialog'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { FormItem, Select } from '@/components/ui'
+import { Checkbox, FormItem, Input, Select } from '@/components/ui'
 import { pageSettingsService } from '@/store/services/pageSettingService'
 import { pageNameTypes } from '@/store/types/pageSettings.types'
 import { useNavigate } from 'react-router-dom'
@@ -15,6 +15,7 @@ import { handleimage } from '@/common/handleImage'
 import MultiSelect from '@/common/MultiSelect'
 import store, { useAppSelector } from '@/store'
 import { USER_PROFILE_DATA } from '@/store/types/company.types'
+import { Extra_Fields_Subpage } from '../../pageSubPage/pageSubPageUtils/subPageCommon'
 
 interface Props {
     dialogIsOpen: boolean
@@ -63,6 +64,12 @@ const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: Props) => {
                 accentColor: values?.extra_attributes?.accent_color || '',
                 textColor: values?.extra_attributes?.text_color || '',
                 textColorInactive: values?.extra_attributes?.text_color_inactive || '',
+                icon_color: values?.extra_attributes?.icon_color || '',
+                icon_color_web: values?.extra_attributes?.icon_color_web || '',
+                address_header_color_web: values?.extra_attributes?.address_header_color_web || '',
+                address_header_color: values?.extra_attributes?.address_header_color || '',
+                address_description_color: values?.extra_attributes?.address_description_color || '',
+                address_description_color_web: values?.extra_attributes?.address_description_color_web || '',
             },
         }
 
@@ -145,6 +152,20 @@ const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: Props) => {
                                 className="rounded-xl px-3 py-2 w-full border border-gray-300"
                             />
                         </FormItem>
+
+                        {Extra_Fields_Subpage?.map((item, key) => {
+                            return (
+                                <FormItem label={item?.label} className="space-y-1" key={key}>
+                                    <Field
+                                        name={item?.name}
+                                        type={item?.type}
+                                        placeholder={`Enter ${item?.label}`}
+                                        component={item?.type === 'checkbox' ? Checkbox : Input}
+                                        className="w-full rounded-lg px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition"
+                                    />
+                                </FormItem>
+                            )
+                        })}
 
                         <MultiSelect
                             label="Store Select"
