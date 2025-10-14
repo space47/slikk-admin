@@ -10,43 +10,22 @@ import { getAllBrandsAPI } from '@/store/action/brand.action'
 import { IoMdAddCircle } from 'react-icons/io'
 import { MdCancel } from 'react-icons/md'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
+import { FILTER_STATE } from '@/store/types/filters.types'
 
 interface PROPS {
     showDrawer: boolean
-    handleCloseDrawer: any
-    handleApply: any
-    divisionList: any
-    categroyList: any
-    productTypeList: any
+    setShowDrawer: (x: boolean) => void
+    setTypeFetch: (x: string) => void
+    isDispatch?: boolean
     brandList: any
-    subCategoryList: any
-    setDivisionList: any
-    setCategoryList: any
-    setSubCategoryList: any
-    setProductTypeList: any
     setBrandList: any
-    filters: any
-    setFilterString: any
 }
 
-const ProductFilterNest = ({
-    showDrawer,
-    handleCloseDrawer,
-    handleApply,
-    divisionList,
-    categroyList,
-    productTypeList,
-    brandList,
-    subCategoryList,
-    setDivisionList,
-    setCategoryList,
-    setSubCategoryList,
-    setProductTypeList,
-    setBrandList,
-    filters,
-    setFilterString,
-}: PROPS) => {
+const FilterProductCommon = ({ showDrawer, setShowDrawer, setTypeFetch, brandList, setBrandList }: PROPS) => {
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
+
+    const [selectFilterString, setFilterString] = useState('')
+    const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
 
     const dispatch = useAppDispatch()
     useEffect(() => {
@@ -55,42 +34,55 @@ const ProductFilterNest = ({
     }, [dispatch])
 
     const handleMultiSelect = (fieldName: string, selectedValues: any) => {
-        if (fieldName === 'division') {
-            setDivisionList(selectedValues)
-        } else if (fieldName === 'category') {
-            setCategoryList(selectedValues)
-        } else if (fieldName === 'sub_category') {
-            setSubCategoryList(selectedValues)
-        } else if (fieldName === 'product_type') {
-            setProductTypeList(selectedValues)
-        } else if (fieldName === 'brand') {
+        if (fieldName === 'brand') {
             setBrandList(selectedValues)
         }
     }
 
     useEffect(() => {
         if (showDrawer) {
-            setInitialValues({
-                division: [],
-                category: [],
-                sub_category: [],
-                product_type: [],
-                brand: [],
-            })
+            setInitialValues({ brand: [] })
         }
     }, [showDrawer])
 
-    const [initialValues, setInitialValues] = useState({
-        division: divisionList,
-        category: categroyList,
-        sub_category: subCategoryList,
-        product_type: productTypeList,
-        brand: brandList,
-    })
+    const [initialValues, setInitialValues] = useState({ brand: brandList })
+
+    const handleApply = () => {
+        let query = ''
+        if (brandList?.length > 0 && !selectFilterString) {
+            const brandIds = brandList.join(',')
+            if (query) query += '&'
+            query += `brand=${encodeURIComponent(brandIds)}`
+        }
+        if (selectFilterString && brandList?.length === 0) {
+            console.log('selected filter string', selectFilterString)
+            query += `${selectFilterString}`
+        }
+        if (selectFilterString && brandList?.length > 0) {
+            const brandIds = brandList.join(',')
+            const data = selectFilterString
+                ?.split('=')
+                ?.filter((item) => item !== 'brand')
+                ?.join('')
+            if (selectFilterString.includes('brand')) {
+                query += `brand=${encodeURIComponent(brandIds)},${data},`
+            } else {
+                query += `${selectFilterString}&brand=${encodeURIComponent(brandIds)}`
+            }
+        }
+        setTypeFetch(query)
+        setShowDrawer(false)
+    }
 
     return (
         <div>
-            <Drawer title="" isOpen={showDrawer} lockScroll={false} onRequestClose={handleCloseDrawer} onClose={handleCloseDrawer}>
+            <Drawer
+                title=""
+                isOpen={showDrawer}
+                lockScroll={false}
+                onRequestClose={() => setShowDrawer(false)}
+                onClose={() => setShowDrawer(false)}
+            >
                 <Formik initialValues={initialValues} onSubmit={handleApply}>
                     {({ setFieldValue }) => (
                         <Form className="flex flex-col gap-10 w-full items-start">
@@ -125,10 +117,7 @@ const ProductFilterNest = ({
                                     {({ push, remove, form }) => (
                                         <>
                                             <FormContainer className="items-center mt-4">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => push([])} // Add a new empty array for multi-select values
-                                                >
+                                                <button type="button" onClick={() => push([])}>
                                                     <IoMdAddCircle className="text-3xl text-green-500" />
                                                 </button>
                                             </FormContainer>
@@ -198,4 +187,4 @@ const ProductFilterNest = ({
     )
 }
 
-export default ProductFilterNest
+export default FilterProductCommon
