@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { useInventoryApi } from '../inventoryUtils/useInventoryApi'
 import { Button, Dropdown, Pagination, Select, Spinner } from '@/components/ui'
-import { useAppDispatch, useAppSelector } from '@/store'
+import { useAppSelector } from '@/store'
 import { USER_PROFILE_DATA } from '@/store/types/company.types'
-import { InventoryCatalog, InventoryFilters } from '../inventoryUtils/inventoryCommon'
+import { InventoryFilters } from '../inventoryUtils/inventoryCommon'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { useInventoryLocationColumns } from '../inventoryUtils/useInventoryLocationTable'
 import ImageMODAL from '@/common/ImageModal'
@@ -14,16 +14,14 @@ import LocationTransferModal from '../inventoryUtils/locationTransferModal'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 import SyncInventoryModal from '../inventoryUtils/SyncInventoryModal'
 import ClearInventoryModal from '../inventoryUtils/ClearInventoryModal'
-import { getAllBrandsAPI } from '@/store/action/brand.action'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import { AxiosError } from 'axios'
 import { errorMessage } from '@/utils/responseMessages'
-import InventoryFilter from '../inventoryUtils/InventoryFilter'
 import { Filter } from 'lucide-react'
+import FilterProductCommon from '@/common/FilterProductCommon'
 
 const InventoryTable = () => {
-    const dispatch = useAppDispatch()
     const locationInputRef = useRef<{ [key: number]: HTMLInputElement | null }>({})
     const qtyInputRef = useRef<{ [key: number]: HTMLInputElement | null }>({})
     const [storeCode, setStoreCode] = useState('slikk101')
@@ -31,31 +29,20 @@ const InventoryTable = () => {
     const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularRowImage] = useState<string | null>('')
-    const [locationTrabsferModal, setLocationTransferModal] = useState(false)
+    const [locationTransferModal, setLocationTransferModal] = useState(false)
     const [searchType, setSearchType] = useState<{ value: string; label?: string }>(InventoryFilters[0])
-    const [filteredCatalog, setFilteredCatalog] = useState<InventoryCatalog>({
-        brand: [],
-        division: '',
-        category: '',
-        subCategory: '',
-    })
     const [isInventorySync, setIsInventorySync] = useState(false)
     const [clearInventory, setClearInventory] = useState(false)
     const [showFilter, setShowFilter] = useState(false)
     const [spinner, setSpinner] = useState(false)
-
-    useEffect(() => {
-        dispatch(getAllBrandsAPI())
-    }, [dispatch])
+    const [typeFetch, setTypeFetch] = useState('')
+    const [brandList, setBrandList] = useState([])
 
     const { data, responseStatus, totalData, setPage, setPageSize, setGlobalFilter, page, pageSize, globalFilter, query } = useInventoryApi(
         {
             searchType,
             store_code: storeCode,
-            brandList: filteredCatalog?.brand,
-            selectedCategory: filteredCatalog?.category,
-            selectedSubCategory: filteredCatalog?.subCategory,
-            selectedDivision: filteredCatalog?.division,
+            typeFetch: typeFetch,
         },
     )
 
@@ -218,15 +205,16 @@ const InventoryTable = () => {
                     image={particularRowImage && particularRowImage?.split(',')}
                 />
             )}
-            {locationTrabsferModal && <LocationTransferModal isOpen={locationTrabsferModal} setIsOpen={setLocationTransferModal} />}
+            {locationTransferModal && <LocationTransferModal isOpen={locationTransferModal} setIsOpen={setLocationTransferModal} />}
             {isInventorySync && <SyncInventoryModal isOpen={isInventorySync} setIsOpen={setIsInventorySync} storeId={storeId as number} />}
             {clearInventory && <ClearInventoryModal isOpen={clearInventory} setIsOpen={setClearInventory} storeId={storeId as number} />}
             {showFilter && (
-                <InventoryFilter
-                    isOpen={showFilter}
-                    setIsOpen={setShowFilter}
-                    setFilteredCatalog={setFilteredCatalog}
-                    filteredCatalog={filteredCatalog}
+                <FilterProductCommon
+                    showDrawer={showFilter}
+                    setShowDrawer={setShowFilter}
+                    setTypeFetch={setTypeFetch}
+                    brandList={brandList}
+                    setBrandList={setBrandList}
                 />
             )}
         </div>
