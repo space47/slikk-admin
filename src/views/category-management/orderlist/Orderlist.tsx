@@ -64,6 +64,7 @@ const OrderList = () => {
     const [isDownloading, setIsDownloading] = useState(false)
     const [showNumberLoading, setShowNumberLoading] = useState(false)
     const [isReAssign, setIsReAssign] = useState(false)
+    const [loadingTable, setLoadingTable] = useState(false)
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
 
     const handleSelectTab = (value: string) => {
@@ -107,6 +108,8 @@ const OrderList = () => {
 
     const fetchOrders = async () => {
         try {
+            setOrders([])
+            setLoadingTable(true)
             const { ordersData, orderCount } = await fetchApiCall()
             setOrders(ordersData)
             setOrderCount(orderCount)
@@ -119,6 +122,7 @@ const OrderList = () => {
             console.error(error)
         } finally {
             setShowNumberLoading(false)
+            setLoadingTable(false)
         }
     }
 
@@ -391,6 +395,7 @@ const OrderList = () => {
                     tabSelect={tabSelect}
                     orderCount={showNumberLoading ? `...` : `${orderCount}`}
                 />
+                {loadingTable && <div className="flex font-bold text-xl items-center justify-center mt-10">Loading...</div>}
                 {showNoData ? (
                     <NotFoundData />
                 ) : (

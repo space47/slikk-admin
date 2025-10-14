@@ -26,7 +26,6 @@ const PaginationTable = () => {
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
     const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
 
-    console.log('selected Store', storeList)
     const [companyCode, setCompanyCode] = useState<any>()
     const [storeCode, setStoreCode] = useState<any[]>([])
     const [activeTab, setActiveTab] = useState('tab2')
@@ -98,7 +97,7 @@ const PaginationTable = () => {
                                     classNamePrefix="react-select"
                                     options={companyList}
                                     getOptionLabel={(option) => option.name}
-                                    getOptionValue={(option) => option.id}
+                                    getOptionValue={(option) => option.id?.toString()}
                                     onChange={(newVal) => setCompanyCode(newVal?.code)}
                                 />
                             </div>
@@ -109,7 +108,7 @@ const PaginationTable = () => {
                                     isMulti
                                     options={storeList}
                                     getOptionLabel={(option) => option.name}
-                                    getOptionValue={(option) => option.id}
+                                    getOptionValue={(option) => option.id?.toString()}
                                     onChange={(selectedOptions) => {
                                         setStoreCode(selectedOptions?.map((opt) => opt.id) || [])
                                     }}
