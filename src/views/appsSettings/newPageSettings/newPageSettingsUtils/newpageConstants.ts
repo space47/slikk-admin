@@ -89,6 +89,7 @@ export const InitialValuesEdit = (data: pageSettingsType | undefined) => {
         last_updated_by: data?.last_updated_by ?? '',
         created_at: data?.created_at ?? '',
         updated_at: data?.updated_at ?? '',
+        section_type: data?.section_type ?? '',
     }
 }
 
