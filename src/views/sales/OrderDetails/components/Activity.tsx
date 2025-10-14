@@ -13,7 +13,7 @@ import { CustomModal, CustomModal2, CustomModal3, CustomModal4, CustomModal5, Ex
 import { ActivityProps, LOGISTIC_PARTNER } from './activityCommon'
 import { getButtonAndModalContent, particularApiCall } from './activityFunctions'
 import { AxiosError } from 'axios'
-import { errorMessage, successMessage } from '@/utils/responseMessages'
+import RtoCancelModal from '../orderDetailsUtils/RtoCancelModal'
 
 const Activity = ({ data = [], status, product = [], payment, invoice_id, mainData, delivery_type }: ActivityProps) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -289,20 +289,6 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
         setPartner({ value: selectedValue, label: selectedLabel })
     }
 
-    const handleCancelOnRTO = async () => {
-        const body = { return_reason: 'RTO Cancel' }
-        try {
-            const response = await axiosInstance.post(`merchant/cancelorder/${invoice_id}`, body)
-            successMessage(response)
-            navigate(0)
-            setIsModalOpen(false)
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                errorMessage(error)
-            }
-        }
-    }
-
     const { buttonText, modalContent: content } = getButtonAndModalContent(data, mainData, delivery_type)
 
     return (
@@ -484,16 +470,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                 />
             )}
 
-            {rtoCancel && (
-                <RejectModal
-                    desc="Are you sure you want to Cancel this order"
-                    title="CANCEL ORDER"
-                    isOpen={rtoCancel}
-                    text="REJECT"
-                    handleOk={handleCancelOnRTO}
-                    onClose={() => setRtoCancel(false)}
-                />
-            )}
+            {rtoCancel && <RtoCancelModal isOpen={rtoCancel} setIsOpen={setRtoCancel} orderItems={product} invoice_id={invoice_id} />}
         </Card>
     )
 }

@@ -12,7 +12,6 @@ import isEmpty from 'lodash/isEmpty'
 import { useParams } from 'react-router-dom'
 import moment from 'moment'
 import ReturnOrderDrawer from './components/ReturnOrderDrawer'
-import CancelModal from './components/CancelModal'
 import { FaDownload } from 'react-icons/fa'
 import { SalesOrderDetailsResponse, scheduleSlots } from './orderList.common'
 import { Button, Dialog } from '@/components/ui'
@@ -24,6 +23,7 @@ import TwoPointMap from './components/TwoPointMap'
 import OrdersRiderActivity from './components/OrdersRiderActivity'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 import { useOrderDetailFunctions } from './orderDetailsUtils/useOrderDetailFunctions'
+import RtoCancelModal from './orderDetailsUtils/RtoCancelModal'
 
 const OrderDetails = () => {
     const { invoice_id } = useParams()
@@ -347,11 +347,12 @@ const OrderDetails = () => {
                             )}
 
                             {showCancelModal && (
-                                <CancelModal
-                                    isModalOpen={showCancelModal}
-                                    handleClose={() => setShowCancelModal(false)}
+                                <RtoCancelModal
+                                    isCancel
+                                    isOpen={showCancelModal}
                                     invoice_id={invoice_id || ''}
-                                    setIsModalOpen={setShowCancelModal}
+                                    orderItems={data?.order_items}
+                                    setIsOpen={setShowCancelModal}
                                 />
                             )}
                             {showCancelExchangeModal && (

@@ -476,6 +476,7 @@ interface props {
     title: string
     desc: string
     text: string
+    isRto?: boolean
 }
 
 export const RejectModal = ({ handleOk, isOpen, onClose, text, desc, title }: props) => {

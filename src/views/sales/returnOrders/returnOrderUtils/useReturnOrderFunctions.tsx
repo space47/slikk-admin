@@ -123,7 +123,7 @@ export const useReturnOrderFunctions = ({
     const handleCompleteReturn = async (action: string, locationWiseDetails: any) => {
         const totalItemQuantity = locationWiseArray?.reduce((total: number, item: any) => total + Number(item?.quantity), 0) || 0
         Object.keys(locationWiseDetails)?.forEach((id) => {
-            locationWiseDetails[id] = locationWiseDetails[id]?.reduce((acc: any, { location, quantity }) => {
+            locationWiseDetails[id] = locationWiseDetails[id]?.reduce((acc: any, { location, quantity }: any) => {
                 acc[location] = quantity
                 return acc
             }, {})
