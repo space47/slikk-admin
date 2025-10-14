@@ -140,7 +140,7 @@ export const useInventoryLocationColumns = ({
                 accessorKey: 'location',
                 cell: ({ row }) => {
                     const stockId = row.original.id
-                    return row.original.location ? (
+                    return (
                         <>
                             <input
                                 type="text"
@@ -149,10 +149,6 @@ export const useInventoryLocationColumns = ({
                                 onChange={(e) => handleLocationChange(stockId, e.target.value)}
                                 ref={(el) => (locationInputRef.current[stockId] = el)}
                             />
-                        </>
-                    ) : (
-                        <>
-                            <div>N/A</div>
                         </>
                     )
                 },
@@ -163,7 +159,7 @@ export const useInventoryLocationColumns = ({
                 accessorKey: 'quantity',
                 cell: ({ row }) => {
                     const stockId = row.original.id
-                    return row.original.quantity ? (
+                    return (
                         <>
                             <input
                                 className="w-[70px] rounded-xl"
@@ -173,8 +169,6 @@ export const useInventoryLocationColumns = ({
                                 ref={(el) => (qtyInputRef.current[stockId] = el)}
                             />
                         </>
-                    ) : (
-                        <>N/A</>
                     )
                 },
             },

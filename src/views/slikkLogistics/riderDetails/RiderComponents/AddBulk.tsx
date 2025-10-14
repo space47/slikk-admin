@@ -44,9 +44,32 @@ const AddBulk = ({ isOpen, setIsOpen }: props) => {
     return (
         <div>
             <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)} contentClassName="max-w-lg w-full">
-                <div className="p-6">
+                <div className="p-6 max-w-lg mx-auto bg-white shadow-md rounded-2xl">
                     <h2 className="text-xl font-semibold mb-2 text-center">Bulk Rider Upload</h2>
                     <p className="text-gray-500 mb-6 text-center">Upload a CSV file to add multiple riders at once.</p>
+                    <div className="flex flex-col items-center justify-center space-y-4 mb-10">
+                        <a
+                            download
+                            href="https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/SampleFiles-Dashboard/RiderBulkUploadSample.csv"
+                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all duration-200"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"
+                                />
+                            </svg>
+                            Download Sample File
+                        </a>
+                    </div>
                     <Formik initialValues={{ fileUpload: [] }} onSubmit={handleSubmit}>
                         {({ values }) => (
                             <Form className="space-y-6">

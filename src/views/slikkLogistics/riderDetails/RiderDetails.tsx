@@ -60,8 +60,8 @@ const RiderDetails = () => {
         {
             from: from,
             to: To_Date,
-            page: page,
-            pageSize: pageSize,
+            page: !globalFilter ? page : undefined,
+            pageSize: !globalFilter ? pageSize : undefined,
             mobile: riderSearchByType === 'mobile' ? globalFilter : '',
             name: riderSearchByType === 'name' ? globalFilter : '',
             isActive: tabSelect === 'checkin' ? 'true' : 'false',
