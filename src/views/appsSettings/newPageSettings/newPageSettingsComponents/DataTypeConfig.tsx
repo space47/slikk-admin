@@ -15,6 +15,7 @@ import BarcodeData from '../newPageSettingsUtils/BarcodeData'
 import { SortArrays } from '../newPageSettingsUtils/newPageCommons'
 import { couponSeriesService } from '@/store/services/couponSeriesService'
 import { CouponResults } from '@/store/types/couponSeries.types'
+import { SectionTypeArray } from '../newPageSettingsUtils/newpageConstants'
 
 interface DataTypesConfigProps {
     values: any
@@ -125,6 +126,7 @@ const DataTypesConfig = ({ values, filterId, setFilterId, setFieldValue, setBarc
                     <Field type="number" name="extra_info.page_size" placeholder="Place Page Size" component={Input} min="0" step={0.01} />
                 </FormItem>
 
+                <CommonSelect needClassName name="section_type" label="Section Type" options={SectionTypeArray} className="w-full" />
                 <FormItem label="Division Select">
                     <Field name="division_select">
                         {({ field, form }: FieldProps<any>) => {
