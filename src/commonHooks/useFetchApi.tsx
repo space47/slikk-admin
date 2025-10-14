@@ -25,6 +25,7 @@ export const useFetchApi = <T,>({ url, initialData = [], typeOfData, pollingInte
     const fetchData = useCallback(async () => {
         try {
             setLoading(true)
+            setData([])
             const response = await axioisInstance.get<ApiResponse<T>>(url)
             if (typeOfData === 'Object') {
                 const data = response.data

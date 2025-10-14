@@ -66,7 +66,7 @@ const AddRider = () => {
                 is_active: riderProfile[0]?.is_active || false,
                 lat: riderProfile[0]?.service_latitude,
                 long: riderProfile[0]?.service_longitude,
-                agency: riderProfile[0]?.agency,
+                agency: riderProfile[0]?.agency?.toLowerCase(),
                 rider_delivery_type: riderProfile[0]?.rider_delivery_type,
                 // store: riderProfile[0]?.store?.map((item: any) => item?.id),
             }
