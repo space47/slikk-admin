@@ -158,15 +158,6 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
 
     // API calls
     const handleCancelOrder = useCallback(async () => {
-        const validation = validateQuantities()
-        if (!validation.isValid) {
-            notification.warning({
-                message: 'Quantity Mismatch',
-                description: 'The total item quantity does not match the calculated quantity.',
-            })
-            return
-        }
-
         if (isCancel && !cancelReason && !customReason) {
             notification.error({
                 message: 'Reason Required',
@@ -176,7 +167,7 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
         }
 
         const body = {
-            items_location: transformLocationDetails(),
+            // items_location: transformLocationDetails(),
             return_reason: getCancelReason(),
         }
 
@@ -207,17 +198,7 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
         } finally {
             setIsLoading(false)
         }
-    }, [
-        validateQuantities,
-        isCancel,
-        cancelReason,
-        customReason,
-        getCancelReason,
-        transformLocationDetails,
-        invoice_id,
-        setIsOpen,
-        navigate,
-    ])
+    }, [isCancel, cancelReason, customReason, getCancelReason, transformLocationDetails, invoice_id, setIsOpen, navigate])
 
     // Component rendering helpers
     const renderLocationInputs = (item: Product) => {
@@ -352,7 +333,7 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
                         </Button>
                     </div>
                 </div>
-                <div className="max-h-[230px] overflow-y-auto pr-2 bg-blue-50 p-4 rounded-lg">{orderItems?.map(renderLocationInputs)}</div>
+                {/* <div className="max-h-[230px] overflow-y-auto pr-2 bg-blue-50 p-4 rounded-lg">{orderItems?.map(renderLocationInputs)}</div> */}
                 {renderCancelReasonSection()}
                 {renderRTOCancelSection()}
             </div>

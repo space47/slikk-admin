@@ -395,7 +395,7 @@ const OrderList = () => {
                     tabSelect={tabSelect}
                     orderCount={showNumberLoading ? `...` : `${orderCount}`}
                 />
-                {loadingTable && <div className="flex font-bold text-xl items-center mt-10">Loading...</div>}
+                {loadingTable && <div className="flex font-bold text-xl items-center justify-center mt-10">Loading...</div>}
                 {showNoData ? (
                     <NotFoundData />
                 ) : (
