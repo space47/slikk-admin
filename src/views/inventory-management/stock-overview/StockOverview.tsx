@@ -7,7 +7,6 @@ import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { IoMdDownload } from 'react-icons/io'
 import { notification } from 'antd'
 import ImageMODAL from '@/common/ImageModal'
-import StockOverviewFilter from './stockOverviewComponents/StockOverviewFilter'
 import { useNavigate } from 'react-router-dom'
 import AccessDenied from '@/views/pages/AccessDenied'
 import EasyTable from '@/common/EasyTable'
@@ -15,6 +14,7 @@ import { Option, pageSizeOptions, Stock } from './stockOverviewCommon'
 import { Dropdown, Spinner } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { useStockOverViewColumns } from './stockOverViewUtils/useStockOverViewColumns'
+import FilterProductCommon from '@/common/FilterProductCommon'
 
 const FilterArray = [
     { label: 'SKU', value: 'sku' },
@@ -29,22 +29,12 @@ const StockOverview = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
-    const [updatedQuantities, setUpdatedQuantities] = useState<{
-        [key: number]: number
-    }>({})
-    const [updatedLocation, setUpdatedLocation] = useState<{
-        [key: number]: string
-    }>({})
+    const [updatedQuantities, setUpdatedQuantities] = useState<{ [key: number]: number }>({})
+    const [updatedLocation, setUpdatedLocation] = useState<{ [key: number]: string }>({})
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularROwImage] = useState<any>([])
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(FilterArray[0])
-    const [searchType, setSearchType] = useState<string>('')
     const navigate = useNavigate()
-    // FOR THE LISTS
-    const [divisionList, setDivisionList] = useState<string[]>([])
-    const [categoryList, setCategoryList] = useState([])
-    const [subCategoryList, setSubCategoryList] = useState([])
-    const [productTypeList, setProductTypeList] = useState([])
     const [brandList, setBrandList] = useState([])
     const [typeFetch, setTypeFetch] = useState('')
     const [accessDenied, setAccessDenied] = useState(false)
@@ -88,7 +78,7 @@ const StockOverview = () => {
 
     useEffect(() => {
         fetchAndFilterData()
-    }, [page, pageSize, globalFilter, searchType, typeFetch])
+    }, [page, pageSize, globalFilter, typeFetch])
 
     const handleOpenModal = (img: any) => {
         setParticularROwImage(img)
@@ -119,58 +109,6 @@ const StockOverview = () => {
         setShowDrawer(true)
     }
 
-    const handleCloseDrawer = () => {
-        setShowDrawer(false)
-    }
-
-    const handleMultiSelect = (fieldName: string, selectedValues: any) => {
-        if (fieldName === 'division') {
-            setDivisionList(selectedValues)
-        } else if (fieldName === 'category') {
-            setCategoryList(selectedValues)
-        } else if (fieldName === 'sub_category') {
-            setSubCategoryList(selectedValues)
-        } else if (fieldName === 'product_type') {
-            setProductTypeList(selectedValues)
-        } else if (fieldName === 'brand') {
-            setBrandList(selectedValues)
-        }
-    }
-
-    const handleApply = () => {
-        let query = ''
-
-        if (divisionList.length > 0) {
-            const divisionIds = divisionList.map((item: any) => item).join(',')
-            query += `division=${encodeURIComponent(divisionIds)}`
-        }
-
-        if (categoryList.length > 0) {
-            const categoryIds = categoryList.map((item: any) => item).join(',')
-            if (query) query += '&'
-            query += `category=${encodeURIComponent(categoryIds)}`
-        }
-
-        if (subCategoryList.length > 0) {
-            const subCategoryIds = subCategoryList.map((item: any) => item).join(',')
-            if (query) query += '&'
-            query += `sub_category=${encodeURIComponent(subCategoryIds)}`
-        }
-        if (productTypeList.length > 0) {
-            const productTypeIds = productTypeList.map((item: any) => item).join(',')
-            if (query) query += '&'
-            query += `Product_type=${encodeURIComponent(productTypeIds)}`
-        }
-        if (brandList.length > 0) {
-            const brandIds = brandList.map((item: any) => item).join(',')
-            if (query) query += '&'
-            query += `brand=${encodeURIComponent(brandIds)}`
-        }
-
-        setTypeFetch(query)
-        setPage(1)
-        setShowDrawer(false)
-    }
     const handleUpdate = async (id: any, originalQuantity: any, originalLocation: any) => {
         console.log(originalQuantity, originalLocation)
         const location = updatedLocation[id] || ''
@@ -239,7 +177,7 @@ const StockOverview = () => {
             const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
             const link = document.createElement('a')
             link.href = urlToBeDownloaded
-            link.download = searchType ? `${searchType}-stockOverView.csv` : `All-StockOverview.csv`
+            link.download = `All-StockOverview.csv`
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)
@@ -361,16 +299,12 @@ const StockOverview = () => {
             )}
 
             {showDrawer && (
-                <StockOverviewFilter
+                <FilterProductCommon
                     showDrawer={showDrawer}
-                    handleCloseDrawer={handleCloseDrawer}
-                    handleMultiSelect={handleMultiSelect}
-                    handleApply={handleApply}
-                    subCategoryList={subCategoryList}
-                    divisionList={divisionList}
-                    categoryList={categoryList}
+                    setShowDrawer={setShowDrawer}
+                    setTypeFetch={setTypeFetch}
                     brandList={brandList}
-                    productTypeList={productTypeList}
+                    setBrandList={setBrandList}
                 />
             )}
         </div>
