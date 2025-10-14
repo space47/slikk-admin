@@ -90,6 +90,7 @@ const AddPageSettings = () => {
                     .flat(),
             },
             ...(values?.section_filters ? { section_filters: values?.section_filters } : {}),
+            section_type: values?.section_type || '',
         }
         const filteredBody = Object.fromEntries(Object.entries(body || {}).filter(([, value]) => value !== undefined))
 

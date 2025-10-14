@@ -18,6 +18,7 @@ export interface pageSettingsType {
     created_at: string
     updated_at: string
     division_select?: string
+    section_type?: string
 }
 
 export interface pageSettingsResponseType {
