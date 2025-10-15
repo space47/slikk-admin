@@ -49,7 +49,7 @@ const StockOverview = () => {
         try {
             let filterValue = ''
             if (globalFilter) {
-                filterValue = `${currentSelectedPage?.value}=${encodeURIComponent(globalFilter ?? '')}`
+                filterValue = `&${currentSelectedPage?.value}=${encodeURIComponent(globalFilter ?? '')}`
             }
             const response = await axiosInstance.get(`inventory?p=${page}&page_size=${pageSize}&${typeFetch}${filterValue}`)
             const data = response.data.data.results
@@ -153,10 +153,9 @@ const StockOverview = () => {
         try {
             let filterValue = ''
             if (globalFilter) {
-                filterValue = `${currentSelectedPage?.value}=${encodeURIComponent(globalFilter ?? '')}`
+                filterValue = `&${currentSelectedPage?.value}=${encodeURIComponent(globalFilter ?? '')}`
             }
-            const downloadUrl = `inventory?download=true&${typeFetch}${filterValue}`
-            const response = await axiosInstance.get(downloadUrl, {
+            const response = await axiosInstance.get(`inventory?download=true&${typeFetch}${filterValue}`, {
                 responseType: 'blob',
             })
             commonDownload(response, `All-StockOverview.csv`)
@@ -179,48 +178,40 @@ const StockOverview = () => {
     }
 
     return (
-        <div className="p-2 shadow-xl rounded-xl ">
-            <div className="upper flex flex-col md:flex-row justify-between mb-5 items-center">
-                <button
-                    className="xl:hidden bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg flex mb-4 justify-end items-end"
-                    onClick={handleDownload}
-                >
-                    <IoMdDownload className="text-xl" />
-                </button>
-                <div className="flex gap-2">
-                    <div className="mb-4 w-full md:w-auto">
+        <div className="p-6 shadow-2xl rounded-2xl bg-white dark:bg-gray-900 transition-all duration-300">
+            <div className="flex flex-col xl:flex-row justify-between gap-5 mb-6">
+                <div className="flex flex-col md:flex-row gap-3 w-full xl:w-auto">
+                    <div className="relative w-full md:w-72">
                         <input
                             type="search"
-                            placeholder="Search SKU/Name"
+                            placeholder="🔍 Search SKU / Name..."
                             value={globalFilter}
-                            className="p-2 border rounded shadow-md w-full md:w-auto"
-                            onChange={(e) => {
-                                console.log('final Value', e.target.value)
-                                setGlobalFilter(e.target.value)
-                            }}
+                            className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-800 shadow-sm dark:bg-gray-800 dark:text-gray-200"
+                            onChange={(e) => setGlobalFilter(e.target.value)}
                         />
                     </div>
-                    <div>
-                        <div className="bg-gray-100 items-center xl:mt-1  xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
-                            <Dropdown
-                                className=" text-xl text-black bg-gray-200 font-bold  "
-                                title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
-                                onSelect={handleSelect}
-                            >
-                                {FilterArray?.map((item, key) => {
-                                    return (
-                                        <DropdownItem key={key} eventKey={item.value}>
-                                            <span>{item.label}</span>
-                                        </DropdownItem>
-                                    )
-                                })}
-                            </Dropdown>
-                        </div>
+
+                    <div className="w-full md:w-52">
+                        <Dropdown
+                            className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 rounded-xl"
+                            title={currentSelectedPage?.value ? currentSelectedPage.label : 'Select Category'}
+                            onSelect={handleSelect}
+                        >
+                            {FilterArray?.map((item, key) => (
+                                <DropdownItem key={key} eventKey={item.value}>
+                                    <span>{item.label}</span>
+                                </DropdownItem>
+                            ))}
+                        </Dropdown>
                     </div>
                 </div>
-                <div className="flex flex-col gap-7 xl:flex-row items-center xl:items-baseline ">
-                    <div className="drop flex flex-row gap-5 w-full md:w-auto items-center">
-                        <Button variant="new" onClick={() => navigate(`/app/updateInventory`)}>
+                <div className="flex flex-wrap justify-between xl:justify-end items-center gap-3">
+                    <div className="flex gap-3">
+                        <Button
+                            variant="new"
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl shadow-md"
+                            onClick={() => navigate(`/app/updateInventory`)}
+                        >
                             Update Inventory
                         </Button>
                         <Button variant="new" onClick={handleFilter}>
@@ -228,39 +219,48 @@ const StockOverview = () => {
                         </Button>
                     </div>
 
-                    <div>
-                        <button
-                            className="hidden xl:flex bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg items-center "
-                            disabled={isDownloading}
-                            onClick={handleDownload}
-                        >
-                            <IoMdDownload className="text-xl" />
-                            <span className="flex gap-1 items-center">EXPORT {isDownloading && <Spinner size={20} color="blue" />}</span>
-                        </button>
-                    </div>
+                    <button
+                        className="hidden xl:flex bg-gray-100 hover:bg-gray-200 text-gray-800 px-5 py-2 rounded-xl shadow-md items-center gap-2 transition-all"
+                        disabled={isDownloading}
+                        onClick={handleDownload}
+                    >
+                        <IoMdDownload className="text-xl" />
+                        <span className="font-medium flex items-center gap-1">
+                            Export {isDownloading && <Spinner size={18} color="blue" />}
+                        </span>
+                    </button>
+                    <button
+                        className="xl:hidden bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-xl shadow-md flex items-center gap-2"
+                        onClick={handleDownload}
+                    >
+                        <IoMdDownload className="text-lg" />
+                    </button>
                 </div>
             </div>
 
-            <div className="flex mb-7 items-center gap-2 p-3  rounded-lg shadow-sm">
-                <span className="text-gray-500 text-lg font-bold">Stock Count:</span>
-                <span className="text-gray-900 font-normal  text-lg">{stockCount || 0}</span>
+            <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-800 p-3 rounded-xl shadow-sm mb-5">
+                <span className="text-gray-500 dark:text-gray-400 font-semibold text-base">Stock Count:</span>
+                <span className="text-gray-900 dark:text-gray-100 text-lg font-bold">{stockCount || 0}</span>
             </div>
-            <EasyTable overflow mainData={data || []} columns={columns} page={page} pageSize={pageSize} />
-            <div className="flex flex-col md:flex-row items-center justify-between mt-4">
+            <div className="overflow-hidden rounded-xl border border-gray-100 shadow-md">
+                <EasyTable overflow mainData={data || []} columns={columns} page={page} pageSize={pageSize} />
+            </div>
+            <div className="flex flex-col md:flex-row justify-between items-center gap-5 mt-6">
                 <Pagination
                     pageSize={pageSize}
                     currentPage={page}
-                    className="w-[400px] md:w-auto mb-4 md:mb-0 "
                     total={totalData}
+                    className="w-full md:w-auto"
                     onChange={onPaginationChange}
                 />
-                <div className="flex flex-row items-center justify-between xl:justify-normal w-full md:w-auto xl:gap-5">
+                <div className="flex items-center gap-3">
+                    <label className="text-gray-600 dark:text-gray-300 text-sm font-medium">Rows per page:</label>
                     <Select<Option>
                         size="sm"
                         isSearchable={false}
                         value={pageSizeOptions.find((option) => option.value === pageSize)}
-                        className="w-1/2 md:w-auto"
                         options={pageSizeOptions}
+                        className="min-w-[100px]"
                         onChange={(option) => onSelectChange(option?.value)}
                     />
                 </div>
@@ -272,7 +272,6 @@ const StockOverview = () => {
                     image={particularRowImage && particularRowImage?.split(',')}
                 />
             )}
-
             {showDrawer && (
                 <FilterProductCommon
                     showDrawer={showDrawer}
