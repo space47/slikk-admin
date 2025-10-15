@@ -8,6 +8,7 @@ import moment from 'moment'
 import { GiResize } from 'react-icons/gi'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { Tooltip } from '@/components/ui'
 
 interface props {
     handleOpenModal: (img: any) => void
@@ -182,13 +183,31 @@ export const useProductColumns = ({ handleOpenModal, handleViewProducts }: props
                     return <div>{moment(info.getValue() as string).format('YYYY-MM-DD HH:mm:ss')}</div>
                 },
             },
-            // {
-            //     header: 'Return Amount',
-            //     accessorKey: 'return_amount',
-            //     cell: (info) => {
-            //         return <div>{moment(info.getValue() as string).format('YYYY-MM-DD HH:mm:ss')}</div>
-            //     },
-            // },
+            {
+                header: 'Update Date',
+                accessorKey: 'update_date',
+                cell: (info) => {
+                    return <div>{moment(info.getValue() as string).format('YYYY-MM-DD HH:mm:ss')}</div>
+                },
+            },
+            {
+                header: 'Updated By',
+                accessorKey: 'last_updated_by',
+                cell: (props) => {
+                    return (
+                        <Tooltip title="Go to user">
+                            <a
+                                href={`/app/customerAnalytics/${props?.row?.original?.last_updated_by}`}
+                                className="cursor-pointer hover:text-green-500"
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                {props?.row?.original?.last_updated_by}
+                            </a>
+                        </Tooltip>
+                    )
+                },
+            },
         ],
         [],
     )

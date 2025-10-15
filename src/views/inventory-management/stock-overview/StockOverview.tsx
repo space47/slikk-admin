@@ -15,6 +15,7 @@ import { Dropdown, Spinner } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { useStockOverViewColumns } from './stockOverViewUtils/useStockOverViewColumns'
 import FilterProductCommon from '@/common/FilterProductCommon'
+import { commonDownload } from '@/common/commonDownload'
 
 const FilterArray = [
     { label: 'SKU', value: 'sku' },
@@ -47,24 +48,12 @@ const StockOverview = () => {
     const fetchAndFilterData = async () => {
         try {
             let filterValue = ''
-            if (currentSelectedPage?.value === 'sku' && globalFilter) {
-                filterValue = `&sku=${encodeURIComponent(globalFilter ?? '')}`
+            if (globalFilter) {
+                filterValue = `&${currentSelectedPage?.value}=${encodeURIComponent(globalFilter ?? '')}`
             }
-            if (currentSelectedPage?.value === 'name' && globalFilter) {
-                filterValue = `&name=${encodeURIComponent(globalFilter ?? '')}`
-            }
-            if (currentSelectedPage?.value === 'barcode' && globalFilter) {
-                filterValue = `&barcode=${encodeURIComponent(globalFilter ?? '')}`
-            }
-            if (currentSelectedPage?.value === 'skid' && globalFilter) {
-                filterValue = `&skid=${encodeURIComponent(globalFilter ?? '')}`
-            }
-
             const response = await axiosInstance.get(`inventory?p=${page}&page_size=${pageSize}&${typeFetch}${filterValue}`)
-
             const data = response.data.data.results
             const total = response.data.data.count
-
             setData(data)
             setTotalData(total)
             setStockCount(response?.data.stock_count)
@@ -72,7 +61,6 @@ const StockOverview = () => {
             if (error.response && error.response.status === 403) {
                 setAccessDenied(true)
             }
-            console.error('Error fetching data:', error)
         }
     }
 
@@ -105,7 +93,7 @@ const StockOverview = () => {
         }, 0)
     }
 
-    const hanldeFilter = () => {
+    const handleFilter = () => {
         setShowDrawer(true)
     }
 
@@ -164,23 +152,13 @@ const StockOverview = () => {
         })
         try {
             let filterValue = ''
-            if (currentSelectedPage?.value === 'sku' && globalFilter) {
-                filterValue = `&sku=${encodeURIComponent(globalFilter)}`
+            if (globalFilter) {
+                filterValue = `&${currentSelectedPage?.value}=${encodeURIComponent(globalFilter ?? '')}`
             }
-            if (currentSelectedPage?.value === 'name' && globalFilter) {
-                filterValue = `&name=${encodeURIComponent(globalFilter)}`
-            }
-            const downloadUrl = `inventory?download=true&${typeFetch}${filterValue}`
-            const response = await axiosInstance.get(downloadUrl, {
+            const response = await axiosInstance.get(`inventory?download=true&${typeFetch}${filterValue}`, {
                 responseType: 'blob',
             })
-            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
-            const link = document.createElement('a')
-            link.href = urlToBeDownloaded
-            link.download = `All-StockOverview.csv`
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
+            commonDownload(response, `All-StockOverview.csv`)
         } catch (error) {
             console.error('Error downloading the file:', error)
         } finally {
@@ -195,98 +173,95 @@ const StockOverview = () => {
         }
     }
 
-    const hanldeUpdateInventory = () => {
-        navigate(`/app/updateInventory`)
-    }
-
     if (accessDenied) {
         return <AccessDenied />
     }
 
     return (
-        <div className="p-2 shadow-xl rounded-xl ">
-            <div className="upper flex flex-col md:flex-row justify-between mb-5 items-center">
-                <button
-                    className="xl:hidden bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg flex mb-4 justify-end items-end"
-                    onClick={handleDownload}
-                >
-                    <IoMdDownload className="text-xl" />
-                </button>
-                <div className="flex gap-2">
-                    <div className="mb-4 w-full md:w-auto">
+        <div className="p-6 shadow-2xl rounded-2xl bg-white dark:bg-gray-900 transition-all duration-300">
+            <div className="flex flex-col xl:flex-row justify-between gap-5 mb-6">
+                <div className="flex flex-col md:flex-row gap-3 w-full xl:w-auto">
+                    <div className="relative w-full md:w-72">
                         <input
                             type="search"
-                            placeholder="Search SKU/Name"
+                            placeholder="🔍 Search SKU / Name..."
                             value={globalFilter}
-                            onChange={(e) => {
-                                console.log('final Value', e.target.value)
-                                setGlobalFilter(e.target.value)
-                            }}
-                            className="p-2 border rounded shadow-md w-full md:w-auto"
+                            className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-800 shadow-sm dark:bg-gray-800 dark:text-gray-200"
+                            onChange={(e) => setGlobalFilter(e.target.value)}
                         />
                     </div>
-                    <div>
-                        <div className="bg-gray-100 items-center xl:mt-1  xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
-                            <Dropdown
-                                className=" text-xl text-black bg-gray-200 font-bold  "
-                                title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
-                                onSelect={handleSelect}
-                            >
-                                {FilterArray?.map((item, key) => {
-                                    return (
-                                        <DropdownItem key={key} eventKey={item.value}>
-                                            <span>{item.label}</span>
-                                        </DropdownItem>
-                                    )
-                                })}
-                            </Dropdown>
-                        </div>
+
+                    <div className="w-full md:w-52">
+                        <Dropdown
+                            className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 rounded-xl"
+                            title={currentSelectedPage?.value ? currentSelectedPage.label : 'Select Category'}
+                            onSelect={handleSelect}
+                        >
+                            {FilterArray?.map((item, key) => (
+                                <DropdownItem key={key} eventKey={item.value}>
+                                    <span>{item.label}</span>
+                                </DropdownItem>
+                            ))}
+                        </Dropdown>
                     </div>
                 </div>
-                <div className="flex flex-col gap-7 xl:flex-row items-center xl:items-baseline ">
-                    <div className="drop flex flex-row gap-5 w-full md:w-auto items-center">
-                        <Button variant="new" onClick={hanldeUpdateInventory}>
+                <div className="flex flex-wrap justify-between xl:justify-end items-center gap-3">
+                    <div className="flex gap-3">
+                        <Button
+                            variant="new"
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl shadow-md"
+                            onClick={() => navigate(`/app/updateInventory`)}
+                        >
                             Update Inventory
                         </Button>
-                        <Button variant="new" onClick={hanldeFilter}>
+                        <Button variant="new" onClick={handleFilter}>
                             Filter
                         </Button>
                     </div>
 
-                    <div>
-                        <button
-                            className="hidden xl:flex bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg items-center "
-                            onClick={handleDownload}
-                            disabled={isDownloading}
-                        >
-                            <IoMdDownload className="text-xl" />
-                            <span className="flex gap-1 items-center">EXPORT {isDownloading && <Spinner size={20} color="blue" />}</span>
-                        </button>
-                    </div>
+                    <button
+                        className="hidden xl:flex bg-gray-100 hover:bg-gray-200 text-gray-800 px-5 py-2 rounded-xl shadow-md items-center gap-2 transition-all"
+                        disabled={isDownloading}
+                        onClick={handleDownload}
+                    >
+                        <IoMdDownload className="text-xl" />
+                        <span className="font-medium flex items-center gap-1">
+                            Export {isDownloading && <Spinner size={18} color="blue" />}
+                        </span>
+                    </button>
+                    <button
+                        className="xl:hidden bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-xl shadow-md flex items-center gap-2"
+                        onClick={handleDownload}
+                    >
+                        <IoMdDownload className="text-lg" />
+                    </button>
                 </div>
             </div>
 
-            <div className="flex mb-7 items-center gap-2 p-3  rounded-lg shadow-sm">
-                <span className="text-gray-500 text-lg font-bold">Stock Count:</span>
-                <span className="text-gray-900 font-normal  text-lg">{stockCount || 0}</span>
+            <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-800 p-3 rounded-xl shadow-sm mb-5">
+                <span className="text-gray-500 dark:text-gray-400 font-semibold text-base">Stock Count:</span>
+                <span className="text-gray-900 dark:text-gray-100 text-lg font-bold">{stockCount || 0}</span>
             </div>
-            <EasyTable mainData={data || []} columns={columns} page={page} pageSize={pageSize} overflow />
-            <div className="flex flex-col md:flex-row items-center justify-between mt-4">
+            <div className="overflow-hidden rounded-xl border border-gray-100 shadow-md">
+                <EasyTable overflow mainData={data || []} columns={columns} page={page} pageSize={pageSize} />
+            </div>
+            <div className="flex flex-col md:flex-row justify-between items-center gap-5 mt-6">
                 <Pagination
                     pageSize={pageSize}
                     currentPage={page}
                     total={totalData}
+                    className="w-full md:w-auto"
                     onChange={onPaginationChange}
-                    className="w-[400px] md:w-auto mb-4 md:mb-0 "
                 />
-                <div className="flex flex-row items-center justify-between xl:justify-normal w-full md:w-auto xl:gap-5">
+                <div className="flex items-center gap-3">
+                    <label className="text-gray-600 dark:text-gray-300 text-sm font-medium">Rows per page:</label>
                     <Select<Option>
                         size="sm"
                         isSearchable={false}
                         value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
+                        className="min-w-[100px]"
                         onChange={(option) => onSelectChange(option?.value)}
-                        className="w-1/2 md:w-auto"
                     />
                 </div>
             </div>
@@ -297,7 +272,6 @@ const StockOverview = () => {
                     image={particularRowImage && particularRowImage?.split(',')}
                 />
             )}
-
             {showDrawer && (
                 <FilterProductCommon
                     showDrawer={showDrawer}
