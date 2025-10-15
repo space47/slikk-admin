@@ -15,6 +15,7 @@ import { Dropdown, Spinner } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { useStockOverViewColumns } from './stockOverViewUtils/useStockOverViewColumns'
 import FilterProductCommon from '@/common/FilterProductCommon'
+import { commonDownload } from '@/common/commonDownload'
 
 const FilterArray = [
     { label: 'SKU', value: 'sku' },
@@ -47,24 +48,12 @@ const StockOverview = () => {
     const fetchAndFilterData = async () => {
         try {
             let filterValue = ''
-            if (currentSelectedPage?.value === 'sku' && globalFilter) {
-                filterValue = `&sku=${encodeURIComponent(globalFilter ?? '')}`
+            if (globalFilter) {
+                filterValue = `${currentSelectedPage?.value}=${encodeURIComponent(globalFilter ?? '')}`
             }
-            if (currentSelectedPage?.value === 'name' && globalFilter) {
-                filterValue = `&name=${encodeURIComponent(globalFilter ?? '')}`
-            }
-            if (currentSelectedPage?.value === 'barcode' && globalFilter) {
-                filterValue = `&barcode=${encodeURIComponent(globalFilter ?? '')}`
-            }
-            if (currentSelectedPage?.value === 'skid' && globalFilter) {
-                filterValue = `&skid=${encodeURIComponent(globalFilter ?? '')}`
-            }
-
             const response = await axiosInstance.get(`inventory?p=${page}&page_size=${pageSize}&${typeFetch}${filterValue}`)
-
             const data = response.data.data.results
             const total = response.data.data.count
-
             setData(data)
             setTotalData(total)
             setStockCount(response?.data.stock_count)
@@ -72,7 +61,6 @@ const StockOverview = () => {
             if (error.response && error.response.status === 403) {
                 setAccessDenied(true)
             }
-            console.error('Error fetching data:', error)
         }
     }
 
@@ -105,7 +93,7 @@ const StockOverview = () => {
         }, 0)
     }
 
-    const hanldeFilter = () => {
+    const handleFilter = () => {
         setShowDrawer(true)
     }
 
@@ -164,23 +152,14 @@ const StockOverview = () => {
         })
         try {
             let filterValue = ''
-            if (currentSelectedPage?.value === 'sku' && globalFilter) {
-                filterValue = `&sku=${encodeURIComponent(globalFilter)}`
-            }
-            if (currentSelectedPage?.value === 'name' && globalFilter) {
-                filterValue = `&name=${encodeURIComponent(globalFilter)}`
+            if (globalFilter) {
+                filterValue = `${currentSelectedPage?.value}=${encodeURIComponent(globalFilter ?? '')}`
             }
             const downloadUrl = `inventory?download=true&${typeFetch}${filterValue}`
             const response = await axiosInstance.get(downloadUrl, {
                 responseType: 'blob',
             })
-            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
-            const link = document.createElement('a')
-            link.href = urlToBeDownloaded
-            link.download = `All-StockOverview.csv`
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
+            commonDownload(response, `All-StockOverview.csv`)
         } catch (error) {
             console.error('Error downloading the file:', error)
         } finally {
@@ -193,10 +172,6 @@ const StockOverview = () => {
         if (selected) {
             setCurrentSelectedPage(selected)
         }
-    }
-
-    const hanldeUpdateInventory = () => {
-        navigate(`/app/updateInventory`)
     }
 
     if (accessDenied) {
@@ -218,11 +193,11 @@ const StockOverview = () => {
                             type="search"
                             placeholder="Search SKU/Name"
                             value={globalFilter}
+                            className="p-2 border rounded shadow-md w-full md:w-auto"
                             onChange={(e) => {
                                 console.log('final Value', e.target.value)
                                 setGlobalFilter(e.target.value)
                             }}
-                            className="p-2 border rounded shadow-md w-full md:w-auto"
                         />
                     </div>
                     <div>
@@ -245,10 +220,10 @@ const StockOverview = () => {
                 </div>
                 <div className="flex flex-col gap-7 xl:flex-row items-center xl:items-baseline ">
                     <div className="drop flex flex-row gap-5 w-full md:w-auto items-center">
-                        <Button variant="new" onClick={hanldeUpdateInventory}>
+                        <Button variant="new" onClick={() => navigate(`/app/updateInventory`)}>
                             Update Inventory
                         </Button>
-                        <Button variant="new" onClick={hanldeFilter}>
+                        <Button variant="new" onClick={handleFilter}>
                             Filter
                         </Button>
                     </div>
@@ -256,8 +231,8 @@ const StockOverview = () => {
                     <div>
                         <button
                             className="hidden xl:flex bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg items-center "
-                            onClick={handleDownload}
                             disabled={isDownloading}
+                            onClick={handleDownload}
                         >
                             <IoMdDownload className="text-xl" />
                             <span className="flex gap-1 items-center">EXPORT {isDownloading && <Spinner size={20} color="blue" />}</span>
@@ -270,23 +245,23 @@ const StockOverview = () => {
                 <span className="text-gray-500 text-lg font-bold">Stock Count:</span>
                 <span className="text-gray-900 font-normal  text-lg">{stockCount || 0}</span>
             </div>
-            <EasyTable mainData={data || []} columns={columns} page={page} pageSize={pageSize} overflow />
+            <EasyTable overflow mainData={data || []} columns={columns} page={page} pageSize={pageSize} />
             <div className="flex flex-col md:flex-row items-center justify-between mt-4">
                 <Pagination
                     pageSize={pageSize}
                     currentPage={page}
+                    className="w-[400px] md:w-auto mb-4 md:mb-0 "
                     total={totalData}
                     onChange={onPaginationChange}
-                    className="w-[400px] md:w-auto mb-4 md:mb-0 "
                 />
                 <div className="flex flex-row items-center justify-between xl:justify-normal w-full md:w-auto xl:gap-5">
                     <Select<Option>
                         size="sm"
                         isSearchable={false}
                         value={pageSizeOptions.find((option) => option.value === pageSize)}
+                        className="w-1/2 md:w-auto"
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
-                        className="w-1/2 md:w-auto"
                     />
                 </div>
             </div>
