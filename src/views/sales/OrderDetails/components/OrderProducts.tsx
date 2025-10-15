@@ -11,7 +11,6 @@ import { Button, Dialog } from '@/components/ui'
 import QRCode from 'react-qr-code'
 import { MdQrCodeScanner } from 'react-icons/md'
 import { CommonOrderProduct } from '../orderList.common'
-import Exchange from './Exchange'
 
 type OrderProductsProps = {
     data: CommonOrderProduct[]
@@ -120,8 +119,6 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularROwImage] = useState('')
     const [qrCode, setQrCode] = useState('')
-    const [exchangeModal, setExchangeModal] = useState(false)
-    const [currentData, setCurrentData] = useState<CommonOrderProduct | null>()
 
     const columns = [
         columnHelper.accessor('name', {
@@ -211,27 +208,7 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                 )
             },
         }),
-        columnHelper.accessor('name', {
-            header: `Exchange`,
-            cell: (props) => {
-                const rowID = props.row.original
-                return (
-                    <>
-                        {status !== 'CANCELLED' && (
-                            <button className="text-white bg-orange-500 px-3 py-2 rounded-[10px]" onClick={() => handleExchange(rowID)}>
-                                Exchange
-                            </button>
-                        )}
-                    </>
-                )
-            },
-        }),
     ]
-
-    const handleExchange = (row: any) => {
-        setCurrentData(row)
-        setExchangeModal(true)
-    }
 
     const handleReplace = (itemId: number | undefined) => {
         setReplaceDrawer(true)
@@ -385,14 +362,6 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                     invoice_id={invoice_id}
                     setIsDialogOpen={setReplaceDrawer}
                     onDialogClose={handleReplaceClose}
-                />
-            )}
-            {exchangeModal && (
-                <Exchange
-                    isOpen={exchangeModal}
-                    setIsOpen={setExchangeModal}
-                    row={currentData as CommonOrderProduct}
-                    invoice_id={invoice_id}
                 />
             )}
         </AdaptableCard>

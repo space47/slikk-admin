@@ -11,11 +11,11 @@ import { useNavigate } from 'react-router-dom'
 import AccessDenied from '@/views/pages/AccessDenied'
 import EasyTable from '@/common/EasyTable'
 import { Option, pageSizeOptions, Stock } from './stockOverviewCommon'
-import { Dropdown, Spinner } from '@/components/ui'
-import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import { Spinner } from '@/components/ui'
 import { useStockOverViewColumns } from './stockOverViewUtils/useStockOverViewColumns'
 import FilterProductCommon from '@/common/FilterProductCommon'
 import { commonDownload } from '@/common/commonDownload'
+import { HiSearch } from 'react-icons/hi'
 
 const FilterArray = [
     { label: 'SKU', value: 'sku' },
@@ -30,6 +30,7 @@ const StockOverview = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
+    const [searchOnEnter, setSearchOnEnter] = useState('')
     const [updatedQuantities, setUpdatedQuantities] = useState<{ [key: number]: number }>({})
     const [updatedLocation, setUpdatedLocation] = useState<{ [key: number]: string }>({})
     const [showImageModal, setShowImageModal] = useState(false)
@@ -44,12 +45,13 @@ const StockOverview = () => {
     const qtyInputRef = useRef<{ [key: number]: HTMLInputElement | null }>({})
     const [isDownloading, setIsDownloading] = useState(false)
     const [stockCount, setStockCount] = useState(0)
+    const [searchTrigger, setSearchTrigger] = useState(0)
 
     const fetchAndFilterData = async () => {
         try {
             let filterValue = ''
-            if (globalFilter) {
-                filterValue = `&${currentSelectedPage?.value}=${encodeURIComponent(globalFilter ?? '')}`
+            if (searchOnEnter) {
+                filterValue = `&${currentSelectedPage?.value}=${encodeURIComponent(searchOnEnter ?? '')}`
             }
             const response = await axiosInstance.get(`inventory?p=${page}&page_size=${pageSize}&${typeFetch}${filterValue}`)
             const data = response.data.data.results
@@ -66,7 +68,7 @@ const StockOverview = () => {
 
     useEffect(() => {
         fetchAndFilterData()
-    }, [page, pageSize, globalFilter, typeFetch])
+    }, [page, pageSize, searchOnEnter, typeFetch, currentSelectedPage, searchTrigger])
 
     const handleOpenModal = (img: any) => {
         setParticularROwImage(img)
@@ -91,10 +93,6 @@ const StockOverview = () => {
         setTimeout(() => {
             locationInputRef.current[id]?.focus()
         }, 0)
-    }
-
-    const handleFilter = () => {
-        setShowDrawer(true)
     }
 
     const handleUpdate = async (id: any, originalQuantity: any, originalLocation: any) => {
@@ -145,6 +143,11 @@ const StockOverview = () => {
         setPageSize(Number(value))
     }
 
+    const handleSearch = () => {
+        setSearchOnEnter(globalFilter)
+        setSearchTrigger((prev) => prev + 1)
+    }
+
     const handleDownload = async () => {
         setIsDownloading(true)
         notification.info({
@@ -166,13 +169,6 @@ const StockOverview = () => {
         }
     }
 
-    const handleSelect = (value: any) => {
-        const selected = FilterArray.find((item) => item.value === value)
-        if (selected) {
-            setCurrentSelectedPage(selected)
-        }
-    }
-
     if (accessDenied) {
         return <AccessDenied />
     }
@@ -184,25 +180,37 @@ const StockOverview = () => {
                     <div className="relative w-full md:w-72">
                         <input
                             type="search"
-                            placeholder="🔍 Search SKU / Name..."
+                            placeholder=" Search SKU / Name..."
                             value={globalFilter}
                             className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-800 shadow-sm dark:bg-gray-800 dark:text-gray-200"
                             onChange={(e) => setGlobalFilter(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault()
+                                    handleSearch()
+                                }
+                            }}
                         />
                     </div>
-
-                    <div className="w-full md:w-52">
-                        <Dropdown
-                            className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 rounded-xl"
-                            title={currentSelectedPage?.value ? currentSelectedPage.label : 'Select Category'}
-                            onSelect={handleSelect}
-                        >
-                            {FilterArray?.map((item, key) => (
-                                <DropdownItem key={key} eventKey={item.value}>
-                                    <span>{item.label}</span>
-                                </DropdownItem>
-                            ))}
-                        </Dropdown>
+                    <div
+                        className="bg-blue-500 hover:bg-blue-400 p-2 rounded-xl items-center flex justify-center cursor-pointer"
+                        onClick={handleSearch}
+                    >
+                        <HiSearch className="text-white text-2xl" />
+                    </div>
+                    <div>
+                        <Select
+                            size="sm"
+                            isSearchable={true}
+                            value={FilterArray.find((option) => currentSelectedPage?.value === option?.value)}
+                            options={FilterArray}
+                            className="min-w-[100px]"
+                            onChange={(option) => {
+                                if (option) {
+                                    setCurrentSelectedPage(option)
+                                }
+                            }}
+                        />
                     </div>
                 </div>
                 <div className="flex flex-wrap justify-between xl:justify-end items-center gap-3">
@@ -214,7 +222,7 @@ const StockOverview = () => {
                         >
                             Update Inventory
                         </Button>
-                        <Button variant="new" onClick={handleFilter}>
+                        <Button variant="new" onClick={() => setShowDrawer(true)}>
                             Filter
                         </Button>
                     </div>
