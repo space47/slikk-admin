@@ -159,7 +159,7 @@ const OrderDetails = () => {
                                                 className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
                                                 onClick={() => setReturnOrderDrawer(true)}
                                             >
-                                                RETURN ORDER
+                                                Return/Exchange ORDER
                                             </button>
                                         )}{' '}
                                     {data.status !== 'DECLINED' && data.status !== 'CANCELLED' && (
@@ -167,7 +167,7 @@ const OrderDetails = () => {
                                             className="bg-gray-600 hover:bg-gray-700 text-white px-2 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-full md:w-auto"
                                             onClick={() => setShowCancelModal(true)}
                                         >
-                                            CANCEL ORDER
+                                            Cancel Order
                                         </button>
                                     )}
                                     {data?.delivery_type === 'EXCHANGE' && (
