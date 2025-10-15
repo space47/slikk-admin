@@ -77,6 +77,7 @@ export type Product = Partial<{
     size_chart_image: string
     size_chart_image_array: File[]
     sizeChartArray?: File[]
+    last_updated_by?: string
 }>
 
 export const DROPDOWNARRAY = [
