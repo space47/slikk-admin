@@ -36,6 +36,7 @@ const ClearInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
     }, [dispatch])
 
     const handleSubmit = async (values: any) => {
+        setSpinner(true)
         const body = {
             store_id: storeId,
             brand_id: values?.brand?.id || '',
@@ -48,12 +49,12 @@ const ClearInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
         try {
             const res = await axioisInstance.post(`/inventory-location/bulk/clear`, filteredBody)
             successMessage(res)
+            setSpinner(false)
         } catch (error) {
             if (error instanceof AxiosError) {
                 errorMessage(error)
             }
         } finally {
-            setSpinner(false)
             setIsOpen(false)
         }
     }
