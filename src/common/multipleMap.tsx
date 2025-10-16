@@ -143,32 +143,42 @@ const MarkerComponent = ({
     return (
         <div>
             {markers.map((marker, index) => (
-                <>
-                    <Marker
-                        key={index}
-                        position={[marker.lat, marker.lon]}
-                        icon={
-                            ['PENDING', 'ACCEPTED', 'PACKED'].includes(marker?.status)
-                                ? officeIcon
-                                : marker?.status === 'EXCHANGE'
-                                  ? orangeIcon // orange
-                                  : ['DECLINED', 'CANCELLED'].includes(marker?.status)
-                                    ? blackIcon //black
-                                    : DefaultIcon
-                        }
-                    >
-                        <Popup className="hover:bg-blue-50">
-                            <a href={`/app/orders/${marker?.invoice_id}`} target="_blank" rel="noreferrer" className="cursor-pointer">
-                                <div className="flex items-center justify-start ">
-                                    <p className="p-2 bg-red-500 rounded-xl text-white">{marker?.invoice_id}</p>
-                                </div>
-                                <p>Amount: Rs.{marker.amount}</p>
-                                <p>Distance: {marker.distance} km</p>
-                                <p>Status: {marker.status} </p>
-                            </a>
-                        </Popup>
-                    </Marker>
-                </>
+                <Marker
+                    key={index}
+                    position={[marker.lat, marker.lon]}
+                    icon={
+                        ['PENDING', 'ACCEPTED', 'PACKED'].includes(marker?.status)
+                            ? officeIcon
+                            : marker?.status === 'EXCHANGE'
+                              ? orangeIcon
+                              : ['DECLINED', 'CANCELLED'].includes(marker?.status)
+                                ? blackIcon
+                                : DefaultIcon
+                    }
+                    eventHandlers={{
+                        mouseover: (e) => {
+                            e.target.openPopup()
+                        },
+                        click: (e) => {
+                            e.target.openPopup()
+                            window.open(`/app/orders/${marker?.invoice_id}`, '_blank', 'noopener,noreferrer')
+                        },
+                        mouseout: (e) => {
+                            e.target.closePopup()
+                        },
+                    }}
+                >
+                    <Popup className="hover:bg-blue-50">
+                        <a href={`/app/orders/${marker?.invoice_id}`} target="_blank" rel="noreferrer" className="cursor-pointer">
+                            <div className="flex items-center justify-start ">
+                                <p className="p-2 bg-red-500 rounded-xl text-white">{marker?.invoice_id}</p>
+                            </div>
+                            <p>Amount: Rs.{marker.amount}</p>
+                            <p>Distance: {marker.distance} km</p>
+                            <p>Status: {marker.status}</p>
+                        </a>
+                    </Popup>
+                </Marker>
             ))}
 
             <Marker position={[currLat, currLong]} icon={wareHouseIcon}>
@@ -277,6 +287,7 @@ const STATUS_ARRAY = [
     { name: 'ACCEPTED', value: 'ACCEPTED' },
     { name: 'PACKED', value: 'PACKED' },
     { name: 'DELIVERY_CREATED', value: 'DELIVERY_CREATED' },
+    { name: 'PACKED+DC', value: 'PACKED,DELIVERY_CREATED' },
 ]
 
 const MultipleMap: React.FC<MultipleMapProps> = ({
