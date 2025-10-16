@@ -37,6 +37,7 @@ const SyncInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
     }, [dispatch])
 
     const handleSubmit = async (values: any) => {
+        setSpinner(true)
         const body = {
             store_id: storeId,
             sync_type: values?.sync || 'soft',
@@ -47,16 +48,17 @@ const SyncInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
             subcategory: values?.sub_categories?.name || '',
         }
         const filteredBody = filterEmptyValues(body)
+
         try {
             const res = await axioisInstance.post(`/inventory-location/sync/inventory`, filteredBody)
             successMessage(res)
+            setIsOpen(false)
         } catch (error) {
             if (error instanceof AxiosError) {
                 errorMessage(error)
             }
         } finally {
             setSpinner(false)
-            setIsOpen(false)
         }
     }
 
