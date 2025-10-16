@@ -1,14 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
 import { FormItem, FormContainer } from '@/components/ui/Form'
-import { Field, Form, Formik, FieldProps, FieldArray } from 'formik'
+import { Field, Form, Formik, FieldProps } from 'formik'
 import Select from '@/components/ui/Select'
 import { Button, Drawer } from '@/components/ui'
 import { BRAND_STATE } from '@/store/types/brand.types'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
-import { IoMdAddCircle } from 'react-icons/io'
-import { MdCancel } from 'react-icons/md'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { FILTER_STATE } from '@/store/types/filters.types'
 
@@ -19,9 +17,10 @@ interface PROPS {
     isDispatch?: boolean
     brandList: any
     setBrandList: any
+    typeFetch?: string
 }
 
-const FilterProductCommon = ({ showDrawer, setShowDrawer, setTypeFetch, brandList, setBrandList }: PROPS) => {
+const FilterProductCommon = ({ showDrawer, setShowDrawer, setTypeFetch, brandList, setBrandList, typeFetch }: PROPS) => {
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
 
     const [selectFilterString, setFilterString] = useState('')
@@ -39,13 +38,29 @@ const FilterProductCommon = ({ showDrawer, setShowDrawer, setTypeFetch, brandLis
         }
     }
 
-    useEffect(() => {
-        if (showDrawer) {
-            setInitialValues({ brand: [] })
-        }
-    }, [showDrawer])
+    // useEffect(() => {
+    //     if (showDrawer) {
+    //         setInitialValues({ brand: [] })
+    //     }
+    // }, [showDrawer])
 
-    const [initialValues, setInitialValues] = useState({ brand: brandList })
+    const [initialValues, setInitialValues] = useState({
+        brand: brandList,
+        // filtersAdd:
+        //     typeFetch?.split('&')?.map((item: string) => {
+        //         console.log('inside', item)
+        //         const [prefix, ...rest] = item.split('=')
+        //         console.log(prefix, 'ssss', rest, 'lokokokokoo')
+        //         return {
+        //             label: prefix,
+        //             options: rest?.map((dta) => ({
+        //                 label: dta,
+        //                 name: dta,
+        //                 value: item?.replace('=', '_'),
+        //             })),
+        //         }
+        //     }) || [],
+    })
 
     const handleApply = () => {
         let query = ''
@@ -113,65 +128,40 @@ const FilterProductCommon = ({ showDrawer, setShowDrawer, setTypeFetch, brandLis
                             </Field>
 
                             <FormItem label="SEARCH FILTER STRINGS">
-                                <FieldArray name="filtersAdd">
-                                    {({ push, remove, form }) => (
-                                        <>
-                                            <FormContainer className="items-center mt-4">
-                                                <button type="button" onClick={() => push([])}>
-                                                    <IoMdAddCircle className="text-3xl text-green-500" />
-                                                </button>
-                                            </FormContainer>
+                                <Field name="filtersAdd">
+                                    {({ field, form }: FieldProps<any>) => (
+                                        <Select
+                                            isMulti
+                                            placeholder="Select Filter Tags"
+                                            className="xl:w-[300px] mt-2"
+                                            options={filters.filters}
+                                            getOptionLabel={(option: any) => option.label}
+                                            getOptionValue={(option: any) => option.value}
+                                            onChange={(newVal) => {
+                                                const selectedValues = newVal ? newVal.map((val) => val.value) : []
+                                                console.log('Selected Values:', selectedValues)
 
-                                            {form.values.filtersAdd?.map((_: any, index: any) => (
-                                                <FormItem key={index} className="flex gap-2">
-                                                    <div className="flex gap-3 items-center">
-                                                        <Field name={`filtersAdd[${index}]`}>
-                                                            {({ field, form }: FieldProps<any>) => (
-                                                                <Select
-                                                                    isMulti
-                                                                    placeholder="Select Filter Tags"
-                                                                    className="xl:w-[300px]"
-                                                                    options={filters.filters}
-                                                                    getOptionLabel={(option: any) => option.label}
-                                                                    getOptionValue={(option: any) => option.value}
-                                                                    onChange={(newVal) => {
-                                                                        const selectedValues = newVal ? newVal.map((val) => val.value) : []
-                                                                        console.log('Selected Values:', selectedValues)
-                                                                        const groupedValues: Record<string, string[]> =
-                                                                            selectedValues.reduce(
-                                                                                (acc, curr) => {
-                                                                                    const [prefix, ...rest] = curr.split('_')
-                                                                                    const key = prefix.toLowerCase()
-                                                                                    const value = rest.join('_')
-                                                                                    acc[key] = acc[key] ? [...acc[key], value] : [value]
-                                                                                    return acc
-                                                                                },
-                                                                                {} as Record<string, string[]>,
-                                                                            )
+                                                const groupedValues: Record<string, string[]> = selectedValues.reduce(
+                                                    (acc, curr) => {
+                                                        const [prefix, ...rest] = curr.split('_')
+                                                        const key = prefix.toLowerCase()
+                                                        const value = rest.join('_')
+                                                        acc[key] = acc[key] ? [...acc[key], value] : [value]
+                                                        return acc
+                                                    },
+                                                    {} as Record<string, string[]>,
+                                                )
 
-                                                                        const queryString = Object.entries(groupedValues)
-                                                                            .map(
-                                                                                ([key, values]) =>
-                                                                                    `${key}=${encodeURIComponent(values.join(','))}`,
-                                                                            )
-                                                                            .join('&')
+                                                const queryString = Object.entries(groupedValues)
+                                                    .map(([key, values]) => `${key}=${encodeURIComponent(values.join(','))}`)
+                                                    .join('&')
 
-                                                                        form.setFieldValue(field.name, queryString)
-                                                                        setFilterString(queryString)
-                                                                    }}
-                                                                />
-                                                            )}
-                                                        </Field>
-
-                                                        <button type="button" onClick={() => remove(index)}>
-                                                            <MdCancel className="text-xl text-red-500" />
-                                                        </button>
-                                                    </div>
-                                                </FormItem>
-                                            ))}
-                                        </>
+                                                form.setFieldValue(field.name, queryString)
+                                                setFilterString(queryString)
+                                            }}
+                                        />
                                     )}
-                                </FieldArray>
+                                </Field>
                             </FormItem>
 
                             <FormContainer className="flex gap-5 justify-end ">
