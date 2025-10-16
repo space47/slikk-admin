@@ -25,7 +25,7 @@ const InventoryTable = () => {
     const locationInputRef = useRef<{ [key: number]: HTMLInputElement | null }>({})
     const qtyInputRef = useRef<{ [key: number]: HTMLInputElement | null }>({})
     const [storeCode, setStoreCode] = useState('slikk101')
-    const [storeId, setStoreId] = useState<number | null>(null)
+    const [storeId, setStoreId] = useState<number | null>(1)
     const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularRowImage] = useState<string | null>('')
