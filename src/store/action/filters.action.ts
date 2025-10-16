@@ -40,18 +40,20 @@ interface SINGLE_FILTER {
 export const transformFiltersFromAPItoFrontendField = (filters: Record<string, string[]>) => {
     if (!filters) return []
     let data: SINGLE_FILTER[] = []
-    Object.keys(filters).map((filter) => {
-        data.push({
-            label: filter,
-            options: filters[filter]?.map((option) => {
-                return {
-                    label: option,
-                    name: option,
-                    value: filter + '_' + option,
-                }
-            }),
+    Object.keys(filters)
+        ?.filter((item) => item !== 'searchkeywords')
+        ?.map((filter) => {
+            data.push({
+                label: filter,
+                options: filters[filter]?.map((option) => {
+                    return {
+                        label: option,
+                        name: option,
+                        value: filter + '_' + option,
+                    }
+                }),
+            })
         })
-    })
 
     return data
 }

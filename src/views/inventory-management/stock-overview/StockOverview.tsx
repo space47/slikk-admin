@@ -169,6 +169,8 @@ const StockOverview = () => {
         }
     }
 
+    console.log('type fetch is', typeFetch)
+
     if (accessDenied) {
         return <AccessDenied />
     }
@@ -287,6 +289,7 @@ const StockOverview = () => {
                     setTypeFetch={setTypeFetch}
                     brandList={brandList}
                     setBrandList={setBrandList}
+                    typeFetch={typeFetch}
                 />
             )}
         </div>
