@@ -87,9 +87,20 @@ const InwardDetails = () => {
         try {
             const response = await axioisInstance.get(`file/presign?file_url=${document_url}`)
             const val = response.data?.data
-            window.open(val)
+
+            if (val) {
+                const link = document.createElement('a')
+                link.href = val
+                link.download = `${document_url}`
+                link.target = '_blank'
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+            } else {
+                console.error('No file URL returned from API')
+            }
         } catch (error) {
-            console.error(error)
+            console.error('Error fetching presigned URL:', error)
         }
     }
 
@@ -169,12 +180,23 @@ const InwardDetails = () => {
                                             <span className="font-bold">Export</span> <FaDownload className="text-xl" />
                                         </div>
                                     </div>
-                                    <div className="docs flex flex-col">
-                                        {data.document_number}
-                                        <div className="cursor-pointer" onClick={() => handleUrl(data.document_url)}>
-                                            <p className=" underline">Document Url</p>
-                                        </div>
-                                    </div>
+                                    {data?.document_url ? (
+                                        <>
+                                            <div className="docs flex flex-col">
+                                                {data.document_url?.split(',')?.map((item, key) => {
+                                                    return (
+                                                        <div className="cursor-pointer" onClick={() => handleUrl(item)} key={key}>
+                                                            <p className="cursor-pointer p-2 rounded-xl bg-blue-600 text-white">
+                                                                {data?.grn_number}_{key + 1}
+                                                            </p>
+                                                        </div>
+                                                    )
+                                                })}
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>No document url</>
+                                    )}
                                 </div>
                             </div>
                             <span className="flex items-center">
