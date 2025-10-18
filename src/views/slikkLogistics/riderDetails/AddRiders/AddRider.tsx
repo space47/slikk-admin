@@ -15,10 +15,9 @@ import { GenericCommonTypes } from '@/common/allTypesCommon'
 import { HiSearch } from 'react-icons/hi'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
-import MultiSelect from '@/common/MultiSelect'
-import { USER_PROFILE_DATA } from '@/store/types/company.types'
 import { RiderAgency } from '../RiderDetailsCommon'
 import AddBulk from '../RiderComponents/AddBulk'
+import StoreSelectForm from '@/common/StoreSelectForm'
 
 const AddRider = () => {
     const navigate = useNavigate()
@@ -30,7 +29,6 @@ const AddRider = () => {
     const [isAddRider, setIsAddRider] = useState(false)
     const [searchInput, setSearchInput] = useState('')
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(SearchRider[0])
-    const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
     const [isBulkAdd, setIsBulkAdd] = useState(false)
     const [activeTab, setActiveTab] = useState<'edit' | 'add' | 'bulk-add'>('edit')
 
@@ -68,7 +66,7 @@ const AddRider = () => {
                 long: riderProfile[0]?.service_longitude,
                 agency: riderProfile[0]?.agency?.toLowerCase(),
                 rider_delivery_type: riderProfile[0]?.rider_delivery_type,
-                // store: riderProfile[0]?.store?.map((item: any) => item?.id),
+                store: riderProfile[0]?.store?.map((item: any) => item?.id)?.join(','),
             }
         }
         return {
@@ -83,6 +81,8 @@ const AddRider = () => {
             long: 77.649326,
         }
     }, [selectedRider, isAddRider, riderProfile])
+
+    console.log('intia', initialValue)
 
     useEffect(() => {
         if (riderDataResponse?.isSuccess) {
@@ -100,7 +100,6 @@ const AddRider = () => {
     }, [riderDataResponse, riderEditResponse])
 
     const handleSubmit = (values: RiderAddTypes) => {
-        console.log('values are', values)
         if (!values?.mobile) {
             notification.error({ message: 'Mobile is required' })
         }
@@ -116,7 +115,7 @@ const AddRider = () => {
                 shift_end_time: values?.shift_end_time,
                 is_active: values?.is_active || false,
                 agency: values?.agency || '',
-                store_id: values?.store?.join(',') || '',
+                store_id: values?.store?.id || '',
                 rider_delivery_type: values?.rider_delivery_type || 'standard',
             }
             if (isAddRider) {
@@ -261,14 +260,8 @@ const AddRider = () => {
                                         />
                                     </FormItem>
                                 ))}
-                                <MultiSelect
-                                    label="Store Select"
-                                    name="store"
-                                    setFieldValue={setFieldValue}
-                                    customClass="w-full"
-                                    options={storeList}
-                                    compareKey="id"
-                                />
+
+                                <StoreSelectForm label="Store Select" name="store" isSingle customCss="w-full" />
                                 <CommonSelect
                                     label="Delivery Type"
                                     name="rider_delivery_type"
