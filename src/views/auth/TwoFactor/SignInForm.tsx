@@ -34,6 +34,7 @@ const SignInForm = (props: SignInFormProps) => {
     const [isAuth, setAuth] = useState(false)
     const selector = useAppSelector((state) => state.authorization)
     const { signInTwoFactor } = useAuth()
+    const [goBack, setGoBack] = useState(false)
 
     const onSignIn = async (values: SignInTwoFactor) => {
         const { mobileNumber } = values
@@ -60,7 +61,7 @@ const SignInForm = (props: SignInFormProps) => {
                             onSignIn(values)
                         }}
                     >
-                        {({ touched, errors, isSubmitting, isValid, isValidating }) => (
+                        {({ touched, errors }) => (
                             <Form>
                                 <FormContainer>
                                     <FormItem
@@ -74,6 +75,7 @@ const SignInForm = (props: SignInFormProps) => {
                                             name="mobileNumber"
                                             placeholder="Mobile Number"
                                             component={Input}
+                                            className="rounded-xl"
                                         />
                                     </FormItem>
                                     <Button

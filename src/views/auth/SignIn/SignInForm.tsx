@@ -83,7 +83,14 @@ const SignInForm = (props: SignInFormProps) => {
                     <Form>
                         <FormContainer>
                             <FormItem label="OTP" invalid={(errors.otp && touched.otp) as boolean} errorMessage={errors.otp}>
-                                <Field type="text" autoComplete="off" name="otp" placeholder="OTP" component={Input} />
+                                <Field
+                                    type="text"
+                                    autoComplete="off"
+                                    name="otp"
+                                    placeholder="Enter Otp"
+                                    component={Input}
+                                    className="rounded-xl"
+                                />
                             </FormItem>
 
                             <Timer initialSeconds={20} />
