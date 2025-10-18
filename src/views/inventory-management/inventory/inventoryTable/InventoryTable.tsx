@@ -215,6 +215,7 @@ const InventoryTable = () => {
                     setTypeFetch={setTypeFetch}
                     brandList={brandList}
                     setBrandList={setBrandList}
+                    typeFetch={typeFetch}
                 />
             )}
         </div>

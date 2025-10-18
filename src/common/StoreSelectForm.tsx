@@ -27,14 +27,12 @@ const StoreSelectForm = ({ label, name, customCss, isSingle = false }: Props) =>
                 <FormItem label={label}>
                     <Field name={name}>
                         {({ form, field }: FieldProps) => {
-                            // handle selected values based on isSingle
                             const getFieldValueId = (value: any) => {
                                 return typeof value === 'object' && value !== null ? value.id : value
                             }
-
                             const selectedValue = isSingle
-                                ? storeResults.find((option) => option.id === getFieldValueId(field.value))
-                                : storeResults.filter((option) => field.value?.some((store: any) => getFieldValueId(store) === option.id))
+                                ? storeResults.find((option) => option.id == getFieldValueId(field.value))
+                                : storeResults.filter((option) => field.value?.some((store: any) => getFieldValueId(store) == option.id))
 
                             return (
                                 <div className="flex flex-col gap-1 w-full max-w-md">

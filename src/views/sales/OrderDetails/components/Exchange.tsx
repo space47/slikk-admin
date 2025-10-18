@@ -156,16 +156,16 @@ const Exchange = ({ row, invoice_id, setIsOpen }: props) => {
 
         const reasonText = textParser(values?.return_reason) || ''
 
+        console.log('exchanghe items', exchangeItems)
+
         const body = {
             return_type: 'EXCHANGE',
-            return_reason: {
-                rowId: reasonText,
-            },
-            exchange_items: exchangeItems.map(({ product_name, ...item }) => item),
+            return_reason: reasonText,
+            items: exchangeItems.map(({ product_name, ...item }) => item),
         }
 
         try {
-            const res = await axioisInstance.patch(`/user/returnorder/${invoice_id}`, body)
+            const res = await axioisInstance.patch(`/merchant/returnorder/${invoice_id}`, body)
             successMessage(res)
             setExchangeItems([])
             setIsOpen(false)

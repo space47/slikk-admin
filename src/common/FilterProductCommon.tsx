@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import { Field, Form, Formik, FieldProps } from 'formik'
 import Select from '@/components/ui/Select'
@@ -13,14 +13,14 @@ import { FILTER_STATE } from '@/store/types/filters.types'
 interface PROPS {
     showDrawer: boolean
     setShowDrawer: (x: boolean) => void
-    setTypeFetch: (x: string) => void
-    isDispatch?: boolean
+    setTypeFetch: any
     brandList: any
     setBrandList: any
     typeFetch?: string
+    isRedux?: any
 }
 
-const FilterProductCommon = ({ showDrawer, setShowDrawer, setTypeFetch, brandList, setBrandList, typeFetch }: PROPS) => {
+const FilterProductCommon = ({ showDrawer, setShowDrawer, setTypeFetch, brandList, setBrandList, typeFetch, isRedux }: PROPS) => {
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
 
     const [selectFilterString, setFilterString] = useState('')
@@ -38,29 +38,31 @@ const FilterProductCommon = ({ showDrawer, setShowDrawer, setTypeFetch, brandLis
         }
     }
 
-    // useEffect(() => {
-    //     if (showDrawer) {
-    //         setInitialValues({ brand: [] })
-    //     }
-    // }, [showDrawer])
+    // Parse filters from typeFetch
+    const parsedFilters = React.useMemo(() => {
+        if (!typeFetch) return []
 
-    const [initialValues, setInitialValues] = useState({
-        brand: brandList,
-        // filtersAdd:
-        //     typeFetch?.split('&')?.map((item: string) => {
-        //         console.log('inside', item)
-        //         const [prefix, ...rest] = item.split('=')
-        //         console.log(prefix, 'ssss', rest, 'lokokokokoo')
-        //         return {
-        //             label: prefix,
-        //             options: rest?.map((dta) => ({
-        //                 label: dta,
-        //                 name: dta,
-        //                 value: item?.replace('=', '_'),
-        //             })),
-        //         }
-        //     }) || [],
-    })
+        return decodeURIComponent(typeFetch)
+            .split('&')
+            .flatMap((item) => {
+                const [key, values] = item.split('=')
+                if (!values) return []
+                return values.split(',').map((v) => ({
+                    label: v.trim(),
+                    value: `${key}_${v.trim()}`,
+                }))
+            })
+    }, [typeFetch])
+
+    const initialValues = useMemo(
+        () => ({
+            brand: brandList,
+            filtersAdd: parsedFilters,
+        }),
+        [brandList, parsedFilters],
+    )
+
+    console.log('initial values', initialValues.filtersAdd)
 
     const handleApply = () => {
         let query = ''
@@ -85,7 +87,11 @@ const FilterProductCommon = ({ showDrawer, setShowDrawer, setTypeFetch, brandLis
                 query += `${selectFilterString}&brand=${encodeURIComponent(brandIds)}`
             }
         }
-        setTypeFetch(query)
+        if (isRedux) {
+            dispatch(setTypeFetch(query))
+        } else {
+            setTypeFetch(query)
+        }
         setShowDrawer(false)
     }
 
@@ -98,8 +104,13 @@ const FilterProductCommon = ({ showDrawer, setShowDrawer, setTypeFetch, brandLis
                 onRequestClose={() => setShowDrawer(false)}
                 onClose={() => setShowDrawer(false)}
             >
-                <Formik initialValues={initialValues} onSubmit={handleApply}>
-                    {({ setFieldValue }) => (
+                <Formik
+                    initialValues={initialValues}
+                    onSubmit={handleApply}
+                    enableReinitialize
+                    key={JSON.stringify(initialValues)} // Add key to force re-render
+                >
+                    {({ setFieldValue, values }) => (
                         <Form className="flex flex-col gap-10 w-full items-start">
                             <Field name="brand">
                                 {({ field }: FieldProps<any>) => {
@@ -113,9 +124,7 @@ const FilterProductCommon = ({ showDrawer, setShowDrawer, setTypeFetch, brandLis
                                                 options={brands.brands}
                                                 getOptionLabel={(option) => option?.name}
                                                 getOptionValue={(option) => option?.id?.toString()}
-                                                defaultValue={brands.brands.filter((option) =>
-                                                    fieldValue.some((item) => item === option.name),
-                                                )}
+                                                value={brands.brands.filter((option) => fieldValue.some((item) => item === option.name))}
                                                 onChange={(newVal) => {
                                                     const selectedValues = newVal.map((item) => item.name) || []
                                                     setFieldValue('brand', selectedValues)
@@ -136,9 +145,12 @@ const FilterProductCommon = ({ showDrawer, setShowDrawer, setTypeFetch, brandLis
                                             className="xl:w-[300px] mt-2"
                                             options={filters.filters}
                                             getOptionLabel={(option: any) => option.label}
-                                            getOptionValue={(option: any) => option.value}
+                                            getOptionValue={(option: any) => {
+                                                return option.value
+                                            }}
+                                            defaultValue={values.filtersAdd}
                                             onChange={(newVal) => {
-                                                const selectedValues = newVal ? newVal.map((val) => val.value) : []
+                                                const selectedValues = newVal ? newVal.map((val: any) => val.value) : []
                                                 console.log('Selected Values:', selectedValues)
 
                                                 const groupedValues: Record<string, string[]> = selectedValues.reduce(
