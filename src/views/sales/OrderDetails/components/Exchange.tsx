@@ -1,20 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, Dialog, FormItem, Spinner } from '@/components/ui'
-import React, { useEffect, useMemo, useState } from 'react'
+
+import { Button, Dropdown, FormItem, Spinner } from '@/components/ui'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { productService } from '@/store/services/productService'
 import { ProductTypes } from '@/store/types/products.types'
 import { Form, Formik } from 'formik'
-import RichTextCommon from '@/common/RichTextCommon'
 import EasyTable from '@/common/EasyTable'
 import FormButton from '@/components/ui/Button/FormButton'
-import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
-import { textParser } from '@/common/textParser'
 import { AxiosError } from 'axios'
 import { errorMessage, successMessage } from '@/utils/responseMessages'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { CommonOrderProduct } from '../orderList.common'
 import { notification } from 'antd'
+import { OrderReturnReasons } from '@/constants/commonArray.constant'
+import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 
 interface ExchangeItem {
     order_item_id: string | number
@@ -35,8 +34,8 @@ const Exchange = ({ row, invoice_id, setIsOpen }: props) => {
     const [currentBarcode, setCurrentBarcode] = useState('')
     const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0)
     const [quantities, setQuantities] = useState<{ [key: string]: number }>({})
-
-    const currentRow = row?.[selectedRowIndex] as any
+    const [returnReason, setReturnReason] = useState<Record<string, { value: string; label: string }>>({})
+    const currentRow = row?.[selectedRowIndex]
     const number = parseInt(currentRow?.quantity as string) || 0
     const numberArray = Array.from({ length: number + 1 }, (_, i) => i)
     const SelectQuantity = numberArray?.map((item) => ({ label: item, value: item }))
@@ -78,8 +77,8 @@ const Exchange = ({ row, invoice_id, setIsOpen }: props) => {
         const existingItemIndex = exchangeItems.findIndex((item) => item.order_item_id === currentRow.id)
 
         const newExchangeItem: ExchangeItem = {
-            order_item_id: currentRow.id,
-            quantity: quantities[currentRow.id] || 1,
+            order_item_id: currentRow.id as number,
+            quantity: quantities[currentRow.id as number] || 1,
             replacement_barcode: currentBarcode,
             product_name: currentRow.name,
         }
@@ -148,24 +147,19 @@ const Exchange = ({ row, invoice_id, setIsOpen }: props) => {
         [currentBarcode],
     )
 
-    const handleSubmit = async (values: any) => {
+    const handleSubmit = async () => {
         if (exchangeItems.length === 0) {
             notification.error({ message: 'Please add at least one product to exchange' })
             return
         }
-
-        const reasonText = textParser(values?.return_reason) || ''
-
-        console.log('exchanghe items', exchangeItems)
-
+        const returnData = Object.fromEntries(Object.entries(returnReason)?.map(([key, obj]) => [key, obj.value]))
         const body = {
             return_type: 'EXCHANGE',
-            return_reason: reasonText,
+            return_reason: returnData,
             items: exchangeItems.map(({ product_name, ...item }) => item),
         }
-
         try {
-            const res = await axioisInstance.patch(`/merchant/returnorder/${invoice_id}`, body)
+            const res = await axioisInstance.post(`/merchant/returnorder/create/${invoice_id}`, body)
             successMessage(res)
             setExchangeItems([])
             setIsOpen(false)
@@ -176,30 +170,72 @@ const Exchange = ({ row, invoice_id, setIsOpen }: props) => {
         }
     }
 
+    const handleSelect = useCallback((productId: number, reasonValue: string) => {
+        setReturnReason((prev) => ({
+            ...prev,
+            [productId]: {
+                value: reasonValue,
+                label: OrderReturnReasons.find((p) => p.value === reasonValue)?.label || '',
+            },
+        }))
+    }, [])
+
     const RowSelector = () => {
         if (row.length <= 1) return null
 
         return (
             <FormItem label="Select Product to Exchange">
-                <div className="flex flex-wrap gap-4">
-                    {row.map((item, index) => {
+                <div className="flex flex-wrap gap-5">
+                    {row?.map((item, index) => {
                         const isInExchange = exchangeItems.some((exchangeItem) => exchangeItem.order_item_id === item.id)
+                        const isSelected = selectedRowIndex === index
+
                         return (
                             <div
                                 key={index}
-                                className={`flex flex-col items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
-                                    selectedRowIndex === index
-                                        ? 'border-blue-500 bg-blue-50 shadow-md'
+                                onClick={() => setSelectedRowIndex(index)}
+                                className={`
+                                relative w-full sm:w-[220px] flex flex-col items-center text-center p-4
+                                rounded-2xl border transition-all duration-300 cursor-pointer group
+                                ${
+                                    isSelected
+                                        ? 'border-blue-500 bg-blue-50 shadow-lg'
                                         : isInExchange
                                           ? 'border-green-500 bg-green-50'
-                                          : 'border-gray-200 hover:border-gray-300'
-                                }`}
-                                onClick={() => setSelectedRowIndex(index)}
+                                          : 'border-gray-200 hover:border-blue-200 hover:bg-blue-50/30'
+                                }
+                            `}
                             >
-                                <img src={item?.image?.split(',')[0]} alt={item?.name} className="w-16 h-16 object-cover rounded-md mb-2" />
-                                <span className="text-sm font-medium text-center max-w-[100px] truncate">{item?.name}</span>
-                                <span className="text-xs text-gray-500">(Qty: {item?.quantity})</span>
-                                {isInExchange && <span className="text-xs text-green-600 font-medium mt-1">✓ In Exchange</span>}
+                                {/* Image */}
+                                <div className="relative w-20 h-20 mb-3">
+                                    <img
+                                        src={item?.image?.split(',')[0]}
+                                        alt={item?.name}
+                                        className="w-full h-full object-cover rounded-lg shadow-sm"
+                                    />
+                                    {isInExchange && (
+                                        <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-full shadow">
+                                            ✓
+                                        </span>
+                                    )}
+                                </div>
+                                <span className="text-sm font-semibold text-gray-800 truncate max-w-[120px]">{item?.name}</span>
+                                <span className="text-xs text-gray-500 mt-1">(Qty: {item?.quantity})</span>
+                                {isInExchange && <span className="text-xs text-green-600 font-medium mt-2">In Exchange</span>}
+                                <div className="w-full mt-4 bg-red-600 text-white rounded-2xl flex items-center flex-col justify-center">
+                                    <label className="block text-xs font-semibold  mb-1 mt-2">Return Reason</label>
+                                    <Dropdown
+                                        className="text-gray-800 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-300"
+                                        title={returnReason[item.id as number]?.value || 'Select a Reason'}
+                                        onSelect={(value) => handleSelect(item.id as number, value)}
+                                    >
+                                        {OrderReturnReasons?.map((reason, key) => (
+                                            <DropdownItem key={key} eventKey={reason.value}>
+                                                <span>{reason.name}</span>
+                                            </DropdownItem>
+                                        ))}
+                                    </Dropdown>
+                                </div>
                             </div>
                         )
                     })}
@@ -270,13 +306,12 @@ const Exchange = ({ row, invoice_id, setIsOpen }: props) => {
             >
                 {() => (
                     <Form className="flex flex-col gap-5 overflow-y-auto px-2 pr-3 custom-scrollbar">
-                        <RichTextCommon label="Return Reason" name="return_reason" />
                         <RowSelector />
 
                         <FormItem label={`Select Quantity for ${currentRow?.name}`}>
                             <select
-                                value={quantities[currentRow?.id] || 1}
-                                onChange={(e) => handleQuantityChange(currentRow?.id, parseInt(e.target.value))}
+                                value={quantities[currentRow?.id as number] || 1}
+                                onChange={(e) => handleQuantityChange(currentRow?.id as number, parseInt(e.target.value))}
                                 className="w-full p-2 border border-gray-300 rounded-md"
                             >
                                 {SelectQuantity.map((option) => (
@@ -325,10 +360,7 @@ const Exchange = ({ row, invoice_id, setIsOpen }: props) => {
                         <ExchangeItemsList />
 
                         <div className="flex justify-end pt-4 border-t border-gray-200 gap-3">
-                            <FormButton
-                                value={`Exchange ${exchangeItems.length} Product(s)`}
-                                disabled={exchangeItems.length === (0 as any)}
-                            />
+                            <FormButton value={`Exchange ${exchangeItems.length} Product(s)`} />
                         </div>
                     </Form>
                 )}
