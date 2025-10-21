@@ -149,7 +149,6 @@ export const useOrderListColumns = ({
             },
             { header: 'Total Items', accessorKey: 'order_items.length' },
             { header: 'Order Count', accessorKey: 'user_order_count' },
-            { header: 'Total Items', accessorKey: 'order_items.length' },
             { header: 'Device Type', accessorKey: 'device_type' },
             { header: 'Customer Name', accessorKey: 'user.name' },
             {
