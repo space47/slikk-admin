@@ -17,7 +17,7 @@ export const cashCollectionService = RtkQueryService.injectEndpoints({
                     parameters.from = params.from
                 }
                 if (params.to) {
-                    parameters.coupon_type = params.to
+                    parameters.to = params.to
                 }
                 if (params.mobile) parameters.mobile = params.mobile
 
