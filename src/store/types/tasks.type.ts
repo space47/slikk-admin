@@ -36,6 +36,11 @@ type EventLog = {
 
 type ClientOrderDetails = {
     order_id: string
+    cash_collected?: boolean
+    cash_to_be_collected?: number
+    delivery_charge_to_be_collected_from_customer?: boolean
+    is_prepaid?: boolean
+    payment_mode?: string
 }
 
 type UserDetails = {

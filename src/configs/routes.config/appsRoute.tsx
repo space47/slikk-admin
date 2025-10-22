@@ -1395,6 +1395,12 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/slikkLogistics/picker/pickerDetails/PickerDetails')),
         authority: [ADMIN, USER],
     },
+    {
+        key: 'appstryAndBuy.cashCollection',
+        path: `${APP_PREFIX_PATH}/cashCollection`,
+        component: lazy(() => import('@/views/slikkLogistics/cashCollection/cashCollectionTable/CashCollectionTable')),
+        authority: [ADMIN, USER],
+    },
 
     // ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
     {

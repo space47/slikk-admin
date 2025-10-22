@@ -903,6 +903,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         authority: [ADMIN, USER],
                         subMenu: [],
                     },
+                    {
+                        key: 'appstryAndBuy.cashCollection',
+                        path: `${APP_PREFIX_PATH}/cashCollection`,
+                        title: 'Cash Reconciliation',
+                        translateKey: 'nav.appstryAndBuy.cashCollection',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
                 ],
             },
 
