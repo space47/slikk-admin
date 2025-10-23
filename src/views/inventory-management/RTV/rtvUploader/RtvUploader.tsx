@@ -10,7 +10,7 @@ import { useAppSelector } from '@/store'
 import { AxiosError } from 'axios'
 import { Select } from '@/components/ui'
 
-const IndentUploader = () => {
+const RtvUploader = () => {
     // const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const [file, setFile] = useState<File | null>(null)
     const [storeCode, setStoreCode] = useState('')
@@ -93,4 +93,4 @@ const IndentUploader = () => {
     )
 }
 
-export default IndentUploader
+export default RtvUploader

@@ -1,6 +1,6 @@
-import { IndentDetailsTypes } from '@/store/types/indent.types'
+// import { IndentDetailsTypes } from '@/store/types/indent.types'
 
-export type IndentHistoryData = {
+export type RtvHistoryData = {
     comments: string
     company: number
     create_date: string

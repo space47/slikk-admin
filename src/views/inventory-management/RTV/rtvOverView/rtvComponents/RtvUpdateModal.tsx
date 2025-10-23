@@ -14,7 +14,7 @@ interface Props {
     refetch?: () => void
 }
 
-const IndentUpdateModal = ({ isOpen, onClose, rowData, status, indent_number, refetch }: Props) => {
+const RtvUpdateModal = ({ isOpen, onClose, rowData, status, indent_number, refetch }: Props) => {
     const [value, setValue] = useState('')
     const [loading, setLoading] = useState(false)
 
@@ -92,4 +92,4 @@ const IndentUpdateModal = ({ isOpen, onClose, rowData, status, indent_number, re
     )
 }
 
-export default IndentUpdateModal
+export default RtvUpdateModal

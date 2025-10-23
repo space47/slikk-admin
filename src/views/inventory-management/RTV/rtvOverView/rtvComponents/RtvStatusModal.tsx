@@ -3,8 +3,8 @@ import { Dialog, Spinner } from '@/components/ui'
 import { indentService } from '@/store/services/indentService'
 import { IndentDetailsTypes } from '@/store/types/indent.types'
 import React, { useEffect, useState } from 'react'
-import { useItemsPickerColumns } from '../../indentUtils/useItemsColumns'
 import EasyTable from '@/common/EasyTable'
+import { useRtvItemsPickerColumns } from '../../rtvUtils/useRtvItemsColumns'
 
 interface Props {
     isOpen: boolean
@@ -12,7 +12,7 @@ interface Props {
     id: string | number | null
 }
 
-const IndentStatusModal = ({ isOpen, onClose, id }: Props) => {
+const RtvStatusModal = ({ isOpen, onClose, id }: Props) => {
     const [indentDetails, setIndentDetails] = useState<IndentDetailsTypes>()
 
     const { data: detailResponseData, isLoading, isSuccess } = indentService.useIndentDetailsQuery({ id: id as string, is_picked: 'true' })
@@ -23,7 +23,7 @@ const IndentStatusModal = ({ isOpen, onClose, id }: Props) => {
         }
     }, [isSuccess, detailResponseData])
 
-    const pickerColumns = useItemsPickerColumns()
+    const pickerColumns = useRtvItemsPickerColumns()
 
     return (
         <Dialog isOpen={isOpen} onClose={onClose} width={800} height={600}>
@@ -51,4 +51,4 @@ const IndentStatusModal = ({ isOpen, onClose, id }: Props) => {
     )
 }
 
-export default IndentStatusModal
+export default RtvStatusModal

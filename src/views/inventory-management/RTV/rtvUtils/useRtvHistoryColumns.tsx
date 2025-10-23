@@ -1,12 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from '@/components/ui'
 import { ColumnDef } from '@tanstack/react-table'
 import moment from 'moment'
 import React, { useMemo } from 'react'
 import { FaDownload } from 'react-icons/fa'
-import { IndentHistoryData } from './indent.types'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { RtvHistoryData } from './rtv.types'
 
-export const useIndentHistoryColumns = () => {
+export const useRtvHistoryColumns = () => {
     const extractFileName = (uploadedFile: any) => {
         const parts = uploadedFile.split('/')
         return parts[parts.length - 1]
@@ -90,7 +91,7 @@ export const useIndentHistoryColumns = () => {
         }
     }
 
-    return useMemo<ColumnDef<IndentHistoryData>[]>(
+    return useMemo<ColumnDef<RtvHistoryData>[]>(
         () => [
             {
                 header: 'Upload Date',

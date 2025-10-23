@@ -14,18 +14,20 @@ import {
     setDateField,
 } from '@/store/slices/indentSlice/indentSlice'
 import React, { useEffect, useState } from 'react'
-import { useIndentColumns } from '../indentUtils/useIndentColumns'
+
 import { Option, pageSizeOptions } from '@/constants/pageUtils.constants'
 import AccessDenied from '@/views/pages/AccessDenied'
 import { USER_PROFILE_DATA } from '@/store/types/company.types'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import { notification } from 'antd'
-import IndentStatusModal from './indentComponents/IndentStatusModal'
+
 import UltimateReduxDatePicker from '@/common/UltimateReduxDatePicker'
 import moment from 'moment'
+import { useRtvColumns } from '../rtvUtils/useRtvColumns'
+import RtvStatusModal from './rtvComponents/RtvStatusModal'
 
-const IndentTable = () => {
+const RtvTable = () => {
     const dispatch = useAppDispatch()
     const { indent, count, page, pageSize, from, to, dateField } = useAppSelector<IndentStateType>((state) => state.indent)
     const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
@@ -69,7 +71,7 @@ const IndentTable = () => {
         dispatch(setPage(1))
     }
 
-    const columns = useIndentColumns({ storeList, store_type: activeTab, handleStatusClick })
+    const columns = useRtvColumns({ storeList, store_type: activeTab, handleStatusClick })
 
     const handleDateChange = (dates: [Date | null, Date | null] | null) => {
         if (dates && dates[0]) {
@@ -160,7 +162,7 @@ const IndentTable = () => {
                 </div>
             </div>
             {showStatusModal && (
-                <IndentStatusModal
+                <RtvStatusModal
                     key={selectedIndentId}
                     isOpen={showStatusModal}
                     id={selectedIndentId}
@@ -171,4 +173,4 @@ const IndentTable = () => {
     )
 }
 
-export default IndentTable
+export default RtvTable

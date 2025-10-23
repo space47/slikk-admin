@@ -28,7 +28,7 @@ interface props {
     data: IndentDetailsTypes
 }
 
-export const useItemsColumns = ({ handleUpdate, data }: props) => {
+export const useRtvItemsColumns = ({ handleUpdate, data }: props) => {
     const currentStatus = data?.status
     console.log('currentStatus', currentStatus, 'and data is', data)
     return useMemo<ColumnDef<ItemType, any>[]>(
@@ -106,7 +106,7 @@ export const useItemsColumns = ({ handleUpdate, data }: props) => {
     )
 }
 
-export const useItemsPickerColumns = () => {
+export const useRtvItemsPickerColumns = () => {
     return useMemo<ColumnDef<any, any>[]>(
         () => [
             {

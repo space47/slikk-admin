@@ -14,7 +14,7 @@ interface props {
     setIsSyncing?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export const useIndentFunctions = ({
+export const useRtvFunctions = ({
     selectedUsers,
     setIsPickerModal,
     data,

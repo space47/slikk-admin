@@ -4,10 +4,10 @@ import { Pagination, Select } from '@/components/ui'
 import { pageSizeOptions } from '@/constants/pageUtils.constants'
 import AccessDenied from '@/views/pages/AccessDenied'
 import React, { useMemo, useState } from 'react'
-import { IndentHistoryData } from '../indentUtils/indent.types'
-import { useIndentHistoryColumns } from '../indentUtils/useIndentHistoryColumns'
+import { RtvHistoryData } from '../rtvUtils/rtv.types'
+import { useRtvHistoryColumns } from '../rtvUtils/useRtvHistoryColumns'
 
-const IndentHistory = () => {
+const RtvHistory = () => {
     const [page, setPage] = useState<number>(1)
     const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0].value)
 
@@ -15,9 +15,9 @@ const IndentHistory = () => {
         return `bulkupload/history?type=indent_note&p=${page}&page_size=${pageSize}`
     }, [page, pageSize])
 
-    const { data: indentHistoryData, responseStatus, totalData } = useFetchApi<IndentHistoryData>({ url: query, initialData: [] })
+    const { data: indentHistoryData, responseStatus, totalData } = useFetchApi<RtvHistoryData>({ url: query, initialData: [] })
     // const [globalFilter, setGlobalFilter] = useState<string>('')
-    const columns = useIndentHistoryColumns()
+    const columns = useRtvHistoryColumns()
 
     if (responseStatus === '403') {
         return <AccessDenied />
@@ -56,4 +56,4 @@ const IndentHistory = () => {
     )
 }
 
-export default IndentHistory
+export default RtvHistory

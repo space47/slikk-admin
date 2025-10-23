@@ -5,13 +5,13 @@ import { USER_PROFILE_DATA } from '@/store/types/company.types'
 import { FcViewDetails } from 'react-icons/fc'
 import moment from 'moment'
 
-interface IndentColumnsProps {
+interface props {
     storeList: USER_PROFILE_DATA['store']
     store_type?: string
     handleStatusClick: (id: number) => void
 }
 
-export const useIndentColumns = ({ storeList, handleStatusClick }: IndentColumnsProps) => {
+export const useRtvColumns = ({ storeList, handleStatusClick }: props) => {
     const findStoreName = (storeId: number) => {
         const store = storeList.find((store) => store?.id === storeId)
         return store ? store.name : 'Unknown Store'

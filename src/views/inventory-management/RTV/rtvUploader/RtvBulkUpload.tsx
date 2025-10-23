@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
-import IndentUploader from './IndentUploader'
-import IndentHistory from './IndentHistory'
-import IndentSingleUpload from './IndentSingleUpload'
+import RtvUploader from './RtvUploader'
+import RtvHistory from './RtvHistory'
 
-const IndentBulkUpload = () => {
+const RtvBulkUpload = () => {
     const [tabSelect, setTabSelect] = useState('bulk_upload')
 
     return (
@@ -27,18 +26,18 @@ const IndentBulkUpload = () => {
             {tabSelect === 'bulk_upload' && (
                 <div>
                     <div className="font-bold text-xl mb-5">Upload Indent</div>
-                    <IndentUploader />
+                    <RtvUploader />
                     <br />
-                    <IndentHistory />
+                    <RtvHistory />
                 </div>
             )}
-            {tabSelect === 'single_upload' && (
+            {/* {tabSelect === 'single_upload' && (
                 <div>
                     <IndentSingleUpload />
                 </div>
-            )}
+            )} */}
         </div>
     )
 }
 
-export default IndentBulkUpload
+export default RtvBulkUpload

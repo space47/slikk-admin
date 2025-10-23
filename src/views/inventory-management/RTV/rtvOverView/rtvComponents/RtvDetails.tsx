@@ -2,21 +2,20 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import { IndentDetailsTypes, IndentItem } from '@/store/types/indent.types'
-import { useItemsColumns, useItemsPickerColumns } from '../../indentUtils/useItemsColumns'
 import EasyTable from '@/common/EasyTable'
 import AccessDenied from '@/views/pages/AccessDenied'
 import { Button, Spinner, Tabs } from '@/components/ui'
 import AssignPicker from '@/common/AssignPicker'
-import IndentUpdateModal from './IndentUpdateModal'
 import { indentService } from '@/store/services/indentService'
-import { DetailsData } from '../../indentUtils/indent.types'
 import { BsFillPatchCheckFill } from 'react-icons/bs'
 import DialogConfirm from '@/common/DialogConfirm'
-import { useIndentFunctions } from '../../indentUtils/useIndentFunctions'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import TabList from '@/components/ui/Tabs/TabList'
+import { useRtvFunctions } from '../../rtvUtils/useRtvFunctions'
+import { useRtvItemsColumns, useRtvItemsPickerColumns } from '../../rtvUtils/useRtvItemsColumns'
+import RtvUpdateModal from './RtvUpdateModal'
 
-const IndentDetails = () => {
+const RtvDetails = () => {
     const { id } = useParams()
     const [data, setData] = useState<IndentDetailsTypes | null>(null)
     const location = useLocation()
@@ -47,7 +46,7 @@ const IndentDetails = () => {
         setRowData(row as any)
     }
 
-    const { handleAssign, handleStatus, handleSyncToGDN } = useIndentFunctions({
+    const { handleAssign, handleStatus, handleSyncToGDN } = useRtvFunctions({
         selectedUsers,
         setIsPickerModal,
         data,
@@ -58,8 +57,8 @@ const IndentDetails = () => {
     })
 
     const { detailsArray } = DetailsData(data as IndentDetailsTypes)
-    const columns = useItemsColumns({ handleUpdate, store_type, data: data as IndentDetailsTypes })
-    const pickerColumns = useItemsPickerColumns()
+    const columns = useRtvItemsColumns({ handleUpdate, store_type, data: data as IndentDetailsTypes })
+    const pickerColumns = useRtvItemsPickerColumns()
 
     if (isLoading) {
         return (
@@ -274,7 +273,7 @@ const IndentDetails = () => {
                 />
             )}
             {isEditModal && (
-                <IndentUpdateModal
+                <RtvUpdateModal
                     isOpen={isEditModal}
                     rowData={rowData as IndentItem}
                     status={data?.status}
@@ -287,4 +286,4 @@ const IndentDetails = () => {
     )
 }
 
-export default IndentDetails
+export default RtvDetails
