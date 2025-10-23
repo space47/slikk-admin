@@ -8,7 +8,7 @@ import { ReturnOrderState } from '@/store/types/returnDetails.types'
 
 const ReturnUserInfo = () => {
     const returnOrder = useAppSelector<ReturnOrderState>((state) => state.returnOrders)
-    const returnProducts = returnOrder?.returnOrders?.user
+    const returnOrderCustomer = returnOrder?.returnOrders?.user
 
     return (
         <div className="flex flex-col gap-4">
@@ -16,7 +16,7 @@ const ReturnUserInfo = () => {
                 <br />
                 <br />
                 <h5 className="mb-4">Customer Details</h5>
-                <Link className="group flex items-center justify-between" to="/app/crm/customer-details?id=11">
+                <Link className="group flex items-center justify-between" to={`/app/customerAnalytics/${returnOrderCustomer?.mobile}`}>
                     <div className="flex items-center">
                         {/* <Avatar shape="circle" src={data?.img} /> */}
                         <div className="ltr:ml-2 rtl:mr-2">
@@ -24,8 +24,8 @@ const ReturnUserInfo = () => {
                             {data?.name}
                         </div> */}
                             <span className="text-xl font-bold flex gap-1">
-                                {returnProducts?.first_name}
-                                {returnProducts?.last_name}
+                                {returnOrderCustomer?.first_name}
+                                {returnOrderCustomer?.last_name}
                             </span>
                         </div>
                     </div>
@@ -34,10 +34,10 @@ const ReturnUserInfo = () => {
                 <hr className="my-5" />
 
                 <IconText icon={<HiPhone className="text-xl opacity-70" />}>
-                    <span className="font-semibold">{returnProducts?.mobile}</span>
+                    <span className="font-semibold">{returnOrderCustomer?.mobile}</span>
                 </IconText>
                 <IconText icon={<HiMail className="text-xl opacity-70" />}>
-                    <span className="font-semibold">{returnProducts?.email}</span>
+                    <span className="font-semibold">{returnOrderCustomer?.email}</span>
                 </IconText>
             </Card>
         </div>

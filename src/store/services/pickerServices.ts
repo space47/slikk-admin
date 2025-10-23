@@ -24,10 +24,12 @@ export const pickerService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        pickerDetailsData: builder.query<particularPickerType, PickerBoardTypes>({
+        pickerDetailsData: builder.query<particularPickerType, { mobile: string; status: string }>({
             query: (params) => {
                 const parameters: Record<string, string | string[]> = {}
-                if (params.mobile) parameters.mobile = params.mobile.toString()
+                if (params.mobile) parameters.mobile = params.mobile
+                if (params.status) parameters.status = params.status
+                console.log('picker data', parameters)
                 return {
                     url: `/picker/orders`,
                     method: 'GET',

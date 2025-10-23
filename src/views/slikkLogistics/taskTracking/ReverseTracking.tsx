@@ -18,6 +18,7 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { AxiosError } from 'axios'
 import { errorMessage } from '@/utils/responseMessages'
 import { commonDownload } from '@/common/commonDownload'
+import { notification } from 'antd'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
@@ -125,6 +126,7 @@ const TaskTracking = () => {
     })
 
     const handleDownloadCsv = async () => {
+        notification.info({ message: 'Download in process' })
         try {
             const downloadUrl = `${queryUrl}&download=true`
             const response = await axioisInstance.get(downloadUrl, { responseType: 'blob' })
