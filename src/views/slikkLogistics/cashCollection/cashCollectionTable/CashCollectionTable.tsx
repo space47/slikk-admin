@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, useCallback, useMemo } from 'react'
 import moment from 'moment'
-import { notification } from 'antd'
 import EasyTable from '@/common/EasyTable'
 import { Button, Input, Spinner } from '@/components/ui'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
@@ -13,10 +12,8 @@ import { CashCollection } from '@/store/types/cashCollection.types'
 import { useCashCollectionColumns } from '../cashCollectionUtils/useCashCollectionColumns'
 import { HiSearch } from 'react-icons/hi'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
-
-const DEFAULT_PAGE = 1
-const DEFAULT_PAGE_SIZE = 10
-const DATE_FORMAT = 'YYYY-MM-DD'
+import { DATE_FORMAT, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '../cashCollectionCommon'
+import CreateCollectionModal from '../cashCollectionUtils/CreateCollectionModal'
 
 export const CashCollectionTable: React.FC = () => {
     const [cashData, setCashData] = useState<CashCollection[]>([])
@@ -32,8 +29,8 @@ export const CashCollectionTable: React.FC = () => {
     const [dailyRow, setDailyRow] = useState<CashCollection>()
     const [isUpdateDepositOpen, setIsUpdateDepositOpen] = useState(false)
     const [isDailyDepositOpen, setIsDailyDepositOpen] = useState(false)
+    const [isCreateModal, setIsCreateModal] = useState(false)
     const toDate = useMemo(() => moment(to).add(1, 'days').format(DATE_FORMAT), [to])
-    const [createCashCollection, cashCollectionResponse] = cashCollectionService.useCreateCashCollectionMutation()
 
     const { data, isSuccess, isError, refetch, isLoading, isFetching } = cashCollectionService.useCashCollectionQuery({
         from,
@@ -42,8 +39,6 @@ export const CashCollectionTable: React.FC = () => {
         pageSize,
         mobile: searchOnEnter || undefined,
     })
-
-    const loadingState = isFetching || isLoading
 
     useEffect(() => {
         if (isSuccess && data?.data) {
@@ -55,20 +50,6 @@ export const CashCollectionTable: React.FC = () => {
             console.error('Error fetching cash collection data')
         }
     }, [data, isSuccess, isError])
-
-    useEffect(() => {
-        if (cashCollectionResponse.isSuccess) {
-            notification.success({
-                message: cashCollectionResponse?.data?.message || 'Successfully created',
-            })
-        }
-
-        if (cashCollectionResponse.isError) {
-            notification.error({
-                message: (cashCollectionResponse?.error as any)?.data?.message || 'Failed to create collection',
-            })
-        }
-    }, [cashCollectionResponse])
 
     useEffect(() => {
         refetch()
@@ -87,15 +68,9 @@ export const CashCollectionTable: React.FC = () => {
         setPage(DEFAULT_PAGE)
     }, [globalFilter])
 
-    const handleCreateRiderCollection = useCallback(async () => {
-        try {
-            await createCashCollection({
-                task_date: from,
-            }).unwrap()
-        } catch (error) {
-            console.error('Failed to create rider collection:', error)
-        }
-    }, [createCashCollection, from])
+    const handleCreateRiderCollection = () => {
+        setIsCreateModal(true)
+    }
 
     const handleDailyCash = (row: CashCollection) => {
         setIsDailyDepositOpen(true)
@@ -138,25 +113,19 @@ export const CashCollectionTable: React.FC = () => {
                         />
                         <button
                             className="bg-blue-600 hover:bg-blue-500 p-2 rounded-md transition-colors duration-200 flex items-center justify-center"
-                            onClick={handleSearch}
                             aria-label="Search"
+                            onClick={handleSearch}
                         >
                             <HiSearch className="text-white text-xl" />
                         </button>
                     </div>
 
                     <div className="flex items-center flex-col xl:flex-row xl:justify-between lg:justify-end gap-3 w-full lg:w-auto">
-                        <Button
-                            variant="new"
-                            className="xl:mt-8"
-                            size="sm"
-                            onClick={handleCreateRiderCollection}
-                            loading={cashCollectionResponse.isLoading}
-                        >
+                        <Button variant="new" className="xl:mt-8" size="sm" onClick={handleCreateRiderCollection}>
                             Create Daily Collection
                         </Button>
 
-                        <Button variant="new" className="xl:mt-8    " size="sm">
+                        <Button variant="new" className="xl:mt-8" size="sm">
                             Download
                         </Button>
 
@@ -164,7 +133,7 @@ export const CashCollectionTable: React.FC = () => {
                     </div>
                 </div>
 
-                {loadingState ? (
+                {isFetching || isLoading ? (
                     <div className="mb-10 flex justify-center items-center">
                         <Spinner size={30} />
                     </div>
@@ -200,6 +169,7 @@ export const CashCollectionTable: React.FC = () => {
                 row={dailyRow}
                 refetch={refetch}
             />
+            <CreateCollectionModal isOpen={isCreateModal} setIsOpen={setIsCreateModal} />
         </div>
     )
 }

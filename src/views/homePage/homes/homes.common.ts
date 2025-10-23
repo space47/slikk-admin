@@ -55,3 +55,12 @@ export interface CUSTOMERANALYTICS {
     cart: any
     profile: Profile
 }
+
+export type OrderMapType = {
+    amount: string
+    distance: number
+    invoice_id: string
+    latitude: number
+    longitude: number
+    status: string
+}

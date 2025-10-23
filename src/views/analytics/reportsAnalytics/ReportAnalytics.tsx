@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { FormContainer, FormItem, Input, Select, Spinner } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { ReportQueryData } from '@/views/configurationsSlikk/reportConfigurations/reportCommon'
 import { Field, FieldProps, Form, Formik } from 'formik'
 import { useEffect, useState } from 'react'
 import { DIVISION_STATE } from '@/store/types/division.types'
@@ -24,7 +23,6 @@ import { reportQueryArray } from '@/constants/commonArray.constant'
 const ReportAnalytics = () => {
     const [storeName, setStoreName] = useState('')
     const [reportQueryNames, setReportQueryNames] = useState<{ label: string; value: string }[]>([])
-    const [showDataBelow, setShowDataBelow] = useState(false)
     const [dynamicReportTable, setDynamicReportTable] = useState<any[]>([])
     const [showTable, setShowTable] = useState(false)
     const [xAxisValue, setXAxisvalue] = useState('')
@@ -113,14 +111,12 @@ const ReportAnalytics = () => {
                     ?.sort((a, b) => a.position - b.position),
             }
             setReportData(formattedData)
-            setShowDataBelow(true)
         } catch (error: any) {
             if (error.response && error.response.status === 403) {
                 setAccessDenied(true)
             } else if (error.response && error.response.status === 500) {
                 setServerError(true)
             }
-            console.log(error)
         }
     }
     useEffect(() => {
@@ -299,7 +295,7 @@ const ReportAnalytics = () => {
                                                 : 'bg-green-500 hover:bg-green-400 focus:ring-2 focus:ring-green-300'
                                         }`}
                                         onClick={() => setIsCustomQuery((Prev) => !Prev)}
-                                        disabled={showDataBelow}
+                                        disabled={!!storeName}
                                     >
                                         {isCustomQuery ? 'Close Custom Query' : 'Add Custom Query'}
                                     </button>
@@ -309,7 +305,7 @@ const ReportAnalytics = () => {
 
                         {isCustomQuery && <ReportCustomQuery />}
 
-                        {showDataBelow && (
+                        {!!storeName && (
                             <div className="mt-6">
                                 <ReportFields
                                     storeName={storeName}
@@ -319,7 +315,7 @@ const ReportAnalytics = () => {
                                 />
                             </div>
                         )}
-                        {!showDataBelow && !isCustomQuery ? (
+                        {!storeName && !isCustomQuery ? (
                             <div className="mt-10 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-md shadow-sm">
                                 <p className="text-sm">Please select the required page to generate the report.</p>
                             </div>

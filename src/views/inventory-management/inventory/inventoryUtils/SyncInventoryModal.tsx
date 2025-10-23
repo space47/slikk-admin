@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Dialog, FormContainer, FormItem, Select } from '@/components/ui'
+import { Dialog, FormContainer, FormItem, Input, Select } from '@/components/ui'
 import FormButton from '@/components/ui/Button/FormButton'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
@@ -46,6 +46,7 @@ const SyncInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
             category: values?.category?.name || '',
             division: values?.division?.name || '',
             subcategory: values?.sub_categories?.name || '',
+            row: values?.row || '',
         }
         const filteredBody = filterEmptyValues(body)
 
@@ -78,6 +79,9 @@ const SyncInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
 
                         {values?.sync === 'hard' && (
                             <FormContainer>
+                                <FormItem label="Rack Number">
+                                    <Field name="row" type="text" placeholder="Enter Rack Number" component={Input} />
+                                </FormItem>
                                 <FormItem label="Company" asterisk>
                                     <Field name="companyList">
                                         {() => {

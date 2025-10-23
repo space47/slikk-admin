@@ -160,7 +160,6 @@ const EditProduct = () => {
                 activeTab === 'add'
                     ? await axioisInstance.post(`product/add`, formData)
                     : await axioisInstance.patch(`product/${barcode}`, formData)
-            console.log(response)
             notification.success({ message: response?.data?.message || `Product ${activeTab === 'add' ? 'Added' : 'Edited'} Successfully` })
             navigate(-1)
         } catch (error: any) {

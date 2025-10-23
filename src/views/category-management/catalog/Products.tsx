@@ -45,7 +45,6 @@ const Products = () => {
     const { productData, count, currentSelectedPage, page, pageSize, typeFetch, globalFilter } = useAppSelector<productRequiredType>(
         (state) => state.product,
     )
-
     const { debounceFilter } = useDebounceInput({ globalFilter: globalFilter as string, delay: 500 })
     const { data, isSuccess, isLoading, isFetching } = productService.useProductDataQuery(
         {
@@ -85,76 +84,56 @@ const Products = () => {
     const columns = useProductColumns({ handleOpenModal, handleViewProducts })
 
     const renderProductButtons = () => {
+        const baseBtnClass = 'flex items-center gap-2 px-3 py-2 rounded-lg text-white font-medium transition-colors'
         const buttonsArray = [
             {
                 label: 'Frame',
-                variant: 'new',
-                size: 'sm',
                 onClick: () => setShowAddFrameDialog(true),
-                className:
-                    'flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg font-medium transition-colors',
+                className: `${baseBtnClass} bg-indigo-600 hover:bg-indigo-700`,
             },
             {
                 label: 'Randomize',
-                variant: 'new',
-                size: 'sm',
                 onClick: () => setShowRandomizeDialog(true),
-                className:
-                    'flex items-center gap-2 px-3 py-2 hover:bg-purple-600 rounded-lg text-white bg-purple-700 font-medium transition-colors',
+                className: `${baseBtnClass} bg-purple-700 hover:bg-purple-600`,
             },
             {
                 label: 'SiteMap',
-                variant: 'new',
-                size: 'sm',
                 onClick: () => handleGenerateSiteMap(),
-                className:
-                    'flex items-center gap-2 px-3 py-2 hover:bg-yellow-500 rounded-lg text-white bg-yellow-600 font-medium transition-colors',
+                className: `${baseBtnClass} bg-yellow-600 hover:bg-yellow-500`,
             },
             {
-                label: `Sync`,
-                variant: 'blue',
-                size: 'sm',
+                label: 'Sync',
                 onClick: () => setShowFacebookDialog(true),
                 icon: <FaFacebook className="text-lg" />,
-                className:
-                    'lg:flex items-center gap-2 px-3 py-2 hover:bg-blue-600 rounded-lg text-white bg-blue-700 font-medium transition-colors',
+                className: `lg:flex ${baseBtnClass} bg-blue-700 hover:bg-blue-600`,
             },
             {
                 label: 'Export',
-                variant: 'solid',
-                size: 'sm',
                 onClick: () => handleDownload(currentSelectedPage, globalFilter!, typeFetch),
                 icon: <IoMdDownload className="text-lg" />,
-                className:
-                    'lg:flex items-center gap-2 px-3 py-2 hover:bg-green-400 rounded-lg text-white bg-green-500 font-medium transition-colors',
+                className: `lg:flex ${baseBtnClass} bg-green-500 hover:bg-green-400`,
             },
             {
                 label: 'Filter',
-                variant: 'new',
-                size: 'sm',
                 onClick: () => setShowDrawer(true),
                 icon: <FaFilter className="text-md" />,
-                className:
-                    'lg:flex items-center gap-2 px-3 py-2 text-white bg-gray-700 hover:bg-gray-600 rounded-lg font-medium transition-colors',
+                className: `lg:flex ${baseBtnClass} bg-gray-700 hover:bg-gray-600`,
             },
             {
                 label: 'Add',
-                variant: 'new',
-                size: 'sm',
                 onClick: () => navigate('/app/catalog/products/addNew'),
-                className:
-                    'flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-white bg-black hover:bg-gray-800 font-medium transition-colors w-full lg:w-auto',
+                className: `${baseBtnClass} justify-center bg-black hover:bg-gray-800 w-full lg:w-auto px-4`,
             },
         ]
 
         return (
             <div className="w-full lg:w-auto">
                 <div className="flex flex-wrap gap-2 justify-start lg:justify-end">
-                    {buttonsArray?.map((item, key) => (
-                        <Button key={key} variant={item?.variant as any} size="sm" className={item?.className} onClick={item?.onClick}>
+                    {buttonsArray.map((item, key) => (
+                        <Button key={key} variant="new" size="sm" className={item.className} onClick={item.onClick}>
                             <span className="flex gap-2 items-center">
-                                {item?.label}
-                                {item?.icon && item?.icon}
+                                {item.label}
+                                {item.icon}
                             </span>
                         </Button>
                     ))}
@@ -214,7 +193,6 @@ const Products = () => {
             <div className="mt-6 overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
                 <EasyTable mainData={productData} columns={columns} page={page} pageSize={pageSize} />
             </div>
-
             <PageCommon dispatch={dispatch} page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={count} />
             {showImageModal && (
                 <ImageMODAL
@@ -235,7 +213,6 @@ const Products = () => {
                     typeFetch={typeFetch}
                 />
             )}
-
             {showFacebookDialog && (
                 <DialogConfirm
                     IsConfirm
@@ -245,7 +222,6 @@ const Products = () => {
                     onDialogOk={() => handleFacebookSync(setShowFacebookDialog)}
                 />
             )}
-
             {showRandomizeDialog && (
                 <DialogConfirm
                     IsConfirm
@@ -255,7 +231,6 @@ const Products = () => {
                     onDialogOk={() => handleRandomize(setShowRandomizeDialog)}
                 />
             )}
-
             {showViewModal && <ProductViewModal row={rowData as ProductTypes} isOpen={showViewModal} setIsOpen={setShowViewModal} />}
             {showAddFrameDialog && <AddFrameModal isOpen={showAddFrameDialog} setIsOpen={setShowAddFrameDialog} />}
         </div>

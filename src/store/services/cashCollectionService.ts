@@ -28,7 +28,7 @@ export const cashCollectionService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        createCashCollection: builder.mutation<{ status: string; message: string }, { task_date: string }>({
+        createCashCollection: builder.mutation<{ status: string; message: string }, { task_date: string[] }>({
             query: ({ task_date }) => {
                 return {
                     url: `rider/cash/daily/create`,
