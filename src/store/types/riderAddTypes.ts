@@ -183,3 +183,8 @@ export type RiderProfileResponseType = {
     status?: string
     data?: RiderProfileData[]
 }
+
+export type RiderDownloadResponse = {
+    status: string
+    message: string
+}

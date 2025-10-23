@@ -11,6 +11,7 @@ export type RiderDetailType = {
     pageSize: number
     from: string
     to: string
+    currentStoreLocation: Record<string, number | undefined>
 }
 
 const initialState: RiderDetailType = {
@@ -21,6 +22,7 @@ const initialState: RiderDetailType = {
     pageSize: 200,
     from: moment().format('YYYY-MM-DD'),
     to: moment().format('YYYY-MM-DD'),
+    currentStoreLocation: { lat: 12.920216, long: 77.649326 },
 }
 
 const riderDetails = createSlice({
@@ -48,8 +50,12 @@ const riderDetails = createSlice({
         setTo: (state, action: PayloadAction<string>) => {
             state.to = action.payload
         },
+        setCurrentStoreLocation: (state, action: PayloadAction<Record<string, number | undefined>>) => {
+            state.currentStoreLocation = action.payload
+        },
     },
 })
 
-export const { setRiderDetails, setCount, setPage, setPageSize, setFrom, setTo, setRiderProfile } = riderDetails.actions
+export const { setRiderDetails, setCount, setPage, setPageSize, setFrom, setTo, setRiderProfile, setCurrentStoreLocation } =
+    riderDetails.actions
 export default riderDetails.reducer

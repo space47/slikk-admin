@@ -72,7 +72,7 @@ const OrderlistMobile: React.FC<Props> = ({ orders, handleNumberClick, handleSyn
                     { label: 'Payment Mode', value: item.payment?.mode || 'N/A' },
                     { label: 'Payment Status', value: item.payment?.status || 'N/A' },
                     { label: 'Picker', value: item.picker?.name || 'Unassigned' },
-                    { label: 'Total Items', value: item.order_items.length },
+                    { label: 'Total Items', value: item.order_items_count },
                     { label: 'Order Total', value: `₹${item.amount}` },
                     { label: 'Area / PIN', value: `${item.area} / ${item.pincode}` },
                 ]

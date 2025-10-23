@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Dialog, FormContainer, FormItem, Select } from '@/components/ui'
+import { Dialog, FormContainer, FormItem, Input, Select } from '@/components/ui'
 import FormButton from '@/components/ui/Button/FormButton'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
@@ -44,18 +44,20 @@ const ClearInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
             category: values?.category?.name || '',
             subcategory: values?.sub_categories?.name || '',
             division: values?.division?.name || '',
+            row: values?.row || '',
+            location: values?.location || '',
         }
         const filteredBody = filterEmptyValues(body)
         try {
             const res = await axioisInstance.post(`/inventory-location/bulk/clear`, filteredBody)
             successMessage(res)
-            setSpinner(false)
+            setIsOpen(false)
         } catch (error) {
             if (error instanceof AxiosError) {
                 errorMessage(error)
             }
         } finally {
-            setIsOpen(false)
+            setSpinner(false)
         }
     }
 
@@ -66,6 +68,12 @@ const ClearInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
                 {({ setFieldValue }) => (
                     <Form>
                         <FormContainer>
+                            <FormItem label="Rack Number">
+                                <Field name="row" type="text" placeholder="Enter Rack Number" component={Input} />
+                            </FormItem>
+                            <FormItem label="Location">
+                                <Field name="location" type="text" placeholder="Enter Location" component={Input} />
+                            </FormItem>
                             <FormItem label="Company" asterisk>
                                 <Field name="companyList">
                                     {() => {
