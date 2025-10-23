@@ -99,7 +99,7 @@ export interface Order {
     latitude: any
     longitude: any
     user_order_count: number
-
+    order_items_count: number
     delivery_type: string
     distance: number
     picker?: {

@@ -83,6 +83,13 @@ export const useCashCollectionColumns = ({ handleUpdateCash, handleDailyCash }: 
                 },
             },
             {
+                header: 'Collection Date',
+                accessorKey: 'rider',
+                cell: ({ row }: any) => {
+                    return <div>{row?.original?.collection_date}</div>
+                },
+            },
+            {
                 header: 'Deposited To',
                 accessorKey: 'rider',
                 cell: ({ row }: any) => {

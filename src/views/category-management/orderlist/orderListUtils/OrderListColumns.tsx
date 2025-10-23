@@ -40,7 +40,7 @@ export const useOrderListColumns = ({
                                     row?.original?.invoice_id,
                                     row?.original?.payment?.mode,
                                     row?.original?.payment?.status,
-                                    row?.original?.order_items?.length,
+                                    row?.original?.order_items_count,
                                     row?.original?.payment?.amount,
                                 )
                             }
@@ -147,7 +147,7 @@ export const useOrderListColumns = ({
                     )
                 },
             },
-            { header: 'Total Items', accessorKey: 'order_items.length' },
+            { header: 'Total Items', accessorKey: 'order_items_count' },
             { header: 'Order Count', accessorKey: 'user_order_count' },
             { header: 'Device Type', accessorKey: 'device_type' },
             { header: 'Customer Name', accessorKey: 'user.name' },
