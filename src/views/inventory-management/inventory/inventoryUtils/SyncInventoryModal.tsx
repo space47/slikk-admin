@@ -47,6 +47,7 @@ const SyncInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
             division: values?.division?.name || '',
             subcategory: values?.sub_categories?.name || '',
             row: values?.row || '',
+            location: values?.location || '',
         }
         const filteredBody = filterEmptyValues(body)
 
@@ -81,6 +82,9 @@ const SyncInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
                             <FormContainer>
                                 <FormItem label="Rack Number">
                                     <Field name="row" type="text" placeholder="Enter Rack Number" component={Input} />
+                                </FormItem>
+                                <FormItem label="Location">
+                                    <Field name="location" type="text" placeholder="Enter Location" component={Input} />
                                 </FormItem>
                                 <FormItem label="Company" asterisk>
                                     <Field name="companyList">
