@@ -1,5 +1,5 @@
 import { Drawer, FormItem, Select } from '@/components/ui'
-import { RiderAgency } from '../RiderDetailsCommon'
+import { RIDER_TYPES, RiderAgency } from '../RiderDetailsCommon'
 import { TimePicker } from 'antd'
 import dayjs from 'dayjs'
 
@@ -12,6 +12,8 @@ interface props {
     setShiftStart: (x: string) => void
     shiftEnd: string
     setShiftEnd: (x: string) => void
+    riderType: string
+    setRiderType: (x: string) => void
 }
 
 const FilterRiderTableDrawer = ({
@@ -23,6 +25,8 @@ const FilterRiderTableDrawer = ({
     setShiftStart,
     shiftEnd,
     shiftStart,
+    riderType,
+    setRiderType,
 }: props) => {
     return (
         <Drawer
@@ -34,7 +38,23 @@ const FilterRiderTableDrawer = ({
             onRequestClose={() => setIsOpen(false)}
         >
             <div>
-                {/* Select Agency */}
+                <FormItem label="Rider Type" className="mb-10">
+                    <Select
+                        isClearable
+                        isSearchable
+                        options={RIDER_TYPES}
+                        className="mt-5"
+                        defaultValue={RIDER_TYPES.find((option) => option.value === riderType)}
+                        onChange={(val) => {
+                            if (val) {
+                                setRiderType(val?.value)
+                            } else {
+                                setRiderType('')
+                            }
+                        }}
+                        onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+                    />
+                </FormItem>
                 <FormItem label="Select Agency" className="mb-10">
                     <Select
                         isClearable
@@ -53,7 +73,6 @@ const FilterRiderTableDrawer = ({
                     />
                 </FormItem>
 
-                {/* Shift Start */}
                 <FormItem label="Shift Start" className="mb-6">
                     <TimePicker
                         placeholder="Select Start Time"
@@ -70,7 +89,6 @@ const FilterRiderTableDrawer = ({
                     />
                 </FormItem>
 
-                {/* Shift End */}
                 <FormItem label="Shift End">
                     <TimePicker
                         placeholder="Select End Time"

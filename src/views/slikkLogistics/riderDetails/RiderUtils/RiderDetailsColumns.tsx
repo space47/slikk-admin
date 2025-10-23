@@ -5,7 +5,7 @@ import moment from 'moment'
 interface RiderColumnsProps {
     sortedRiderDetails: any
     handleActiveCareer: (id: number, e: any, checked: boolean, mobile: string, name: string) => void
-    hanldeProfileClick: (mobile: string) => void
+    handleProfileClick: (mobile: string) => void
     currentStoreLocation: Record<string, number | undefined>
     riderMobileStore: any[]
     handleSelectAllRiders: (x: any) => void
@@ -25,7 +25,7 @@ export const calculateDistance = (latitude: number, longitude: number, storeLat:
 
 export const RiderColumns = ({
     handleActiveCareer,
-    hanldeProfileClick,
+    handleProfileClick: hanldeProfileClick,
     currentStoreLocation,
     riderMobileStore,
     sortedRiderDetails,

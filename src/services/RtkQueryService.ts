@@ -32,16 +32,6 @@ const customBaseQuery: typeof baseQuery = async (args, api, extraOptions) => {
         }
     }
 
-    // if (Array.isArray(storeIds) && storeIds.length > 0) {
-    //     modifiedArgs = {
-    //         ...modifiedArgs,
-    //         params: {
-    //             ...(modifiedArgs as any).params,
-    //             store_id: storeIds.join(','),
-    //         },
-    //     }
-    // }
-
     return baseQuery(modifiedArgs, api, extraOptions)
 }
 
