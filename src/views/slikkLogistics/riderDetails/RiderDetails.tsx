@@ -4,7 +4,6 @@ import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { notification } from 'antd'
-import debounce from 'lodash/debounce'
 import EasyTable from '@/common/EasyTable'
 import RiderDetailModal from './RiderComponents/RiderDetailModal'
 import RiderCheckinModal from './RiderCheckinModal'
@@ -32,6 +31,7 @@ import { handleCopyLink } from './RiderUtils/riderFunctions'
 import { FaDownload, FaFilter } from 'react-icons/fa'
 import { BUSY_STATUS_TABS, DEBOUNCE_DELAY, SEARCH_TYPES, STATUS_TABS, StoreOption } from './RiderDetailsCommon'
 import PageCommon from '@/common/PageCommon'
+import { useDebounceInput } from '@/commonHooks/useDebounceInput'
 
 const RiderDetails = () => {
     const navigate = useNavigate()
@@ -45,7 +45,6 @@ const RiderDetails = () => {
     const [nameForParticularRider, setNameForParticularRider] = useState<string>('')
     const [riderMobileStore, setRiderMobileStore] = useState<number[]>([])
     const [globalFilter, setGlobalFilter] = useState('')
-    const [debounceFilter, setDebounceFilter] = useState('')
     const [tabSelect, setTabSelect] = useState<'checkin' | 'checkout'>('checkin')
     const [busyTab, setBusyTab] = useState('')
     const [riderType, setRiderType] = useState<string>('Select Rider Type')
@@ -57,6 +56,7 @@ const RiderDetails = () => {
     const { storeResults } = useAppSelector<companyStore>((state) => state.companyStore)
     const { count, from, page, pageSize, to, currentStoreLocation } = useAppSelector<RiderDetailType>((state) => state.riderDetails)
     const [riderDownload, riderDownloadResponse] = ridersService.useLazyRiderDetailsDownloadQuery()
+    const { debounceFilter } = useDebounceInput({ globalFilter: globalFilter as string, delay: DEBOUNCE_DELAY })
     const {
         data: riders,
         isSuccess,
@@ -93,24 +93,9 @@ const RiderDetails = () => {
         }))
     }, [storeResults])
 
-    const debouncedSetFilter = useMemo(
-        () =>
-            debounce((value: string) => {
-                setDebounceFilter(value)
-            }, DEBOUNCE_DELAY),
-        [],
-    )
-
     useEffect(() => {
         dispatch(fetchCompanyStore())
     }, [dispatch])
-
-    useEffect(() => {
-        debouncedSetFilter(globalFilter)
-        return () => {
-            debouncedSetFilter.cancel()
-        }
-    }, [globalFilter, debouncedSetFilter])
 
     useEffect(() => {
         if (isSuccess && riders?.data) {
@@ -342,7 +327,6 @@ const RiderDetails = () => {
                 <div className="flex flex-col gap-3">
                     {renderTabNavigation()}
                     {renderBusyStatusTabs()}
-                    {/* <div className="font-bold text-xl mb-5 mt-5">Total Riders: {count}</div> */}
                     <div className="flex justify-between items-center">
                         {renderSearchBar()}
                         {renderActionButtons()}
