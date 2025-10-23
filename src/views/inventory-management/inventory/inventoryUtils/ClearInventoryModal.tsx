@@ -45,18 +45,19 @@ const ClearInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
             subcategory: values?.sub_categories?.name || '',
             division: values?.division?.name || '',
             row: values?.row || '',
+            location: values?.location || '',
         }
         const filteredBody = filterEmptyValues(body)
         try {
             const res = await axioisInstance.post(`/inventory-location/bulk/clear`, filteredBody)
             successMessage(res)
-            setSpinner(false)
+            setIsOpen(false)
         } catch (error) {
             if (error instanceof AxiosError) {
                 errorMessage(error)
             }
         } finally {
-            setIsOpen(false)
+            setSpinner(false)
         }
     }
 
@@ -69,6 +70,9 @@ const ClearInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
                         <FormContainer>
                             <FormItem label="Rack Number">
                                 <Field name="row" type="text" placeholder="Enter Rack Number" component={Input} />
+                            </FormItem>
+                            <FormItem label="Location">
+                                <Field name="location" type="text" placeholder="Enter Location" component={Input} />
                             </FormItem>
                             <FormItem label="Company" asterisk>
                                 <Field name="companyList">
