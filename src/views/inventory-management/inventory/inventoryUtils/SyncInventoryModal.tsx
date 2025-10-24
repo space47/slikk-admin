@@ -1,43 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Dialog, FormContainer, FormItem, Input, Select } from '@/components/ui'
+import { Dialog, FormContainer } from '@/components/ui'
 import FormButton from '@/components/ui/Button/FormButton'
-import { useAppDispatch, useAppSelector } from '@/store'
-import { getAllBrandsAPI } from '@/store/action/brand.action'
-import { BRAND_STATE } from '@/store/types/brand.types'
-import { CATEGORY_STATE } from '@/store/types/category.types'
-import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
-import { DIVISION_STATE } from '@/store/types/division.types'
-import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
 import { filterEmptyValues } from '@/utils/apiBodyUtility'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { errorMessage, successMessage } from '@/utils/responseMessages'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 import { AxiosError } from 'axios'
-import { Field, Form, Formik } from 'formik'
-import React, { useEffect, useState } from 'react'
+import { Form, Formik } from 'formik'
+import React, { useState } from 'react'
+import InventoryActionForm from './InventoryActionForm'
+import { Modal } from 'antd'
 
-interface props {
+interface Props {
     isOpen: boolean
     setIsOpen: (x: boolean) => void
     storeId: number
 }
 
-const SyncInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
-    const division = useAppSelector<DIVISION_STATE>((state) => state.division)
-    const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
-    const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
-    const subCategory = useAppSelector<SUBCATEGORY_STATE>((state) => state.subCategory)
-    const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
+const SyncInventoryModal = ({ isOpen, setIsOpen, storeId }: Props) => {
     const [spinner, setSpinner] = useState(false)
 
-    const dispatch = useAppDispatch()
-
-    useEffect(() => {
-        dispatch(getAllBrandsAPI())
-    }, [dispatch])
-
-    const handleSubmit = async (values: any) => {
+    const handleSubmit = async (values: any, extraData?: Record<string, any>) => {
         setSpinner(true)
+
         const body = {
             store_id: storeId,
             sync_type: values?.sync || 'soft',
@@ -48,7 +33,9 @@ const SyncInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
             subcategory: values?.sub_categories?.name || '',
             row: values?.row || '',
             location: values?.location || '',
+            ...extraData,
         }
+
         const filteredBody = filterEmptyValues(body)
 
         try {
@@ -57,7 +44,23 @@ const SyncInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
             setIsOpen(false)
         } catch (error) {
             if (error instanceof AxiosError) {
-                errorMessage(error)
+                const message = error?.response?.data?.message
+
+                if (message === 'Please confirm hard inventory sync') {
+                    const { total_product, total_inventory, total_inventory_sum } = error?.response?.data || {}
+
+                    Modal.confirm({
+                        title: 'Confirm Force Update',
+                        content: `Are you sure you want to hard sync with total Product: ${total_product}, total Inventory: ${total_inventory}, and inventory sum of: ${total_inventory_sum}?`,
+                        okText: 'Yes',
+                        cancelText: 'No',
+                        onOk: () => {
+                            handleSubmit(values, { confirm_sync: true })
+                        },
+                    })
+                } else {
+                    errorMessage(error)
+                }
             }
         } finally {
             setSpinner(false)
@@ -68,7 +71,7 @@ const SyncInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
         <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)} width={800}>
             <Formik enableReinitialize initialValues={{} as any} onSubmit={handleSubmit}>
                 {({ values, setFieldValue }) => (
-                    <Form>
+                    <Form className="h-[60vh] overflow-scroll">
                         <CommonSelect
                             name="sync"
                             label="Sync Type"
@@ -80,84 +83,7 @@ const SyncInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
 
                         {values?.sync === 'hard' && (
                             <FormContainer>
-                                <FormItem label="Rack Number">
-                                    <Field name="row" type="text" placeholder="Enter Rack Number" component={Input} />
-                                </FormItem>
-                                <FormItem label="Location">
-                                    <Field name="location" type="text" placeholder="Enter Location" component={Input} />
-                                </FormItem>
-                                <FormItem label="Company" asterisk>
-                                    <Field name="companyList">
-                                        {() => {
-                                            return (
-                                                <Select
-                                                    isMulti
-                                                    className="w-full"
-                                                    options={companyList}
-                                                    getOptionLabel={(option) => option.name}
-                                                    getOptionValue={(option) => option.id?.toString()}
-                                                    onChange={(newVal) => {
-                                                        const selectedValues = newVal
-                                                        setFieldValue('companyList', selectedValues)
-                                                    }}
-                                                />
-                                            )
-                                        }}
-                                    </Field>
-                                </FormItem>
-
-                                <FormItem label="Brand">
-                                    <div className="flex flex-col xl:flex-row items-start gap-2">
-                                        <Select
-                                            options={brands.brands}
-                                            getOptionLabel={(option) => option.name}
-                                            getOptionValue={(option) => option.id.toString()}
-                                            className="w-full"
-                                            onChange={(val) => {
-                                                setFieldValue('brand', val)
-                                            }}
-                                        />
-                                    </div>
-                                </FormItem>
-                                <FormItem label="Division">
-                                    <div className="flex flex-col xl:flex-row items-start gap-2">
-                                        <Select
-                                            options={division.divisions}
-                                            getOptionLabel={(option) => option.name}
-                                            getOptionValue={(option) => option?.id?.toString()}
-                                            className="w-full"
-                                            onChange={(val) => {
-                                                setFieldValue('division', val)
-                                            }}
-                                        />
-                                    </div>
-                                </FormItem>
-                                <FormItem label="Category">
-                                    <div className="flex flex-col xl:flex-row items-start gap-2">
-                                        <Select
-                                            options={category.categories}
-                                            getOptionLabel={(option) => option.name}
-                                            getOptionValue={(option) => option?.id?.toString()}
-                                            className="w-full"
-                                            onChange={(val) => {
-                                                setFieldValue('category', val)
-                                            }}
-                                        />
-                                    </div>
-                                </FormItem>
-                                <FormItem label="Sub Category">
-                                    <div className="flex flex-col xl:flex-row items-start gap-2">
-                                        <Select
-                                            options={subCategory.subcategories}
-                                            getOptionLabel={(option) => option.name}
-                                            getOptionValue={(option) => option?.id?.toString()}
-                                            className="w-full"
-                                            onChange={(val) => {
-                                                setFieldValue('sub_categories', val)
-                                            }}
-                                        />
-                                    </div>
-                                </FormItem>
+                                <InventoryActionForm setFieldValue={setFieldValue} />
                             </FormContainer>
                         )}
 
