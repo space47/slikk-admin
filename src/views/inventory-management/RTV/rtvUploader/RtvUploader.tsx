@@ -10,11 +10,10 @@ import { useAppSelector } from '@/store'
 import { AxiosError } from 'axios'
 import { Select } from '@/components/ui'
 
-const RtvUploader = () => {
-    // const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
+const IndentUploader = () => {
     const [file, setFile] = useState<File | null>(null)
-    const [storeCode, setStoreCode] = useState('')
-    const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
+    const [companyId, setCompanyId] = useState('')
+    const company = useAppSelector<USER_PROFILE_DATA['company']>((state) => state.company.company)
 
     const onFileUpload = (fileList: File[]) => {
         setFile(fileList[0])
@@ -25,16 +24,16 @@ const RtvUploader = () => {
             notification.error({ message: 'No file uploaded' })
             return
         }
-        if (!storeCode) {
+        if (!companyId) {
             notification.error({ message: 'No store selected' })
             return
         }
         const formData = new FormData()
-        formData.append('indent_file', file)
-        formData.append('target_store', storeCode)
+        formData.append('rtv_products_file', file)
+        formData.append('company', companyId)
 
         try {
-            const response = await axioisInstance.post('/indent/bulkupload', formData, {
+            const response = await axioisInstance.post('/rtv-products/bulkupload', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             })
             notification.success({ message: response?.data?.message || 'File uploaded successfully' })
@@ -77,11 +76,11 @@ const RtvUploader = () => {
                     <label className="font-semibold text-gray-700 mb-1">Select Store</label>
                     <Select
                         isClearable
-                        options={storeList}
+                        options={company}
                         getOptionLabel={(option) => option.name}
-                        getOptionValue={(option) => option.id}
+                        getOptionValue={(option) => option.id?.toString()}
                         onChange={(selectedOptions) => {
-                            setStoreCode(selectedOptions?.code || '')
+                            setCompanyId((selectedOptions?.id as any) || '')
                         }}
                     />
                 </div>
@@ -93,4 +92,4 @@ const RtvUploader = () => {
     )
 }
 
-export default RtvUploader
+export default IndentUploader

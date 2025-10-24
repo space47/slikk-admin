@@ -25,7 +25,7 @@ const RtvBulkUpload = () => {
             <br />
             {tabSelect === 'bulk_upload' && (
                 <div>
-                    <div className="font-bold text-xl mb-5">Upload Indent</div>
+                    <div className="font-bold text-xl mb-5">Upload RTV</div>
                     <RtvUploader />
                     <br />
                     <RtvHistory />

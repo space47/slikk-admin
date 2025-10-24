@@ -12,7 +12,7 @@ const RtvHistory = () => {
     const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0].value)
 
     const query = useMemo(() => {
-        return `bulkupload/history?type=indent_note&p=${page}&page_size=${pageSize}`
+        return `bulkupload/history?type=rtv&p=${page}&page_size=${pageSize}`
     }, [page, pageSize])
 
     const { data: indentHistoryData, responseStatus, totalData } = useFetchApi<RtvHistoryData>({ url: query, initialData: [] })
