@@ -9,18 +9,20 @@ import { AxiosError } from 'axios'
 import { Form, Formik } from 'formik'
 import React, { useState } from 'react'
 import InventoryActionForm from './InventoryActionForm'
+import { Modal } from 'antd'
 
-interface props {
+interface Props {
     isOpen: boolean
     setIsOpen: (x: boolean) => void
     storeId: number
 }
 
-const SyncInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
+const SyncInventoryModal = ({ isOpen, setIsOpen, storeId }: Props) => {
     const [spinner, setSpinner] = useState(false)
 
-    const handleSubmit = async (values: any) => {
+    const handleSubmit = async (values: any, extraData?: Record<string, any>) => {
         setSpinner(true)
+
         const body = {
             store_id: storeId,
             sync_type: values?.sync || 'soft',
@@ -31,7 +33,9 @@ const SyncInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
             subcategory: values?.sub_categories?.name || '',
             row: values?.row || '',
             location: values?.location || '',
+            ...extraData,
         }
+
         const filteredBody = filterEmptyValues(body)
 
         try {
@@ -40,7 +44,23 @@ const SyncInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
             setIsOpen(false)
         } catch (error) {
             if (error instanceof AxiosError) {
-                errorMessage(error)
+                const message = error?.response?.data?.message
+
+                if (message === 'Please confirm hard inventory sync') {
+                    const { total_product, total_inventory, total_inventory_sum } = error?.response?.data || {}
+
+                    Modal.confirm({
+                        title: 'Confirm Force Update',
+                        content: `Are you sure you want to hard sync with total Product: ${total_product}, total Inventory: ${total_inventory}, and inventory sum of: ${total_inventory_sum}?`,
+                        okText: 'Yes',
+                        cancelText: 'No',
+                        onOk: () => {
+                            handleSubmit(values, { confirm_sync: true })
+                        },
+                    })
+                } else {
+                    errorMessage(error)
+                }
             }
         } finally {
             setSpinner(false)
@@ -62,7 +82,7 @@ const SyncInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
                         />
 
                         {values?.sync === 'hard' && (
-                            <FormContainer className="">
+                            <FormContainer>
                                 <InventoryActionForm setFieldValue={setFieldValue} />
                             </FormContainer>
                         )}
