@@ -32,6 +32,7 @@ const SendNotification = () => {
     const dispatch = useAppDispatch()
     const [currentStep, setCurrentStep] = useState(0)
     const [filterId, setFilterId] = useState<any>('')
+    const [excludeFilterId, setExcludeFilterId] = useState<number | string>('')
     const [messagePreview, setMessagePreview] = useState('')
     const [imagePreview, setImagePreview] = useState('')
     const [titleView, setTitleView] = useState('')
@@ -65,6 +66,7 @@ const SendNotification = () => {
                     ...OFFARRAY.filter((item) => val?.[item.name] !== undefined).map((item) => `${item.name}_${val?.[item.name]}`),
                     ...(val?.discountTags ?? []),
                     ...(filterId ? [`filterId_${filterId}`] : []),
+                    ...(excludeFilterId ? [`filterId_exclude_${excludeFilterId}`] : []),
                 ].filter((filter) => filter),
                 target_page: targetPage,
                 page_title: encodeURIComponent(val?.page_title) ?? '',
@@ -134,6 +136,8 @@ const SendNotification = () => {
                                         values={values}
                                         setFilterId={setFilterId}
                                         filterId={filterId as unknown as string}
+                                        setExcludeFilterId={setExcludeFilterId}
+                                        excludeFilterId={excludeFilterId as unknown as string}
                                     />
                                 )}
                                 {currentStep === 2 && <ThirdStepNotification />}

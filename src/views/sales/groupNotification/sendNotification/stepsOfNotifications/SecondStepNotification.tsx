@@ -11,9 +11,11 @@ interface SecondStepNotification {
     values: any
     setFilterId: React.Dispatch<React.SetStateAction<string>>
     filterId: string
+    excludeFilterId: string
+    setExcludeFilterId: React.Dispatch<React.SetStateAction<string | number>>
 }
 
-const SecondStepNotification = ({ values, setFilterId, filterId }: SecondStepNotification) => {
+const SecondStepNotification = ({ values, setFilterId, filterId, excludeFilterId, setExcludeFilterId }: SecondStepNotification) => {
     const [subPageNamesData, setSubPageNamesData] = useState<pageNameTypes[] | undefined>([])
     const [pageNamesData, setPageNamesData] = useState<pageNameTypes[] | undefined>([])
     const [selectedPageName, setSelectedPageName] = useState<string | undefined>(undefined)
@@ -45,6 +47,9 @@ const SecondStepNotification = ({ values, setFilterId, filterId }: SecondStepNot
             <div className="text-xl font-bold">Select Filters</div>
 
             <CommonFilterSelect isCsv isSku values={values} setFilterId={setFilterId} filterId={filterId} />
+            <div className="mb-4">
+                <CommonFilterSelect isEdit isExclude filterId={excludeFilterId as string} setFilterId={setExcludeFilterId} />
+            </div>
 
             <div className="grid xl:grid-cols-2 grid-cols-1 gap-10 ">
                 <div className="flex flex-col">
