@@ -14,7 +14,7 @@ export const useInventoryApi = ({ searchType, store_code, typeFetch }: Props) =>
     const [globalFilter, setGlobalFilter] = useState('')
 
     const query = useMemo(() => {
-        let params = `p=${page}&page_size=${pageSize}`
+        let params = !globalFilter ? `p=${page}&page_size=${pageSize}` : ''
 
         if (typeFetch) {
             params += `&${typeFetch}`
