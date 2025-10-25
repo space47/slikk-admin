@@ -24,8 +24,8 @@ import FilterProductCommon from '@/common/FilterProductCommon'
 const InventoryTable = () => {
     const locationInputRef = useRef<{ [key: number]: HTMLInputElement | null }>({})
     const qtyInputRef = useRef<{ [key: number]: HTMLInputElement | null }>({})
-    const [storeCode, setStoreCode] = useState('slikk101')
-    const [storeId, setStoreId] = useState<number | null>(1)
+    const [storeCode, setStoreCode] = useState('')
+    const [storeId, setStoreId] = useState<number | null>(null)
     const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularRowImage] = useState<string | null>('')
@@ -38,13 +38,12 @@ const InventoryTable = () => {
     const [typeFetch, setTypeFetch] = useState('')
     const [brandList, setBrandList] = useState([])
 
-    const { data, responseStatus, totalData, setPage, setPageSize, setGlobalFilter, page, pageSize, globalFilter, query } = useInventoryApi(
-        {
+    const { data, responseStatus, totalData, setPage, setPageSize, setGlobalFilter, page, pageSize, globalFilter, query, loading } =
+        useInventoryApi({
             searchType,
             store_code: storeCode,
             typeFetch: typeFetch,
-        },
-    )
+        })
 
     const handleOpenModal = (img: string) => {
         setParticularRowImage(img)
@@ -159,6 +158,11 @@ const InventoryTable = () => {
                     )}
                 </div>
             </div>
+            {loading && (
+                <div className="flex items-center justify-center mt-2 mb-5">
+                    <Spinner size={20} />
+                </div>
+            )}
             {data?.length > 0 && (
                 <>
                     <div>
