@@ -23,6 +23,7 @@ import { FiEye, FiEyeOff } from 'react-icons/fi'
 import HomepageMaps from './componentsHomes/HomepageMaps'
 import { HomeCalculations } from './homesUtils/homeFunctions'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
+import SplitOrdersData from './componentsHomes/SplitOrdersData'
 
 const Home = () => {
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
@@ -35,6 +36,7 @@ const Home = () => {
     const navigate = useNavigate()
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
     const [analyticsShow, setAnalyticsShow] = useState(false)
+    const [splitOrders, setSplitOrders] = useState(false)
 
     const { data: homeData, refetch } = useFetchSingleData<SalesData>({
         url: `/merchant/analytics/order?from=${from}&to=${To_Date}`,
@@ -265,14 +267,27 @@ const Home = () => {
             </div>
 
             {/* CHART */}
-            <div className="p-3">
-                <Button variant={analyticsShow ? 'reject' : 'pending'} size="sm" onClick={() => setAnalyticsShow((prev) => !prev)}>
-                    {analyticsShow ? 'Hide Sessions' : 'Show Sessions'}
-                </Button>
+            <div className="flex items-center">
+                <div className="p-3">
+                    <Button variant={analyticsShow ? 'reject' : 'pending'} size="sm" onClick={() => setAnalyticsShow((prev) => !prev)}>
+                        {analyticsShow ? 'Hide Sessions' : 'Show Sessions'}
+                    </Button>
+                </div>
+                <div className="p-3">
+                    <Button variant={splitOrders ? 'reject' : 'pending'} size="sm" onClick={() => setSplitOrders((prev) => !prev)}>
+                        {splitOrders ? 'Hide Split orders' : 'Show Split Orders'}
+                    </Button>
+                </div>
             </div>
+
             {analyticsShow && (
                 <div className="mt-4">
                     <ActiveUserTable from={from} to={to} />
+                </div>
+            )}
+            {splitOrders && (
+                <div className="mt-4">
+                    <SplitOrdersData from={from} to={to} />
                 </div>
             )}
 
