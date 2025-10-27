@@ -926,7 +926,7 @@ const appsNavigationConfig: NavigationTree[] = [
                     {
                         key: 'appstryAndBuy.cashCollection',
                         path: `${APP_PREFIX_PATH}/cashCollection`,
-                        title: 'Cash Reconciliation',
+                        title: 'Cash Recon',
                         translateKey: 'nav.appstryAndBuy.cashCollection',
                         icon: '',
                         type: NAV_ITEM_TYPE_ITEM,
