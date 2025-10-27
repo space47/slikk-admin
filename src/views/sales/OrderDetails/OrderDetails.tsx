@@ -24,6 +24,7 @@ import OrdersRiderActivity from './components/OrdersRiderActivity'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 import { useOrderDetailFunctions } from './orderDetailsUtils/useOrderDetailFunctions'
 import RtoCancelModal from './orderDetailsUtils/RtoCancelModal'
+import { TaskData } from '@/store/types/tasks.type'
 
 const OrderDetails = () => {
     const { invoice_id } = useParams()
@@ -43,7 +44,7 @@ const OrderDetails = () => {
         return `/logistic/slikk/task?task_id=${data.logistic.task_id}`
     }, [data?.logistic?.task_id])
 
-    const { data: taskData } = useFetchSingleData<any>({
+    const { data: taskData } = useFetchSingleData<TaskData>({
         url: query || '',
         pollingInterval: query ? 60000 : undefined,
     })
@@ -255,6 +256,7 @@ const OrderDetails = () => {
                                             location_url={data.location_url}
                                             delivery_type={data.delivery_type}
                                             distance={data?.distance}
+                                            alternate_number={taskData?.drop_details?.alternate_number}
                                         />
                                     </div>
                                     <div className="bg-white shadow-lg p-6 rounded-lg dark:bg-gray-900">

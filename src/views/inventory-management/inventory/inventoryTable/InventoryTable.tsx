@@ -58,6 +58,8 @@ const InventoryTable = () => {
         setLocationTransferModal,
     })
 
+    console.log('columns are', columns)
+
     const handleDownload = async () => {
         try {
             setSpinner(true)
