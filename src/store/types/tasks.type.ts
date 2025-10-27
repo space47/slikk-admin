@@ -24,6 +24,7 @@ type LocationDetails = {
     latitude: number
     longitude: number
     contact_number: string
+    alternate_number?: string
 }
 
 type EventLog = {
