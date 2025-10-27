@@ -198,19 +198,30 @@ const RefundActivity = () => {
                         handleInputChange={handleInputChange}
                     />
                 )}
-            {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'REFUNDED' ||
-                (returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'DELIVERED' &&
-                    !returnDetails?.log?.some((item) => item?.status?.includes('COMPLETED')) &&
-                    returnDetails?.log?.some((item) => item?.status?.includes('REFUNDED')))) && (
-                <Modal
-                    open={isModalOpen}
-                    okText={currentButton ? 'Returning' : 'Return Orders'}
-                    onOk={() => handleAction('return_completed')}
-                    onCancel={() => setIsModalOpen(false)}
-                >
-                    <p className="text-xl">Complete Return Order</p>
-                </Modal>
-            )}
+            {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'REFUNDED' &&
+                !returnDetails?.log?.some((item) => item?.status?.includes('COMPLETED')) && (
+                    <CompleteReturnModal
+                        handleAction={handleCompleteReturn}
+                        returnOrderItems={returnOrderItems as any}
+                        isModalOpen={isModalOpen}
+                        setIsModalOpen={setIsModalOpen}
+                        valueInsideModal={valueInsideModal}
+                        handleInputChange={handleInputChange}
+                    />
+                )}
+
+            {/* {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'DELIVERED' &&
+                !returnDetails?.log?.some((item) => item?.status?.includes('COMPLETED')) &&
+                !returnDetails?.log?.some((item) => item?.status?.includes('REFUNDED')) && (
+                    <Modal
+                        open={isModalOpen}
+                        okText={currentButton ? 'Returning' : 'Return Orders'}
+                        onOk={() => handleAction('return_completed')}
+                        onCancel={() => setIsModalOpen(false)}
+                    >
+                        <p className="text-xl">Complete Return Order</p>
+                    </Modal>
+                )} */}
             {forceCOD && (
                 <Modal open={forceCOD} okText={'Proceed'} onOk={handleForceCod} onCancel={() => setForceCOD(false)}>
                     <p className="text-xl">Do You Want To Proceed With Manual Refund</p>

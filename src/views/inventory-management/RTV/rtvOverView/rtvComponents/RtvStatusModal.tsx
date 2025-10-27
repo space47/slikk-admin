@@ -4,7 +4,7 @@ import { indentService } from '@/store/services/indentService'
 import { IndentDetailsTypes } from '@/store/types/indent.types'
 import React, { useEffect, useState } from 'react'
 import EasyTable from '@/common/EasyTable'
-import { useRtvItemsPickerColumns } from '../../rtvUtils/useRtvItemsColumns'
+import { useRtvItemsPickerColumns } from '../../rtvUtils/useRtvProductsColumns'
 
 interface Props {
     isOpen: boolean

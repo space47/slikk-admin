@@ -49,7 +49,7 @@ const AppBanners = () => {
             return { name: item?.name, value: item?.name }
         }) || []
 
-    const { data: pageData } = useFetchApi<pageNameTypes>({ url: `/page?p=1&page_size=500` })
+    const { data: pageData } = useFetchApi<pageNameTypes>({ url: `/page?dashboard=true&p=1&page_size=500` })
     const BANNER_PAGE_NAME = pageData?.map((item) => ({
         name: item?.display_name,
         value: item?.name,
@@ -58,7 +58,7 @@ const AppBanners = () => {
         var1 !== undefined ? { name: var1, value: var1 } : BANNER_PAGE_NAME[0],
     )
     const query = useMemo(() => {
-        return `/subpage?page=${currentSelectedPage?.name}`
+        return `/subpage?dashboard=true&page=${currentSelectedPage?.name}`
     }, [currentSelectedPage])
     const { data: subPageData } = useFetchSingleData<any>({ url: query })
     const SUB_PAGE_NAME = subPageData?.map((item: any) => ({
