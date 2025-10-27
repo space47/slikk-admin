@@ -582,6 +582,24 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsInventoryManagement.rtv',
+        path: `${APP_PREFIX_PATH}/goods/rtv`,
+        component: lazy(() => import('@/views/inventory-management/RTV/rtvOverView/RtvTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsInventoryManagement.rtvDetails',
+        path: `${APP_PREFIX_PATH}/goods/rtvDetails/:rtv_number`,
+        component: lazy(() => import('@/views/inventory-management/RTV/rtvOverView/rtvComponents/RtvDetails')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsInventoryManagement.rtvDetails',
+        path: `${APP_PREFIX_PATH}/goods/rtv/add`,
+        component: lazy(() => import('@/views/inventory-management/RTV/rtvOverView/addRtv/AddRtv')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsInventoryManagement.quality_checkList',
         path: `${APP_PREFIX_PATH}/goods/qualitycheckList`,
         component: lazy(() => import('@/views/inventory-management/qualityCheckList/QCListTable')),
