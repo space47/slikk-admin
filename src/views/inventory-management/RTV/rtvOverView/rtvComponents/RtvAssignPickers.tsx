@@ -6,12 +6,13 @@ import React, { useEffect, useState, useMemo } from 'react'
 interface AssignPickerProps {
     isOpen: boolean
     setIsOpen: (isOpen: boolean) => void
+    store_id: string | number
     onChange: (selectedUsers: string[]) => void
     handleAssign: (x: string) => void
     selectedPickers?: any[]
 }
 
-const RtvAssignPicker = ({ onChange, isOpen, setIsOpen, handleAssign, selectedPickers = [] }: AssignPickerProps) => {
+const RtvAssignPicker = ({ onChange, isOpen, setIsOpen, store_id, handleAssign, selectedPickers = [] }: AssignPickerProps) => {
     const [pickerData, setPickerData] = useState<any[]>([])
     const [selectedMobiles, setSelectedMobiles] = useState<string[]>([])
     const [globalFilter, setGlobalFilter] = useState<string>('')
@@ -28,7 +29,7 @@ const RtvAssignPicker = ({ onChange, isOpen, setIsOpen, handleAssign, selectedPi
         if (globalFilter) nameFilter = `&name=${encodeURIComponent(globalFilter)}`
 
         try {
-            const response = await axioisInstance.get(`/store/staffs?user_type=picker${nameFilter}`)
+            const response = await axioisInstance.get(`/store/staffs/${store_id}?user_type=picker${nameFilter}`)
             const data = response?.data?.data || []
             setPickerData(data)
         } catch (error) {

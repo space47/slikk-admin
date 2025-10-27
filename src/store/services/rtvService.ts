@@ -12,6 +12,7 @@ export const rtvService = RtkQueryService.injectEndpoints({
                 if (params.from) parameters.from = params.from
                 if (params.to) parameters.to = params.to
                 if (params.rtv_number) parameters.rtv_number = params.rtv_number
+                if (params.rtv_id) parameters.rtv_id = params.rtv_id
                 return {
                     url: `/rtv`,
                     method: 'GET',
@@ -46,11 +47,11 @@ export const rtvService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        updateRtv: builder.mutation<{ status: string; message: string }, Record<string, any>>({
-            query: (body) => {
+        updateRtv: builder.mutation<{ status: string; message: string }, Record<string, any> & { id: number }>({
+            query: ({ id, ...body }) => {
                 console.log('body is', body)
                 return {
-                    url: `/rtv`,
+                    url: `/rtv/${id}`,
                     method: 'PATCH',
                     body,
                 }

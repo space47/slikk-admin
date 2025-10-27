@@ -600,6 +600,12 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsInventoryManagement.rtvDetails',
+        path: `${APP_PREFIX_PATH}/goods/rtv/edit/:id`,
+        component: lazy(() => import('@/views/inventory-management/RTV/rtvOverView/editRtv/EditRtv')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsInventoryManagement.quality_checkList',
         path: `${APP_PREFIX_PATH}/goods/qualitycheckList`,
         component: lazy(() => import('@/views/inventory-management/qualityCheckList/QCListTable')),

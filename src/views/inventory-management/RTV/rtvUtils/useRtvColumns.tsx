@@ -22,7 +22,7 @@ export const useRtvColumns = ({ storeList }: Props) => {
                 header: 'Edit RTV',
                 accessorKey: 'rtv_id',
                 cell: ({ row }) => (
-                    <a href={`/app/goods/rtvDetails/${row.original.id}`} target="_blank" rel="noopener noreferrer">
+                    <a href={`/app/goods/rtv/edit/${row.original.id}`} target="_blank" rel="noopener noreferrer">
                         <FaEdit className="text-xl text-blue-500" />
                     </a>
                 ),
