@@ -2,9 +2,9 @@
 import React from 'react'
 import moment from 'moment'
 import { IoMdRefresh } from 'react-icons/io'
-import { useNavigate } from 'react-router-dom'
 import { Tooltip } from '@/components/ui'
 import { Order } from './commontypes'
+import { notification } from 'antd'
 
 interface Props {
     orders: Order[]
@@ -13,10 +13,6 @@ interface Props {
 }
 
 const OrderlistMobile: React.FC<Props> = ({ orders, handleNumberClick, handleSyncDistance }) => {
-    const navigate = useNavigate()
-
-    const handleOrderNavigation = (id: string) => navigate(`/app/orders/${id}`)
-
     return (
         <div className="space-y-6 xl:mx-20">
             {orders?.map((item) => {
@@ -81,7 +77,9 @@ const OrderlistMobile: React.FC<Props> = ({ orders, handleNumberClick, handleSyn
                     <div
                         key={item.invoice_id}
                         className={`${cardBase} ${cardColor}`}
-                        onClick={() => handleOrderNavigation(item.invoice_id)}
+                        onClick={() => {
+                            notification.info({ message: 'Click on the Id to go to Order Details' })
+                        }}
                     >
                         {/* Header */}
                         <div className="flex items-center justify-between mb-4">

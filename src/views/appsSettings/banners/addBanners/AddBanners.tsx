@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react'
 // import { BANNER_PAGE_NAME } from '@/common/banner'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -51,7 +52,7 @@ const AddBanners = () => {
     const [pageNames, setPageNames] = useState<any[]>([])
 
     useLayoutEffect(() => {
-        fetchPageSettings(setPageNames, setCurrentSelectedPage)
+        fetchPageSettings(setPageNames, setCurrentSelectedPage as any)
     }, [])
 
     const BANNER_PAGE_NAME = pageNames?.map((item) => ({
@@ -63,7 +64,7 @@ const AddBanners = () => {
     const [currentSelectedSubPage, setCurrentSelectedSubPage] = useState<Record<string, string> | null>(null)
 
     const query = useMemo(() => {
-        return `/subpage?page=${currentSelectedPage?.name}`
+        return `/subpage?dashboard=true&page=${currentSelectedPage?.name}`
     }, [currentSelectedPage])
 
     const { data: subPage } = useFetchSingleData<any>({ url: query })
