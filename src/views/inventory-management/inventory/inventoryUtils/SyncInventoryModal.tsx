@@ -26,6 +26,7 @@ const SyncInventoryModal = ({ isOpen, setIsOpen, storeId }: Props) => {
         const body = {
             store_id: storeId,
             sync_type: values?.sync || 'soft',
+            update_type: values?.update_type || '',
             brand_id: values?.brand?.id || '',
             company_id: values?.companyList?.map((item: any) => item?.id)?.join(','),
             category: values?.category?.name || '',
@@ -69,9 +70,18 @@ const SyncInventoryModal = ({ isOpen, setIsOpen, storeId }: Props) => {
 
     return (
         <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)} width={800}>
+            <div className="font-bold text-green-500 text-xl">Sync Inventory</div>
             <Formik enableReinitialize initialValues={{} as any} onSubmit={handleSubmit}>
                 {({ values, setFieldValue }) => (
-                    <Form className="h-[60vh] overflow-scroll">
+                    <Form className="h-[60vh] overflow-scroll mt-8">
+                        <CommonSelect
+                            name="update_type"
+                            label="Select Update Type"
+                            options={[
+                                { label: 'add', value: 'add' },
+                                { label: 'replace', value: 'replace' },
+                            ]}
+                        />
                         <CommonSelect
                             name="sync"
                             label="Sync Type"

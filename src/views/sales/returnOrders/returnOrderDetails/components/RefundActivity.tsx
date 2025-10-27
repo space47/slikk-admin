@@ -198,7 +198,8 @@ const RefundActivity = () => {
                         handleInputChange={handleInputChange}
                     />
                 )}
-            {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'REFUNDED' &&
+            {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'REFUNDED' ||
+                returnDetails?.log?.some((item) => item?.status?.includes('REFUNDED'))) &&
                 !returnDetails?.log?.some((item) => item?.status?.includes('COMPLETED')) && (
                     <CompleteReturnModal
                         handleAction={handleCompleteReturn}
