@@ -12,7 +12,14 @@ const onRequest = async (config: InternalAxiosRequestConfig): Promise<InternalAx
 
     const ifGetCall = config.method?.toLowerCase() === 'get'
 
-    const excludedUrls = ['user/profile', 'merchant/store', 'goods/received/', 'indent', 'inventory-location']
+    const excludedUrls = [
+        'user/profile',
+        'merchant/store',
+        'goods/received/',
+        'indent',
+        'inventory-location',
+        'merchant/orders?p=1&page_size=100&mobile=6000478573',
+    ]
 
     if (storeCodes && storeCodes.length > 0 && ifGetCall) {
         if (!excludedUrls.some((url) => config.url?.includes(url))) {
