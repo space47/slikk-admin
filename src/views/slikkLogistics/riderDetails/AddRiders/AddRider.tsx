@@ -307,7 +307,27 @@ const AddRider = () => {
                                     name="shift_end_time"
                                     fieldname="shift_end_time"
                                 />
-                                <CommonSelect label="Rider Agency" name="agency" options={RiderAgency} />
+                                <FormItem label="Rider Agency">
+                                    <Field name="agency">
+                                        {({ field, form }: FieldProps<any>) => {
+                                            return (
+                                                <Select
+                                                    isClearable
+                                                    isSearchable
+                                                    options={RiderAgency}
+                                                    value={RiderAgency.find(
+                                                        (option) => option.value?.toLowerCase() === field.value?.toLowerCase(),
+                                                    )}
+                                                    onChange={(option) => {
+                                                        const value = option ? option.value : ''
+                                                        form.setFieldValue(field.name, value)
+                                                    }}
+                                                    onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+                                                />
+                                            )
+                                        }}
+                                    </Field>
+                                </FormItem>
                             </FormContainer>
                             <div className="mt-8">
                                 <div className="text-xl font-bold mb-4 text-gray-700">ADD RIDER LOCATION</div>

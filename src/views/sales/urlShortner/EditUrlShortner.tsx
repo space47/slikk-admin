@@ -99,26 +99,21 @@ const EditUrlShortner = () => {
             ...MAXMINARRAY.filter((item) => values[item.name] !== undefined).map((item) => `${item.name}_${values[item.name]}`),
             ...OFFARRAY.filter((item) => values[item.name] !== undefined).map((item) => `${item.name}_${values[item.name]}`),
             ...(filterId ? [`filterId_${filterId}`] : values.filter_id ? [`filterId_${values.filter_id}`] : []),
-            ...(values?.banners ? [`bannerId_${values.banners[0]?.id}`] : []),
+            ...(Array.isArray(values?.banners)
+                ? [`bannerId_${values.banners[0]?.id}`]
+                : values?.banners
+                  ? [`bannerId_${values.banners}`]
+                  : []),
             values?.discountTags && values?.discountTags,
         ].join(',')
 
-        console.log('1')
         const noSelectFilters = UtmArray.filter((item) => values[item.name] !== undefined && values[item.name] !== '')
             .map((item) => `${item.name.replace('_', '-')}=${values[item.name]}`)
             .join('&')
-
-        console.log('2')
-
         let utmFilters = noSelectFilters ? `&${noSelectFilters}` : ''
-        console.log('3')
         let filterSelect = values?.select_filter ? `&filters=${filters}` : `&${noSelectFilters}` || ''
-        console.log('4')
         if (values?.is_custom) utmFilters = noSelectFilters ? `?${noSelectFilters}` : ''
-        console.log('5')
         if (values?.is_custom) filterSelect = values?.select_filter ? `?filters=${filters}` : `?${noSelectFilters}` || ''
-        console.log('6')
-
         const { page_title, rest } = values
         let pageTitle = ''
         if (page_title && values?.target_page === 'products') pageTitle = `/${values?.page_title}`
@@ -134,7 +129,6 @@ const EditUrlShortner = () => {
                 subPage = `sub_page=${values.sub_page}`
             }
         }
-        console.log('7')
         const formData = {
             ...rest,
             extra_attributes: extra_attributes_fields,

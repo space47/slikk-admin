@@ -184,12 +184,11 @@ const Products = () => {
                 {renderProductInput()}
                 {renderProductButtons()}
             </div>
-            {isLoading ||
-                (isFetching && (
-                    <div className="flex items-center justify-center">
-                        <Spinner size={30} />
-                    </div>
-                ))}
+            {(isLoading || isFetching) && (
+                <div className="flex items-center justify-center py-8">
+                    <Spinner size={30} />
+                </div>
+            )}
             <div className="mt-6 overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
                 <EasyTable mainData={productData} columns={columns} page={page} pageSize={pageSize} />
             </div>
