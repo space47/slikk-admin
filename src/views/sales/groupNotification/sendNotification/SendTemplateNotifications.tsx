@@ -14,13 +14,21 @@ import {
 import { Checkbox, FormItem, Input } from '@/components/ui'
 import { DatePicker, Radio, Select, Checkbox as Checkbx, notification } from 'antd'
 import { MdTimer } from 'react-icons/md'
-import moment from 'moment'
-import { CronExpressionParser } from 'cron-parser'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+import CronExpressionParser from 'cron-parser'
 import SearchableGroups from '@/common/SearchableGroups'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { AxiosError } from 'axios'
 import FormButton from '@/components/ui/Button/FormButton'
 import { errorMessage } from '@/utils/responseMessages'
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.extend(customParseFormat)
+dayjs.tz.setDefault('Asia/Kolkata')
 
 const CronPreview: React.FC<{ cronExpression: string }> = ({ cronExpression }) => {
     const [nextOccurrences, setNextOccurrences] = useState<string[]>([])
@@ -31,9 +39,13 @@ const CronPreview: React.FC<{ cronExpression: string }> = ({ cronExpression }) =
             return
         }
         try {
-            const options = { currentDate: moment().format('YYYY-MM-DD HH:mm:ss'), tz: 'Asia/Kolkata' }
+            const options = { currentDate: dayjs().tz().format('YYYY-MM-DD HH:mm:ss'), tz: 'Asia/Kolkata' }
             const interval = CronExpressionParser.parse(cronExpression, options)
-            const nextDates = interval.take(10).map((date) => date.toString())
+            const nextDates = interval.take(10).map((date) =>
+                dayjs(date as any)
+                    .tz()
+                    .format('ddd, MMM D YYYY, h:mm A'),
+            )
             setNextOccurrences(nextDates)
         } catch (error) {
             setNextOccurrences(['Invalid cron expression'])
@@ -113,7 +125,7 @@ const SendTemplateNotifications: React.FC = () => {
         setSpinner(true)
         if (values.schedule_notification) {
             try {
-                const dateTime = moment(values?.get_date, 'YYYY-MM-DD HH:mm:ss')
+                const dateTime = dayjs(values?.get_date, 'YYYY-MM-DD HH:mm:ss')
                 const modifiedValues: any = {
                     month: dateTime.format('MM'),
                     minute: dateTime.format('mm'),
@@ -138,7 +150,7 @@ const SendTemplateNotifications: React.FC = () => {
                             : values.month_value
                               ? `${values.month_value}`
                               : 0
-                    modifiedValues.year = moment().format('YYYY')
+                    modifiedValues.year = dayjs().format('YYYY')
                 }
                 const body = {
                     scheduler_config: modifiedValues,
@@ -175,6 +187,7 @@ const SendTemplateNotifications: React.FC = () => {
             }
         }
     }
+
     const initialValues: TemplateFormValues = { repeat_type: 'no_repeat' }
     const RenderFieldsArray = [
         { label: 'Minute', fieldName: 'minute', options: MINUTE_OPTIONS },
@@ -184,7 +197,7 @@ const SendTemplateNotifications: React.FC = () => {
     ]
 
     return (
-        <div className="max-w-10xl  p-6 bg-white rounded-lg shadow-sm">
+        <div className="max-w-10xl p-6 bg-white rounded-lg shadow-sm">
             <div className="mb-6">
                 <h1 className="text-2xl font-bold text-gray-800">Send Template Notifications</h1>
                 {id && <p className="text-gray-600">Template ID: {id}</p>}
@@ -258,11 +271,11 @@ const SendTemplateNotifications: React.FC = () => {
                                                         <DatePicker
                                                             showTime
                                                             placeholder="Select start date and time"
-                                                            value={field.value ? moment(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
+                                                            value={field.value ? dayjs(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
                                                             onChange={(value) => {
                                                                 form.setFieldValue(
                                                                     'get_date',
-                                                                    value ? value.format('YYYY-MM-DD HH:mm:ss') : '',
+                                                                    value ? dayjs(value).format('YYYY-MM-DD HH:mm:ss') : '',
                                                                 )
                                                             }}
                                                             className="w-full"
@@ -276,9 +289,12 @@ const SendTemplateNotifications: React.FC = () => {
                                                 {({ field, form }: any) => (
                                                     <DatePicker
                                                         placeholder="Select expiry date"
-                                                        value={field.value ? moment(field.value, 'YYYY-MM-DD') : null}
+                                                        value={field.value ? dayjs(field.value, 'YYYY-MM-DD') : null}
                                                         onChange={(value) => {
-                                                            form.setFieldValue('expiry_date', value ? value.format('YYYY-MM-DD') : '')
+                                                            form.setFieldValue(
+                                                                'expiry_date',
+                                                                value ? dayjs(value).format('YYYY-MM-DD') : '',
+                                                            )
                                                         }}
                                                         className="w-full"
                                                     />

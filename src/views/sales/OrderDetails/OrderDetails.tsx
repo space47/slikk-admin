@@ -256,7 +256,7 @@ const OrderDetails = () => {
                                             location_url={data.location_url}
                                             delivery_type={data.delivery_type}
                                             distance={data?.distance}
-                                            alternate_number={taskData?.drop_details?.alternate_number}
+                                            alternate_number={taskData?.drop_details?.contact_number}
                                         />
                                     </div>
                                     <div className="bg-white shadow-lg p-6 rounded-lg dark:bg-gray-900">
