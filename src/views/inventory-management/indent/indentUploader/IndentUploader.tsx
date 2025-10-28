@@ -79,7 +79,7 @@ const IndentUploader = () => {
                         isClearable
                         options={storeList}
                         getOptionLabel={(option) => option.name}
-                        getOptionValue={(option) => option.id}
+                        getOptionValue={(option) => option.id?.toString()}
                         onChange={(selectedOptions) => {
                             setStoreCode(selectedOptions?.code || '')
                         }}

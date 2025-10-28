@@ -6,9 +6,16 @@ import FormData from 'form-data'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import { AxiosError } from 'axios'
+import { Select } from '@/components/ui'
+import { useAppSelector } from '@/store'
+import { USER_PROFILE_DATA } from '@/store/types/company.types'
 
 const IndentUploader = () => {
     const [file, setFile] = useState<File | null>(null)
+    const [company, setCompany] = useState<number | null>(null)
+    const companyList = useAppSelector<USER_PROFILE_DATA['company']>((state) => state.company.company)
+
+    console.log('company is', company)
 
     const onFileUpload = (fileList: File[]) => {
         setFile(fileList[0])
@@ -22,7 +29,7 @@ const IndentUploader = () => {
 
         const formData = new FormData()
         formData.append('rtv_products_file', file)
-
+        formData.append('company', company)
         try {
             const response = await axioisInstance.post('/rtv-products/bulkupload', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
@@ -44,7 +51,7 @@ const IndentUploader = () => {
         <div className="w-full mb-5">
             <div className="flex justify-end mb-10">
                 <a
-                    className="p-2 rounded-xl bg-gradient-to-r from-blue-500/80 to-blue-700/80 hover:from-blue-600/90 hover:to-blue-800/90 text-white no-underline flex gap-2 font-bold backdrop-blur-sm"
+                    className="p-2 rounded-xl bg-gradient-to-r bg-blue-500 hover:bg-blue-700 text-white no-underline flex gap-2 font-bold backdrop-blur-sm"
                     href="https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/SampleFiles-Dashboard/rtv_sample.csv"
                 >
                     Download Sample File
@@ -63,7 +70,19 @@ const IndentUploader = () => {
                 </div>
             </Upload>
             <div className="flex flex-row w-full space-x-[2%] items-center justify-center">
-                <Button onClick={handleSave} className="mt-5">
+                <div className="flex flex-col w-full max-w-[400px]">
+                    <label className="font-semibold text-gray-700 mb-1">Select Company</label>
+                    <Select
+                        isClearable
+                        options={companyList}
+                        getOptionLabel={(option) => option.name}
+                        getOptionValue={(option) => option.id?.toString()}
+                        onChange={(selectedOptions) => {
+                            setCompany(selectedOptions?.id || null)
+                        }}
+                    />
+                </div>
+                <Button onClick={handleSave} variant="twoTone" className="mt-5">
                     Upload
                 </Button>
             </div>
