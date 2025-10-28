@@ -5,15 +5,10 @@ import { useState } from 'react'
 import FormData from 'form-data'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
-import { USER_PROFILE_DATA } from '@/store/types/company.types'
-import { useAppSelector } from '@/store'
 import { AxiosError } from 'axios'
-import { Select } from '@/components/ui'
 
 const IndentUploader = () => {
     const [file, setFile] = useState<File | null>(null)
-    const [companyId, setCompanyId] = useState('')
-    const company = useAppSelector<USER_PROFILE_DATA['company']>((state) => state.company.company)
 
     const onFileUpload = (fileList: File[]) => {
         setFile(fileList[0])
@@ -24,13 +19,9 @@ const IndentUploader = () => {
             notification.error({ message: 'No file uploaded' })
             return
         }
-        if (!companyId) {
-            notification.error({ message: 'No store selected' })
-            return
-        }
+
         const formData = new FormData()
         formData.append('rtv_products_file', file)
-        formData.append('company', companyId)
 
         try {
             const response = await axioisInstance.post('/rtv-products/bulkupload', formData, {
@@ -54,7 +45,7 @@ const IndentUploader = () => {
             <div className="flex justify-end mb-10">
                 <a
                     className="p-2 rounded-xl bg-gradient-to-r from-blue-500/80 to-blue-700/80 hover:from-blue-600/90 hover:to-blue-800/90 text-white no-underline flex gap-2 font-bold backdrop-blur-sm"
-                    href="https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Indent-Sample-File.csv"
+                    href="https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/SampleFiles-Dashboard/rtv_sample.csv"
                 >
                     Download Sample File
                 </a>
@@ -72,18 +63,6 @@ const IndentUploader = () => {
                 </div>
             </Upload>
             <div className="flex flex-row w-full space-x-[2%] items-center justify-center">
-                <div className="flex flex-col w-full max-w-[400px]">
-                    <label className="font-semibold text-gray-700 mb-1">Select Store</label>
-                    <Select
-                        isClearable
-                        options={company}
-                        getOptionLabel={(option) => option.name}
-                        getOptionValue={(option) => option.id?.toString()}
-                        onChange={(selectedOptions) => {
-                            setCompanyId((selectedOptions?.id as any) || '')
-                        }}
-                    />
-                </div>
                 <Button onClick={handleSave} className="mt-5">
                     Upload
                 </Button>

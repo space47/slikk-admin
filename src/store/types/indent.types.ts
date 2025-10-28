@@ -7,6 +7,7 @@ export interface IndentParamsTypes {
     pageSize?: number
     store_id?: string | number
     source_type?: string
+    status: string
 }
 
 export interface IndentResultType {

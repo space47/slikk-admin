@@ -32,12 +32,21 @@ const IndentTable = () => {
     const [storeCode, setStoreCode] = useState<any[]>([1])
     const [activeTab, setActiveTab] = useState('target')
     const [showStatusModal, setShowStatusModal] = useState(false)
+    const [selectedStatus, setSelectedStatus] = useState<string[]>([])
     const [selectedIndentId, setSelectedIndentId] = useState<number | null>(null)
 
     const handleStatusClick = (id: number) => {
         setSelectedIndentId(id)
         setShowStatusModal(true)
     }
+
+    const IndentStatusArray = [
+        { name: 'DRAFT', value: 'DRAFT' },
+        { name: 'CREATED', value: 'CREATED' },
+        { name: 'APPROVED', value: 'APPROVED' },
+        { name: 'FULFILLED', value: 'FULFILLED' },
+        { name: 'REJECTED', value: 'REJECTED' },
+    ]
 
     useEffect(() => {
         if (storeCode?.length <= 0) {
@@ -55,6 +64,7 @@ const IndentTable = () => {
         source_type: activeTab === 'target' ? 'target' : 'source',
         from,
         to: moment(to).add(1, 'days').format('YYYY-MM-DD'),
+        status: selectedStatus?.join(',') || '',
     })
 
     useEffect(() => {
@@ -85,21 +95,37 @@ const IndentTable = () => {
 
     return (
         <div className="bg-white shadow-md rounded-2xl p-6 space-y-6">
-            {/* Store Selector */}
-            <div className="flex justify-between items-center">
-                <div className="w-full md:max-w-sm">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Select Store</label>
-                    <Select
-                        isClearable
-                        isMulti
-                        options={storeList}
-                        getOptionLabel={(option) => option.name}
-                        getOptionValue={(option) => option.id?.toString()}
-                        value={storeList.filter((opt) => storeCode.includes(opt.id))}
-                        onChange={(selectedOptions) => {
-                            setStoreCode(selectedOptions?.map((opt) => opt.id) || [])
-                        }}
-                    />
+            <div className="flex flex-col xl:flex-row md:flex-row md:justify-between xl:justify-between items-center">
+                <div className="flex gap-2 flex-col xl:flex-row">
+                    <div className="w-[300px] xl:w-[600px] md:w-[400px]">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Select Store</label>
+                        <Select
+                            isClearable
+                            isMulti
+                            options={storeList}
+                            getOptionLabel={(option) => option.name}
+                            getOptionValue={(option) => option.id?.toString()}
+                            value={storeList.filter((opt) => storeCode.includes(opt.id))}
+                            onChange={(selectedOptions) => {
+                                setStoreCode(selectedOptions?.map((opt) => opt.id) || [])
+                            }}
+                        />
+                    </div>
+                    <div className="w-full">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Select Status</label>
+                        <Select
+                            isClearable
+                            isMulti
+                            options={IndentStatusArray}
+                            placeholder="Select Status to Filter"
+                            getOptionLabel={(option) => option.name}
+                            getOptionValue={(option) => option.value}
+                            value={IndentStatusArray.filter((opt) => selectedStatus.includes(opt.value))}
+                            onChange={(selectedOptions) => {
+                                setSelectedStatus(selectedOptions?.map((opt) => opt.value) || [])
+                            }}
+                        />
+                    </div>
                 </div>
                 <div>
                     <UltimateReduxDatePicker
