@@ -11,6 +11,8 @@ import { pageSizeOptions } from '../../inward/inwardCommon'
 import { useNavigate } from 'react-router-dom'
 import AccessDenied from '@/views/pages/AccessDenied'
 import GdnDeleteModal from './components/GdnDeleteModal'
+import { useAppSelector } from '@/store'
+import { SINGLE_COMPANY_DATA, USER_PROFILE_DATA } from '@/store/types/company.types'
 
 const GdnTable = () => {
     const [gdnData, setGdnData] = useState<GDN_TYPES[]>([])
@@ -21,9 +23,18 @@ const GdnTable = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false)
     const [storeGdnId, setStoreGdnId] = useState<number>()
     const navigate = useNavigate()
+    const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
+    const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
+    const [companyCode, setCompanyCode] = useState<any>()
+    const [storeCode, setStoreCode] = useState<any[]>([])
+
     const fetchGdnData = async () => {
         try {
-            const response = await axioisInstance.get(`/goods/dispatch?p=${page}&page_size=${pageSize}`)
+            let code = ''
+            let store = ''
+            if (companyCode) code = `&company_code=${encodeURIComponent(companyCode)}`
+            if (storeCode && storeCode.length > 0) store = `&store_id=${encodeURIComponent(storeCode?.join(','))}`
+            const response = await axioisInstance.get(`/goods/dispatch?p=${page}&page_size=${pageSize}${code}${store}`)
             const data = await response?.data?.data
             setGdnData(data?.results)
             setTotalPages(data?.count)
@@ -37,7 +48,7 @@ const GdnTable = () => {
 
     useEffect(() => {
         fetchGdnData()
-    }, [page, pageSize])
+    }, [page, pageSize, storeCode, companyCode])
 
     const columns = [
         {
@@ -126,7 +137,6 @@ const GdnTable = () => {
         setPageSize(Number(value))
     }
 
-    console.log('Data of gdn', gdnData)
     const hanldeAddGDN = () => {
         navigate(`/app/goods/gdn/addNew`)
     }
@@ -142,10 +152,39 @@ const GdnTable = () => {
 
     return (
         <div className="p-2 shadow-xl rounded-xl ">
-            <div className="flex justify-end mb-10">
-                <Button variant="new" onClick={hanldeAddGDN}>
-                    Add GDN
-                </Button>
+            <div className="flex justify-between items-center mb-5">
+                <div className="flex gap-2">
+                    <div className="flex flex-col xl:w-[300px] md:w-[200px] w-full">
+                        <label className="font-semibold text-gray-700 mb-1">Select Company</label>
+                        <Select
+                            isClearable
+                            className="react-select-container "
+                            classNamePrefix="react-select"
+                            options={companyList}
+                            getOptionLabel={(option) => option.name}
+                            getOptionValue={(option) => option.id?.toString()}
+                            onChange={(newVal) => setCompanyCode(newVal?.code)}
+                        />
+                    </div>
+                    <div className="flex flex-col xl:w-[300px] md:w-[200px] w-full">
+                        <label className="font-semibold text-gray-700 mb-1">Select Store</label>
+                        <Select
+                            isClearable
+                            isMulti
+                            options={storeList}
+                            getOptionLabel={(option) => option.name}
+                            getOptionValue={(option) => option.id?.toString()}
+                            onChange={(selectedOptions) => {
+                                setStoreCode(selectedOptions?.map((opt) => opt.id) || [])
+                            }}
+                        />
+                    </div>
+                </div>
+                <div className="">
+                    <Button variant="new" onClick={hanldeAddGDN}>
+                        Add GDN
+                    </Button>
+                </div>
             </div>
             <div>
                 <EasyTable overflow mainData={gdnData} columns={columns} page={page} pageSize={pageSize} />
