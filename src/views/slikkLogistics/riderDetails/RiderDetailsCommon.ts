@@ -35,7 +35,7 @@ export type RiderData = {
 export const RiderAgency = [
     { label: 'Pidge', value: 'pidge' },
     { label: 'Pico', value: 'pico' },
-    { label: 'Care Bazaar', value: 'careBazaar' },
+    { label: 'CareBazaar', value: 'careBazaar' },
     { label: 'Shadow Fax', value: 'shadowfax' },
 ]
 

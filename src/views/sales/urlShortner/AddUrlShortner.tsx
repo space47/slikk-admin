@@ -89,6 +89,7 @@ const AddUrlShortner = () => {
         console.log('7')
 
         const { page_title, ...rest } = values
+        console.log(page_title)
         let pageTitle = ''
         if (values.page_title && values?.target_page === 'products') pageTitle = `/${values?.page_title}`
         let appOnly = ''
