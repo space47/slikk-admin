@@ -37,12 +37,14 @@ const InventoryTable = () => {
     const [spinner, setSpinner] = useState(false)
     const [typeFetch, setTypeFetch] = useState('')
     const [brandList, setBrandList] = useState([])
+    const [sortByFilter, setSortByFilter] = useState('')
 
     const { data, responseStatus, totalData, setPage, setPageSize, setGlobalFilter, page, pageSize, globalFilter, query, loading } =
         useInventoryApi({
             searchType,
             store_code: storeCode,
             typeFetch: typeFetch,
+            sortByFilter,
         })
 
     const handleOpenModal = (img: string) => {
@@ -216,12 +218,15 @@ const InventoryTable = () => {
             {clearInventory && <ClearInventoryModal isOpen={clearInventory} setIsOpen={setClearInventory} storeId={storeId as number} />}
             {showFilter && (
                 <FilterProductCommon
+                    isSorByFilter
                     showDrawer={showFilter}
                     setShowDrawer={setShowFilter}
                     setTypeFetch={setTypeFetch}
                     brandList={brandList}
                     setBrandList={setBrandList}
                     typeFetch={typeFetch}
+                    sortByFilter={sortByFilter}
+                    setSortByFilter={setSortByFilter}
                 />
             )}
         </div>

@@ -18,9 +18,23 @@ interface PROPS {
     setBrandList: any
     typeFetch?: string
     isRedux?: any
+    setSortByFilter?: any
+    isSorByFilter?: boolean
+    sortByFilter: string
 }
 
-const FilterProductCommon = ({ showDrawer, setShowDrawer, setTypeFetch, brandList, setBrandList, typeFetch, isRedux }: PROPS) => {
+const FilterProductCommon = ({
+    showDrawer,
+    setShowDrawer,
+    setTypeFetch,
+    brandList,
+    setBrandList,
+    typeFetch,
+    isRedux,
+    setSortByFilter,
+    isSorByFilter,
+    sortByFilter,
+}: PROPS) => {
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
 
     const [selectFilterString, setFilterString] = useState('')
@@ -37,6 +51,15 @@ const FilterProductCommon = ({ showDrawer, setShowDrawer, setTypeFetch, brandLis
             setBrandList(selectedValues)
         }
     }
+
+    console.log('sort', sortByFilter)
+
+    const sortOptions = [
+        { name: 'Location', value: 'location' },
+        { name: 'Update Date', value: 'update_date' },
+        { name: 'Ascending Quantity', value: 'quantity_asc' },
+        { name: 'Descending Quantity', value: 'quantity_desc' },
+    ]
 
     // Parse filters from typeFetch
     const parsedFilters = React.useMemo(() => {
@@ -64,7 +87,7 @@ const FilterProductCommon = ({ showDrawer, setShowDrawer, setTypeFetch, brandLis
 
     console.log('initial values', initialValues.filtersAdd)
 
-    const handleApply = () => {
+    const handleApply = (values: any) => {
         let query = ''
         if (brandList?.length > 0 && !selectFilterString) {
             const brandIds = brandList.join(',')
@@ -91,6 +114,9 @@ const FilterProductCommon = ({ showDrawer, setShowDrawer, setTypeFetch, brandLis
             dispatch(setTypeFetch(query))
         } else {
             setTypeFetch(query)
+        }
+        if (isSorByFilter) {
+            setSortByFilter(values?.sort)
         }
         setShowDrawer(false)
     }
@@ -175,6 +201,33 @@ const FilterProductCommon = ({ showDrawer, setShowDrawer, setTypeFetch, brandLis
                                     )}
                                 </Field>
                             </FormItem>
+
+                            {isSorByFilter && (
+                                <>
+                                    <FormItem label="Sort Options">
+                                        <Field name="sort">
+                                            {({ field, form }: FieldProps<any>) => {
+                                                return (
+                                                    <Select
+                                                        isClearable
+                                                        isSearchable
+                                                        options={sortOptions}
+                                                        className="xl:w-[300px] md:w-[300px] w-auto"
+                                                        getOptionLabel={(option) => option.name}
+                                                        getOptionValue={(option) => option.value}
+                                                        defaultValue={sortOptions.find((option) => option.value === sortByFilter) || null}
+                                                        onChange={(option) => {
+                                                            const value = option ? option.value : ''
+                                                            form.setFieldValue(field.name, value)
+                                                        }}
+                                                        onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+                                                    />
+                                                )
+                                            }}
+                                        </Field>
+                                    </FormItem>
+                                </>
+                            )}
 
                             <FormContainer className="flex gap-5 justify-end ">
                                 <Button type="submit" variant="new" className="mt-4 bg-blue-500 text-white p-2 rounded">
