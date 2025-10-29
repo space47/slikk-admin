@@ -73,8 +73,8 @@ const RtvAssignPicker = ({ onChange, isOpen, setIsOpen, store_id, handleAssign, 
     }
 
     return (
-        <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)} width={600}>
-            <div className="bg-white p-2 rounded-2xl  w-[800px] max-w-full flex flex-col max-h-[90vh]">
+        <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)} width={600} height={'80vh'}>
+            <div className="bg-white p-2 rounded-2xl  w-[800px] max-w-full flex flex-col max-h-[70vh]">
                 <div className="flex items-center justify-between border-b px-5 py-4">
                     <h2 className="text-xl font-semibold text-gray-800">Assign Picker</h2>
                 </div>
