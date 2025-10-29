@@ -132,6 +132,10 @@ const RtvDetails = () => {
                             <span className="font-medium text-gray-500 dark:text-gray-400">Total Quantity:</span>
                             <p className="text-gray-800 dark:text-gray-100">{rtvData?.total_quantity ?? 0}</p>
                         </div>
+                        <div>
+                            <span className="font-medium text-gray-500 dark:text-gray-400">Quantity Picked:</span>
+                            <p className="text-gray-800 dark:text-gray-100">{rtvData?.quantity_picked ?? 0}</p>
+                        </div>
                     </div>
                 </div>
             ) : (
