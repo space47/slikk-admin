@@ -67,6 +67,11 @@ export const useRtvColumns = ({ storeList }: Props) => {
                 cell: ({ row }) => <span>{row.original.total_sku}</span>,
             },
             {
+                header: 'Quantity Picked',
+                accessorKey: 'quantity_picked',
+                cell: ({ row }) => <span>{row.original.quantity_picked}</span>,
+            },
+            {
                 header: 'Total Quantity',
                 accessorKey: 'total_quantity',
                 cell: ({ row }) => <span>{row.original.total_quantity}</span>,

@@ -14,6 +14,7 @@ export type Rtv_Data = {
     company: number
     store: number
     last_updated_by: string
+    quantity_picked: number
 }
 
 export type RTV_DATA_DETAILS = {
@@ -41,6 +42,7 @@ export type RTV_DATA_DETAILS = {
         name: string
     }
     last_updated_by: string
+    quantity_picked: number
 }
 
 export type Rtv_Data_Response = {
