@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { beforeUpload } from '@/common/beforeUpload'
 import { Button, Checkbox, FormContainer, FormItem, Input, Select, Upload } from '@/components/ui'
+import FormButton from '@/components/ui/Button/FormButton'
 import { Field, FieldProps, Form } from 'formik'
 import React from 'react'
 
@@ -16,6 +17,7 @@ interface GDN_FORM_PROPS {
     setCompanyData: any
     receiveAddress: any[]
     storeResults: any
+    spinner: boolean
 }
 
 const GdnForm = ({
@@ -30,6 +32,7 @@ const GdnForm = ({
     setCompanyData,
     receiveAddress,
     storeResults,
+    spinner,
 }: GDN_FORM_PROPS) => {
     return (
         <Form className="w-full">
@@ -180,14 +183,7 @@ const GdnForm = ({
                     </Field>
                 </FormItem> */}
 
-                <FormItem>
-                    <Button type="reset" className="ltr:mr-2 rtl:ml-2" onClick={() => resetForm()}>
-                        Reset
-                    </Button>
-                    <Button variant="solid" type="submit">
-                        Submit
-                    </Button>
-                </FormItem>
+                <FormButton isSpinning={spinner} value="Update" />
             </FormContainer>
         </Form>
     )
