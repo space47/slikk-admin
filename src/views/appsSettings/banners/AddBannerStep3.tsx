@@ -424,9 +424,7 @@ const MediaUploadSection = ({ form, onUpload }: any) => {
                             {section.icon}
                             <span className="font-medium text-sm">{section.label}</span>
                         </div>
-
-                        {/* 👇 Show preview if available */}
-                        {form?.[section.previewKey] && (
+                        {form?.[section?.previewKey] && (
                             <div className="mb-2">
                                 {section.accept.includes('image') ? (
                                     <img
@@ -435,13 +433,12 @@ const MediaUploadSection = ({ form, onUpload }: any) => {
                                         className="rounded-md object-cover h-24 w-full border"
                                     />
                                 ) : section.accept.includes('video') ? (
-                                    <video src={form[section.previewKey]} controls className="rounded-md h-24 w-full border" />
+                                    <video src={form[section?.previewKey]} controls className="rounded-md h-24 w-full border" />
                                 ) : (
                                     <p className="text-xs text-gray-500">Lottie JSON selected</p>
                                 )}
                             </div>
                         )}
-
                         <Upload
                             uploadLimit={1}
                             beforeUpload={section.key.startsWith('lottie') ? beforeUpload : undefined}
@@ -544,6 +541,10 @@ const DateAndPageConfig = ({
     storeResults,
     index,
 }: any) => {
+    const IsDevelopment =
+        import.meta.env.VITE_BACKEND_URI === 'https://dev-api.slikk.club/' ||
+        import.meta.env.VITE_BACKEND_URI === 'https://uat-api.slikk.club/'
+
     return (
         <div className="mb-8">
             <h4 className="text-lg font-semibold mb-4 text-gray-700">Schedule & Placement</h4>
@@ -553,7 +554,7 @@ const DateAndPageConfig = ({
                     handleTimeChange={(value: any) => {
                         handleFromTimeChange(value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
                     }}
-                    valueDate={bannerForm[index]?.from_date}
+                    valueDate={IsDevelopment ? moment().format('YYYY-MM-DD HH:mm:ss') : bannerForm[index]?.from_date}
                     label="Start Date"
                 />
                 <BannerDateSelector
@@ -561,7 +562,7 @@ const DateAndPageConfig = ({
                     handleTimeChange={(value: any) => {
                         handleToTimeChange(value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
                     }}
-                    valueDate={bannerForm[index]?.to_date}
+                    valueDate={IsDevelopment ? moment().add(2, 'month').format('YYYY-MM-DD HH:mm:ss') : bannerForm[index]?.to_date}
                     label="End Date"
                 />
 
