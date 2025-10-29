@@ -24,6 +24,7 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { AxiosError } from 'axios'
 import FormButton from '@/components/ui/Button/FormButton'
 import { errorMessage } from '@/utils/responseMessages'
+import LoadingSpinner from '@/common/LoadingSpinner'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -97,9 +98,32 @@ const RecurrenceField: React.FC<{
 
 const SendTemplateNotifications: React.FC = () => {
     const { id } = useParams()
+    const [data, setData] = useState<Record<string, any>>({})
+    const [loading, setLoading] = useState(false)
     const [cronExpression, setCronExpression] = useState<string>('')
     const [searchInput, setSearchInput] = useState('')
     const [spinner, setSpinner] = useState(false)
+
+    useEffect(() => {
+        const fetchData = async () => {
+            if (id) {
+                try {
+                    setLoading(true)
+                    const response = await axioisInstance.get(`/user_notification?id=${id}`)
+                    setData(response.data?.message)
+                } catch (error) {
+                    if (error instanceof AxiosError) {
+                        notification.error({ message: error?.response?.data?.message || 'Failed to load' })
+                    }
+                } finally {
+                    setLoading(false)
+                }
+            }
+        }
+        fetchData()
+    }, [id])
+
+    console.log('data is', data)
 
     const handleSearchChange = (val: string) => {
         setSearchInput(val)
@@ -196,70 +220,94 @@ const SendTemplateNotifications: React.FC = () => {
         { label: 'Month', fieldName: 'month', options: MONTH_OPTIONS },
     ]
 
+    if (loading) {
+        return <LoadingSpinner />
+    }
+
     return (
-        <div className="max-w-10xl p-6 bg-white rounded-lg shadow-sm">
-            <div className="mb-6">
-                <h1 className="text-2xl font-bold text-gray-800">Send Template Notifications</h1>
-                {id && <p className="text-gray-600">Template ID: {id}</p>}
+        <div className=" p-8 bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800">
+            <div className="mb-8 border-b pb-4">
+                <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Send Template Notifications</h1>
+                {id && (
+                    <p className="text-gray-500 mt-1 text-sm">
+                        Template ID: <span className="font-medium text-gray-700">{id}</span>
+                    </p>
+                )}
             </div>
+
             <Formik initialValues={initialValues} onSubmit={handleSubmit}>
                 {({ values, setFieldValue }) => (
-                    <Form className="space-y-6">
-                        <SearchableGroups label="Groups" name="groups" searchInputs={searchInput} handleSearch={handleSearchChange} />
-                        <div className="space-y-4">
+                    <Form className="space-y-8">
+                        <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl border border-gray-100 dark:border-gray-700">
+                            <SearchableGroups label="Groups" name="groups" searchInputs={searchInput} handleSearch={handleSearchChange} />
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-6 bg-gray-50 dark:bg-gray-800 p-6 rounded-xl border border-gray-100 dark:border-gray-700">
                             {USERNOTFARRAY.map((item, index) => (
                                 <FormItem key={index} label={item.label} className={item.classname}>
                                     <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                 </FormItem>
                             ))}
                         </div>
-                        <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-3 p-5 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
                             <Field type="checkbox" name="users_all" component={Checkbox} />
-                            <label className="font-semibold text-gray-700 cursor-pointer">Send to all Users</label>
+                            <label className="font-medium text-gray-700 dark:text-gray-200 cursor-pointer">Send to all Users</label>
                         </div>
-                        <div className="border-t pt-6">
+                        <div className="border-t border-gray-200 dark:border-gray-700 pt-8">
                             <div className="flex items-center gap-3 mb-6">
                                 <Field type="checkbox" name="schedule_notification" component={Checkbox} />
-                                <label className="font-semibold text-gray-700 cursor-pointer">Schedule Notification for Later</label>
+                                <label className="font-medium text-gray-700 dark:text-gray-200 cursor-pointer">
+                                    Schedule Notification for Later
+                                </label>
                             </div>
+
                             {values.schedule_notification && (
-                                <div className="ml-6 space-y-6">
-                                    <FormItem label="Schedule Type" className="mb-2">
+                                <div className="ml-2 md:ml-6 space-y-8">
+                                    <span>
+                                        {data?.status === 'PROCESSING' && (
+                                            <p className='className="mt-10 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-md shadow-sm"'>
+                                                The notification you are Trying to Send is in PROCESSING and cannot be send at this moment
+                                            </p>
+                                        )}
+                                    </span>
+                                    <FormItem label="Schedule Type" className="mb-4">
+                                        <br />
                                         <Radio.Group
                                             options={REPEATARRAY}
                                             value={values.repeat_type}
                                             optionType="button"
                                             buttonStyle="solid"
                                             onChange={(e) => setFieldValue('repeat_type', e.target.value)}
-                                            className="flex gap-2 mt-6"
+                                            className="flex flex-wrap gap-3"
                                         />
                                     </FormItem>
                                     {values.repeat_type === 'repeat' && (
-                                        <div className="bg-gray-50 p-4 rounded-lg">
-                                            <h3 className="text-lg font-semibold mb-4 text-gray-800">Recurrence Settings</h3>
-                                            <div className="grid md:grid-cols-2 gap-3">
+                                        <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl border border-gray-100 dark:border-gray-700">
+                                            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">
+                                                Recurrence Settings
+                                            </h3>
+                                            <div className="grid md:grid-cols-2 gap-4">
                                                 {RenderFieldsArray.map((item, key) => (
-                                                    <div key={key}>
-                                                        <RecurrenceField
-                                                            fieldName={item?.fieldName}
-                                                            label={item?.label}
-                                                            options={item?.options}
-                                                            values={values}
-                                                            setFieldValue={setFieldValue}
-                                                        />
-                                                    </div>
+                                                    <RecurrenceField
+                                                        key={key}
+                                                        fieldName={item.fieldName}
+                                                        label={item.label}
+                                                        options={item.options}
+                                                        values={values}
+                                                        setFieldValue={setFieldValue}
+                                                    />
                                                 ))}
                                             </div>
-                                            <div className="flex justify-end mt-4">
+                                            <div className="flex justify-end mt-6">
                                                 <button
                                                     type="button"
-                                                    className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                                                    className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm transition-colors"
                                                     onClick={() => updateCronExpression(values)}
                                                 >
                                                     <MdTimer className="text-lg" />
-                                                    Generate Schedule Preview
+                                                    <span>Generate Schedule Preview</span>
                                                 </button>
                                             </div>
+
                                             <CronPreview cronExpression={cronExpression} />
                                         </div>
                                     )}
@@ -272,43 +320,34 @@ const SendTemplateNotifications: React.FC = () => {
                                                             showTime
                                                             placeholder="Select start date and time"
                                                             value={field.value ? dayjs(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
-                                                            onChange={(value) => {
+                                                            onChange={(value) =>
                                                                 form.setFieldValue(
                                                                     'get_date',
                                                                     value ? dayjs(value).format('YYYY-MM-DD HH:mm:ss') : '',
                                                                 )
-                                                            }}
+                                                            }
                                                             className="w-full"
                                                         />
                                                     )}
                                                 </Field>
                                             </FormItem>
                                         )}
-                                        <FormItem label="Expiry Date">
-                                            <Field name="expiry_date">
-                                                {({ field, form }: any) => (
-                                                    <DatePicker
-                                                        placeholder="Select expiry date"
-                                                        value={field.value ? dayjs(field.value, 'YYYY-MM-DD') : null}
-                                                        onChange={(value) => {
-                                                            form.setFieldValue(
-                                                                'expiry_date',
-                                                                value ? dayjs(value).format('YYYY-MM-DD') : '',
-                                                            )
-                                                        }}
-                                                        className="w-full"
-                                                    />
-                                                )}
-                                            </Field>
-                                        </FormItem>
                                     </div>
-                                    <div className="flex justify-end pt-4">
-                                        <FormButton isSpinning={spinner} value="Schedule" />
+                                    <div className="flex justify-end pt-6">
+                                        <FormButton
+                                            isSpinning={spinner}
+                                            value="Schedule"
+                                            disabled={data && data?.status === 'PROCESSING'}
+                                        />
                                     </div>
                                 </div>
                             )}
                         </div>
-                        {!values.schedule_notification && <FormButton isSpinning={spinner} value="Send Now" />}
+                        {!values.schedule_notification && (
+                            <div className="flex justify-end">
+                                <FormButton isSpinning={spinner} value="Send Now" />
+                            </div>
+                        )}
                     </Form>
                 )}
             </Formik>
