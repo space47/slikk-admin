@@ -13,6 +13,8 @@ export const rtvService = RtkQueryService.injectEndpoints({
                 if (params.to) parameters.to = params.to
                 if (params.rtv_number) parameters.rtv_number = params.rtv_number
                 if (params.rtv_id) parameters.rtv_id = params.rtv_id
+                if (params.store_id) parameters.store_id = params.store_id
+
                 return {
                     url: `/rtv`,
                     method: 'GET',
