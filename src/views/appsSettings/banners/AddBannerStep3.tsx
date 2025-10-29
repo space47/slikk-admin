@@ -541,10 +541,6 @@ const DateAndPageConfig = ({
     storeResults,
     index,
 }: any) => {
-    const IsDevelopment =
-        import.meta.env.VITE_BACKEND_URI === 'https://dev-api.slikk.club/' ||
-        import.meta.env.VITE_BACKEND_URI === 'https://uat-api.slikk.club/'
-
     return (
         <div className="mb-8">
             <h4 className="text-lg font-semibold mb-4 text-gray-700">Schedule & Placement</h4>
@@ -554,7 +550,7 @@ const DateAndPageConfig = ({
                     handleTimeChange={(value: any) => {
                         handleFromTimeChange(value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
                     }}
-                    valueDate={IsDevelopment ? moment().format('YYYY-MM-DD HH:mm:ss') : bannerForm[index]?.from_date}
+                    valueDate={bannerForm[index]?.from_date}
                     label="Start Date"
                 />
                 <BannerDateSelector
@@ -562,7 +558,7 @@ const DateAndPageConfig = ({
                     handleTimeChange={(value: any) => {
                         handleToTimeChange(value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
                     }}
-                    valueDate={IsDevelopment ? moment().add(2, 'month').format('YYYY-MM-DD HH:mm:ss') : bannerForm[index]?.to_date}
+                    valueDate={bannerForm[index]?.to_date}
                     label="End Date"
                 />
 

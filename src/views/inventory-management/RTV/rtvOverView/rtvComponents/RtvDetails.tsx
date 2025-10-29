@@ -7,7 +7,7 @@ import { useParams } from 'react-router-dom'
 import { useRtvProductsColumn } from '../../rtvUtils/useRtvProductsColumns'
 import PageCommon from '@/common/PageCommon'
 import LoadingSpinner from '@/common/LoadingSpinner'
-import { Button, Tabs } from '@/components/ui'
+import { Button, Spinner, Tabs } from '@/components/ui'
 import RtvAssignPicker from './RtvAssignPickers'
 import { notification } from 'antd'
 import TabList from '@/components/ui/Tabs/TabList'
@@ -171,13 +171,8 @@ const RtvDetails = () => {
                     >
                         Add Picker
                     </Button>
-                    <Button
-                        size="sm"
-                        variant="twoTone"
-                        onClick={handleCreateGDN}
-                        className="bg-green-50 dark:bg-green-900 text-green-600 dark:text-green-200 hover:bg-green-100"
-                    >
-                        Create GDN from RTV
+                    <Button size="sm" variant="twoTone" onClick={handleCreateGDN}>
+                        {gdnResponse?.isLoading ? <Spinner size={20} color="blue" /> : 'Create GDN from RTV'}
                     </Button>
                 </div>
             </div>
