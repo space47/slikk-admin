@@ -2,6 +2,7 @@
 import { beforeUpload } from '@/common/beforeUpload'
 import { RichTextEditor } from '@/components/shared'
 import { Button, Checkbox, DatePicker, FormContainer, FormItem, Input, Select, Upload } from '@/components/ui'
+import FormButton from '@/components/ui/Button/FormButton'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
@@ -19,7 +20,7 @@ const CreateGdn = () => {
     const [imagview, setImageView] = useState<string>('')
     const [showData, setShowData] = useState(false)
     const [showImage, setShowImage] = useState(false)
-
+    const [spinner, setSpinner] = useState(false)
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
 
     const [companyData, setCompanyData] = useState<number>()
@@ -109,6 +110,7 @@ const CreateGdn = () => {
     }
 
     const handleSubmit = async (values: any) => {
+        setSpinner(true)
         let docsUpload = null
         if (values.files && values.files.length > 0) {
             docsUpload = await handleUpload(values.files)
@@ -168,6 +170,8 @@ const CreateGdn = () => {
                 message: 'Failure',
                 description: error?.response?.data?.message || 'GRN not created ',
             })
+        } finally {
+            setSpinner(false)
         }
     }
 
@@ -180,7 +184,7 @@ const CreateGdn = () => {
                 onSubmit={handleSubmit}
             >
                 {({ values, touched, errors, resetForm, setFieldValue }) => (
-                    <Form className="w-2/3">
+                    <Form className="">
                         <FormContainer>
                             <FormContainer className="flex flex-row gap-3 ">
                                 <FormItem label="Document Number" className="col-span-1 w-1/2">
@@ -371,18 +375,7 @@ const CreateGdn = () => {
                                 </FormItem>
                             </FormContainer>
 
-                            <FormItem>
-                                <Button type="reset" className="ltr:mr-2 rtl:ml-2" onClick={() => resetForm()}>
-                                    Reset
-                                </Button>
-                                <Button
-                                    variant="solid"
-                                    type="submit"
-                                    // onClick={() => handleSubmit()}
-                                >
-                                    Submit
-                                </Button>
-                            </FormItem>
+                            <FormButton isSpinning={spinner} value="Create" />
                         </FormContainer>
                     </Form>
                 )}

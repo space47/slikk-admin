@@ -21,6 +21,7 @@ const EditGdn = () => {
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const [companyData, setCompanyData] = useState<number>()
+    const [spinner, setSpinner] = useState(false)
     const { document_number } = useParams()
 
     const dispatch = useAppDispatch()
@@ -142,6 +143,7 @@ const EditGdn = () => {
     }
 
     const handleSubmit = async (values: any) => {
+        setSpinner(true)
         console.log('Values of edit GDN', values)
         const docsShow = await processUpload(handleUpload, values.files, values.document)
         const imageShow = await processUpload(handleimage, values.image, values.images)
@@ -180,6 +182,8 @@ const EditGdn = () => {
                 description:
                     error?.response?.data?.message || error?.response?.data?.data?.message || error?.data?.message || 'GRN not created ',
             })
+        } finally {
+            setSpinner(false)
         }
     }
     return (
@@ -199,6 +203,7 @@ const EditGdn = () => {
                             datas={datas}
                             companyList={companyList}
                             storeResults={storeResults}
+                            spinner={spinner}
                         />
                     </div>
                 )}
