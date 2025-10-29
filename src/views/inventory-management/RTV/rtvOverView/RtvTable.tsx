@@ -3,11 +3,11 @@ import LoadingSpinner from '@/common/LoadingSpinner'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { rtvService } from '@/store/services/rtvService'
 import { rtvActions, rtvStateType } from '@/store/slices/rtv/rtv.slice'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRtvColumns } from '../rtvUtils/useRtvColumns'
 import { USER_PROFILE_DATA } from '@/store/types/company.types'
 import PageCommon from '@/common/PageCommon'
-import { Button } from '@/components/ui'
+import { Button, Select } from '@/components/ui'
 import { useNavigate } from 'react-router-dom'
 import UltimateReduxDatePicker from '@/common/UltimateReduxDatePicker'
 import moment from 'moment'
@@ -18,12 +18,14 @@ const RtvTable = () => {
     const navigate = useNavigate()
     const { rtv, count, page, pageSize, from, to, dateField } = useAppSelector<rtvStateType>((state) => state.rtv)
     const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
+    const [storeCode, setStoreCode] = useState<number>(1)
     const { data, isLoading, isSuccess, isError } = rtvService.useRtvDataQuery(
         {
             from,
             page,
             pageSize: pageSize,
             to: moment(to).add(1, 'days').format('YYYY-MM-DD'),
+            store_id: storeCode,
         },
         { refetchOnMountOrArgChange: true },
     )
@@ -52,20 +54,34 @@ const RtvTable = () => {
     return (
         <div className="p-6 space-y-6 bg-gray-50 dark:bg-gray-900 rounded-xl shadow-sm">
             <div className="flex flex-wrap justify-between items-center gap-4">
-                <Button variant="new" className="mt-7" size="sm" onClick={() => navigate(`/app/goods/rtv/add`)}>
-                    Add RTV
-                </Button>
-
-                <UltimateReduxDatePicker
-                    customChange={dateField}
-                    setCustomChange={rtvActions.setDateField}
-                    dispatch={dispatch}
-                    from={from}
-                    to={to}
-                    setFrom={rtvActions.setFrom}
-                    setTo={rtvActions.setTo}
-                    handleDateChange={handleDateChange}
-                />
+                <div className="flex flex-col w-full max-w-xs">
+                    <label className="font-semibold text-gray-700 mb-1">Select Store</label>
+                    <Select
+                        isClearable
+                        className="react-select-container"
+                        classNamePrefix="react-select"
+                        options={storeList}
+                        defaultValue={storeList?.find((item) => item?.id === storeCode)}
+                        getOptionLabel={(option) => option.name}
+                        getOptionValue={(option) => option.id?.toString()}
+                        onChange={(newVal) => setStoreCode(newVal?.id as number)}
+                    />
+                </div>
+                <div className="flex gap-2 items-center">
+                    <Button variant="new" className="mt-8" size="sm" onClick={() => navigate(`/app/goods/rtv/add`)}>
+                        Add RTV
+                    </Button>
+                    <UltimateReduxDatePicker
+                        customChange={dateField}
+                        setCustomChange={rtvActions.setDateField}
+                        dispatch={dispatch}
+                        from={from}
+                        to={to}
+                        setFrom={rtvActions.setFrom}
+                        setTo={rtvActions.setTo}
+                        handleDateChange={handleDateChange}
+                    />
+                </div>
             </div>
             {isError && <NotFoundData />}
             {isSuccess && (
