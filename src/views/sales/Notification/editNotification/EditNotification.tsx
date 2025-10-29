@@ -5,12 +5,11 @@ import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import Select from '@/components/ui/Select'
 import { Field, Form, Formik, FieldProps, FieldArray } from 'formik' // Add FieldProps here
-import * as Yup from 'yup'
 import { useEffect, useState } from 'react'
-import { message, notification } from 'antd'
-import { useNavigate, useParams } from 'react-router-dom'
+import { notification } from 'antd'
+import { useParams } from 'react-router-dom'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { NotificationTYPE, notificationTypeArray, ParametersArray } from '../createNotification/createNotification.common'
+import { NotificationTYPE, notificationTypeArray } from '../createNotification/createNotification.common'
 import { extractPlaceholders, NotificationARRAY } from '../createNotification/NotificationForms'
 import { RichTextEditor } from '@/components/shared'
 import axios from 'axios'
@@ -20,7 +19,6 @@ import { EventNamesSliceType, setEventNamesData } from '@/store/slices/eventName
 import { eventNameService } from '@/store/services/eventNameSerices'
 import EventNamesModal from '../EventNamesModal'
 import EditEventNamesModal from '../EditEventNameModal'
-import { FaEdit, FaPlusCircle } from 'react-icons/fa'
 import { Checkbox } from '@/components/ui'
 import { NotificationTypeNamed } from './notification'
 
@@ -102,12 +100,10 @@ const EditNotification = () => {
         fetchNotificationEditData()
     }, [id])
 
-    // Initial value includes fetched `config_data` or default values if not present
     const initialValue: NotificationTYPE = {
         event_name: notificationData?.event_name || '',
         notification_type: notificationData?.notification_type || '',
         title: notificationData?.title || '',
-        // message: notificationData?.message || '',
         language: Object.keys(messageParticular).length > 0 ? messageParticular?.language : '',
         message:
             Object.keys(messageParticular).length > 0

@@ -37,9 +37,9 @@ export const useNotificationFunc = ({ data }: props) => {
         minoff: getFilterValue('minoff'),
         filterId: getFilterValue('filterId'),
         target_page: d?.other_config?.target_page || d?.target_page || '',
-        is_custom: d?.is_custom || false,
-        page: d?.page || '',
-        sub_page: d?.sub_page || '',
+        is_custom: d?.other_config?.page || d?.other_config?.sub_page ? true : false,
+        page: d?.other_config?.page || '',
+        sub_page: d?.other_config?.sub_page || '',
         users: d?.mobiles ? d?.mobiles?.join(',') : '',
         image_url: d?.image || d?.image_url || '',
     }

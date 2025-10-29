@@ -100,7 +100,8 @@ const EditNotification = () => {
                 ].filter((filter) => filter),
                 target_page: targetPage,
                 page_title: encodeURIComponent(val?.page_title) ?? '',
-                sub_page: val?.sub ?? '',
+                page: val?.page ?? '',
+                sub_page: val?.sub_page ?? '',
             },
             mobiles: val?.users ?? [],
         }
@@ -156,15 +157,12 @@ const EditNotification = () => {
                             <FormContainer>
                                 {currentStep === 0 && (
                                     <FirstStepNotification
-                                        // editMode={true}
                                         SendNotificationARRAY={SendNotificationARRAY}
                                         values={values as any}
                                         setImagePreview={setImagePreview}
                                         setMessagePreview={setMessagePreview}
                                         setTitleView={setTitleView}
                                         setFieldValue={setFieldValue}
-                                        // initialValue={initialValue}
-                                        // handleRemoveImage={() => setFieldValue('image_url_array', [])}
                                     />
                                 )}
 
