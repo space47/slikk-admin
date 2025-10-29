@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import EasyTable from '@/common/EasyTable'
 import { rtvService } from '@/store/services/rtvService'
-import { Rtv_Data, Rtv_Products } from '@/store/types/rtv.types'
+import { RTV_DATA_DETAILS, Rtv_Products } from '@/store/types/rtv.types'
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useRtvProductsColumn } from '../../rtvUtils/useRtvProductsColumns'
@@ -16,7 +16,7 @@ import NotFoundData from '@/views/pages/NotFound/Notfound'
 
 const RtvDetails = () => {
     const { rtv_number } = useParams()
-    const [rtvData, setRtvData] = useState<Rtv_Data>()
+    const [rtvData, setRtvData] = useState<RTV_DATA_DETAILS>()
     const [rtvProductsData, setRtvProductsData] = useState<Rtv_Products[]>([])
     const [selectedUsers, setSelectedUsers] = useState<string[]>([])
     const [isPickerModal, setIsPickerModal] = useState(false)
@@ -43,7 +43,7 @@ const RtvDetails = () => {
 
     useEffect(() => {
         if (rtvSuccess) {
-            setRtvData(rtv?.data?.results[0])
+            setRtvData(rtv?.data as any)
         }
     }, [rtvSuccess, rtv])
 
@@ -98,6 +98,14 @@ const RtvDetails = () => {
                         RTV Details
                     </h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-3 gap-x-6 text-sm">
+                        <div>
+                            <span className="font-medium text-gray-500 dark:text-gray-400">Company Name:</span>
+                            <p className="text-gray-800 dark:text-gray-100">{rtvData?.company?.name || '-'}</p>
+                        </div>
+                        <div>
+                            <span className="font-medium text-gray-500 dark:text-gray-400">Store Name:</span>
+                            <p className="text-gray-800 dark:text-gray-100">{rtvData?.store?.name || '-'}</p>
+                        </div>
                         <div>
                             <span className="font-medium text-gray-500 dark:text-gray-400">Document Number:</span>
                             <p className="text-gray-800 dark:text-gray-100">{rtvData?.document_number || '-'}</p>
@@ -183,7 +191,7 @@ const RtvDetails = () => {
                     isOpen={isPickerModal}
                     setIsOpen={setIsPickerModal}
                     selectedPickers={rtvProductsData?.map((item) => item.picker) || []}
-                    store_id={rtvData?.store as number}
+                    store_id={rtvData?.store?.id as number}
                     handleAssign={handleAssign}
                     onChange={(selectedUsers) => setSelectedUsers(selectedUsers)}
                 />

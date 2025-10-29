@@ -16,6 +16,33 @@ export type Rtv_Data = {
     last_updated_by: string
 }
 
+export type RTV_DATA_DETAILS = {
+    id: number
+    rtv_number: string | null
+    document_number: string
+    destination_address: string | null
+    origin_address: string | null
+    document_date: string
+    total_sku: number
+    total_quantity: number
+    rtv_document: string | null
+    create_date: string
+    update_date: string
+    company: {
+        code: string
+        id: number
+        is_active: boolean
+        name: string
+    }
+    store: {
+        code: string
+        id: number
+        is_fulfillment_center: boolean
+        name: string
+    }
+    last_updated_by: string
+}
+
 export type Rtv_Data_Response = {
     status: string
     data: {
