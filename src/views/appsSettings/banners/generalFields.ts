@@ -22,7 +22,7 @@ export const ADD_BANNER_BASIC_FIELDS: BannerFields = {
     position: {
         label: 'Position',
         type: 'number',
-        defVal: '',
+        defVal: '1',
         placeHolder: 'Enter position',
     },
     footer: {
