@@ -83,6 +83,7 @@ export type Rtv_Get_Params = {
     from?: string
     to?: string
     rtv_id?: string | number
+    store_id?: number
 }
 
 export type Rtv_Product_Params = {
