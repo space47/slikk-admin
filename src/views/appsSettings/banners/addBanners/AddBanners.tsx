@@ -142,19 +142,20 @@ const AddBanners = () => {
 
     return (
         <div>
-            <div className="w-full my-10 px-[10%] ">
-                <Steps current={currentStep} className="flex flex-col lg:flex-row gap-4 items-start">
+            <div className="w-full my-10 flex items-center px-6">
+                {currentStep > 1 && (
+                    <div onClick={() => setCurrentStep((prev) => prev - 1)} className="mr-2 cursor-pointer">
+                        <FaCircleArrowLeft className="text-2xl text-red-600 font-bold " />
+                    </div>
+                )}
+                <Steps current={currentStep} className="flex flex-col lg:flex-row gap-4 items-start w-[90%] px-2">
                     <Steps.Item title={currentSelectedPage?.value || 'Select Page'} />
                     <Steps.Item title={selectedSectionHeading?.section_heading || 'Select Section Heading'} />
                     <Steps.Item title="Add Banners and Corresponding Details" />
                     <Steps.Item title="Preview and Save" />
                 </Steps>
             </div>
-            {currentStep > 1 && (
-                <div onClick={() => setCurrentStep((prev) => prev - 1)} className="mx-10 cursor-pointer">
-                    <FaCircleArrowLeft className="text-2xl text-red-600 font-bold " />
-                </div>
-            )}
+
 
             <div className="flex flex-col w-full sticky mt-5 min-h-[70vh] text-[16px] overflow-scroll scrollbar-hide">
                 {/* STEP 1 -- Select Page */}
@@ -278,6 +279,7 @@ const AddBanners = () => {
                         completeBannerFormData={completeBannerFormData}
                         selectedPage={currentSelectedPage}
                         selectedSection={selectedSectionHeading}
+                        subpage={currentSelectedSubPage}
                         headingData={sectionHeadingData}
                     />
                 )}
