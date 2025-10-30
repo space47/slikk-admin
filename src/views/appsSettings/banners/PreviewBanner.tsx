@@ -5,18 +5,19 @@ import { Button, Spinner } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import { useNavigate } from 'react-router-dom'
-import AllComponents from '@/preview/BannerComps/AllComponent'
 import Preview from '@/preview/BannerComps/Preview'
 import { safeImageUrl } from '@/preview/lib/utils'
+import { AxiosError } from 'axios'
 
-function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, subpage, selectedSection, headingData }: any) {
+function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, subpage, selectedSection }: any) {
     const navigate = useNavigate()
     const [API_BANNERS, setApiBanners] = useState<any[]>([])
-    const [viewSize, setViewSize] = useState('lg')
+    const [loader, setLoader] = useState(false)
     const [showSpinner, setShowSpinner] = useState(false)
     useEffect(() => {
         const fetchBanners = async () => {
-            let url = `page/sections/new?page=${selectedPage.name?.toLowerCase()}`
+            setLoader(true)
+            let url = `page/sections/new?page_size=10000&page=${selectedPage.name?.toLowerCase()}`
             if (subpage.name) url += `&sub_page=${subpage.name?.toLowerCase()}`
             const response = await axioisInstance
                 .get(url)
@@ -24,7 +25,13 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                     return res.data?.data?.data
                 })
                 .catch((err) => {
+                    if (err instanceof AxiosError) {
+                        notification.error({ message: err.response?.data?.message })
+                    }
                     return []
+                })
+                .finally(() => {
+                    setLoader(false)
                 })
 
             console.log(response)
@@ -48,8 +55,8 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
 
                 const data = await Promise.all(
                     completeBannerFormData.map(async (banner: any, index: number) => {
-                        const image_mobile = await safeImageUrl(banner.image_mobile);
-                        const image_web = await safeImageUrl(banner.image_web);
+                        const image_mobile = await safeImageUrl(banner.image_mobile)
+                        const image_web = await safeImageUrl(banner.image_web)
 
                         return {
                             pk: index,
@@ -58,9 +65,9 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                             tags: banner.tags || [],
                             image_mobile,
                             image_web,
-                        };
-                    })
-                );
+                        }
+                    }),
+                )
                 console.log('data is', data)
                 FULL_BANNER_API.data = data
 
@@ -290,8 +297,13 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                 </Button>
             </div>
             <div className={`w-full`}>
-                {/* <AllComponentsLib data={API_BANNERS} size={viewSize} /> */}
-                <Preview data={{ total: API_BANNERS.length, size: 'sm', width: '400px', data: API_BANNERS }} />
+                {loader ? (
+                    <div className="flex items-center justify-center">
+                        <Spinner size={30} />
+                    </div>
+                ) : (
+                    <Preview data={{ total: API_BANNERS.length, size: 'sm', width: '400px', data: API_BANNERS }} />
+                )}
             </div>
         </div>
     )
