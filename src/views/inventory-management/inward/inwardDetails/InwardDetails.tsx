@@ -182,11 +182,11 @@ const InwardDetails = () => {
                                     </div>
                                     {data?.document_url ? (
                                         <>
-                                            <div className="docs flex flex-col">
+                                            <div className="docs flex flex-col w-1/2">
                                                 {data.document_url?.split(',')?.map((item, key) => {
                                                     return (
                                                         <div className="cursor-pointer" onClick={() => handleUrl(item)} key={key}>
-                                                            <p className="cursor-pointer p-2 rounded-xl bg-blue-600 text-white">
+                                                            <p className="cursor-pointer p-2 text-blue-500">
                                                                 {data?.grn_number}_{key + 1}
                                                             </p>
                                                         </div>
