@@ -2,6 +2,24 @@ import { ScreenSize } from "@/preview/utils";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+
+export const safeImageUrl = async (url: string): Promise<string> => {
+    // If it's already a normal URL, just return it
+    if (url.startsWith("http")) return url;
+
+    // If it's a blob URL, convert to base64
+    if (url.startsWith("blob:")) {
+        const blob = await fetch(url).then((res) => res.blob());
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    }
+
+    return url;
+};
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
