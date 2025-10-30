@@ -27,8 +27,8 @@ export const receiveAddress = [
 export const DocumentArrayGDN = [
     { label: 'Document Number', type: 'text', name: 'document_number' },
     { label: 'Dispatched By', type: 'text', name: 'dispatched_by' },
-    { label: 'Document Date', type: 'Date', name: 'document_date' },
     { label: 'Total Sku', type: 'number', name: 'total_sku' },
     { label: 'Total Quantity', type: 'number', name: 'total_quantity' },
-    // { label: 'Store', type: 'number', name: 'store' },
+    { label: 'Origin Address', type: 'text', name: 'origin_address' },
+    { label: 'Delivery Address', type: 'text', name: 'delivery_address' },
 ]
