@@ -10,7 +10,9 @@ import { useNavigate, useParams } from 'react-router-dom'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { SELLING_FORM, POC_FORM, ACCOUNT_FORM } from './editCommon'
 import AccessDenied from '@/views/pages/AccessDenied'
-import { SellerFormTypes } from '../sellerCommon'
+import { SellerFormTypes, SellerSteps } from '../sellerCommon'
+import { Steps } from '@/components/ui'
+import SellerStepOne from '../sellerForm/SellerStepOne'
 
 const SegmentOptions = () => {
     return ['Fashion', 'Footwear', 'Beauty & Personal Care', 'Home Decor', 'Accessories', 'Travel and Luggages'].map((segment) => ({
@@ -23,7 +25,7 @@ const EditSeller = () => {
     const [sellerData, setSellerData] = useState<SellerFormTypes>()
     const [accessDenied, setAccessDenied] = useState(false)
     const navigate = useNavigate()
-
+    const [currentStep, setCurrentStep] = useState(0)
     const { id } = useParams()
 
     const fetchsellerData = async () => {
@@ -125,7 +127,7 @@ const EditSeller = () => {
 
     return (
         <div>
-            <h3 className="text-xl font-bold">Edit Seller</h3>
+            <h3 className="text-xl font-bold">Onboarding Process</h3>
             <Formik
                 enableReinitialize
                 initialValues={initialValue}
@@ -133,72 +135,58 @@ const EditSeller = () => {
                 onSubmit={handleSubmit}
             >
                 {({ resetForm }) => (
-                    <Form className="xl:w-[90%] w-full p-5 shadow-xl rounded-xl">
-                        <FormContainer>
-                            <FormContainer className="grid grid-cols-2 gap-10">
-                                {SELLING_FORM.map((item, key) => (
-                                    <FormItem key={key} label={item.label} className={item.classname}>
-                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
-                                    </FormItem>
-                                ))}
-
-                                <FormItem asterisk label="Segment" className="col-span-1 w-full">
-                                    <Field name="segment">
-                                        {({ field, form }: FieldProps) => {
-                                            const fieldValueArray = Array.isArray(field?.value) ? field?.value : field?.value.split(',')
-                                            const selectedOptions = fieldValueArray.map((item: any) => {
-                                                const selectedOption = SegmentOptions()?.find((options: any) => {
-                                                    return options?.label === item
-                                                })
-                                                return selectedOption
-                                            })
-                                            return (
-                                                <Select
-                                                    isMulti
-                                                    isClearable
-                                                    className="w-full"
-                                                    options={SegmentOptions()}
-                                                    getOptionLabel={(option) => option?.label}
-                                                    getOptionValue={(option) => option?.value?.toString()}
-                                                    value={selectedOptions}
-                                                    onChange={(newVals) => {
-                                                        const selectedValues = newVals?.map((val: any) => val.value) || []
-                                                        form.setFieldValue(`segment`, selectedValues?.join(','))
-                                                    }}
-                                                />
-                                            )
-                                        }}
-                                    </Field>
-                                </FormItem>
+                    <Form className="xl:w-[90%] w-full p-5 ">
+                        <FormContainer className="flex xl:flex-row md:flex-row flex-col gap-4 xl:justify-around">
+                            <FormContainer className="shadow-xl rounded-xl xl:w-1/3 w-auto p-4">
+                                <Steps current={currentStep} className="flex flex-col items-start gap-5">
+                                    {SellerSteps.map((stepTitle, index) => (
+                                        <Steps.Item
+                                            key={index}
+                                            title={
+                                                <span
+                                                    className={`p-2 rounded-md ${
+                                                        currentStep === index
+                                                            ? 'text-green-500 font-bold bg-gray-200 px-2 py-2 rounded-md text-xl'
+                                                            : 'text-inherit font-normal'
+                                                    }`}
+                                                >
+                                                    <span onClick={() => setCurrentStep(index)} className="cursor-pointer">
+                                                        {stepTitle}
+                                                    </span>
+                                                </span>
+                                            }
+                                        />
+                                    ))}
+                                </Steps>
                             </FormContainer>
-                            <br />
-                            <h5 className="mb-3 text-gray-600 text-xl">POC Details</h5>
-                            <FormContainer className="grid grid-cols-2 gap-10 ">
-                                {POC_FORM.map((item, key) => (
-                                    <FormItem asterisk key={key} label={item.label} className={item.classname}>
-                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
-                                    </FormItem>
-                                ))}
-                            </FormContainer>
+                            <FormContainer className="shadow-xl p-4 rounded-xl">
+                                {/* Forms Below */}
 
-                            {/* ------------------------------------------------------------------------------------------------ */}
-                            <br />
-                            <h5 className="mb-3 text-gray-600 text-xl">Account Details</h5>
-                            <FormContainer className="grid grid-cols-2 gap-10 ">
-                                {ACCOUNT_FORM.map((item, key) => (
-                                    <FormItem key={key} label={item.label} className={item.classname}>
-                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
-                                    </FormItem>
-                                ))}
-                            </FormContainer>
+                                {currentStep === 0 && <SellerStepOne />}
 
-                            <FormContainer className="flex justify-end mt-5">
-                                <Button type="reset" className="mr-2" onClick={() => resetForm()}>
-                                    Reset
-                                </Button>
-                                <Button variant="solid" type="submit" className="bg-blue-500 text-white">
-                                    Submit
-                                </Button>
+                                {/* Buttons */}
+                                <FormContainer className="flex justify-end mt-5 mb-9 ">
+                                    {currentStep > 0 && (
+                                        <Button
+                                            type="button"
+                                            variant="pending"
+                                            className="mr-2 bg-gray-600"
+                                            onClick={() => setCurrentStep((prev) => prev - 1)}
+                                        >
+                                            Previous
+                                        </Button>
+                                    )}
+                                    {currentStep >= 0 && (
+                                        <Button
+                                            type="button"
+                                            variant="accept"
+                                            className="mr-2 bg-gray-600"
+                                            onClick={() => setCurrentStep((prev) => prev + 1)}
+                                        >
+                                            Next
+                                        </Button>
+                                    )}
+                                </FormContainer>
                             </FormContainer>
                         </FormContainer>
                     </Form>

@@ -65,3 +65,12 @@ export type SellerFormTypes = {
     warehouse_charge_per_sku: number
     code?: string
 }
+
+export const SellerSteps = [
+    'Basic Information',
+    'Business Details',
+    'Bank Details',
+    'Warehouse & GST',
+    'MSME Details',
+    'Docs and Declaration',
+]
