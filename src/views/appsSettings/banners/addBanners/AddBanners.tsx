@@ -142,30 +142,26 @@ const AddBanners = () => {
 
     return (
         <div>
-            <div className="w-full my-10 px-[10%] ">
-                <Steps current={currentStep} className="flex flex-col lg:flex-row gap-4 items-start">
+            <div className="w-full my-10 flex items-center px-6">
+                {currentStep > 1 && (
+                    <div onClick={() => setCurrentStep((prev) => prev - 1)} className="mr-2 cursor-pointer">
+                        <FaCircleArrowLeft className="text-2xl text-red-600 font-bold " />
+                    </div>
+                )}
+                <Steps current={currentStep} className="flex flex-col lg:flex-row gap-4 items-start w-[90%] px-2">
                     <Steps.Item title={currentSelectedPage?.value || 'Select Page'} />
                     <Steps.Item title={selectedSectionHeading?.section_heading || 'Select Section Heading'} />
                     <Steps.Item title="Add Banners and Corresponding Details" />
                     <Steps.Item title="Preview and Save" />
                 </Steps>
             </div>
-            {currentStep > 1 && (
-                <div onClick={() => setCurrentStep((prev) => prev - 1)} className="mx-10 cursor-pointer">
-                    <FaCircleArrowLeft className="text-2xl text-red-600 font-bold " />
-                </div>
-            )}
 
             <div className="flex flex-col w-full sticky mt-5 min-h-[70vh] text-[16px] overflow-scroll scrollbar-hide">
                 {/* STEP 1 -- Select Page */}
                 {currentStep == 1 && (
                     <div className="flex  items-center justify-center ">
                         <div className="text-[20px] border">
-                            <Dropdown
-                                className="text-xl text-black"
-                                title={currentSelectedPage?.name || 'Select Page Name'}
-                                onSelect={handlePageSelect}
-                            >
+                            <Dropdown className="text-xl text-black" title={'Select Page Name'} onSelect={handlePageSelect}>
                                 {BANNER_PAGE_NAME?.map((item, key) => (
                                     <DropdownItem key={key} eventKey={item.value}>
                                         <span>{item?.name}</span>
@@ -176,17 +172,15 @@ const AddBanners = () => {
                     </div>
                 )}
 
-                {/* STEP 2 -- Select Section */}
                 {currentStep == 2 && (
                     <div className="space-y-6 p-6 max-w-4xl mx-auto">
-                        {/* Page Selection Section */}
+                        <h4 className="flex items-center justify-center">Select SubPage and Section Headings</h4>
                         <div className="text-center">
-                            <h2 className="text-2xl font-bold text-gray-800 mb-4">Select Sub Page</h2>
                             <div className="flex justify-center">
                                 <div className="w-64">
                                     <Dropdown
                                         className="w-full flex items-center justify-center text-lg text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:border-blue-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
-                                        title={currentSelectedSubPage?.name || 'Select Page Name'}
+                                        title={currentSelectedSubPage?.name || 'Select Sub Page Name'}
                                         onSelect={handleSubPageSelect}
                                     >
                                         {SUB_PAGE_NAME?.map((item, key) => (
@@ -199,7 +193,6 @@ const AddBanners = () => {
                             </div>
                         </div>
 
-                        {/* Section Heading Selection */}
                         <div className="text-center">
                             {sectionHeadingData && sectionHeadingData.length !== 0 ? (
                                 <div className="flex flex-col items-center space-y-4">
@@ -278,6 +271,7 @@ const AddBanners = () => {
                         completeBannerFormData={completeBannerFormData}
                         selectedPage={currentSelectedPage}
                         selectedSection={selectedSectionHeading}
+                        subpage={currentSelectedSubPage}
                         headingData={sectionHeadingData}
                     />
                 )}
