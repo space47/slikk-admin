@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Loading } from '@/components/shared'
 import React, { useState } from 'react'
-import { FaDownload, FaSync } from 'react-icons/fa'
+import { FaDownload, FaSync, FaTrash } from 'react-icons/fa'
 import QCtable from './QCtable'
 import { Modal } from 'antd'
 import SkuUpdate from './SkuUpdate'
 import { Select, Spinner } from '@/components/ui'
+import { AxiosError } from 'axios'
+import { errorMessage, successMessage } from '@/utils/responseMessages'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 interface props {
     handleSyncClick: any
@@ -33,8 +36,44 @@ const QcTabs = ({
     handleRegenerateGrn,
 }: props) => {
     const [tabSelect, setTabSelect] = useState('quality_checklist')
+    const [deleteSpinner, setDeleteSpinner] = useState(false)
+
     const handleSelectTab = (value: string) => {
         setTabSelect(value)
+    }
+
+    const deleteGrn = async (isForce: string, id: number) => {
+        try {
+            setDeleteSpinner(true)
+            const res = await axioisInstance.delete(`/goods/received/${id}`, {
+                data: {
+                    force: isForce,
+                },
+            })
+            successMessage(res)
+            return res?.data?.data
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                errorMessage(error)
+            }
+        } finally {
+            setDeleteSpinner(false)
+        }
+    }
+
+    const handleDeleteGrn = async (id: number) => {
+        const data = await deleteGrn('false', id)
+        if (data) {
+            Modal.confirm({
+                title: 'Confirm Force Update',
+                content: `Are you sure you want to delete the grn: `,
+                okText: 'Yes',
+                cancelText: 'No',
+                onOk: () => {
+                    deleteGrn('true', id)
+                },
+            })
+        }
     }
 
     return (
@@ -91,6 +130,20 @@ const QcTabs = ({
                                         <>
                                             <div className="flex gap-2 font-bold text-green-600">
                                                 SYNC GRN <FaSync className="text-2xl" />
+                                            </div>
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                            <div>
+                                <button onClick={() => handleDeleteGrn(data.id)} className="border-none bg-none flex gap-5">
+                                    {' '}
+                                    {deleteSpinner ? (
+                                        <Spinner size="sm" />
+                                    ) : (
+                                        <>
+                                            <div className="flex gap-2 font-bold text-red-600">
+                                                DELETE GRN <FaTrash className="text-2xl" />
                                             </div>
                                         </>
                                     )}
