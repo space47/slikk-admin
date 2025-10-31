@@ -5,18 +5,18 @@ import { useParams } from 'react-router-dom'
 import RtvCommonForm from '../rtvComponents/RtvCommonForm'
 import FormButton from '@/components/ui/Button/FormButton'
 import { rtvService } from '@/store/services/rtvService'
-import { Rtv_Data } from '@/store/types/rtv.types'
+import { RTV_DATA_DETAILS } from '@/store/types/rtv.types'
 import { notification } from 'antd'
 
 const EditRtv = () => {
     const { id } = useParams()
-    const [rtvData, setRtvData] = useState<Rtv_Data>()
+    const [rtvData, setRtvData] = useState<RTV_DATA_DETAILS>()
     const [updateRtv, updateResponse] = rtvService.useUpdateRtvMutation()
     const { data, isSuccess } = rtvService.useRtvDataQuery({ rtv_id: id })
 
     useEffect(() => {
         if (isSuccess) {
-            setRtvData(data?.data?.results[0])
+            setRtvData(data?.data as any)
         }
     }, [isSuccess, data, id])
 
@@ -24,7 +24,7 @@ const EditRtv = () => {
 
     const initialValue = {
         document_number: rtvData?.document_number,
-        company: rtvData?.company,
+        company: rtvData?.company?.id,
         store: rtvData?.store,
     }
 
