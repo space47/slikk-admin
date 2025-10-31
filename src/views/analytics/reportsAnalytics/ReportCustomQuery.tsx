@@ -12,6 +12,7 @@ import moment from 'moment'
 import React, { useEffect, useMemo, useState } from 'react'
 import { pageSizeOptions } from '../overview/analyticsCommon'
 import { customQueryService } from '@/store/services/customQueryService'
+import { escapeCsvValue, handleDownloadCsv } from '@/common/allTypesCommon'
 
 interface TableItem {
     table_name: string
@@ -88,8 +89,6 @@ const ReportCustomQuery = () => {
         }
     }, [selectedTable, columnSuccess, columnDataList])
 
-    console.log('columnsData', columnNames)
-
     useEffect(() => {
         if (isError) {
             notification.error({ message: 'Failed to fetch tables' })
@@ -131,7 +130,6 @@ const ReportCustomQuery = () => {
 
     const handleGenerateCustomQuery = async () => {
         notification.info({ message: 'Generating Custom Query' })
-
         const parsedValue = textParser(value)
         console.log(parsedValue)
         const body = {
@@ -181,6 +179,24 @@ const ReportCustomQuery = () => {
 
     const paginatedData = customReportData ? customReportData?.slice((page - 1) * pageSize, page * pageSize) : []
     const totalPages = Math.ceil(customReportData.length / pageSize)
+
+    const convertToCSV = (data: any[], columns: any[]) => {
+        const filteredColumns = columns?.filter((item) => item.header !== 'Edit')
+        const header = filteredColumns.map((col) => escapeCsvValue(col.header)).join(',')
+        const rows = data
+            .map((row: any) => {
+                return filteredColumns.map((col: any) => escapeCsvValue(row[col.accessorKey])).join(',')
+            })
+            .join('\n')
+
+        return `${header}\n${rows}`
+    }
+
+    const handleDownloadCsvData = () => {
+        notification.info({ message: 'Download in process' })
+        handleDownloadCsv(paginatedData, columns, convertToCSV, 'Sellers.csv')
+        notification.success({ message: 'Download complete' })
+    }
 
     return (
         <div className="mt-5">
@@ -264,6 +280,11 @@ const ReportCustomQuery = () => {
             </div>
             {customReportData.length > 0 && (
                 <>
+                    <div className="flex justify-end">
+                        <Button variant="new" onClick={handleDownloadCsvData}>
+                            Download
+                        </Button>
+                    </div>
                     <div className="mt-10 mb-8 font-bold text-xl">Custom Query Table</div>
                     <EasyTable mainData={paginatedData} columns={columns} overflow />
 

@@ -183,7 +183,10 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
         }),
 
         columnHelper.accessor('fulfilled_quantity', {
-            header: 'Fullfilled Quantity',
+            header: 'Fulfilled Quantity',
+        }),
+        columnHelper.accessor('llinfo', {
+            header: 'LLInfo',
         }),
         columnHelper.accessor('is_gift_wrap', {
             header: 'Gift Wrap',
