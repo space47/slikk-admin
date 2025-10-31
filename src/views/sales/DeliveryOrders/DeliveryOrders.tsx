@@ -33,11 +33,11 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { CiFilter } from 'react-icons/ci'
 import FilterForwardDelivery from './filter/FilterForwardDelivery'
 import { FaFilter } from 'react-icons/fa'
-import UltimateDatePicker from '@/common/UltimateDateFilter'
 import { DELIVERY_OPTIONS, LOGISTIC_PARTNER, SEARCHOPTIONS } from './DeliveryCommon'
 import { pageSizeOptions } from '../groupNotification/getGroup/groupComnmon'
 import { ForwardDeliveryColumns } from './forwardDeliveryUtils/ForwardDeliveryColumns'
 import { HiSearch } from 'react-icons/hi'
+import ReduxDateRange from '@/common/ReduxDateRange'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
@@ -229,14 +229,7 @@ const DeliveryOrders = () => {
 
                 <div className="flex gap-3 items-center">
                     <div>
-                        <UltimateDatePicker
-                            from={from}
-                            setFrom={setFrom}
-                            to={to}
-                            setTo={setTo}
-                            handleDateChange={handleDateChange}
-                            dispatch={dispatch}
-                        />
+                        <ReduxDateRange handleDateChange={handleDateChange} id="delivery_orders" setFrom={setFrom} setTo={setTo} />
                     </div>
 
                     <div className="mt-7">

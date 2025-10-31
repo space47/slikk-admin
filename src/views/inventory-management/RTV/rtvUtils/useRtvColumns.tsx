@@ -5,12 +5,14 @@ import { USER_PROFILE_DATA } from '@/store/types/company.types'
 import moment from 'moment'
 import { Rtv_Data } from '@/store/types/rtv.types'
 import { FaEdit } from 'react-icons/fa'
+import { useNavigate } from 'react-router-dom'
 
 interface Props {
     storeList: USER_PROFILE_DATA['store']
 }
 
 export const useRtvColumns = ({ storeList }: Props) => {
+    const navigate = useNavigate()
     const findStoreName = (storeId: number) => {
         const store = storeList.find((store) => store?.id === storeId)
         return store ? store.name : 'Unknown Store'
@@ -22,23 +24,21 @@ export const useRtvColumns = ({ storeList }: Props) => {
                 header: 'Edit RTV',
                 accessorKey: 'rtv_id',
                 cell: ({ row }) => (
-                    <a href={`/app/goods/rtv/edit/${row.original.id}`} target="_blank" rel="noopener noreferrer">
+                    <div onClick={() => navigate(`/app/goods/rtv/edit/${row.original.id}`)}>
                         <FaEdit className="text-xl text-blue-500" />
-                    </a>
+                    </div>
                 ),
             },
             {
                 header: 'RTV Number',
                 accessorKey: 'rtv_number',
                 cell: ({ row }) => (
-                    <a
+                    <div
                         className="w-[180px] p-2 rounded-xl items-center bg-gray-600 text-white flex justify-center cursor-pointer hover:bg-gray-700"
-                        href={`/app/goods/rtvDetails/${row.original.id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        onClick={() => navigate(`/app/goods/rtvDetails/${row.original.id}`)}
                     >
                         {row.original.rtv_number || 'N/A'}
-                    </a>
+                    </div>
                 ),
             },
             {
