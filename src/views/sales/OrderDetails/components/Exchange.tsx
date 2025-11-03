@@ -181,8 +181,6 @@ const Exchange = ({ row, invoice_id, setIsOpen }: props) => {
     }, [])
 
     const RowSelector = () => {
-        if (row.length <= 1) return null
-
         return (
             <FormItem label="Select Product to Exchange">
                 <div className="flex flex-wrap gap-5">
@@ -223,7 +221,7 @@ const Exchange = ({ row, invoice_id, setIsOpen }: props) => {
                                 <span className="text-xs text-gray-500 mt-1">(Qty: {item?.quantity})</span>
                                 {isInExchange && <span className="text-xs text-green-600 font-medium mt-2">In Exchange</span>}
                                 <div className="w-full mt-4 bg-red-600 text-white rounded-2xl flex items-center flex-col justify-center">
-                                    <label className="block text-xs font-semibold  mb-1 mt-2">Return Reason</label>
+                                    <label className="block text-xs font-semibold  mb-1 mt-2">Exchange Reason</label>
                                     <Dropdown
                                         className="text-gray-800 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-300"
                                         title={returnReason[item.id as number]?.value || 'Select a Reason'}
