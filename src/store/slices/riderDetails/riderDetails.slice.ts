@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { RiderDetails, RiderProfileData } from '@/store/types/riderAddTypes'
+import { RiderDetailsType, RiderProfileData } from '@/store/types/riderAddTypes'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import moment from 'moment'
 
 export type RiderDetailType = {
-    riderDetails: RiderDetails[]
+    riderDetails: RiderDetailsType[]
     riderProfile: RiderProfileData[]
     count: number
     page: number
@@ -29,7 +29,7 @@ const riderDetails = createSlice({
     name: 'riderDetails',
     initialState,
     reducers: {
-        setRiderDetails: (state, action: PayloadAction<RiderDetails[]>) => {
+        setRiderDetails: (state, action: PayloadAction<RiderDetailsType[]>) => {
             state.riderDetails = action.payload
         },
         setRiderProfile: (state, action: PayloadAction<RiderProfileData[]>) => {

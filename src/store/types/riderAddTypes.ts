@@ -102,7 +102,7 @@ export type UserProfile = Partial<{
     }
 }>
 
-export type RiderDetails = Partial<{
+export type RiderDetailsType = Partial<{
     profile: UserProfile
     task_data: TaskData
     recent_task_detail: {
@@ -113,13 +113,18 @@ export type RiderDetails = Partial<{
         order_id: string
     }
     rider_status: boolean
+    attendance_details: {
+        active_time: number
+        check_in_time: string
+        check_out_time: string
+    }
 }>
 
 export type RiderDetailResponseType = {
     status?: string
     data?: {
         count: number
-        results?: RiderDetails[]
+        results?: RiderDetailsType[]
     }
 }
 

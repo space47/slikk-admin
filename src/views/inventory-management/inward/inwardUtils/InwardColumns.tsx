@@ -105,6 +105,25 @@ export const InwardColumns = ({ companyList, storeList }: props) => {
                 cell: (info) => getowner(info.getValue()),
             },
             {
+                header: 'Synced Items',
+                accessorKey: 'synced_quantity',
+            },
+            {
+                header: 'UnSynced Items',
+                accessorKey: 'synced_quantity',
+                cell: ({ row }) => {
+                    const synced =
+                        typeof row?.original?.synced_quantity === 'number'
+                            ? row?.original?.synced_quantity
+                            : parseInt(row?.original?.synced_quantity) || 0
+                    const qcPassed =
+                        typeof row?.original?.qc_passed_quantity === 'number'
+                            ? row?.original?.qc_passed_quantity
+                            : parseInt(row?.original?.qc_passed_quantity) || 0
+                    return <div>{qcPassed - synced}</div>
+                },
+            },
+            {
                 header: 'Total QTY',
                 accessorKey: 'total_quantity',
                 cell: (info) => info.getValue(),

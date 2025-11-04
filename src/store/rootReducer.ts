@@ -53,6 +53,7 @@ import indentReducer from './slices/indentSlice/indentSlice'
 import OfferQueryService from '@/services/OfferQueryService'
 import storeSelectReducer from './slices/storeSelect/storeSelect.slice'
 import rtvSlice from './slices/rtv/rtv.slice'
+import dateRangeReducer from './slices/dateRange/dateRange.slice'
 
 export type RootState = CombinedState<{
     authorization: CombinedState<Authorization>
@@ -118,6 +119,7 @@ const staticReducers = {
     offers: offersReducer,
     indent: indentReducer,
     storeSelect: storeSelectReducer,
+    dateRange: dateRangeReducer,
     [rtvSlice.name]: rtvSlice.reducer,
     [remitanceApi.reducerPath]: remitanceApi.reducer,
     [RtkQueryService.reducerPath]: RtkQueryService.reducer,

@@ -9,14 +9,14 @@ import { USER_PROFILE_DATA } from '@/store/types/company.types'
 import PageCommon from '@/common/PageCommon'
 import { Button, Select } from '@/components/ui'
 import { useNavigate } from 'react-router-dom'
-import UltimateReduxDatePicker from '@/common/UltimateReduxDatePicker'
 import moment from 'moment'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
+import ReduxDateRange from '@/common/ReduxDateRange'
 
 const RtvTable = () => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
-    const { rtv, count, page, pageSize, from, to, dateField } = useAppSelector<rtvStateType>((state) => state.rtv)
+    const { rtv, count, page, pageSize, from, to } = useAppSelector<rtvStateType>((state) => state.rtv)
     const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
     const [storeCode, setStoreCode] = useState<number>(1)
     const { data, isLoading, isSuccess, isError } = rtvService.useRtvDataQuery(
@@ -71,15 +71,12 @@ const RtvTable = () => {
                     <Button variant="new" className="mt-8" size="sm" onClick={() => navigate(`/app/goods/rtv/add`)}>
                         Add RTV
                     </Button>
-                    <UltimateReduxDatePicker
-                        customChange={dateField}
-                        setCustomChange={rtvActions.setDateField}
-                        dispatch={dispatch}
-                        from={from}
-                        to={to}
+
+                    <ReduxDateRange
+                        handleDateChange={handleDateChange}
+                        id="rtv_table"
                         setFrom={rtvActions.setFrom}
                         setTo={rtvActions.setTo}
-                        handleDateChange={handleDateChange}
                     />
                 </div>
             </div>
