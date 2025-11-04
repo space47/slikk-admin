@@ -32,6 +32,7 @@ import { FaDownload, FaFilter } from 'react-icons/fa'
 import { BUSY_STATUS_TABS, DEBOUNCE_DELAY, SEARCH_TYPES, STATUS_TABS, StoreOption } from './RiderDetailsCommon'
 import PageCommon from '@/common/PageCommon'
 import { useDebounceInput } from '@/commonHooks/useDebounceInput'
+import { RiderDetailsType } from '@/store/types/riderAddTypes'
 
 const RiderDetails = () => {
     const navigate = useNavigate()
@@ -53,6 +54,7 @@ const RiderDetails = () => {
     const [currentAgency, setCurrentAgency] = useState('')
     const [shiftStart, setShiftStart] = useState('')
     const [shiftEnd, setShiftEnd] = useState('')
+    const [currentRow, setCurrentRow] = useState<RiderDetailsType>()
     const { storeResults } = useAppSelector<companyStore>((state) => state.companyStore)
     const { count, from, page, pageSize, to, currentStoreLocation } = useAppSelector<RiderDetailType>((state) => state.riderDetails)
     const [riderDownload, riderDownloadResponse] = ridersService.useLazyRiderDetailsDownloadQuery()
@@ -123,9 +125,9 @@ const RiderDetails = () => {
         }
     }, [])
 
-    const handleProfileClick = useCallback((mobile: string) => {
+    const handleProfileClick = useCallback((row: any) => {
         setShowRiderDetailModal(true)
-        setMobileForParticularRider(mobile)
+        setCurrentRow(row)
     }, [])
 
     const handleDateChange = useCallback(
@@ -352,9 +354,9 @@ const RiderDetails = () => {
                 <RiderDetailModal
                     dialogIsOpen={showRiderDetailModal}
                     setIsOpen={setShowRiderDetailModal}
-                    mobile={mobileForParticularRider}
                     fromDate={from}
                     toDate={moment(to).add(1, 'days').format('YYYY-MM-DD')}
+                    row={currentRow}
                 />
             )}
             {isCheckModal && (
