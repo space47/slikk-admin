@@ -86,26 +86,6 @@ const RefundActivity = () => {
         }
     }, [triggerAction])
 
-    const handleForceCod = async () => {
-        const body = {
-            action: 'return_completed',
-            reference_id: valueInsideModal.refundId,
-            return_amount: valueInsideModal.refundAmount,
-            cod_force: true,
-        }
-        try {
-            const response = await axiosInstance.patch(`merchant/return_order/${returnDetails?.return_order_id}`, body)
-            notification.success({ message: response?.data?.message || 'Rider status updated successfully.' })
-            setForceCOD(false)
-            navigate(0)
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                notification.error({ message: error?.message || 'Failed to Update' })
-            }
-            console.error(error)
-        }
-    }
-
     // const handlePacketsCount = (e: any) => {
     //     if (e.key === 'Enter') {
     //         if (packetsContainer.includes(e.target.value)) {
