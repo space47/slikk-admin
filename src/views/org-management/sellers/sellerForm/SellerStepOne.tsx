@@ -8,7 +8,7 @@ const SellerStepOne = () => {
         <div>
             <h4>Basic Information</h4>
             <p>Provide essential details about vendor entity. All field marked with * are mandatory</p>
-            <FormContainer>
+            <FormContainer className="mt-8">
                 {BasicSellerInformation?.map((item, idx) => {
                     return (
                         <FormItem key={idx} label={item?.label} asterisk={item?.isRequired}>

@@ -1,8 +1,8 @@
 export const BasicSellerInformation = [
-    { label: 'Vendor Name', name: 'vendor_name', type: 'text', isRequired: true },
-    { label: 'Vendor Code', name: 'vendor_code', type: 'text', isRequired: false },
-    { label: 'Primary Contact Name', name: 'contact_name', type: 'text', isRequired: true },
-    { label: 'Primary Contact Email', name: 'contact_email', type: 'text', isRequired: true },
-    { label: 'Primary Contact Phone', name: 'contact_phone', type: 'number', isRequired: true },
+    { label: 'Vendor Business Name', name: 'registered_name', type: 'text', isRequired: true, visible: true },
+    { label: 'Company Name', name: 'name', type: 'text', isRequired: true, visible: true },
+    { label: 'Contact Person Name', name: 'head_name', type: 'text', isRequired: true, visible: true },
+    { label: 'Email Address', name: 'head_email', type: 'text', isRequired: true, visible: true },
+    { label: 'Phone Number', name: 'head_number', type: 'number', isRequired: true, visible: true },
     // {label:'', name:'', type:'', isRequired:'' },
 ]
