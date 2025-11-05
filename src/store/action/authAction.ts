@@ -82,6 +82,7 @@ export const validateOTP = (mobileNumber: string, otpCode: string, callBackfn: (
                 },
             ),
         )
+        notification.success({ message: 'Welcome to Slikk Dashboard' })
         callBackfn()
     } catch (error: any) {
         console.log('Validate OTP Error', error?.response?.data)

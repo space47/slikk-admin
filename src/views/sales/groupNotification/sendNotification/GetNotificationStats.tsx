@@ -23,7 +23,7 @@ const GetNotificationStats = () => {
     const [schedulePageSize, setSchedulePageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
     const [accessDenied, setAccessDenied] = useState(false)
-    const [activeTab, setActiveTab] = useState<'sent' | 'schedule'>('sent')
+    const [activeTab, setActiveTab] = useState<'sent' | 'schedule'>('schedule')
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
@@ -126,16 +126,16 @@ const GetNotificationStats = () => {
 
             <div className="flex gap-6 mt-10">
                 <div
+                    className={`flex   cursor-pointer  ${activeTab === 'schedule' ? ' border-b-4 border-black' : ''}`}
+                    onClick={() => setActiveTab('schedule')}
+                >
+                    <span className="text-xl font-bold">Notification Templates</span>
+                </div>
+                <div
                     className={`flex  cursor-pointer ${activeTab === 'sent' ? ' border-b-4 border-black' : ''}`}
                     onClick={() => setActiveTab('sent')}
                 >
                     <span className="text-xl font-bold">Sent Notifications</span>
-                </div>
-                <div
-                    className={`flex   cursor-pointer  ${activeTab === 'schedule' ? ' border-b-4 border-black' : ''}`}
-                    onClick={() => setActiveTab('schedule')}
-                >
-                    <span className="text-xl font-bold">Schedular Notifications</span>
                 </div>
             </div>
 

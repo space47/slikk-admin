@@ -8,6 +8,11 @@ export const BackGroundArray = [
     { label: 'Redirection Url', type: 'text', key: 'redirection_url', placeholder: 'Place Redirection Url' },
 ]
 
+export const GradientDirectionArray = [
+    { label: 'VERTICAL', value: 'VERTICAL' },
+    { label: 'HORIZONTAL', value: 'HORIZONTAL' },
+]
+
 export const getBackgroundArray = (prefix: string) => {
     return BackGroundArray?.map((item) => ({
         label: item?.label,
@@ -138,6 +143,7 @@ export const TimeFieldsArray = [
     { label: 'Timer Text', name: 'extra_info.timer_text', type: 'text' },
     { label: 'Timer Color', name: 'extra_info.timer_color', type: 'text' },
     { label: 'Timer Text color', name: 'extra_info.timer_text_color', type: 'text' },
+    { label: 'Timer Dots color', name: 'extra_info.timer_dots_color', type: 'text' },
     { label: 'Timer Text Font', name: 'extra_info.timer_text_font', type: 'checkbox' },
     { label: 'Timer Font Size', name: 'extra_info.timer_font_size', type: 'number' },
     { label: 'Timer Background Color', name: 'extra_info.timer_bg_color', type: 'text' },
@@ -152,6 +158,7 @@ export const SortArrays = [
     { label: 'Discount', value: 'discount' },
     { label: 'Rating', value: 'rating' },
     { label: 'Newest', value: 'newest' },
+    { label: 'Popularity', value: 'popularity' },
 ]
 
 export const PageSectionsFiltersArray = [

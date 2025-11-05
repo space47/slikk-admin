@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { FormContainer, FormItem, Input, Select, Spinner } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { ReportQueryData } from '@/views/configurationsSlikk/reportConfigurations/reportCommon'
 import { Field, FieldProps, Form, Formik } from 'formik'
 import { useEffect, useState } from 'react'
 import { DIVISION_STATE } from '@/store/types/division.types'
@@ -15,26 +14,15 @@ import AccessDenied from '@/views/pages/AccessDenied'
 import InnternalError from '@/views/pages/InternalServerError/InternalError'
 import ReportFields from './ReportFields'
 import moment from 'moment'
-import BadRequest from '@/views/pages/BadRequest/BadRequest'
 import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
 import { PRODUCTTYPE_STATE } from '@/store/types/productType.types'
 import ReportCustomQuery from './ReportCustomQuery'
 import { notification } from 'antd'
-
-const reportQueryArray = [
-    { label: 'Date', value: 'Date' },
-    { label: 'Number', value: 'Number' },
-    { label: 'String', value: 'String' },
-    { label: 'Boolean', value: 'Boolean' },
-    { label: 'Select', value: 'Select' },
-    { label: 'MultiSelect', value: 'MultiSelect' },
-]
+import { reportQueryArray } from '@/constants/commonArray.constant'
 
 const ReportAnalytics = () => {
-    const [reportQueryData, setReportQueryData] = useState<ReportQueryData[]>([])
     const [storeName, setStoreName] = useState('')
     const [reportQueryNames, setReportQueryNames] = useState<{ label: string; value: string }[]>([])
-    const [showDataBelow, setShowDataBelow] = useState(false)
     const [dynamicReportTable, setDynamicReportTable] = useState<any[]>([])
     const [showTable, setShowTable] = useState(false)
     const [xAxisValue, setXAxisvalue] = useState('')
@@ -50,7 +38,6 @@ const ReportAnalytics = () => {
     const [accessDenied, setAccessDenied] = useState(false)
     const [badRequest, setBadRequest] = useState(false)
     const [serverError, setServerError] = useState(false)
-    const [reportValue, setReportValue] = useState()
     const [isCustomQuery, setIsCustomQuery] = useState(false)
     const [errorQuery, setErrorQuery] = useState('')
 
@@ -59,7 +46,6 @@ const ReportAnalytics = () => {
             setShowSpinner(true)
             const response = await axioisInstance.get(`/query/config?p=1&page_size=100`)
             const data = response?.data?.data
-            setReportQueryData(data?.results)
             setReportQueryNames(
                 data?.results?.map((item: any) => ({
                     label: item.name,
@@ -106,16 +92,13 @@ const ReportAnalytics = () => {
                 required_fields: Object.entries(data?.required_fields || {})
                     ?.reverse()
                     ?.map(([key, fullValue]) => {
-                        console.log('full value', fullValue)
                         const [position, dataType, valueArray, prefix, suffix] = Array.isArray(fullValue) ? fullValue : []
                         let transformedValue = valueArray
-
                         if (key === 'start_date') {
                             transformedValue = moment().startOf('month').format('YYYY-MM-DD')
                         } else if (key === 'end_date') {
                             transformedValue = moment().endOf('month').format('YYYY-MM-DD')
                         }
-
                         return {
                             position: position,
                             key,
@@ -128,15 +111,12 @@ const ReportAnalytics = () => {
                     ?.sort((a, b) => a.position - b.position),
             }
             setReportData(formattedData)
-            setReportValue(formattedData?.value)
-            setShowDataBelow(true)
         } catch (error: any) {
             if (error.response && error.response.status === 403) {
                 setAccessDenied(true)
             } else if (error.response && error.response.status === 500) {
                 setServerError(true)
             }
-            console.log(error)
         }
     }
     useEffect(() => {
@@ -144,8 +124,6 @@ const ReportAnalytics = () => {
             fetchApi()
         }
     }, [storeName])
-
-    console.log('reportValue', reportValue)
 
     const [currentValues, setCurrentValues] = useState<any>()
 
@@ -156,15 +134,12 @@ const ReportAnalytics = () => {
                 .map((field: { key: string; value: any; prefix?: string; suffix?: string; dataType?: string; position?: number }) => {
                     const { key, value = '', prefix = '', suffix = '', dataType } = field
                     const val = encodeURIComponent(value)
-
                     if (dataType === 'MultiSelect' && Array.isArray(value)) {
-                        console.log('value for muktiselect ', value)
                         if (value.length === 0 || value[0] === '') {
                             return `${key}= NOT IN ('')`
                         }
 
                         const formattedValues = value.map((item: any) => {
-                            console.log('Items is', item)
                             const itemsEncoded = encodeURIComponent(item)
                             const transformedValue = item
                                 ? !['Date', 'Number', 'Boolean'].includes(dataType!)
@@ -186,7 +161,7 @@ const ReportAnalytics = () => {
                         ? `${prefix.toUpperCase()}${val.toString().toUpperCase()}${suffix.toUpperCase()}`
                         : `${prefix.toUpperCase()}${val}${suffix.toUpperCase()}`
 
-                    if (key === 'store_code') {
+                    if (key === 'store_code' || key === 'fashion_style') {
                         transformedValue = !['Date', 'Number', 'Boolean'].includes(dataType!)
                             ? `${prefix}${val.toString()}${suffix}`
                             : `${prefix}${val}${suffix}`
@@ -202,7 +177,6 @@ const ReportAnalytics = () => {
             setShowSpinner(true)
             const response = await axioisInstance.get(`/query/execute/${storeName}?${reportParameters}`)
             const data = response?.data?.data
-
             const tab = Object.keys(data).map((key) => {
                 return { key, data: data[key] }
             })
@@ -216,7 +190,8 @@ const ReportAnalytics = () => {
             } else if (error.response && error.response.status === 400) {
                 setBadRequest(true)
             }
-            setErrorQuery(error?.response?.data?.error_query)
+            setShowTable(false)
+            setErrorQuery(error?.response?.data?.message)
             console.log(error?.response?.data?.error_query)
         } finally {
             setShowSpinner(false)
@@ -278,13 +253,13 @@ const ReportAnalytics = () => {
         <div>
             <Formik enableReinitialize initialValues={reportData} onSubmit={handleSubmit}>
                 {({ values, resetForm, setFieldValue }) => (
-                    <Form className=" w-full p-6  bg-white shadow-lg rounded-lg">
+                    <Form className=" w-full p-6  bg-white dark:bg-slate-900 shadow-lg rounded-lg">
                         <FormContainer className="">
-                            <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 p-4 bg-white shadow-md rounded-2xl">
+                            <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 p-4 bg-white dark:bg-slate-700 shadow-md rounded-2xl">
                                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 w-full">
                                     {!isCustomQuery ? (
-                                        <FormItem className="font-medium text-gray-800">
-                                            <label className="text-lg xl:text-xl font-semibold text-gray-800 mb-2">
+                                        <FormItem className="font-medium text-gray-800 dark:text-gray-300">
+                                            <label className="text-lg xl:text-xl font-semibold text-gray-800 mb-2 dark:text-gray-300">
                                                 Select Target Page
                                             </label>
                                             <Field name="target_page">
@@ -320,7 +295,7 @@ const ReportAnalytics = () => {
                                                 : 'bg-green-500 hover:bg-green-400 focus:ring-2 focus:ring-green-300'
                                         }`}
                                         onClick={() => setIsCustomQuery((Prev) => !Prev)}
-                                        disabled={showDataBelow}
+                                        disabled={!!storeName}
                                     >
                                         {isCustomQuery ? 'Close Custom Query' : 'Add Custom Query'}
                                     </button>
@@ -330,7 +305,7 @@ const ReportAnalytics = () => {
 
                         {isCustomQuery && <ReportCustomQuery />}
 
-                        {showDataBelow && (
+                        {!!storeName && (
                             <div className="mt-6">
                                 <ReportFields
                                     storeName={storeName}
@@ -340,7 +315,7 @@ const ReportAnalytics = () => {
                                 />
                             </div>
                         )}
-                        {!showDataBelow && !isCustomQuery ? (
+                        {!storeName && !isCustomQuery ? (
                             <div className="mt-10 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-md shadow-sm">
                                 <p className="text-sm">Please select the required page to generate the report.</p>
                             </div>

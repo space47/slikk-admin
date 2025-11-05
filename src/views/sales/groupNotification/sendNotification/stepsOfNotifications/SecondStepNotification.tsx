@@ -1,140 +1,55 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, FormContainer, FormItem, Input, Select } from '@/components/ui'
+import { Checkbox, FormContainer, FormItem, Input, Select } from '@/components/ui'
 import { Field, FieldProps } from 'formik'
-import React from 'react'
-import { IoMdAddCircle } from 'react-icons/io'
-import { MdCancel } from 'react-icons/md'
-import { OFFARRAY } from '../sendNotify.common'
+import React, { useEffect, useState } from 'react'
+import { DISCOUNTOPTIONS, targetPageArray } from '../sendNotify.common'
+import { pageNameTypes } from '@/store/types/pageSettings.types'
+import { pageSettingsService } from '@/store/services/pageSettingService'
+import CommonFilterSelect from '@/common/ComonFilterSelect'
 
 interface SecondStepNotification {
-    notificationTypeArray: any[]
-    groupValue: any
-    setGroupValue: any
-    groupDatatoSend: any[]
-    clickedGuarantee: any
-    hanldeGroupSearch: any
-    handleAddFilter: any
-    showAddFilter: any
-    filters: any
-    handleRemoveFilter: any
-    MAXMINARRAY: any
-    DISCOUNTOPTIONS: any
-    targetPageArray: any
-    handleAddFilters: any
+    values: any
+    setFilterId: React.Dispatch<React.SetStateAction<string>>
+    filterId: string
+    excludeFilterId: string
+    setExcludeFilterId: React.Dispatch<React.SetStateAction<string | number>>
 }
 
-const SecondStepNotification = ({
-    groupValue,
-    setGroupValue,
-    groupDatatoSend,
-    clickedGuarantee,
-    hanldeGroupSearch,
-    handleAddFilter,
-    showAddFilter,
-    filters,
-    handleRemoveFilter,
-    MAXMINARRAY,
-    DISCOUNTOPTIONS,
-    targetPageArray,
-    handleAddFilters,
-}: SecondStepNotification) => {
+const SecondStepNotification = ({ values, setFilterId, filterId, excludeFilterId, setExcludeFilterId }: SecondStepNotification) => {
+    const [subPageNamesData, setSubPageNamesData] = useState<pageNameTypes[] | undefined>([])
+    const [pageNamesData, setPageNamesData] = useState<pageNameTypes[] | undefined>([])
+    const [selectedPageName, setSelectedPageName] = useState<string | undefined>(undefined)
+
+    const { data: SubPageNames, isSuccess: isSubPageNamesSuccess } = pageSettingsService.useSubPageNamesQuery({
+        pageName: selectedPageName || '',
+    })
+
+    const { data: pageNames, isSuccess: isPageNamesSuccess } = pageSettingsService.usePageNamesQuery({
+        page: 1,
+        pageSize: 500,
+    })
+
+    useEffect(() => {
+        if (isPageNamesSuccess) {
+            setPageNamesData(pageNames?.data?.results || [])
+        }
+    }, [pageNames, isPageNamesSuccess])
+
+    useEffect(() => {
+        if (isSubPageNamesSuccess) {
+            setSubPageNamesData(SubPageNames?.data || [])
+        }
+    }, [isSubPageNamesSuccess, SubPageNames, selectedPageName])
+
+    console.log('groupDatatoSend', values?.groupId)
     return (
         <div className="space-y-6 shadow-lg rounded-lg px-14 py-9 mt-10">
             <div className="text-xl font-bold">Select Filters</div>
-            <div className="grid xl:grid-cols-2 grid-cols-1  gap-10">
-                <FormItem label="Group Name" className="w-full xl:w-2/3 items-center">
-                    <input
-                        type="text"
-                        name="group_name"
-                        placeholder="Enter Group name"
-                        value={groupValue}
-                        onChange={(e) => setGroupValue(e.target.value)}
-                    />
 
-                    {groupValue && (
-                        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
-                            {groupDatatoSend?.map((item, key) => (
-                                <div key={key} className="flex items-center justify-center">
-                                    <div
-                                        className={
-                                            clickedGuarantee[item?.name]
-                                                ? 'px-6 py-2 bg-gray-500 text-green-200 font-semibold rounded-lg shadow-md transition duration-300 ease-in-out cursor-pointer'
-                                                : 'px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition duration-300 ease-in-out cursor-pointer'
-                                        }
-                                        onClick={() => hanldeGroupSearch(item?.name)}
-                                    >
-                                        {item?.name}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </FormItem>
-
-                <FormItem label="SEARCH FILTER STRINGS">
-                    <FormContainer className="items-center mt-4">
-                        <button onClick={handleAddFilter} type="button">
-                            <IoMdAddCircle className="text-3xl text-green-500" />
-                        </button>
-                    </FormContainer>
-
-                    {showAddFilter.map((item: any) => (
-                        <FormItem key={item} className="flex  gap-2">
-                            <div className="flex gap-3 items-center">
-                                <Field name={`filtersAdd[${item}]`} key={item}>
-                                    {({ field, form }: FieldProps<any>) => (
-                                        <Select
-                                            isMulti
-                                            isClearable
-                                            placeholder={`Select Filter Tags `}
-                                            options={filters.filters}
-                                            getOptionLabel={(option: any) => option.label}
-                                            getOptionValue={(option: any) => option.value}
-                                            onChange={(newVal) => {
-                                                const newValues = newVal ? newVal.map((val) => val.value) : []
-                                                form.setFieldValue(field.name, newValues)
-                                            }}
-                                            className="w-3/4"
-                                        />
-                                    )}
-                                </Field>
-                                <div className="">
-                                    <button type="button" className="" onClick={() => handleRemoveFilter(item)}>
-                                        <MdCancel className="text-xl text-red-500" />
-                                    </button>
-                                </div>
-                            </div>
-                        </FormItem>
-                    ))}
-
-                    {showAddFilter.length > 0 && (
-                        <>
-                            <Field>
-                                {({ form }: FieldProps<any>) => (
-                                    <Button variant="new" onClick={() => handleAddFilters(form.values)} type="button">
-                                        Search Strings
-                                    </Button>
-                                )}
-                            </Field>
-                        </>
-                    )}
-                </FormItem>
+            <CommonFilterSelect isCsv isSku values={values} setFilterId={setFilterId} filterId={filterId} />
+            <div className="mb-4">
+                <CommonFilterSelect isEdit isExclude filterId={excludeFilterId as string} setFilterId={setExcludeFilterId} />
             </div>
-
-            <FormContainer className="flex gap-3 flex-col xl:flex-row">
-                {MAXMINARRAY.map((item: any, key: any) => (
-                    <FormItem key={key} label={item.label} className="w-full xl:w-2/3">
-                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
-                    </FormItem>
-                ))}
-            </FormContainer>
-            <FormContainer className="flex gap-3 flex-col xl:flex-row">
-                {OFFARRAY.map((item, key) => (
-                    <FormItem key={key} label={item.label} className="w-full xl:w-2/3">
-                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
-                    </FormItem>
-                ))}
-            </FormContainer>
 
             <div className="grid xl:grid-cols-2 grid-cols-1 gap-10 ">
                 <div className="flex flex-col">
@@ -159,21 +74,96 @@ const SecondStepNotification = ({
                     </Field>
                 </div>
 
-                <FormItem label="Target Page">
-                    <Field name="target_page">
-                        {({ field, form }: FieldProps<any>) => {
-                            return (
-                                <Select
-                                    isClearable
-                                    placeholder="Select Target Page"
-                                    options={targetPageArray}
-                                    value={targetPageArray.find((option: any) => option.value === field.value)}
-                                    onChange={(option) => form.setFieldValue(field.name, option?.value)}
-                                />
-                            )
-                        }}
-                    </Field>
-                </FormItem>
+                {!values?.is_custom && (
+                    <FormItem label="Target Page">
+                        <Field name="target_page">
+                            {({ field, form }: FieldProps<any>) => {
+                                return (
+                                    <Select
+                                        isClearable
+                                        placeholder="Select Target Page"
+                                        options={targetPageArray}
+                                        value={targetPageArray.find((option: any) => option.value === field.value)}
+                                        onChange={(option) => form.setFieldValue(field.name, option?.value)}
+                                    />
+                                )
+                            }}
+                        </Field>
+                    </FormItem>
+                )}
+                {values?.target_page?.toLowerCase() === 'home' && (
+                    <FormItem label="Target Sub Page">
+                        <Field type="text" name="sub" component={Input} placeholder="Enter target Sub Page" />
+                    </FormItem>
+                )}
+
+                <div>
+                    <FormItem label="Is Custom" className="w-full xl:w-2/3">
+                        <Field type="checkbox" name="is_custom" component={Checkbox} />
+                    </FormItem>
+                </div>
+                {values?.is_custom && (
+                    <>
+                        <FormItem label="Page">
+                            <Field name="page">
+                                {({ form, field }: FieldProps) => {
+                                    console.log('field.value', field.value)
+                                    const selectedPage =
+                                        typeof field?.value === 'object'
+                                            ? pageNamesData?.find((option) => option.name === field?.value?.name)
+                                            : pageNamesData?.find((option) => option.name === field?.value)
+                                    return (
+                                        <div className="flex flex-col gap-1 w-full max-w-md">
+                                            <Select
+                                                isClearable
+                                                className="w-full"
+                                                options={pageNamesData}
+                                                getOptionLabel={(option) => option.name}
+                                                getOptionValue={(option) => option.id?.toString()}
+                                                value={selectedPage || null}
+                                                onChange={(newVal) => {
+                                                    console.log('inside  select', newVal)
+                                                    const name = newVal?.name
+                                                    form.setFieldValue('page', name)
+                                                    setSelectedPageName(name)
+                                                }}
+                                            />
+                                        </div>
+                                    )
+                                }}
+                            </Field>
+                        </FormItem>
+                        <FormContainer>
+                            <FormItem label="Sub Page">
+                                <Field name="sub_page">
+                                    {({ form, field }: FieldProps) => {
+                                        const selectedSubPage =
+                                            typeof field?.value === 'object'
+                                                ? subPageNamesData?.find((option) => option.name === field?.value?.name)
+                                                : subPageNamesData?.find((option) => option.name === field?.value)
+                                        return (
+                                            <div className="flex flex-col gap-1 w-full max-w-md">
+                                                <Select
+                                                    isClearable
+                                                    className="w-full"
+                                                    options={subPageNamesData}
+                                                    getOptionLabel={(option) => option.name}
+                                                    getOptionValue={(option) => option.id?.toString()}
+                                                    value={selectedSubPage || null}
+                                                    onChange={(newVal) => {
+                                                        console.log('inside sub page select', newVal)
+                                                        const name = newVal?.name
+                                                        form.setFieldValue('sub_page', name)
+                                                    }}
+                                                />
+                                            </div>
+                                        )
+                                    }}
+                                </Field>
+                            </FormItem>
+                        </FormContainer>
+                    </>
+                )}
             </div>
         </div>
     )

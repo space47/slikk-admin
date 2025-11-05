@@ -1,20 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
-import React from 'react'
-import { uniq } from 'lodash'
+import React, { useState } from 'react'
+import { useParams } from 'react-router-dom'
 
 type formData = {
     location: string
     sku: string
+    barcode?: string
+    skid?: string
+    [key: string]: string | undefined
 }
 
 interface props {
     formData: formData
-    getSkuData: any[]
     skuWiseData: any[]
-    data: any
     setQualitySentInput: any
     setBatchNumberInput: any
     setSkuWiseData: any
@@ -22,100 +22,198 @@ interface props {
     company: any
     setFormData: any
     setCounter: (x: any) => number
+    setFailedQc: (x: any) => void
+    setQcFailedData: (x: any) => void
 }
 
 const SkuDataInputs = ({
     formData,
-
-    getSkuData,
-    skuWiseData,
-    data,
     setQualitySentInput,
     setBatchNumberInput,
     setSkuWiseData,
-    batchNumberInput,
     company,
     setFormData,
     setCounter,
+    setFailedQc,
+    setQcFailedData,
 }: props) => {
-    const handleAddSku = () => {
-        const { sku, location } = formData
-        if (!sku.trim()) return
+    const [qcFailed, setQcFailed] = useState(false)
+    const { document_number } = useParams()
 
-        const getSameData = getSkuData?.find((item) => item.sku === sku)
-
-        const updatedData = skuWiseData.map((item) => {
-            if (item.sku === sku) {
-                return {
-                    ...item,
-                    qc_passed: item.qc_passed + 1,
-                    quantity_received: item.quantity_received + 1,
-                    qc_failed: item.quantity_received + 1 - (item.qc_passed + 1),
-                    location: location || item.location,
-                }
-            }
-            return item
-        })
-
-        if (getSameData) {
-            updatedData[0] = {
-                sku,
-                qc_passed: getSameData.qc_passed + 1,
-                quantity_received: getSameData.quantity_received + 1,
-                qc_failed: getSameData.quantity_received + 1 - (getSameData.qc_passed + 1),
-                location: formData?.location
-                    ? formData.location?.toLowerCase() !== getSameData?.location?.toLowerCase()
-                        ? uniq([getSameData?.location, formData.location].filter(Boolean)).join(',')
-                        : getSameData?.location
-                    : getSameData?.location,
-            }
-        }
-
-        if (!updatedData.find((item) => item.sku === sku) && !getSameData) {
-            updatedData[0] = {
-                sku,
-                qc_passed: 1,
-                quantity_received: 1,
-                qc_failed: 0,
-                location: location || '',
-                document_number: data?.document_number,
-                company_id: Number(company),
-                quantity_sent: 1,
-                batch_number: batchNumberInput ?? '',
-            }
-        }
-
-        setSkuWiseData(updatedData)
-    }
-
-    const handleAddGrn = async () => {
-        const skuData = skuWiseData[0]
-        console.log('formadta', !formData?.sku)
-        const getSameData = getSkuData?.find((item) => item.sku === formData.sku)
+    const handleAddSku = async () => {
         try {
-            if (getSameData || !formData.sku) {
-                const response = await axioisInstance.patch(`/goods/qualitycheck/${getSameData.id}`, skuData)
-                notification.success({
-                    message: response?.data?.message || 'Successfully Updated',
-                })
-                setCounter((prev: number) => prev + 1)
+            let response = await axioisInstance.get(`/goods/qualitycheck?grn_number=${document_number}&sku=${formData?.sku}`)
+            let results = response?.data?.data?.results ?? response?.data?.results ?? []
+            if (!results || results.length === 0) {
+                response = await axioisInstance.get(`/goods/qualitycheck?grn_number=${document_number}&barcode=${formData?.sku}`)
+                results = response?.data?.data?.results ?? response?.data?.results ?? []
+            }
+
+            if (results && results.length > 0) {
+                const dataToBeMatched = results[0]
+                const newSkuData = {
+                    sku: dataToBeMatched?.sku,
+                    qc_passed: 1,
+                    quantity_received: 1,
+                    qc_failed: 0,
+                    location: formData?.location || '',
+                    document_number: dataToBeMatched?.document_number,
+                    company_id: Number(company),
+                    quantity_sent: dataToBeMatched?.quantity_sent || 1,
+                    batch_number: dataToBeMatched?.batch_number ?? '',
+                    id: dataToBeMatched?.id,
+                }
+                setSkuWiseData([newSkuData])
+                await handleAddGrn(newSkuData)
             } else {
-                const response = await axioisInstance.post(`/goods/qualitycheck`, skuData)
-                notification.success({
-                    message: response?.data?.message || 'Successfully Added',
+                setFailedQc((prev: any) => {
+                    const arr = Array.isArray(prev) ? prev : []
+                    const idx = arr.findIndex((item) => item.sku === formData?.sku && item.location === (formData?.location ?? ''))
+
+                    if (idx !== -1) {
+                        const updated = [...arr]
+                        const currentQty = Number(updated[idx]?.quantity_sent) || 0
+                        updated[idx] = {
+                            ...updated[idx],
+                            quantity_sent: currentQty + 1,
+                        }
+                        return updated
+                    }
+
+                    localStorage.setItem(
+                        `failed_${document_number}`,
+                        JSON.stringify([...arr, { sku: formData?.sku || '', location: formData?.location || '', quantity_sent: 1 }]),
+                    )
+
+                    return [
+                        ...arr,
+                        {
+                            sku: formData?.sku || '',
+                            location: formData?.location || '',
+                            quantity_sent: 1,
+                        },
+                    ]
                 })
-                setCounter((prev: number) => prev + 1)
+                notification.error({
+                    message: error?.response?.data?.message || 'Item not found by SKU or Barcode in this GRN',
+                })
             }
         } catch (error) {
-            notification.error({
-                message: getSameData ? 'Failed to Update' : 'Failed to Add',
+            console.log('here lalaalal')
+            setFailedQc((prev: any) => {
+                const arr = Array.isArray(prev) ? prev : []
+                const idx = arr.findIndex((item) => item.sku === formData?.sku && item.location === (formData?.location ?? ''))
+
+                if (idx !== -1) {
+                    const updated = [...arr]
+                    const currentQty = Number(updated[idx]?.quantity_sent) || 0
+                    updated[idx] = {
+                        ...updated[idx],
+                        quantity_sent: currentQty + 1,
+                    }
+                    return updated
+                }
+
+                localStorage.setItem(
+                    `failed_${document_number}`,
+                    JSON.stringify([...arr, { sku: formData?.sku || '', location: formData?.location || '', quantity_sent: 1 }]),
+                )
+
+                return [
+                    ...arr,
+                    {
+                        sku: formData?.sku || '',
+                        location: formData?.location || '',
+                        quantity_sent: 1,
+                    },
+                ]
             })
+            notification.error({
+                message: 'No SKU or Barcode found',
+            })
+            console.error('Error during API call:', error)
+        }
+    }
+
+    const handleAddGrn = async (skuData: any) => {
+        let qc_failed = 0
+        let qc_Set = 1
+        let qc_passed = 1
+        if (qcFailed) {
+            qc_failed = 1
+            qc_Set = 1
+            qc_passed = 0
+        }
+
+        console.log('here')
+
+        const body = {
+            sku: skuData?.sku || '',
+            location: skuData?.location || '',
+            quantity_received: qc_Set,
+            qc_passed: qc_passed,
+            qc_failed: qc_failed,
+            action: 'add',
+        }
+
+        setQcFailedData({
+            failed: qc_failed,
+            set: qc_Set,
+            passed: qc_passed,
+        })
+
+        console.log('body')
+
+        try {
+            console.log('body')
+            const response = await axioisInstance.patch(`/goods/qualitycheck/${skuData?.id}`, body)
+            notification.success({
+                message: response?.data?.message || 'Successfully Added',
+            })
+            setCounter((prev: number) => prev + 1)
+        } catch (error: any) {
+            console.log('error in here 2')
+            setFailedQc((prev: any) => {
+                const arr = Array.isArray(prev) ? prev : []
+                const idx = arr.findIndex((item) => item.sku === formData?.sku && item.location === (formData?.location ?? ''))
+
+                if (idx !== -1) {
+                    const updated = [...arr]
+                    const currentQty = Number(updated[idx]?.quantity_sent) || 0
+                    updated[idx] = {
+                        ...updated[idx],
+                        quantity_sent: currentQty + 1,
+                    }
+                    return updated
+                }
+
+                localStorage.setItem(
+                    `failed_${document_number}`,
+                    JSON.stringify([...arr, { sku: formData?.sku || '', location: formData?.location || '', quantity_sent: 1 }]),
+                )
+
+                return [
+                    ...arr,
+                    {
+                        sku: formData?.sku || '',
+                        location: formData?.location || '',
+                        quantity_sent: 1,
+                    },
+                ]
+            })
+            notification.error({
+                message: 'Error',
+                description: error?.response?.data?.message || error?.data?.message || error?.data?.data?.message || 'Something went wrong',
+            })
+
             console.error('Error during API call:', error)
         }
 
         setFormData((prev: any) => ({
             ...prev,
             sku: '',
+            barcode: '',
+            skid: '',
         }))
         setQualitySentInput('')
         setBatchNumberInput('')
@@ -130,39 +228,49 @@ const SkuDataInputs = ({
     }
 
     return (
-        <div>
-            <div className="mb-4">
-                <label className="block text-gray-700">Location</label>
+        <div className="space-y-6 p-6 bg-white dark:bg-gray-900 rounded-2xl shadow-md">
+            {/* Location */}
+            <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Location</label>
                 <input
                     name="location"
                     type="text"
                     placeholder="Enter Location"
-                    className="w-auto xl:w-1/6 border border-gray-300 rounded p-2"
+                    className="w-full max-w-sm rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 p-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-400 outline-none"
                     value={formData.location}
                     onChange={handleInputChange}
                 />
             </div>
-            <div className="grid grid-cols-4 gap-2">
-                <div className="mb-4">
-                    <label className="block text-gray-700">SKU</label>
+
+            {/* QC Failed */}
+            <div className="flex items-center space-x-3">
+                <input
+                    name="qc_failed"
+                    type="checkbox"
+                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    checked={qcFailed}
+                    onChange={(e) => setQcFailed(e.target.checked)}
+                />
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Is QC Failed</label>
+            </div>
+
+            {/* Dynamic Search + Dropdown */}
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Sku/Barcode</label>
+            <div className="grid grid-cols-1 gap-4 xl:grid-cols-4 items-center">
+                {/* Search */}
+                <div className="space-y-2 col-span-3">
                     <input
                         name="sku"
                         type="search"
-                        placeholder="Enter SKU"
-                        className="w-2/3 border border-gray-300 rounded p-2"
-                        value={formData.sku}
+                        placeholder={`Enter SKU/BARCODE `}
+                        className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 p-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-400 outline-none"
+                        value={formData?.sku || ''}
                         onChange={handleInputChange}
                         onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                                handleAddSku()
-                            }
+                            if (e.key === 'Enter') handleAddSku()
                         }}
                     />
                 </div>
-            </div>
-
-            <div className=" flex justify-end" onClick={handleAddGrn}>
-                <Button variant="accept">Add</Button>
             </div>
         </div>
     )

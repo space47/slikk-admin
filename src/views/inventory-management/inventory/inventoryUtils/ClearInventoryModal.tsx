@@ -1,0 +1,64 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Dialog, FormContainer } from '@/components/ui'
+import FormButton from '@/components/ui/Button/FormButton'
+import { filterEmptyValues } from '@/utils/apiBodyUtility'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { errorMessage, successMessage } from '@/utils/responseMessages'
+import { AxiosError } from 'axios'
+import { Form, Formik } from 'formik'
+import React, { useState } from 'react'
+import InventoryActionForm from './InventoryActionForm'
+
+interface props {
+    isOpen: boolean
+    setIsOpen: (x: boolean) => void
+    storeId: number
+}
+
+const ClearInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
+    const [spinner, setSpinner] = useState(false)
+
+    const handleSubmit = async (values: any) => {
+        setSpinner(true)
+        const body = {
+            store_id: storeId,
+            brand_id: values?.brand?.id || '',
+            company_id: values?.companyList?.map((item: any) => item?.id)?.join(','),
+            category: values?.category?.name || '',
+            subcategory: values?.sub_categories?.name || '',
+            division: values?.division?.name || '',
+            row: values?.row || '',
+            location: values?.location || '',
+        }
+        const filteredBody = filterEmptyValues(body)
+        try {
+            const res = await axioisInstance.post(`/inventory-location/bulk/clear`, filteredBody)
+            successMessage(res)
+            setIsOpen(false)
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                errorMessage(error)
+            }
+        } finally {
+            setSpinner(false)
+        }
+    }
+
+    return (
+        <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)} width={800} height={'80vh'}>
+            <h4 className="text-red-500 mb-4"> Clear Inventory From Location</h4>
+            <Formik enableReinitialize initialValues={{} as any} onSubmit={handleSubmit}>
+                {({ setFieldValue }) => (
+                    <Form className="h-[70vh] overflow-scroll">
+                        <FormContainer className="h-[60vh] overflow-scroll">
+                            <InventoryActionForm setFieldValue={setFieldValue} />
+                        </FormContainer>
+                        <FormButton isSpinning={spinner} value="Apply" />
+                    </Form>
+                )}
+            </Formik>
+        </Dialog>
+    )
+}
+
+export default ClearInventoryModal

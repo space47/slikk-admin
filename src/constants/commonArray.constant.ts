@@ -71,3 +71,23 @@ export const SegmentOptions = () => {
         value: segment,
     }))
 }
+
+export const reportQueryArray = [
+    { label: 'Date', value: 'Date' },
+    { label: 'Number', value: 'Number' },
+    { label: 'String', value: 'String' },
+    { label: 'Boolean', value: 'Boolean' },
+    { label: 'Select', value: 'Select' },
+    { label: 'MultiSelect', value: 'MultiSelect' },
+]
+
+export const FashionList = [
+    { name: 'Ethnic', value: 'ethnic' },
+    { name: 'Accessories', value: 'accessories' },
+    { name: 'Travel & Luggages', value: 'travel & luggages' },
+    { name: 'Home & Living', value: 'home & living' },
+    { name: 'Gift Set', value: 'gift set' },
+    { name: 'Western', value: 'western' },
+    { name: 'Beauty', value: 'beauty' },
+    { name: 'Footwear', value: 'footwear' },
+]

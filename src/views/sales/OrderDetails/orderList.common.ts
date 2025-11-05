@@ -12,6 +12,7 @@ type RETURNORDER = {
 }
 
 export type SalesOrderDetailsResponse = {
+    split_order_id: string
     amount: string
     original_order: string
     exchange_order_id: string[]
@@ -24,6 +25,7 @@ export type SalesOrderDetailsResponse = {
     longitude: number
     distance: number
     order_id: string
+    is_internal_order?: boolean
     payment?: {
         amount: number
         mode: string
@@ -130,3 +132,43 @@ export const scheduleSlots: any = {
     '3': { start: '04:00 PM', end: '07:00 PM' },
     '4': { start: '07:00 PM', end: '10:00 PM' },
 }
+
+export type CommonOrderProduct = Partial<{
+    id: number
+    barcode: string
+    brand: string
+    name: string
+    color: string
+    size: string
+    product_type: string
+    image: string
+    sp: string | undefined | number
+    quantity: string
+    sub_category: string | undefined
+    location: string
+    mrp: string | undefined | number
+    fulfilled_quantity: string
+    final_price: number
+    sku: string
+    category: string | undefined
+    is_gift_wrap: boolean
+    llinfo?: string
+}>
+
+export interface FulfilledQuantities {
+    [key: number]: number
+}
+
+export interface SelectedLocations {
+    [productId: number]: {
+        [location: string]: number
+    }
+}
+
+export interface LogisticPartner {
+    value: string
+    label: string
+}
+
+export const NOTIFICATION_DURATION = 3000
+export const NAVIGATION_DELAY = 2000

@@ -3,13 +3,15 @@ import { Button } from '@/components/ui'
 import moment from 'moment'
 import { useMemo } from 'react'
 import { FaEdit, FaTrash } from 'react-icons/fa'
+import { RiCoupon2Fill } from 'react-icons/ri'
 import { useNavigate } from 'react-router-dom'
 
 interface props {
     handleDeleteCoupon: any
+    handleCouponRelease: any
 }
 
-export const CouponCoulumns = ({ handleDeleteCoupon }: props) => {
+export const CouponCoulumns = ({ handleDeleteCoupon, handleCouponRelease }: props) => {
     const navigate = useNavigate()
     return useMemo(() => {
         return [
@@ -37,22 +39,6 @@ export const CouponCoulumns = ({ handleDeleteCoupon }: props) => {
             },
             { header: 'Code', accessorKey: 'code' },
 
-            {
-                header: 'Users',
-                accessorKey: 'user',
-                cell: ({ row }: any) => {
-                    const userArray = row.original.user
-                    return (
-                        <div>
-                            {userArray?.map((item: any, key: any) => (
-                                <div key={key} className="mb-1">
-                                    <div>{item?.mobile}</div>
-                                </div>
-                            ))}
-                        </div>
-                    )
-                },
-            },
             {
                 header: 'Orders',
                 accessorKey: 'orders',
@@ -95,7 +81,25 @@ export const CouponCoulumns = ({ handleDeleteCoupon }: props) => {
             {
                 header: 'Campaign',
                 accessorKey: 'coupon_series.campaign',
-                cell: ({ row }: any) => row.original.coupon_series?.campaign || 'N/A',
+                cell: ({ row }: any) => {
+                    const campaign = row.original.coupon_series?.id
+                    return campaign ? (
+                        <div
+                            className="cursor-pointer hover:text-blue-500"
+                            onClick={() =>
+                                navigate(`/app/appSettings/couponsSeries`, {
+                                    state: {
+                                        campaignId: campaign,
+                                    },
+                                })
+                            }
+                        >
+                            {row.original.coupon_series?.campaign || campaign}
+                        </div>
+                    ) : (
+                        'N/A'
+                    )
+                },
             },
             {
                 header: 'Max Discount',
@@ -144,11 +148,22 @@ export const CouponCoulumns = ({ handleDeleteCoupon }: props) => {
                 accessorKey: 'create_date',
                 cell: ({ row }: any) => moment(row.original?.create_date).format('DD-MM-YYYY') || 'N/A',
             },
-            // {
-            //     header: 'Updated Date',
-            //     accessorKey: 'update_date',
-            //     cell: ({ row }: any) => moment(row.original?.update_date).format || 'N/A',
-            // },
+            {
+                header: 'Coupon Release',
+                accessorKey: 'code',
+                cell: ({ row }: any) => {
+                    return (
+                        <span>
+                            {
+                                <RiCoupon2Fill
+                                    className="text-2xl cursor-pointer text-blue-600"
+                                    onClick={() => handleCouponRelease(row?.original?.code)}
+                                />
+                            }
+                        </span>
+                    )
+                },
+            },
         ]
     }, [])
 }

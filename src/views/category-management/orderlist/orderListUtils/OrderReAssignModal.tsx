@@ -1,4 +1,5 @@
 import { Button, Dialog, Spinner } from '@/components/ui'
+import store from '@/store'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import { AxiosError } from 'axios'
@@ -11,15 +12,19 @@ interface props {
 
 const OrderReAssignModal = ({ isReAssign, setIsReAssign }: props) => {
     const [loadingAction, setLoadingAction] = useState<'picker' | 'partner' | null>(null)
+    const storeCodes = store.getState().storeSelect.store_ids
 
     const handleReassignPickerOrder = async (text: 'picker' | 'partner') => {
-        const body: { action?: string } = {}
+        const body: { action?: string; store_id?: string } = {}
 
         if (text === 'picker') {
             body.action = 'reassign_picker_orders'
         }
         if (text === 'partner') {
             body.action = 'reassign_delivery_partner'
+        }
+        if (storeCodes && storeCodes.length > 0) {
+            body.store_id = storeCodes.join(',')
         }
 
         try {

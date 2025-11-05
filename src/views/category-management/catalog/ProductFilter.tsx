@@ -43,7 +43,6 @@ const ProductFilterNest = ({
     setSubCategoryList,
     setProductTypeList,
     setBrandList,
-
     filters,
     setFilterString,
 }: PROPS) => {

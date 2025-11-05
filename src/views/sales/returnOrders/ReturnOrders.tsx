@@ -134,7 +134,7 @@ const ReturnOrders = () => {
     }
 
     return (
-        <div className="bg-gray-50 rounded-xl p-4">
+        <div className="bg-gray-50 dark:bg-slate-800 rounded-xl p-4">
             <div className="flex flex-col xl:flex-row justify-between lg:flex-row lg:justify-between mb-10 items-center gap-3">
                 <div className="flex  xl:gap-2  xl:flex-row  flex-col gap-3 order-2 xl:order-none md:order-none ">
                     <div className="flex items-center gap-2 bg-white dark:bg-gray-900 px-3 py-2 rounded-lg shadow-md">

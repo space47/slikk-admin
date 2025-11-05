@@ -197,9 +197,16 @@ export const PRODUCT_EDIT_COMMON_DOWN = [
         classname: 'w-full',
     },
     {
-        name: 'free_ittem',
+        name: 'free_item',
         type: 'checkbox',
         label: 'Is Free Item ',
+        component: Checkbox,
+        classname: 'w-full',
+    },
+    {
+        name: 'is_locked',
+        type: 'checkbox',
+        label: 'Is Locked',
         component: Checkbox,
         classname: 'w-full',
     },
@@ -285,6 +292,7 @@ export const INITIALVALUES: Product = {
 export const ProductFilterArray = [
     { label: 'SKU', value: 'sku' },
     { label: 'Name', value: 'name' },
+    { label: 'SKID', value: 'skid' },
     { label: 'Barcode', value: 'barcode' },
 ]
 

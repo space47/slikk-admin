@@ -16,13 +16,13 @@ import UltimateDatePicker from '@/common/UltimateDateFilter'
 import AccessDenied from '@/views/pages/AccessDenied'
 import ActiveUserTable from './componentsHomes/ActiveUserTable'
 import { IoBagCheck } from 'react-icons/io5'
-import { Tabs } from '@/components/ui'
+import { Spinner, Tabs } from '@/components/ui'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import { FiEye, FiEyeOff } from 'react-icons/fi'
 import HomepageMaps from './componentsHomes/HomepageMaps'
-import { HomeCalculations } from './homesUtils/homeFunctions'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
+import { HomeCalculations } from './homesUtils/homeFunctions'
 
 const Home = () => {
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
@@ -34,8 +34,14 @@ const Home = () => {
     const [viewMap, setViewMap] = useState(false)
     const navigate = useNavigate()
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
+    const [analyticsShow, setAnalyticsShow] = useState(false)
+    const [splitOrders, setSplitOrders] = useState(false)
 
-    const { data: homeData, refetch } = useFetchSingleData<SalesData>({
+    const {
+        data: homeData,
+        refetch,
+        loading,
+    } = useFetchSingleData<SalesData>({
         url: `/merchant/analytics/order?from=${from}&to=${To_Date}`,
         onErrorStatus: (status) => {
             if (status === 403) {
@@ -147,6 +153,14 @@ const Home = () => {
 
     return (
         <div className="flex flex-col gap-6  p-2 shadow-xl rounded-xl">
+            {loading && (
+                <div className="flex items-center justify-center ">
+                    <span className="shadow-xl p-2 rounded-[50px]">
+                        {' '}
+                        <Spinner size={30} />
+                    </span>
+                </div>
+            )}
             <div className="flex flex-col xl:flex-row  mb-4 gap-5 ">
                 <div className="w-full xl:mt-6 items-start flex justify-start">
                     <div className="flex flex-col xl:flex-row gap-4 xl:justify-center ">
@@ -233,7 +247,6 @@ const Home = () => {
                         </div>
                     </Card>
                 ))}
-
                 <Card className="shadow-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl cursor-pointer">
                     <div className="flex gap-10 items-center">
                         <div>
@@ -262,11 +275,48 @@ const Home = () => {
                     </div>
                 </Card>
             </div>
-
-            {/* CHART */}
-            <div className="mt-4">
-                <ActiveUserTable from={from} to={to} />
+            <div className="flex items-center border-b border-gray-300 gap-2 mt-3">
+                <button
+                    className={`px-4 py-2  transition-all duration-200 text-xl font-bold ${
+                        analyticsShow ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500 hover:text-green-600'
+                    }`}
+                    onClick={() => setAnalyticsShow((prev) => !prev)}
+                >
+                    Sessions
+                </button>
+                <button
+                    className={`px-4 py-2 text-xl font-bold transition-all duration-200 ${
+                        splitOrders ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500 hover:text-green-600'
+                    }`}
+                    onClick={() => setSplitOrders((prev) => !prev)}
+                >
+                    Split Orders
+                </button>
             </div>
+
+            {analyticsShow && (
+                <div className="mt-4">
+                    <ActiveUserTable
+                        from={from}
+                        to={to}
+                        reportName="Daily_user_stats"
+                        queryName="Overall_stats"
+                        label="Active User Stats"
+                    />
+                </div>
+            )}
+            {splitOrders && (
+                <div className="mt-4">
+                    <ActiveUserTable
+                        isTable
+                        from={from}
+                        to={to}
+                        reportName="Split Orders"
+                        queryName="Bangalore Orders Overall"
+                        label="Split orders"
+                    />
+                </div>
+            )}
 
             <div className="mt-5 w-[320px] xl:w-full">
                 {homeData?.brand_wise_sale && <BrandDataChart brandData={homeData?.brand_wise_sale} from={from} to={to} />}

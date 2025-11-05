@@ -13,7 +13,7 @@ import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { FaDownload, FaSync } from 'react-icons/fa'
 import CustomerInfo from '@/views/inventory-management/inward/inwardDetails/components/CustomerInfo'
-import { Select } from '@/components/ui'
+import { Select, Spinner } from '@/components/ui'
 import GDNdetailTable from './GDNdetailTable'
 import { AxiosError } from 'axios'
 // import { string } from 'yup'
@@ -31,6 +31,7 @@ const GdnDetails = () => {
     const { document_number, id } = useParams()
     const [showSyncModal, setShowSyncModal] = useState(false)
     const [isSyncing, setIsSyncing] = useState(false)
+    const [isRegenerating, setIsRegenerating] = useState(false)
     const [grnNumber, setGrnNumber] = useState('')
     const navigate = useNavigate()
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
@@ -90,7 +91,24 @@ const GdnDetails = () => {
         setShowSyncModal(false)
     }
 
+    const handleCreateShipment = async () => {
+        setIsRegenerating(true)
+        try {
+            const res = await axioisInstance.get(`/goods/dispatch/shipment/create/${data?.id}`)
+            notification.success({ message: res?.data?.message || 'Shipment created successfully from GDN' })
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                notification.error({
+                    message: error?.response?.data?.message || error?.response?.data?.data?.message || 'Failed to create shipment from GDN',
+                })
+            }
+        } finally {
+            setIsRegenerating(false)
+        }
+    }
+
     const handleRegenerateGrn = async (doc_number: string) => {
+        notification.info({ message: 'Downloading, please wait...' })
         try {
             let responseData = `/goods/dispatch/${id}/detail?download=true&regenerate=true&document_number=${doc_number}`
             if (selectValue === 'csv') {
@@ -176,6 +194,14 @@ const GdnDetails = () => {
                                             <span className="font-bold">Export</span> <FaDownload className="" />
                                         </button>
                                     </div>
+                                    <div>
+                                        <button
+                                            onClick={handleCreateShipment}
+                                            className="flex gap-2 bg-gray-200 p-2 rounded-xl text-black hover:bg-gray-300 font-bold items-center justify-center"
+                                        >
+                                            Create Shipment from GDN {isRegenerating && <Spinner size={20} color={'yellow'} />}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                             <span className="flex items-center">
@@ -236,22 +262,34 @@ const GdnDetails = () => {
                                         </button>
                                     </div>
                                 </div>
-                                <div>
-                                    <button onClick={() => handleSyncClick(data.grn_number)} className="border-none bg-none flex gap-5">
-                                        {' '}
-                                        <div className="flex gap-2 font-bold text-green-600">
-                                            SYNC GDN <FaSync className="text-2xl" />
-                                        </div>{' '}
-                                    </button>
-                                </div>
+                                {isSyncing ? (
+                                    <>
+                                        <Spinner size={30} />
+                                    </>
+                                ) : (
+                                    <>
+                                        <div>
+                                            <button
+                                                onClick={() => handleSyncClick(data.grn_number)}
+                                                className="border-none bg-none flex gap-5"
+                                            >
+                                                {' '}
+                                                <div className="flex gap-2 font-bold text-green-600">
+                                                    SYNC GDN <FaSync className="text-2xl" />
+                                                </div>{' '}
+                                            </button>
+                                        </div>
+                                    </>
+                                )}
                             </div>
+                            <br />
                             {/* <QCtable data={data.grn_quality_check} totalData={data.grn_quality_check.length} /> */}
                             {data?.gdn_products?.length === 0 ? (
                                 <>
                                     <div className="flex justify-center items-center text-xl font-bold text-red-700">NO GDN PRODUCTS</div>
                                 </>
                             ) : (
-                                <GDNdetailTable data={data?.gdn_products || []} />
+                                <GDNdetailTable />
                             )}
                         </div>
                         {showSyncModal && (
@@ -269,7 +307,7 @@ const GdnDetails = () => {
                                 onOk={syncGRN}
                                 onCancel={handleCloseModal}
                             >
-                                <div className="italic text-lg font-semibold">SYNC YOUR GRN NUMBER</div>
+                                <div className="italic text-lg font-semibold">Are you sure you want to sync this GDN?</div>
                             </Modal>
                         )}
                         {isSyncing && <Loading loading={isSyncing} />}

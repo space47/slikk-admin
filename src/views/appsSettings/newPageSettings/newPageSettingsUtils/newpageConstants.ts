@@ -74,18 +74,25 @@ export const InitialValuesEdit = (data: pageSettingsType | undefined) => {
         display_name: data?.display_name ?? '',
         is_active: data?.is_active ?? false,
         component_type: data?.component_type ?? '',
-        data_type: data?.data_type ?? '',
-        // data_type?.division_select:data?.extra_info?.divisionForFilter,
+        data_type: {
+            ...data?.data_type,
+            validation: data?.data_type?.duration,
+        },
+        // data_type?.division_select:data?.extra_info?.divisionForFilter, validation
         component_config: data?.component_config ?? {},
         background_config: data?.background_config ?? {},
         header_config: data?.header_config ?? {},
         sub_header_config: data?.sub_header_config ?? {},
         footer_config: data?.footer_config ?? {},
-        extra_info: data?.extra_info ?? {},
+        extra_info: {
+            ...data?.extra_info,
+            coupon_series: data?.extra_info?.series_id ?? '',
+        },
         is_section_clickable: data?.is_section_clickable ?? false,
         last_updated_by: data?.last_updated_by ?? '',
         created_at: data?.created_at ?? '',
         updated_at: data?.updated_at ?? '',
+        section_type: data?.section_type ?? '',
     }
 }
 
@@ -94,7 +101,7 @@ export const FormFieldsArray = [
     { label: 'Display Name', name: 'display_name', type: 'text' },
     { label: 'Is Active', name: 'is_active', type: 'checkbox' },
     // { label: 'Is Section Clickable', name: 'is_section_clickable', type: 'checkbox' },
-    { label: 'Product Filter', name: 'extra_info?.is_product_filter', type: 'checkbox' },
+    { label: 'Product Filter', name: 'extra_info.is_product_filter', type: 'checkbox' },
 ]
 
 export const useBgRemoveFunctions = (setInitialValue: any) => {

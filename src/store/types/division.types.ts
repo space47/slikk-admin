@@ -7,6 +7,7 @@ export interface SINGLE_DIVISION_DATA {
     description: string
     title: string
     footer: string
+    count: number
     quick_filter_tags: string
     position: string
     seo_tags: string
@@ -20,6 +21,7 @@ export interface SINGLE_DIVISION_DATA {
         name: string
         division: number
         division_name: string
+        count: number
         image: string
         description: string
         title: string
@@ -37,6 +39,7 @@ export interface SINGLE_DIVISION_DATA {
         sub_categories: {
             id: number
             name: string
+            count: number
             category: number
             category_name: string
             image: string
@@ -58,6 +61,7 @@ export interface SINGLE_DIVISION_DATA {
                 name: string
                 sub_category_name: string
                 image: string
+                count: number
                 description: string
                 title: string
                 footer: null

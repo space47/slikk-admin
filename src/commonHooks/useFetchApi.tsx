@@ -25,6 +25,7 @@ export const useFetchApi = <T,>({ url, initialData = [], typeOfData, pollingInte
     const fetchData = useCallback(async () => {
         try {
             setLoading(true)
+            setData([])
             const response = await axioisInstance.get<ApiResponse<T>>(url)
             if (typeOfData === 'Object') {
                 const data = response.data
@@ -34,8 +35,10 @@ export const useFetchApi = <T,>({ url, initialData = [], typeOfData, pollingInte
                 setData(response.data?.data?.results ?? [])
                 setTotalData(response.data?.data?.count ?? 0)
             }
+            setResponseStatus(response.status)
         } catch (error) {
             if (error instanceof AxiosError) {
+                setData([])
                 setResponseStatus(error.response?.status)
             }
         } finally {

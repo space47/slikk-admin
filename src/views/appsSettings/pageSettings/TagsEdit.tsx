@@ -6,11 +6,12 @@ import React from 'react'
 interface FilterProps {
     filterOptions: any
     isValue?: boolean
+    customClass?: string
 }
 
-const TagsEdit = ({ filterOptions, isValue }: FilterProps) => {
+const TagsEdit = ({ filterOptions, isValue, customClass }: FilterProps) => {
     return (
-        <FormContainer className="grid grid-cols-2 gap-4 w-3/4">
+        <FormContainer className={` ${customClass ? customClass : 'grid grid-cols-2 gap-4 w-3/4 '} `}>
             {/* Filters */}
             <FormItem label="Section Filters">
                 <Field name="section_filters">

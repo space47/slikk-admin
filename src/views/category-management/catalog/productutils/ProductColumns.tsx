@@ -5,6 +5,10 @@ import { Product } from '../CommonType'
 import { FaEdit, FaEye } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
+import { GiResize } from 'react-icons/gi'
+import { notification } from 'antd'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { Tooltip } from '@/components/ui'
 
 interface props {
     handleOpenModal: (img: any) => void
@@ -13,13 +17,27 @@ interface props {
 
 export const useProductColumns = ({ handleOpenModal, handleViewProducts }: props) => {
     const navigate = useNavigate()
+
+    const handleResize = async (barcode: string | undefined) => {
+        try {
+            const res = await axioisInstance.post(`/backend/task/create`, {
+                task_name: 'resize_product_images',
+                barcodes: barcode,
+            })
+            notification.success({ message: res?.data?.message || 'Successfully Resized' })
+        } catch (error) {
+            notification.error({ message: 'Failed to Resize' })
+            console.error('Error resizing product:', error)
+        }
+    }
+
     return useMemo<ColumnDef<Product>[]>(
         () => [
             {
                 header: 'Edit',
                 accessorKey: '',
                 cell: ({ row }) => (
-                    <button className="border-none bg-none" onClick={() => navigate(`/app/catalog/products/${row.original.barcode}`)}>
+                    <button className="border-none bg-none" onClick={() => navigate(`/app/catalog/products/${row.original.skid}`)}>
                         {/* <a href={`/app/catalog/products/${row.original.barcode}`} target="_blank" rel="noreferrer">
                             {' '}
                             </a> */}
@@ -33,6 +51,15 @@ export const useProductColumns = ({ handleOpenModal, handleViewProducts }: props
                 cell: ({ row }) => (
                     <button className="border-none bg-none" onClick={() => handleViewProducts(row?.original)}>
                         <FaEye className="text-xl text-yellow-500" />
+                    </button>
+                ),
+            },
+            {
+                header: 'Re-Size Image',
+                accessorKey: '',
+                cell: ({ row }) => (
+                    <button className="border-none bg-none" onClick={() => handleResize(row?.original?.barcode)}>
+                        <GiResize className="text-xl text-green-500" />
                     </button>
                 ),
             },
@@ -73,6 +100,23 @@ export const useProductColumns = ({ handleOpenModal, handleViewProducts }: props
                                 alt="Image"
                                 className="w-24 h-20 object-cover cursor-pointer"
                                 onClick={() => handleOpenModal(row.original.image)}
+                            />
+                        </>
+                    )
+                },
+            },
+            {
+                header: 'Frame Image',
+                accessorKey: 'framed_image_url',
+                cell: ({ row }: any) => {
+                    const imageUrl = row?.original?.framed_image_url?.split(',')[0]
+                    return (
+                        <>
+                            <img
+                                src={imageUrl}
+                                alt="Image"
+                                className="w-24 h-20 object-cover cursor-pointer"
+                                onClick={() => handleOpenModal(row.original.framed_image_url)}
                             />
                         </>
                     )
@@ -140,10 +184,28 @@ export const useProductColumns = ({ handleOpenModal, handleViewProducts }: props
                 },
             },
             {
-                header: 'Return Amount',
-                accessorKey: 'return_amount',
+                header: 'Update Date',
+                accessorKey: 'update_date',
                 cell: (info) => {
                     return <div>{moment(info.getValue() as string).format('YYYY-MM-DD HH:mm:ss')}</div>
+                },
+            },
+            {
+                header: 'Updated By',
+                accessorKey: 'last_updated_by',
+                cell: (props) => {
+                    return (
+                        <Tooltip title="Go to user">
+                            <a
+                                href={`/app/customerAnalytics/${props?.row?.original?.last_updated_by}`}
+                                className="cursor-pointer hover:text-green-500"
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                {props?.row?.original?.last_updated_by}
+                            </a>
+                        </Tooltip>
+                    )
                 },
             },
         ],

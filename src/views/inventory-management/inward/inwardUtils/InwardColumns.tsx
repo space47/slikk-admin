@@ -6,6 +6,11 @@ import { FaEdit, FaSave, FaTimes, FaTrash } from 'react-icons/fa'
 
 const isDashboard = import.meta.env.VITE_IS_DASHBOARD !== 'brand'
 
+interface props {
+    companyList: { id: number; name: string }[]
+    storeList: { id: number; name: string }[]
+}
+
 const getowner = (own: any) => {
     if (own === true) {
         return 'Yes'
@@ -14,7 +19,16 @@ const getowner = (own: any) => {
     }
 }
 
-export const InwardColumns = () => {
+export const InwardColumns = ({ companyList, storeList }: props) => {
+    function GetCompanyNameFromId(id: number) {
+        const company = companyList.find((company) => company.id === id)
+        return company ? company.name : ''
+    }
+
+    function GetStoreNameFromId(id: number) {
+        const store = storeList.find((store) => store.id === id)
+        return store ? store.name : ''
+    }
     return useMemo(
         () => [
             {
@@ -49,6 +63,16 @@ export const InwardColumns = () => {
                 cell: (info) => info.getValue(),
             },
             {
+                header: 'Company',
+                accessorKey: 'company',
+                cell: ({ row }) => GetCompanyNameFromId(row.original.company),
+            },
+            {
+                header: 'Store',
+                accessorKey: 'store',
+                cell: ({ row }) => GetStoreNameFromId(row.original.store),
+            },
+            {
                 header: 'Create Date',
                 accessorKey: 'create_date',
                 cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
@@ -66,7 +90,9 @@ export const InwardColumns = () => {
             {
                 header: 'Received At',
                 accessorKey: 'received_address',
-                cell: (info) => info.getValue(),
+                cell: (info) => (
+                    <div className="w-[100px] line-clamp-3 overflow-hidden text-ellipsis">{info.getValue() || 'Not Available'}</div>
+                ),
             },
             {
                 header: 'Received By',
@@ -77,6 +103,25 @@ export const InwardColumns = () => {
                 header: 'Slikk Owned',
                 accessorKey: 'slikk_owned',
                 cell: (info) => getowner(info.getValue()),
+            },
+            {
+                header: 'Synced Items',
+                accessorKey: 'synced_quantity',
+            },
+            {
+                header: 'UnSynced Items',
+                accessorKey: 'synced_quantity',
+                cell: ({ row }) => {
+                    const synced =
+                        typeof row?.original?.synced_quantity === 'number'
+                            ? row?.original?.synced_quantity
+                            : parseInt(row?.original?.synced_quantity) || 0
+                    const qcPassed =
+                        typeof row?.original?.qc_passed_quantity === 'number'
+                            ? row?.original?.qc_passed_quantity
+                            : parseInt(row?.original?.qc_passed_quantity) || 0
+                    return <div>{qcPassed - synced}</div>
+                },
             },
             {
                 header: 'Total QTY',
@@ -99,25 +144,25 @@ export const InwardColumns = () => {
 }
 
 export const InwardDetailsColumns = (
-    editingRow,
-    editFormDataRef,
-    barcodeInputRef,
-    skuInputRef,
-    qtySentInputRef,
-    handleEdit,
-    renderEditableCell,
-    handleEditChange,
-    handleEditKeyDown,
-    handleSave,
-    handleCancel,
-    handleAddRow,
+    editingRow: any,
+    editFormDataRef: any,
+    barcodeInputRef: any,
+    skuInputRef: any,
+    qtySentInputRef: any,
+    handleEdit: any,
+    renderEditableCell: any,
+    handleEditChange: any,
+    handleEditKeyDown: any,
+    handleSave: any,
+    handleCancel: any,
+    handleAddRow: any,
     formData: {
         boxCount: string
         sku: string
         barcode: string
     },
     skuWiseData: any[],
-    handleDeleteRow,
+    handleDeleteRow: any,
 ) => {
     return useMemo(
         () => [
@@ -242,18 +287,18 @@ export const InwardDetailsColumns = (
     )
 }
 export const ShipmentDetailsInwardColumns = (
-    editingRow,
-    editFormDataRef,
-    barcodeInputRef,
-    skuInputRef,
-    qtySentInputRef,
-    handleEdit,
-    renderEditableCell,
-    handleEditChange,
-    handleEditKeyDown,
-    handleSave,
-    handleCancel,
-    qtyReceivedInputRef,
+    editingRow: any,
+    editFormDataRef: any,
+    barcodeInputRef: any,
+    skuInputRef: any,
+    qtySentInputRef: any,
+    handleEdit: any,
+    renderEditableCell: any,
+    handleEditChange: any,
+    handleEditKeyDown: any,
+    handleSave: any,
+    handleCancel: any,
+    qtyReceivedInputRef: any,
 ) => {
     useMemo(
         () => [

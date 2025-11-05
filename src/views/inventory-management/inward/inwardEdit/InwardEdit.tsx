@@ -27,7 +27,7 @@ const InwardEdit = () => {
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
     const [companyData, setCompanyData] = useState<number>()
     const { grn } = useParams()
-    console.log('docs', docsView)
+
     const navigate = useNavigate()
 
     const handleUpload = async (files: File[]) => {
@@ -153,23 +153,27 @@ const InwardEdit = () => {
     }
 
     const handleSubmit = async (values: FormModel) => {
+        console.log('values', values)
         const docsShow = await processUpload(handleUpload, values.files, values.document)
-        const imageShow = await processUpload(handleimage, values.image, values.images)
+        const imageShow = values.image?.length > 0 ? await processUpload(handleimage, values.image, values.images) : ''
+
+        const validDocumentNumber = values?.document_number === datas?.document_number ? '' : values?.document_number
 
         const formData = {
             ...values,
+            received_by: values?.received_by?.mobile,
+            document_number: validDocumentNumber,
             company: companyData,
             document: docsShow,
-            images: imageShow,
+            images: imageShow || '',
         }
 
         console.log('formDaata', formData)
 
+        const filteredBody = Object.fromEntries(Object.entries(formData).filter(([, value]) => value !== ''))
+
         try {
-            const response = await axioisInstance.patch(
-                'goods/received', //
-                formData,
-            )
+            const response = await axioisInstance.patch(`goods/received/${datas?.id}`, filteredBody)
 
             console.log(response)
             notification.success({
@@ -185,8 +189,6 @@ const InwardEdit = () => {
             })
         }
     }
-    console.log('ssdsdsdsd', imagview)
-
     return (
         <div>
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>

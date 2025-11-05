@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
-import Button from '@/components/ui/Button'
-import { Field, Form, Formik, ErrorMessage, FieldProps } from 'formik'
+import { Field, Form, Formik, ErrorMessage, FieldProps, FormikErrors } from 'formik'
 import { useEffect, useMemo, useState } from 'react'
 import { notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -16,14 +15,13 @@ import { getAllFiltersAPI } from '@/store/action/filters.action'
 import ImageComponent from './component/ImageComponent'
 import SectionsComponent from './component/SectionsComponent'
 import * as Yup from 'yup'
-import LoadingSpinner from '@/common/LoadingSpinner'
 import { beforeUpload } from '@/common/beforeUpload'
 import BannerCategories from './component/BannerCategories'
 import { beforeVideoUpload } from '@/common/beforUploadVideo'
 import VideoComponent from './component/VideoComponent'
 import { Checkbox, Select } from '@/components/ui'
 import BannerFilterTags from './component/BannerFilterTags'
-import { ImageHandlerBanners, MediaType } from './component/bannerFunctions'
+import { bannerBodyFile, ImageHandlerBanners } from './component/bannerFunctions'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 import FullDateForm from '@/common/FullDateForm'
 import { pageSettingsService } from '@/store/services/pageSettingService'
@@ -31,10 +29,15 @@ import CommonFilterSelect from '@/common/ComonFilterSelect'
 import { useFetchApi } from '@/commonHooks/useFetchApi'
 import CommonSelect from '../../pageSettings/CommonSelect'
 import { SortArrays } from '../../newPageSettings/newPageSettingsUtils/newPageCommons'
+import FormButton from '@/components/ui/Button/FormButton'
+import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
+import { companyStore } from '@/store/types/companyStore.types'
 
 const EditBanner = () => {
     const { id } = useParams()
     const navigate = useNavigate()
+
+    const dispatch = useAppDispatch()
     const [webImagview, setWebImageView] = useState<string[]>([])
     const [mobileImagview, setMobileImageView] = useState<string[]>([])
     const [weblottieview, setWeblottieView] = useState<string[]>([])
@@ -46,14 +49,21 @@ const EditBanner = () => {
     const [showSpinner, setShowSpinner] = useState(false)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const [subPageNamesData, setSubPageNamesData] = useState<any>([])
+    const [selectedPage, setSelectedPage] = useState('')
     const [filterId, setFilterId] = useState<number | string>('')
+    const [excludeFilterId, setExcludeFilterId] = useState<number | string>('')
+
+    const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
+
+    useEffect(() => {
+        dispatch(fetchCompanyStore())
+    }, [dispatch])
 
     const validationSchema = Yup.object().shape({
         min_off: Yup.number().max(Yup.ref('max_off'), 'min_off must be less than or equal to max_off'),
         max_off: Yup.number(),
     })
 
-    const dispatch = useAppDispatch()
     useEffect(() => {
         dispatch(getAllBrandsAPI())
         dispatch(getAllFiltersAPI())
@@ -64,18 +74,12 @@ const EditBanner = () => {
     }, [id])
 
     const { data: bannerData } = useFetchSingleData<any>({ url: query })
-
     const toArray = (value: string | undefined): string[] => (value ? [value] : [])
-
-    const { data: SubPageNames, isSuccess: isSubPageNamesSuccess } = pageSettingsService.useSubPageNamesQuery({
-        pageName: bannerData?.page || '',
-    })
+    const { data: SubPageNames } = pageSettingsService.useSubPageNamesQuery({ pageName: selectedPage })
 
     useEffect(() => {
-        if (isSubPageNamesSuccess) {
-            setSubPageNamesData(SubPageNames?.data || [])
-        }
-    }, [isSubPageNamesSuccess])
+        setSubPageNamesData(SubPageNames?.data || [])
+    }, [SubPageNames])
 
     const { data: bannerFile } = useFetchApi<BANNER_MODEL>({
         url: `/banners?p=1&page_size=200&page=${bannerData?.page}&section_heading=${bannerData?.section_heading}`,
@@ -83,7 +87,6 @@ const EditBanner = () => {
 
     useEffect(() => {
         if (!bannerData) return
-
         setMobileImageView(toArray(bannerData.image_mobile))
         setWebImageView(toArray(bannerData.image_web))
         setWebVideoView(toArray(bannerData?.extra_attributes?.video_web))
@@ -93,27 +96,59 @@ const EditBanner = () => {
         setMobilelottieView(toArray(bannerData?.extra_attributes?.lottie_mobile))
         setWeblottieView(toArray(bannerData?.extra_attributes?.lottie_web))
         setFilterId(bannerData?.filter_id)
+        setSelectedPage(bannerData?.page)
+        setExcludeFilterId(bannerData?.extra_attributes?.filter_id_exclude || '')
     }, [bannerData])
 
-    const handleImageRemove = (index: number, type: MediaType) => {
-        const stateMap: Record<MediaType, React.Dispatch<React.SetStateAction<string[]>>> = {
-            [MediaType.MobileImage]: setMobileImageView,
-            [MediaType.WebImage]: setWebImageView,
-            [MediaType.SectionWeb]: setSectionBGweb,
-            [MediaType.SectionMobile]: setSectionBGmobile,
-            [MediaType.MobileVideo]: setMobileVideoView,
-            [MediaType.WebVideo]: setWebVideoView,
-            [MediaType.MobileLottie]: setMobilelottieView,
-            [MediaType.WebLottie]: setWeblottieView,
-        }
-
-        const updater = stateMap[type]
-        if (updater) {
-            updater((prev) => prev.filter((_, i) => i !== index))
+    const handleImageRemove = (
+        type: string,
+        setFieldValue: (field: string, value: any, data?: boolean) => Promise<void | FormikErrors<BANNER_MODEL>>,
+    ) => {
+        switch (type) {
+            case 'm_image':
+                setFieldValue('image_mobile_array', [])
+                setFieldValue('image_mobile', '')
+                setMobileImageView([])
+                break
+            case 'w_image':
+                setFieldValue('image_web_array', [])
+                setFieldValue('image_web', '')
+                setWebImageView([])
+                break
+            case 'm_video':
+                setFieldValue('video_mobile_array', [])
+                setFieldValue('extra_attributes.video_mobile', '')
+                setMobileVideoView([])
+                break
+            case 'w_video':
+                setFieldValue('video_web_array', [])
+                setFieldValue('extra_attributes.video_web', '')
+                setWebVideoView([])
+                break
+            case 'm_lottie':
+                setFieldValue('lottie_mobile_array', [])
+                setFieldValue('extra_attributes.lottie_mobile', '')
+                setMobilelottieView([])
+                break
+            case 'w_lottie':
+                setFieldValue('lottie_web_array', [])
+                setFieldValue('extra_attributes.lottie_web', '')
+                setWeblottieView([])
+                break
+            case 'm_bg':
+                setFieldValue('section_background_mobile_array', [])
+                setFieldValue('extra_attributes.section_background_mobile', '')
+                setSectionBGmobile([])
+                break
+            case 'w_bg':
+                setFieldValue('section_background_web_array', [])
+                setFieldValue('extra_attributes.section_background_web', '')
+                setSectionBGweb([])
+                break
+            default:
+                break
         }
     }
-    console.log('banner data us', bannerData)
-
     const handleSubmit = async (values: BANNER_MODEL) => {
         const {
             webImageUpload,
@@ -127,87 +162,36 @@ const EditBanner = () => {
             webLottieUpload,
             mobileLottieUpload,
         } = await ImageHandlerBanners(values, webImagview, mobileImagview)
-
-        const body = {
-            banner_id: values?.id || '',
-            barcodes: values?.barcodes || '',
-            brand: values?.brand?.map((item: any) => item.name).join(',') || '',
-            category: values?.category?.map((item: any) => item.name).join(',') || '',
-            coupon_code: values?.coupon_code || '',
-            division: values?.division?.map((item: any) => item.name).join(',') || '',
-            extra_attributes: {
-                video_web: webVideoUpload ?? values?.extra_attributes?.video_web ?? '',
-                video_mobile: mobileVideoUpload ?? values?.extra_attributes?.video_mobile ?? '',
-                web_aspect_ratio: webAspectratio?.[0]
-                    ? Number(webAspectratio[0].toFixed(2))
-                    : values?.extra_attributes?.web_aspect_ratio || '',
-                mobile_aspect_ratio: mobileAspectratio?.[0]
-                    ? Number(mobileAspectratio[0].toFixed(2))
-                    : values?.extra_attributes?.mobile_aspect_ratio || '',
-                mobile_redirection_url: values?.extra_attributes?.mobile_redirection_url || '',
-                web_redirection_url: values?.extra_attributes?.web_redirection_url || '',
-                lottie_web: webLottieUpload ?? values?.extra_attributes?.lottie_web ?? '',
-                lottie_mobile: mobileLottieUpload ?? values?.extra_attributes?.lottie_mobile ?? '',
-            },
-            footer: values?.footer || '',
-            from_date: values?.from_date || '',
-            id: values?.id || '',
-            image_mobile: mobileImageUpload || '',
-            image_web: webImageUpload || '',
-            is_clickable: values?.is_clickable ?? '',
-            max_price: values?.max_price || '',
-            min_price: values?.min_price || '',
-            name: values?.name || '',
-            offer_id: values?.offer_id || '',
-            offers: values?.offers ?? '',
-            page: values?.page || '',
-            filter_id: filterId || '',
-            parent_banner: values?.parent_banner || '',
-            position: values?.position || '',
-            product_type: values?.product_type?.map((item: any) => item.name).join(',') || '',
-            quick_filter_tags: values?.quick_filter_tags || [],
-            redirection_url: values?.redirection_url || '',
-            section_background_mobile: sectionBgMobileUpload || values?.section_background_mobile || '',
-            section_background_mobile_array: values?.section_background_mobile_array || [],
-            section_background_web: sectionBgWebUpload || values?.section_background_web || '',
-            section_background_web_array: values?.section_background_web_array || [],
-            section_heading: values?.section_heading || '',
-            sub_category: values?.sub_category?.map((item: any) => item.name).join(',') || '',
-            tags: [
-                ...(values?.tags ? values.tags : []),
-                BANNER_FIELDS_TYPE.some((item) => item.name === 'max_off') && values?.max_off ? `maxoff_${values?.max_off}` : '',
-                BANNER_FIELDS_TYPE.some((item) => item.name === 'min_off') && values?.min_off ? `minoff_${values?.min_off}` : '',
-                values?.sort ? `sort_${values?.sort}` : '',
-            ]?.filter((val) => val !== ''),
-            to_date: values?.to_date || '',
-            type: values?.type || '',
-            uptooff: values?.uptooff || '',
-            video_mobile: values?.video_mobile || '',
-            video_web: values?.video_web || '',
-            sub_page: values?.sub_page || [],
-        }
-
-        const keysToKeepEvenIfEmpty = ['division', 'category', 'sub_category', 'product_type']
-
+        const body = bannerBodyFile(
+            values,
+            webVideoUpload,
+            mobileVideoUpload,
+            webAspectratio,
+            mobileAspectratio,
+            webLottieUpload,
+            mobileLottieUpload,
+            mobileImageUpload,
+            webImageUpload,
+            filterId,
+            excludeFilterId,
+            sectionBgWebUpload,
+            sectionBgMobileUpload,
+            BANNER_FIELDS_TYPE,
+        )
+        const keysToKeepEvenIfEmpty = ['division', 'category', 'sub_category', 'product_type', 'image_web', 'image_mobile', 'brand']
         const filteredBody = Object.fromEntries(
             Object.entries(body).filter(([key, value]) => keysToKeepEvenIfEmpty.includes(key) || value !== ''),
         )
-
-        console.log('FormData of Edit Banner:', filteredBody)
         try {
             setShowSpinner(true)
             const response = await axioisInstance.patch(`banners`, filteredBody)
             notification.success({ message: response?.data?.message || 'Banner Edited Successfully' })
             navigate('/app/appSettings/banners')
         } catch (error: any) {
-            notification.error({ message: error?.response?.data?.message || 'Banner not Edited' })
+            notification.error({ message: error?.response?.data?.message || error?.response?.data?.data?.message || 'Banner not Edited' })
         } finally {
             setShowSpinner(false)
         }
-    }
-
-    if (showSpinner) {
-        return <LoadingSpinner />
     }
 
     return (
@@ -241,55 +225,47 @@ const EditBanner = () => {
                                 <FullDateForm label="From Date" name="from_date" fieldname="from_date" />
                                 <FullDateForm label="To Date" name="to_date" fieldname="to_date" />
                             </FormContainer>
-
-                            {/* ................I.....M......A.....G.....E....S.................... */}
                             <div>Mobile Image</div>
                             <ImageComponent
                                 imageView={mobileImagview}
                                 imageremove="mobile"
-                                handleImageRemove={handleImageRemove}
+                                handleImageRemove={() => handleImageRemove('m_image', setFieldValue)}
                                 name="image_mobile_array"
                                 beforeUpload={beforeUpload}
                                 fileList={values.image_mobile_array}
                             />
-
-                            {/* 2nd image */}
-
                             <div>Web Image</div>
                             <ImageComponent
                                 imageView={webImagview}
                                 imageremove="web"
-                                handleImageRemove={handleImageRemove}
+                                handleImageRemove={() => handleImageRemove('w_image', setFieldValue)}
                                 name="image_web_array"
                                 beforeUpload={beforeUpload}
                                 fileList={values.image_web_array}
                             />
-
                             <div>Mobile Video</div>
                             <VideoComponent
                                 videoView={mobileVideoview}
                                 videoRemove="mobile_video"
-                                handleVideoRemove={handleImageRemove}
+                                handleVideoRemove={() => handleImageRemove('m_video', setFieldValue)}
                                 name="video_mobile_array"
                                 beforeUpload={beforeVideoUpload}
                                 fileList={values.video_mobile_array}
                             />
-
                             <div>Web Video</div>
                             <VideoComponent
                                 videoView={webVideoview}
                                 videoRemove="web_video"
-                                handleVideoRemove={handleImageRemove}
+                                handleVideoRemove={() => handleImageRemove('w_video', setFieldValue)}
                                 name="video_web_array"
                                 beforeUpload={beforeVideoUpload}
                                 fileList={values.video_web_array}
                             />
-
                             <div>Mobile Lottie</div>
                             <ImageComponent
                                 imageView={mobilelottieview}
                                 imageremove="mobile_lottie"
-                                handleImageRemove={handleImageRemove}
+                                handleImageRemove={() => handleImageRemove('m_lottie', setFieldValue)}
                                 name="lottie_mobile_array"
                                 beforeUpload={beforeUpload}
                                 fileList={values.lottie_mobile_array}
@@ -298,19 +274,17 @@ const EditBanner = () => {
                             <ImageComponent
                                 imageView={weblottieview}
                                 imageremove="web_lottie"
-                                handleImageRemove={handleImageRemove}
+                                handleImageRemove={() => handleImageRemove('w_lottie', setFieldValue)}
                                 name="lottie_web_array"
                                 beforeUpload={beforeUpload}
                                 fileList={values.lottie_web_array}
                             />
 
-                            {/* ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,, */}
-
                             <div>Section BG Web</div>
                             <ImageComponent
                                 imageView={sectionBGweb}
                                 imageremove="SecWeb"
-                                handleImageRemove={handleImageRemove}
+                                handleImageRemove={() => handleImageRemove('w_bg', setFieldValue)}
                                 name="section_background_web_array"
                                 beforeUpload={beforeUpload}
                                 fileList={values.section_background_web_array}
@@ -319,7 +293,7 @@ const EditBanner = () => {
                             <ImageComponent
                                 imageView={sectionBGmobile}
                                 imageremove="SecMob"
-                                handleImageRemove={handleImageRemove}
+                                handleImageRemove={() => handleImageRemove('m_bg', setFieldValue)}
                                 name="section_background_mobile_array"
                                 beforeUpload={beforeUpload}
                                 fileList={values.section_background_mobile_array}
@@ -338,66 +312,98 @@ const EditBanner = () => {
                                 <div className="mb-4">
                                     <CommonFilterSelect isEdit filterId={filterId as string} setFilterId={setFilterId} />
                                 </div>
+                                <div className="mb-4">
+                                    <CommonFilterSelect
+                                        isEdit
+                                        isExclude
+                                        filterId={excludeFilterId as string}
+                                        setFilterId={setExcludeFilterId}
+                                    />
+                                </div>
 
-                                <FormItem label="Parent Banner">
-                                    <Field name="parent_banner">
-                                        {({ field, form }: FieldProps<any>) => {
-                                            const selectedTag = bannerFile.find((item) => item.id === field.value)
+                                <FormContainer className="grid grid-cols-2 gap-4">
+                                    <FormItem label="Parent Banner">
+                                        <Field name="parent_banner">
+                                            {({ field, form }: FieldProps<any>) => {
+                                                const selectedTag = bannerFile.find((item) => item.id === field.value)
 
-                                            return (
-                                                <Select
-                                                    isClearable
-                                                    className="w-1/2"
-                                                    placeholder="Select Filter Tags"
-                                                    options={bannerFile}
-                                                    value={selectedTag}
-                                                    getOptionLabel={(option) => option.name}
-                                                    getOptionValue={(option) => option.id}
-                                                    onChange={(newVal) => {
-                                                        form.setFieldValue('parent_banner', newVal?.id)
-                                                    }}
-                                                />
-                                            )
-                                        }}
-                                    </Field>
-                                </FormItem>
+                                                return (
+                                                    <Select
+                                                        isClearable
+                                                        className=""
+                                                        placeholder="Select Filter Tags"
+                                                        options={bannerFile}
+                                                        value={selectedTag}
+                                                        getOptionLabel={(option) => option.name as string}
+                                                        getOptionValue={(option) => option.id as any}
+                                                        onChange={(newVal) => {
+                                                            form.setFieldValue('parent_banner', newVal?.id)
+                                                        }}
+                                                    />
+                                                )
+                                            }}
+                                        </Field>
+                                    </FormItem>
 
-                                <BannerFilterTags label="Tags" name="tags" />
-                                <BannerFilterTags label="Quick Filter Tags" name="quick_filter_tags" />
-                                <FormItem label="Sub Page" className="col-span-1 w-1/2">
-                                    <Field name="sub_page">
-                                        {({ field, form }: FieldProps<any>) => {
-                                            const selectedTags = Array.isArray(field.value)
-                                                ? subPageNamesData?.filter((option: any) => field.value.includes(option.id)) || []
-                                                : []
+                                    <BannerFilterTags label="Tags" name="tags" />
+                                    <BannerFilterTags label="Quick Filter Tags" name="quick_filter_tags" />
+                                    <FormItem label="Sub Page" className="col-span-1">
+                                        <Field name="sub_page">
+                                            {({ field, form }: FieldProps<any>) => {
+                                                const selectedTags = Array.isArray(field.value)
+                                                    ? subPageNamesData?.filter((option: any) => field.value.includes(option.id)) || []
+                                                    : []
 
-                                            return (
-                                                <Select
-                                                    isMulti
-                                                    placeholder="Select Filter Tags"
-                                                    options={subPageNamesData}
-                                                    value={selectedTags}
-                                                    getOptionLabel={(option) => option.name}
-                                                    getOptionValue={(option) => option.id}
-                                                    onChange={(newVal) => {
-                                                        const newIds = newVal ? newVal.map((val) => val.id) : []
-                                                        form.setFieldValue('sub_page', newIds)
-                                                    }}
-                                                />
-                                            )
-                                        }}
-                                    </Field>
-                                </FormItem>
-                                <CommonSelect needClassName className="w-1/2" label="Sort By" name="sort" options={SortArrays} />
+                                                return (
+                                                    <Select
+                                                        isMulti
+                                                        placeholder="Select Filter Tags"
+                                                        options={subPageNamesData}
+                                                        value={selectedTags}
+                                                        getOptionLabel={(option) => option.name}
+                                                        getOptionValue={(option) => option.id}
+                                                        onChange={(newVal) => {
+                                                            const newIds = newVal ? newVal.map((val) => val.id) : []
+                                                            form.setFieldValue('sub_page', newIds)
+                                                        }}
+                                                    />
+                                                )
+                                            }}
+                                        </Field>
+                                    </FormItem>
+                                    <FormContainer>
+                                        <FormItem label="Store">
+                                            <Field name="store">
+                                                {({ form, field }: FieldProps) => {
+                                                    const selectedStores = storeResults?.filter((option) =>
+                                                        field.value?.some((store: any) => store?.id === option.id),
+                                                    )
+                                                    return (
+                                                        <div className="flex flex-col gap-1 w-full max-w-md">
+                                                            <Select
+                                                                isMulti
+                                                                className="w-full"
+                                                                options={storeResults}
+                                                                getOptionLabel={(option) => option.code}
+                                                                getOptionValue={(option) => option.id?.toString()}
+                                                                value={selectedStores || null}
+                                                                onChange={(newVal) => {
+                                                                    form.setFieldValue('store', newVal)
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    )
+                                                }}
+                                            </Field>
+                                        </FormItem>
+                                    </FormContainer>
+                                    <FormItem label="Show Subscription Popup">
+                                        <Field type="checkbox" name="show_subscription_popup" component={Checkbox} />
+                                    </FormItem>
+                                    <CommonSelect needClassName className="" label="Sort By" name="sort" options={SortArrays} />
+                                </FormContainer>
                             </FormContainer>
-
-                            <FormContainer>
-                                <FormItem className="mt-5">
-                                    <Button type="submit" variant="solid">
-                                        Submit
-                                    </Button>
-                                </FormItem>
-                            </FormContainer>
+                            <FormButton isSpinning={showSpinner} value="Update" />
                         </FormContainer>
                     </Form>
                 )}

@@ -20,6 +20,7 @@ const EditPageSettings = () => {
     const [barcodeData, setBarcodeData] = useState<any>()
     const location = useLocation()
     const { pageState } = location.state || {}
+    const [isCopy, setIsCopy] = useState<boolean>(false)
 
     const queryParams =
         useMemo(() => {
@@ -51,15 +52,19 @@ const EditPageSettings = () => {
         const division = filters.find((item: string) => item.includes('division'))?.split('_')[1]
         setInitialValue({ ...editedValues, division_select: division, banners: bannerData })
         setBarcodeData(editedValues?.data_type?.barcodes)
+
         setFilterId(filterId)
     }, [pageSettingsData, bannerDetails])
 
     const handleSubmit = async (values: any) => {
+        console.log('values in submit', values)
         const { componentConfig, backgroundConfig, footerConfig, headerConfig, subHeaderConfig, child_component_config, cta_config } =
             await PageSettingsBodyFile({
                 values,
                 initialValue,
             })
+
+        console.log('componentConfig', filterId)
         const body = {
             ...values,
             banners: values?.banners?.map((item: any) => item?.id) || [],
@@ -74,9 +79,10 @@ const EditPageSettings = () => {
                     ...(values?.extra_info?.timeout ? { timeout: values?.extra_info?.timeout } : {}),
                     ...(values?.extra_info?.page_size ? { page_size: values?.extra_info?.page_size } : {}),
                     ...(values?.extra_info?.child_data_type && { child_data_type: values?.extra_info?.child_data_type }),
-                    is_product_filter: values?.extra_info?.is_product_filter || false,
+                    is_product_filter: values?.extra_info?.is_product_filter ? values?.extra_info?.is_product_filter : false,
                     cta_config: cta_config,
                     child_component_config: child_component_config,
+                    series_id: values?.extra_info?.coupon_series || '',
                 }).filter(([, value]) => value !== ''),
             ),
             data_type: {
@@ -104,24 +110,42 @@ const EditPageSettings = () => {
                     .filter(Boolean)
                     .flat(),
             },
+            section_type: values?.section_type || '',
         }
         const filteredBody = Object.fromEntries(Object.entries(body || {}).filter(([_, value]) => value !== undefined))
         try {
-            const response = await axioisInstance.patch(`/section/${section_id}`, filteredBody)
-            notification.success({ message: response?.data?.message || 'successfully updated' })
+            const response = isCopy
+                ? await axioisInstance.post(`/section`, filteredBody)
+                : await axioisInstance.patch(`/section/${section_id}`, filteredBody)
+            notification.success({ message: response?.data?.message || `successfully ${isCopy ? 'created' : 'updated'}` })
         } catch (error) {
             console.error(error)
             if (error instanceof AxiosError) {
-                notification.error({ message: error?.response?.data?.message || 'Failed to Edit' })
+                notification.error({
+                    message: error?.response?.data?.message || `Error occurred while ${isCopy ? 'creating' : 'updating'} page settings`,
+                })
             }
         }
     }
     return (
         <div>
+            <div className="flex items-center justify-between mb-4">
+                <div className="text-xl font-bold">{isCopy ? 'New Page Settings' : 'Edit Page Settings'}</div>
+                <Button
+                    variant={isCopy ? 'twoTone' : 'solid'}
+                    type="button"
+                    size="sm"
+                    onClick={() => {
+                        setIsCopy(!isCopy)
+                    }}
+                >
+                    {isCopy ? 'Set to Edit Mode' : 'Set to Copy'}
+                </Button>
+            </div>
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                 {({ values, resetForm, setFieldValue }) => {
                     return (
-                        <Form>
+                        <Form onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}>
                             <NewPageCommonForms
                                 bannerDetails={bannerDetails}
                                 isEdit

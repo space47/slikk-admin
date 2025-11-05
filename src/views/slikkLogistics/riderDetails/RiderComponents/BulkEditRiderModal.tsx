@@ -14,6 +14,8 @@ import { notification } from 'antd'
 import { AxiosError } from 'axios'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
+import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
+import { RiderAgency } from '../RiderDetailsCommon'
 
 interface Props {
     dialogIsOpen: boolean
@@ -43,6 +45,7 @@ const BulkEditRiderModal = ({ dialogIsOpen, setIsOpen, riderMobileStore }: Props
                     shift_start_time: values?.shift_start_time || '',
                     shift_end_time: values?.shift_end_time || '',
                     store: values?.store || [],
+                    agency: values?.agency || '',
                 }
                 return Object.fromEntries(Object.entries(obj).filter(([, value]) => value !== ''))
             })
@@ -66,12 +69,18 @@ const BulkEditRiderModal = ({ dialogIsOpen, setIsOpen, riderMobileStore }: Props
 
     return (
         <div>
-            <Dialog isOpen={dialogIsOpen} width={1000} onRequestClose={() => setIsOpen(false)} onClose={() => setIsOpen(false)}>
+            <Dialog
+                isOpen={dialogIsOpen}
+                width={1000}
+                height={'80vh'}
+                onRequestClose={() => setIsOpen(false)}
+                onClose={() => setIsOpen(false)}
+            >
                 <Formik enableReinitialize initialValues={{}} onSubmit={handleSubmit}>
                     {() => (
-                        <Form className="w-full mx-auto p-6 bg-white rounded-lg shadow-md">
-                            <FormContainer className="space-y-6">
-                                <div className="grid grid-cols-2 gap-6">
+                        <Form className="w-full mx-auto mt-2  p-6 bg-white rounded-lg shadow-md ">
+                            <FormContainer className="overflow-scroll h-[60vh]">
+                                <div className="grid grid-cols-2 gap-6 overflow-scroll">
                                     <FormItem label="Rider Type" className="col-span-1">
                                         <Field name="rider_type">
                                             {({ form, field }: FieldProps) => {
@@ -107,7 +116,7 @@ const BulkEditRiderModal = ({ dialogIsOpen, setIsOpen, riderMobileStore }: Props
                                                             className="w-full"
                                                             options={storeResults}
                                                             getOptionLabel={(option) => option.code}
-                                                            getOptionValue={(option) => option.id}
+                                                            getOptionValue={(option) => option?.id?.toString()}
                                                             value={selectedStores || null}
                                                             onChange={(newVal) => {
                                                                 form.setFieldValue(
@@ -135,6 +144,7 @@ const BulkEditRiderModal = ({ dialogIsOpen, setIsOpen, riderMobileStore }: Props
                                         name="shift_end_time"
                                         fieldname="shift_end_time"
                                     />
+                                    <CommonSelect label="Rider Agency" name="agency" options={RiderAgency} />
                                 </div>
 
                                 <div className="border-t border-gray-200 pt-6">
@@ -158,7 +168,7 @@ const BulkEditRiderModal = ({ dialogIsOpen, setIsOpen, riderMobileStore }: Props
                                             />
                                         </div>
 
-                                        <div className="h-64 overflow-y-auto border border-gray-200 rounded-md xl:block hidden">
+                                        <div className="h-64 p-5 overflow-y-auto border border-gray-200 rounded-md xl:block hidden">
                                             <AddRiderMap
                                                 setMarkLat={setCurrLat ?? 0}
                                                 setMarkLong={setCurrLong ?? 0}
@@ -168,13 +178,13 @@ const BulkEditRiderModal = ({ dialogIsOpen, setIsOpen, riderMobileStore }: Props
                                         </div>
                                     </div>
                                 </div>
-
-                                <div className="flex justify-end pt-4">
-                                    <Button variant="accept" type="submit">
-                                        Submit
-                                    </Button>
-                                </div>
                             </FormContainer>
+
+                            <div className="flex justify-end pt-4">
+                                <Button variant="accept" type="submit">
+                                    Submit
+                                </Button>
+                            </div>
                         </Form>
                     )}
                 </Formik>

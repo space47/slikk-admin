@@ -19,7 +19,7 @@ export interface ButtonProps extends CommonProps, Omit<ComponentPropsWithRef<'bu
     onClick?: (e: MouseEvent<HTMLButtonElement>) => void
     shape?: TypeAttributes.Shape
     size?: TypeAttributes.Size
-    variant?: 'solid' | 'twoTone' | 'plain' | 'default' | 'new' | 'accept' | 'reject' | 'pending' | 'yellow'
+    variant?: 'solid' | 'twoTone' | 'plain' | 'default' | 'new' | 'accept' | 'reject' | 'pending' | 'yellow' | 'blue'
 }
 
 type ButtonColor = {
@@ -105,9 +105,11 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
         const btn = {
             bgColor: active
                 ? `bg-${buttonColor}-200 dark:bg-${buttonColor}-50`
-                : `bg-${buttonColor}-50 dark:bg-${buttonColor}-500 dark:bg-opacity-20`,
+                : `bg-${buttonColor}-100 dark:bg-${buttonColor}-500 dark:bg-opacity-20`,
             textColor: `text-${buttonColor}-${buttonColorLevel} dark:text-${buttonColor}-50`,
-            hoverColor: active ? '' : `hover:bg-${buttonColor}-100 dark:hover:bg-${buttonColor}-500 dark:hover:bg-opacity-30`,
+            hoverColor: active
+                ? ''
+                : `hover:bg-${buttonColor}-500 hover:text-white dark:hover:bg-${buttonColor}-500 dark:hover:bg-opacity-30`,
             activeColor: `active:bg-${buttonColor}-200 dark:active:bg-${buttonColor}-500 dark:active:bg-opacity-40`,
         }
         return getBtnColor(btn)
@@ -115,10 +117,10 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
     const newColor = () => {
         const btn = {
             bgColor: active
-                ? `bg-gray-100 border border-gray-300 dark:bg-gray-500 dark:border-gray-500 dark:bg-blue-500 dark:text-white`
+                ? `bg-gray-100 border  border-gray-300 dark:bg-gray-500 dark:border-gray-500 dark:bg-blue-500 dark:text-white`
                 : `bg-black border border-gray-800 dark:bg-black dark:border-gray-700 dark:bg-blue-600 dark:text-white`,
             textColor: `text-white dark:text-white`,
-            hoverColor: active ? `hover:bg-gray-200 dark:hover:bg-gray-600` : `hover:bg-gray-900 dark:hover:bg-gray-800`,
+            hoverColor: active ? `hover:bg-gray-200 dark:hover:bg-gray-600` : `hover:bg-gray-500 dark:hover:bg-gray-800`,
             activeColor: `active:bg-gray-300 dark:active:bg-gray-700 dark:active:border-gray-600`,
         }
         return getBtnColor(btn)
@@ -158,6 +160,15 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
             textColor: `text-white dark:text-white`,
             hoverColor: `hover:bg-orange-600 dark:hover:bg-orange-700`,
             activeColor: `active:bg-orange-400 dark:active:bg-orange-500 dark:active:border-orange-700`,
+        }
+        return getBtnColor(btn)
+    }
+    const blueColor = () => {
+        const btn = {
+            bgColor: `bg-blue-500 border border-blue-700 dark:bg-blue-600 dark:border-blue-800`,
+            textColor: `text-white dark:text-white`,
+            hoverColor: `hover:bg-blue-600 dark:hover:bg-blue-700`,
+            activeColor: `active:bg-blue-400 dark:active:bg-blue-500 dark:active:border-blue-700`,
         }
         return getBtnColor(btn)
     }
@@ -208,6 +219,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
                 return rejectColor()
             case 'pending':
                 return pendingColor()
+            case 'blue':
+                return blueColor()
             default:
                 return defaultColor()
         }

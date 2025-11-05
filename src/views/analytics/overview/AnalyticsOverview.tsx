@@ -26,7 +26,7 @@ import { TbCalendarStats } from 'react-icons/tb'
 import AnalyticsOrderGraph from './analyticsOrderGraph/AnalyticsOrderGraph'
 // import AnalyticsQuantityGraph from './AnalyticsOrderGraph/AnalyticsQuantityGraph'
 import AnalyticsQuantityGraph from './analyticsOrderGraph/AnalyticsQuantityGraph'
-import { FaDownload, FaFilter } from 'react-icons/fa'
+import { FaFilter } from 'react-icons/fa'
 import ImageMODAL from '@/common/ImageModal'
 // import AnalyticsQuantityGraph from './AnalyticsQuantityGraph/AnalyticsQuantityGraph'
 import AnalyticsOrderDrawer from './analyticsOrderDrawer/AnalyticsOrderDrawer'
@@ -99,14 +99,14 @@ const AnalyticsOverview = () => {
                   }))
                 : []
 
-            setSkuWiseDetails(skuDetailsArray)
+            setSkuWiseDetails(skuDetailsArray as any)
 
             const dateWIseDetailArray = Object.entries(dateWiseData).map(([key, value]) => ({
                 key,
                 value,
             }))
 
-            setDatewisedetails(dateWIseDetailArray)
+            setDatewisedetails(dateWIseDetailArray as any)
         } catch (error: any) {
             if (error.response && error.response.status === 403) {
                 setAccessDenied(true)
@@ -125,6 +125,7 @@ const AnalyticsOverview = () => {
         () => [
             { header: 'SKU', accessorKey: 'key', cell: (info) => info.getValue() },
             { header: 'Name', accessorKey: 'value.name', cell: (info) => info.getValue() },
+            { header: 'Brand', accessorKey: 'value.brand', cell: (info) => info.getValue() },
             { header: 'Size', accessorKey: 'value.size', cell: (info) => info.getValue() },
             { header: 'Color', accessorKey: 'value.color', cell: (info) => info.getValue() },
             { header: 'MRP', accessorKey: 'value.mrp', cell: (info) => info.getValue() },
@@ -182,7 +183,7 @@ const AnalyticsOverview = () => {
 
     const table = useReactTable({
         data: paginatedData,
-        columns,
+        columns: columns as any,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
@@ -282,8 +283,8 @@ const AnalyticsOverview = () => {
     return (
         <div className="overflow-x-auto">
             <div className="flex flex-col lg:flex-row justify-between mb-5 items-center gap-5">
-                <div className="w-auto lg:w-1/2 flex flex-col  ">
-                    <Button variant="new" onClick={handleDrawer} className="xl:w-1/2 w-auto flex gap-3 items-center justify-center">
+                <div className=" flex flex-col  ">
+                    <Button variant="new" onClick={handleDrawer} className="flex gap-3 items-center justify-center">
                         {' '}
                         <FaFilter className="text-lg" /> <p>CATEGORY FILTER</p>
                     </Button>

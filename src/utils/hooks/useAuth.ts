@@ -1,11 +1,5 @@
 import { apiSignIn, apiSignInTwoFactor, apiSignOut, apiSignUp } from '@/services/AuthService'
-import {
-    setUser,
-    signInSuccess,
-    signOutSuccess,
-    useAppSelector,
-    useAppDispatch,
-} from '@/store'
+import { setUser, signInSuccess, signOutSuccess, useAppSelector, useAppDispatch } from '@/store'
 import appConfig from '@/configs/app.config'
 import { REDIRECT_URL_KEY } from '@/constants/app.constant'
 import { useNavigate } from 'react-router-dom'
@@ -18,17 +12,15 @@ type Status = 'success' | 'failed'
 
 function useAuth() {
     const dispatch = useAppDispatch()
-    const selector = useAppSelector(state => state.authorization)
+    const selector = useAppSelector((state) => state.authorization)
     const navigate = useNavigate()
 
     const query = useQuery()
 
     const { token, signedIn } = useAppSelector((state) => state.auth.session)
 
-
-    const signInTwoFactor = async (
-        values: SignInTwoFactor
-    ) => {
+    const signInTwoFactor = async (values: SignInTwoFactor) => {
+        console.log('values are', values)
         dispatch(validatePhoneNumber(values.mobileNumber))
     }
 
@@ -37,12 +29,8 @@ function useAuth() {
         navigate(redirectUrl ? redirectUrl : appConfig.authenticatedEntryPath)
     }
 
-    const signIn = async (
-        values: SignInCredential
-    ) => {
-        dispatch(validateOTP(selector.mobile, values.otp,navigateTo))
-        //dispatch(signInSuccess(selector.))
-        
+    const signIn = async (values: SignInCredential) => {
+        dispatch(validateOTP(selector.mobile, values.otp, navigateTo))
     }
 
     const signUp = async (values: SignUpCredential) => {
@@ -59,14 +47,12 @@ function useAuth() {
                                 userName: 'Anonymous',
                                 authority: ['USER'],
                                 email: '',
-                            }
-                        )
+                            },
+                        ),
                     )
                 }
                 const redirectUrl = query.get(REDIRECT_URL_KEY)
-                navigate(
-                    redirectUrl ? redirectUrl : appConfig.authenticatedEntryPath
-                )
+                navigate(redirectUrl ? redirectUrl : appConfig.authenticatedEntryPath)
                 return {
                     status: 'success',
                     message: '',
@@ -76,7 +62,7 @@ function useAuth() {
         } catch (errors: any) {
             return {
                 status: 'failed',
-                message: errors?.response?.data?.message || errors.toString(),
+                message: errors?.response?.data?.message || 'Failed to perform Action',
             }
         }
     }
@@ -89,18 +75,17 @@ function useAuth() {
                 userName: '',
                 email: '',
                 authority: [],
-            })
+            }),
         )
         navigate(appConfig.unAuthenticatedEntryPath)
     }
 
     const signOut = async () => {
         //await apiSignOut()
-        localStorage.clear();
-        sessionStorage.clear();
+        localStorage.clear()
+        sessionStorage.clear()
         handleSignOut()
-        navigate("/");
-
+        navigate('/')
     }
 
     return {
@@ -108,7 +93,7 @@ function useAuth() {
         signIn,
         signUp,
         signOut,
-        signInTwoFactor
+        signInTwoFactor,
     }
 }
 

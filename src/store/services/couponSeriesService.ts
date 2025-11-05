@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import RtkQueryService from '@/services/RtkQueryService'
 import { CouponGenerateBodyType, CouponSeriesBodyType, CouponSeriesTypes } from '../types/couponSeries.types'
 
@@ -42,20 +43,7 @@ export const couponSeriesService = RtkQueryService.injectEndpoints({
                     url: `/couponseries`,
                     method: 'POST',
                     body: {
-                        discount_type: params.discount_type,
-                        value: params.value,
-                        image: params.image,
-                        min_cart_value: params.min_cart_value,
-                        max_count: params.max_count,
-                        maximum_discount: params.maximum_discount,
-                        valid_from: params.valid_from,
-                        valid_to: params.valid_to,
-                        description: params.description,
-                        max_count_per_user: params.max_count_per_user,
-                        campaign: params.campaign,
-                        coupon_type: params.coupon_type,
-                        is_public: params.is_public,
-                        extra_attributes: params.extra_attributes,
+                        ...params,
                     },
                 }
             },
@@ -73,12 +61,17 @@ export const couponSeriesService = RtkQueryService.injectEndpoints({
         }),
         generateCouponFromSeries: builder.mutation<{ success: string }, CouponGenerateBodyType>({
             query: (params) => {
+                const formData = new FormData()
+
+                Object.entries(params).forEach(([key, value]) => {
+                    if (value !== undefined && value !== null && value !== '') {
+                        formData.append(key, value as any)
+                    }
+                })
                 return {
                     url: `/merchant/coupon/generate`,
                     method: 'POST',
-                    body: {
-                        ...params,
-                    },
+                    body: formData,
                 }
             },
         }),

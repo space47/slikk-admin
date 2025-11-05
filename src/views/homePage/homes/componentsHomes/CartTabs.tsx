@@ -15,6 +15,7 @@ interface props {
 const CartTabs = ({ customerData }: props) => {
     const TabsArray = [
         { label: 'Order', value: 'orders' },
+        // {label: 'Return', value: 'returns' },
         { label: 'Returns', value: 'returns' },
         { label: 'Events', value: 'events' },
         { label: 'Referrals', value: 'referrals' },

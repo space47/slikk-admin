@@ -20,7 +20,9 @@ import DialogConfirm from '@/common/DialogConfirm'
 import { AxiosError } from 'axios'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import moment from 'moment'
+import { CouponSeriesInitialTypes, setCouponSeriesData } from '@/store/slices/couponSeriesSlice/couponSeries'
+import { couponSeriesService } from '@/store/services/couponSeriesService'
+import CouponReleaseModal from './couponUtils/CouponReleaseModal'
 
 const AppCoupons = () => {
     // const navigate = useNavigate()
@@ -33,6 +35,29 @@ const AppCoupons = () => {
     const [activateCodeButton, setActivateCodeButton] = useState('')
     const [couponCode, setCouponCode] = useState<string>('')
     const [deleteModal, setDeleteModal] = useState<boolean>(false)
+    const [couponId, setCouponId] = useState<any>('')
+    const [isCouponReleaseModal, setIsCouponReleaseModal] = useState<boolean>(false)
+    const [searchInput, setSearchInput] = useState<string>('')
+    const { couponSeries } = useAppSelector<CouponSeriesInitialTypes>((state) => state.couponSeries)
+    const [queryParams, setQueryParams] = useState({ page: 1, pageSize: 100, campaign: '' })
+    const [seriesValue, setSeriesValue] = useState<any>('')
+    const { data: couponSeriesData, isSuccess: getSuccess } = couponSeriesService.useCouponSeriesQuery(queryParams, {
+        refetchOnMountOrArgChange: true,
+    })
+
+    useEffect(() => {
+        if (getSuccess) {
+            dispatch(setCouponSeriesData(couponSeriesData?.data?.results))
+        }
+    }, [getSuccess, couponSeriesData?.data?.results, dispatch])
+
+    const formattedData = couponSeries
+        ?.filter((item) => item?.campaign !== '')
+        .map((item) => {
+            return { label: item?.campaign, value: item?.id }
+        })
+
+    console.log('Formatted Data:', var1, seriesValue)
 
     const { coupon, count, page, pageSize } = useAppSelector<CoupunInitialStateType>((state) => state.coupon)
     const {
@@ -44,7 +69,7 @@ const AppCoupons = () => {
     } = couponService.useCouponQuery(
         {
             coupon_code: activateCodeButton ? activateCodeButton : undefined,
-            coupon_series: var1 ?? undefined,
+            coupon_series: var1 || seriesValue || '',
             page,
             pageSize,
             mobile: activateMobileButton ? activateMobileButton : undefined,
@@ -53,8 +78,6 @@ const AppCoupons = () => {
             refetchOnMountOrArgChange: true,
         },
     )
-
-    console.log('ssss', var1)
 
     useEffect(() => {
         if (isSuccess) {
@@ -87,11 +110,18 @@ const AppCoupons = () => {
         setDeleteModal(true)
     }
 
-    const columns = CouponCoulumns({ handleDeleteCoupon })
+    const handleCouponRelease = (code: string | number) => {
+        setCouponId(code)
+        setIsCouponReleaseModal(true)
+    }
+
+    console.log('Selected Coupon Code:', seriesValue)
+
+    const columns = CouponCoulumns({ handleDeleteCoupon, handleCouponRelease })
 
     const hanldeDelete = async () => {
         const body = {
-            expiry_date: moment().format('YYYY-MM-DD'),
+            is_active: false,
         }
         try {
             const res = await axioisInstance.patch(`merchant/coupon?coupon_code=${couponCode}`, body)
@@ -103,9 +133,16 @@ const AppCoupons = () => {
         }
     }
 
+    const handleSearch = (inputValue: string) => {
+        setSearchInput(inputValue)
+        setQueryParams((prev) => ({ ...prev, campaign: inputValue }))
+    }
+
     if (isError && error && 'status' in error && error.status === 403) {
         return <AccessDenied />
     }
+
+    console.log('Search Input:', seriesValue)
 
     return (
         <div>
@@ -155,6 +192,24 @@ const AppCoupons = () => {
                                 </button>
                             </div>
                         </div>
+                        <div className="flex flex-col gap-2 shadow-lg border-gray-300 rounded-lg p-2">
+                            <label className="text-gray-700 font-semibold mb-1">Search by Coupon Series</label>
+                            <div>
+                                <Select
+                                    isSearchable
+                                    isClearable
+                                    className="xl:w-[300px]"
+                                    inputValue={searchInput}
+                                    options={formattedData}
+                                    onInputChange={handleSearch}
+                                    onChange={(selectedOption: any) => {
+                                        const value = selectedOption ? selectedOption.value : ''
+                                        setSeriesValue(value)
+                                    }}
+                                    onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+                                />
+                            </div>
+                        </div>
                     </div>
 
                     {((isError && error && 'status' in error && error.status === 400) || coupon?.length === 0) && (
@@ -201,6 +256,14 @@ const AppCoupons = () => {
                             setIsOpen={setDeleteModal}
                             headingName="Delete Modal"
                             onDialogOk={hanldeDelete}
+                        />
+                    )}
+                    {isCouponReleaseModal && (
+                        <CouponReleaseModal
+                            couponCode={couponId}
+                            isOpen={isCouponReleaseModal}
+                            setIsOpen={setIsCouponReleaseModal}
+                            mobileNumber={mobileFilter}
                         />
                     )}
                 </>

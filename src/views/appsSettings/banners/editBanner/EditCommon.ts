@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Input from '@/components/ui/Input'
 import Checkbox from '@/components/ui/Checkbox'
 import { BANNER_MODEL } from '../BannerCommon'
@@ -48,24 +49,6 @@ export const BANNER_FIELDS_TYPE = [
         component: { Input },
         status: 'type',
     },
-    // {
-    //     label: 'Image (Web)',
-    //     classname: 'col-span-1 w-full',
-    //     type: 'text',
-    //     name: 'image_web',
-    //     placeholder: 'Place your Image URL for Web',
-    //     component: { Input },
-    //     status: 'image_web',
-    // },
-    // {
-    //     label: 'Image (Mobile)',
-    //     classname: 'col-span-1 w-full',
-    //     type: 'text',
-    //     name: 'image_mobile',
-    //     placeholder: 'Place your Image URL for Mobile',
-    //     component: { Input },
-    //     status: 'image_mobile',
-    // },
 
     {
         label: 'Offer ID',
@@ -112,25 +95,6 @@ export const BANNER_FIELDS_TYPE = [
         component: { Input },
         status: 'coupon_code',
     },
-
-    // {
-    //     label: 'Section Background (Web)',
-    //     classname: 'col-span-1 w-full',
-    //     type: 'text',
-    //     name: 'section_background_web',
-    //     placeholder: 'Place your Section Background URL for Web',
-    //     component: { Input },
-    //     status: 'section_background_web',
-    // },
-    // {
-    //     label: 'Section Background (Mobile)',
-    //     classname: 'col-span-1 w-full',
-    //     type: 'text',
-    //     name: 'section_background_mobile',
-    //     placeholder: 'Place your Section Background URL for Mobile',
-    //     component: { Input },
-    //     status: 'section_background_mobile',
-    // },
     {
         label: 'Max Price',
         classname: 'col-span-1 w-full',
@@ -242,7 +206,7 @@ export const BANNER_FIELDS_TYPE = [
 
 export const getInitialBannerValue = (bannerData: BANNER_MODEL | undefined) => ({
     id: bannerData?.id || 0,
-    sort: bannerData?.tags?.find((item: string) => item.startsWith('sort_'))?.split('_')[1],
+    sort: bannerData?.tags ? bannerData?.tags?.find((item: string) => item.startsWith('sort_'))?.split('_')[1] : '',
     name: bannerData?.name || '',
     section_heading: bannerData?.section_heading || '',
     parent_banner: bannerData?.parent_banner || null,
@@ -252,7 +216,7 @@ export const getInitialBannerValue = (bannerData: BANNER_MODEL | undefined) => (
     category: bannerData?.category || [],
     image_web_array: bannerData?.image_web_array || [],
     image_mobile_array: bannerData?.image_mobile_array || [],
-    sub_page: bannerData?.sub_page || '',
+    sub_page: bannerData?.sub_page?.map((item: any) => item?.id) || '',
     video_web_array: bannerData?.video_web_array || [],
     video_mobile_array: bannerData?.video_mobile_array || [],
     lottie_web_array: bannerData?.lottie_web_array || [],
@@ -286,6 +250,7 @@ export const getInitialBannerValue = (bannerData: BANNER_MODEL | undefined) => (
     barcodes: bannerData?.barcodes || '',
     redirection_url: bannerData?.redirection_url || null,
     tags_input: bannerData?.tags?.join(',') || '',
-
+    show_subscription_popup: bannerData?.extra_attributes?.show_subscription_popup || false,
     position: bannerData?.position || null,
+    store: bannerData?.store || null,
 })

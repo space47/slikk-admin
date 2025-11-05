@@ -12,6 +12,7 @@ const CouponSeriesAdd = () => {
     const navigate = useNavigate()
     const [addCouponseries, addCouponseriesresponse] = couponSeriesService.useAddCouponSeriesMutation()
     const [filterId, setFilterId] = useState<any>()
+    const [excludeFilterId, setExcludeFilterId] = useState<any>()
 
     console.log('filterId is', filterId)
 
@@ -43,7 +44,7 @@ const CouponSeriesAdd = () => {
                 discount_type: values?.discount_type,
                 value: values?.value,
                 image: imageUpload,
-                min_cart_value: values?.min_cart_value,
+                min_cart_value: values?.min_cart_value || null,
                 max_count: values?.max_count,
                 maximum_discount: values?.maximum_discount,
                 valid_from: values?.valid_from,
@@ -53,17 +54,36 @@ const CouponSeriesAdd = () => {
                 campaign: values?.campaign,
                 coupon_type: values?.coupon_type,
                 is_public: values?.is_public ?? false,
+                series_type: values?.series_type,
+                event_name: values?.event_name,
+                coupon_active_event_name: values?.coupon_active_event_name,
+                max_coupons_per_user: values?.max_coupons_per_user,
+                store_id: values?.store?.map((store: any) => store.id).join(',') || '',
                 extra_attributes: {
                     new_users_only: values?.extra_attributes?.new_users_only,
                     filters: {
                         filter_id: filterId ?? '',
+                        filter_id_exclude: excludeFilterId || '',
+                        min_item_quantity: values?.extra_attributes?.filters?.min_item_quantity,
+                        max_item_quantity: values?.extra_attributes?.filters?.max_item_quantity,
                     },
+                    bxgy_config: {
+                        max_groups: values?.extra_attributes?.bxgy_config?.max_groups,
+                        y_quantity: values?.extra_attributes?.bxgy_config?.y_quantity,
+                        x_quantity: values?.extra_attributes?.bxgy_config?.x_quantity,
+                        y_discount_value: values?.extra_attributes?.bxgy_config?.y_discount_value,
+                        y_discount_type: values?.extra_attributes?.bxgy_config?.y_discount_type,
+                    },
+                    auto_apply: values?.extra_attributes?.auto_apply || false,
+                    offer_text: values?.extra_attributes?.offer_text,
                     min_filters_products_amount: values?.extra_attributes?.min_filters_products_amount,
+                    free_delivery: values?.extra_attributes?.free_delivery || false,
+                    terms_and_conditions: values?.extra_attributes?.terms_and_conditions,
                 },
             }).unwrap()
         } catch (error: any) {
             notification.error({
-                message: error?.data?.message || 'Failed to add Series',
+                message: error?.response?.data?.message || 'Failed to add Series',
             })
         }
     }
@@ -94,6 +114,8 @@ const CouponSeriesAdd = () => {
                                 values={values}
                                 setFieldValue={setFieldValue}
                                 resetForm={resetForm}
+                                excludeFilterValue={excludeFilterId}
+                                setExcludeFilterId={setExcludeFilterId}
                             />
                         </FormContainer>
                         <FormContainer>

@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ColumnDef } from '@tanstack/react-table'
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { NOTIFYSTATS, pageSizeOptions } from '../getNotiStats.common'
 import moment from 'moment'
 import EasyTable from '@/common/EasyTable'
 import { Pagination, Select } from '@/components/ui'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 interface SentProps {
     data: any[]
@@ -20,6 +21,22 @@ type Option = {
 }
 
 const SentNotif = ({ data, page, pageSize, onPaginationChange, onSelectChange, totalData }: SentProps) => {
+    const [groupDataToSend, setGroupDataToSend] = useState<any[]>([])
+
+    const fetchGroupValue = async () => {
+        try {
+            const response = await axioisInstance.get(`/notification/groups?p=1&page_size=1000`)
+            const data = response?.data?.data.results
+            setGroupDataToSend(data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        fetchGroupValue()
+    }, [])
+
     const columns = useMemo<ColumnDef<NOTIFYSTATS>[]>(
         () => [
             {
@@ -62,7 +79,9 @@ const SentNotif = ({ data, page, pageSize, onPaginationChange, onSelectChange, t
             {
                 header: 'Notification',
                 accessorKey: 'notification',
-                cell: (info) => info.getValue(),
+                cell: ({ row }) => {
+                    ;<span>{groupDataToSend?.find((group) => group?.id === row?.original?.notification)?.name || 'N/A'}</span>
+                },
             },
 
             {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import AdaptableCard from '@/components/shared/AdaptableCard'
 import Table from '@/components/ui/Table'
 
@@ -6,48 +7,31 @@ import { NumericFormat } from 'react-number-format'
 import { useState } from 'react'
 import ImageMODAL from '@/common/ImageModal'
 import ReplaceDrawer from './ReplaceDrawer'
-import { Button } from '@/components/ui'
-
-import.meta.env.VITE_WEB_URI
-
-type Product = Partial<{
-    id: number
-    barcode: string
-    brand: string
-    name: string
-    color: string
-    size: string
-    product_type: string
-    image: string
-    sp: string | undefined | number
-    quantity: string
-    sub_category: string | undefined
-    location: string
-    mrp: string | undefined | number
-    fulfilled_quantity: string
-    final_price: number
-    sku: string
-    category: string | undefined
-}>
+import { Button, Dialog } from '@/components/ui'
+import QRCode from 'react-qr-code'
+import { MdQrCodeScanner } from 'react-icons/md'
+import { CommonOrderProduct } from '../orderList.common'
 
 type OrderProductsProps = {
-    data: Product[]
+    data: CommonOrderProduct[]
     invoice_id: string | undefined
     status: string
 }
 
 const { Tr, Th, Td, THead, TBody } = Table
 
-const columnHelper = createColumnHelper<Product>()
+const columnHelper = createColumnHelper<CommonOrderProduct>()
 
 type productProps = {
-    row: Product
+    row: CommonOrderProduct
     status: string
 }
 
 const ProductColumn = ({ row, status }: productProps) => {
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularROwImage] = useState('')
+    const [qrCode, setQrCode] = useState('')
+    const headerLink = import.meta.env.VITE_WEBSITE_URL
 
     const segregatedNames = (value: string) => {
         return encodeURIComponent(value?.replace(/\s+/g, '-'))
@@ -84,7 +68,7 @@ const ProductColumn = ({ row, status }: productProps) => {
                     Product Name:
                     <h4 className="font-light text-[14px] flex-wrap">
                         <a
-                            href={`https://slikk.club/${segregatedNames(row.category || '')}/${segregatedNames(row.sub_category || '')}/${segregatedNames(row.brand || '')}/${segregatedNames(row.name || '')}/${row.barcode}`}
+                            href={`${headerLink}${segregatedNames(row.category || '')}/${segregatedNames(row.sub_category || '')}/${segregatedNames(row.brand || '')}/${segregatedNames(row.name || '')}/${row.barcode}`}
                             className="hover:text-blue-500 hover:underline"
                             target="_blank"
                             rel="noopener noreferrer"
@@ -94,7 +78,15 @@ const ProductColumn = ({ row, status }: productProps) => {
                     </h4>
                 </div>
                 {/* skv */}
-                <h4 className="font-light text-[14px]"> SKU:{row.sku} </h4>
+                <div className="font-light text-[14px]">
+                    {' '}
+                    <div className="flex gap-2 items-center">
+                        <span>SKU:{row.sku} </span>
+                        <span className="rounded-full border p-2 bg-blue-100 hover:bg-gray-200" title="Click to view QR code">
+                            <MdQrCodeScanner onClick={() => setQrCode(row?.sku as string)} className="text-xl cursor-pointer" />
+                        </span>
+                    </div>{' '}
+                </div>
             </div>
             {showImageModal && (
                 <ImageMODAL
@@ -102,6 +94,16 @@ const ProductColumn = ({ row, status }: productProps) => {
                     setIsOpen={setShowImageModal}
                     image={particularRowImage && particularRowImage?.split(',')}
                 />
+            )}
+            {qrCode && (
+                <>
+                    <Dialog isOpen={!!qrCode} onClose={() => setQrCode('')} width={600}>
+                        <div className="bg-gray-100 mt-5 flex items-center justify-center dark:bg-gray-800 p-4 rounded-xl shadow-sm">
+                            <QRCode value={row?.sku ?? ''} size={200} />
+                        </div>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 font-medium mt-10">sku: {row?.sku}</p>
+                    </Dialog>
+                </>
             )}
         </div>
     )
@@ -116,6 +118,7 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
     const [itemId, setItemId] = useState<number>()
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularROwImage] = useState('')
+    const [qrCode, setQrCode] = useState('')
 
     const columns = [
         columnHelper.accessor('name', {
@@ -168,13 +171,6 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                 )
             },
         }),
-        columnHelper.accessor('quantity', {
-            header: 'Quantity',
-        }),
-
-        columnHelper.accessor('fulfilled_quantity', {
-            header: 'Fullfilled Quantity',
-        }),
         columnHelper.accessor('final_price', {
             header: 'Final Price',
             cell: (props) => {
@@ -182,6 +178,24 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                 return <PriceAmount amount={row.final_price ?? 0} />
             },
         }),
+        columnHelper.accessor('quantity', {
+            header: 'Quantity',
+        }),
+
+        columnHelper.accessor('fulfilled_quantity', {
+            header: 'Fulfilled Quantity',
+        }),
+        columnHelper.accessor('llinfo', {
+            header: 'LLInfo',
+        }),
+        columnHelper.accessor('is_gift_wrap', {
+            header: 'Gift Wrap',
+            cell: (props) => {
+                const row = props.row.original
+                return <div>{row?.is_gift_wrap ? 'Yes' : 'NO'}</div>
+            },
+        }),
+
         columnHelper.accessor('name', {
             header: `${status !== 'CANCELLED' ? 'Replace' : ''}`,
             cell: (props) => {
@@ -267,13 +281,31 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                                         className="w-28 xl:w-44 h-52 object-cover rounded-lg cursor-pointer"
                                         onClick={() => handleImageView(pdts?.image || '')}
                                     />
+                                    {qrCode && (
+                                        <div className="bg-gray-100 mt-5 flex items-center justify-center dark:bg-gray-800 p-4 rounded-xl shadow-sm">
+                                            <QRCode value={qrCode ?? ''} size={80} />
+                                        </div>
+                                    )}
                                 </div>
+
                                 <div className="ml-6 w-full ">
                                     <div className="font-bold text-[12px] xl:text-2xl">{pdts.brand}</div>
                                     <div className="font-normal text-[12px] text-gray-500 xl:text-2xl w-[100px] xl:w-full">{pdts.name}</div>
                                     <br />
                                     <div className="mb-3 xl:text-lg w-[80px] flex flex-wrap break-words text-red-700 xl:w-full dark:text-red-500">
                                         {pdts.sku}
+                                    </div>
+                                    <div>
+                                        <MdQrCodeScanner
+                                            onClick={() => {
+                                                if (qrCode) {
+                                                    setQrCode('')
+                                                } else {
+                                                    setQrCode(pdts?.sku as string)
+                                                }
+                                            }}
+                                            className="text-xl cursor-pointer"
+                                        />
                                     </div>
                                     <div className=" mb-3 xl:text-sm w-[100px] text-gray-700 xl:w-full dark:text-white">
                                         color:{pdts.color}
@@ -284,12 +316,20 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                                     <div className=" mb-3 xl:text-sm w-[100px] text-gray-700 xl:w-full dark:text-white">
                                         size:{pdts.size}
                                     </div>
+                                    <div className=" mb-3 xl:text-sm w-[100px] text-gray-700 xl:w-full dark:text-white">
+                                        Gift Wrap:{pdts.is_gift_wrap ? 'YES' : 'NO'}
+                                    </div>
 
-                                    <div className="flex items-center justify-between">
+                                    <div className="flex items-center justify-between mb-4">
                                         <div className="flex flex-col xl:flex-row xl:gap-6 xl:items-center gap-2">
                                             <div className="text-md xl:text-md dark:text-white">
-                                                Qty:{' '}
-                                                {status !== 'PENDING' && status !== 'ACCEPTED' ? pdts.fulfilled_quantity : pdts?.quantity}
+                                                Qty:
+                                                {pdts?.quantity}
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-col xl:flex-row xl:gap-6 xl:items-center gap-2">
+                                            <div className="text-md xl:text-md dark:text-white">
+                                                Fulfilled Qty: {pdts.fulfilled_quantity}
                                             </div>
                                         </div>
                                     </div>

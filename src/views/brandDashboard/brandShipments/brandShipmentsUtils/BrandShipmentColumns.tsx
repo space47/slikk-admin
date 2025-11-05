@@ -30,12 +30,14 @@ export const BrandShipmentsColumns = () => {
                 name: 'shipment_id',
                 cell: ({ row }: any) => {
                     return (
-                        <div
+                        <a
+                            href={`/app/vendor/shipments/details/${row?.original?.id}`}
                             className="p-2 rounded-xl bg-gray-600 text-white flex items-center justify-center hover:bg-gray-400 cursor-pointer"
-                            onClick={() => navigate(`/app/vendor/shipments/details/${row?.original?.id}`)}
+                            target="_blank"
+                            rel="noopener noreferrer"
                         >
                             {row?.original.shipment_id}
-                        </div>
+                        </a>
                     )
                 },
             },

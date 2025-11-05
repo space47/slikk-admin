@@ -10,6 +10,11 @@ export type RiderAddTypes = {
     shift_start_time?: string
     shift_end_time?: string
     is_active?: boolean
+    agency?: string
+    lat?: number
+    long?: number
+    store?: number[]
+    rider_delivery_type?: string
 }
 
 type UserType = {
@@ -83,6 +88,7 @@ export type UserProfile = Partial<{
     email: string
     mobile: number
     gender: string
+    rider_type: string
     dob: string
     country_code: string
     device_id: string
@@ -96,7 +102,7 @@ export type UserProfile = Partial<{
     }
 }>
 
-export type RiderDetails = Partial<{
+export type RiderDetailsType = Partial<{
     profile: UserProfile
     task_data: TaskData
     recent_task_detail: {
@@ -107,13 +113,18 @@ export type RiderDetails = Partial<{
         order_id: string
     }
     rider_status: boolean
+    attendance_details: {
+        active_time: number
+        check_in_time: string
+        check_out_time: string
+    }
 }>
 
 export type RiderDetailResponseType = {
     status?: string
     data?: {
         count: number
-        results?: RiderDetails[]
+        results?: RiderDetailsType[]
     }
 }
 
@@ -168,9 +179,17 @@ export interface RiderProfileData {
     other_info: Record<string, any>
     create_date: string
     update_date: string
+    agency?: string
+    rider_delivery_type?: string
+    store: any
 }
 
 export type RiderProfileResponseType = {
     status?: string
     data?: RiderProfileData[]
+}
+
+export type RiderDownloadResponse = {
+    status: string
+    message: string
 }

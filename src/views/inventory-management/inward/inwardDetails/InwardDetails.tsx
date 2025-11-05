@@ -1,36 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react'
-// import classNames from 'classnames'
-// import Tag from '@/components/ui/Tag'
 import Loading from '@/components/shared/Loading'
 import Container from '@/components/shared/Container'
 import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
-// import OrderProducts from './components/OrderProducts'
 import PaymentSummary from './components/PaymentSummary'
 import ShippingInfo from './components/ShippingInfo'
-// import Activity from './components/Activity'
 import CustomerInfo from './components/CustomerInfo'
 import { HiOutlineCalendar } from 'react-icons/hi'
-// import { apiGetSalesOrderDetails } from '@/services/SalesService'
-// import { useLocation } from 'react-router-dom'
 import isEmpty from 'lodash/isEmpty'
-import QCtable from './components/QCtable'
-
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-// import { ordercommon } from '@/views/category-management/orderlist/commontypes'
 import { useParams, useNavigate } from 'react-router-dom'
 import moment from 'moment'
-import { Modal, notification } from 'antd'
+import { notification } from 'antd'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
-import { FaDownload, FaSync } from 'react-icons/fa'
+import { FaDownload } from 'react-icons/fa'
 import { inwardDetailsResponse } from './inwardCommon'
 import QcTabs from './components/QcTabs'
-// import { string } from 'yup'
 
 const InwardDetails = () => {
-    // const location = useLocation()
-
     const [loading, setLoading] = useState(true)
     const [data, setData] = useState<inwardDetailsResponse>()
     const { document_number } = useParams()
@@ -51,7 +39,7 @@ const InwardDetails = () => {
                 setLoading(false)
 
                 setData(ordersData)
-                setCompanyId(ordersData?.company?.id)
+                setCompanyId(ordersData?.company)
             } catch (error) {
                 console.log(error)
             }
@@ -99,17 +87,28 @@ const InwardDetails = () => {
         try {
             const response = await axioisInstance.get(`file/presign?file_url=${document_url}`)
             const val = response.data?.data
-            window.open(val)
+
+            if (val) {
+                const link = document.createElement('a')
+                link.href = val
+                link.download = `${document_url}`
+                link.target = '_blank'
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+            } else {
+                console.error('No file URL returned from API')
+            }
         } catch (error) {
-            console.error(error)
+            console.error('Error fetching presigned URL:', error)
         }
     }
 
     const handleRegenerateGrn = async (doc_number: string) => {
         try {
-            let responseData = `/goods/received/${companyId}/detail?download=true&regenerate=true&document_number=${doc_number}`
+            let responseData = `/goods/received/${companyId}/detail?download=true&regenerate=true&document_number=${encodeURIComponent(doc_number)}`
             if (selectValue === 'csv') {
-                responseData = `/goods/received/${companyId}/detail?download=true&regenerate=true&document_number=${doc_number}&download_type=csv`
+                responseData = `/goods/received/${companyId}/detail?download=true&regenerate=true&document_number=${encodeURIComponent(doc_number)}&download_type=csv`
             }
 
             const response = await axioisInstance.get(responseData)
@@ -181,12 +180,23 @@ const InwardDetails = () => {
                                             <span className="font-bold">Export</span> <FaDownload className="text-xl" />
                                         </div>
                                     </div>
-                                    <div className="docs flex flex-col">
-                                        {data.document_number}
-                                        <div className="cursor-pointer" onClick={() => handleUrl(data.document_url)}>
-                                            <p className=" underline">Document Url</p>
-                                        </div>
-                                    </div>
+                                    {data?.document_url ? (
+                                        <>
+                                            <div className="docs flex flex-col w-1/2">
+                                                {data.document_url?.split(',')?.map((item, key) => {
+                                                    return (
+                                                        <div className="cursor-pointer" onClick={() => handleUrl(item)} key={key}>
+                                                            <p className="cursor-pointer p-2 text-blue-500">
+                                                                {data?.grn_number}_{key + 1}
+                                                            </p>
+                                                        </div>
+                                                    )
+                                                })}
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>No document url</>
+                                    )}
                                 </div>
                             </div>
                             <span className="flex items-center">

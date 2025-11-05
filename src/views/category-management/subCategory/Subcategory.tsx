@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
@@ -13,10 +13,14 @@ import { useGetSubCategory } from './subCategoryUtils/useGetSubCategory'
 import { useDeleteFromCatalog } from '@/commonHooks/useDeleteFromCatalog'
 import { useLocalPaginateData } from '@/commonHooks/useLocalPaginateData'
 import CatalogDeleteModal from '@/common/CatalogDeleteModal'
+import { useAppDispatch, useAppSelector } from '@/store'
+import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
+import { getAllSubCategoryAPI } from '@/store/action/subcategory.action'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
 const Subcategory = () => {
+    const dispatch = useAppDispatch()
     const navigate = useNavigate()
     const [deleteModal, setDeleteModal] = useState(false)
     const [globalFilter, setGlobalFilter] = useState<string>('')
@@ -24,7 +28,22 @@ const Subcategory = () => {
     const [selectedDivision, setSelectedDivision] = useState('Select Division')
     const [selectedCategory, setSelectedCategory] = useState('Select Category')
 
-    const { subCategories, DivisionArray } = useGetSubCategory({ selectedDivision, selectedCategory })
+    useEffect(() => {
+        const divisionParam = selectedDivision && selectedDivision !== 'Select Division' ? selectedDivision : undefined
+        const categoryParam = selectedCategory && selectedCategory !== 'Select Category' ? selectedCategory : undefined
+
+        const searchParam = globalFilter?.trim() ? globalFilter : undefined
+
+        dispatch(getAllSubCategoryAPI(undefined, searchParam, divisionParam, categoryParam))
+    }, [dispatch, globalFilter, selectedDivision, selectedCategory])
+
+    const subCategory = useAppSelector<SUBCATEGORY_STATE>((state) => state.subCategory)
+
+    const subCategories = useMemo(() => {
+        return subCategory?.subcategories
+    }, [subCategory])
+
+    const { DivisionArray } = useGetSubCategory({ selectedDivision, selectedCategory })
 
     const { page, pageSize, paginatedData, setPage, setPageSize, totalPages } = useLocalPaginateData({
         data: subCategories,

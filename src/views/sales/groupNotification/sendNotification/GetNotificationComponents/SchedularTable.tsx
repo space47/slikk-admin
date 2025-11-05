@@ -1,10 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ColumnDef } from '@tanstack/react-table'
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import { pageSizeOptions, Rules, SchedularTypes, SchedulerConfig } from '../getNotiStats.common'
 import moment from 'moment'
 import EasyTable from '@/common/EasyTable'
 import { Pagination, Select } from '@/components/ui'
+import { useNavigate } from 'react-router-dom'
+import { TbPlayerTrackNextFilled } from 'react-icons/tb'
+import { FaEdit } from 'react-icons/fa'
+import { Switch } from 'antd'
+import ActiveInactiveModal from '@/views/appsSettings/careers/careerDetails/ActiveInactiveModal'
+import { BsFillInfoSquareFill } from 'react-icons/bs'
+import StatusModal from './StatusModal'
 
 interface SentProps {
     data: any[]
@@ -20,12 +27,43 @@ type Option = {
 }
 
 const SchedularTable = ({ data, page, pageSize, onPaginationChange, onSelectChange, totalData }: SentProps) => {
+    const [forActive, setForActive] = useState('')
+    const [showModalForActive, setShowModalForActive] = useState(false)
+    const [checkActive, setCheckActive] = useState(false)
+    const [idStore, setIdStore] = useState<number | string>('')
+    const [statusModal, setStatusModal] = useState(false)
+
+    const handleActiveCareer = (id: number | string, e: React.MouseEvent, checked: boolean) => {
+        setForActive(id as string)
+        setShowModalForActive(true)
+        setCheckActive(checked)
+    }
+    const navigate = useNavigate()
     const columns = useMemo<ColumnDef<SchedularTypes>[]>(
         () => [
             {
-                header: 'ID',
+                header: 'Activate / Inactivate',
+                accessorKey: 'is_active',
+                cell: ({ row }: any) => {
+                    return (
+                        <div>
+                            <Switch
+                                className="bg-red-500"
+                                checked={row.original.is_active}
+                                onChange={(checked) => handleActiveCareer(row.original.id, checked, row.original.is_active)}
+                            />
+                        </div>
+                    )
+                },
+            },
+            {
+                header: 'Edit',
                 accessorKey: 'id',
-                cell: (info) => info.getValue(),
+                cell: (info) => (
+                    <button onClick={() => navigate(`/app/appsCommuncication/sendNotification/edit/${info.getValue()}`)}>
+                        <FaEdit className="text-2xl text-blue-500" />
+                    </button>
+                ),
             },
             {
                 header: 'Name',
@@ -79,7 +117,7 @@ const SchedularTable = ({ data, page, pageSize, onPaginationChange, onSelectChan
             {
                 header: 'Status Logs',
                 accessorKey: 'status_logs',
-                cell: (info) => JSON.stringify(info.getValue()), // You can adjust based on how you want to display status logs
+                cell: (info) => JSON.stringify(info.getValue()),
             },
             {
                 header: 'Expiry Date',
@@ -95,6 +133,33 @@ const SchedularTable = ({ data, page, pageSize, onPaginationChange, onSelectChan
                 header: 'Update Date',
                 accessorKey: 'update_date',
                 cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
+            },
+            {
+                header: 'Send Notification',
+                accessorKey: 'notification',
+                cell: ({ row }) => (
+                    <button
+                        onClick={() => navigate(`/app/appsCommuncication/sendNotification/${row.original.id}`)}
+                        className="text-blue-600 hover:underline"
+                    >
+                        <TbPlayerTrackNextFilled className="text-2xl" />
+                    </button>
+                ),
+            },
+            {
+                header: 'Stats',
+                accessorKey: 'name',
+                cell: (info) => (
+                    <button
+                        className="text-yellow-600 hover:underline cursor-pointer"
+                        onClick={() => {
+                            setIdStore(info.getValue() as string)
+                            setStatusModal(true)
+                        }}
+                    >
+                        <BsFillInfoSquareFill className="text-2xl" />
+                    </button>
+                ),
             },
         ],
         [],
@@ -115,6 +180,17 @@ const SchedularTable = ({ data, page, pageSize, onPaginationChange, onSelectChan
                     />
                 </div>
             </div>
+            {showModalForActive && (
+                <ActiveInactiveModal
+                    dialogIsOpen={showModalForActive}
+                    setIsOpen={setShowModalForActive}
+                    idForUpdate={forActive}
+                    isActive={checkActive}
+                    url={`/user_notification/${forActive}`}
+                    label="Notification"
+                />
+            )}
+            {statusModal && <StatusModal isOpen={statusModal} onClose={() => setStatusModal(false)} name={idStore as string} />}
         </div>
     )
 }

@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react'
 import { Card, notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAppSelector } from '@/store'
-import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+import { SINGLE_COMPANY_DATA, USER_PROFILE_DATA } from '@/store/types/company.types'
 import { USER_EDIT_FROM } from './UserEditForm'
 import CardComponent from './cardComponents/CardComponent'
 import { Spinner } from '@/components/ui'
@@ -26,6 +26,7 @@ type FormModel = {
     business_email: string
     permissions: []
     company: []
+    store: USER_PROFILE_DATA['store']
 }
 
 interface permission {
@@ -279,10 +280,10 @@ const BrandUserEdit = () => {
         setSelectedGroups([])
     }
 
-    console.log('Groups data  is', addedGroups?.map((item) => item.name.includes('picker')).includes(true))
+    console.log('Groups data  is xyzzzz', addedGroups)
 
     useEffect(() => {
-        if (addedGroups?.map((item) => item.name.includes('picker')).includes(true)) {
+        if (addedGroups?.map((item) => ['picker', 'rider'].includes(item.name))?.includes(true)) {
             setStoreAssign(true)
         } else {
             setStoreAssign(false)
@@ -446,27 +447,37 @@ const BrandUserEdit = () => {
                     onSubmit={handleSubmit}
                 >
                     {({ values, touched, errors, resetForm }) => (
-                        <Form className="w-full shadow-lg rounded-lg p-3" onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}>
-                            <div className="text-xl mb-10 font-bold">EDIT USER DETAILS</div>
+                        <Form
+                            className="w-full bg-blue-50 shadow-xl rounded-xl p-6 transition-all duration-200 hover:shadow-2xl"
+                            onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
+                        >
+                            <div className="text-2xl font-bold text-gray-800 mb-8 pb-2 border-b border-gray-200">EDIT USER DETAILS</div>
+
                             <FormContainer>
                                 {/* Form Fields */}
-                                <FormContainer className="grid grid-cols-2 gap-8">
-                                    {USER_EDIT_FROM.map((item, key) => (
-                                        <FormItem key={key} label={item.label} className={item.className}>
-                                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
-                                        </FormItem>
-                                    ))}
-                                </FormContainer>
+                                <div className="mb-8">
+                                    <h3 className="text-lg font-semibold text-gray-700 mb-4">User Information</h3>
+                                    <FormContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        {USER_EDIT_FROM.map((item, key) => (
+                                            <FormItem key={key} label={item.label} className={item.className}>
+                                                <Field
+                                                    type={item.type}
+                                                    name={item.name}
+                                                    placeholder={item.placeholder}
+                                                    component={Input}
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                                                />
+                                            </FormItem>
+                                        ))}
+                                    </FormContainer>
+                                </div>
 
-                                <div className="text-xl font-bold">USER PERMISSIONS</div>
-                                <br />
+                                <div className="text-xl font-bold text-gray-800 mb-6 pb-2 border-b border-gray-200">USER PERMISSIONS</div>
 
                                 {accessDenied?.company ? (
-                                    <>
-                                        <AccessDenied particularName="Comapany Details" />
-                                    </>
+                                    <AccessDenied particularName="Company Details" />
                                 ) : (
-                                    <FormContainer className="">
+                                    <FormContainer className="mb-8">
                                         <CardComponent
                                             isSelectAll
                                             label="Company"
@@ -483,14 +494,11 @@ const BrandUserEdit = () => {
                                         />
                                     </FormContainer>
                                 )}
-                                <br />
 
                                 {accessDenied?.groups ? (
-                                    <>
-                                        <AccessDenied particularName="User Groups" />
-                                    </>
+                                    <AccessDenied particularName="User Groups" />
                                 ) : (
-                                    <FormContainer className="">
+                                    <FormContainer className="mb-8">
                                         <CardComponent
                                             label="Groups"
                                             selectedValue={selectedGroups}
@@ -505,17 +513,17 @@ const BrandUserEdit = () => {
                                     </FormContainer>
                                 )}
 
-                                {storeAssign && (
-                                    <StoreAssignComponent storePicker={storePicker} setStorePicker={setStorePicker} mobile={mobile} />
-                                )}
-                                <br />
+                                <StoreAssignComponent
+                                    storePicker={storePicker}
+                                    setStorePicker={setStorePicker}
+                                    mobile={mobile}
+                                    profile={userData?.store}
+                                />
 
                                 {accessDenied?.permission ? (
-                                    <>
-                                        <AccessDenied particularName="User Permissions" />
-                                    </>
+                                    <AccessDenied particularName="User Permissions" />
                                 ) : (
-                                    <FormContainer className="">
+                                    <FormContainer className="mb-8">
                                         <CardComponent
                                             isSelectAll
                                             forPermission
@@ -536,10 +544,11 @@ const BrandUserEdit = () => {
 
                                 {/* Submit & Reset Buttons */}
                                 <FormItem className="mt-10 flex justify-center gap-4">
-                                    <Button type="reset" className="ltr:mr-2 rtl:ml-2" onClick={() => resetForm()}>
-                                        Reset
-                                    </Button>
-                                    <Button variant="new" type="submit">
+                                    <Button
+                                        variant="new"
+                                        type="submit"
+                                        className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-md"
+                                    >
                                         Submit
                                     </Button>
                                 </FormItem>

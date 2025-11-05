@@ -20,9 +20,10 @@ type CustomerInfoProps = {
     location_url: string
     delivery_type: string
     distance?: number
+    alternate_number?: string
 }
 
-const CustomerInfo = ({ user, billing_address, store, location_url, delivery_type, distance }: CustomerInfoProps) => {
+const CustomerInfo = ({ user, billing_address, store, location_url, delivery_type, distance, alternate_number }: CustomerInfoProps) => {
     const printRef = useRef<HTMLDivElement>(null)
 
     const generatePrint = () => {
@@ -122,6 +123,17 @@ const CustomerInfo = ({ user, billing_address, store, location_url, delivery_typ
                 </h6>
                 <address className="not-italic">
                     <div className="mb-1">{billing_address}</div>
+                    {alternate_number && (
+                        <div className="font-bold">
+                            Alternate Number:{' '}
+                            <span className="text-green-500">
+                                {' '}
+                                <a href={`tel:${alternate_number}`} className="hover:text-blue-600">
+                                    {alternate_number}
+                                </a>
+                            </span>
+                        </div>
+                    )}
                 </address>
                 <hr className="my-5" />
             </div>

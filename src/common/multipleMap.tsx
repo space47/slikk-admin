@@ -5,15 +5,14 @@ import * as L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { FaMapMarkerAlt } from 'react-icons/fa'
 import axios from 'axios'
-import _, { sum } from 'lodash'
+import _ from 'lodash'
 import icon from 'leaflet/dist/images/marker-icon.png'
 import iconShadow from 'leaflet/dist/images/marker-shadow.png'
-import { MdClose, MdFullscreen } from 'react-icons/md'
+import { MdFullscreen } from 'react-icons/md'
 import { BsFullscreenExit } from 'react-icons/bs'
 import 'leaflet.heat'
 import { Dropdown, Select } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-import { useNavigate } from 'react-router-dom'
 import { companyStore } from '@/store/types/companyStore.types'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
@@ -56,6 +55,8 @@ interface MultipleMapProps {
     amount: any[]
     currentStatus: string[]
     currentInvoice: string[]
+    setSelectedStatus: (status: string[]) => void
+    currentDistance: number[]
 }
 
 interface CenterProps {
@@ -64,9 +65,8 @@ interface CenterProps {
     currLong: any
 }
 
-const CurrentLocationButton = ({ currLat, currLong }: CenterProps) => {
+const CurrentLocationButton: React.FC<CenterProps> = ({ currLat, currLong }) => {
     const map = useMap()
-
     const handleClick = () => {
         map.setView([currLat, currLong], 13)
     }
@@ -91,6 +91,7 @@ const CurrentLocationButton = ({ currLat, currLong }: CenterProps) => {
         </button>
     )
 }
+CurrentLocationButton.displayName = 'CurrentLocationButton'
 
 // Marker
 interface MarkerComponentProps {
@@ -104,7 +105,7 @@ interface MarkerComponentProps {
     CurrentStatus?: any
 }
 
-const MarkerComponent = ({
+const MarkerComponent: React.FC<MarkerComponentProps> = ({
     markers,
     currLat,
     currLong,
@@ -112,10 +113,8 @@ const MarkerComponent = ({
     distanceBetweenFifteenToThirty,
     distanceBelowTen,
     distanceBelowTentoFifteen,
-    CurrentStatus,
 }: MarkerComponentProps) => {
     const map = useMap()
-    const navigate = useNavigate()
     useEffect(() => {
         let currPos = 13
 
@@ -149,17 +148,32 @@ const MarkerComponent = ({
                         ['PENDING', 'ACCEPTED', 'PACKED'].includes(marker?.status)
                             ? officeIcon
                             : marker?.status === 'EXCHANGE'
-                              ? orangeIcon // orange
+                              ? orangeIcon
                               : ['DECLINED', 'CANCELLED'].includes(marker?.status)
-                                ? blackIcon //black
+                                ? blackIcon
                                 : DefaultIcon
                     }
+                    eventHandlers={{
+                        mouseover: (e) => {
+                            e.target.openPopup()
+                        },
+                        click: (e) => {
+                            e.target.openPopup()
+                            window.open(`/app/orders/${marker?.invoice_id}`, '_blank', 'noopener,noreferrer')
+                        },
+                        mouseout: (e) => {
+                            e.target.closePopup()
+                        },
+                    }}
                 >
                     <Popup className="hover:bg-blue-50">
                         <a href={`/app/orders/${marker?.invoice_id}`} target="_blank" rel="noreferrer" className="cursor-pointer">
+                            <div className="flex items-center justify-start ">
+                                <p className="p-2 bg-red-500 rounded-xl text-white">{marker?.invoice_id}</p>
+                            </div>
                             <p>Amount: Rs.{marker.amount}</p>
                             <p>Distance: {marker.distance} km</p>
-                            <p>Status: {marker.status} </p>
+                            <p>Status: {marker.status}</p>
                         </a>
                     </Popup>
                 </Marker>
@@ -177,10 +191,10 @@ const MarkerComponent = ({
         </div>
     )
 }
+MarkerComponent.displayName = 'MarkerComponent'
 
-const HeatMapComponent = ({ markers }: { markers: any[] }) => {
+const HeatMapComponent: React.FC<{ markers: any[] }> = ({ markers }) => {
     const map = useMap()
-
     useEffect(() => {
         const heatLayer = L.heatLayer(
             markers.map((marker) => [marker.lat, marker.lon, marker.amount || 1]),
@@ -195,6 +209,7 @@ const HeatMapComponent = ({ markers }: { markers: any[] }) => {
 
     return null
 }
+HeatMapComponent.displayName = 'HeatMapComponent'
 
 interface FullScreenMapProps {
     currLat: number
@@ -204,7 +219,13 @@ interface FullScreenMapProps {
     currentPage: string
 }
 
-const FullScreenMap = ({ currLat, currLong, markers, style = { height: '70vh', width: '100%' }, currentPage }: FullScreenMapProps) => {
+const FullScreenMap: React.FC<FullScreenMapProps> = ({
+    currLat,
+    currLong,
+    markers,
+    style = { height: '70vh', width: '100%' },
+    currentPage,
+}) => {
     const mapContainerRef = useRef<HTMLDivElement>(null)
     const [isFullScreen, setIsFullScreen] = useState(false)
 
@@ -232,8 +253,6 @@ const FullScreenMap = ({ currLat, currLong, markers, style = { height: '70vh', w
         }
     }
 
-    console.log('Current Page Name', currentPage)
-
     return (
         <div ref={mapContainerRef} style={{ position: 'relative', ...style }}>
             <button
@@ -255,20 +274,35 @@ const FullScreenMap = ({ currLat, currLong, markers, style = { height: '70vh', w
             {isFullScreen && (
                 <MapContainer center={[currLat, currLong]} zoom={13} style={{ height: '100%', width: '100%' }}>
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                    {currentPage === 'marker' && <MarkerComponent currLat={currLat} currLong={currLong} markers={markers} />}
-                    {currentPage === 'heat_map' && <HeatMapComponent markers={markers} />}
+                    {currentPage === 'marker' && <MarkerComponent currLat={currLat} currLong={currLong} markers={markers as any} />}
+                    {currentPage === 'heat_map' && <HeatMapComponent markers={markers as any} />}
                 </MapContainer>
             )}
         </div>
     )
 }
+FullScreenMap.displayName = 'FullScreenMap'
 
 const MAP_STYLE_ARRAY = [
     { name: 'Marker', value: 'marker' },
     { name: 'HeatMap', value: 'heat_map' },
 ]
+const STATUS_ARRAY = [
+    { name: 'ACCEPTED', value: 'ACCEPTED' },
+    { name: 'PACKED', value: 'PACKED' },
+    { name: 'DELIVERY_CREATED', value: 'DELIVERY_CREATED' },
+    { name: 'PACKED+DC', value: 'PACKED,DELIVERY_CREATED' },
+]
 
-const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount, currentStatus, currentInvoice }) => {
+const MultipleMap: React.FC<MultipleMapProps> = ({
+    latitudes,
+    longitudes,
+    amount,
+    currentStatus,
+    currentInvoice,
+    currentDistance,
+    setSelectedStatus,
+}) => {
     const dispatch = useAppDispatch()
     const [currLat, setCurrLat] = useState<number>(12.920216)
     const [currLong, setCurrLong] = useState<number>(77.649326)
@@ -302,8 +336,6 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
                 setSuggestions([])
                 return
             }
-
-            console.log('Debounce query', query)
             try {
                 const response = await axios.get(`https://api.olamaps.io/places/v1/autocomplete`, {
                     params: {
@@ -340,27 +372,16 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
         setSuggestions([])
         setLocation(suggestion.name)
     }
-
     const markers = useMemo(() => {
         const belowTen: any[] = []
         const tenToFifteen: any[] = []
         const fifteenToThirty: any[] = []
         const aboveThirty: any[] = []
-
         const result = latitudes.map((lat, index) => {
             const lon = longitudes[index]
-            const dLat = (lat - currLat) * (Math.PI / 180)
-            const dLon = (lon - currLong) * (Math.PI / 180)
             const status = currentStatus[index]
             const invoice_id = currentInvoice[index] ?? ''
-
-            const rLat1 = currLat * (Math.PI / 180)
-            const rLat2 = lat * (Math.PI / 180)
-
-            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(rLat1) * Math.cos(rLat2)
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-
-            const distance = parseFloat((R * c).toFixed(2))
+            const distance = currentDistance[index] || 0
 
             if (distance <= 10) {
                 belowTen.push({ lat, lon, amount: amount[index], distance })
@@ -371,7 +392,6 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
             } else {
                 aboveThirty.push({ lat, lon, amount: amount[index], distance })
             }
-
             return { lat, lon, amount: amount[index], distance, status, invoice_id }
         })
 
@@ -383,28 +403,24 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
         return result
     }, [latitudes, longitudes, amount, currLat, currLong, R])
 
-    console.log('bwlow ten', distanceBelowTen)
-
-    const sumsConvertToNumber = markers?.map((item) => parseInt(item?.amount))
-    const sumsofAmount = _.sum(sumsConvertToNumber)
-    const avgofAmount = _.mean(sumsConvertToNumber)
-    console.log('sum of amount', avgofAmount)
-
-    const calculateSum = (distanceArray: any[]): number => {
+    const calculateSum = useCallback((distanceArray: any[]): number => {
         const numbers = distanceArray?.map((item) => parseInt(item?.amount, 10) || 0)
         return numbers.length === 0 ? 0 : _.sum(numbers)
-    }
+    }, [])
 
-    const calculateAverage = (distanceArray: any[]): number => {
+    const calculateAverage = useCallback((distanceArray: any[]): number => {
         const numbers = distanceArray?.map((item) => parseInt(item?.amount, 10) || 0)
         return numbers.length === 0 ? 0 : _.mean(numbers)
-    }
+    }, [])
 
-    const calculatePerSquareCount = (distanceArrays: any[][], area: number): number => {
-        if (area === 0 || !distanceArrays) return 0
-        const totalSum = distanceArrays.reduce((sum, array) => sum + calculateSum(array), 0)
-        return totalSum / area
-    }
+    const calculatePerSquareCount = useCallback(
+        (distanceArrays: any[][], area: number): number => {
+            if (area === 0 || !distanceArrays) return 0
+            const totalSum = distanceArrays.reduce((sum, array) => sum + calculateSum(array), 0)
+            return totalSum / area
+        },
+        [calculateSum],
+    )
 
     const Belowdatas = [
         {
@@ -444,26 +460,27 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
         const selectedPage = MAP_STYLE_ARRAY.find((page) => page.value === value)
         if (selectedPage) setCurrentSelectedPage(selectedPage)
     }
-    console.log('currLat', currLat)
 
     return (
         <div className="flex flex-col gap-4">
-            <div className="flex gap-4 ">
-                <div>
-                    <input className="rounded-xl" placeholder="Enter location" value={location} onChange={handleChangeLocation} />
-                    {suggestions.length > 0 && (
-                        <ul className="mt-2 border rounded-xl bg-white shadow-md">
-                            {suggestions.map((suggestion: any, index: any) => (
-                                <li
-                                    key={index}
-                                    className="p-2 cursor-pointer hover:bg-gray-200"
-                                    onClick={() => handleSelectSuggestion(suggestion)}
-                                >
-                                    {suggestion.name}
-                                </li>
-                            ))}
-                        </ul>
-                    )}
+            <div className="flex flex-row items-center gap-2">
+                <div className="flex gap-4 ">
+                    <div>
+                        <input className="rounded-xl" placeholder="Enter location" value={location} onChange={handleChangeLocation} />
+                        {suggestions.length > 0 && (
+                            <ul className="mt-2 border rounded-xl bg-white shadow-md">
+                                {suggestions.map((suggestion: any, index: any) => (
+                                    <li
+                                        key={index}
+                                        className="p-2 cursor-pointer hover:bg-gray-200"
+                                        onClick={() => handleSelectSuggestion(suggestion)}
+                                    >
+                                        {suggestion.name}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
                 </div>
             </div>
 
@@ -486,6 +503,24 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
                     <FullScreenMap currLat={currLat} currLong={currLong} markers={markers} currentPage={currentSelectedPage?.value} />
                 </MapContainer>
                 <div className="space-y-2  xl:w-[300px]">
+                    <div>
+                        <div className="flex flex-col gap-3 mt-6 mb-10">
+                            <div>Select Status</div>
+                            <Select
+                                isMulti
+                                isClearable
+                                placeholder="select status"
+                                options={STATUS_ARRAY}
+                                getOptionLabel={(option) => option.name}
+                                getOptionValue={(option) => option.value}
+                                className="w-full"
+                                onChange={(newVal) => {
+                                    console.log('newVal', newVal)
+                                    setSelectedStatus(newVal ? newVal.map((item) => item.value) : [])
+                                }}
+                            />
+                        </div>
+                    </div>
                     {Belowdatas.map((item, key) => (
                         <div key={key} className="flex flex-col  bg-white px-4 py-2 rounded-md border border-gray-200 shadow-sm">
                             <div className="flex justify-between">
@@ -525,7 +560,7 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
                             placeholder="select Warehouse"
                             options={formattedData}
                             getOptionLabel={(option) => option.label}
-                            getOptionValue={(option) => option.value}
+                            getOptionValue={(option) => option.value as any}
                             className="w-full"
                             onChange={(newVal) => {
                                 setCurrLat(newVal?.value?.lat || 0)
@@ -538,5 +573,7 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
         </div>
     )
 }
+
+MultipleMap.displayName = 'MultipleMap'
 
 export default MultipleMap

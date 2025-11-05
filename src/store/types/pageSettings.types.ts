@@ -4,7 +4,7 @@ export interface pageSettingsType {
     section_heading: string
     display_name: string
     is_active: string
-    banners: any[]
+    banners?: any[]
     component_type: string
     data_type: Record<string, string | number | [] | any>
     component_config: Record<string, string | number>
@@ -18,6 +18,7 @@ export interface pageSettingsType {
     created_at: string
     updated_at: string
     division_select?: string
+    section_type?: string
 }
 
 export interface pageSettingsResponseType {

@@ -24,6 +24,7 @@ type LocationDetails = {
     latitude: number
     longitude: number
     contact_number: string
+    alternate_number?: string
 }
 
 type EventLog = {
@@ -36,6 +37,11 @@ type EventLog = {
 
 type ClientOrderDetails = {
     order_id: string
+    cash_collected?: boolean
+    cash_to_be_collected?: number
+    delivery_charge_to_be_collected_from_customer?: boolean
+    is_prepaid?: boolean
+    payment_mode?: string
 }
 
 type UserDetails = {

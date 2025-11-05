@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react'
-import { Dropdown } from '@/components/ui'
+import { Dialog, Dropdown } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import moment from 'moment'
 
@@ -15,6 +15,9 @@ const PREVIOUSARRAY = [
     { label: 'LAST WEEK', value: 'LAST WEEK' },
     { label: 'CURRENT MONTH', value: 'CURRENT MONTH' },
     { label: 'LAST MONTH', value: 'LAST MONTH' },
+    { label: 'FINANCIAL YEAR', value: 'FINANCIAL_YEAR' },
+    { label: 'OVERALL', value: 'OVERALL' },
+    { label: 'YEARLY', value: 'YEARLY' },
     { label: 'CUSTOM ', value: 'CUSTOM' },
 ]
 
@@ -31,7 +34,8 @@ interface DATEPROPS {
 
 const UltimateDatePicker = ({ setFrom, setTo, handleDateChange, dispatch }: DATEPROPS) => {
     const [selectedOption, setSelectedOption] = useState('TODAY')
-    const [showinfDatePicker, setShowingDatePicker] = useState(false)
+    const [showingDatePicker, setShowingDatePicker] = useState(false)
+    const [tempRange, setTempRange] = useState<any>(null)
 
     const handleSelect = (value: string) => {
         setSelectedOption(value)
@@ -70,9 +74,31 @@ const UltimateDatePicker = ({ setFrom, setTo, handleDateChange, dispatch }: DATE
                 endDate = moment().subtract(1, 'month').endOf('month').format('YYYY-MM-DD')
                 setShowingDatePicker(false)
                 break
+            case 'FINANCIAL_YEAR': {
+                const currentYear = moment().year()
+                // If today is before April, financial year started April 1 of last year
+                const fyStart =
+                    moment().month() < 3
+                        ? moment([currentYear - 1, 3, 1]) // April 1 last year
+                        : moment([currentYear, 3, 1]) // April 1 this year
+                startDate = fyStart.format('YYYY-MM-DD')
+                endDate = moment().format('YYYY-MM-DD')
+                setShowingDatePicker(false)
+                break
+            }
+            case 'OVERALL':
+                startDate = moment('2024-08-01').format('YYYY-MM-DD')
+                endDate = moment().format('YYYY-MM-DD')
+                setShowingDatePicker(false)
+                break
+            case 'YEARLY':
+                startDate = moment().startOf('year').format('YYYY-MM-DD') // Jan 1 of this year
+                endDate = moment().format('YYYY-MM-DD') // today
+                setShowingDatePicker(false)
+                break
             case 'CUSTOM':
                 setShowingDatePicker(true)
-                
+
                 break
             default:
                 return
@@ -87,8 +113,26 @@ const UltimateDatePicker = ({ setFrom, setTo, handleDateChange, dispatch }: DATE
         }
     }
 
+    const applyCustomRange = () => {
+        if (tempRange?.[0] && tempRange?.[1]) {
+            const startDate = moment(tempRange[0]).format('YYYY-MM-DD')
+            const endDate = moment(tempRange[1]).format('YYYY-MM-DD')
+
+            if (dispatch) {
+                dispatch(setFrom(startDate))
+                dispatch(setTo(endDate))
+            } else {
+                setFrom(startDate)
+                setTo(endDate)
+            }
+
+            handleDateChange([startDate, endDate])
+            setShowingDatePicker(false)
+        }
+    }
+
     return (
-        <div className="flex gap-1 items-center xl:mr-10">
+        <div className="flex gap-1 items-center xl:mr-14">
             <div className="border w-auto rounded-md h-auto font-bold mt-8 bg-black text-white flex justify-center">
                 <Dropdown
                     className="text-xl text-white bg-white font-bold border-2 border-blue-600"
@@ -103,11 +147,34 @@ const UltimateDatePicker = ({ setFrom, setTo, handleDateChange, dispatch }: DATE
                 </Dropdown>
             </div>
 
-            {showinfDatePicker && (
-                <div className="xl:w-[230px] w-[200px]">
-                    <div className="mb-2">Date Range:</div>
-                    <DatePickerRange placeholder="Select dates range" onChange={handleDateChange} singleDate />
-                </div>
+            {showingDatePicker && (
+                <Dialog isOpen={showingDatePicker} onClose={() => setShowingDatePicker(false)}>
+                    <div className="w-full bg-white border rounded-2xl shadow-md p-3 mt-5">
+                        <div className="mb-3 font-semibold text-gray-700 text-sm">Select Date Range</div>
+
+                        <DatePickerRange
+                            placeholder="Choose dates"
+                            onChange={(val) => setTempRange(val)} // store temp value
+                            singleDate
+                            className="w-full border rounded-lg px-2 py-1"
+                        />
+
+                        <div className="flex justify-end mt-4 gap-2">
+                            <button
+                                onClick={() => setShowingDatePicker(false)}
+                                className="px-3 py-1.5 text-sm rounded-lg border border-gray-300 hover:bg-gray-100"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={applyCustomRange}
+                                className="px-4 py-1.5 text-sm bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
+                            >
+                                Apply
+                            </button>
+                        </div>
+                    </div>
+                </Dialog>
             )}
         </div>
     )

@@ -3,7 +3,7 @@ import React from 'react'
 import { Modal, Select } from 'antd'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { Dropdown, Input } from '@/components/ui'
-import { FaRupeeSign } from 'react-icons/fa'
+import { FaRupeeSign, FaTrash } from 'react-icons/fa'
 import { LOGISTIC_PARTNER, Product } from './activityCommon'
 
 const { Option } = Select
@@ -26,6 +26,9 @@ type Props = {
     isButtonClick?: boolean
     bagsCount: string
     setBagsCount: (x: string) => void
+    handleLocationClick: any
+    selectedLocations: { [productId: number]: { [location: string]: number } }
+    handleRemoveLocation: (productId: number, location: string) => void
 }
 
 export const CustomModal: React.FC<Props> = ({
@@ -44,6 +47,9 @@ export const CustomModal: React.FC<Props> = ({
     isButtonClick,
     bagsCount,
     setBagsCount,
+    handleLocationClick,
+    selectedLocations,
+    handleRemoveLocation,
 }) => {
     return (
         <Modal
@@ -73,7 +79,6 @@ export const CustomModal: React.FC<Props> = ({
             className="custom-modal"
             open={isModalOpen}
             onCancel={handleCancel}
-            bodyStyle={{ maxHeight: '75vh', overflowY: 'auto', padding: '1rem' }}
         >
             <p className="text-lg font-bold mb-4">{modalContent}</p>
 
@@ -104,7 +109,7 @@ export const CustomModal: React.FC<Props> = ({
 
             {product && product.length > 0 && (
                 <div className="grid grid-cols-1 gap-4 overflow-y-auto max-h-[300px] pr-2">
-                    {product.map((pdts) => (
+                    {product?.map((pdts) => (
                         <div
                             key={pdts.id}
                             className="flex items-center p-4 bg-white shadow-md rounded-lg hover:shadow-lg transition-shadow gap-6"
@@ -116,23 +121,71 @@ export const CustomModal: React.FC<Props> = ({
                                 <div className="font-semibold text-lg">{pdts.brand}</div>
                                 <div className="text-gray-600 text-md truncate">{pdts.name}</div>
                                 <div className="text-gray-800 text-sm mb-2">{pdts.sku}</div>
-                                <div className="flex flex-wrap gap-4 items-center text-md">
-                                    <span>Qty: {pdts.quantity}</span>
-                                    <div className="flex items-center">
-                                        <span>Fulfilled Qty:</span>
-                                        <Select
-                                            value={fulfilledQuantities[pdts.id] || 0}
-                                            className="ml-2 w-20 h-8"
-                                            onChange={(value: any) => handleSelectChange(pdts.id, value)}
-                                        >
-                                            {Array.from({ length: parseInt(pdts.quantity, 10) + 1 }, (_, i) => (
-                                                <Option key={i} value={i.toString()}>
-                                                    {i}
-                                                </Option>
-                                            ))}
-                                        </Select>
-                                    </div>
-                                </div>
+                                <div className="text-gray-800 text-sm mb-2">Loc:{pdts.location}</div>
+                                <div className="text-gray-800 text-sm mb-2">Quantity:{pdts.quantity}</div>
+                                {pdts?.location &&
+                                    (!pdts?.location_details ||
+                                        Object.keys(pdts.location_details).length === 0 ||
+                                        Object.values(pdts.location_details).reduce((sum, qty) => sum + qty, 0) <
+                                            parseInt(pdts.quantity)) && (
+                                        <div className="flex flex-wrap gap-4 items-center text-md">
+                                            <div className="flex items-center">
+                                                <span>Fulfilled Qty:</span>
+                                                <Select
+                                                    value={fulfilledQuantities[pdts.id] || 0}
+                                                    className="ml-2 w-20 h-8"
+                                                    onChange={(value: any) => handleSelectChange(pdts.id, value)}
+                                                >
+                                                    {Array.from({ length: parseInt(pdts.quantity, 10) + 1 }, (_, i) => (
+                                                        <Option key={i} value={i.toString()}>
+                                                            {i}
+                                                        </Option>
+                                                    ))}
+                                                </Select>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                {pdts.location_details &&
+                                    Object.keys(pdts.location_details).length > 0 &&
+                                    Object.values(pdts.location_details).reduce((sum, qty) => sum + qty, 0) >= parseInt(pdts.quantity) && (
+                                        <div>
+                                            <div className="flex gap-10 text-md">
+                                                <div className="font-semibold mt-2">Select Location:</div>
+                                                <div className="flex gap-2 flex-wrap mt-1">
+                                                    {Object.entries(pdts.location_details)?.map(([location, qty], index) => (
+                                                        <span
+                                                            key={index}
+                                                            className="text-white text-md cursor-pointer border px-2 py-1 rounded-md bg-blue-800 hover:bg-blue-400"
+                                                            onClick={() => handleLocationClick(pdts.id, location, qty, pdts.quantity)}
+                                                        >
+                                                            {location} ({qty})
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            {selectedLocations[pdts?.id] && (
+                                                <div className="mt-2 flex flex-wrap gap-2">
+                                                    {Object.entries(selectedLocations[pdts.id]).map(([loc, count]) => (
+                                                        <div
+                                                            key={loc}
+                                                            className="bg-green-100 text-blue-800 px-2 py-1 rounded-xl flex items-center gap-2"
+                                                        >
+                                                            <span>
+                                                                {loc}: {count}
+                                                            </span>
+                                                            <button
+                                                                className="text-red-500 hover:text-red-700"
+                                                                onClick={() => handleRemoveLocation(pdts.id, loc)}
+                                                            >
+                                                                <FaTrash className="text-xl font-bold " />
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                             </div>
                         </div>
                     ))}
@@ -196,23 +249,13 @@ export const CustomModal2: React.FC<props2> = ({
             onCancel={handleClose}
         >
             <div
-                className="flex flex-col items-center justify-center min-w-[22rem] px-6 py-8 
+                className="flex flex-col items-center justify-center min-w-[18rem] px-6 py-8 
                 bg-white/60 backdrop-blur-md rounded-2xl shadow-2xl"
             >
                 <p className="mb-6 text-xl font-semibold text-gray-800 text-center">{modalContent}</p>
                 <span className="mb-8 inline-block rounded-full bg-green-100 px-4 py-1 text-sm font-semibold text-green-700 shadow-sm">
                     Delivery Partner
                 </span>
-                <label className="mb-6 flex w-full flex-col items-start gap-2">
-                    <span className="text-sm font-medium text-gray-700">Bin Number</span>
-                    <Input
-                        value={binNumber}
-                        placeholder="Enter Bin Number"
-                        className="w-full rounded-xl border border-gray-300 bg-white/80 px-4 py-2 text-base
-                        shadow-inner transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-                        onChange={(e) => setBinNumber(e.target.value)}
-                    />
-                </label>
                 <div className="flex w-full flex-col items-center gap-4">
                     <span className="text-base font-semibold text-gray-800">Select Delivery Partner</span>
 
@@ -236,6 +279,16 @@ export const CustomModal2: React.FC<props2> = ({
                         </div>
                     </Dropdown>
                 </div>
+                <label className="mb-6 flex w-full flex-col items-start gap-2">
+                    <span className="text-sm font-medium text-gray-700">Bin Number</span>
+                    <Input
+                        value={binNumber}
+                        placeholder="Enter Bin Number"
+                        className="w-full rounded-xl border border-gray-300 bg-white/80 px-4 py-2 text-base
+                        shadow-inner transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                        onChange={(e) => setBinNumber(e.target.value)}
+                    />
+                </label>
             </div>
         </Modal>
     )
@@ -419,6 +472,39 @@ export const ExchangeModal: React.FC<prop6> = ({ isModalOpen, handlePack, handle
                 Mark to set the Excange Delivery Complete for order:<span className="font-bold underline text-red-600">{invoice}</span>{' '}
             </p>
             <br />
+        </Modal>
+    )
+}
+
+interface props {
+    isOpen: boolean
+    handleOk: any
+    onClose: any
+    title: string
+    desc: string
+    text: string
+    isRto?: boolean
+}
+
+export const RejectModal = ({ handleOk, isOpen, onClose, text, desc, title }: props) => {
+    return (
+        <Modal
+            title=""
+            open={isOpen}
+            okText={text}
+            cancelText="CANCEL"
+            okButtonProps={{
+                style: {
+                    backgroundColor: '#D32F2F',
+                    color: '#FFFFFF',
+                    borderRadius: '8px',
+                },
+            }}
+            onOk={handleOk}
+            onCancel={onClose}
+        >
+            <h1 className="text-center text-lg font-bold text-red-600">{title}</h1>
+            <p className="text-center text-xl font-semibold mb-10">{desc}</p>
         </Modal>
     )
 }

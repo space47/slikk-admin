@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, FormContainer, FormItem } from '@/components/ui'
-import { Form, Formik } from 'formik'
+
 import React, { useMemo, useState } from 'react'
 import NewPageCommonForms from '../newPageSettingsUtils/NewPageCommonForms'
 import { PageSettingsBodyFile } from '../newPageSettingsUtils/usePageSettingsBodyFile'
@@ -9,6 +9,7 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { AxiosError } from 'axios'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useFetchApi } from '@/commonHooks/useFetchApi'
+import { Form, Formik } from 'formik'
 
 const AddPageSettings = () => {
     const navigate = useNavigate()
@@ -33,7 +34,7 @@ const AddPageSettings = () => {
             return
         }
 
-        console.log('here 0')
+        console.log('here 0', values?.coupon_series)
 
         const { componentConfig, backgroundConfig, footerConfig, headerConfig, subHeaderConfig, child_component_config, cta_config } =
             await PageSettingsBodyFile({
@@ -58,6 +59,7 @@ const AddPageSettings = () => {
                     ...(values?.extra_info?.is_product_filter ? { is_product_filter: values.extra_info.is_product_filter } : {}),
                     cta_config: cta_config,
                     child_component_config: child_component_config,
+                    series_id: values?.extra_info?.coupon_series || '',
                 }).filter(([, value]) => value !== ''),
             ),
 
@@ -88,6 +90,7 @@ const AddPageSettings = () => {
                     .flat(),
             },
             ...(values?.section_filters ? { section_filters: values?.section_filters } : {}),
+            section_type: values?.section_type || '',
         }
         const filteredBody = Object.fromEntries(Object.entries(body || {}).filter(([, value]) => value !== undefined))
 
@@ -109,7 +112,7 @@ const AddPageSettings = () => {
             <Formik enableReinitialize initialValues={{}} onSubmit={handleSubmit}>
                 {({ values, resetForm, setFieldValue }) => {
                     return (
-                        <Form>
+                        <Form onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}>
                             <div className="text-xl mb-2">1. Create New Sections</div>
                             <NewPageCommonForms
                                 bannerDetails={bannerDetails}

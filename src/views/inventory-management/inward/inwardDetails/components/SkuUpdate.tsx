@@ -9,15 +9,14 @@ import { Pagination, Select } from '@/components/ui'
 import { Option } from '../../inwardCommon'
 import SkuDataInputs from './SkuDataInputs'
 import { FaSync } from 'react-icons/fa'
-import { inwardDetailsResponse } from '../inwardCommon'
 import LoadingSpinner from '@/common/LoadingSpinner'
 import PrinterComp from './PrinterComp'
+import TabsCommon from '@/common/TabsCommon'
+import { InwardTabs } from '../inwardCommon'
+import { useMaterialFailedColumns } from './materialUtils/useMaterialColumns'
+import { handleDownloadCsv } from '@/common/allTypesCommon'
 
-interface props {
-    data: inwardDetailsResponse
-}
-
-const SkuUpdate = ({ data }: props) => {
+const SkuUpdate = () => {
     const { document_number, company } = useParams()
     const [skuWiseData, setSkuWiseData] = useState<skuUpdateType[]>([])
     const [getSkuData, setGetSkuData] = useState<any[]>([])
@@ -30,30 +29,37 @@ const SkuUpdate = ({ data }: props) => {
     const [qualitySentInput, setQualitySentInput] = useState('')
     const [batchNumberInput, setBatchNumberInput] = useState('')
     const [globalFilter, setGlobalFilter] = useState('')
-    const [updatedPassed, setUpdatedPassed] = useState<{
-        [key: number]: number
-    }>({})
-    const [updatedReceived, setUpdatedReceived] = useState<{
-        [key: number]: number
-    }>({})
-    const [updatedLocation, setUpdatedLocation] = useState<{
-        [key: number]: string
-    }>({})
+    const [updatedPassed, setUpdatedPassed] = useState<{ [key: number]: number }>({})
+    const [updatedReceived, setUpdatedReceived] = useState<{ [key: number]: number }>({})
+    const [updatedLocation, setUpdatedLocation] = useState<{ [key: number]: string }>({})
     const [refreshTable, setRefreshTable] = useState(false)
     const [showSpinner, setShowSpinner] = useState(false)
     const [dataForPrinter, setDataForPrinter] = useState([])
+    const [failedQc, setFailedQc] = useState<any>([])
+    const [activeTab, setActiveTab] = useState('passed')
     const [counter, setCounter] = useState(0)
-    const [qtySent, setQtySent] = useState(0)
+    const [qcFailedData, setQcFailedData] = useState<any>({
+        failed: 0,
+        set: 0,
+        passed: 0,
+    }) // not a nice idea but using as my brain is not braining now
+
+    console.log('failedQc', failedQc)
+
+    useEffect(() => {
+        if (document_number) {
+            localStorage.getItem(`failed_${document_number}`)
+            setFailedQc(JSON.parse(localStorage.getItem(`failed_${document_number}`) || '[]'))
+        }
+    }, [document_number])
 
     const fetchSkuData = async () => {
         try {
             setShowSpinner(true)
             let searchFilter = ''
-
             if (globalFilter) {
                 searchFilter = `&sku=${globalFilter}`
             }
-
             const response = await axioisInstance.get(
                 `/goods/qualitycheck?grn_number=${document_number}${searchFilter}&p=${page}&page_size=${pageSize}`,
             )
@@ -61,8 +67,12 @@ const SkuUpdate = ({ data }: props) => {
             setGetSkuData(data?.results)
             setTotalData(data?.count)
             setRefreshTable(false)
-        } catch (error) {
+        } catch (error: any) {
             console.log(error)
+            notification.error({
+                message: 'Error',
+                description: error?.data?.message || error?.data?.data?.message || 'Something went wrong',
+            })
         } finally {
             setShowSpinner(false)
         }
@@ -73,12 +83,9 @@ const SkuUpdate = ({ data }: props) => {
         if (skuWiseData || refreshTable) {
             fetchSkuData()
         }
-    }, [page, pageSize, globalFilter, skuWiseData, refreshTable, counter])
+    }, [page, pageSize, globalFilter, refreshTable, counter])
 
-    const [formData, setFormData] = useState({
-        location: '',
-        sku: '',
-    })
+    const [formData, setFormData] = useState({ location: '', sku: '', barcode: '', skid: '' })
 
     const fetchDataForPrinter = async () => {
         try {
@@ -108,35 +115,14 @@ const SkuUpdate = ({ data }: props) => {
                 accessorKey: 'quantity_received',
                 cell: ({ row }: any) => {
                     const value = qcReceived ?? row?.original?.quantity_received
-                    return (
-                        <div className="flex gap-1 items-center">
-                            <input
-                                className="w-[60px] "
-                                type="number"
-                                min={0}
-                                value={value}
-                                onChange={(e) => setQcReceived(Number(e.target.value))}
-                            />
-                        </div>
-                    )
+                    return qcFailedData?.set
                 },
             },
             {
                 header: 'QC PASSED',
                 accessorKey: 'qc_passed',
                 cell: ({ row }: any) => {
-                    const value = qcPass ?? row?.original?.qc_passed
-                    return (
-                        <div className="flex gap-1 items-center">
-                            <input
-                                className="w-[60px] "
-                                type="number"
-                                min={0}
-                                value={value}
-                                onChange={(e) => setQcPass(Number(e.target.value))}
-                            />
-                        </div>
-                    )
+                    return qcFailedData?.passed
                 },
             },
 
@@ -144,11 +130,7 @@ const SkuUpdate = ({ data }: props) => {
                 header: 'QC FAILED',
                 accessorKey: 'qc_failed',
                 cell: ({ row }: any) => {
-                    const received = qcReceived ?? row?.original?.quantity_received ?? 0
-                    const passed = qcPass ?? row?.original?.qc_passed ?? 0
-
-                    const qcFail = received - passed
-                    return <div>{qcFail}</div>
+                    return <div>{qcFailedData?.failed}</div>
                 },
             },
             {
@@ -165,17 +147,7 @@ const SkuUpdate = ({ data }: props) => {
                                 ? `${getSame?.location}/${formData?.location}`
                                 : getSame?.location
                     }
-                    return (
-                        <div className="flex gap-1 items-center">
-                            <input
-                                className="w-[100px] "
-                                type="text"
-                                min={0}
-                                value={value}
-                                onChange={(e) => setLocationInput(e.target.value)}
-                            />
-                        </div>
-                    )
+                    return <div className="flex gap-1 items-center">{value}</div>
                 },
             },
             {
@@ -307,6 +279,8 @@ const SkuUpdate = ({ data }: props) => {
         [updatedPassed, updatedReceived, updatedLocation, skuWiseData],
     )
 
+    const failedColumns = useMaterialFailedColumns()
+
     const handleChanges = (id: number, newQuantity: number | string, setValue: any) => {
         setValue((prevQuantities: any) => ({
             ...prevQuantities,
@@ -314,7 +288,31 @@ const SkuUpdate = ({ data }: props) => {
         }))
     }
 
-    console.log('Printers data is', dataForPrinter)
+    const convertToCSV = (data: any[], columns: any[]) => {
+        const header = columns.map((col) => col.header).join(',')
+        const rows = data
+            .map((row) => {
+                return columns
+                    .map((col) => {
+                        if (col.accessorKey === 'sku') {
+                            return `${row?.sku}`
+                        } else if (col.accessorKey === 'quantity_sent') {
+                            return row?.quantity_sent
+                        } else if (col.accessorKey === 'location') {
+                            return row?.location
+                        } else {
+                            return ''
+                        }
+                    })
+                    .join(',')
+            })
+            .join('\n')
+        return `${header}\n${rows}`
+    }
+
+    const handleDownloadFailedCsv = () => {
+        handleDownloadCsv(failedQc, failedColumns, convertToCSV, 'failedQC.csv')
+    }
 
     const handleEditSku = async (oLocation: string, oPassed: number, oReceived: number, oFailed: number, oSku: string) => {
         const getSame = getSkuData?.find((item) => item.sku === oSku)
@@ -345,41 +343,40 @@ const SkuUpdate = ({ data }: props) => {
             quantity_received: updatedReceived[id] ?? oReceived,
             qc_failed: (updatedReceived[id] ?? oReceived) - (updatedPassed[id] ?? oPassed),
             sku: oSku,
+            action: 'replace',
         }
 
         try {
             await axioisInstance.patch(`/goods/qualitycheck/${id}`, body)
-            notification.success({
-                message: 'Successfully edited',
-            })
+            notification.success({ message: 'Successfully edited' })
             setRefreshTable(true)
         } catch (error) {
+            notification.error({ message: error?.response?.data?.message || 'Failed to edit' })
             console.error(error)
         }
     }
 
     return (
-        <div className="p-4 flex flex-col gap-6">
+        <div className="p-4 flex flex-col gap-6 shadow-xl">
             <SkuDataInputs
                 formData={formData}
                 setBatchNumberInput={setBatchNumberInput}
-                getSkuData={getSkuData}
                 skuWiseData={skuWiseData}
-                data={data}
                 setQualitySentInput={setQualitySentInput}
                 setSkuWiseData={setSkuWiseData}
                 batchNumberInput={batchNumberInput}
                 company={company}
                 setFormData={setFormData}
-                setCounter={setCounter}
+                setCounter={setCounter as any}
+                setFailedQc={setFailedQc}
+                setQcFailedData={setQcFailedData}
             />
             {<EasyTable noPage overflow mainData={skuWiseData} columns={columns} />}
-            <div className="flex justify-start items-center">
+            <div className="flex justify-start items-center mb-10">
                 {skuWiseData?.length > 0 && <span className="text-xl font-bold">Print Product Data: </span>}
                 <span>{skuWiseData?.length > 0 && <PrinterComp dataForPrinter={dataForPrinter} />}</span>
             </div>
-            <br />
-            <br />
+
             <div className="flex flex-col gap-6">
                 <div className="flex justify-between">
                     <label htmlFor="" className="font-bold text-xl">
@@ -396,25 +393,59 @@ const SkuUpdate = ({ data }: props) => {
                         onChange={(e) => setGlobalFilter(e.target?.value)}
                     />
                 </div>
-                {showSpinner ? (
-                    <>
-                        <LoadingSpinner />
-                    </>
-                ) : (
-                    <EasyTable noPage overflow mainData={getSkuData} columns={columns2} />
-                )}
-                <div className="flex items-center justify-between mt-4">
-                    <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={(page) => setPage(page)} />
-                    <div style={{ minWidth: 130 }}>
-                        <Select<Option>
-                            size="sm"
-                            isSearchable={false}
-                            value={pageSizeOptions.find((option) => option.value === pageSize)}
-                            options={pageSizeOptions}
-                            onChange={(option) => onSelectChange(option?.value)}
-                        />
-                    </div>
+
+                <div>
+                    <TabsCommon
+                        tabLists={InwardTabs}
+                        activeTab={activeTab}
+                        handleChange={(val) => {
+                            console.log('val', val)
+                            setActiveTab(val)
+                        }}
+                    />
                 </div>
+
+                {activeTab === 'passed' && (
+                    <>
+                        {showSpinner ? (
+                            <>
+                                <LoadingSpinner />
+                            </>
+                        ) : (
+                            <EasyTable noPage overflow mainData={getSkuData} columns={columns2} />
+                        )}
+                        <div className="flex items-center justify-between mt-4">
+                            <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={(page) => setPage(page)} />
+                            <div style={{ minWidth: 130 }}>
+                                <Select<Option>
+                                    size="sm"
+                                    isSearchable={false}
+                                    value={pageSizeOptions.find((option) => option.value === pageSize)}
+                                    options={pageSizeOptions}
+                                    onChange={(option) => onSelectChange(option?.value)}
+                                />
+                            </div>
+                        </div>
+                    </>
+                )}
+                {activeTab === 'failed' && (
+                    <div className="space-y-4">
+                        {/* Action Bar */}
+                        <div className="flex justify-end">
+                            <button
+                                className="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg shadow hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
+                                onClick={handleDownloadFailedCsv}
+                            >
+                                Download Failed Files
+                            </button>
+                        </div>
+
+                        {/* Table */}
+                        <div className="rounded-2xl border border-gray-200 shadow-sm bg-white p-4">
+                            <EasyTable noPage overflow mainData={failedQc} columns={failedColumns} />
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     )

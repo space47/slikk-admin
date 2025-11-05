@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, Checkbox, FormContainer, FormItem, Input, Select } from '@/components/ui'
-// import { ridersService } from '@/store/services/riderServices'
+import { Button, Checkbox, Dropdown, FormContainer, FormItem, Input, Select } from '@/components/ui'
 import { Field, FieldProps, Form, Formik } from 'formik'
-import React, { useEffect, useState } from 'react'
-import { RiderFieldArray, RiderTypeArray } from './riderUtils'
+import React, { useEffect, useState, useMemo } from 'react'
+import { RiderFieldArray, RiderTypeArray, SearchRider } from './riderUtils'
 import AddRiderMap from './AddRiderMap'
 import { notification } from 'antd'
 import FullTimePicker from '@/common/FullTimePicker'
@@ -13,42 +12,77 @@ import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { RiderDetailType, setRiderProfile } from '@/store/slices/riderDetails/riderDetails.slice'
 import { GenericCommonTypes } from '@/common/allTypesCommon'
+import { HiSearch } from 'react-icons/hi'
+import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
+import { RiderAgency } from '../RiderDetailsCommon'
+import AddBulk from '../RiderComponents/AddBulk'
+import StoreSelectForm from '@/common/StoreSelectForm'
 
 const AddRider = () => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
-    const [currLat, setCurrLat] = useState<number>(12.920216)
-    const [currLong, setCurrLong] = useState<number>(77.649326)
     const [selectedRider, setSelectedRider] = useState<string | number>()
     const [ridersData, riderDataResponse] = ridersService.useAddRidersMutation()
     const [editRiders, riderEditResponse] = ridersService.useEditRidersMutation()
     const { riderProfile } = useAppSelector<RiderDetailType>((state) => state.riderDetails)
     const [isAddRider, setIsAddRider] = useState(false)
+    const [searchInput, setSearchInput] = useState('')
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(SearchRider[0])
+    const [isBulkAdd, setIsBulkAdd] = useState(false)
+    const [activeTab, setActiveTab] = useState<'edit' | 'add' | 'bulk-add'>('edit')
 
-    const { data: riders, isSuccess } = ridersService.useRiderProfileQuery(
+    const {
+        data: riders,
+        isSuccess,
+        refetch,
+    } = ridersService.useRiderProfileQuery(
         {
             page: 1,
             pageSize: 100,
-            mobile: selectedRider?.toString(),
+            mobile: currentSelectedPage?.value === 'mobile' ? selectedRider?.toString() : '',
+            name: currentSelectedPage?.value === 'name' ? selectedRider?.toString() : '',
         },
         { refetchOnMountOrArgChange: true },
     )
-
     useEffect(() => {
         if (isSuccess) {
             dispatch(setRiderProfile(riders?.data || []))
         }
     }, [riders, isSuccess, dispatch, selectedRider])
-    const initialValue = {
-        last_name: selectedRider && !isAddRider ? riderProfile[0].user?.last_name : '',
-        mobile: selectedRider && !isAddRider ? riderProfile[0]?.user?.mobile.toString() : '',
-        shift_start_time: selectedRider && !isAddRider ? riderProfile[0]?.shift_start_time : '',
-        shift_end_time: selectedRider && !isAddRider ? riderProfile[0]?.shift_end_time : '',
-        rider_type: selectedRider && !isAddRider ? riderProfile[0]?.rider_type : '',
-        is_active: selectedRider && !isAddRider ? riderProfile[0]?.is_active : false,
-        lat: riderProfile[0]?.service_latitude,
-        long: riderProfile[0]?.service_longitude,
-    }
+
+    const initialValue = useMemo(() => {
+        if (selectedRider && !isAddRider && riderProfile && riderProfile.length > 0) {
+            const user = riderProfile[0]?.user || {}
+            return {
+                first_name: user.first_name || '',
+                last_name: user.last_name || '',
+                mobile: user.mobile ? user.mobile.toString() : '',
+                shift_start_time: riderProfile[0]?.shift_start_time || '',
+                shift_end_time: riderProfile[0]?.shift_end_time || '',
+                rider_type: riderProfile[0]?.rider_type || '',
+                is_active: riderProfile[0]?.is_active || false,
+                lat: riderProfile[0]?.service_latitude,
+                long: riderProfile[0]?.service_longitude,
+                agency: riderProfile[0]?.agency?.toLowerCase(),
+                rider_delivery_type: riderProfile[0]?.rider_delivery_type,
+                store: riderProfile[0]?.store?.map((item: any) => item?.id)?.join(','),
+            }
+        }
+        return {
+            first_name: '',
+            last_name: '',
+            mobile: '',
+            shift_start_time: '',
+            shift_end_time: '',
+            rider_type: '',
+            is_active: false,
+            lat: 12.920216,
+            long: 77.649326,
+        }
+    }, [selectedRider, isAddRider, riderProfile])
+
+    console.log('intia', initialValue)
 
     useEffect(() => {
         if (riderDataResponse?.isSuccess) {
@@ -65,28 +99,27 @@ const AddRider = () => {
         }
     }, [riderDataResponse, riderEditResponse])
 
-    useEffect(() => {
-        setCurrLat(riderProfile[0]?.service_latitude)
-        setCurrLong(riderProfile[0]?.service_longitude)
-    }, [riders, selectedRider, riderProfile])
-
     const handleSubmit = (values: RiderAddTypes) => {
         if (!values?.mobile) {
             notification.error({ message: 'Mobile is required' })
         }
         if (values?.mobile) {
+            const payload = {
+                mobile: values?.mobile,
+                first_name: selectedRider && !isAddRider ? riderProfile[0].user?.first_name : values?.first_name,
+                last_name: values?.last_name,
+                rider_type: values?.rider_type,
+                service_latitude: values?.lat,
+                service_longitude: values?.long,
+                shift_start_time: values?.shift_start_time,
+                shift_end_time: values?.shift_end_time,
+                is_active: values?.is_active || false,
+                agency: values?.agency || '',
+                store_id: values?.store?.id || '',
+                rider_delivery_type: values?.rider_delivery_type || 'standard',
+            }
             if (isAddRider) {
-                ridersData({
-                    mobile: values?.mobile,
-                    first_name: selectedRider && !isAddRider ? riderProfile[0].user?.first_name : values?.first_name,
-                    last_name: values?.last_name,
-                    rider_type: values?.rider_type,
-                    service_latitude: currLat,
-                    service_longitude: currLong,
-                    shift_start_time: values?.shift_start_time,
-                    shift_end_time: values?.shift_end_time,
-                    is_active: values?.is_active || false,
-                })
+                ridersData(payload)
                     .then(() => {})
                     .catch(() => {
                         notification.error({
@@ -94,17 +127,7 @@ const AddRider = () => {
                         })
                     })
             } else {
-                editRiders({
-                    mobile: values?.mobile,
-                    first_name: selectedRider && !isAddRider ? riderProfile[0].user?.first_name : values?.first_name,
-                    last_name: values?.last_name,
-                    rider_type: values?.rider_type,
-                    service_latitude: currLat,
-                    service_longitude: currLong,
-                    shift_start_time: values?.shift_start_time,
-                    shift_end_time: values?.shift_end_time,
-                    is_active: values?.is_active || false,
-                })
+                editRiders(payload)
                     .then(() => {})
                     .catch(() => {
                         notification.error({
@@ -114,59 +137,116 @@ const AddRider = () => {
             }
         }
     }
+    const setSearchOnEnter = () => {
+        if (searchInput.trim()) {
+            setSelectedRider(searchInput.trim())
+            refetch()
+        }
+    }
+
+    const handleSearchWithIcon = () => {
+        setSearchOnEnter()
+    }
+    const handleSelect = (e: any, setCurrent: any) => {
+        const selected = SearchRider.find((item) => item.value === e)
+        if (selected) {
+            setCurrent(selected)
+        }
+    }
 
     return (
         <div>
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
-                {() => (
+                {({ values, setFieldValue }) => (
                     <Form className="w-full mx-auto p-6 bg-white rounded-lg shadow-md">
                         <FormContainer>
-                            <FormContainer className="grid grid-cols-2 gap-6">
-                                <div className="col-span-2 flex justify-start">
-                                    <button
-                                        className={`${isAddRider ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'} p-2 flex items-center justify-center  text-white rounded-xl transition duration-200`}
-                                        type="button"
-                                        onClick={() => setIsAddRider((item) => !item)}
-                                    >
-                                        {isAddRider ? (
-                                            <div className="text-xl ">Select Rider</div>
-                                        ) : (
-                                            <div className="text-xl ">New Rider</div>
-                                        )}
-                                    </button>
+                            <div className="flex gap-6 items-center mb-8 border-b border-gray-200 font-bold">
+                                <div
+                                    className={`pb-2 cursor-pointer text-xl ${
+                                        activeTab === 'edit'
+                                            ? 'border-b-2 border-green-500 text-green-600 font-semibold'
+                                            : 'border-b-2 border-transparent text-gray-600 hover:text-green-600 hover:border-green-400'
+                                    }`}
+                                    onClick={() => {
+                                        setActiveTab('edit')
+                                        setIsAddRider(false)
+                                    }}
+                                >
+                                    Edit Existing Rider
                                 </div>
-                                <FormItem label="First Name" className="col-span-1">
-                                    <>
-                                        {isAddRider === false && (
-                                            <select
-                                                value={selectedRider || 'SELECT'}
-                                                className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                onChange={(e) => setSelectedRider(e.target.value === 'CLEAR' ? '' : e.target.value)}
-                                            >
-                                                <option disabled value="SELECT">
-                                                    SELECT RIDER
-                                                </option>
-                                                {riderProfile?.map((item, key) => (
-                                                    <option key={key} value={item?.user?.mobile}>
-                                                        {item.user?.first_name}
-                                                    </option>
-                                                ))}
-                                                <option value="CLEAR" className="bg-red-500 hover:bg-red-400 text-white">
-                                                    <span className="flex justify-center items-center ">CLEAR</span>
-                                                </option>
-                                            </select>
-                                        )}
-                                        {isAddRider === true && (
-                                            <Field
-                                                type="text"
-                                                name="first_name"
-                                                placeholder="Enter First Name"
-                                                component={Input}
-                                                className="w-1/2 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            />
-                                        )}
-                                    </>
-                                </FormItem>
+
+                                <div
+                                    className={`pb-2 cursor-pointer text-xl ${
+                                        activeTab === 'add'
+                                            ? 'border-b-2 border-green-500 text-green-600 font-semibold'
+                                            : 'border-b-2 border-transparent text-gray-600 hover:text-green-600 hover:border-green-400'
+                                    }`}
+                                    onClick={() => {
+                                        setActiveTab('add')
+                                        setIsAddRider(true)
+                                    }}
+                                >
+                                    Add New Riders
+                                </div>
+                                <div
+                                    className={`pb-2 cursor-pointer text-xl ${
+                                        activeTab === 'bulk-add'
+                                            ? 'border-b-2 border-green-500 text-green-600 font-semibold'
+                                            : 'border-b-2 border-transparent text-gray-600 hover:text-green-600 hover:border-green-400'
+                                    }`}
+                                    onClick={() => {
+                                        setActiveTab('bulk-add')
+                                        setIsBulkAdd(true)
+                                    }}
+                                >
+                                    Bulk Add Rider
+                                </div>
+                            </div>
+
+                            <FormContainer className="grid grid-cols-2 gap-6">
+                                <div className="col-span-2 flex justify-start gap-6 items-center">
+                                    {!isAddRider && (
+                                        <>
+                                            <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center order-2 lg:order-1 w-full lg:w-auto">
+                                                <div className="flex items-center gap-2 bg-white dark:bg-gray-900 px-3 py-2 rounded-lg shadow-md w-full sm:w-auto">
+                                                    <Input
+                                                        type="search"
+                                                        name="search"
+                                                        placeholder="Search here..."
+                                                        value={searchInput}
+                                                        className="w-full sm:w-[180px] xl:w-[250px] rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-1 focus:outline-none focus:ring focus:ring-blue-500"
+                                                        onChange={(e) => setSearchInput(e.target.value)}
+                                                        onKeyDown={(e: any) => {
+                                                            if (e.key === 'Enter') {
+                                                                e.preventDefault()
+                                                                setSearchOnEnter()
+                                                            }
+                                                        }}
+                                                    />
+                                                    <div
+                                                        className="bg-blue-500 hover:bg-blue-400 p-2 rounded-xl cursor-pointer"
+                                                        onClick={handleSearchWithIcon}
+                                                    >
+                                                        <HiSearch className="text-white text-xl" />
+                                                    </div>
+                                                    <div className="bg-gray-100 dark:bg-blue-600 dark:text-white font-bold text-sm rounded-md">
+                                                        <Dropdown
+                                                            className="text-black bg-gray-200 font-bold"
+                                                            title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
+                                                            onSelect={(e) => handleSelect(e, setCurrentSelectedPage)}
+                                                        >
+                                                            {SearchRider?.map((item, key) => (
+                                                                <DropdownItem key={key} eventKey={item.value}>
+                                                                    <span>{item.label}</span>
+                                                                </DropdownItem>
+                                                            ))}
+                                                        </Dropdown>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
                                 {RiderFieldArray?.map((item, key) => (
                                     <FormItem key={key} label={item?.label} className="col-span-1">
                                         <Field
@@ -175,10 +255,21 @@ const AddRider = () => {
                                             placeholder={`Enter ${item?.label}`}
                                             component={item.type === 'checkbox' ? Checkbox : Input}
                                             maxLength={item?.name === 'mobile' ? 10 : undefined}
+                                            disabled={item?.name === 'mobile' && !isAddRider}
                                             className="w-full"
                                         />
                                     </FormItem>
                                 ))}
+
+                                <StoreSelectForm label="Store Select" name="store" isSingle customCss="w-full" />
+                                <CommonSelect
+                                    label="Delivery Type"
+                                    name="rider_delivery_type"
+                                    options={[
+                                        { label: 'Standard', value: 'standard' },
+                                        { label: 'Express', value: 'express' },
+                                    ]}
+                                />
                                 <FormItem label="Rider Type" className="col-span-1">
                                     <Field name="rider_type">
                                         {({ form, field }: FieldProps) => {
@@ -187,7 +278,7 @@ const AddRider = () => {
                                                 <div className="w-full">
                                                     <Select
                                                         isClearable
-                                                        className="w-1/2"
+                                                        className="w-full"
                                                         options={RiderTypeArray}
                                                         getOptionLabel={(option) => option.label}
                                                         getOptionValue={(option) => option.value}
@@ -201,8 +292,42 @@ const AddRider = () => {
                                         }}
                                     </Field>
                                 </FormItem>
-                                <FullTimePicker label="SHIFT START" name="shift_start_time" fieldname="shift_start_time" />
-                                <FullTimePicker label="SHIFT END" name="shift_end_time" fieldname="shift_end_time" />
+
+                                <FullTimePicker
+                                    needClass
+                                    customClass="w-full"
+                                    label="SHIFT START"
+                                    name="shift_start_time"
+                                    fieldname="shift_start_time"
+                                />
+                                <FullTimePicker
+                                    needClass
+                                    customClass="w-full"
+                                    label="SHIFT END"
+                                    name="shift_end_time"
+                                    fieldname="shift_end_time"
+                                />
+                                <FormItem label="Rider Agency">
+                                    <Field name="agency">
+                                        {({ field, form }: FieldProps<any>) => {
+                                            return (
+                                                <Select
+                                                    isClearable
+                                                    isSearchable
+                                                    options={RiderAgency}
+                                                    value={RiderAgency.find(
+                                                        (option) => option.value?.toLowerCase() === field.value?.toLowerCase(),
+                                                    )}
+                                                    onChange={(option) => {
+                                                        const value = option ? option.value : ''
+                                                        form.setFieldValue(field.name, value)
+                                                    }}
+                                                    onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+                                                />
+                                            )
+                                        }}
+                                    </Field>
+                                </FormItem>
                             </FormContainer>
                             <div className="mt-8">
                                 <div className="text-xl font-bold mb-4 text-gray-700">ADD RIDER LOCATION</div>
@@ -211,24 +336,26 @@ const AddRider = () => {
                                         <Input
                                             name="lat"
                                             type="number"
-                                            value={currLat}
+                                            value={values.lat}
                                             placeholder="Enter latitude"
-                                            onChange={(e: GenericCommonTypes['InputEvent']) => setCurrLat(Number(e.target.value))}
+                                            onChange={(e: GenericCommonTypes['InputEvent']) => setFieldValue('lat', Number(e.target.value))}
                                         />
                                         <Input
                                             name="long"
                                             type="number"
-                                            value={currLong}
+                                            value={values.long}
                                             placeholder="Enter longitude"
-                                            onChange={(e: GenericCommonTypes['InputEvent']) => setCurrLong(Number(e.target.value))}
+                                            onChange={(e: GenericCommonTypes['InputEvent']) =>
+                                                setFieldValue('long', Number(e.target.value))
+                                            }
                                         />
                                     </div>
                                 </div>
                                 <AddRiderMap
-                                    setMarkLat={setCurrLat ?? 0}
-                                    setMarkLong={setCurrLong ?? 0}
-                                    markLat={currLat ?? 0}
-                                    markLong={currLong ?? 0}
+                                    setMarkLat={(lat: number) => setFieldValue('lat', lat)}
+                                    setMarkLong={(lng: number) => setFieldValue('long', lng)}
+                                    markLat={values.lat}
+                                    markLong={values.long}
                                 />
                             </div>
                         </FormContainer>
@@ -240,6 +367,7 @@ const AddRider = () => {
                     </Form>
                 )}
             </Formik>
+            {isBulkAdd && <AddBulk isOpen={isBulkAdd} setIsOpen={setIsBulkAdd} />}
         </div>
     )
 }

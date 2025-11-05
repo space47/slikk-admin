@@ -39,7 +39,7 @@ const Infor = () => {
 
     return (
         <div className="text-[14px] max-h-[140px] xl:text-[18px]  font-bold">
-            <Dropdown key={selectedCompany.id} title={` ${selectedCompany.name}`} onClick={onDropdownClick}>
+            <Dropdown key={selectedCompany.id} title={` ${selectedCompany.name || '🚫..No Data'}`} onClick={onDropdownClick}>
                 <div className="mb-5 mt-2 flex items-center">
                     <input
                         className="flex items-center rounded-xl"

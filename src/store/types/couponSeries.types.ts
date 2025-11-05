@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export type CouponResults = {
     id?: number
     discount_type?: string
@@ -15,11 +16,19 @@ export type CouponResults = {
     campaign: string
     coupon_type: string
     is_public: boolean
+    event_name?: string
+    coupon_active_event_name?: string
+    max_coupons_per_user?: number
+    series_type?: string
+    store_id?: string
     extra_attributes: {
         new_users_only?: boolean
         applicable_categories?: string[]
         filters?: Record<string, string | number>
         min_filters_products_amount?: number
+        filter_id_exclude?: string
+        min_item_quantity?: number
+        max_item_quantity?: number
     }
 }
 
@@ -42,17 +51,15 @@ export type CouponSeriesBodyType = {
     valid_to?: string // ISO date string
     description?: string
     max_count_per_user?: number
-    // frequency?: "MONTHLY" | "WEEKLY" | "DAILY"; // Uncomment if needed
-    // freq_config?: { interval: number; unit: "month" | "week" | "day" }; // Uncomment if needed
+    max_coupons_per_user?: number
+    series_type?: string
     campaign?: string
     coupon_type?: string
     is_public?: boolean
-    extra_attributes?: {
-        applicable_categories?: string[]
-        new_users_only?: boolean
-        filters?: Record<string, string | number>
-        min_filters_products_amount?: number
-    }
+    event_name?: string
+    coupon_active_event_name?: string
+    store_id?: string
+    extra_attributes?: any
 }
 
 export type CouponGenerateBodyType = {

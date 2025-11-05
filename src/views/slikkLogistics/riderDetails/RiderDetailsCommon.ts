@@ -31,3 +31,28 @@ export type RiderData = {
     profile: RiderProfile
     task_data: RiderTaskData
 }
+
+export const RiderAgency = [
+    { label: 'Pidge', value: 'pidge' },
+    { label: 'Pico', value: 'pico' },
+    { label: 'CareBazaar', value: 'careBazaar' },
+    { label: 'Shadow Fax', value: 'shadowfax' },
+]
+
+export const DEBOUNCE_DELAY = 600
+export const RIDER_TYPES = [
+    { label: 'FORWARD', value: 'FORWARD' },
+    { label: 'RETURN', value: 'RETURN' },
+]
+export const SEARCH_TYPES = ['mobile', 'name'] as const
+export const STATUS_TABS = ['checkin', 'checkout'] as const
+export const BUSY_STATUS_TABS = ['', 'free', 'busy'] as const
+
+export interface StoreOption {
+    label: string
+    value: {
+        lat: number
+        long: number
+        id: number
+    }
+}

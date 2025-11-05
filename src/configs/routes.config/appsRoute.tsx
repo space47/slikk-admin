@@ -280,15 +280,39 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
-        key: 'appsCategory.productFeedback',
-        path: `${APP_PREFIX_PATH}/category/productFeedback`,
-        component: lazy(() => import('@/views/category-management/productFeedback/ProductFeedback')),
+        key: 'appsCategory.productLock',
+        path: `${APP_PREFIX_PATH}/category/productLock`,
+        component: lazy(() => import('@/views/category-management/productLock/productLockTable/ProductLockTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCategory.productLock',
+        path: `${APP_PREFIX_PATH}/category/productLock/add`,
+        component: lazy(() => import('@/views/category-management/productLock/productLockAdd/ProductLockAdd')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCategory.productLock',
+        path: `${APP_PREFIX_PATH}/category/productLock/Edit/:id`,
+        component: lazy(() => import('@/views/category-management/productLock/productLockEdit/ProductLockEdit')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsCategory.uploader',
         path: `${APP_PREFIX_PATH}/category/uploader`,
         component: lazy(() => import('@/views/category-management/uploader/Uploader')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCategory.scrapper',
+        path: `${APP_PREFIX_PATH}/category/scrapper`,
+        component: lazy(() => import('@/views/category-management/scrapper/Scrapper')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCategory.filters',
+        path: `${APP_PREFIX_PATH}/category/filters`,
+        component: lazy(() => import('@/views/category-management/filterList/FilterTable')),
         authority: [ADMIN, USER],
     },
 
@@ -534,6 +558,54 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsInventoryManagement.indent',
+        path: `${APP_PREFIX_PATH}/goods/indent`,
+        component: lazy(() => import('@/views/inventory-management/indent/indentOverview/IndentTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsInventoryManagement.indent',
+        path: `${APP_PREFIX_PATH}/goods/indentDetails/:id`,
+        component: lazy(() => import('@/views/inventory-management/indent/indentOverview/indentComponents/IndentDetails')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsInventoryManagement.indentUpload',
+        path: `${APP_PREFIX_PATH}/goods/indentUpload/`,
+        component: lazy(() => import('@/views/inventory-management/indent/indentUploader/IndentBulkUpload')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsInventoryManagement.rtvUpload',
+        path: `${APP_PREFIX_PATH}/goods/rtvUpload`,
+        component: lazy(() => import('@/views/inventory-management/RTV/rtvUploader/RtvBulkUpload')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsInventoryManagement.rtv',
+        path: `${APP_PREFIX_PATH}/goods/rtv`,
+        component: lazy(() => import('@/views/inventory-management/RTV/rtvOverView/RtvTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsInventoryManagement.rtvDetails',
+        path: `${APP_PREFIX_PATH}/goods/rtvDetails/:rtv_number`,
+        component: lazy(() => import('@/views/inventory-management/RTV/rtvOverView/rtvComponents/RtvDetails')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsInventoryManagement.rtvDetails',
+        path: `${APP_PREFIX_PATH}/goods/rtv/add`,
+        component: lazy(() => import('@/views/inventory-management/RTV/rtvOverView/addRtv/AddRtv')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsInventoryManagement.rtvDetails',
+        path: `${APP_PREFIX_PATH}/goods/rtv/edit/:id`,
+        component: lazy(() => import('@/views/inventory-management/RTV/rtvOverView/editRtv/EditRtv')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsInventoryManagement.quality_checkList',
         path: `${APP_PREFIX_PATH}/goods/qualitycheckList`,
         component: lazy(() => import('@/views/inventory-management/qualityCheckList/QCListTable')),
@@ -543,6 +615,12 @@ const appsRoute: Routes = [
         key: 'appsInventoryManagement.stock_overview',
         path: `${APP_PREFIX_PATH}/stockOverview/`,
         component: lazy(() => import('@/views/inventory-management/stock-overview/StockOverview')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsInventoryManagement.inventoryLocation',
+        path: `${APP_PREFIX_PATH}/inventoryLocation`,
+        component: lazy(() => import('@/views/inventory-management/inventory/inventoryTable/InventoryTable')),
         authority: [ADMIN, USER],
     },
     {
@@ -841,6 +919,24 @@ const appsRoute: Routes = [
     // ...............................APP SETTINGS...................................................
 
     {
+        key: 'appsAppSettings.offers',
+        path: `${APP_PREFIX_PATH}/appSettings/offers`,
+        component: lazy(() => import('@/views/offerEngine/offers/offersTable/OffersTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.offers',
+        path: `${APP_PREFIX_PATH}/appSettings/offers/add`,
+        component: lazy(() => import('@/views/offerEngine/offers/offersAdd/OffersAdd')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.offers',
+        path: `${APP_PREFIX_PATH}/appSettings/offers/:id`,
+        component: lazy(() => import('@/views/offerEngine/offers/offersEdit/OffersEdit')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsAppSettings.coupons',
         path: `${APP_PREFIX_PATH}/appSettings/coupons`,
         component: lazy(() => import('@/views/appsSettings/coupons/AppCoupons')),
@@ -1068,6 +1164,48 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsCommuncication.events',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/events`,
+        component: lazy(() => import('@/views/sales/eventAnalytics/eventTable/EventTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCommuncication.events',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/eventsAdd`,
+        component: lazy(() => import('@/views/sales/eventAnalytics/eventAdd/EventAdd')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCommuncication.events',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/events/:id`,
+        component: lazy(() => import('@/views/sales/eventAnalytics/eventEdit/EventEdit')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCommuncication.events',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/eventsAdd`,
+        component: lazy(() => import('@/views/sales/eventAnalytics/eventAdd/EventAdd')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCommuncication.notification',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/eventUsers/:id`,
+        component: lazy(() => import('@/views/newGroups/notificationUtils/EventUsersTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCommuncication.cohorts',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/cohorts/:id`,
+        component: lazy(() => import('@/views/newGroups/editNewGroups/EditNewGroups')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCommuncication.notification',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/events/:id`,
+        component: lazy(() => import('@/views/sales/eventAnalytics/eventEdit/EventEdit')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsCommuncication.notification',
         path: `${APP_PREFIX_PATH}/appsCommuncication/notification`,
         component: lazy(() => import('@/views/sales/Notification/getNotification/NotificationTable')),
@@ -1092,6 +1230,18 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsCommuncication.cohorts',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/cohorts`,
+        component: lazy(() => import('@/views/newGroups/notificationGroupsTable/NotificationGroupsTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCommuncication.cohorts',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/cohorts/add`,
+        component: lazy(() => import('@/views/newGroups/addNewGroups/NewGroupsAdd')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsCommuncication.groups',
         path: `${APP_PREFIX_PATH}/appsCommuncication/editGroups/:groupId`,
         component: lazy(() => import('@/views/sales/groupNotification/editGroup/EditGroup')),
@@ -1106,8 +1256,20 @@ const appsRoute: Routes = [
     },
     {
         key: 'appsCommuncication.sendNotification',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/sendNotification/:id`,
+        component: lazy(() => import('@/views/sales/groupNotification/sendNotification/SendTemplateNotifications')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCommuncication.sendNotification',
         path: `${APP_PREFIX_PATH}/appsCommuncication/sendNotification/addNew`,
         component: lazy(() => import('@/views/sales/groupNotification/sendNotification/SendNotification')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCommuncication.sendNotification',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/sendNotification/edit/:id`,
+        component: lazy(() => import('@/views/sales/groupNotification/sendNotification/EditNotifications')),
         authority: [ADMIN, USER],
     },
     {
@@ -1253,8 +1415,20 @@ const appsRoute: Routes = [
     },
     {
         key: 'appstryAndBuy.picker',
+        path: `${APP_PREFIX_PATH}/picker/Leaderboard`,
+        component: lazy(() => import('@/views/slikkLogistics/picker/pickerBoard/pickerComponents/LeaderBoard')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appstryAndBuy.picker',
         path: `${APP_PREFIX_PATH}/pickerDetails/:mobile`,
         component: lazy(() => import('@/views/slikkLogistics/picker/pickerDetails/PickerDetails')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appstryAndBuy.cashCollection',
+        path: `${APP_PREFIX_PATH}/cashCollection`,
+        component: lazy(() => import('@/views/slikkLogistics/cashCollection/cashCollectionTable/CashCollectionTable')),
         authority: [ADMIN, USER],
     },
 
@@ -1302,6 +1476,24 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
 
+    {
+        key: 'appsConfiguration.storeConfigurations',
+        path: `${APP_PREFIX_PATH}/storeConfigurations`,
+        component: lazy(() => import('@/views/configurationsSlikk/storeConfig/storeConfigTable/StoreConfigTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsConfiguration.storeConfigurations',
+        path: `${APP_PREFIX_PATH}/storeConfigurations/edit/:id`,
+        component: lazy(() => import('@/views/configurationsSlikk/storeConfig/storeConfigEdit/StoreEditConfig')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsConfiguration.storeConfigurations',
+        path: `${APP_PREFIX_PATH}/storeConfigurations/add`,
+        component: lazy(() => import('@/views/configurationsSlikk/storeConfig/storeConfigAdd/StoreConfigAdd')),
+        authority: [ADMIN, USER],
+    },
     {
         key: 'appsConfiguration.configurations',
         path: `${APP_PREFIX_PATH}/configurations`,

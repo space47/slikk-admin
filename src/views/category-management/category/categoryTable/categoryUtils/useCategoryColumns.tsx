@@ -41,12 +41,12 @@ export const useCategoryColumns = ({ handleDeleteClick }: props) => {
             },
             {
                 header: 'Division',
-                accessorKey: 'division',
+                accessorKey: 'division_name',
                 cell: (info) => info.getValue(),
             },
             {
                 header: 'Product Count',
-                accessorKey: 'product_count',
+                accessorKey: 'count',
                 cell: (info) => info.getValue(),
             },
             {

@@ -34,8 +34,8 @@ const BannerCategories = ({ setFieldValue }: CATEGORYBANNERPROPS) => {
                                     field={field}
                                     value={selectedOption}
                                     options={divisions.divisions}
-                                    getOptionLabel={(option) => option.name}
-                                    getOptionValue={(option) => option.id.toString()}
+                                    getOptionLabel={(option) => option?.name}
+                                    getOptionValue={(option) => option?.id?.toString()}
                                     onChange={(newVal) => {
                                         setFieldValue('division', newVal)
                                     }}
@@ -65,8 +65,8 @@ const BannerCategories = ({ setFieldValue }: CATEGORYBANNERPROPS) => {
                                     isMulti
                                     value={selectedOption}
                                     options={filteredCategories}
-                                    getOptionLabel={(option) => option.name}
-                                    getOptionValue={(option) => option.id.toString()}
+                                    getOptionLabel={(option) => option?.name}
+                                    getOptionValue={(option) => option?.id?.toString()}
                                     onChange={(newVal) => {
                                         form.setFieldValue('category', newVal || [])
                                     }}
@@ -99,8 +99,8 @@ const BannerCategories = ({ setFieldValue }: CATEGORYBANNERPROPS) => {
                                     isMulti
                                     value={selectedOption}
                                     options={filteredSubCategories}
-                                    getOptionLabel={(option) => option.name}
-                                    getOptionValue={(option) => option.id.toString()}
+                                    getOptionLabel={(option) => option?.name}
+                                    getOptionValue={(option) => option?.id?.toString()}
                                     onChange={(newVal) => {
                                         form.setFieldValue('sub_category', newVal || [])
                                     }}
@@ -120,8 +120,8 @@ const BannerCategories = ({ setFieldValue }: CATEGORYBANNERPROPS) => {
                                     field={field}
                                     defaultValue={productType?.product_types}
                                     options={productType?.product_types}
-                                    getOptionLabel={(option) => option.name}
-                                    getOptionValue={(option) => option.id.toString()}
+                                    getOptionLabel={(option) => option?.name}
+                                    getOptionValue={(option) => option?.id?.toString()}
                                     onChange={(newVal) => {
                                         setFieldValue('product_type', newVal ? newVal : [])
                                     }}

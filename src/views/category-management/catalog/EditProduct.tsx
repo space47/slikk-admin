@@ -5,7 +5,7 @@ import { Form, Formik } from 'formik'
 import { useEffect, useState } from 'react'
 import { notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Spinner } from '@/components/ui'
+import { Spinner, Tabs } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { handleimage, handleVideo } from './handlingProductImage'
 import { InitialValues } from './EditCommonProduct'
@@ -14,40 +14,36 @@ import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { textParser } from '@/common/textParser'
 import ProductFormCommon from './productutils/ProductForm'
 import { AxiosError } from 'axios'
+import TabList from '@/components/ui/Tabs/TabList'
+import TabNav from '@/components/ui/Tabs/TabNav'
+import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 
 const EditProduct = () => {
     const navigate = useNavigate()
     const { barcode } = useParams()
-    const [productData, setProductData] = useState<any>()
     const [allImage, setAllImage] = useState<string[]>([])
     const [allVideo, setAllVideo] = useState<string[]>([])
     const [allColor, setAllColor] = useState<string[]>([])
     const [allSizeChart, setAllSizeChart] = useState<string[]>([])
+    const [allFrame, setAllFrame] = useState<string[]>([])
     const [showSpinner, setShowSpinner] = useState(false)
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
     const [companyData, setCompanyData] = useState<number>()
     const [domainWatcher, setDomainWatcher] = useState<string | string[] | undefined>('')
     const [segmentKeys, setSegmentKeys] = useState<string[] | undefined>([])
     const [segmentOptions, setSegmentOptions] = useState<string[] | undefined>([])
-    const [isCopy, setIsCopy] = useState(false)
+    const [activeTab, setActiveTab] = useState('edit')
+    const { data: productData, loading } = useFetchSingleData<any>({ url: `product/${barcode}` })
 
-    const fetchUser = async () => {
-        try {
-            const response = await axioisInstance.get(`product/${barcode}`)
-            const userData = response.data.data
-            setProductData(userData)
-            const colorList = userData.color_code_link ? userData.color_code_link.split(',') : []
-            const imageList = userData.image.split(',')
-            const videoList = userData.video_link ? userData.video_link.split(',') : []
-            const sizeList = userData.size_chart_image ? userData.size_chart_image.split(',') : []
-            setAllImage(imageList)
-            setAllVideo(videoList)
-            setAllColor(colorList)
-            setAllSizeChart(sizeList)
-        } catch (error) {
-            console.log(error)
+    useEffect(() => {
+        if (productData) {
+            setAllImage(productData?.image.split(','))
+            setAllVideo(productData?.video_link ? productData?.video_link.split(',') : [])
+            setAllColor(productData?.color_code_link ? productData?.color_code_link.split(',') : [])
+            setAllSizeChart(productData?.size_chart_image ? productData?.size_chart_image.split(',') : [])
+            setAllFrame(productData?.framed_image_url ? productData?.framed_image_url.split(',') : [])
         }
-    }
+    }, [productData])
 
     useEffect(() => {
         if (productData && companyList.length > 0) {
@@ -69,10 +65,6 @@ const EditProduct = () => {
             console.error(error)
         }
     }
-
-    useEffect(() => {
-        fetchUser()
-    }, [])
 
     useEffect(() => {
         fetchSegmentByDomain()
@@ -106,6 +98,7 @@ const EditProduct = () => {
             color_code_url = allColor.join(',')
 
         let size_chart_url = allSizeChart?.join(',')
+        let frame_image = allFrame?.join(',')
         const imageUpload = await handleimage(values.images)
         if (values.images && values.images.length && !imageUpload) {
             console.log('image Upload return', values.images)
@@ -135,9 +128,16 @@ const EditProduct = () => {
             const temp = [size_chart_url, sizeLink]
             size_chart_url = temp.filter((t) => t).join(',')
         }
+        const frame = await handleimage(values.frame_image_array)
+        if (values.frame_image_array && values.frame_image_array.length && !frame) {
+            return
+        } else if (values.frame_image_array && frame) {
+            const temp = [frame_image, frame]
+            frame_image = temp.filter((t) => t).join(',')
+        }
 
-        const { color_code, size_chart_image_array, images, ...rest } = values
-        console.log(color_code, size_chart_image_array, images)
+        const { color_code, size_chart_image_array, frame_image_array, images, filter_tags, ...rest } = values
+        console.log(color_code, size_chart_image_array, images, filter_tags, frame_image_array)
         const formData = Object.fromEntries(
             Object.entries({
                 ...rest,
@@ -151,21 +151,20 @@ const EditProduct = () => {
                 includes: textParser(values?.description.includes || ''),
                 other_info: textParser(values?.description.other_info || ''),
                 size_chart_image: size_chart_url,
-            }).filter(([, value]) => value !== '' && value !== null && value !== undefined),
+                framed_image_url: frame_image,
+            }).filter(([, value]) => value !== null && value !== undefined),
         )
-
-        console.log('formdata us', formData)
         try {
             setShowSpinner(true)
-            const response = isCopy
-                ? await axioisInstance.post(`product/add`, formData)
-                : await axioisInstance.patch(`product/${barcode}`, formData)
-            console.log(response)
-            notification.success({ message: response?.data?.message || `Product ${isCopy ? 'Added' : 'Edited'} Successfully` })
+            const response =
+                activeTab === 'add'
+                    ? await axioisInstance.post(`product/add`, formData)
+                    : await axioisInstance.patch(`product/${barcode}`, formData)
+            notification.success({ message: response?.data?.message || `Product ${activeTab === 'add' ? 'Added' : 'Edited'} Successfully` })
             navigate(-1)
         } catch (error: any) {
             if (error instanceof AxiosError) {
-                notification.error({ message: error?.response?.data?.message || `Failed to ${isCopy ? 'Add' : 'Edit'}` })
+                notification.error({ message: error?.response?.data?.message || `Failed to ${activeTab === 'add' ? 'Add' : 'Edit'}` })
             }
         } finally {
             setShowSpinner(false)
@@ -179,25 +178,23 @@ const EditProduct = () => {
 
     return (
         <div>
-            <div className="flex xl:justify-between flex-col gap-2 mb-7 ">
-                <div className="flex justify-between">
-                    <h3 className="mb-5 text-neutral-900">
-                        {isCopy ? 'ADD PRODUCT' : ' EDIT PRODUCT'} <span className="font-light xl:text-md text-sm ">#{barcode}</span>
-                    </h3>
-                    <div>
-                        <Button variant={isCopy ? 'reject' : 'accept'} size="sm" onClick={() => setIsCopy((prev) => !prev)}>
-                            {isCopy ? 'Back' : 'Copy Product'}
-                        </Button>
-                    </div>
+            <Tabs defaultValue={'edit'} onChange={(val) => setActiveTab(val)} className="mb-5">
+                <TabList>
+                    <TabNav value="edit" className={`text-xl ${activeTab === 'edit' ? ' border-b-2 border-green-500' : ''} gap-2`}>
+                        <span className="text-xl font-bold">Edit Product</span> (
+                        <span className="font-light xl:text-md text-sm ">#{barcode}</span>)
+                    </TabNav>
+                    <TabNav value="add" className={`text-xl ${activeTab === 'add' ? ' border-b-2 border-green-500' : ''} `}>
+                        <span className="text-xl font-bold">Create New Product</span>
+                    </TabNav>
+                </TabList>
+            </Tabs>
+            {loading && (
+                <div className="flex items-center justify-center">
+                    <Spinner size={30} />
                 </div>
-            </div>
-            <Formik
-                enableReinitialize
-                initialValues={InitialValues(productData, segmentOptions)}
-                // validationSchema={validationSchema}
-
-                onSubmit={handleSubmit}
-            >
+            )}
+            <Formik enableReinitialize initialValues={InitialValues(productData, segmentOptions)} onSubmit={handleSubmit}>
                 {({ values, resetForm }) => (
                     <Form className="p-4 w-full shadow-xl rounded-xl" onKeyDown={handleKeyDown}>
                         <ProductFormCommon
@@ -216,6 +213,8 @@ const EditProduct = () => {
                             setAllImage={setAllImage}
                             setAllSizeChart={setAllSizeChart}
                             setAllVideo={setAllVideo}
+                            allFrameImage={allFrame}
+                            setAllFrameImage={setAllFrame}
                             initialValues={InitialValues(productData, segmentOptions)}
                         />
                         <FormContainer className="flex justify-end mt-5">

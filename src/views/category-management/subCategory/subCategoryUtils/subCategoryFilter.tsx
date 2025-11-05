@@ -9,6 +9,8 @@ interface Props {
 export const useSubCategoryFilter = ({ selectedDivision }: Props) => {
     const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
 
+    console.log('Filtered Categories:', category?.categories)
+
     const filteredCategories = useMemo(() => {
         if (selectedDivision === 'Select Division') {
             return category.categories

@@ -15,9 +15,10 @@ interface Props {
     filterId?: string
     customClass?: string
     isOnchange?: (x: any, index: number) => void
+    exclude?: boolean
 }
 
-const FilterSelectWithoutFormik = ({ setFilterId, filterId, customClass, isOnchange }: Props) => {
+const FilterSelectWithoutFormik = ({ setFilterId, filterId, customClass, isOnchange, exclude }: Props) => {
     const dispatch = useAppDispatch()
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
     const [filtersData, setFiltersData] = useState<any[][]>([])
@@ -95,8 +96,10 @@ const FilterSelectWithoutFormik = ({ setFilterId, filterId, customClass, isOncha
 
     return (
         <div>
-            <FormContainer className="items-center flex flex-col xl:flex-row md:flex-row gap-2 items-center">
-                <p className="font-bold">Filters {filterId ? <>(Id: {filterId})</> : ''}</p>
+            <FormContainer className="items-center flex flex-col xl:flex-row md:flex-row gap-2 ">
+                <p className="font-bold">
+                    {exclude ? 'Exclude_Filters' : 'Filters'} {filterId ? <>(Id: {filterId})</> : ''}
+                </p>
                 <button type="button" onClick={handleAddFilter}>
                     <Tooltip title="Add new filters">
                         <IoMdAddCircle className="text-3xl text-green-500" />

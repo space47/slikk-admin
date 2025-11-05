@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface sendNotificationType {
     title: string
     message: string
@@ -69,33 +70,13 @@ export type SendNotificationARRAYType = {
 
 export const SendNotificationARRAY = [
     {
-        label: 'Name',
+        label: 'Campaign Name',
         classname: 'col-span-1 w-1/2',
         type: 'text',
         name: 'event_name',
         placeholder: 'Enter Event name',
     },
-    {
-        label: 'Key',
-        classname: 'col-span-1 w-1/2',
-        type: 'text',
-        name: 'key',
-        placeholder: 'Place your key',
-    },
-    // {
-    //     label: 'Title',
-    //     classname: 'col-span-1 w-1/2',
-    //     type: 'text',
-    //     name: 'title',
-    //     placeholder: 'Place your Title',
-    // },
-    {
-        label: 'Page',
-        classname: 'col-span-1 w-1/2',
-        type: 'text',
-        name: 'page',
-        placeholder: 'Place page',
-    },
+
     {
         label: 'Page Title',
         classname: 'col-span-1 w-1/2',
@@ -178,6 +159,7 @@ export const notificationTypeArray = [
 ]
 
 export const targetPageArray = [
+    { label: 'home', value: 'home' },
     { label: 'product', value: 'product' },
     { label: 'productListing', value: 'productListing' },
     { label: 'wishlist', value: 'wishlist' },
@@ -192,6 +174,7 @@ export const DISCOUNTOPTIONS = [
     { value: 'sort_discount', label: 'DISCOUNT' },
     { value: 'sort_rating', label: 'RATING' },
     { value: 'sort_newest', label: 'NEWEST' },
+    { value: 'sort_popularity', label: 'POPULARiTY' },
 ]
 
 export const USERNOTFARRAY = [
@@ -202,11 +185,31 @@ export const USERNOTFARRAY = [
         name: 'users',
         placeholder: 'Enter Users',
     },
-    // {
-    //     label: 'Send to all Users',
-    //     classname: 'col-span-1 w-full',
-    //     type: 'checkbox',
-    //     name: 'users_all',
-    //     placeholder: 'Enter Users',
-    // },
 ]
+
+export const REPEATARRAY = [
+    { label: 'FIXED', value: 'no_repeat' },
+    { label: 'REPEAT', value: 'repeat' },
+]
+
+export const MINUTE_OPTIONS = Array.from({ length: 60 }, (_, i) => ({ label: i.toString(), value: i.toString() }))
+export const HOUR_OPTIONS = Array.from({ length: 24 }, (_, i) => ({ label: i.toString(), value: i.toString() }))
+export const DAY_OPTIONS = Array.from({ length: 31 }, (_, i) => ({ label: (i + 1).toString(), value: (i + 1).toString() }))
+export const MONTH_OPTIONS = Array.from({ length: 12 }, (_, i) => ({ label: (i + 1).toString(), value: (i + 1).toString() }))
+
+export interface TemplateFormValues {
+    users_all?: boolean
+    schedule_notification?: boolean
+    repeat_type: 'repeat' | 'no_repeat'
+    minute_enabled?: boolean
+    minute_value?: number
+    hour_enabled?: boolean
+    hour_value?: number
+    day_enabled?: boolean
+    day_value?: number
+    month_enabled?: boolean
+    month_value?: number
+    get_date?: string
+    expiry_date?: string
+    [key: string]: any
+}

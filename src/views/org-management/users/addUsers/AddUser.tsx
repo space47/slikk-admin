@@ -61,8 +61,11 @@ const AddUser = () => {
     const [showSpinner, setShowSpinner] = useState(false)
     const [accessDenied, setAccessDenied] = useState({ groups: false, permission: false, company: false })
     const [storeAssign, setStoreAssign] = useState(false)
-    const [storePicker, setStorePicker] = useState('')
+    const [storePicker, setStorePicker] = useState<any>()
     const [mobileNumber, setMobileNumber] = useState('')
+    const [triggerAfter, setTriggerAfter] = useState(false)
+
+    console.log('trigger after is.....................', triggerAfter)
 
     const navigate = useNavigate()
 
@@ -195,7 +198,7 @@ const AddUser = () => {
     console.log('Groups data  is', addedGroups?.map((item) => item.name.includes('picker')).includes(true))
 
     useEffect(() => {
-        if (addedGroups?.map((item) => item.name.includes('picker')).includes(true)) {
+        if (addedGroups?.map((item) => ['picker', 'rider'].includes(item.name))?.includes(true)) {
             setStoreAssign(true)
         } else {
             setStoreAssign(false)
@@ -215,6 +218,26 @@ const AddUser = () => {
     const handleRemoveCompany = (id: number) => {
         setAddedCompanyList((prevAdded) => prevAdded.filter((perm) => perm.id !== id))
     }
+
+    const hanldePicker = async (selectedOptions: any[] = []) => {
+        const body = {
+            mobile: mobileNumber,
+            store: storePicker?.join(','),
+        }
+
+        try {
+            const response = await axioisInstance.post(`/merchant/store/user`, body)
+            notification.success({
+                message: response?.data?.data?.message || 'Store(s) Assigned Successfully',
+            })
+            return true
+        } catch (error) {
+            notification.info({ message: 'NOTE:Store for a particular user has not been assigned' })
+            console.error(error)
+            return false
+        }
+    }
+
     const handleSubmit = async (values: any) => {
         const groupIds = addedGroups.map((item) => item.id)
         const permissionIds = addedPermissions.map((item) => item.id)
@@ -226,15 +249,26 @@ const AddUser = () => {
             group_id: `${groupIds.join(',')}`,
             permission_id: `${permissionIds.join(',')}`,
         }
-        console.log('body', bodyData)
+
         try {
             setShowSpinner(true)
             const response = await axioisInstance.post(`company/users/add`, bodyData)
-            console.log('response of add users', response)
+            if (storePicker?.length > 0) {
+                const storeAssignmentSuccess = await hanldePicker()
+                if (!storeAssignmentSuccess) {
+                    notification.warning({
+                        message: 'User created but store assignment failed',
+                    })
+                }
+            }
 
-            navigate('/app/users')
+            notification.success({ message: response?.data?.message || 'User added successfully' })
+            setTimeout(() => {
+                navigate(-1)
+            }, 1000)
         } catch (error: any) {
-            notification.error({ message: error?.response?.data?.message || 'Failed to add' })
+            console.log('error', error)
+            notification.error({ message: error?.response?.data?.message || 'User not created' })
             console.log(error)
         } finally {
             setShowSpinner(false)
@@ -285,191 +319,137 @@ const AddUser = () => {
                 onSubmit={handleSubmit}
             >
                 {({ values, touched, errors, resetForm }) => (
-                    <Form className="w-full shadow-lg rounded-lg p-3">
-                        <div className="text-xl mb-10 font-semibold">ADD USER </div>
+                    <Form className="w-full bg-blue-50 shadow-xl rounded-xl p-6 transition-all duration-200 hover:shadow-2xl">
+                        <div className="text-2xl font-bold text-gray-800 mb-8 pb-2 border-b border-gray-200">ADD USER</div>
+
                         <FormContainer>
-                            <FormContainer className="flex flex-row gap-7 ">
-                                {USERDETAILS.map((item, index) => (
-                                    <FormItem key={index} label={item.label} className="col-span-1 w-1/2">
-                                        <Field
-                                            type={item.type}
-                                            name={item.name}
-                                            component={Input}
-                                            onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
-                                        />
-                                    </FormItem>
-                                ))}
-                            </FormContainer>
-                            {/* Mobile email work email */}
-
-                            <FormContainer className="flex flex-row gap-7 ">
-                                {USERCOMMUNICATION.map((item, index) => (
-                                    <FormItem key={index} label={item.label} className="col-span-1 w-1/2">
-                                        <Field
-                                            type={item.type}
-                                            name={item.name}
-                                            component={Input}
-                                            onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
-                                        />
-                                    </FormItem>
-                                ))}
-                                <FormItem label="Mobile">
-                                    <input
-                                        type="text"
-                                        name="mobile"
-                                        onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
-                                        onChange={(e: any) => setMobileNumber(e.target.value)}
-                                    />
-                                </FormItem>
-                            </FormContainer>
-                            {/* ........................................................................................ */}
-
-                            <div className="text-xl font-semibold mt-4">COMPANYS</div>
-                            <br />
-
-                            <FormContainer className="mb-7">
-                                <FormContainer className="flex justify-between">
-                                    {/* All Permissions */}
-                                    <Card className="overflow-y-scroll h-[360px] w-[400px] flex flex-col">
-                                        <div className="sticky top-0 z-10 bg-white">
-                                            <div className="mb-3 bg-white">
-                                                <input
-                                                    type="text"
-                                                    className="border border-gray-200 w-[90%] h-8 items-center p-2 rounded-md active:border-0 hover:border-blue-500 active:border-blue-500"
-                                                    placeholder="Search Comapny"
-                                                    value={companyInput}
-                                                    onChange={handleCompanySearch}
-                                                    onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
-                                                />
-                                            </div>
-                                            <label htmlFor="All Groups" className="font-bold bg-white">
-                                                All Companys
-                                            </label>
-                                        </div>
-
-                                        <div className="">
-                                            <div className="flex gap-2 items-center">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedCompanyList.length === filteredComapny.length}
-                                                    onChange={handleSelectAll}
-                                                />{' '}
-                                                <span className="font-bold">Select All</span>
-                                            </div>
-
-                                            {filteredComapny?.map((item) => (
-                                                <div key={item.id} className="flex flex-col">
-                                                    <label className="bg-gray-100 px-2 py-2 flex items-center">
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={selectedCompanyList.includes(item?.id)}
-                                                            onChange={() => handleCompanySelect(item.id)}
-                                                        />
-                                                        <span className="ml-2">{item.name}</span>
-                                                    </label>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </Card>
-
-                                    {/* Buttons */}
-                                    <div className="flex justify-center items-center flex-col gap-4">
-                                        <Button type="button" variant="accept" className="w-32 px-8" onClick={handleAddCompany}>
-                                            ADD {'>>'}
-                                        </Button>
-                                    </div>
-
-                                    {/* Added Permissions */}
-                                    <Card className="overflow-y-scroll h-[360px] w-[400px] flex flex-col">
-                                        <div className="sticky top-0 z-10 bg-white">
-                                            <label htmlFor="Added Permissions" className="font-bold bg-white">
-                                                Added Company
-                                            </label>
-                                        </div>
-                                        <div className="">
-                                            {filteredAddCompany?.map((item) => (
-                                                <div key={item.id} className="flex flex-col">
-                                                    <div className="bg-gray-100 px-2 py-2 flex items-center justify-between">
-                                                        <span>{item.name}</span>
-                                                        <button className="text-red-500 ml-2" onClick={() => handleRemoveCompany(item.id)}>
-                                                            <IoMdCloseCircle className="text-red-400" />
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </Card>
+                            {/* User Details Section */}
+                            <div className="mb-8">
+                                <h3 className="text-lg font-semibold text-gray-700 mb-4">Personal Information</h3>
+                                <FormContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {USERDETAILS.map((item, index) => (
+                                        <FormItem key={index} label={item.label} className="col-span-1">
+                                            <Field
+                                                type={item.type}
+                                                name={item.name}
+                                                component={Input}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                                                onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
+                                            />
+                                        </FormItem>
+                                    ))}
                                 </FormContainer>
-                            </FormContainer>
+                            </div>
 
-                            {/* .................................................................... */}
+                            {/* Communication Section */}
+                            <div className="mb-8">
+                                <h3 className="text-lg font-semibold text-gray-700 mb-4">Contact Information</h3>
+                                <FormContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {USERCOMMUNICATION.map((item, index) => (
+                                        <FormItem key={index} label={item.label} className="col-span-1">
+                                            <Field
+                                                type={item.type}
+                                                name={item.name}
+                                                component={Input}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                                                onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
+                                            />
+                                        </FormItem>
+                                    ))}
+                                    <FormItem label="Mobile" className="col-span-1">
+                                        <input
+                                            type="text"
+                                            name="mobile"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                                            onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
+                                            onChange={(e: any) => setMobileNumber(e.target.value)}
+                                        />
+                                    </FormItem>
+                                </FormContainer>
+                            </div>
 
-                            <div className="text-xl font-semibold mt-4">USER GROUPS</div>
-                            <br />
-                            {accessDenied?.groups ? (
-                                <>
-                                    <AccessDenied particularName="User Groups" />
-                                </>
-                            ) : (
+                            {/* Companies Section */}
+                            <div className="mb-10">
+                                <div className="text-xl font-semibold text-gray-800 mb-6 pb-2 border-b border-gray-200">COMPANIES</div>
+
                                 <FormContainer className="mb-7">
-                                    <FormContainer className="flex justify-between">
-                                        {/* All Permissions */}
-                                        <Card className="overflow-y-scroll h-[360px] w-[400px] flex flex-col">
-                                            <div className="sticky top-0 z-10 bg-white">
-                                                <div className="mb-3 bg-white">
+                                    <FormContainer className="flex flex-col lg:flex-row justify-between gap-6">
+                                        {/* All Companies */}
+                                        <Card className="h-[360px] w-full lg:w-[400px] flex flex-col border border-gray-200 rounded-xl overflow-y-scroll shadow-sm">
+                                            <div className="sticky top-0 z-10 bg-white p-4 border-b border-gray-200">
+                                                <div className="mb-3">
                                                     <input
                                                         type="text"
-                                                        className="border border-gray-200 w-[90%] h-8 items-center p-2 rounded-md active:border-0 hover:border-blue-500 active:border-blue-500"
-                                                        placeholder="Search Groups"
-                                                        value={groupInput}
-                                                        onChange={handleGroupSearch}
+                                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                                                        placeholder="Search Company"
+                                                        value={companyInput}
+                                                        onChange={handleCompanySearch}
                                                         onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
                                                     />
                                                 </div>
-                                                <label htmlFor="All Groups" className="font-bold bg-white">
-                                                    User Groups
+                                                <label htmlFor="All Groups" className="font-bold text-gray-700">
+                                                    All Companies
                                                 </label>
                                             </div>
-                                            <div className="">
-                                                {filteredGroups?.map((item) => (
-                                                    <div key={item.id} className="flex flex-col">
-                                                        <label className="bg-gray-100 px-2 py-2 flex items-center">
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={selectedGroups.includes(item.id)}
-                                                                onChange={() => handleGroupSelect(item.id)}
-                                                            />
-                                                            <span className="ml-2">{item.name}</span>
-                                                        </label>
-                                                    </div>
-                                                ))}
+
+                                            <div className="p-4 ">
+                                                <div className="flex gap-2 items-center mb-3 p-2 bg-gray-50 rounded-lg">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedCompanyList.length === filteredComapny.length}
+                                                        onChange={handleSelectAll}
+                                                        className="h-4 w-4 text-blue-600 rounded focus:ring-blue-500"
+                                                    />
+                                                    <span className="font-medium text-gray-700">Select All</span>
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    {filteredComapny?.map((item) => (
+                                                        <div key={item.id} className="flex flex-col">
+                                                            <label className="px-3 py-2 flex items-center hover:bg-gray-50 rounded-lg transition-colors">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={selectedCompanyList.includes(item?.id)}
+                                                                    onChange={() => handleCompanySelect(item.id)}
+                                                                    className="h-4 w-4 text-blue-600 rounded focus:ring-blue-500"
+                                                                />
+                                                                <span className="ml-3 text-gray-700">{item.name}</span>
+                                                            </label>
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             </div>
                                         </Card>
 
                                         {/* Buttons */}
-                                        <div className="flex justify-center items-center flex-col gap-4">
-                                            <Button type="button" variant="accept" className="w-32 px-8" onClick={handleAddGroups}>
+                                        <div className="flex lg:flex-col justify-center items-center gap-4 my-4 lg:my-0">
+                                            <Button
+                                                type="button"
+                                                variant="accept"
+                                                className="w-full lg:w-32 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-md"
+                                                onClick={handleAddCompany}
+                                            >
                                                 ADD {'>>'}
                                             </Button>
                                         </div>
 
-                                        {/* Added Permissions */}
-                                        <Card className="overflow-y-scroll h-[360px] w-[400px] flex flex-col">
-                                            <div className="sticky top-0 z-10 bg-white">
-                                                <label htmlFor="Added Permissions" className="font-bold bg-white">
-                                                    Added Groups
+                                        {/* Added Companies */}
+                                        <Card className="h-[360px] w-full lg:w-[400px] flex flex-col border border-gray-200 rounded-xl overflow-y-scroll shadow-sm">
+                                            <div className="sticky top-0 z-10 bg-white p-4 border-b border-gray-200">
+                                                <label htmlFor="Added Permissions" className="font-bold text-gray-700">
+                                                    Added Company
                                                 </label>
                                             </div>
-                                            <div className="">
-                                                {filteredAddGroup?.map((item) => (
+                                            <div className="p-4 overflow-y-auto space-y-2">
+                                                {filteredAddCompany?.map((item) => (
                                                     <div key={item.id} className="flex flex-col">
-                                                        <div className="bg-gray-100 px-2 py-2 flex items-center justify-between">
-                                                            <span>{item.name}</span>
+                                                        <div className="px-3 py-2 flex items-center justify-between bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                                                            <span className="text-gray-700">{item.name}</span>
                                                             <button
-                                                                className="text-red-500 ml-2"
-                                                                onClick={() => handleRemoveGroups(item.id)}
+                                                                className="text-red-500 hover:text-red-700 transition-colors"
+                                                                onClick={() => handleRemoveCompany(item.id)}
                                                             >
-                                                                <IoMdCloseCircle className="text-red-400" />
+                                                                <IoMdCloseCircle className="text-xl" />
                                                             </button>
                                                         </div>
                                                     </div>
@@ -478,130 +458,224 @@ const AddUser = () => {
                                         </Card>
                                     </FormContainer>
                                 </FormContainer>
-                            )}
+                            </div>
 
-                            {storeAssign && (
-                                <StoreAssignComponent storePicker={storePicker} setStorePicker={setStorePicker} mobile={mobileNumber} />
-                            )}
+                            {/* User Groups Section */}
+                            <div className="mb-10">
+                                <div className="text-xl font-semibold text-gray-800 mb-6 pb-2 border-b border-gray-200">USER GROUPS</div>
 
-                            {/* ............................................................................................ */}
-
-                            <div className="text-xl font-semibold">USER PERMISSIONS</div>
-                            <br />
-                            {accessDenied?.permission ? (
-                                <>
-                                    <AccessDenied particularName="User Permissions" />
-                                </>
-                            ) : (
-                                <div className="">
-                                    <div className="flex gap-2 items-center mb-5">
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedPermissions.length === filteredPermission?.length}
-                                            onChange={handleSelectAllPermissions}
-                                        />{' '}
-                                        <span className="font-bold">Select All</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        {/* All Permissions */}
-                                        <Card className="overflow-y-scroll h-[560px] w-[400px] flex flex-col">
-                                            <div className="sticky top-0 z-10 bg-white">
-                                                <div className="mb-3 bg-white">
-                                                    <input
-                                                        type="text"
-                                                        className="border border-gray-200 w-[90%] h-8 items-center p-2 rounded-md active:border-0 hover:border-blue-500 active:border-blue-500"
-                                                        placeholder="Search Permissions"
-                                                        value={searchInput}
-                                                        onChange={handleSearch}
-                                                        onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
-                                                    />
-                                                </div>
-                                                <label htmlFor="All Permissions" className="font-bold bg-white">
-                                                    All Permissions
-                                                </label>
-                                            </div>
-                                            <div className="">
-                                                {filteredPermission?.map((item) => (
-                                                    <div key={item.id} className="flex flex-col">
-                                                        <label className="bg-gray-100 px-2 py-2 flex items-center">
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={selectedPermissions.includes(item.id)}
-                                                                onChange={() => handlePermissionSelect(item.id)}
-                                                            />
-                                                            <span className="ml-2">{item.name}</span>
-                                                        </label>
+                                {accessDenied?.groups ? (
+                                    <AccessDenied particularName="User Groups" />
+                                ) : (
+                                    <FormContainer className="mb-7">
+                                        <FormContainer className="flex flex-col lg:flex-row justify-between gap-6">
+                                            {/* All Groups */}
+                                            <Card className="h-[360px] w-full lg:w-[400px] flex flex-col border border-gray-200 rounded-xl overflow-y-scroll shadow-sm">
+                                                <div className="sticky top-0 z-10 bg-white p-4 border-b border-gray-200">
+                                                    <div className="mb-3">
+                                                        <input
+                                                            type="text"
+                                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                                                            placeholder="Search Groups"
+                                                            value={groupInput}
+                                                            onChange={handleGroupSearch}
+                                                            onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
+                                                        />
                                                     </div>
-                                                ))}
-                                            </div>
-                                        </Card>
+                                                    <label htmlFor="All Groups" className="font-bold text-gray-700">
+                                                        User Groups
+                                                    </label>
+                                                </div>
+                                                <div className="p-4 overflow-y-auto space-y-2">
+                                                    {filteredGroups?.map((item) => (
+                                                        <div key={item.id} className="flex flex-col">
+                                                            <label className="px-3 py-2 flex items-center hover:bg-gray-50 rounded-lg transition-colors">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={selectedGroups.includes(item.id)}
+                                                                    onChange={() => handleGroupSelect(item.id)}
+                                                                    className="h-4 w-4 text-blue-600 rounded focus:ring-blue-500"
+                                                                />
+                                                                <span className="ml-3 text-gray-700">{item.name}</span>
+                                                            </label>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </Card>
 
-                                        {/* Buttons */}
-                                        <div className="flex justify-center items-center flex-col gap-4">
-                                            <Button type="button" variant="accept" className="w-32 px-8" onClick={handleAddPermissions}>
-                                                ADD {'>>'}
-                                            </Button>
+                                            {/* Buttons */}
+                                            <div className="flex lg:flex-col justify-center items-center gap-4 my-4 lg:my-0">
+                                                <Button
+                                                    type="button"
+                                                    variant="accept"
+                                                    className="w-full lg:w-32 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-md"
+                                                    onClick={handleAddGroups}
+                                                >
+                                                    ADD {'>>'}
+                                                </Button>
+                                            </div>
+
+                                            {/* Added Groups */}
+                                            <Card className="h-[360px] w-full lg:w-[400px] flex flex-col border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                                                <div className="sticky top-0 z-10 bg-white p-4 border-b border-gray-200">
+                                                    <label htmlFor="Added Permissions" className="font-bold text-gray-700">
+                                                        Added Groups
+                                                    </label>
+                                                </div>
+                                                <div className="p-4 overflow-y-auto space-y-2">
+                                                    {filteredAddGroup?.map((item) => (
+                                                        <div key={item.id} className="flex flex-col">
+                                                            <div className="px-3 py-2 flex items-center justify-between bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                                                                <span className="text-gray-700">{item.name}</span>
+                                                                <button
+                                                                    className="text-red-500 hover:text-red-700 transition-colors"
+                                                                    onClick={() => handleRemoveGroups(item.id)}
+                                                                >
+                                                                    <IoMdCloseCircle className="text-xl" />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </Card>
+                                        </FormContainer>
+                                    </FormContainer>
+                                )}
+                            </div>
+
+                            <StoreAssignComponent
+                                isAfter
+                                storePicker={storePicker as any}
+                                setStorePicker={setStorePicker as any}
+                                mobile={mobileNumber}
+                                profile={[]}
+                            />
+
+                            {/* User Permissions Section */}
+                            <div className="mb-10">
+                                <div className="text-xl font-semibold text-gray-800 mb-6 pb-2 border-b border-gray-200">
+                                    USER PERMISSIONS
+                                </div>
+
+                                {accessDenied?.permission ? (
+                                    <AccessDenied particularName="User Permissions" />
+                                ) : (
+                                    <div>
+                                        <div className="flex gap-2 items-center mb-5 p-2 bg-gray-50 rounded-lg w-fit">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedPermissions.length === filteredPermission?.length}
+                                                onChange={handleSelectAllPermissions}
+                                                className="h-4 w-4 text-blue-600 rounded focus:ring-blue-500"
+                                            />
+                                            <span className="font-medium text-gray-700">Select All</span>
                                         </div>
 
-                                        {/* Added Permissions */}
-                                        <Card className="overflow-y-scroll h-[560px] w-[400px] flex flex-col">
-                                            <div className="sticky top-0 z-10 bg-white">
-                                                <div className="mb-3 bg-white">
-                                                    <input
-                                                        type="text"
-                                                        value={addInput}
-                                                        onChange={handleAddPerm}
-                                                        className="border border-gray-200 w-[90%] h-8 items-center p-2 rounded-md active:border-0 hover:border-blue-500 active:border-blue-500"
-                                                        placeholder="Search Permissions"
-                                                    />
-                                                </div>
-                                                <label htmlFor="Added Permissions" className="font-bold bg-white">
-                                                    Added Permissions
-                                                </label>
-                                            </div>
-                                            <div className="">
-                                                {filteredAddPermission.map((item) => (
-                                                    <div key={item.id} className="flex flex-col">
-                                                        <div className="bg-gray-100 px-2 py-2 flex items-center justify-between">
-                                                            <span>{item.name}</span>
-                                                            <button
-                                                                className="text-red-500 ml-2"
-                                                                onClick={() => handleRemovePermissions(item.id)}
-                                                            >
-                                                                <IoMdCloseCircle className="text-red-400" />
-                                                            </button>
-                                                        </div>
+                                        <div className="flex flex-col lg:flex-row justify-between gap-6">
+                                            {/* All Permissions */}
+                                            <Card className="h-[360px] w-full lg:w-[400px] flex flex-col border border-gray-200 rounded-xl overflow-y-scroll shadow-sm">
+                                                <div className="sticky top-0 z-10 bg-white p-4 border-b border-gray-200">
+                                                    <div className="mb-3">
+                                                        <input
+                                                            type="text"
+                                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                                                            placeholder="Search Permissions"
+                                                            value={searchInput}
+                                                            onChange={handleSearch}
+                                                            onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
+                                                        />
                                                     </div>
-                                                ))}
-                                            </div>
-                                        </Card>
-                                    </div>
-                                </div>
-                            )}
+                                                    <label htmlFor="All Permissions" className="font-bold text-gray-700">
+                                                        All Permissions
+                                                    </label>
+                                                </div>
+                                                <div className="p-4 overflow-y-auto space-y-2">
+                                                    {filteredPermission?.map((item) => (
+                                                        <div key={item.id} className="flex flex-col">
+                                                            <label className="px-3 py-2 flex items-center hover:bg-gray-50 rounded-lg transition-colors">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={selectedPermissions.includes(item.id)}
+                                                                    onChange={() => handlePermissionSelect(item.id)}
+                                                                    className="h-4 w-4 text-blue-600 rounded focus:ring-blue-500"
+                                                                />
+                                                                <span className="ml-3 text-gray-700">{item.name}</span>
+                                                            </label>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </Card>
 
-                            <FormItem className="mt-10 ">
-                                <Button type="reset" className="ltr:mr-2 rtl:ml-2" onClick={() => resetForm()}>
-                                    Reset
-                                </Button>
-                                <Button variant="new" type="submit">
-                                    <span className="flex gap-4 items-center justify-center">
-                                        {showSpinner && (
-                                            <div className="flex items-center justify-center ">
-                                                <Spinner size={20} />
+                                            {/* Buttons */}
+                                            <div className="flex lg:flex-col justify-center items-center gap-4 my-4 lg:my-0">
+                                                <Button
+                                                    type="button"
+                                                    variant="accept"
+                                                    className="w-full lg:w-32 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-md"
+                                                    onClick={handleAddPermissions}
+                                                >
+                                                    ADD {'>>'}
+                                                </Button>
                                             </div>
-                                        )}{' '}
-                                        Submit
-                                    </span>
-                                </Button>
-                            </FormItem>
+
+                                            {/* Added Permissions */}
+                                            <Card className="h-[360px] w-full lg:w-[400px] flex flex-col border border-gray-200 rounded-xl overflow-y-scroll shadow-sm">
+                                                <div className="sticky top-0 z-10 bg-white p-4 border-b border-gray-200">
+                                                    <div className="mb-3">
+                                                        <input
+                                                            type="text"
+                                                            value={addInput}
+                                                            onChange={handleAddPerm}
+                                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                                                            placeholder="Search Permissions"
+                                                        />
+                                                    </div>
+                                                    <label htmlFor="Added Permissions" className="font-bold text-gray-700">
+                                                        Added Permissions
+                                                    </label>
+                                                </div>
+                                                <div className="p-4 overflow-y-auto space-y-2">
+                                                    {filteredAddPermission.map((item) => (
+                                                        <div key={item.id} className="flex flex-col">
+                                                            <div className="px-3 py-2 flex items-center justify-between bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                                                                <span className="text-gray-700">{item.name}</span>
+                                                                <button
+                                                                    className="text-red-500 hover:text-red-700 transition-colors"
+                                                                    onClick={() => handleRemovePermissions(item.id)}
+                                                                >
+                                                                    <IoMdCloseCircle className="text-xl" />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </Card>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Form Actions */}
                         </FormContainer>
+                        <FormItem className="flex gap-4">
+                            <Button
+                                variant="new"
+                                type="submit"
+                                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-md"
+                            >
+                                <span className="flex gap-2 items-center justify-center">
+                                    {showSpinner && (
+                                        <div className="flex items-center justify-center">
+                                            <Spinner size={20} />
+                                        </div>
+                                    )}
+                                    Submit
+                                </span>
+                            </Button>
+                        </FormItem>
                     </Form>
                 )}
             </Formik>
-            {/* 
-                {
-                   storeAssign  && 
-                } */}
         </div>
     )
 }

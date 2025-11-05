@@ -10,6 +10,7 @@ import { useBgRemoveFunctions } from '../newPageSettingsUtils/newpageConstants'
 import {
     BackgroundExtraArray,
     BackgroundFields,
+    GradientDirectionArray,
     MobileAndDesktopPositions,
     webBackgroundFields,
 } from '../newPageSettingsUtils/newPageCommons'
@@ -268,6 +269,20 @@ const BackgroundConfig = ({ editMode = false, initialValue, values, setInitialVa
                 name="background_config.mobile_position"
                 label="Mobile Position"
                 options={MobileAndDesktopPositions}
+                className="w-1/2"
+            />
+            <CommonSelect
+                needClassName
+                name="extra_info.gradient_direction"
+                label="Gradient Direction"
+                options={GradientDirectionArray}
+                className="w-1/2"
+            />
+            <CommonSelect
+                needClassName
+                name="extra_info.web_gradient_direction"
+                label="Web Gradient Direction"
+                options={GradientDirectionArray}
                 className="w-1/2"
             />
         </FormContainer>

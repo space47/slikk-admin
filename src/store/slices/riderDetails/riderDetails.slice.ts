@@ -1,16 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { RiderDetails, RiderProfileData } from '@/store/types/riderAddTypes'
+import { RiderDetailsType, RiderProfileData } from '@/store/types/riderAddTypes'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import moment from 'moment'
 
 export type RiderDetailType = {
-    riderDetails: RiderDetails[]
+    riderDetails: RiderDetailsType[]
     riderProfile: RiderProfileData[]
     count: number
     page: number
     pageSize: number
     from: string
     to: string
+    currentStoreLocation: Record<string, number | undefined>
 }
 
 const initialState: RiderDetailType = {
@@ -21,13 +22,14 @@ const initialState: RiderDetailType = {
     pageSize: 200,
     from: moment().format('YYYY-MM-DD'),
     to: moment().format('YYYY-MM-DD'),
+    currentStoreLocation: { lat: 12.920216, long: 77.649326 },
 }
 
 const riderDetails = createSlice({
     name: 'riderDetails',
     initialState,
     reducers: {
-        setRiderDetails: (state, action: PayloadAction<RiderDetails[]>) => {
+        setRiderDetails: (state, action: PayloadAction<RiderDetailsType[]>) => {
             state.riderDetails = action.payload
         },
         setRiderProfile: (state, action: PayloadAction<RiderProfileData[]>) => {
@@ -48,8 +50,12 @@ const riderDetails = createSlice({
         setTo: (state, action: PayloadAction<string>) => {
             state.to = action.payload
         },
+        setCurrentStoreLocation: (state, action: PayloadAction<Record<string, number | undefined>>) => {
+            state.currentStoreLocation = action.payload
+        },
     },
 })
 
-export const { setRiderDetails, setCount, setPage, setPageSize, setFrom, setTo, setRiderProfile } = riderDetails.actions
+export const { setRiderDetails, setCount, setPage, setPageSize, setFrom, setTo, setRiderProfile, setCurrentStoreLocation } =
+    riderDetails.actions
 export default riderDetails.reducer

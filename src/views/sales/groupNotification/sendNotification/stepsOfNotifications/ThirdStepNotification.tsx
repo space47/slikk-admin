@@ -1,7 +1,7 @@
 import React from 'react'
 import { UtmArray } from '../sendNotify.common'
 import { FormItem, Input } from '@/components/ui'
-import { Field } from 'formik'
+import { Field, ErrorMessage } from 'formik'
 
 const ThirdStepNotification = () => {
     return (
@@ -10,6 +10,7 @@ const ThirdStepNotification = () => {
             {UtmArray.map((item, key) => (
                 <FormItem key={key} label={item.label} className={item.classname}>
                     <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                    <ErrorMessage name={item?.name} component="div" className="text-red-500" />
                 </FormItem>
             ))}
         </div>

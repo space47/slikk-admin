@@ -34,6 +34,8 @@ interface props {
     allName?: string[]
     initialValues?: any
     setFieldValue?: any
+    allFrameImage?: string[] | undefined
+    setAllFrameImage?: (x: string[]) => void
 }
 
 const ProductFormCommon = ({
@@ -52,6 +54,8 @@ const ProductFormCommon = ({
     setAllImage,
     setAllSizeChart,
     initialValues,
+    allFrameImage,
+    setAllFrameImage,
 }: props) => {
     return (
         <div>
@@ -66,7 +70,7 @@ const ProductFormCommon = ({
                                         className="w-full"
                                         options={companyList}
                                         getOptionLabel={(option) => option.name}
-                                        getOptionValue={(option) => option.id}
+                                        getOptionValue={(option) => option.id as any}
                                         value={selectedCompany || null}
                                         onChange={(newVal) => {
                                             form.setFieldValue('company', newVal?.id)
@@ -191,6 +195,17 @@ const ProductFormCommon = ({
                                 placeholder="Enter Size Chart Image"
                                 setAllName={setAllSizeChart}
                             />
+                            <ImageCommonProduct
+                                label="Frame Image"
+                                allName={allFrameImage || []}
+                                handleRemove={handleRemove}
+                                name="frame_image_array"
+                                fieldname="frame_image_array"
+                                fileLists={values.frame_image_array}
+                                textName="frame_image"
+                                placeholder="Enter Frame Image Image"
+                                setAllName={setAllFrameImage}
+                            />
                         </>
                     ) : (
                         <>
@@ -222,6 +237,13 @@ const ProductFormCommon = ({
                                 beforeUpload={beforeUpload}
                                 fieldNames="size_chart_image_array"
                             />
+                            <AddProductImages
+                                label="Frame Image"
+                                name="frame_image"
+                                fileList={values.frame_image_array}
+                                beforeUpload={beforeUpload}
+                                fieldNames="frame_image_array"
+                            />
                         </>
                     )}
                 </div>
@@ -236,28 +258,32 @@ const ProductFormCommon = ({
                         )
                     })}
                 </FormContainer>
-                {initialValues?.filter_tags && (
-                    <>
-                        {Object.entries(initialValues.filter_tags).map(([key, value], index) => {
-                            const joinedValue = Array.isArray(value) ? value.join(', ') : value
+                <FormContainer className="grid grid-cols-2 gap-6">
+                    {initialValues?.filter_tags && (
+                        <>
+                            {Object.entries(initialValues.filter_tags).map(([key, value], index) => {
+                                const joinedValue = Array.isArray(value) ? value.join(', ') : value
 
-                            return (
-                                <FormItem key={index} label={key} className="col-span-1 w-full">
-                                    <Field name={key}>
-                                        {({ field, form }: FieldProps) => (
-                                            <Input
-                                                {...field}
-                                                placeholder={key}
-                                                value={field.value || joinedValue}
-                                                onChange={(e) => form.setFieldValue(key, e.target.value)}
-                                            />
-                                        )}
-                                    </Field>
-                                </FormItem>
-                            )
-                        })}
-                    </>
-                )}
+                                console.log('joinedValue', key)
+
+                                return (
+                                    <FormItem key={index} label={key} className="col-span-1 w-full">
+                                        <Field name={key}>
+                                            {({ field, form }: FieldProps) => (
+                                                <Input
+                                                    {...field}
+                                                    placeholder={key}
+                                                    value={field.value ?? joinedValue}
+                                                    onChange={(e) => form.setFieldValue(key, e.target.value)}
+                                                />
+                                            )}
+                                        </Field>
+                                    </FormItem>
+                                )
+                            })}
+                        </>
+                    )}
+                </FormContainer>
             </FormContainer>
         </div>
     )

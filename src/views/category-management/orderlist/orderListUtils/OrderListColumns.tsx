@@ -3,8 +3,9 @@ import { useMemo } from 'react'
 import moment from 'moment'
 import { BsFillPrinterFill } from 'react-icons/bs'
 import { FaExclamationCircle, FaMapMarkedAlt } from 'react-icons/fa'
-import { Dropdown } from '@/components/ui'
+import { Dropdown, Tooltip } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import { IoMdRefresh } from 'react-icons/io'
 
 interface columnProps {
     generatePrintingData: any
@@ -13,6 +14,7 @@ interface columnProps {
     handleDeliveryChange: any
     deliveryChangeType: any
     CHANGE_DELIVERY_OPTIONS: any
+    handleSyncDistance: any
 }
 
 export const useOrderListColumns = ({
@@ -22,6 +24,7 @@ export const useOrderListColumns = ({
     handleDeliveryChange,
     deliveryChangeType,
     CHANGE_DELIVERY_OPTIONS,
+    handleSyncDistance,
 }: columnProps) => {
     return useMemo(
         () => [
@@ -37,7 +40,7 @@ export const useOrderListColumns = ({
                                     row?.original?.invoice_id,
                                     row?.original?.payment?.mode,
                                     row?.original?.payment?.status,
-                                    row?.original?.order_items?.length,
+                                    row?.original?.order_items_count,
                                     row?.original?.payment?.amount,
                                 )
                             }
@@ -78,6 +81,28 @@ export const useOrderListColumns = ({
                 },
             },
             {
+                header: 'Split Order',
+                accessorKey: 'split_order_id',
+                cell: ({ getValue }: any) => {
+                    return getValue() ? (
+                        <>
+                            <div className="flex items-center gap-3">
+                                <a
+                                    href={`/app/orders/${getValue()}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-white bg-red-600 flex items-center justify-center px-2 py-1 rounded-[7px] font-semibold cursor-pointer"
+                                >
+                                    {getValue()}
+                                </a>
+                            </div>
+                        </>
+                    ) : (
+                        'N/A'
+                    )
+                },
+            },
+            {
                 header: 'Order Date',
                 accessorKey: 'create_date',
                 cell: ({ getValue }: any) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
@@ -98,13 +123,32 @@ export const useOrderListColumns = ({
             },
             { header: 'Payment Status', accessorKey: 'payment.status' },
             { header: 'Payment Mode', accessorKey: 'payment.mode' },
-            { header: 'Distance', accessorKey: 'distance', cell: ({ getValue }: any) => <span>{getValue()} km</span> },
-            { header: 'Total Items', accessorKey: 'order_items.length' },
+            {
+                header: 'Distance',
+                accessorKey: 'distance',
+                cell: ({ row }: any) => {
+                    return (
+                        <div>
+                            {row?.original?.distance > 0 ? (
+                                <span>{row?.original?.distance} km</span>
+                            ) : (
+                                <>
+                                    <Tooltip title="Refresh distance per user">
+                                        <button
+                                            className="flex items-center justify-center bg-green-500 py-2 px-2 rounded-xl cursor-pointer"
+                                            onClick={() => handleSyncDistance(row?.original?.invoice_id)}
+                                        >
+                                            <IoMdRefresh className="text-2xl text-white font-bold" />
+                                        </button>
+                                    </Tooltip>
+                                </>
+                            )}
+                        </div>
+                    )
+                },
+            },
+            { header: 'Total Items', accessorKey: 'order_items_count' },
             { header: 'Order Count', accessorKey: 'user_order_count' },
-            { header: 'Total Items', accessorKey: 'order_items.length' },
-            { header: 'Payment Mode', accessorKey: 'payment.mode' },
-            { header: 'Distance', accessorKey: 'distance', cell: ({ getValue }: any) => <span>{getValue()} km</span> },
-            { header: 'Payment Status', accessorKey: 'payment.status' },
             { header: 'Device Type', accessorKey: 'device_type' },
             { header: 'Customer Name', accessorKey: 'user.name' },
             {

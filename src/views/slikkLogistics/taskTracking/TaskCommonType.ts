@@ -23,6 +23,8 @@ type ClientOrderDetails = {
     is_prepaid: boolean
     cash_to_be_collected: number
     delivery_charge_to_be_collected_from_customer: boolean
+    cash_collected: boolean
+    payment_mode: string
 }
 
 export type TaskDetails = {

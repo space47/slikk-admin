@@ -2,7 +2,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import Loading from '@/components/shared/Loading'
 import Container from '@/components/shared/Container'
-import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
 import OrderProducts from './components/OrderProducts'
 import PaymentSummary from './components/PaymentSummary'
 import ShippingInfo from './components/ShippingInfo'
@@ -10,13 +9,10 @@ import Activity from './components/Activity'
 import CustomerInfo from './components/CustomerInfo'
 import { HiOutlineCalendar } from 'react-icons/hi'
 import isEmpty from 'lodash/isEmpty'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import moment from 'moment'
 import ReturnOrderDrawer from './components/ReturnOrderDrawer'
-import CancelModal from './components/CancelModal'
 import { FaDownload } from 'react-icons/fa'
-import { notification } from 'antd'
 import { SalesOrderDetailsResponse, scheduleSlots } from './orderList.common'
 import { Button, Dialog } from '@/components/ui'
 import TrackModal from '@/views/slikkLogistics/taskTracking/TrackModal'
@@ -26,11 +22,11 @@ import UtmModal from './components/UtmModal'
 import TwoPointMap from './components/TwoPointMap'
 import OrdersRiderActivity from './components/OrdersRiderActivity'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
-import { commonDownload } from '@/common/commonDownload'
-// import { string } from 'yup'
+import { useOrderDetailFunctions } from './orderDetailsUtils/useOrderDetailFunctions'
+import RtoCancelModal from './orderDetailsUtils/RtoCancelModal'
+import { TaskData } from '@/store/types/tasks.type'
 
 const OrderDetails = () => {
-    const navigate = useNavigate()
     const { invoice_id } = useParams()
     const [returnOrderDrawer, setReturnOrderDrawer] = useState(false)
     const [showCancelModal, setShowCancelModal] = useState(false)
@@ -48,53 +44,15 @@ const OrderDetails = () => {
         return `/logistic/slikk/task?task_id=${data.logistic.task_id}`
     }, [data?.logistic?.task_id])
 
-    const { data: taskData } = useFetchSingleData<any>({
+    const { data: taskData } = useFetchSingleData<TaskData>({
         url: query || '',
         pollingInterval: query ? 60000 : undefined,
     })
 
-    const handlemarkAsPaid = async () => {
-        try {
-            const response = await axioisInstance.post(`/user/order/${invoice_id}/payment/status`)
-            notification.success({ message: response.data.message || 'Successfully markded as Paid' })
-            navigate(0)
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    const handlePODAction = async () => {
-        try {
-            const body = { action: 'MARK_POD_COMPLETE' }
-            const response = await axioisInstance.patch(`/merchant/order/${invoice_id}`, body)
-            notification.success({ message: response.data.message || 'POD COMPLETED SUCCESSFULLY' })
-            navigate(0)
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    const handleDownload = async () => {
-        try {
-            const response = await axioisInstance.get(`/user/order/invoice/${invoice_id}`)
-            commonDownload(response, `invoice-${invoice_id}.pdf`)
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    const handleConvert = async () => {
-        const body = { action: 'EXCHANGE_TO_RETURN' }
-        try {
-            const response = await axioisInstance.patch(`/merchant/order/${invoice_id}`, body)
-            notification.success({ message: response?.data?.message || 'Successfully converted' })
-        } catch (error) {
-            console.log(error)
-            notification.error({ message: 'Failed to Convert' })
-        } finally {
-            setShowCancelExchangeModal(false)
-        }
-    }
+    const { handlemarkAsPaid, handlePODAction, handleDownload, handleConvert, handleMarketingOrder } = useOrderDetailFunctions({
+        data,
+        setShowCancelExchangeModal,
+    })
 
     useEffect(() => {
         if (data?.status === 'DELIVERY_CREATED' && data?.logistic?.partner === 'Slikk' && data?.logistic?.runner_phone_number === '') {
@@ -104,13 +62,8 @@ const OrderDetails = () => {
         }
     }, [data?.logistic, data?.status])
 
-    const handleCloseTrackModal = () => {
-        setShowRiderData(false)
-    }
-
     const ReturnOrderList = ({ title, items }: { title: string; items: any[] }) => {
         if (!items || items.length === 0) return null
-
         return (
             <div className="flex flex-col xl:flex-row gap-2 items-center">
                 <span className="text-gray-700">{title}:</span>
@@ -130,7 +83,7 @@ const OrderDetails = () => {
     }
 
     return (
-        <Container className="p-4 xl:px-10 overflow-scroll scrollbar-hide ">
+        <Container className="overflow-scroll scrollbar-hide ">
             <Loading loading={loading}>
                 {!isEmpty(data) && (
                     <>
@@ -140,7 +93,7 @@ const OrderDetails = () => {
                                     <div className="text-3xl font-bold text-gray-800 text-center md:text-left flex gap-2">
                                         <span>Order</span>
                                         <span className="ml-2 text-red-600 flex gap-3">
-                                            #{data.invoice_id}{' '}
+                                            #{data.invoice_id}
                                             <div>
                                                 <button className="bg-none border-none text-md mt-1" onClick={handleDownload}>
                                                     <FaDownload className="bg-none text-gray-700" />
@@ -158,6 +111,14 @@ const OrderDetails = () => {
                                             ) : (
                                                 <></>
                                             )}
+                                            <div>
+                                                <button
+                                                    className=" text-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-200"
+                                                    onClick={handleMarketingOrder}
+                                                >
+                                                    {data?.is_internal_order ? 'Marketing Marked' : 'Mark as Marketing'}
+                                                </button>
+                                            </div>
                                         </span>
                                     </div>
                                 </div>
@@ -199,15 +160,15 @@ const OrderDetails = () => {
                                                 className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
                                                 onClick={() => setReturnOrderDrawer(true)}
                                             >
-                                                RETURN ORDER
+                                                Return/Exchange ORDER
                                             </button>
                                         )}{' '}
                                     {data.status !== 'DECLINED' && data.status !== 'CANCELLED' && (
                                         <button
-                                            className="bg-red-600 hover:bg-red-700 text-white px-2 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-full md:w-auto"
+                                            className="bg-gray-600 hover:bg-gray-700 text-white px-2 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-full md:w-auto"
                                             onClick={() => setShowCancelModal(true)}
                                         >
-                                            CANCEL ORDER
+                                            Cancel Order
                                         </button>
                                     )}
                                     {data?.delivery_type === 'EXCHANGE' && (
@@ -241,6 +202,17 @@ const OrderDetails = () => {
                                         </a>
                                     </div>
                                 )}
+                                {data?.split_order_id && (
+                                    <div>
+                                        <a
+                                            href={`/app/orders/${data?.split_order_id}`}
+                                            className="text-blue-600 hover:underline hover:text-blue-800 transition duration-200"
+                                        >
+                                            <span className="text-gray-700">Split Order:</span> {data?.split_order_id}
+                                        </a>
+                                    </div>
+                                )}
+
                                 {data?.exchange_order_id?.length > 0 && (
                                     <div className="flex flex-col xl:flex-row gap-2 items-center">
                                         <span className="text-gray-700">Exchange Orders:</span>
@@ -284,6 +256,7 @@ const OrderDetails = () => {
                                             location_url={data.location_url}
                                             delivery_type={data.delivery_type}
                                             distance={data?.distance}
+                                            alternate_number={taskData?.drop_details?.contact_number}
                                         />
                                     </div>
                                     <div className="bg-white shadow-lg p-6 rounded-lg dark:bg-gray-900">
@@ -331,7 +304,7 @@ const OrderDetails = () => {
                                         />
                                     </div>
                                     {data?.logistic && (
-                                        <div className="mt-6">
+                                        <div className="mt-6 xl:w-[200px] md:w-[250px] flex-wrap break-words">
                                             <OrdersRiderActivity eventLogs={taskData} />
                                         </div>
                                     )}
@@ -376,11 +349,12 @@ const OrderDetails = () => {
                             )}
 
                             {showCancelModal && (
-                                <CancelModal
-                                    isModalOpen={showCancelModal}
-                                    handleClose={() => setShowCancelModal(false)}
+                                <RtoCancelModal
+                                    isCancel
+                                    isOpen={showCancelModal}
                                     invoice_id={invoice_id || ''}
-                                    setIsModalOpen={setShowCancelModal}
+                                    orderItems={data?.order_items}
+                                    setIsOpen={setShowCancelModal}
                                 />
                             )}
                             {showCancelExchangeModal && (
@@ -419,7 +393,7 @@ const OrderDetails = () => {
                                     showTaskModal={showRiderData}
                                     setShowAssignModal={setShowRiderData}
                                     taskId={data?.logistic?.task_id}
-                                    handleCloseModal={handleCloseTrackModal}
+                                    handleCloseModal={() => setShowRiderData(false)}
                                     storeLat={data?.latitude}
                                     storeLong={data?.longitude}
                                 />
@@ -429,17 +403,6 @@ const OrderDetails = () => {
                     </>
                 )}
             </Loading>
-            {!loading && isEmpty(data) && (
-                <div className="h-full flex flex-col items-center justify-center">
-                    <DoubleSidedImage
-                        src="/img/others/img-2.png"
-                        darkModeSrc="/img/others/img-2-dark.png"
-                        alt="No order found!"
-                        className="w-64"
-                    />
-                    <h3 className="mt-8 text-center text-xl font-medium text-gray-700">No order found!</h3>
-                </div>
-            )}
         </Container>
     )
 }

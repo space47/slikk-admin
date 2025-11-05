@@ -5,13 +5,17 @@ import Button from '@/components/ui/Button'
 import Dialog from '@/components/ui/Dialog'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { FormItem, Select } from '@/components/ui'
+import { Checkbox, FormItem, Input, Select } from '@/components/ui'
 import { pageSettingsService } from '@/store/services/pageSettingService'
 import { pageNameTypes } from '@/store/types/pageSettings.types'
 import { useNavigate } from 'react-router-dom'
 import PageAddVideo from '../../pageSettings/PageAddVideo'
 import { beforeUpload } from '@/common/beforeUpload'
 import { handleimage } from '@/common/handleImage'
+import MultiSelect from '@/common/MultiSelect'
+import store, { useAppSelector } from '@/store'
+import { USER_PROFILE_DATA } from '@/store/types/company.types'
+import { Extra_Fields_Subpage } from '../../pageSubPage/pageSubPageUtils/subPageCommon'
 
 interface Props {
     dialogIsOpen: boolean
@@ -20,6 +24,7 @@ interface Props {
 
 const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: Props) => {
     const [pageNamesData, setPageNamesData] = useState<pageNameTypes[] | undefined>([])
+    const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
     const navigate = useNavigate()
 
     const { data: pageNames, isSuccess: isPageNamesSuccess } = pageSettingsService.usePageNamesQuery({
@@ -53,9 +58,18 @@ const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: Props) => {
             position: Number(values?.position) || '',
             image: imageUpload || '',
             is_active: values?.is_active || false,
+            stores: values?.store || [],
             extra_attributes: {
                 primaryColor: values?.extra_attributes?.primary_color || '',
                 accentColor: values?.extra_attributes?.accent_color || '',
+                textColor: values?.extra_attributes?.text_color || '',
+                textColorInactive: values?.extra_attributes?.text_color_inactive || '',
+                icon_color: values?.extra_attributes?.icon_color || '',
+                icon_color_web: values?.extra_attributes?.icon_color_web || '',
+                address_header_color_web: values?.extra_attributes?.address_header_color_web || '',
+                address_header_color: values?.extra_attributes?.address_header_color || '',
+                address_description_color: values?.extra_attributes?.address_description_color || '',
+                address_description_color_web: values?.extra_attributes?.address_description_color_web || '',
             },
         }
 
@@ -77,17 +91,17 @@ const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: Props) => {
     }
 
     return (
-        <Dialog isOpen={dialogIsOpen} onClose={onDialogClose} width={1000}>
+        <Dialog isOpen={dialogIsOpen} onClose={onDialogClose} width={1200} height={'80vh'}>
             <h5 className="mb-4 text-red-500">Add New Sub Page</h5>
             <Formik initialValues={initialValues} onSubmit={handleSubmit}>
                 {({ setFieldValue, values }) => (
-                    <Form className="grid grid-cols-2 xl:grid-cols-3 gap-2">
+                    <Form className="grid grid-cols-2 xl:grid-cols-2 gap-2 max-h-[70vh] overflow-y-auto ">
                         <FormItem label="Name">
                             <Field
                                 name="name"
                                 type="text"
                                 placeholder="Enter Name"
-                                className="rounded-xl px-3 py-2 border border-gray-300"
+                                className="rounded-xl px-3 py-2 w-full border border-gray-300"
                             />
                         </FormItem>
                         <FormItem label="Display Name">
@@ -95,7 +109,7 @@ const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: Props) => {
                                 name="display_name"
                                 type="text"
                                 placeholder="Enter Display Name"
-                                className="rounded-xl px-3 py-2 border border-gray-300"
+                                className="rounded-xl px-3 py-2 w-full border border-gray-300"
                             />
                         </FormItem>
                         <FormItem label="Position">
@@ -103,25 +117,78 @@ const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: Props) => {
                                 name="position"
                                 type="text"
                                 placeholder="Enter Position"
-                                className="rounded-xl px-3 py-2 border border-gray-300"
+                                className="rounded-xl px-3 py-2 w-full border border-gray-300"
                             />
                         </FormItem>
-                        <FormItem label="Primary Color">
+                        <FormItem label="Header Background Color">
                             <Field
                                 name="extra_attributes.primary_color"
                                 type="text"
-                                placeholder="Enter Position"
-                                className="rounded-xl px-3 py-2 border border-gray-300"
+                                placeholder="Enter Header Background Color"
+                                className="rounded-xl px-3 py-2 w-full border border-gray-300"
                             />
                         </FormItem>
-                        <FormItem label="Accent Color">
+                        <FormItem label="Text Color">
+                            <Field
+                                name="extra_attributes.text_color"
+                                type="text"
+                                placeholder="Enter Text Color"
+                                className="rounded-xl px-3 py-2 w-full border border-gray-300"
+                            />
+                        </FormItem>
+                        <FormItem label="Text Color Inactive">
+                            <Field
+                                name="extra_attributes.text_color_inactive"
+                                type="text"
+                                placeholder="Enter Text Color Inactive"
+                                className="rounded-xl px-3 py-2 w-full border border-gray-300"
+                            />
+                        </FormItem>
+                        <FormItem label="Selected Background Color">
                             <Field
                                 name="extra_attributes.accent_color"
                                 type="text"
-                                placeholder="Enter Position"
-                                className="rounded-xl px-3 py-2 border border-gray-300"
+                                placeholder="Selected Background Color"
+                                className="rounded-xl px-3 py-2 w-full border border-gray-300"
                             />
                         </FormItem>
+
+                        {Extra_Fields_Subpage?.map((item, key) => {
+                            return (
+                                <FormItem label={item?.label} className="space-y-1" key={key}>
+                                    <Field
+                                        name={item?.name}
+                                        type={item?.type}
+                                        placeholder={`Enter ${item?.label}`}
+                                        component={item?.type === 'checkbox' ? Checkbox : Input}
+                                        className="w-full rounded-lg px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition"
+                                    />
+                                </FormItem>
+                            )
+                        })}
+
+                        <MultiSelect
+                            label="Store Select"
+                            name="store"
+                            setFieldValue={setFieldValue}
+                            customClass="w-full"
+                            options={storeList}
+                            compareKey="id"
+                        />
+
+                        <div>
+                            <div className="font-semibold"> Select Page</div>
+                            <Select
+                                isClearable
+                                className="w-full"
+                                options={pageNamesData}
+                                getOptionLabel={(option) => option.name}
+                                getOptionValue={(option) => option.id}
+                                value={values.page}
+                                placeholder="Select Page"
+                                onChange={(val) => setFieldValue('page', val)}
+                            />
+                        </div>
 
                         <PageAddVideo
                             label="Image"
@@ -140,20 +207,8 @@ const AddSubPageNameModal = ({ dialogIsOpen, setIsOpen }: Props) => {
                             />
                         </FormItem>
 
-                        <div>
-                            <Select
-                                isClearable
-                                className="w-full"
-                                options={pageNamesData}
-                                getOptionLabel={(option) => option.name}
-                                getOptionValue={(option) => option.id}
-                                value={values.page}
-                                placeholder="Select Page"
-                                onChange={(val) => setFieldValue('page', val)}
-                            />
-                        </div>
-                        <div className="flex justify-end mt-10">
-                            <Button className="ltr:mr-2 rtl:ml-2" variant="reject" onClick={onDialogClose}>
+                        <div className="flex justify-start mt-10 gap-6">
+                            <Button className="" variant="reject" onClick={onDialogClose}>
                                 Cancel
                             </Button>
                             <Button type="submit" variant="solid">

@@ -24,7 +24,7 @@ const ComponentConfigArray = [
         type: 'text',
     },
     {
-        label: 'Carousel AutoPlay',
+        label: "Carousel AutoPlay (Section alignment center doesn't work with autoplay)",
         key: 'carousel_autoplay',
         component: { Checkbox },
         type: 'checkbox',
@@ -189,6 +189,108 @@ const ComponentConfigArray = [
         component: { Input },
     },
 ]
+
+export const ExtraComponentFieldsArray = [
+    {
+        label: 'Component Top Padding',
+        key: 'extra_info.component_topPadding',
+        type: 'number',
+        component: { Input },
+    },
+    {
+        label: 'Component Bottom Padding',
+        key: 'extra_info.component_bottomPadding',
+        type: 'number',
+        component: { Input },
+    },
+    {
+        label: 'Component Left Padding',
+        key: 'extra_info.component_leftPadding',
+        type: 'number',
+        component: { Input },
+    },
+    {
+        label: 'Component Right Padding',
+        key: 'extra_info.component_rightPadding',
+        type: 'number',
+        component: { Input },
+    },
+
+    {
+        label: 'Web Component Top Padding',
+        key: 'extra_info.web_component_topPadding',
+        type: 'number',
+        component: { Input },
+    },
+    {
+        label: 'Web Component Bottom Padding',
+        key: 'extra_info.web_component_bottomPadding',
+        type: 'number',
+        component: { Input },
+    },
+    {
+        label: 'Web Component Left Padding',
+        key: 'extra_info.web_component_leftPadding',
+        type: 'number',
+        component: { Input },
+    },
+    {
+        label: 'Web Component Right Padding',
+        key: 'extra_info.web_component_rightPadding',
+        type: 'number',
+        component: { Input },
+    },
+]
+
+const ContentPaddingsArray = [
+    {
+        label: 'Content Top Padding',
+        key: 'content_topPadding',
+        type: 'number',
+        component: { Input },
+    },
+    {
+        label: 'Content Bottom Padding',
+        key: 'content_bottomPadding',
+        type: 'number',
+        component: { Input },
+    },
+    {
+        label: 'Content Left Padding',
+        key: 'content_leftPadding',
+        type: 'number',
+        component: { Input },
+    },
+    {
+        label: 'Content Right Padding',
+        key: 'content_rightPadding',
+        type: 'number',
+        component: { Input },
+    },
+]
+
+export const getContentPaddingArray = (prefix: string) => {
+    return ContentPaddingsArray?.map((item) => ({
+        label: item?.label,
+        name: `${prefix}.${item?.key}`,
+        component: item?.component,
+        type: item?.type,
+    }))
+}
+export const getContentWebPaddingArray = (prefix: string) => {
+    return ContentPaddingsArray?.map((item) => ({
+        label: `Web ${item?.label}`,
+        name: `${prefix}.web_${item?.key}`,
+        component: item?.component,
+        type: item?.type,
+    }))
+}
+
+export const contentFieldArray = getContentPaddingArray('extra_info')
+export const contentFieldWebArray = getContentWebPaddingArray('extra_info')
+
+export const childContentFieldArray = getContentPaddingArray('extra_info.child_component_config')
+export const childContentFieldWebArray = getContentWebPaddingArray('extra_info.child_component_config')
 
 export const getComponentConfigArray = (prefix: string) => {
     return ComponentConfigArray?.map((item) => ({

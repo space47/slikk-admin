@@ -20,6 +20,7 @@ const CouponSeriesEdit = () => {
     const { data: couponSeriesData, isSuccess } = couponSeriesService.useCouponSeriesQuery({ id: id }, { refetchOnMountOrArgChange: true })
     const [editSeriesData, editSeriesDataResponse] = couponSeriesService.useEditCouponSeriesMutation()
     const [filterId, setFilterId] = useState<any>()
+    const [excludeFilterId, setExcludeFilterId] = useState<any>()
 
     console.log('filterId is', filterId)
 
@@ -57,7 +58,18 @@ const CouponSeriesEdit = () => {
         coupon_type: couponSeriesActive?.coupon_type,
         is_public: couponSeriesActive?.is_public,
         extra_attributes: couponSeriesActive?.extra_attributes,
+        max_coupons_per_user: couponSeriesActive?.max_coupons_per_user,
+        series_type: couponSeriesActive?.series_type,
+        event_name: couponSeriesActive?.event_name,
+        coupon_active_event_name: couponSeriesActive?.coupon_active_event_name,
+        store_id: couponSeriesActive?.store_id,
     }
+
+    // useEffect(() => {
+    //     setExcludeFilterId(couponSeriesActive?.extra_attributes?.filters?.filter_id_exclude || '')
+    // }, [couponSeriesActive])
+
+    console.log('filters are', excludeFilterId)
 
     const handleSubmit = async (values: any) => {
         let imageUpload = values?.image
@@ -69,7 +81,7 @@ const CouponSeriesEdit = () => {
                 discount_type: values?.discount_type,
                 value: values?.value,
                 image: imageUpload,
-                min_cart_value: values?.min_cart_value,
+                min_cart_value: values?.min_cart_value || null,
                 max_count: values?.max_count,
                 maximum_discount: values?.maximum_discount,
                 valid_from: values?.valid_from,
@@ -78,12 +90,31 @@ const CouponSeriesEdit = () => {
                 max_count_per_user: values?.max_count_per_user,
                 campaign: values?.campaign,
                 coupon_type: values?.coupon_type,
+                series_type: values?.series_type,
+                event_name: values?.event_name,
+                coupon_active_event_name: values?.coupon_active_event_name,
+                max_coupons_per_user: values?.max_coupons_per_user,
                 is_public: values?.is_public ?? false,
+                store_id: values?.store?.map((store: any) => store.id).join(',') || '',
                 extra_attributes: {
                     new_users_only: values?.extra_attributes?.new_users_only,
                     filters: {
                         filter_id: filterId ?? values?.extra_attributes?.filters?.filter_id,
+                        filter_id_exclude: excludeFilterId ?? values?.extra_attributes?.filters?.filter_id_exclude,
+                        min_item_quantity: values?.extra_attributes?.filters?.min_item_quantity,
+                        max_item_quantity: values?.extra_attributes?.filters?.max_item_quantity,
                     },
+                    bxgy_config: {
+                        max_groups: values?.extra_attributes?.bxgy_config?.max_groups,
+                        y_quantity: values?.extra_attributes?.bxgy_config?.y_quantity,
+                        x_quantity: values?.extra_attributes?.bxgy_config?.x_quantity,
+                        y_discount_value: values?.extra_attributes?.bxgy_config?.y_discount_value,
+                        y_discount_type: values?.extra_attributes?.bxgy_config?.y_discount_type,
+                    },
+                    auto_apply: values?.extra_attributes?.auto_apply || false,
+                    offer_text: values?.extra_attributes?.offer_text,
+                    terms_and_conditions: values?.extra_attributes?.terms_and_conditions,
+                    free_delivery: values?.extra_attributes?.free_delivery || false,
                     min_filters_products_amount: values?.extra_attributes?.min_filters_products_amount,
                 },
             }).filter(([key, value]) => value !== undefined && value !== null && value !== ''),
@@ -121,6 +152,8 @@ const CouponSeriesEdit = () => {
                                 values={values}
                                 setFieldValue={setFieldValue}
                                 resetForm={resetForm}
+                                excludeFilterValue={initialValue?.extra_attributes?.filters?.filter_id_exclude}
+                                setExcludeFilterId={setExcludeFilterId}
                                 filterValue={initialValue?.extra_attributes?.filters?.filter_id}
                             />
                         </FormContainer>

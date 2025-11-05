@@ -1,51 +1,38 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
-import { FormItem, FormContainer } from '@/components/ui/Form'
+import { FormContainer } from '@/components/ui/Form'
 import Button from '@/components/ui/Button'
-import { Field, Form, Formik, FieldProps } from 'formik'
-import { notification } from 'antd'
+import { Form, Formik } from 'formik'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import {
-    MAXMINARRAY,
-    OFFARRAY,
-    SendNotificationARRAY,
-    sendNotificationType,
-    UtmArray,
-    notificationTypeArray,
-    targetPageArray,
-    DISCOUNTOPTIONS,
-    initialValue,
-} from './sendNotify.common'
-import { useAppDispatch, useAppSelector } from '@/store'
-import { FILTER_STATE } from '@/store/types/filters.types'
+import { MAXMINARRAY, OFFARRAY, SendNotificationARRAY, UtmArray, initialValue } from './sendNotify.common'
+import { useAppDispatch } from '@/store'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
-import { Checkbox, Spinner, Upload } from '@/components/ui'
 import { handleimage } from '@/common/handleImage'
-import SchedularModal from './SchedularModule'
 import FirstStepNotification from './stepsOfNotifications/FirstStepNotification'
 import SecondStepNotification from './stepsOfNotifications/SecondStepNotification'
 import ThirdStepNotification from './stepsOfNotifications/ThirdStepNotification'
 import Steps from '@/components/ui/Steps'
-import FourthStep from './stepsOfNotifications/FourthStep'
 import MobilePreview from './mobilePreview/MobilePreview'
 import { useNavigate } from 'react-router-dom'
 import MobileDrawer from './MobileDrawer'
+import FormButton from '@/components/ui/Button/FormButton'
+import { AxiosError } from 'axios'
+import * as Yup from 'yup'
+import { errorMessage, successMessage } from '@/utils/responseMessages'
+
+const validationSchema = Yup.object({
+    utm_medium: Yup.string().matches(/^[^_]*$/, 'Underscores are not allowed'),
+    utm_source: Yup.string().matches(/^[^_]*$/, 'Underscores are not allowed'),
+    utm_campaign: Yup.string().matches(/^[^_]*$/, 'Underscores are not allowed'),
+    utm_tags: Yup.string().matches(/^[^_]*$/, 'Underscores are not allowed'),
+})
 
 const SendNotification = () => {
-    const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
     const [showSpinner, setShowSpinner] = useState(false)
-    const [groupValue, setGroupValue] = useState('')
-    const [groupDatatoSend, setGroupDataToSend] = useState([])
-    const [clickedGuarantee, setClickedGuarantee] = useState<any>({})
-    const [groupId, setgroupId] = useState<string[]>([])
-    const [groupName, setgroupName] = useState<string[]>([])
     const dispatch = useAppDispatch()
     const [currentStep, setCurrentStep] = useState(0)
-    const [filterId, setFilterId] = useState()
-    const [showScheduleModal, setScheduleModal] = useState(false)
-    const [storeSchedular, setStoreSchedular] = useState({})
-    const [valueForSchedule, setValueForSchedule] = useState<any>()
+    const [filterId, setFilterId] = useState<any>('')
+    const [excludeFilterId, setExcludeFilterId] = useState<number | string>('')
     const [messagePreview, setMessagePreview] = useState('')
     const [imagePreview, setImagePreview] = useState('')
     const [titleView, setTitleView] = useState('')
@@ -56,241 +43,48 @@ const SendNotification = () => {
         dispatch(getAllFiltersAPI())
     }, [dispatch])
 
-    const fetchGroupValue = async () => {
-        try {
-            const response = await axioisInstance.get(`/notification/groups?group_name=${groupValue}`)
-            const data = response?.data?.data.results
-            setGroupDataToSend(data)
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    useEffect(() => {
-        if (groupValue) {
-            fetchGroupValue()
-        }
-    }, [groupValue])
-
-    const hanldeGroupSearch = async (groupName: string) => {
-        console.log('onclicking group', groupName)
-        setClickedGuarantee((prevState: any) => ({
-            ...prevState,
-            [groupName]: !prevState[groupName],
-        }))
-        try {
-            const response = await axioisInstance.get(`/notification/groups?group_name=${groupName}`)
-            const Gdata = response?.data?.data.results
-            console.log('data from groups', Gdata)
-            const groupID = Gdata?.map((item: any) => item.id).join(',') // name is there in api.....if required add here
-            const groupNameData = Gdata?.map((item: any) => item.name).join(',') // name is there in api.....if required add here
-            setgroupId((prev) => [...prev, groupID])
-            setgroupName((prev) => [...prev, groupNameData])
-            // setGroupValue(groupName)
-            // setGroupDataToSend([])
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    const handleSubmit = async (values: any) => {
-        const parser = new DOMParser()
-        const htmlDoc = parser.parseFromString(values.message, 'text/html')
-        const plainTextMessage = htmlDoc.body.textContent || ''
-        const {
-            image_url_array,
-            utm_medium,
-            utm_source,
-            utm_campaign,
-            minprice,
-            maxprice,
-            minoff,
-            maxoff,
-            event_name,
-            utm_tags,
-            filtersAdd,
-            ...formData
-        } = values
-        console.log(utm_medium, utm_source, utm_campaign, utm_tags, maxoff, maxprice, minoff, minprice, filtersAdd)
-
-        const imageUpload = values.image_url_array.length > 0 ? await handleimage('product', image_url_array) : values.image_url
-
-        const data = {
-            ...formData,
-            title: titleView ?? '',
-            name: values?.event_name ?? '',
-            image_url: imageUpload || '',
-            notification_group_id: groupId.join(',') || '',
-            filters: [
-                ...(values.filters || []),
-                ...UtmArray.filter((item) => values[item.name] !== undefined).map(
-                    (item) => `${item.name.replace('_', '-')}_${values[item.name]}`,
-                ),
-                ...MAXMINARRAY.filter((item) => values[item.name] !== undefined).map((item) => `${item.name}_${values[item.name]}`),
-                ...OFFARRAY.filter((item) => values[item.name] !== undefined).map((item) => `${item.name}_${values[item.name]}`),
-                ...(values.discountTags || []),
-                ...(filterId ? [`filterId_${filterId}`] : []),
-            ]
-                .filter((filter) => filter)
-                .join(','),
-            message: plainTextMessage || '',
-        }
-
-        if (values.users_all) {
-            data.users = ''
-        } else {
-            data.users = values.users?.replace(/\s+/g, '') || ''
-        }
-
-        setValueForSchedule(data)
-
-        try {
-            const response = await axioisInstance.post(`/notification/send`, data)
-            notification.success({
-                message: 'SUCCESS',
-                description: response.data.message || 'Notification has been added',
-            })
-        } catch (error: any) {
-            console.log(error)
-            notification.error({
-                message: 'FAILURE',
-                description: error?.response?.data?.message || error?.response?.message || 'Failed to send',
-            })
-        }
-    }
-
-    const [showAddFilter, setShowAddFilter] = useState<number[]>([])
-    const handleAddFilter = () => {
-        setShowAddFilter((prevFilters) => [...prevFilters, showAddFilter.length])
-    }
-
-    const handleRemoveFilter = (index: number) => {
-        setShowAddFilter((prev) => prev.filter((item) => item !== index))
-    }
-
-    const [filtersData, setFiltersData] = useState<any[]>([])
-
-    const handleAddFilters = async (values: any) => {
-        const newFilterData = showAddFilter.map((_, index) => {
-            return values.filtersAdd[index] || []
-        })
-
-        setFiltersData((prev: any) => {
-            const updatedFilters = [...prev, newFilterData]
-
-            const lastElement = updatedFilters.at(-1)
-
-            sendFilterData(lastElement)
-
-            return updatedFilters
-        })
-    }
-
-    const sendFilterData = async (filterData: any) => {
-        try {
-            const body = {
-                filter_data: filterData,
-            }
-
-            const response = await axioisInstance.post(`/product/search/criteria`, body)
-
-            const id = response.data?.data?.id
-            setFilterId(id)
-            notification.success({
-                message: 'Filters has been set',
-            })
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    if (showSpinner) {
-        return <div className="flex h-screen items-center justify-center">{<Spinner size={40} />}</div>
-    }
-
-    const hanldeSchedule = (value: any) => {
-        setValueForSchedule(value)
-        setScheduleModal((prev) => !prev)
-    }
-
     const handleOk = async (val: any) => {
-        console.log('clicked', val)
-        const {
-            checkBox_schedule_day,
-            checkBox_schedule_minute,
-            checkBox_schedule_month,
-            checkBox_schedule_year,
-            checkBox_schedule_hour,
-            ...rest
-        } = val ?? {}
-
-        setStoreSchedular(rest)
-
-        console.log('Rest of Data', storeSchedular)
+        setShowSpinner(true)
         const parser = new DOMParser()
-        const htmlDoc = parser.parseFromString(valueForSchedule?.message ?? '', 'text/html')
+        const htmlDoc = parser.parseFromString(val?.message ?? '', 'text/html')
         const plainTextMessage = htmlDoc.body.textContent || ''
-
-        const imageUpload =
-            valueForSchedule?.image_url_array?.length > 0
-                ? await handleimage('product', valueForSchedule.image_url_array)
-                : (valueForSchedule?.image_url ?? '')
-
-        const { expiry_date, ...schedulerConfigs } = rest ?? {}
+        const imageUpload = val?.image_url_array?.length > 0 ? await handleimage('product', val.image_url_array) : (val?.image_url ?? '')
+        const targetPage = val?.is_custom ? `s/${val?.page}${val?.sub_page ? `/${val?.sub_page}` : ''}` : val?.target_page || ''
 
         const body = {
             title: titleView ?? '',
             message: plainTextMessage ?? '',
-            name: valueForSchedule?.event_name ?? '',
-            ...(valueForSchedule?.image_url_array.length > 0 ? { image: imageUpload } : {}),
-            scheduler_config: schedulerConfigs,
+            name: val?.event_name ?? '',
+            ...(val?.image_url_array.length > 0 ? { image: imageUpload } : {}),
             other_config: {
                 filters: [
-                    ...(valueForSchedule?.filters ?? []),
-                    ...UtmArray.filter((item) => valueForSchedule?.[item.name] !== undefined).map(
-                        (item) => `${item.name.replace('_', '-')}_${valueForSchedule?.[item.name]}`,
+                    ...(val?.filters ?? []),
+                    ...UtmArray.filter((item) => val?.[item.name] !== undefined).map(
+                        (item) => `${item.name.replace('_', '-')}_${val?.[item.name]}`,
                     ),
-                    ...MAXMINARRAY.filter((item) => valueForSchedule?.[item.name] !== undefined).map(
-                        (item) => `${item.name}_${valueForSchedule?.[item.name]}`,
-                    ),
-                    ...OFFARRAY.filter((item) => valueForSchedule?.[item.name] !== undefined).map(
-                        (item) => `${item.name}_${valueForSchedule?.[item.name]}`,
-                    ),
-                    ...(valueForSchedule?.discountTags ?? []),
-                    ...(filterId !== undefined ? [`filterId_${filterId}`] : []),
+                    ...MAXMINARRAY.filter((item) => val?.[item.name] !== undefined).map((item) => `${item.name}_${val?.[item.name]}`),
+                    ...OFFARRAY.filter((item) => val?.[item.name] !== undefined).map((item) => `${item.name}_${val?.[item.name]}`),
+                    ...(val?.discountTags ?? []),
+                    ...(filterId ? [`filterId_${filterId}`] : []),
+                    ...(excludeFilterId ? [`filterId_exclude_${excludeFilterId}`] : []),
                 ].filter((filter) => filter),
-                target_page: valueForSchedule?.target_page ?? '',
-                key: valueForSchedule?.key ?? '',
-                page_title: valueForSchedule?.page_title ?? '',
+                target_page: targetPage,
+                page_title: encodeURIComponent(val?.page_title) ?? '',
+                sub_page: val?.sub ?? '',
             },
-            expiry_date: expiry_date ?? '',
-            mobiles: valueForSchedule?.users ?? [],
-            group_name: groupName.join(',') ?? '',
+            mobiles: val?.users ?? [],
+            is_active: true,
         }
-        console.log('body', body)
-
+        const filteredBody = Object.fromEntries(Object.entries(body).filter(([, value]) => value !== undefined && value !== ''))
         try {
-            const response = await axioisInstance.post(`/user_notification`, body)
-            notification.success({
-                message: 'Scheduled successfully',
-            })
-            navigate(`/app/appsCommuncication/sendNotification`)
-        } catch (error: any) {
-            console.log(error)
-            notification.error({
-                message: error?.response?.data?.message || error?.response?.message || 'Failed to schedule',
-            })
+            const response = await axioisInstance.post(`/user_notification`, filteredBody)
+            successMessage(response)
+            navigate(`/app/appsCommuncication/sendNotification/${response?.data?.data?.id}`)
+        } catch (error) {
+            errorMessage(error as AxiosError)
         } finally {
-            setScheduleModal(false)
+            setShowSpinner(false)
         }
-    }
-
-    const handleNext = () => {
-        setCurrentStep((prev) => prev + 1)
-    }
-
-    const handlePrevious = () => {
-        setCurrentStep((prev) => prev - 1)
     }
 
     return (
@@ -322,17 +116,9 @@ const SendNotification = () => {
                 </Button>
             </div>
 
-            <div
-                className={
-                    currentStep === 3
-                        ? showScheduleModal
-                            ? 'grid xl:grid-cols-3 grid-cols-1 gap-7 xl:gap-0 '
-                            : 'flex gap-4 '
-                        : 'flex gap-10'
-                }
-            >
-                <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
-                    {({ values, resetForm }) => (
+            <div className="flex gap-10">
+                <Formik enableReinitialize initialValues={initialValue} onSubmit={handleOk} validationSchema={validationSchema}>
+                    {({ values, setFieldValue }) => (
                         <Form className="w-full lg:w-2/3 mx-auto xl:mx-0">
                             <FormContainer>
                                 {currentStep === 0 && (
@@ -342,70 +128,75 @@ const SendNotification = () => {
                                         setImagePreview={setImagePreview}
                                         setMessagePreview={setMessagePreview}
                                         setTitleView={setTitleView}
+                                        setFieldValue={setFieldValue}
                                     />
                                 )}
-
                                 {currentStep === 1 && (
                                     <SecondStepNotification
-                                        notificationTypeArray={notificationTypeArray}
-                                        groupValue={groupValue}
-                                        setGroupValue={setGroupValue}
-                                        groupDatatoSend={groupDatatoSend}
-                                        clickedGuarantee={clickedGuarantee}
-                                        hanldeGroupSearch={hanldeGroupSearch}
-                                        handleAddFilter={handleAddFilter}
-                                        showAddFilter={showAddFilter}
-                                        filters={filters}
-                                        handleRemoveFilter={handleRemoveFilter}
-                                        MAXMINARRAY={MAXMINARRAY}
-                                        DISCOUNTOPTIONS={DISCOUNTOPTIONS}
-                                        targetPageArray={targetPageArray}
-                                        handleAddFilters={handleAddFilters}
-                                    />
-                                )}
-
-                                {currentStep === 2 && <ThirdStepNotification />}
-                                {currentStep === 3 && (
-                                    <FourthStep
                                         values={values}
-                                        handleSchedule={hanldeSchedule}
-                                        valueForSchedule={valueForSchedule}
-                                        scheduleModal={showScheduleModal}
+                                        setFilterId={setFilterId}
+                                        filterId={filterId as unknown as string}
+                                        setExcludeFilterId={setExcludeFilterId}
+                                        excludeFilterId={excludeFilterId as unknown as string}
                                     />
                                 )}
+                                {currentStep === 2 && <ThirdStepNotification />}
                             </FormContainer>
-
                             <FormContainer className="flex justify-end mt-5 mb-9 xl:mb-0">
-                                {currentStep > 0 && currentStep < 3 && (
-                                    <Button type="button" variant="pending" onClick={handlePrevious} className="mr-2 bg-gray-600">
+                                {currentStep > 0 && currentStep < 2 && (
+                                    <Button
+                                        type="button"
+                                        variant="pending"
+                                        className="mr-2 bg-gray-600"
+                                        onClick={() => setCurrentStep((prev) => prev - 1)}
+                                    >
                                         Previous
                                     </Button>
                                 )}
-                                {currentStep < 3 && currentStep > 0 && (
-                                    <Button type="button" variant="accept" onClick={handleNext} className="mr-2 bg-gray-600">
+                                {currentStep < 2 && currentStep > 0 && (
+                                    <Button
+                                        type="button"
+                                        variant="accept"
+                                        className="mr-2 bg-gray-600"
+                                        onClick={() => setCurrentStep((prev) => prev + 1)}
+                                    >
                                         Next
                                     </Button>
                                 )}
                             </FormContainer>
-
                             {currentStep === 0 && (
                                 <FormContainer className="flex justify-end">
-                                    <Button type="button" variant="accept" onClick={handleNext} className="mr-2 bg-gray-600">
+                                    <Button
+                                        type="button"
+                                        variant="accept"
+                                        className="mr-2 bg-gray-600"
+                                        onClick={() => setCurrentStep((prev) => prev + 1)}
+                                    >
                                         Next
                                     </Button>
                                 </FormContainer>
                             )}
-
                             <FormContainer className="flex justify-start">
-                                {currentStep === 3 && (
+                                {currentStep === 2 && (
                                     <div className="flex">
-                                        <Button type="button" variant="pending" onClick={handlePrevious} className="mr-2 bg-gray-600">
+                                        <Button
+                                            variant="twoTone"
+                                            type="button"
+                                            className="mr-2 mt-5 bg-gray-600"
+                                            onClick={() => setCurrentStep(0)}
+                                        >
+                                            First Page
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            variant="pending"
+                                            className="mr-2 mt-5 bg-gray-600"
+                                            onClick={() => setCurrentStep((prev) => prev - 1)}
+                                        >
                                             Previous
                                         </Button>
                                         <div className="flex gap-20">
-                                            <Button variant="accept" type="submit" className=" text-white">
-                                                Submit
-                                            </Button>
+                                            <FormButton isSpinning={showSpinner} value="Create Template" />
                                         </div>
                                     </div>
                                 )}
@@ -414,20 +205,14 @@ const SendNotification = () => {
                     )}
                 </Formik>
 
-                {showScheduleModal && currentStep === 3 ? (
-                    <SchedularModal handleOk={handleOk} scheduleValues={valueForSchedule} />
-                ) : (
-                    <>
-                        <div></div>
-                    </>
-                )}
-
-                <div className="w-[450px] bg-contain h-[780px] rounded-[24px] shadow-2xl overflow-hidden bg-gray-100 relative hidden xl:inline">
-                    <img src="/img/logo/mobilePreview.jpeg" alt="" className="w-full h-full object-cover" />
-                    <div className="absolute top-20 left-1 right-1">
-                        <MobilePreview message={messagePreview} image={imagePreview} title={titleView} />
+                {currentStep !== 4 && (
+                    <div className="w-[250px] bg-contain h-[500px] rounded-[24px] shadow-2xl overflow-hidden bg-gray-100 relative hidden xl:inline">
+                        <img src="/img/logo/mobilePreview.jpeg" alt="" className="w-full h-full object-cover" />
+                        <div className="absolute top-20 left-1 right-1">
+                            <MobilePreview message={messagePreview} image={imagePreview} title={titleView} />
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
             {showMobileView && (
                 <>

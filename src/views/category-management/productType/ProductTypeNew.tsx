@@ -140,6 +140,10 @@ const ProducTypeNew = () => {
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             'application/zip',
             'application/json',
+            'application/lottie+json',
+            'application/vnd.lottie+json',
+            'application/x-lottie',
+            'video/lottie+json',
         ]
         const MAX_FILE_SIZE = 5000000
 

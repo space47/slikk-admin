@@ -10,11 +10,9 @@ import EasyTable from '@/common/EasyTable'
 import { useParams } from 'react-router-dom'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { InwardDetailsColumns } from '../inwardUtils/InwardColumns'
-
-interface props {
-    shipmentDetails: any
-    setRefreshTrigger: (x: any) => void
-}
+import PageCommon from '@/common/PageCommon'
+import { AxiosError } from 'axios'
+import { useFetchApi } from '@/commonHooks/useFetchApi'
 
 const renderEditableCell = (
     value: any,
@@ -36,12 +34,16 @@ const renderEditableCell = (
     )
 }
 
-const InwardMaterialModule = ({ setRefreshTrigger, shipmentDetails }: props) => {
+const InwardMaterialModule = () => {
     const { id } = useParams()
     const isDashboard = import.meta.env.VITE_DASHBOARD_TYPE !== 'brand'
     const [skuWiseData, setSkuWiseData] = useState<any[]>([])
+
+    const [page, setPage] = useState(1)
+    const [pageSize, setPageSize] = useState(10)
+
     const [currentSelectedSearch, setCurrentSelectedSearch] = useState<Record<string, string>>(InwardDetailSearchOptions[0])
-    const [shipmentData, setShipmentData] = useState<ShipmentItem[]>(shipmentDetails?.shipment_items ?? [])
+
     const [formData, setFormData] = useState({ boxCount: '', sku: '', barcode: '' })
     const [editingRow, setEditingRow] = useState<string | null>(null)
     const editFormDataRef = useRef<Partial<ShipmentItem>>({})
@@ -55,6 +57,23 @@ const InwardMaterialModule = ({ setRefreshTrigger, shipmentDetails }: props) => 
     const [dataTobeEdited, setDataTobeEdited] = useState<any>()
     const [isGenerateGrn, setIsGenerateGrn] = useState(false)
     const [receivedBy, setReceivedBy] = useState('')
+    const [isSyncing, setIsSyncing] = useState(false)
+
+    const shipmentsItemsQuery = useMemo(() => {
+        return `/shipment/item?shipment_id=${id}&page_size=${pageSize}&p=${page}`
+    }, [id, page, pageSize])
+
+    const {
+        data: shipmentItems,
+        totalData,
+        refetch,
+    } = useFetchApi<any>({
+        url: shipmentsItemsQuery,
+        initialData: [],
+    })
+    const [shipmentData, setShipmentData] = useState<ShipmentItem[]>(shipmentItems ?? [])
+
+    console.log('shipmentItems', shipmentItems)
 
     const handleEdit = useCallback(async (row: ShipmentItem) => {
         setEditingRow(row.id)
@@ -121,7 +140,7 @@ const InwardMaterialModule = ({ setRefreshTrigger, shipmentDetails }: props) => 
         try {
             const response = await axioisInstance.post(`/shipment/item`, body)
             notification.success({ message: response?.data?.message || 'Item added successfully' })
-            setRefreshTrigger((prev: any) => prev + 1)
+            refetch()
         } catch (error) {
             console.error(error)
             notification.error({ message: 'Failed to add item' })
@@ -141,7 +160,7 @@ const InwardMaterialModule = ({ setRefreshTrigger, shipmentDetails }: props) => 
         try {
             const response = await axioisInstance.post(`/shipment/item/${dataTobeEdited?.id}`, formattedData)
             notification.success({ message: response?.data?.message || 'Item Edited successfully' })
-            setRefreshTrigger((prev: any) => prev + 1)
+            refetch()
         } catch (error) {
             console.error(error)
             notification.error({ message: 'Failed to Edit item' })
@@ -157,7 +176,7 @@ const InwardMaterialModule = ({ setRefreshTrigger, shipmentDetails }: props) => 
             notification.warning({ message: `Please enter a ${currentSelectedSearch.label}` })
             return
         }
-        const existingShipmentItem = shipmentDetails?.shipment_items?.find(
+        const existingShipmentItem = shipmentItems?.find(
             (item: ShipmentItem) =>
                 (searchField === 'sku' && item.sku === searchValue) || (searchField === 'barcode' && item.barcode === searchValue),
         )
@@ -285,6 +304,13 @@ const InwardMaterialModule = ({ setRefreshTrigger, shipmentDetails }: props) => 
                 },
             },
             {
+                header: 'Box Number',
+                accessorKey: 'box_number',
+                cell: ({ row }: any) => {
+                    return <div>{row.original.box_number}</div>
+                },
+            },
+            {
                 header: 'Quantity Sent',
                 accessorKey: 'quantity_sent',
                 cell: ({ row }: any) => {
@@ -314,15 +340,6 @@ const InwardMaterialModule = ({ setRefreshTrigger, shipmentDetails }: props) => 
                         )
                     }
                     return row.original.quantity_received
-                },
-            },
-            {
-                header: 'QC failed',
-                accessorKey: 'qc_failed',
-                cell: ({ row }: any) => {
-                    const quantityReceived = row?.original?.quantity_received ?? 0
-                    const quantitySent = row?.original?.quantity_sent ?? 0
-                    return <div>{quantitySent - quantityReceived}</div>
                 },
             },
             {
@@ -371,13 +388,18 @@ const InwardMaterialModule = ({ setRefreshTrigger, shipmentDetails }: props) => 
             shipment_id: id,
             received_by: receivedBy,
         }
+        setIsSyncing(true)
         try {
             const response = await axioisInstance.post(`/shipment/grn/sync`, body)
             notification.success({ message: response?.data?.message || 'Synced successfully' })
             setIsGenerateGrn(false)
         } catch (error) {
             console.error(error)
-            notification.error({ message: 'Failed to Sync' })
+            if (error instanceof AxiosError) {
+                notification.error({ message: error?.response?.data?.message || 'Failed to sync' })
+            }
+        } finally {
+            setIsSyncing(false)
         }
     }
 
@@ -437,16 +459,24 @@ const InwardMaterialModule = ({ setRefreshTrigger, shipmentDetails }: props) => 
             <div className="mt-8">
                 <div className="text-xl font-bold mb-8">Items Received</div>
                 <div>
-                    {isDashboard && (
+                    {isDashboard && !isSyncing && (
                         <div className="flex gap-2 mb-7 justify-end cursor-pointer" onClick={() => setIsGenerateGrn(true)}>
                             <span>
                                 <FaSync className="text-green-500 text-xl" />
                             </span>
-                            <span className="font-bold  text-green-500">SYNC</span>
+                            <span className="font-bold  text-green-500">Create GRN</span>
                         </div>
                     )}
                 </div>
-                <EasyTable overflow columns={columns2} mainData={shipmentDetails?.shipment_items ?? []} />
+                {/* Shipment items */}
+                <EasyTable overflow columns={columns2} mainData={shipmentItems ?? []} />
+                <PageCommon
+                    page={page as number}
+                    pageSize={pageSize as number}
+                    setPage={setPage}
+                    setPageSize={setPageSize}
+                    totalData={totalData}
+                />
             </div>
             {showAddModal && (
                 <Dialog isOpen={showAddModal} onClose={() => setShowAddModal(false)}>

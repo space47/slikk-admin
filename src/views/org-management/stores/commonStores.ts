@@ -11,7 +11,7 @@ export type StoreTypes = {
     area: string
     city: string
     state: string
-    pincode: number | null
+    pincode: number | string | null
     latitude: number | null
     longitude: number | null
     contactNumber: string
@@ -29,6 +29,7 @@ export type StoreTypes = {
     image: string
     opening_hours: OpeningHour[]
     images_array: []
+    is_volumetric_store?: boolean
 }
 
 export type STORETABLE = {
@@ -63,3 +64,18 @@ export type STORETABLE = {
     update_date: string
     location_url: string
 }
+
+export const StoreOption = [
+    { label: 'Mall', value: 'Mall' },
+    {
+        label: 'Independent Commercial Complex',
+        value: 'Independent Commercial Complex',
+    },
+    { label: 'Standalone', value: 'Standalone' },
+    { label: 'Warehouse', value: 'Warehouse' },
+]
+
+export const StoreStatusForAvailability = [
+    { label: 'OPEN', value: 'open' },
+    { label: 'CLOSE', value: 'close' },
+]

@@ -46,6 +46,14 @@ import pageSettingsReducer from './slices/pageSettingsSlice/pageSettingsSlice'
 import pageNamesReducer from './slices/pageSettingsSlice/pageNames.slice'
 import productReducer from './slices/productData/productData.slice'
 import pageSettingsMainReducer from './slices/mainPageSettings/mainPageSettingsSlice'
+import qualityCheckReducer from './slices/qualityCheckSlice/qualityCheckList.slice'
+import productLockReducer from './slices/productData/productLock.slice'
+import offersReducer from './slices/offerSlice/offerSlice'
+import indentReducer from './slices/indentSlice/indentSlice'
+import OfferQueryService from '@/services/OfferQueryService'
+import storeSelectReducer from './slices/storeSelect/storeSelect.slice'
+import rtvSlice from './slices/rtv/rtv.slice'
+import dateRangeReducer from './slices/dateRange/dateRange.slice'
 
 export type RootState = CombinedState<{
     authorization: CombinedState<Authorization>
@@ -106,8 +114,16 @@ const staticReducers = {
     pageNames: pageNamesReducer,
     product: productReducer,
     pageSettingsMain: pageSettingsMainReducer,
+    qualityCheck: qualityCheckReducer,
+    productLock: productLockReducer,
+    offers: offersReducer,
+    indent: indentReducer,
+    storeSelect: storeSelectReducer,
+    dateRange: dateRangeReducer,
+    [rtvSlice.name]: rtvSlice.reducer,
     [remitanceApi.reducerPath]: remitanceApi.reducer,
     [RtkQueryService.reducerPath]: RtkQueryService.reducer,
+    [OfferQueryService.reducerPath]: OfferQueryService.reducer,
 }
 
 const rootReducer = (asyncReducers?: AsyncReducers) => (state: RootState, action: AnyAction) => {

@@ -164,13 +164,13 @@ const AnalyticsReports = () => {
     }
 
     return (
-        <div className="p-6 bg-white rounded-2xl shadow-lg border border-gray-100">
+        <div className="p-6 bg-white rounded-2xl shadow-lg border dark:bg-slate-800 border-gray-100">
             <div className="flex flex-col gap-8">
                 {/* Date Pickers Section */}
-                <div className="flex flex-col xl:flex-row gap-6 xl:justify-between items-center p-5 rounded-xl border border-gray-200 shadow-sm bg-gray-50">
+                <div className="flex flex-col xl:flex-row gap-6 xl:justify-between items-center p-5 rounded-xl border border-gray-200 dark:bg-gray-900 shadow-sm bg-gray-50">
                     <div className="flex flex-col xl:flex-row gap-4 xl:gap-10 items-start xl:items-center">
                         <div className="flex flex-col gap-1">
-                            <label className="text-sm font-medium text-gray-800">
+                            <label className="text-sm font-medium text-gray-800 dark:text-gray-300 ">
                                 From Date <span className="text-xs text-gray-500">{showOneMonthBack ? '(Start of Month)' : ''}</span>
                             </label>
                             <DatePicker
@@ -181,7 +181,7 @@ const AnalyticsReports = () => {
                             />
                         </div>
                         <div className="flex flex-col gap-1">
-                            <label className="text-sm font-medium text-gray-800">To Date</label>
+                            <label className="text-sm font-medium text-gray-800 dark:text-gray-300">To Date</label>
                             <DatePicker
                                 inputPrefix={<HiOutlineCalendar className="text-gray-500 text-lg" />}
                                 value={new Date(to)}
@@ -200,7 +200,7 @@ const AnalyticsReports = () => {
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <label className="text-sm font-medium text-gray-800">Brands</label>
+                        <label className="text-sm font-medium text-gray-800 dark:text-gray-300">Brands</label>
                         <div className="flex flex-col xl:flex-row items-start gap-2">
                             <Select
                                 options={brands.brands}
@@ -250,7 +250,7 @@ const AnalyticsReports = () => {
                             </Button>
                         </div>
 
-                        <div className="text-right font-semibold text-sm text-gray-700">
+                        <div className="text-right font-semibold text-sm text-gray-700 dark:text-gray-300 ">
                             TOTAL AMOUNT: <span className="text-green-600">₹{fullRemitanceRespone?.total_amount.toFixed(2)}</span>
                         </div>
 
@@ -261,7 +261,10 @@ const AnalyticsReports = () => {
                                     {table.getHeaderGroups().map((headerGroup) => (
                                         <Tr key={headerGroup.id}>
                                             {headerGroup.headers.map((header) => (
-                                                <Th key={header.id} className="py-3 px-4 text-left font-medium text-gray-700">
+                                                <Th
+                                                    key={header.id}
+                                                    className="py-3 px-4 text-left font-medium text-gray-700 dark:text-gray-300"
+                                                >
                                                     {flexRender(header.column.columnDef.header, header.getContext())}
                                                 </Th>
                                             ))}
@@ -272,7 +275,7 @@ const AnalyticsReports = () => {
                                     {table.getRowModel().rows.map((row) => (
                                         <Tr key={row.id} className="hover:bg-gray-50 transition">
                                             {row.getVisibleCells().map((cell) => (
-                                                <Td key={cell.id} className="py-2 px-4 text-gray-800">
+                                                <Td key={cell.id} className="py-2 px-4 text-gray-800 dark:text-gray-300">
                                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                                 </Td>
                                             ))}

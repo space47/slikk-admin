@@ -16,8 +16,6 @@ interface FILTERPROPS {
     showAddFilter?: any
     handleRemoveFilter?: any
     handleAddFilters?: any
-    sortValue?: any
-    targetPagevalue?: any
     filterValue?: any
     setFilterId?: any
     isPageSettings?: boolean
@@ -29,6 +27,7 @@ const DISCOUNTOPTIONS = [
     { value: 'sort_discount', label: 'DISCOUNT' },
     { value: 'sort_rating', label: 'RATING' },
     { value: 'sort_newest', label: 'NEWEST' },
+    { value: 'sort_popularity', label: 'POPULARiTY' },
 ]
 
 export const targetPageArray = [
@@ -76,7 +75,6 @@ export const targetPageArray = [
 ]
 
 const FilterSelect = ({
-    sortValue,
     filterValue,
     setFilterId,
     isPageSettings,
@@ -175,22 +173,17 @@ const FilterSelect = ({
                 <div>Sort By</div>
                 <Field name="discountTags">
                     {({ field, form }: FieldProps<any>) => {
-                        console.log('Field Value', field)
-                        console.log('Sort', sortValue)
-                        const selectedValue = DISCOUNTOPTIONS.find((option) => option.value === `sort_${sortValue}`)
-                        console.log('Selected Value', selectedValue)
+                        const selectedValue = DISCOUNTOPTIONS.find((option) => option.value === field.value)
                         return (
                             <Select
-                                isMulti
+                                isClearable
                                 placeholder="Discount Tags"
                                 options={DISCOUNTOPTIONS}
                                 getOptionLabel={(option) => option.label}
                                 getOptionValue={(option) => option.value}
-                                // defaultValue={selectedValue}
+                                defaultValue={selectedValue}
                                 onChange={(newVal) => {
-                                    const newValues = newVal ? newVal.map((val) => val.value) : []
-                                    console.log('onChange Values', newVal)
-                                    form.setFieldValue(field.name, newValues)
+                                    form.setFieldValue(field.name, newVal?.value)
                                 }}
                             />
                         )

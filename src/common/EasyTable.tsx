@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
+    FilterFn,
     flexRender,
     getCoreRowModel,
     getFilteredRowModel,
@@ -10,6 +11,7 @@ import {
 } from '@tanstack/react-table'
 import React, { useState } from 'react'
 import Table from '@/components/ui/Table'
+import { rankItem } from '@tanstack/match-sorter-utils'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
@@ -21,9 +23,16 @@ interface TABLEPROPS {
     noPage?: boolean
     overflow?: boolean
     isNotSort?: boolean
+    filterValue?: string
 }
 
-const EasyTable = ({ columns, page, pageSize, mainData, noPage, overflow, isNotSort }: TABLEPROPS) => {
+const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+    const itemRank = rankItem(row.getValue(columnId), value)
+    addMeta(itemRank)
+    return itemRank.passed
+}
+
+const EasyTable = ({ columns, page, pageSize, mainData, noPage, overflow, isNotSort, filterValue }: TABLEPROPS) => {
     const [sorting, setSorting] = useState<any[]>([])
 
     const table = useReactTable({
@@ -31,6 +40,7 @@ const EasyTable = ({ columns, page, pageSize, mainData, noPage, overflow, isNotS
         columns,
         state: {
             sorting,
+            globalFilter: filterValue ? filterValue : '',
             pagination: noPage
                 ? undefined
                 : ({
@@ -40,6 +50,9 @@ const EasyTable = ({ columns, page, pageSize, mainData, noPage, overflow, isNotS
         },
         onSortingChange: isNotSort ? undefined : setSorting,
         getCoreRowModel: getCoreRowModel(),
+        filterFns: {
+            fuzzy: fuzzyFilter,
+        },
         getFilteredRowModel: getFilteredRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getPaginationRowModel: getPaginationRowModel(),

@@ -5,28 +5,39 @@ import { Button, Spinner } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import { useNavigate } from 'react-router-dom'
-import AllComponents from '@/preview/BannerComps/AllComponent'
+import Preview from '@/preview/BannerComps/Preview'
+import { safeImageUrl } from '@/preview/lib/utils'
+import { AxiosError } from 'axios'
 
-function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, selectedSection, headingData }: any) {
+function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, subpage, selectedSection }: any) {
     const navigate = useNavigate()
     const [API_BANNERS, setApiBanners] = useState<any[]>([])
-    const [viewSize, setViewSize] = useState('lg')
+    const [loader, setLoader] = useState(false)
     const [showSpinner, setShowSpinner] = useState(false)
-
     useEffect(() => {
         const fetchBanners = async () => {
+            setLoader(true)
+            let url = `page/sections/new?page_size=10000&page=${selectedPage.name?.toLowerCase()}`
+            if (subpage.name) url += `&sub_page=${subpage.name?.toLowerCase()}`
             const response = await axioisInstance
-                .get('page/sections?device_type=Web')
+                .get(url)
                 .then((res) => {
-                    return res.data.data
+                    return res.data?.data?.data
                 })
                 .catch((err) => {
+                    if (err instanceof AxiosError) {
+                        notification.error({ message: err.response?.data?.message })
+                    }
                     return []
+                })
+                .finally(() => {
+                    setLoader(false)
                 })
 
             console.log(response)
             setApiBanners(response)
-            const getFullBannerDataFromBannerFormArray = () => {
+
+            const getFullBannerDataFromBannerFormArray = async () => {
                 const FULL_BANNER_API: any = {
                     position: 0,
                     component_type: selectedSection?.component_type,
@@ -42,17 +53,21 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
 
                 console.log('FULL BANNER is', FULL_BANNER_API?.section_heading)
 
-                const data: any[] = []
+                const data = await Promise.all(
+                    completeBannerFormData.map(async (banner: any, index: number) => {
+                        const image_mobile = await safeImageUrl(banner.image_mobile)
+                        const image_web = await safeImageUrl(banner.image_web)
 
-                completeBannerFormData?.forEach((banner: any, index: number) => {
-                    console.log(banner)
-                    data.push({
-                        pk: index,
-                        ...banner,
-                        quick_filter_tags: banner.quick_filter_tags || [],
-                        tags: banner.tags || [],
-                    })
-                })
+                        return {
+                            pk: index,
+                            ...banner,
+                            quick_filter_tags: banner.quick_filter_tags || [],
+                            tags: banner.tags || [],
+                            image_mobile,
+                            image_web,
+                        }
+                    }),
+                )
                 console.log('data is', data)
                 FULL_BANNER_API.data = data
 
@@ -70,7 +85,7 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                     })
                 })
             }
-            getFullBannerDataFromBannerFormArray()
+            await getFullBannerDataFromBannerFormArray()
         }
         fetchBanners()
     }, [completeBannerFormData, selectedSection])
@@ -201,11 +216,11 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
             console.log('banner index', banner)
             const data = {
                 ...banner,
-                division: banner?.division?.map((item: any) => item.name).join(',') || '',
-                category: banner?.category?.map((item: any) => item.name).join(',') || '',
-                sub_category: banner?.sub_category?.map((item: any) => item.name).join(',') || '',
-                product_type: banner?.product_type?.map((item: any) => item.name).join(',') || '',
-                brand: banner?.brand?.map((item: any) => item.name).join(',') || '',
+                division: banner?.division?.map((item: any) => item.id) || [],
+                category: banner?.category?.map((item: any) => item.id) || [],
+                sub_category: banner?.sub_category?.map((item: any) => item.id) || [],
+                product_type: banner?.product_type?.map((item: any) => item.id) || [],
+                brand: banner?.brand?.map((item: any) => item.id) || [],
                 page: selectedPage.value,
                 section_heading: selectedSection?.section_heading,
                 image_web: webImageUpload || '',
@@ -229,12 +244,19 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                     min_off: banner?.minoff ?? null,
                     lottie_web: webLottieUpload ?? '',
                     lottie_mobile: mobileLottieUpload ?? '',
+                    filter_id_exclude: banner?.extra_attributes?.filter_id_exclude || '',
+                    show_subscription_popup: banner?.show_subscription_popup || false,
                 },
                 image_web_file: null,
                 image_mobile_file: null,
             }
 
-            const filteredBody = Object.fromEntries(Object.entries(data)?.filter(([, val]) => val !== ''))
+            const keysToKeepEvenIfEmpty = ['division', 'category', 'sub_category', 'product_type', 'brand']
+            const filteredBody = Object.fromEntries(
+                Object.entries(data).filter(([key, value]) => keysToKeepEvenIfEmpty.includes(key) || value !== ''),
+            )
+
+            console.log('Filtered Body', filteredBody)
             await axioisInstance
                 .post('banners', filteredBody)
                 .then((res) => {
@@ -258,7 +280,7 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
 
     return (
         <div className="gap-3 w-full overflow-hidden">
-            <div className="mb-5 w-full px-[10%]  flex flex-col lg:flex-row gap-3">
+            <div className="px-6 w-full flex flex-col lg:flex-row gap-3 mb-1">
                 <Button size="lg" onClick={() => setCurrentStep(3)} variant="new">
                     Add/Edit More Banners
                 </Button>
@@ -274,20 +296,14 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                     {showSpinner && <Spinner size={30} />} {showSpinner ? 'Saving..' : 'Save Banner'}
                 </Button>
             </div>
-            <div className="mb-5 w-full px-[10%] flex flex-col lg:flex-row gap-4">
-                <Button size="lg" onClick={() => setViewSize('sm')} variant="new">
-                    Mobile View
-                </Button>
-                <Button size="lg" onClick={() => setViewSize('md')} variant="new">
-                    Tablet View
-                </Button>
-                <Button size="lg" onClick={() => setViewSize('lg')} variant="new">
-                    Laptop View
-                </Button>
-            </div>
-            <div className={`bg-black w-full`}>
-                {/* <AllComponentsLib data={API_BANNERS} size={viewSize} /> */}
-                <AllComponents data={API_BANNERS} size={viewSize} />
+            <div className={`w-full`}>
+                {loader ? (
+                    <div className="flex items-center justify-center">
+                        <Spinner size={30} />
+                    </div>
+                ) : (
+                    <Preview data={{ total: API_BANNERS.length, size: 'sm', width: '400px', data: API_BANNERS }} />
+                )}
             </div>
         </div>
     )

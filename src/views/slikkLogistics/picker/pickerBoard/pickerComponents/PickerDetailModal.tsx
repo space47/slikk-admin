@@ -4,6 +4,9 @@ import { pickerService } from '@/store/services/pickerServices'
 import { particularPickerType } from '@/store/types/picker.types'
 import { usePickerDetailsColumns } from '../../pickerUtils/usePickerDetailsColumns'
 import EasyTable from '@/common/EasyTable'
+import { Tabs } from '@/components/ui'
+import TabList from '@/components/ui/Tabs/TabList'
+import TabNav from '@/components/ui/Tabs/TabNav'
 
 interface props {
     dialogIsOpen: boolean
@@ -13,10 +16,10 @@ interface props {
     to?: string
 }
 
-const PickerDetailModal = ({ dialogIsOpen, setIsOpen, mobile, from, to }: props) => {
+const PickerDetailModal = ({ dialogIsOpen, setIsOpen, mobile }: props) => {
     const [pickerDetailsData, setPickerDetailsData] = useState<particularPickerType>()
-
-    const { data, isSuccess } = pickerService.usePickerDetailsDataQuery({ mobile, from, to })
+    const [activeTab, setActiveTab] = useState<string>('pending')
+    const { data, isSuccess } = pickerService.usePickerDetailsDataQuery({ mobile, status: activeTab?.toUpperCase() })
 
     useEffect(() => {
         if (isSuccess && data) {
@@ -32,8 +35,8 @@ const PickerDetailModal = ({ dialogIsOpen, setIsOpen, mobile, from, to }: props)
 
     return (
         <div>
-            <Dialog isOpen={dialogIsOpen} onClose={() => setIsOpen(false)} onRequestClose={() => setIsOpen(false)} width={800}>
-                <div className="flex flex-col w-full max-w-3xl h-[600px] bg-white rounded-2xl shadow-lg overflow-hidden">
+            <Dialog isOpen={dialogIsOpen} onClose={() => setIsOpen(false)} onRequestClose={() => setIsOpen(false)} width={900}>
+                <div className="flex flex-col w-full max-w-4xl h-[600px] bg-white rounded-2xl shadow-lg overflow-hidden">
                     {/* Header Section */}
                     <div className="p-6 bg-gray-50 space-y-6">
                         <h2 className="text-2xl font-semibold text-gray-800 text-center">Picker Profile</h2>
@@ -75,8 +78,17 @@ const PickerDetailModal = ({ dialogIsOpen, setIsOpen, mobile, from, to }: props)
                         </div>
                     </div>
 
-                    {/* Scrollable Table Section */}
-                    <div className="flex-1 overflow-y-auto px-4 pb-4">
+                    <Tabs defaultValue={'pending'} onChange={(val) => setActiveTab(val)}>
+                        <TabList>
+                            <TabNav value="pending" className={`text-xl ${activeTab === 'pending' ? ' border-b-2 border-green-500' : ''} `}>
+                                Pending
+                            </TabNav>
+                            <TabNav value="packed" className={`text-xl ${activeTab === 'packed' ? ' border-b-2 border-green-500' : ''} `}>
+                                Packed
+                            </TabNav>
+                        </TabList>
+                    </Tabs>
+                    <div className="flex-1 overflow-y-auto px-4 pb-4 mt-4">
                         <EasyTable noPage overflow mainData={orders} columns={columns} />
                     </div>
                 </div>

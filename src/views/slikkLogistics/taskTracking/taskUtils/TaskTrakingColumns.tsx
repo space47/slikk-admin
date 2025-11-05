@@ -2,6 +2,7 @@
 import { useMemo } from 'react'
 import { TaskDetails } from '../TaskCommonType'
 import { MdAssignment, MdAssignmentLate } from 'react-icons/md'
+import moment from 'moment'
 
 interface columnProps {
     handleAssignClick: (task_id: TaskDetails) => void
@@ -47,6 +48,38 @@ export const TaskTrackingColumns = ({ handleAssignClick, handleReAssignClick, ha
                 },
             },
             { header: 'Status', accessor: 'status' },
+            {
+                header: 'Payment Mode',
+                accessor: 'client_order_details.payment_mode',
+                format: (_: any, row: TaskDetails) => {
+                    return <div>{row?.client_order_details?.payment_mode}</div>
+                },
+            },
+            {
+                header: 'Cash to be Collected',
+                accessor: 'client_order_details.cash_to_be_collected',
+                format: (_: any, row: TaskDetails) => {
+                    return (
+                        <div>
+                            {row?.client_order_details?.cash_to_be_collected ? (
+                                <>
+                                    <div>Rs. {row?.client_order_details?.cash_to_be_collected}</div>
+                                </>
+                            ) : (
+                                'N/A'
+                            )}
+                        </div>
+                    )
+                },
+            },
+            {
+                header: 'Cash Collected',
+                accessor: 'client_order_details?.cash_collected',
+                format: (_: any, row: TaskDetails) => {
+                    return <div>{row?.client_order_details?.cash_collected ? 'Yes' : 'No'}</div>
+                },
+            },
+
             { header: 'Task Type', accessor: 'task_type' },
             {
                 header: 'Runner Name',
@@ -120,11 +153,7 @@ export const TaskTrackingColumns = ({ handleAssignClick, handleReAssignClick, ha
                 accessor: 'client_order_details.is_prepaid',
                 format: (_: any, row: TaskDetails) => (row.client_order_details?.is_prepaid ? 'Yes' : 'No'),
             },
-            {
-                header: 'Cash to be Collected',
-                accessor: 'client_order_details.cash_to_be_collected',
-                format: (_: any, row: TaskDetails) => row.client_order_details?.cash_to_be_collected || '',
-            },
+
             {
                 header: 'Delivery Charge from Customer',
                 accessor: 'client_order_details.delivery_charge_to_be_collected_from_customer',
@@ -135,6 +164,16 @@ export const TaskTrackingColumns = ({ handleAssignClick, handleReAssignClick, ha
                 header: 'Client Order ID',
                 accessor: 'client_order_id',
                 format: (_: any, row: TaskDetails) => row.client_order_id || '',
+            },
+            {
+                header: 'Create Update',
+                accessor: 'create_date',
+                cell: ({ getValue }: any) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
+            },
+            {
+                header: 'Last Update',
+                accessor: 'update_date',
+                cell: ({ getValue }: any) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
             },
         ],
         [],

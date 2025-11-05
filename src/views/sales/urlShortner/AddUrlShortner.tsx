@@ -1,67 +1,66 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react'
-import { Field, FieldProps, Form, Formik } from 'formik'
-import { notification } from 'antd'
+import { Formik } from 'formik'
 import { useNavigate } from 'react-router-dom'
-import { AiOutlineCopy } from 'react-icons/ai'
-import { FormItem, FormContainer } from '@/components/ui/Form'
-import Input from '@/components/ui/Input'
-import Button from '@/components/ui/Button'
-// import Select from '@/components/ui/Select'
-// import * as Yup from 'yup'
-
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { URLARRAY, initialValueForUrl } from './urlShortner.common'
+import { initialValueForUrl } from './urlShortner.common'
 import { MAXMINARRAY, OFFARRAY, UtmArray } from '../groupNotification/sendNotification/sendNotify.common'
-import FilterSelect, { targetPageArray } from './FilterSelect'
-import { Checkbox, Select } from '@/components/ui'
+import { pageNameTypes } from '@/store/types/pageSettings.types'
+import { pageSettingsService } from '@/store/services/pageSettingService'
+import { errorMessage, successMessage } from '@/utils/responseMessages'
+import { AxiosError } from 'axios'
+import UrlShortnerForm from './UrlShortnerForm'
 
 const AddUrlShortner = () => {
     const navigate = useNavigate()
     const base_url = import.meta.env.VITE_WEBSITE_URL
-    const [shortUrlData, setShortUrlData] = useState('')
-    const [showGeneratedUrl, setShowGeneratedUrl] = useState(false)
-    const [showAddFilter, setShowAddFilter] = useState<number[]>([])
     const [filterId, setFilterId] = useState()
-    const [filtersData, setFiltersData] = useState<any[]>([])
+    const [subPageNamesData, setSubPageNamesData] = useState<pageNameTypes[] | undefined>([])
+    const [pageNamesData, setPageNamesData] = useState<pageNameTypes[] | undefined>([])
+    const [selectedPageName, setSelectedPageName] = useState<string | undefined>(undefined)
+    const { data: SubPageNames, isSuccess: subSuccess } = pageSettingsService.useSubPageNamesQuery({
+        pageName: selectedPageName || '',
+    })
+    const { data: pageNames, isSuccess: isPageNamesSuccess } = pageSettingsService.usePageNamesQuery({
+        page: 1,
+        pageSize: 500,
+    })
 
-    const handleAddFilter = () => {
-        setShowAddFilter([...showAddFilter, showAddFilter.length])
-    }
+    useEffect(() => {
+        if (isPageNamesSuccess) {
+            setPageNamesData(pageNames?.data?.results || [])
+        }
+    }, [pageNames, isPageNamesSuccess])
 
-    const handleRemoveFilter = (index: number) => {
-        const updatedFilters = showAddFilter.filter((_, i) => i !== index)
-        setShowAddFilter(updatedFilters)
-    }
-
-    // const handleAddFilters = async (values) => {
-    //     const newFilterData = showAddFilter.map((_, index) => values.filtersAdd[index] || [])
-    //     setFiltersData((prev: any) => {
-    //         const updatedFilters = [...prev, newFilterData]
-    //         const lastElement = updatedFilters.at(-1)
-    //         sendFilterData(lastElement)
-    //         return updatedFilters
-    //     })
-    // }
-
-    // const sendFilterData = async (filterData: number) => {
-    //     try {
-    //         const response = await axioisInstance.post(`/product/search/criteria`, { filter_data: filterData })
-    //         setFilterId(response.data?.data?.id)
-    //         notification.success({
-    //             message: 'Filter Id Added',
-    //         })
-    //         console.log('here')
-    //     } catch (error) {
-    //         console.log('error', error)
-    //         notification.error({
-    //             message: 'Failed to Add Filter ID',
-    //         })
-    //         console.error(error)
-    //     }
-    // }
+    useEffect(() => {
+        if (subSuccess) {
+            setSubPageNamesData(SubPageNames?.data || [])
+        }
+    }, [subSuccess, SubPageNames, selectedPageName])
 
     const handleSubmit = async (values: any) => {
+        const extra_attributes_fields = {
+            utm_medium: values?.utm_medium,
+            filter_id: filterId,
+            utm_tags: values?.utm_tags,
+            utm_source: values?.utm_source,
+            utm_campaign: values?.utm_campaign,
+            target_page: values?.target_page,
+            max_off: values?.maxoff,
+            min_off: values?.minoff,
+            min_price: values?.minprice,
+            max_price: values?.maxprice,
+            subPage: values?.sub_page?.name,
+            page: values?.page?.name,
+            appOnly: values?.app,
+            is_custom: values?.is_custom,
+            selectFilter: values?.select_filter,
+            discount_tags: values?.discountTags,
+            page_title: values?.page_title,
+            is_banner: values?.is_banner,
+            banner_id: values?.banners && values.banners[0]?.id,
+        }
+        console.log('1')
         const filters = [
             ...(values.filters || []),
             ...UtmArray.filter((item) => values[item.name] !== undefined).map(
@@ -69,213 +68,91 @@ const AddUrlShortner = () => {
             ),
             ...MAXMINARRAY.filter((item) => values[item.name] !== undefined).map((item) => `${item.name}_${values[item.name]}`),
             ...OFFARRAY.filter((item) => values[item.name] !== undefined).map((item) => `${item.name}_${values[item.name]}`),
-            ...(values.discountTags || []),
-            `filterId_${filterId}`,
-        ]
-            .filter(Boolean)
-            .join(',')
+            ...(filterId ? [`filterId_${filterId}`] : values.filter_id ? [`filterId_${values.filter_id}`] : []),
+            ...(values?.banners ? [`bannerId_${values.banners[0]?.id}`] : []),
+            values?.discountTags && values?.discountTags,
+        ].join(',')
+        console.log('2')
 
         const noSelectFilters = UtmArray.filter((item) => values[item.name] !== undefined)
             .map((item) => `${item.name.replace('_', '-')}=${values[item.name]}`)
             .join('&')
 
+        console.log('3')
+        let utmFilters = noSelectFilters ? `&${noSelectFilters}` : ''
+        console.log('4')
+        let filterSelect = values?.select_filter ? `&filters=${filters}` : `&${noSelectFilters}` || ''
+        console.log('5')
+        if (values?.is_custom) utmFilters = noSelectFilters ? `?${noSelectFilters}` : ''
+        console.log('6')
+        if (values?.is_custom) filterSelect = values?.select_filter ? `?filters=${filters}` : `?${noSelectFilters}` || ''
+        console.log('7')
+
         const { page_title, ...rest } = values
+        console.log(page_title)
         let pageTitle = ''
-        if (values.page_title) {
-            pageTitle = `/${values?.page_title}`
-        }
-
+        if (values.page_title && values?.target_page === 'products') pageTitle = `/${values?.page_title}`
         let appOnly = ''
-        if (values?.app) {
-            appOnly = `&app=${values?.app}`
-        }
-
+        if (values?.app) appOnly = `&app=${values?.app}`
         let target_page = ''
-        if (values?.target_page) {
-            target_page = `/${values?.target_page}`
-        }
+        if (values?.target_page) target_page = `/${values?.target_page}`
+        let subPage = ''
+        if (values?.sub_page && values?.target_page === 'home') subPage = `sub_page=${values?.sub_page?.name}`
+        console.log('8')
 
         const formData = {
             ...rest,
+            extra_attributes: extra_attributes_fields,
             short_code: values?.short_code,
             ios_url: !values.select_filter
                 ? values.ios_url
-                    ? `${values.ios_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
-                    : `${base_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
-                : `${base_url}${target_page}${pageTitle}?filters=${filters}${appOnly}`,
+                    ? `${values.ios_url}${target_page}${pageTitle}?${subPage}${utmFilters}${appOnly}`
+                    : `${`slikk://page`}${target_page}${pageTitle}?${subPage}${utmFilters}${appOnly}`
+                : `${`slikk://page`}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
             web_url: !values.select_filter
                 ? values.web_url
-                    ? `${values.web_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
-                    : `${base_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
-                : `${base_url}${target_page}${pageTitle}?filters=${filters}${appOnly}`,
+                    ? `${values.web_url}${target_page}${pageTitle}?${subPage}${utmFilters}${appOnly}`
+                    : `${base_url}${target_page}${pageTitle}?${subPage}${utmFilters}${appOnly}`
+                : `${base_url}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
             android_url: !values.select_filter
                 ? values.android_url
-                    ? `${values.android_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
-                    : `${base_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
-                : `${base_url}${target_page}${pageTitle}?filters=${filters}${appOnly}`,
+                    ? `${values.android_url}${target_page}${pageTitle}?${subPage}${noSelectFilters}${appOnly}`
+                    : `${`slikk://page`}${target_page}${pageTitle}?${subPage}${utmFilters}${appOnly}`
+                : `${`slikk://page`}${target_page}${pageTitle}?${subPage}&filters=${filters}${appOnly}`,
         }
 
+        const pageUrl = `${`slikk://page`}/s/${encodeURIComponent(values?.page?.name)}${values?.sub_page?.name ? `/${encodeURIComponent(values?.sub_page?.name)}` : ''}${pageTitle}${filterSelect}${appOnly}`
+        const webPageUrl = `${base_url}/s/${encodeURIComponent(values?.page?.name)}${values?.sub_page?.name ? `/${encodeURIComponent(values?.sub_page?.name)}` : ''}${pageTitle}${filterSelect}${appOnly}`
+        const customBody = {
+            extra_attributes: extra_attributes_fields,
+            short_code: values?.short_code,
+            ios_url: pageUrl,
+            web_url: webPageUrl,
+            android_url: pageUrl,
+        }
         try {
-            const response = await axioisInstance.post('/short_url/create', formData)
-            notification.success({
-                message: 'Success',
-                description: response?.data?.message || 'Url Shortener created successfully',
-            })
-            setShortUrlData(response.data.short_url)
-            setShowGeneratedUrl(true)
+            const body = values?.is_custom ? customBody : formData
+            const response = await axioisInstance.post('/short_url/create', body)
+            successMessage(response)
             navigate(-1)
-        } catch (error: any) {
-            notification.error({
-                message: 'Failure',
-                description: error?.response?.data?.message || error?.response?.data?.data.message || 'Failed to create Url Shortener',
-            })
-        }
-    }
-
-    const handleCopy = (data: string) => {
-        navigator.clipboard.writeText(data)
-        notification.success({
-            message: 'Copied to Clipboard',
-        })
-    }
-
-    const handleFilterChange = (e: any, setFieldValue: any) => {
-        const isChecked = e.target.checked
-        setFieldValue('select_filter', isChecked)
-
-        if (isChecked) {
-            URLARRAY.slice(1).forEach((item) => setFieldValue(item.name, ''))
+        } catch (error) {
+            errorMessage(error as AxiosError)
         }
     }
 
     return (
         <div>
             <h3 className="mb-5 from-neutral-900">Create Url Shortner</h3>
-            <Formik
-                enableReinitialize
-                initialValues={initialValueForUrl}
-                // validationSchema={validationSchema}
-                onSubmit={handleSubmit}
-            >
-                {({ resetForm, setFieldValue, values }) => (
-                    <Form className="w-full shadow-lg p-4 px-6 rounded-xl">
-                        <FormContainer>
-                            <FormContainer className="grid grid-cols-2 gap-10">
-                                {URLARRAY.slice(0, 1).map((item, key) => (
-                                    <FormItem key={key} label={item.label} className={item.classname}>
-                                        <Field
-                                            type={item.type}
-                                            name={item.name}
-                                            placeholder={item.placeholder}
-                                            component={item?.type === 'checkbox' ? Checkbox : Input}
-                                        />
-                                    </FormItem>
-                                ))}
-
-                                <FormItem label="Target Page">
-                                    <Field name="target_page">
-                                        {({ field, form }: FieldProps<any>) => {
-                                            return (
-                                                <Select
-                                                    placeholder="Select Target Page"
-                                                    options={targetPageArray}
-                                                    // defaultValue={selectedOption}
-                                                    value={targetPageArray.find((option) => option.value === field.value)}
-                                                    onChange={(option) => form.setFieldValue(field.name, option?.value)}
-                                                />
-                                            )
-                                        }}
-                                    </Field>
-                                </FormItem>
-
-                                {values?.target_page === 'products' && (
-                                    <FormItem label="Page Title">
-                                        <Field type="text" name="page_title" placeholder="Enter Page Title" component={Input} />
-                                    </FormItem>
-                                )}
-
-                                <FormItem label="App Only">
-                                    <Field type="checkbox" name="app" component={Checkbox} />
-                                </FormItem>
-                            </FormContainer>
-
-                            <FormContainer>
-                                <h3>UTM TAGS</h3>
-                                <br />
-                                <FormContainer className="grid grid-cols-2 gap-6">
-                                    {UtmArray.map((item, key) => (
-                                        <FormItem key={key} label={item.label} className={item.classname}>
-                                            <Field
-                                                type={item.type}
-                                                name={item.name}
-                                                placeholder={item.placeholder}
-                                                component={item?.type === 'checkbox' ? Checkbox : Input}
-                                            />
-                                        </FormItem>
-                                    ))}
-                                </FormContainer>
-                            </FormContainer>
-
-                            <FormItem label="Select Filter">
-                                <Field
-                                    type="checkbox"
-                                    name="select_filter"
-                                    component={Checkbox}
-                                    onChange={(e) => handleFilterChange(e, setFieldValue)}
-                                />
-                            </FormItem>
-
-                            {values?.select_filter && (
-                                <FilterSelect
-                                    handleAddFilter={handleAddFilter}
-                                    showAddFilter={showAddFilter}
-                                    handleRemoveFilter={handleRemoveFilter}
-                                    setFilterId={setFilterId}
-                                />
-                            )}
-
-                            <FormContainer className="grid grid-cols-2 gap-10">
-                                {URLARRAY.slice(1).map((item, key) => (
-                                    <FormItem key={key} label={item.label} className={item.classname}>
-                                        <Field
-                                            type={item.type}
-                                            name={item.name}
-                                            placeholder={item.placeholder}
-                                            className="w-full"
-                                            // disabled={filterShow}
-                                        />
-                                    </FormItem>
-                                ))}
-                            </FormContainer>
-
-                            <FormContainer className="flex justify-end mt-5">
-                                <Button type="reset" className="mr-2 bg-gray-600" onClick={() => resetForm()}>
-                                    Reset
-                                </Button>
-                                <Button variant="accept" type="submit" className="text-white">
-                                    Submit
-                                </Button>
-                            </FormContainer>
-
-                            {showGeneratedUrl && (
-                                <div className="flex gap-2 text-xl items-center">
-                                    <span className="font-bold">Short Url:</span>
-                                    <a
-                                        href={shortUrlData}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-blue-500 hover:underline"
-                                    >
-                                        {shortUrlData}
-                                    </a>
-                                    <AiOutlineCopy
-                                        className="text-gray-500 cursor-pointer text-xl"
-                                        onClick={() => handleCopy(shortUrlData)}
-                                    />
-                                </div>
-                            )}
-                        </FormContainer>
-                    </Form>
+            <Formik enableReinitialize initialValues={initialValueForUrl} onSubmit={handleSubmit}>
+                {({ values, setFieldValue }) => (
+                    <UrlShortnerForm
+                        pageNamesData={pageNamesData}
+                        setFilterId={setFilterId}
+                        subPageNamesData={subPageNamesData}
+                        values={values}
+                        setSelectedPageName={setSelectedPageName}
+                        setFieldValues={setFieldValue}
+                    />
                 )}
             </Formik>
         </div>

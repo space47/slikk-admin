@@ -1,25 +1,37 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, Pagination, Select } from '@/components/ui'
+import { Button, Pagination, Select, Tabs } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { pageSizeOptions } from './groupComnmon'
-import moment from 'moment'
+
 import EasyTable from '@/common/EasyTable'
-import { FaEdit } from 'react-icons/fa'
 import AccessDenied from '@/views/pages/AccessDenied'
+import { handleDownloadCsv } from '@/common/allTypesCommon'
+import { useGroupColumns } from './groupUtils/useGroupColumns'
+import { notification } from 'antd'
+import { AxiosError } from 'axios'
+import TabList from '@/components/ui/Tabs/TabList'
+import TabNav from '@/components/ui/Tabs/TabNav'
+import ActiveInactiveModal from '@/views/appsSettings/careers/careerDetails/ActiveInactiveModal'
+import { pageSizeOptions } from '@/constants/pageUtils.constants'
 
 const GetGroupNotification = () => {
-    const [groupData, setGroupData] = useState([])
+    const [groupData, setGroupData] = useState<any[]>([])
     const [totalCount, setTotalCount] = useState(0)
     const [page, setPage] = useState<number>(1)
     const [pageSize, setPageSize] = useState<number | undefined>(10)
     const [accessDenied, setAccessDenied] = useState(false)
+    const [downloadSpinner, setDownloadSpinner] = useState(false)
+    const [isActive, setIsActive] = useState('true')
+    const [showModalForActive, setShowModalForActive] = useState(false)
+    const [checkActive, setCheckActive] = useState(false)
+    const [forActive, setForActive] = useState('')
+
     const navigate = useNavigate()
 
     const fetchGroupNotification = async () => {
         try {
-            const response = await axioisInstance.get(`/notification/groups?p=${page}&page_size=${pageSize}`)
+            const response = await axioisInstance.get(`/notification/groups?p=${page}&page_size=${pageSize}&is_active=${isActive}`)
             const data = response?.data?.data
             setGroupData(data?.results)
             setTotalCount(data?.count)
@@ -33,183 +45,68 @@ const GetGroupNotification = () => {
 
     useEffect(() => {
         fetchGroupNotification()
-    }, [page, pageSize])
+    }, [page, pageSize, isActive])
 
-    const columns = useMemo(
-        () => [
-            {
-                header: 'Edit',
-                accessorKey: 'id',
-                cell: ({ getValue }: any) => (
-                    <button onClick={() => handleEditClick(getValue())}>
-                        <FaEdit className="text-blue-500 text-xl" />
-                    </button>
-                ),
-            },
-            {
-                header: 'name',
-                accessorKey: 'name',
-                // cell: ({ getValue }: any) => (
-                //     <button onClick={() => handleEditClick(getValue())}>
-                //         <FaEdit className="text-blue-500 text-xl" />
-                //     </button>
-                // ),
-            },
-            {
-                header: 'Group',
-                accessorKey: 'group',
-                cell: ({ getValue }: any) => {
-                    return getValue().map((item: any, key: any) => (
-                        <div key={key} className="">
-                            {item.name}
-                        </div>
-                    ))
-                },
-            },
-            {
-                header: 'USER INFO',
-                accessorKey: 'rules?.userInfo',
-                cell: ({ getValue }: any) => {
-                    const orders = getValue()
+    const convertToCSV = (data: any[], columns: any[]) => {
+        const header = columns.map((col) => col.header).join(',')
+        const rows = data
+            .map((row) => {
+                return columns
+                    .map((col) => {
+                        if (col.accessorKey === 'first_name') {
+                            return `${row?.first_name}`
+                        } else if (col.accessorKey === 'checked_in_status') {
+                            return row?.checked_in_status ? 'Yes' : 'No'
+                        } else if (col.accessorKey === 'email') {
+                            return row?.email
+                        } else if (col.accessorKey === 'latitude') {
+                            return row?.latitude || ''
+                        } else if (col.accessorKey === 'longitude') {
+                            return row?.longitude || ''
+                        } else if (col.accessorKey === 'mobile') {
+                            return row?.mobile
+                        } else {
+                            return ''
+                        }
+                    })
+                    .join(',')
+            })
+            .join('\n')
+        return `${header}\n${rows}`
+    }
 
-                    return (
-                        <div className="flex flex-col gap-2">
-                            {orders?.map((item: any, key: any) => {
-                                return (
-                                    <div key={key} className="flex gap-2">
-                                        <div>
-                                            <strong>{item.type}:</strong>
-                                        </div>
-                                        <div>{JSON.stringify(item.value)}</div>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    )
-                },
-            },
-            {
-                header: 'CART',
-                accessorKey: 'rules.cart',
-                cell: ({ getValue }: any) => {
-                    const orders = getValue()
+    const columnsForCsv = [
+        { header: 'First Name', accessorKey: 'first_name' },
+        { header: 'Mobile', accessorKey: 'mobile' },
+        { header: 'Checked In', accessorKey: 'checked_in_status' },
+        { header: 'Email', accessorKey: 'email' },
+        { header: 'Latitude', accessorKey: 'latitude' },
+        { header: 'Longitude', accessorKey: 'longitude' },
+    ]
 
-                    return (
-                        <div className="flex flex-col gap-2">
-                            {orders?.map((item: any, key: any) => {
-                                return (
-                                    <div key={key} className="flex gap-2">
-                                        <div>
-                                            <strong>{item.type}:</strong>
-                                        </div>
-                                        <div>{JSON.stringify(item.value)}</div>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    )
-                },
-            },
-            {
-                header: 'Order',
-                accessorKey: 'rules.order',
-                cell: ({ getValue }: any) => {
-                    const orders = getValue()
+    const handleDownloadUserCsv = async (groupId: number) => {
+        let userData = groupData?.find((item) => item.id === groupId)?.user || []
 
-                    return (
-                        <div className="flex flex-col gap-2">
-                            {orders?.map((item: any, key: any) => {
-                                return (
-                                    <div key={key} className="flex gap-2">
-                                        <div>
-                                            <strong>{item.type}:</strong>
-                                        </div>
-                                        <div>{JSON.stringify(item.value)}</div>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    )
-                },
-            },
-
-            {
-                header: 'Order Items',
-                accessorKey: 'rules.order_item',
-                cell: ({ getValue }: any) => {
-                    const orders = getValue()
-
-                    return (
-                        <div className="flex flex-col gap-2">
-                            {orders?.map((item: any, key: any) => {
-                                return (
-                                    <div key={key} className="flex gap-2">
-                                        <div>
-                                            <strong>{item.type}:</strong>
-                                        </div>
-                                        <div>{JSON.stringify(item.value)}</div>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    )
-                },
-            },
-
-            {
-                header: 'Loyalty',
-                accessorKey: 'rules.loyalty',
-                cell: ({ getValue }: any) => {
-                    const orders = getValue()
-
-                    return (
-                        <div className="flex flex-col gap-2">
-                            {orders?.map((item: any, key: any) => {
-                                return (
-                                    <div key={key} className="flex gap-2">
-                                        <div>
-                                            <strong>{item.type}:</strong>
-                                        </div>
-                                        <div>{JSON.stringify(item.value)}</div>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    )
-                },
-            },
-
-            {
-                header: 'Location',
-                accessorKey: 'rules.location',
-                cell: ({ getValue }: any) => {
-                    const orders = getValue()
-
-                    return (
-                        <div className="flex flex-col gap-2">
-                            {orders?.map((item: any, key: any) => {
-                                return (
-                                    <div key={key} className="flex gap-2">
-                                        <div>
-                                            <strong>{item.type}:</strong>
-                                        </div>
-                                        <div>{item.value}</div>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    )
-                },
-            },
-
-            {
-                header: 'Create Date',
-                accessorKey: 'create_date',
-                cell: ({ getValue }: any) => <span className="">{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
-            },
-        ],
-        [],
-    )
+        try {
+            setDownloadSpinner(true)
+            const response = await axioisInstance.get(`/notification/groups/${groupId}`)
+            const data = response?.data?.data || {}
+            console.log(data)
+            const userList = data?.user || []
+            userData = [...userList, ...data.group_users]
+            handleDownloadCsv(userData, columnsForCsv, convertToCSV, 'group_users.csv')
+            notification.success({ message: 'Download complete' })
+        } catch (error) {
+            console.error(error)
+            if (error instanceof AxiosError) {
+                notification.error({
+                    message: error?.response?.data?.message || error?.response?.data?.data?.message || 'Failed to download',
+                })
+            }
+        } finally {
+            setDownloadSpinner(false)
+        }
+    }
 
     const handleEditClick = async (groupId: number) => {
         navigate(`/app/appsCommuncication/editGroups/${groupId}`)
@@ -223,6 +120,16 @@ const GetGroupNotification = () => {
         navigate(`/app/appsCommuncication/addGroups`)
     }
 
+    const handleActiveCareer = (id: number | string, e: React.MouseEvent, checked: boolean) => {
+        setForActive(id as string)
+        setShowModalForActive(true)
+        setCheckActive(checked)
+    }
+
+    const tableData = groupData.filter((item: any) => item.is_active.toString() === isActive)
+
+    const columns = useGroupColumns({ handleEditClick, handleDownloadUserCsv, downloadSpinner, handleActiveCareer })
+
     if (accessDenied) {
         return <AccessDenied />
     }
@@ -234,7 +141,25 @@ const GetGroupNotification = () => {
                     Add Groups
                 </Button>
             </div>
-            <EasyTable mainData={groupData} columns={columns} />
+
+            <Tabs defaultValue="true" onChange={(e: string) => setIsActive(e)}>
+                <TabList className="flex items-center justify-start gap-4 bg-gray-50 dark:bg-slate-900 dark:rounded-xl  shadow-md p-3 mb-10">
+                    <TabNav
+                        value="true"
+                        className="relative px-4 py-2 text-sm sm:text-base font-semibold text-gray-700 dark:text-gray-500 rounded-xl transition-all duration-300 hover:text-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-400"
+                    >
+                        Active
+                    </TabNav>
+                    <TabNav
+                        value="false"
+                        className="relative px-4 py-2 text-sm sm:text-base font-semibold text-gray-700 dark:text-gray-500 rounded-xl transition-all duration-300 hover:text-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-400"
+                    >
+                        InActive
+                    </TabNav>
+                </TabList>
+            </Tabs>
+
+            <EasyTable mainData={tableData} columns={columns} />
             <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-4">
                 <Pagination pageSize={pageSize} currentPage={page} total={totalCount} onChange={onPaginationChange} />
                 <div className="w-full sm:w-auto min-w-[130px]">
@@ -247,6 +172,16 @@ const GetGroupNotification = () => {
                     />
                 </div>
             </div>
+            {showModalForActive && (
+                <ActiveInactiveModal
+                    dialogIsOpen={showModalForActive}
+                    setIsOpen={setShowModalForActive}
+                    idForUpdate={forActive}
+                    isActive={checkActive}
+                    url={`/notification/groups/${forActive}`}
+                    label="Group"
+                />
+            )}
         </div>
     )
 }

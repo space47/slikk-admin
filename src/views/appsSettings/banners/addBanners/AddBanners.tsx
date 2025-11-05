@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react'
 // import { BANNER_PAGE_NAME } from '@/common/banner'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -51,7 +52,7 @@ const AddBanners = () => {
     const [pageNames, setPageNames] = useState<any[]>([])
 
     useLayoutEffect(() => {
-        fetchPageSettings(setPageNames, setCurrentSelectedPage)
+        fetchPageSettings(setPageNames, setCurrentSelectedPage as any)
     }, [])
 
     const BANNER_PAGE_NAME = pageNames?.map((item) => ({
@@ -63,7 +64,7 @@ const AddBanners = () => {
     const [currentSelectedSubPage, setCurrentSelectedSubPage] = useState<Record<string, string> | null>(null)
 
     const query = useMemo(() => {
-        return `/subpage?page=${currentSelectedPage?.name}`
+        return `/subpage?dashboard=true&page=${currentSelectedPage?.name}`
     }, [currentSelectedPage])
 
     const { data: subPage } = useFetchSingleData<any>({ url: query })
@@ -80,7 +81,7 @@ const AddBanners = () => {
 
         try {
             const response = await axioisInstance.get(
-                `/page-sections?p=1&page_size=500&page=${currentSelectedPage.value}&sub_page=${encodeURIComponent(currentSelectedSubPage?.name || '')}`,
+                `/page-sections?is_active=true&p=1&page_size=500&page=${currentSelectedPage.value}&sub_page=${encodeURIComponent(currentSelectedSubPage?.name || '')}`,
             )
             const responsedata = response.data.data.results
             setSectionHeadingData(responsedata?.map((item) => item?.section))
@@ -141,30 +142,26 @@ const AddBanners = () => {
 
     return (
         <div>
-            <div className="w-full my-10 px-[10%] ">
-                <Steps current={currentStep} className="flex flex-col lg:flex-row gap-4 items-start">
+            <div className="w-full my-10 flex items-center px-6">
+                {currentStep > 1 && (
+                    <div onClick={() => setCurrentStep((prev) => prev - 1)} className="mr-2 cursor-pointer">
+                        <FaCircleArrowLeft className="text-2xl text-red-600 font-bold " />
+                    </div>
+                )}
+                <Steps current={currentStep} className="flex flex-col lg:flex-row gap-4 items-start w-[90%] px-2">
                     <Steps.Item title={currentSelectedPage?.value || 'Select Page'} />
                     <Steps.Item title={selectedSectionHeading?.section_heading || 'Select Section Heading'} />
                     <Steps.Item title="Add Banners and Corresponding Details" />
                     <Steps.Item title="Preview and Save" />
                 </Steps>
             </div>
-            {currentStep > 1 && (
-                <div onClick={() => setCurrentStep((prev) => prev - 1)} className="mx-10 cursor-pointer">
-                    <FaCircleArrowLeft className="text-2xl text-red-600 font-bold " />
-                </div>
-            )}
 
             <div className="flex flex-col w-full sticky mt-5 min-h-[70vh] text-[16px] overflow-scroll scrollbar-hide">
                 {/* STEP 1 -- Select Page */}
                 {currentStep == 1 && (
                     <div className="flex  items-center justify-center ">
                         <div className="text-[20px] border">
-                            <Dropdown
-                                className="text-xl text-black"
-                                title={currentSelectedPage?.name || 'Select Page Name'}
-                                onSelect={handlePageSelect}
-                            >
+                            <Dropdown className="text-xl text-black" title={'Select Page Name'} onSelect={handlePageSelect}>
                                 {BANNER_PAGE_NAME?.map((item, key) => (
                                     <DropdownItem key={key} eventKey={item.value}>
                                         <span>{item?.name}</span>
@@ -175,17 +172,15 @@ const AddBanners = () => {
                     </div>
                 )}
 
-                {/* STEP 2 -- Select Section */}
                 {currentStep == 2 && (
                     <div className="space-y-6 p-6 max-w-4xl mx-auto">
-                        {/* Page Selection Section */}
+                        <h4 className="flex items-center justify-center">Select SubPage and Section Headings</h4>
                         <div className="text-center">
-                            <h2 className="text-2xl font-bold text-gray-800 mb-4">Select Sub Page</h2>
                             <div className="flex justify-center">
                                 <div className="w-64">
                                     <Dropdown
                                         className="w-full flex items-center justify-center text-lg text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:border-blue-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
-                                        title={currentSelectedSubPage?.name || 'Select Page Name'}
+                                        title={currentSelectedSubPage?.name || 'Select Sub Page Name'}
                                         onSelect={handleSubPageSelect}
                                     >
                                         {SUB_PAGE_NAME?.map((item, key) => (
@@ -198,7 +193,6 @@ const AddBanners = () => {
                             </div>
                         </div>
 
-                        {/* Section Heading Selection */}
                         <div className="text-center">
                             {sectionHeadingData && sectionHeadingData.length !== 0 ? (
                                 <div className="flex flex-col items-center space-y-4">
@@ -221,8 +215,9 @@ const AddBanners = () => {
                                     </div>
 
                                     {selectedSectionHeading && (
-                                        <>
-                                            <div className="w-full mt-6 p-4 bg-white rounded-lg shadow-md border border-gray-100">
+                                        <div className="flex flex-col gap-4 sm:gap-6">
+                                            {/* Banner details container */}
+                                            <div className="w-full p-3 sm:p-4 bg-white rounded-lg shadow-md border border-gray-100">
                                                 <BannerDetails
                                                     data={sectionHeadingData.filter(
                                                         (item) => item.section_heading === selectedSectionHeading.section_heading,
@@ -230,15 +225,13 @@ const AddBanners = () => {
                                                 />
                                             </div>
 
-                                            <Button
-                                                variant="new"
-                                                size="sm"
-                                                onClick={handleProceedToAddBanner}
-                                                className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg shadow hover:shadow-md transition-all"
-                                            >
-                                                Proceed to Add Banner
-                                            </Button>
-                                        </>
+                                            {/* Proceed button */}
+                                            <div className="flex justify-center ">
+                                                <Button variant="new" size="sm" onClick={handleProceedToAddBanner}>
+                                                    Proceed to Add Banner
+                                                </Button>
+                                            </div>
+                                        </div>
                                     )}
                                 </div>
                             ) : (
@@ -278,6 +271,7 @@ const AddBanners = () => {
                         completeBannerFormData={completeBannerFormData}
                         selectedPage={currentSelectedPage}
                         selectedSection={selectedSectionHeading}
+                        subpage={currentSelectedSubPage}
                         headingData={sectionHeadingData}
                     />
                 )}

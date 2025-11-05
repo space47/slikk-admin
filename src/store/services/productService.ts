@@ -13,6 +13,13 @@ interface productDataTypes {
     }
 }
 
+interface productLockTypes {
+    page?: number
+    pageSize?: number
+    globalFilter?: string
+    id?: number
+}
+
 export const productService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
         productData: builder.query<ProductResponseType, productDataTypes>({
@@ -23,11 +30,29 @@ export const productService = RtkQueryService.injectEndpoints({
                 if (params.page) parameters.p = params.page
                 if (params.pageSize) parameters.page_size = params.pageSize
                 if (params.globalFilter && params.currentSelectedPage?.value) {
-                    parameters[params.currentSelectedPage.value] = encodeURI(params.globalFilter?.trim())
+                    // Remove encodeURI - the HTTP client will handle encoding
+                    parameters[params.currentSelectedPage.value] = params.globalFilter?.trim()
                 }
 
                 return {
                     url: `/merchant/products?${params.typeFetch}`,
+                    method: 'GET',
+                    params: parameters,
+                }
+            },
+        }),
+        productLockData: builder.query<ProductResponseType, productLockTypes>({
+            query: (params) => {
+                const parameters: Record<string, any> = {}
+                if (params.page) parameters.p = params.page
+                if (params.pageSize) parameters.page_size = params.pageSize
+                if (params.globalFilter) {
+                    parameters.name = encodeURI(params.globalFilter?.trim())
+                }
+                if (params.id) parameters.id = params.id
+
+                return {
+                    url: `/product/lock/update`,
                     method: 'GET',
                     params: parameters,
                 }

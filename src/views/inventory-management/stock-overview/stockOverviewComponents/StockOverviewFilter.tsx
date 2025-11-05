@@ -41,6 +41,8 @@ const StockOverviewFilter = ({
     const product_type = useAppSelector<PRODUCTTYPE_STATE>((state) => state.product_type)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
 
+    console.log('division that ', divisions)
+
     const dispatch = useAppDispatch()
     useEffect(() => {
         dispatch(getAllBrandsAPI())
@@ -56,12 +58,18 @@ const StockOverviewFilter = ({
 
     return (
         <div>
-            <Drawer lockScroll={false} title="" isOpen={showDrawer} onClose={handleCloseDrawer} onRequestClose={handleCloseDrawer}>
+            <Drawer
+                lockScroll={false}
+                title="Filter Stock Overview"
+                isOpen={showDrawer}
+                onClose={handleCloseDrawer}
+                onRequestClose={handleCloseDrawer}
+            >
                 <Formik initialValues={initialValues} onSubmit={handleApply}>
                     {({ setFieldValue }) => (
                         <Form className="flex flex-col gap-10 w-full items-center">
                             {/* Division */}
-                            <Field name="division">
+                            {/* <Field name="division">
                                 {({ field }: FieldProps<any>) => {
                                     const fieldValue = Array.isArray(field.value) ? field.value : []
 
@@ -71,9 +79,9 @@ const StockOverviewFilter = ({
                                             <Select
                                                 isMulti
                                                 className="w-full"
-                                                options={divisions.divisions}
+                                                options={divisions?.divisions}
                                                 getOptionLabel={(option) => option.name}
-                                                getOptionValue={(option) => option.id.toString()}
+                                                getOptionValue={(option) => option?.id?.toString()}
                                                 defaultValue={divisions.divisions.filter((option) =>
                                                     fieldValue.some((item) => item === option.name),
                                                 )}
@@ -86,10 +94,10 @@ const StockOverviewFilter = ({
                                         </div>
                                     )
                                 }}
-                            </Field>
+                            </Field> */}
 
                             {/* Category */}
-                            <Field name="category">
+                            {/* <Field name="category">
                                 {({ field }: FieldProps<any>) => {
                                     const fieldValue = Array.isArray(field.value) ? field.value : []
                                     let divFilteredCategories = category.categories
@@ -122,10 +130,10 @@ const StockOverviewFilter = ({
                                         </div>
                                     )
                                 }}
-                            </Field>
+                            </Field> */}
 
                             {/* Sub Category */}
-                            <Field name="sub_category">
+                            {/* <Field name="sub_category">
                                 {({ field }: FieldProps<any>) => {
                                     const fieldValue = Array.isArray(field.value) ? field.value : []
                                     let catFilteredSubCat = subCategory.subcategories
@@ -155,9 +163,9 @@ const StockOverviewFilter = ({
                                         </div>
                                     )
                                 }}
-                            </Field>
+                            </Field> */}
 
-                            <Field name="product_type">
+                            {/* <Field name="product_type">
                                 {({ field }: FieldProps<any>) => {
                                     const fieldValue = Array.isArray(field.value) ? field.value : []
                                     let subCatFilteredProductTypes = product_type.product_types
@@ -188,7 +196,7 @@ const StockOverviewFilter = ({
                                         </div>
                                     )
                                 }}
-                            </Field>
+                            </Field> */}
 
                             <Field name="brand">
                                 {({ field }: FieldProps<any>) => {

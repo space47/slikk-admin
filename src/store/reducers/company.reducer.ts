@@ -18,6 +18,7 @@ const initialState: USER_PROFILE_DATA = {
     currCompany: {},
     roles: [],
     permissions: [],
+    store: [],
 }
 
 export const companyReducer = createReducer(initialState, (builder) => {
@@ -34,6 +35,7 @@ export const companyReducer = createReducer(initialState, (builder) => {
             state.company = action.payload.company
             state.roles = action.payload.roles
             state.permissions = action.payload.permissions
+            state.store = action.payload.store || []
         })
         .addCase(companyRequestFailure, (state, action: PayloadAction<USER_PROFILE_DATA>) => {
             state.loading = false

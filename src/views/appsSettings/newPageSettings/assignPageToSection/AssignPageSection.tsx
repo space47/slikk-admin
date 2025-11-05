@@ -57,7 +57,7 @@ const AssignPageSection = () => {
         dispatch(getAllFiltersAPI())
     }, [dispatch])
 
-    const { data: sectionsData } = useFetchApi<RequiredSections>({ url: `/section` })
+    const { data: sectionsData } = useFetchApi<RequiredSections>({ url: `/section?is_active=true&p=1&page_size=1000` })
 
     const { data: pageNames, isSuccess: isPageNamesSuccess } = pageSettingsService.usePageNamesQuery({
         page: 1,
@@ -83,6 +83,8 @@ const AssignPageSection = () => {
     }, [isSubPageNamesSuccess, SubPageNames])
 
     const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
+
+    console.log('storeResults', storeResults)
 
     const initialState = {
         page: pageState || '',
@@ -160,7 +162,7 @@ const AssignPageSection = () => {
                 {({ resetForm, values }) => {
                     return (
                         <Form className="p-3 rounded-xl shadow-xl">
-                            <div className="text-xl mb-2">2. Assign Sections</div>
+                            <div className="text-xl mb-2">Assign Sections</div>
 
                             <FormContainer>
                                 <FormItem label="Store">
@@ -291,28 +293,24 @@ const AssignPageSection = () => {
                                 <Field type="checkbox" name="is_section_clickable" component={Checkbox} />
                             </FormItem>
 
-                            {values?.is_section_clickable && (
-                                <>
-                                    <TagsEdit isValue filterOptions={filters.filters} />
-                                    <div className="mb-4">
-                                        <CommonFilterSelect filterId={filterId} setFilterId={setFilterId} />
-                                    </div>
-                                    {/* sort_hightolow */}
+                            <TagsEdit isValue filterOptions={filters.filters} customClass="grid grid-cols-2 gap-4 w-[500px]" />
+                            <div className="mb-4">
+                                <CommonFilterSelect filterId={filterId} setFilterId={setFilterId} customClass="xl:w-[400px] w-auto" />
+                            </div>
+                            {/* sort_hightolow */}
 
-                                    <CommonSelect label="Sort By" name="sort" options={SortArrays} />
-                                    <FormContainer className="grid grid-cols-2 gap-2">
-                                        {PageSectionsFiltersArray?.map((item, key) => {
-                                            return (
-                                                <div key={key}>
-                                                    <FormItem label={item?.label}>
-                                                        <Field type={item?.type} name={item?.name} component={Input} />
-                                                    </FormItem>
-                                                </div>
-                                            )
-                                        })}
-                                    </FormContainer>
-                                </>
-                            )}
+                            <CommonSelect label="Sort By" name="sort" options={SortArrays} />
+                            {/* <FormContainer className="grid grid-cols-2 gap-2">
+                                {PageSectionsFiltersArray?.map((item, key) => {
+                                    return (
+                                        <div key={key}>
+                                            <FormItem label={item?.label}>
+                                                <Field type={item?.type} name={item?.name} component={Input} />
+                                            </FormItem>
+                                        </div>
+                                    )
+                                })}
+                            </FormContainer> */}
 
                             <FormItem label="Position">
                                 <Field type="number" min="0" name="position" placeholder="Enter Position" component={Input} />

@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Checkbox, FormContainer, FormItem, Input, Select } from '@/components/ui'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Field, FieldProps } from 'formik'
 // import FilterSelect from '@/views/sales/urlShortner/FilterSelect'
 import { DatePicker } from 'antd'
 import moment from 'moment'
-import { useAppSelector } from '@/store'
+import { useAppDispatch, useAppSelector } from '@/store'
 import { DIVISION_STATE } from '@/store/types/division.types'
 import CommonSelect from '../../pageSettings/CommonSelect'
 import { dataTypeArray, dataTypeValidationArray } from '../../pageSettings/configurationCommon'
@@ -13,6 +13,9 @@ import { SubDataTypeArray } from '../../pageSettings/PageSettingsCommon'
 import ComonFilterSelect from '@/common/ComonFilterSelect'
 import BarcodeData from '../newPageSettingsUtils/BarcodeData'
 import { SortArrays } from '../newPageSettingsUtils/newPageCommons'
+import { couponSeriesService } from '@/store/services/couponSeriesService'
+import { CouponResults } from '@/store/types/couponSeries.types'
+import { SectionTypeArray } from '../newPageSettingsUtils/newpageConstants'
 
 interface DataTypesConfigProps {
     values: any
@@ -25,8 +28,31 @@ interface DataTypesConfigProps {
 }
 
 const DataTypesConfig = ({ values, filterId, setFilterId, setFieldValue, setBarcodeData, barcodeData, isEdit }: DataTypesConfigProps) => {
+    const dispatch = useAppDispatch()
+    const [couponSeries, setCouponSeries] = useState<CouponResults[]>([])
+    const [queryParams, setQueryParams] = useState({ page: 1, pageSize: 100, campaign: '' })
+    const { data: couponSeriesData, isSuccess } = couponSeriesService.useCouponSeriesQuery(queryParams, { refetchOnMountOrArgChange: true })
+    const [searchInput, setSearchInput] = useState<string>('')
+
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const formattedDivisions = divisions?.divisions?.map((item) => ({ label: item.name, value: item.name?.toLowerCase() }))
+
+    useEffect(() => {
+        if (isSuccess) {
+            setCouponSeries(couponSeriesData?.data?.results)
+        }
+    }, [isSuccess, couponSeriesData?.data?.results, dispatch])
+
+    const handleSearch = (inputValue: string) => {
+        setSearchInput(inputValue)
+        setQueryParams((prev) => ({ ...prev, campaign: inputValue }))
+    }
+
+    const formattedData = couponSeries
+        ?.filter((item) => item?.campaign !== '')
+        .map((item) => {
+            return { label: item?.campaign, value: item?.id }
+        })
 
     console.log('filter Id', filterId)
 
@@ -100,6 +126,7 @@ const DataTypesConfig = ({ values, filterId, setFilterId, setFieldValue, setBarc
                     <Field type="number" name="extra_info.page_size" placeholder="Place Page Size" component={Input} min="0" step={0.01} />
                 </FormItem>
 
+                <CommonSelect needClassName name="section_type" label="Section Type" options={SectionTypeArray} className="w-full" />
                 <FormItem label="Division Select">
                     <Field name="division_select">
                         {({ field, form }: FieldProps<any>) => {
@@ -135,7 +162,14 @@ const DataTypesConfig = ({ values, filterId, setFilterId, setFieldValue, setBarc
                 </FormItem>
 
                 <FormItem label="Order Count" className="w-full">
-                    <Field type="number" name="order_count" placeholder="Enter order count" component={Input} min="0" step={0.01} />
+                    <Field
+                        type="number"
+                        name="extra_info.order_count"
+                        placeholder="Enter order count"
+                        component={Input}
+                        min="0"
+                        step={0.01}
+                    />
                 </FormItem>
                 <FormItem label="Min Order Value for Event Pass" className="w-full">
                     <Field
@@ -152,6 +186,28 @@ const DataTypesConfig = ({ values, filterId, setFilterId, setFieldValue, setBarc
                     <Field type="text" name="extra_info.accent_color" placeholder="" component={Input} />
                 </FormItem>
             </FormContainer>
+            <FormItem label="Select Coupon Series" className="col-span-1 w-full">
+                <Field name="extra_info.coupon_series">
+                    {({ form, field }: FieldProps) => {
+                        console.log('FIELD.NAME', field.name, field.value)
+                        return (
+                            <Select
+                                isSearchable
+                                isClearable
+                                inputValue={searchInput}
+                                options={formattedData}
+                                value={formattedData?.find((option) => option.value === field.value)}
+                                onInputChange={handleSearch}
+                                onChange={(selectedOption: any) => {
+                                    const value = selectedOption ? selectedOption.value : ''
+                                    form.setFieldValue(field.name, value)
+                                }}
+                                onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+                            />
+                        )
+                    }}
+                </Field>
+            </FormItem>
             <div>
                 <div className="p-2 ">
                     <BarcodeData setFieldValue={setFieldValue} values={values} barcodeData={barcodeData} setBarcodeData={setBarcodeData} />

@@ -33,6 +33,7 @@ export const useFetchSingleData = <T,>({ url, initialData, onErrorStatus, pollin
     }, [url, onErrorStatus])
 
     useEffect(() => {
+        if (!url) return
         fetchData()
         if (pollingInterval) {
             const intervalId = setInterval(() => {
