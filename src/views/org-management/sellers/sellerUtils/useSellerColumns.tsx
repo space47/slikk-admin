@@ -136,6 +136,28 @@ export const useSellerColumns = () => {
                     </div>
                 ),
             },
+            {
+                header: 'Action',
+                accessorKey: 'vendor',
+                cell: ({ row }) => (
+                    <div className="flex flex-col gap-2">
+                        <button
+                            type="button"
+                            className="px-3 py-1 text-xs font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-all duration-200"
+                            onClick={() => console.log('View details for', row.original)}
+                        >
+                            View Details
+                        </button>
+                        <button
+                            type="button"
+                            className="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 transition-all duration-200 truncate"
+                            onClick={() => console.log('Send notification to', row.original)}
+                        >
+                            Send Notification
+                        </button>
+                    </div>
+                ),
+            },
         ],
         [navigate],
     )

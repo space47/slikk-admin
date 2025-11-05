@@ -1,31 +1,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormItem, FormContainer } from '@/components/ui/Form'
-import Input from '@/components/ui/Input'
-import Button from '@/components/ui/Button'
-import Select from '@/components/ui/Select'
-import { Field, Form, Formik, FieldProps } from 'formik' // Add FieldProps here
+import { Form, Formik } from 'formik' // Add FieldProps here
 import { useEffect, useState } from 'react'
 import { notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { SELLING_FORM, POC_FORM, ACCOUNT_FORM } from './editCommon'
 import AccessDenied from '@/views/pages/AccessDenied'
-import { SellerFormTypes, SellerSteps } from '../sellerCommon'
-import { Steps } from '@/components/ui'
-import SellerStepOne from '../sellerForm/SellerStepOne'
+import { SellerFormTypes } from '../sellerCommon'
+import SellerForm from '../sellerForm/SellerForm'
 
-const SegmentOptions = () => {
-    return ['Fashion', 'Footwear', 'Beauty & Personal Care', 'Home Decor', 'Accessories', 'Travel and Luggages'].map((segment) => ({
-        label: segment,
-        value: segment,
-    }))
-}
+// const SegmentOptions = () => {
+//     return ['Fashion', 'Footwear', 'Beauty & Personal Care', 'Home Decor', 'Accessories', 'Travel and Luggages'].map((segment) => ({
+//         label: segment,
+//         value: segment,
+//     }))
+// }
 
 const EditSeller = () => {
     const [sellerData, setSellerData] = useState<SellerFormTypes>()
     const [accessDenied, setAccessDenied] = useState(false)
     const navigate = useNavigate()
-    const [currentStep, setCurrentStep] = useState(0)
+
     const { id } = useParams()
 
     const fetchsellerData = async () => {
@@ -134,61 +128,9 @@ const EditSeller = () => {
                 // validationSchema={validationSchema}
                 onSubmit={handleSubmit}
             >
-                {({ resetForm }) => (
+                {({ values }) => (
                     <Form className="xl:w-[90%] w-full p-5 ">
-                        <FormContainer className="flex xl:flex-row md:flex-row flex-col gap-4 xl:justify-around">
-                            <FormContainer className="shadow-xl rounded-xl xl:w-1/3 w-auto p-4">
-                                <Steps current={currentStep} className="flex flex-col items-start gap-5">
-                                    {SellerSteps.map((stepTitle, index) => (
-                                        <Steps.Item
-                                            key={index}
-                                            title={
-                                                <span
-                                                    className={`p-2 rounded-md ${
-                                                        currentStep === index
-                                                            ? 'text-green-500 font-bold bg-gray-200 px-2 py-2 rounded-md text-xl'
-                                                            : 'text-inherit font-normal'
-                                                    }`}
-                                                >
-                                                    <span onClick={() => setCurrentStep(index)} className="cursor-pointer">
-                                                        {stepTitle}
-                                                    </span>
-                                                </span>
-                                            }
-                                        />
-                                    ))}
-                                </Steps>
-                            </FormContainer>
-                            <FormContainer className="shadow-xl p-4 rounded-xl">
-                                {/* Forms Below */}
-
-                                {currentStep === 0 && <SellerStepOne />}
-
-                                {/* Buttons */}
-                                <FormContainer className="flex justify-end mt-5 mb-9 ">
-                                    {currentStep > 0 && (
-                                        <Button
-                                            type="button"
-                                            variant="pending"
-                                            className="mr-2 bg-gray-600"
-                                            onClick={() => setCurrentStep((prev) => prev - 1)}
-                                        >
-                                            Previous
-                                        </Button>
-                                    )}
-                                    {currentStep >= 0 && (
-                                        <Button
-                                            type="button"
-                                            variant="accept"
-                                            className="mr-2 bg-gray-600"
-                                            onClick={() => setCurrentStep((prev) => prev + 1)}
-                                        >
-                                            Next
-                                        </Button>
-                                    )}
-                                </FormContainer>
-                            </FormContainer>
-                        </FormContainer>
+                        <SellerForm values={values} />
                     </Form>
                 )}
             </Formik>

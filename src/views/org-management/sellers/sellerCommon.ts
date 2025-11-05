@@ -69,8 +69,11 @@ export type SellerFormTypes = {
 export const SellerSteps = [
     'Basic Information',
     'Business Details',
+    'POC Details',
     'Bank Details',
     'Warehouse & GST',
     'MSME Details',
+    'Commercials',
+    'POC-(Slikk Internal)',
     'Docs and Declaration',
 ]
