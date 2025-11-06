@@ -144,7 +144,7 @@ export const useSellerColumns = () => {
                         <button
                             type="button"
                             className="px-3 py-1 text-xs font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-all duration-200"
-                            onClick={() => console.log('View details for', row.original)}
+                            onClick={() => navigate(`/app/sellers/details/${row?.original?.id}`)}
                         >
                             View Details
                         </button>
