@@ -59,5 +59,14 @@ export const vendorService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
+        vendorApproval: builder.mutation<{ status: string; message: string }, Record<string, string | number | Record<string, string>>>({
+            query: (body) => {
+                return {
+                    url: `/merchant/company/status`,
+                    method: 'PATCH',
+                    body,
+                }
+            },
+        }),
     }),
 })

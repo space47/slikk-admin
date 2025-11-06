@@ -2,16 +2,17 @@ import { textParser } from '@/common/textParser'
 import { RichTextEditor } from '@/components/shared'
 import { Button, Dialog } from '@/components/ui'
 import { notification } from 'antd'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 interface props {
     isOpen: boolean
     setIsOPen: (x: boolean) => void
     dataForComment: { name: string; label: string }
     setCommentsStructure: React.Dispatch<React.SetStateAction<Record<string, string>>>
+    commentsStructure: Record<string, string>
 }
 
-const SellerCommentsModal = ({ isOpen, setIsOPen, dataForComment, setCommentsStructure }: props) => {
+const SellerCommentsModal = ({ isOpen, setIsOPen, dataForComment, setCommentsStructure, commentsStructure }: props) => {
     const [commentValue, setCommentValue] = useState('')
 
     const handleSaveComment = useCallback(() => {
@@ -20,6 +21,12 @@ const SellerCommentsModal = ({ isOpen, setIsOPen, dataForComment, setCommentsStr
         setIsOPen(false)
         notification.info({ message: 'Comment Set' })
     }, [commentValue, dataForComment, setCommentsStructure, setIsOPen])
+
+    useEffect(() => {
+        if (isOpen) {
+            setCommentValue(commentsStructure[dataForComment?.name] || '')
+        }
+    }, [isOpen, dataForComment, commentsStructure])
 
     return (
         <div>

@@ -12,10 +12,8 @@ import { MdCancel } from 'react-icons/md'
 import { IoIosSend } from 'react-icons/io'
 import SellerCommentsModal from './SellerCommentsModal'
 import DialogConfirm from '@/common/DialogConfirm'
-import { AxiosError } from 'axios'
-import { errorMessage } from '@/utils/responseMessages'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { BiSolidCommentCheck } from 'react-icons/bi'
+import { getApiErrorMessage } from '@/constants/generateErrorMessage'
 
 const { Panel } = Collapse
 
@@ -28,14 +26,25 @@ const SellerDetails = () => {
         label: '',
     })
     const [commentStructure, setCommentStructure] = useState<Record<string, string>>({})
-    const { data, isSuccess, isError, isLoading, error } = vendorService.useGetSingleVendorListQuery({ id: id as string }, { skip: !id })
     const [statusToProceed, setStatusToProceed] = useState<'approved' | 'rejected' | 'changes_requested' | ''>('')
     const [confirmModal, setConfirmModal] = useState(false)
+    const [vendorApprove, approveResponse] = vendorService.useVendorApprovalMutation()
+    const { data, isSuccess, isError, isLoading, error } = vendorService.useGetSingleVendorListQuery({ id: id as string }, { skip: !id })
 
     useEffect(() => {
         if (isSuccess) setSellerData(data?.data)
         if (isError) notification.error({ message: (error as any)?.data?.message })
     }, [isSuccess, isError])
+
+    useEffect(() => {
+        if (approveResponse?.isSuccess) {
+            notification.success({ message: approveResponse?.data?.message || 'Successfully send for approval' })
+        }
+        if (approveResponse?.isError) {
+            const errorMessage = getApiErrorMessage(approveResponse?.error)
+            notification.error({ message: errorMessage || 'Failed to send for approval' })
+        }
+    }, [approveResponse?.isSuccess, approveResponse?.isError])
 
     const {
         BasicSellerInformationDetail,
@@ -76,14 +85,11 @@ const SellerDetails = () => {
     }
 
     const handleProceed = async () => {
-        try {
-            // TODO:will confirm and proceed later
-            const res = await axioisInstance.patch(``)
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                errorMessage(error)
-            }
-        }
+        vendorApprove({
+            company_id: id as string,
+            comments: commentStructure,
+            status: statusToProceed,
+        })
     }
 
     return (
@@ -184,24 +190,23 @@ const SellerDetails = () => {
                     Send back with comments
                 </Button>
             </div>
-            {isCommentModal && (
-                <SellerCommentsModal
-                    isOpen={isCommentModal}
-                    setIsOPen={setIsCommentModal}
-                    dataForComment={dataForComment}
-                    setCommentsStructure={setCommentStructure}
-                />
-            )}
-            {confirmModal && (
-                <DialogConfirm
-                    IsOpen={confirmModal}
-                    setIsOpen={setConfirmModal}
-                    IsConfirm={statusToProceed !== 'rejected'}
-                    IsDelete={statusToProceed === 'rejected'}
-                    headingName="Confirmation to proceed Further"
-                    onDialogOk={handleProceed}
-                />
-            )}
+
+            <SellerCommentsModal
+                isOpen={isCommentModal}
+                setIsOPen={setIsCommentModal}
+                dataForComment={dataForComment}
+                setCommentsStructure={setCommentStructure}
+                commentsStructure={commentStructure}
+            />
+
+            <DialogConfirm
+                IsOpen={confirmModal}
+                setIsOpen={setConfirmModal}
+                IsConfirm={statusToProceed !== 'rejected'}
+                IsDelete={statusToProceed === 'rejected'}
+                headingName="Confirmation to proceed Further"
+                onDialogOk={handleProceed}
+            />
         </div>
     )
 }
