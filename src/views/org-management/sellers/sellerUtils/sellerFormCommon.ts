@@ -14,7 +14,7 @@ export const BusinessDetails = [
     { label: 'Pf Declaration', name: 'sp_type', type: 'checkbox', isRequired: true, visible: true },
 ]
 export const PocDetails = [
-    { label: 'Vendor POC', name: 'poc_name', type: 'text', isRequired: true, visible: true },
+    { label: 'Vendor POC', name: 'poc', type: 'text', isRequired: true, visible: true },
     { label: 'Vendor POC Email', name: 'poc_email', type: 'text', isRequired: true, visible: true },
     { label: 'Vendor POC Contact', name: 'contact_number', type: 'number', isRequired: true, visible: true },
     { label: 'Vendor POC Alternate Number', name: 'alternate_contact_number', type: 'number', isRequired: true, visible: true },

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import RtkQueryService from '@/services/RtkQueryService'
-import { VendorResponseData } from '../types/vendor.type'
+import { VendorList, VendorResponseData } from '../types/vendor.type'
 
 export const vendorService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
@@ -18,23 +18,44 @@ export const vendorService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        addVendors: builder.mutation<{ status: string; message: string }, Record<string, any>>({
-            query: (body) => {
-                console.log('body is', body)
+        getSingleVendorList: builder.query<{ status: string; data: VendorList }, { id: string | number }>({
+            query: (params) => {
+                const parameters: Record<string, string | string[] | number> = {}
+                if (params.id) parameters.company_id = params.id
                 return {
-                    url: `/merchant/company`,
-                    method: 'POST',
-                    body,
+                    url: `merchant/company`,
+                    method: 'GET',
+                    params: parameters,
                 }
             },
         }),
-        updateVendors: builder.mutation<{ status: string; message: string }, Record<string, any> & { id: number }>({
-            query: ({ id, ...body }) => {
-                console.log('body is', body)
+        addVendors: builder.mutation<{ status: string; message: string }, FormData>({
+            query: (formData) => {
+                console.log('formData is', formData)
+                return {
+                    url: `/merchant/company`,
+                    method: 'POST',
+                    body: formData,
+                    // ⛔ Do NOT set Content-Type manually — the browser will handle it automatically for FormData
+                }
+            },
+        }),
+
+        updateVendors: builder.mutation<{ status: string; message: string }, FormData & { id: number }>({
+            query: ({ id, ...rest }) => {
+                const formData = new FormData()
+
+                Object.entries(rest).forEach(([key, value]) => {
+                    if (value !== undefined && value !== null) {
+                        formData.append(key, value as any)
+                    }
+                })
+                console.log('formData for update', formData)
+
                 return {
                     url: `/merchant/company/${id}`,
                     method: 'POST',
-                    body,
+                    body: formData,
                 }
             },
         }),

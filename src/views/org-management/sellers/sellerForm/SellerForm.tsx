@@ -63,7 +63,7 @@ const SellerForm = ({ values }: props) => {
                             Previous
                         </Button>
                     )}
-                    {currentStep < 8 ? (
+                    {currentStep < 8 && (
                         <Button
                             type="button"
                             variant="accept"
@@ -72,7 +72,8 @@ const SellerForm = ({ values }: props) => {
                         >
                             Next
                         </Button>
-                    ) : (
+                    )}
+                    {currentStep >= 8 && (
                         <Button type="submit" variant="blue">
                             Submit
                         </Button>
