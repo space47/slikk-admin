@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { notification, Collapse, Empty, Spin } from 'antd'
 import { Button, Card, Tooltip } from '@/components/ui'
@@ -10,13 +10,27 @@ import { FaRegCommentAlt } from 'react-icons/fa'
 import { IoCheckmarkOutline } from 'react-icons/io5'
 import { MdCancel } from 'react-icons/md'
 import { IoIosSend } from 'react-icons/io'
+import SellerCommentsModal from './SellerCommentsModal'
+import DialogConfirm from '@/common/DialogConfirm'
+import { AxiosError } from 'axios'
+import { errorMessage } from '@/utils/responseMessages'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { BiSolidCommentCheck } from 'react-icons/bi'
 
 const { Panel } = Collapse
 
 const SellerDetails = () => {
     const { id } = useParams()
     const [sellerData, setSellerData] = useState<VendorList>()
+    const [isCommentModal, setIsCommentModal] = useState(false)
+    const [dataForComment, setDataForComment] = useState<{ name: string; label: string }>({
+        name: '',
+        label: '',
+    })
+    const [commentStructure, setCommentStructure] = useState<Record<string, string>>({})
     const { data, isSuccess, isError, isLoading, error } = vendorService.useGetSingleVendorListQuery({ id: id as string }, { skip: !id })
+    const [statusToProceed, setStatusToProceed] = useState<'approved' | 'rejected' | 'changes_requested' | ''>('')
+    const [confirmModal, setConfirmModal] = useState(false)
 
     useEffect(() => {
         if (isSuccess) setSellerData(data?.data)
@@ -33,7 +47,9 @@ const SellerDetails = () => {
         SellerInternalDetail,
         SellerMsMeDetail,
         SellerWarehouseDetail,
-    } = SellerDetailCommon({ seller: sellerData })
+    } = useMemo(() => {
+        return SellerDetailCommon({ seller: sellerData })
+    }, [sellerData])
 
     const sections = [
         { title: 'Business Details', data: BusinessDetailsDetail },
@@ -54,9 +70,24 @@ const SellerDetails = () => {
         )
     }
 
+    const handleComments = (name: string, label: string) => {
+        setIsCommentModal(true)
+        setDataForComment({ name: name, label: label })
+    }
+
+    const handleProceed = async () => {
+        try {
+            // TODO:will confirm and proceed later
+            const res = await axioisInstance.patch(``)
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                errorMessage(error)
+            }
+        }
+    }
+
     return (
         <div className="space-y-6 p-4">
-            {/* Basic Info Card */}
             <h4>{sellerData?.registered_name}</h4>
             <p>
                 code:{sellerData?.code} || createdAt: {sellerData?.create_date} || updatedAt: {sellerData?.update_date}
@@ -76,8 +107,6 @@ const SellerDetails = () => {
                     <Empty description="No data available" image={Empty.PRESENTED_IMAGE_SIMPLE} />
                 )}
             </Card>
-
-            {/* Collapsible Sections */}
             <Collapse accordion bordered={false} className="bg-transparent space-y-2">
                 {sections.map(
                     (section, index) =>
@@ -92,10 +121,20 @@ const SellerDetails = () => {
                                         {section.data.map((item, idx) => (
                                             <div key={idx} className="flex flex-col border-b border-gray-100 pb-2">
                                                 <div className="flex items-center gap-4">
-                                                    <span className="font-medium text-gray-800"> {item.label}</span>
+                                                    <span className="font-bold text-gray-800"> {item.label}</span>
                                                     <span>
-                                                        <Tooltip title="Add Comments ">
-                                                            <FaRegCommentAlt className="cursor-pointer" />
+                                                        <Tooltip title={`${commentStructure[item?.name] || 'Add comment'}`}>
+                                                            {commentStructure[item?.name] ? (
+                                                                <BiSolidCommentCheck
+                                                                    className="cursor-pointer text-xl text-green-500"
+                                                                    onClick={() => handleComments(item?.name, item?.label)}
+                                                                />
+                                                            ) : (
+                                                                <FaRegCommentAlt
+                                                                    className="cursor-pointer"
+                                                                    onClick={() => handleComments(item?.name, item?.label)}
+                                                                />
+                                                            )}
                                                         </Tooltip>
                                                     </span>
                                                 </div>
@@ -111,18 +150,58 @@ const SellerDetails = () => {
                 )}
             </Collapse>
             <div className="flex justify-end items-center gap-2">
-                <Button variant="accept" icon={<IoCheckmarkOutline />}>
+                <Button
+                    variant="accept"
+                    icon={<IoCheckmarkOutline />}
+                    onClick={() => {
+                        setConfirmModal(true)
+                        setStatusToProceed('approved')
+                    }}
+                >
                     Accept
                 </Button>
 
-                <Button variant="reject" icon={<MdCancel />}>
+                <Button
+                    variant="reject"
+                    icon={<MdCancel />}
+                    onClick={() => {
+                        setConfirmModal(true)
+                        setStatusToProceed('rejected')
+                    }}
+                >
                     Reject
                 </Button>
 
-                <Button variant="twoTone" color="yellow" icon={<IoIosSend />}>
+                <Button
+                    variant="twoTone"
+                    color="yellow"
+                    icon={<IoIosSend />}
+                    onClick={() => {
+                        setConfirmModal(true)
+                        setStatusToProceed('changes_requested')
+                    }}
+                >
                     Send back with comments
                 </Button>
             </div>
+            {isCommentModal && (
+                <SellerCommentsModal
+                    isOpen={isCommentModal}
+                    setIsOPen={setIsCommentModal}
+                    dataForComment={dataForComment}
+                    setCommentsStructure={setCommentStructure}
+                />
+            )}
+            {confirmModal && (
+                <DialogConfirm
+                    IsOpen={confirmModal}
+                    setIsOpen={setConfirmModal}
+                    IsConfirm={statusToProceed !== 'rejected'}
+                    IsDelete={statusToProceed === 'rejected'}
+                    headingName="Confirmation to proceed Further"
+                    onDialogOk={handleProceed}
+                />
+            )}
         </div>
     )
 }
