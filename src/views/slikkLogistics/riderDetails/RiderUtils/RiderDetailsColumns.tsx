@@ -5,7 +5,7 @@ import moment from 'moment'
 interface RiderColumnsProps {
     sortedRiderDetails: any
     handleActiveCareer: (id: number, e: any, checked: boolean, mobile: string, name: string) => void
-    handleProfileClick: (mobile: string) => void
+    handleProfileClick: (row: any) => void
     currentStoreLocation: Record<string, number | undefined>
     riderMobileStore: any[]
     handleSelectAllRiders: (x: any) => void
@@ -95,7 +95,7 @@ export const RiderColumns = ({
                                 ? 'text-green-500 flex gap-2 hover:text-blue-800 hover:underline cursor-pointer'
                                 : 'text-red-500 flex gap-2 hover:text-blue-800 hover:underline cursor-pointer'
                         }
-                        onClick={() => hanldeProfileClick(row?.original?.profile?.mobile)}
+                        onClick={() => hanldeProfileClick(row?.original)}
                     >
                         <span>{row?.original?.profile?.first_name}</span>
                         <span>{row?.original?.profile?.last_name}</span>
