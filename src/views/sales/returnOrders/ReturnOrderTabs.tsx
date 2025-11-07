@@ -1,73 +1,59 @@
 import React from 'react'
 
-interface props {
+interface Props {
     tabSelect: string
     handleSelectTab: (tab: string) => void
     orderCount: number | string
 }
 
-const ReturnOrderTabs = ({ tabSelect, handleSelectTab, orderCount }: props) => {
-    return (
-        <div className=" p-4 rounded-lg xl:shadow-md overflow-x-scroll scrollbar-hide">
-            <div className="xl:flex xl:gap-6 gap-2 xl:justify-start justify-around xl:flex-row flex-col w-full hidden">
-                {[
-                    { label: 'ALL', key: 'all' },
-                    { label: 'PICKUP_CREATED', key: 'pickup_created' },
-                    // { label: 'REVERSE_PICKUP_CREATED', key: 'reverse_pickup_created' },
-                    { label: 'RIDER_ASSIGNED', key: 'rider_assigned' },
-                    { label: 'OUT_FOR_PICKUP', key: 'out_for_pickup' },
-                    { label: 'PICKED_UP', key: 'picked_up' },
-                    { label: 'DELIVERED', key: 'delivered' },
-                    { label: 'COMPLETED', key: 'completed' },
-                    { label: 'REFUNDED', key: 'refunded' },
-                    { label: 'CANCELLED', key: 'cancelled' },
-                    { label: 'ACCEPTED', key: 'accepted' },
-                ].map((tab) => (
-                    <div
-                        key={tab.key}
-                        className={`flex items-center justify-center cursor-pointer px-2 rounded-lg transition-all duration-300 ${
-                            tabSelect === tab.key
-                                ? 'bg-gradient-to-r from-green-400 to-green-600 text-white shadow-lg'
-                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300 hover:shadow-md'
-                        }`}
-                        onClick={() => handleSelectTab(tab.key)}
-                    >
-                        <span className="xl:text-lg text-sm font-semibold">
-                            {tab.label} {tabSelect === tab.key && <>({orderCount})</>}
-                        </span>
-                    </div>
-                ))}
-            </div>
+const tabs = [
+    { label: 'ALL', key: 'all' },
+    { label: 'PICKUP_CREATED', key: 'pickup_created' },
+    { label: 'PICKUP_RESCHEDULED', key: 'pickup_rescheduled' },
+    { label: 'RIDER_ASSIGNED', key: 'rider_assigned' },
+    { label: 'OUT_FOR_PICKUP', key: 'out_for_pickup' },
+    { label: 'PICKED_UP', key: 'picked_up' },
+    { label: 'DELIVERED', key: 'delivered' },
+    { label: 'COMPLETED', key: 'completed' },
+    { label: 'REFUNDED', key: 'refunded' },
+    { label: 'CANCELLED', key: 'cancelled' },
+    { label: 'ACCEPTED', key: 'accepted' },
+]
 
-            {/* Mobile */}
-            <div className="grid grid-cols-2 gap-2 xl:hidden ">
-                {[
-                    { label: 'ALL', key: 'all' },
-                    { label: 'PICKUP_CREATED', key: 'pickup_created' },
-                    // { label: 'REVERSE_PICKUP_CREATED', key: 'reverse_pickup_created' },
-                    { label: 'RIDER_ASSIGNED', key: 'rider_assigned' },
-                    { label: 'OUT_FOR_PICKUP', key: 'out_for_pickup' },
-                    { label: 'PICKED_UP', key: 'picked_up' },
-                    { label: 'DELIVERED', key: 'delivered' },
-                    { label: 'COMPLETED', key: 'completed' },
-                    { label: 'REFUNDED', key: 'refunded' },
-                    { label: 'CANCELLED', key: 'cancelled' },
-                    { label: 'ACCEPTED', key: 'accepted' },
-                ].map((tab) => (
-                    <div
-                        key={tab.key}
-                        className={`flex items-center justify-center cursor-pointer px-4 py-2 rounded-lg transition-all duration-300 ${
-                            tabSelect === tab.key
-                                ? 'bg-gradient-to-r from-green-400 to-green-600 text-white shadow-lg'
-                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300 hover:shadow-md'
-                        }`}
-                        onClick={() => handleSelectTab(tab.key)}
-                    >
-                        <span className="xl:text-lg text-sm font-semibold">
-                            {tab.label} {tabSelect === tab.key && <>({orderCount})</>}
-                        </span>
-                    </div>
-                ))}
+const ReturnOrderTabs = ({ tabSelect, handleSelectTab, orderCount }: Props) => {
+    return (
+        <div className="p-4 rounded-lg xl:shadow-md overflow-x-auto scrollbar-hide">
+            <div
+                className={`
+                    flex flex-wrap xl:flex-nowrap
+                    gap-2 xl:gap-4
+                    justify-around xl:justify-start
+                    w-full
+                `}
+            >
+                {tabs.map((tab) => {
+                    const isActive = tabSelect === tab.key
+                    return (
+                        <button
+                            key={tab.key}
+                            onClick={() => handleSelectTab(tab.key)}
+                            className={`
+                                flex items-center justify-center
+                                px-4 py-2 rounded-lg font-semibold
+                                text-sm xl:text-base whitespace-nowrap
+                                transition-all duration-300
+                                ${
+                                    isActive
+                                        ? 'bg-gradient-to-r from-green-400 to-green-600 text-white shadow-lg'
+                                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300 hover:shadow-md'
+                                }
+                            `}
+                        >
+                            {tab.label}
+                            {isActive && <span className="ml-1 text-xs xl:text-sm font-medium">({orderCount})</span>}
+                        </button>
+                    )
+                })}
             </div>
         </div>
     )
