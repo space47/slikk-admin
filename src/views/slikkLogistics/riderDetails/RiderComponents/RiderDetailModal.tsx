@@ -10,7 +10,7 @@ import { useAppDispatch, useAppSelector } from '@/store'
 import RiderLocationMap from './RiderLocationMap'
 import { ridersService } from '@/store/services/riderServices'
 import { setCount, setRidersAttendanceData } from '@/store/slices/riderSlice/rider.slice'
-import { RiderSlice } from '@/store/types/riderAddTypes'
+import { RiderDetailsType, RiderSlice } from '@/store/types/riderAddTypes'
 import { useNavigate } from 'react-router-dom'
 import EasyTable from '@/common/EasyTable'
 import { notification } from 'antd'
@@ -21,12 +21,12 @@ import { useRiderModalColumns, useRiderModalColumnsForOrders } from '../RiderUti
 interface RiderModalProps {
     dialogIsOpen: boolean
     setIsOpen: (x: boolean) => void
-    mobile: string | string[]
     fromDate?: string
     toDate?: string
+    row?: RiderDetailsType
 }
 
-const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile, fromDate, toDate }: RiderModalProps) => {
+const RiderDetailModal = ({ dialogIsOpen, setIsOpen, fromDate, toDate, row }: RiderModalProps) => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
     const [riderData, setRiderData] = useState<RiderData>()
@@ -39,7 +39,7 @@ const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile, fromDate, toDate }:
         error,
     } = ridersService.useRiderAttendanceQuery({
         from: fromDate ?? from,
-        mobile: mobile,
+        mobile: row?.profile?.mobile as any,
         page: page,
         pageSize: pageSize,
         to: toDate ?? to,
@@ -61,8 +61,8 @@ const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile, fromDate, toDate }:
     }, [riderDataForAttendance, isSuccess, dispatch])
 
     const queryParams = useMemo(() => {
-        return `/logistic/slikk/task?runner_mobile=${mobile}&from=${fromDate}&to=${toDate}`
-    }, [mobile, fromDate, toDate])
+        return `/logistic/slikk/task?runner_mobile=${row?.profile?.mobile}&from=${fromDate}&to=${toDate}`
+    }, [row?.profile?.mobile, fromDate, toDate])
 
     const { data: taskData, refetch } = useFetchApi<TaskData>({ url: queryParams })
 
@@ -76,7 +76,7 @@ const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile, fromDate, toDate }:
 
     const fetchRiderParticularDetails = async () => {
         try {
-            const response = await axioisInstance.get(`/logistic/rider/profile/${mobile}`)
+            const response = await axioisInstance.get(`/logistic/rider/profile/${row?.profile?.mobile}`)
             const data = response?.data?.data
             setRiderData(data)
         } catch (error) {
@@ -99,8 +99,6 @@ const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile, fromDate, toDate }:
         { name: 'Return Completed', value: riderData?.task_data?.DELIVERED, color: 'blue' },
         { name: 'Completed', value: riderData?.task_data?.COMPLETED, color: 'green' },
     ]
-
-    console.log('rider_data', riderData)
 
     const columnsForRiderOrders = useRiderModalColumnsForOrders()
 
@@ -183,6 +181,7 @@ const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile, fromDate, toDate }:
                             </div>
                         </div>
                     </div>
+
                     <div className="font-bold text-xl mb-6">Order Details</div>
                     <div className="grid grid-cols-1 ">
                         <EasyTable overflow mainData={taskData} columns={columnsForRiderOrders} page={page} pageSize={pageSize} />
