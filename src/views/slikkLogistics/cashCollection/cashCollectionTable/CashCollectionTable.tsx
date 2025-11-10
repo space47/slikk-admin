@@ -14,6 +14,11 @@ import { HiSearch } from 'react-icons/hi'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 import { DATE_FORMAT, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '../cashCollectionCommon'
 import CreateCollectionModal from '../cashCollectionUtils/CreateCollectionModal'
+import { notification } from 'antd'
+import { commonDownload } from '@/common/commonDownload'
+import { AxiosError } from 'axios'
+import { errorMessage } from '@/utils/responseMessages'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 export const CashCollectionTable: React.FC = () => {
     const [cashData, setCashData] = useState<CashCollection[]>([])
@@ -30,6 +35,7 @@ export const CashCollectionTable: React.FC = () => {
     const [isUpdateDepositOpen, setIsUpdateDepositOpen] = useState(false)
     const [isDailyDepositOpen, setIsDailyDepositOpen] = useState(false)
     const [isCreateModal, setIsCreateModal] = useState(false)
+    const [downloadSpinning, setDownloadSpinning] = useState(false)
     const toDate = useMemo(() => moment(to).add(1, 'days').format(DATE_FORMAT), [to])
 
     const { data, isSuccess, isError, refetch, isLoading, isFetching } = cashCollectionService.useCashCollectionQuery({
@@ -54,6 +60,22 @@ export const CashCollectionTable: React.FC = () => {
     useEffect(() => {
         refetch()
     }, [searchTrigger, refetch])
+
+    const handleDownload = async () => {
+        try {
+            setDownloadSpinning(true)
+            notification.info({ message: 'Download in progress' })
+            const res = await axioisInstance.get(`/rider/cash/collection?from=${from}&to=${to}&download=true`)
+            commonDownload(res, 'CashCollection.csv')
+            notification.success({ message: 'Successfully completed' })
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                errorMessage(error)
+            }
+        } finally {
+            setDownloadSpinning(false)
+        }
+    }
 
     const handleDateChange = useCallback((dates: [Date | null, Date | null] | null) => {
         if (dates?.[0]) {
@@ -125,8 +147,15 @@ export const CashCollectionTable: React.FC = () => {
                             Create Daily Collection
                         </Button>
 
-                        <Button variant="new" className="xl:mt-8" size="sm">
-                            Download
+                        <Button variant="new" className="xl:mt-8" size="sm" onClick={handleDownload}>
+                            <span className="flex items-center gap-1">
+                                Download
+                                {downloadSpinning && (
+                                    <span>
+                                        <Spinner size={20} color="white" />
+                                    </span>
+                                )}
+                            </span>
                         </Button>
 
                         <UltimateDatePicker from={from} to={to} setFrom={setFrom} setTo={setTo} handleDateChange={handleDateChange} />

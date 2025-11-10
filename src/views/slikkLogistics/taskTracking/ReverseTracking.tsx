@@ -14,9 +14,9 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import FilterByRunner from './FilterByRunner'
 import { TaskTrackingColumns } from './taskUtils/TaskTrakingColumns'
 import { useFetchApi } from '@/commonHooks/useFetchApi'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { AxiosError } from 'axios'
 import { errorMessage } from '@/utils/responseMessages'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { commonDownload } from '@/common/commonDownload'
 import { notification } from 'antd'
 
@@ -51,7 +51,14 @@ const TaskTracking = () => {
             searchData = `&runner_mobile=${globalFilter}`
         }
 
-        const currentStatusName = statusName ? `&status=${statusName}` : ''
+        let currentStatusName = ''
+        if (statusName) {
+            if (statusName === 'cash_recon') {
+                currentStatusName = `&data_type=${statusName}`
+            } else {
+                currentStatusName = `&status=${statusName}`
+            }
+        }
 
         if (!globalFilter) {
             deliveryType = `task_type=REVERSE`
@@ -64,8 +71,6 @@ const TaskTracking = () => {
     }, [from, to, particularMobileOfRunner, globalFilter, currentStatus, page, pageSize])
 
     const { data, totalData, responseStatus } = useFetchApi<TaskDetails>({ url: queryUrl, initialData: [] })
-
-    console.log('data of results', data)
 
     const totalPages = Math.ceil(totalData / pageSize)
 
@@ -130,7 +135,7 @@ const TaskTracking = () => {
         try {
             const downloadUrl = `${queryUrl}&download=true`
             const response = await axioisInstance.get(downloadUrl, { responseType: 'blob' })
-            commonDownload(response, 'Reverse-Task.csv')
+            commonDownload(response, 'Forward-Task.csv')
         } catch (error) {
             if (error instanceof AxiosError) {
                 errorMessage(error)
@@ -142,36 +147,43 @@ const TaskTracking = () => {
         return <AccessDenied />
     }
     return (
-        <div className="px-2 sm:px-4 shadow-xl rounded-xl">
-            <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4 mb-7">
-                <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto xl:mt-9">
-                    <div className="w-full sm:w-64">
+        <div className="p-4 sm:p-6 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl transition-all duration-300">
+            <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-6 mb-8">
+                <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto xl:mt-8">
+                    <div className="w-full sm:w-72">
                         <input
                             type="text"
-                            placeholder="Search here"
+                            placeholder="Search..."
                             value={globalFilter}
-                            className="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             onChange={(e) => setGlobalFilter(e.target.value)}
+                            className="w-full p-2.5 border border-gray-300 rounded-lg shadow-sm 
+                                   focus:outline-none focus:ring-2 focus:ring-indigo-500 
+                                   dark:bg-gray-800 dark:text-white dark:border-gray-700"
                         />
                     </div>
+
                     <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                        <div className="w-full sm:w-auto bg-gray-100 rounded-md dark:bg-blue-600 dark:text-white">
+                        <div className="w-full sm:w-auto">
                             <Dropdown
-                                className="w-full sm:w-auto text-black bg-gray-200 font-bold px-4 py-2 rounded-md"
-                                title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
+                                className="w-full sm:w-auto  bg-gray-100 dark:bg-gray-800 
+                                         dark:text-gray-100 rounded-lg px-4 py-2 
+                                       hover:bg-gray-200 dark:hover:bg-gray-700 transition-all text-blue-500 font-bold"
+                                title={currentSelectedPage?.value ? currentSelectedPage.label : 'Select Page'}
                                 onSelect={handleSelect}
                             >
                                 {SEARCHOPTIONS?.map((item, key) => (
                                     <DropdownItem key={key} eventKey={item.value}>
-                                        <span>{item.label}</span>
+                                        <span className="">{item.label}</span>
                                     </DropdownItem>
                                 ))}
                             </Dropdown>
                         </div>
-                        <div className="w-full sm:w-auto bg-gray-100 rounded-md dark:bg-blue-600 dark:text-white">
+                        <div className="w-full sm:w-auto">
                             <Dropdown
-                                className="w-full sm:w-auto text-black bg-gray-200 font-bold px-4 py-2 rounded-md"
-                                title={currentStatus?.value ? currentStatus.label : 'SELECT STATUS'}
+                                className="w-full sm:w-auto font-semibold bg-gray-100 dark:bg-gray-800 
+                                       text-gray-800 dark:text-gray-100 rounded-lg px-4 py-2 
+                                       hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
+                                title={currentStatus?.value ? currentStatus.label : 'Select Filter'}
                                 onSelect={handleSelectStatus}
                             >
                                 {STATUSARRAY?.map((item, key) => (
@@ -180,51 +192,59 @@ const TaskTracking = () => {
                                     </DropdownItem>
                                 ))}
                                 <div
-                                    className="flex justify-center items-center text-red-500 font-bold cursor-pointer hover:bg-gray-100 p-2"
+                                    className="flex justify-center items-center text-red-500 font-semibold 
+                                           cursor-pointer hover:bg-red-50 dark:hover:bg-gray-700 p-2 rounded"
                                     onClick={() => {
-                                        setCurrentStatus({
-                                            label: 'ALL',
-                                            value: 'ALL',
-                                        })
+                                        setCurrentStatus({ label: 'ALL', value: 'ALL' })
                                         setStatusName('')
                                     }}
                                 >
-                                    REMOVE
+                                    Remove Filter
                                 </div>
                             </Dropdown>
                         </div>
                     </div>
                 </div>
-                <div className="flex flex-col xl:flex-row gap-2 xl:align-top">
-                    <div className=" items-center xl:mt-9 md:mt-9 ">
-                        <Button variant="new" size="sm" onClick={() => handleFilterRunner()}>
-                            Filter by Runner
-                        </Button>
-                    </div>
-                    <div className=" items-center xl:mt-9 md:mt-9 ">
-                        <Button variant="new" size="sm" onClick={handleDownloadCsv}>
-                            Download CSV
-                        </Button>
-                    </div>
-                    <div className="">
-                        <UltimateDatePicker from={from} setFrom={setFrom} to={to} setTo={setTo} handleDateChange={handleDateChange} />
-                    </div>
+                <div className="flex flex-col xl:flex-row gap-3 items-center ">
+                    <Button
+                        variant="new"
+                        size="sm"
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition-all xl:mt-8"
+                        onClick={handleFilterRunner}
+                    >
+                        Filter by Runner
+                    </Button>
+
+                    <Button
+                        variant="new"
+                        size="sm"
+                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition-all xl:mt-8"
+                        onClick={handleDownloadCsv}
+                    >
+                        Download CSV
+                    </Button>
+
+                    <UltimateDatePicker from={from} setFrom={setFrom} to={to} setTo={setTo} handleDateChange={handleDateChange} />
                 </div>
             </div>
-            <div className="overflow-x-auto">
+
+            {/* ===== Table Section ===== */}
+            <div className="overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-xl">
                 <Table>
-                    <THead>
+                    <THead className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-200">
                         <Tr>
                             {columns.map((column, index) => (
-                                <Th key={index}>{column.header}</Th>
+                                <Th key={index} className="py-3 px-4 font-semibold">
+                                    {column.header}
+                                </Th>
                             ))}
                         </Tr>
                     </THead>
                     <TBody>
                         {data.map((row: any) => (
-                            <Tr key={row.task_id}>
+                            <Tr key={row.task_id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-all">
                                 {columns.map((column, index) => (
-                                    <Td key={index}>
+                                    <Td key={index} className="py-2.5 px-4 text-gray-800 dark:text-gray-200">
                                         {column.format ? column.format(row[column.accessor], row) : row[column.accessor] || ''}
                                     </Td>
                                 ))}
@@ -233,9 +253,11 @@ const TaskTracking = () => {
                     </TBody>
                 </Table>
             </div>
-            <div className="mt-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+
+            {/* ===== Pagination ===== */}
+            <div className="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
                 <Pagination currentPage={page} total={totalPages} onChange={(newPage: any) => setPage(newPage)} />
-                <div className="w-full sm:w-32">
+                <div className="w-full sm:w-36">
                     <Select<Option>
                         size="sm"
                         isSearchable={false}
@@ -248,6 +270,8 @@ const TaskTracking = () => {
                     />
                 </div>
             </div>
+
+            {/* ===== Modals ===== */}
             {showAssignModal && (
                 <TrackModal
                     showTaskModal={showAssignModal}
@@ -256,6 +280,7 @@ const TaskTracking = () => {
                     setShowAssignModal={setShowAssignModal}
                 />
             )}
+
             {showFilterByRunner && (
                 <FilterByRunner
                     showTaskModal={showFilterByRunner}

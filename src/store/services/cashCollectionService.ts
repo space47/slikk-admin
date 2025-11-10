@@ -4,7 +4,10 @@ import { CashResponseType } from '../types/cashCollection.types'
 
 export const cashCollectionService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
-        cashCollection: builder.query<CashResponseType, { page?: number; pageSize?: number; from?: string; to?: string; mobile?: string }>({
+        cashCollection: builder.query<
+            CashResponseType,
+            { page?: number; pageSize?: number; from?: string; to?: string; mobile?: string; download?: string }
+        >({
             query: (params) => {
                 const parameters: Record<string, string | string[]> = {}
                 if (params.page) {
