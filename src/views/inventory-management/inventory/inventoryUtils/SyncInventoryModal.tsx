@@ -69,33 +69,33 @@ const SyncInventoryModal = ({ isOpen, setIsOpen, storeId }: Props) => {
     }
 
     return (
-        <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)} width={800}>
+        <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)} width={800} height={'70vh'}>
             <div className="font-bold text-green-500 text-xl">Sync Inventory</div>
             <Formik enableReinitialize initialValues={{} as any} onSubmit={handleSubmit}>
-                {({ values, setFieldValue }) => (
-                    <Form className="h-[60vh] overflow-scroll mt-8">
-                        <CommonSelect
-                            name="update_type"
-                            label="Select Update Type"
-                            options={[
-                                { label: 'add', value: 'add' },
-                                { label: 'replace', value: 'replace' },
-                            ]}
-                        />
-                        <CommonSelect
-                            name="sync"
-                            label="Sync Type"
-                            options={[
-                                { label: 'soft', value: 'soft' },
-                                { label: 'hard', value: 'hard' },
-                            ]}
-                        />
+                {({ setFieldValue }) => (
+                    <Form className="h-[60vh] p-5">
+                        <FormContainer className="h-[50vh] overflow-scroll  p-4 ">
+                            <CommonSelect
+                                name="update_type"
+                                label="Select Update Type"
+                                options={[
+                                    { label: 'add', value: 'add' },
+                                    { label: 'replace', value: 'replace' },
+                                ]}
+                            />
+                            <CommonSelect
+                                name="sync"
+                                label="Sync Type"
+                                options={[
+                                    { label: 'soft', value: 'soft' },
+                                    { label: 'hard', value: 'hard' },
+                                ]}
+                            />
 
-                        {values?.sync === 'hard' && (
                             <FormContainer>
                                 <InventoryActionForm setFieldValue={setFieldValue} />
                             </FormContainer>
-                        )}
+                        </FormContainer>
 
                         <FormButton isSpinning={spinner} value="Apply" />
                     </Form>
