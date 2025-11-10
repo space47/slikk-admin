@@ -1,9 +1,8 @@
 import { notification } from 'antd'
 
 export const commonDownload = (response: any, label: string) => {
-    console.log('response', response)
     const contentType = response.headers['content-type']
-    console.log('object', contentType)
+
     if (contentType !== 'text/csv') {
         if (response?.data?.data?.includes('https')) {
             notification.info({ message: 'Link downloading' })
