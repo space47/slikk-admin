@@ -148,13 +148,6 @@ export const useSellerColumns = () => {
                         >
                             View Details
                         </button>
-                        <button
-                            type="button"
-                            className="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 transition-all duration-200 truncate"
-                            onClick={() => console.log('Send notification to', row.original)}
-                        >
-                            Send Notification
-                        </button>
                     </div>
                 ),
             },
