@@ -64,6 +64,7 @@ export const CashCollectionTable: React.FC = () => {
     const handleDownload = async () => {
         try {
             setDownloadSpinning(true)
+            notification.info({ message: 'Download in progress' })
             const res = await axioisInstance.get(`/rider/cash/collection?from=${from}&to=${to}&download=true`)
             commonDownload(res, 'CashCollection.csv')
             notification.success({ message: 'Successfully completed' })
