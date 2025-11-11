@@ -213,22 +213,21 @@ const InventoryTable = () => {
                     image={particularRowImage && particularRowImage?.split(',')}
                 />
             )}
-            {locationTransferModal && <LocationTransferModal isOpen={locationTransferModal} setIsOpen={setLocationTransferModal} />}
-            {isInventorySync && <SyncInventoryModal isOpen={isInventorySync} setIsOpen={setIsInventorySync} storeId={storeId as number} />}
-            {clearInventory && <ClearInventoryModal isOpen={clearInventory} setIsOpen={setClearInventory} storeId={storeId as number} />}
-            {showFilter && (
-                <FilterProductCommon
-                    isSorByFilter
-                    showDrawer={showFilter}
-                    setShowDrawer={setShowFilter}
-                    setTypeFetch={setTypeFetch}
-                    brandList={brandList}
-                    setBrandList={setBrandList}
-                    typeFetch={typeFetch}
-                    sortByFilter={sortByFilter}
-                    setSortByFilter={setSortByFilter}
-                />
-            )}
+            <LocationTransferModal isOpen={locationTransferModal} setIsOpen={setLocationTransferModal} />
+            <SyncInventoryModal isOpen={isInventorySync} setIsOpen={setIsInventorySync} storeId={storeId as number} />
+            <ClearInventoryModal isOpen={clearInventory} setIsOpen={setClearInventory} storeId={storeId as number} />
+
+            <FilterProductCommon
+                isSorByFilter
+                showDrawer={showFilter}
+                setShowDrawer={setShowFilter}
+                setTypeFetch={setTypeFetch}
+                brandList={brandList}
+                setBrandList={setBrandList}
+                typeFetch={typeFetch}
+                sortByFilter={sortByFilter}
+                setSortByFilter={setSortByFilter}
+            />
         </div>
     )
 }
