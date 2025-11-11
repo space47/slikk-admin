@@ -12,7 +12,7 @@ export const getStatusFilterReturn = (tabSelect: string) => {
         // case 'reverse_pickup_created':
         //     return '&status=REVERSE_PICKUP_CREATED'
         case 'pickup_rescheduled':
-            return '&status=PICKUP_RESCHEDULED'
+            return '&status=RETURN_RESCHEDULED'
 
         case 'out_for_pickup':
             return '&status=OUT_FOR_PICKUP'
