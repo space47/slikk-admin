@@ -6,6 +6,7 @@ interface PickerBoardTypes {
     from?: string
     to?: string
     mobile?: string
+    name?: string
     checkin_status?: boolean | string
 }
 
@@ -17,8 +18,10 @@ export const pickerService = RtkQueryService.injectEndpoints({
                 if (params.from) parameters.from = params.from.toString()
                 if (params.to) parameters.to = params.to.toString()
                 if (params.checkin_status) parameters.checkin_status = params.checkin_status
+                if (params.name) parameters.name = params.name
+                if (params.mobile) parameters.mobile = params.mobile
                 return {
-                    url: `/picker/orders`,
+                    url: `/picker/profile`,
                     method: 'GET',
                     params: parameters,
                 }
