@@ -3,6 +3,7 @@ import React, { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
 import { FaEdit } from 'react-icons/fa'
+import { Switch } from 'antd'
 
 interface Props {
     handleDetailsModal: (mobile: string) => void
@@ -14,6 +15,21 @@ export const usePickerColumns = ({ handleDetailsModal, handleEditModal }: Props)
 
     return useMemo(
         () => [
+            // {
+            //                 header: 'Activate / Inactivate',
+            //                 accessorKey: 'is_active',
+            //                 cell: ({ row }: any) => {
+            //                     return (
+            //                         <div>
+            //                             <Switch
+            //                                 className="bg-red-500"
+            //                                 checked={row.original.is_active}
+            //                                 onChange={(checked) => handleActiveCareer(row.original.id, checked, row.original.is_active)}
+            //                             />
+            //                         </div>
+            //                     )
+            //                 },
+            //             },
             {
                 header: 'Edit',
                 accessorKey: 'edit',
