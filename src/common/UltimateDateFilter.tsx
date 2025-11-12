@@ -26,13 +26,12 @@ interface DATEPROPS {
     to: any
     setFrom: any
     setTo: any
-    handleFromChange?: any
-    handleToChange?: any
     handleDateChange: any
     dispatch?: any
+    customClass?: string
 }
 
-const UltimateDatePicker = ({ setFrom, setTo, handleDateChange, dispatch }: DATEPROPS) => {
+const UltimateDatePicker = ({ setFrom, setTo, handleDateChange, dispatch, customClass }: DATEPROPS) => {
     const [selectedOption, setSelectedOption] = useState('TODAY')
     const [showingDatePicker, setShowingDatePicker] = useState(false)
     const [tempRange, setTempRange] = useState<any>(null)
@@ -133,7 +132,11 @@ const UltimateDatePicker = ({ setFrom, setTo, handleDateChange, dispatch }: DATE
 
     return (
         <div className="flex gap-1 items-center xl:mr-14">
-            <div className="border w-auto rounded-md h-auto font-bold mt-8 bg-black text-white flex justify-center">
+            <div
+                className={
+                    customClass ? customClass : 'border w-auto rounded-md h-auto font-bold mt-8 bg-black text-white flex justify-center'
+                }
+            >
                 <Dropdown
                     className="text-xl text-white bg-white font-bold border-2 border-blue-600"
                     title={selectedOption}

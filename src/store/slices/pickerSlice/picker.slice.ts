@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { particularPickerType, pickerBoardData } from '@/store/types/picker.types'
+import { particularPickerType, PickerTableData } from '@/store/types/picker.types'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import moment from 'moment'
 
 export interface PickerRequiredType {
-    pickerBoardData?: pickerBoardData[]
+    pickerBoardData?: PickerTableData[]
     pickerDetailsData?: particularPickerType
     from?: string
     to?: string
@@ -21,7 +21,7 @@ const pickerSlice = createSlice({
     name: 'picker',
     initialState,
     reducers: {
-        setPickerBoardData: (state, action: PayloadAction<pickerBoardData[]>) => {
+        setPickerBoardData: (state, action: PayloadAction<PickerTableData[]>) => {
             state.pickerBoardData = action.payload
         },
         setPickerDetailsData: (state, action: PayloadAction<particularPickerType>) => {
