@@ -1,5 +1,5 @@
 import { textParser } from '@/common/textParser'
-import { RichTextEditor } from '@/components/shared'
+import SimpleTextEditor from '@/components/shared/SimpleTextEditor'
 import { Button, Dialog } from '@/components/ui'
 import { notification } from 'antd'
 import React, { useCallback, useEffect, useState } from 'react'
@@ -36,7 +36,7 @@ const SellerCommentsModal = ({ isOpen, setIsOPen, dataForComment, setCommentsStr
                         Add Comment for <span className="text-blue-600">{dataForComment?.label}</span>
                     </h5>
                     <div className="bg-gray-50 rounded-lg border border-gray-200 p-3">
-                        <RichTextEditor value={commentValue} onChange={(val) => setCommentValue(val)} />
+                        <SimpleTextEditor value={commentValue} onChange={(val) => setCommentValue(val)} />
                     </div>
                     <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
                         <Button

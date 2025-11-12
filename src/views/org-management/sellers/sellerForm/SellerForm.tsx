@@ -75,7 +75,7 @@ const SellerForm = ({ values }: props) => {
                     )}
                     {currentStep >= 8 && (
                         <Button type="submit" variant="blue">
-                            Submit
+                            Send To Vendor
                         </Button>
                     )}
                 </FormContainer>
