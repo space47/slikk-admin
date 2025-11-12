@@ -74,6 +74,8 @@ const SellerBeforeApproval = ({
             })
     }, [sellerData])
 
+    console.log('seller fields are', sellerFields)
+
     const renderField = (field: any) => {
         const value = (sellerData as any)[field.name]
 
