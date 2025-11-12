@@ -49,7 +49,7 @@ const SellerBeforeApproval = ({
     const sellerFields = useMemo(() => {
         if (!sellerData) return []
 
-        const ignoredKeys = ['comments', 'create_date', 'update_date', 'status']
+        const ignoredKeys = ['comments', 'create_date', 'update_date', 'status', 'id']
 
         return Object.keys(sellerData)
             .filter((key) => !ignoredKeys.includes(key))

@@ -16,6 +16,7 @@ import SellerBeforeApproval from './SellerBeforeApproval'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { AxiosError } from 'axios'
 import { Formik } from 'formik'
+import { FaDownload } from 'react-icons/fa'
 
 const { Panel } = Collapse
 
@@ -127,6 +128,19 @@ const SellerDetails = () => {
         if (lower === 'approved') return <IoCheckmarkOutline />
         if (lower === 'rejected' || lower === 'reject') return <MdCancel />
         return null
+    }
+
+    const handleDownload = (fileUrl: string, fileName: string) => {
+        try {
+            const link = document.createElement('a')
+            link.href = fileUrl
+            link.download = fileName || 'document'
+            link.target = '_blank'
+            link.rel = 'noopener noreferrer'
+            link.click()
+        } catch (error) {
+            console.error('File download failed:', error)
+        }
     }
 
     return (
@@ -280,53 +294,62 @@ const SellerDetails = () => {
                                     </Panel>
                                 ),
                         )}
+                        <div className="mt-6">
+                            <Card className="rounded-2xl border border-gray-200 shadow-sm bg-white p-5">
+                                <h2 className="text-lg font-semibold mb-4 text-gray-800 border-b pb-2">Documents & Verifications</h2>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
+                                    {[
+                                        { label: 'PAN Card', file: sellerData?.pan_copy, key: 'pan' },
+                                        { label: 'GST Certificate', file: sellerData?.gst_certificate, key: 'gst' },
+                                        { label: 'Cancelled Cheque', file: sellerData?.cancelled_cheque, key: 'cheque' },
+                                        { label: 'MSME Certificate', file: sellerData?.msme_certificate, key: 'msme' },
+                                    ].map((doc) => (
+                                        <div
+                                            key={doc.key}
+                                            className="flex justify-between items-center border border-gray-100 bg-gray-50 hover:bg-gray-100 transition-all rounded-lg p-3 shadow-sm"
+                                        >
+                                            <div className="flex flex-col">
+                                                <span className="text-sm font-medium text-gray-700">{doc.label}</span>
+                                                <span className={`text-xs ${doc.file ? 'text-green-600' : 'text-red-500'}`}>
+                                                    {doc.file ? 'Uploaded' : 'Not Uploaded'}
+                                                </span>
+                                            </div>
+
+                                            {doc.file ? (
+                                                <Button
+                                                    variant="twoTone"
+                                                    color="green"
+                                                    size="sm"
+                                                    icon={<FaDownload />}
+                                                    onClick={() => handleDownload(`${doc.file}`, doc.label)}
+                                                    className="rounded-full"
+                                                >
+                                                    Download
+                                                </Button>
+                                            ) : (
+                                                <Button variant="twoTone" color="gray" size="sm" disabled className="rounded-full">
+                                                    N/A
+                                                </Button>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </Card>
+                        </div>
                     </Collapse>
-
-                    <div className="flex justify-end items-center gap-2">
-                        <Button
-                            variant="accept"
-                            icon={<IoCheckmarkOutline />}
-                            onClick={() => {
-                                setConfirmModal(true)
-                                setStatusToProceed('approved')
-                            }}
-                        >
-                            Accept
-                        </Button>
-
-                        <Button
-                            variant="reject"
-                            icon={<MdCancel />}
-                            onClick={() => {
-                                setConfirmModal(true)
-                                setStatusToProceed('rejected')
-                            }}
-                        >
-                            Reject
-                        </Button>
-
-                        <Button
-                            variant="twoTone"
-                            color="yellow"
-                            icon={<IoIosSend />}
-                            onClick={() => {
-                                setConfirmModal(true)
-                                setStatusToProceed('changes_requested')
-                            }}
-                        >
-                            Send back with comments
-                        </Button>
-                    </div>
                 </>
             ) : (
-                <SellerBeforeApproval
-                    sellerData={sellerData as VendorDetails}
-                    commentStructure={commentStructure}
-                    handleComments={handleComments}
-                    handleProceed={handleProceed}
-                    setConfirmModal={setConfirmModal}
-                    setStatusToProceed={setStatusToProceed}
-                />
+                <>
+                    <SellerBeforeApproval
+                        sellerData={sellerData as VendorDetails}
+                        commentStructure={commentStructure}
+                        handleComments={handleComments}
+                        handleProceed={handleProceed}
+                        setConfirmModal={setConfirmModal}
+                        setStatusToProceed={setStatusToProceed}
+                    />
+                </>
             )}
 
             <SellerCommentsModal
