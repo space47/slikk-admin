@@ -33,6 +33,7 @@ import { BUSY_STATUS_TABS, DEBOUNCE_DELAY, SEARCH_TYPES, STATUS_TABS, StoreOptio
 import PageCommon from '@/common/PageCommon'
 import { useDebounceInput } from '@/commonHooks/useDebounceInput'
 import { RiderDetailsType } from '@/store/types/riderAddTypes'
+import DialogConfirm from '@/common/DialogConfirm'
 
 const RiderDetails = () => {
     const navigate = useNavigate()
@@ -55,15 +56,18 @@ const RiderDetails = () => {
     const [shiftStart, setShiftStart] = useState('')
     const [shiftEnd, setShiftEnd] = useState('')
     const [currentRow, setCurrentRow] = useState<RiderDetailsType>()
+    const [showDeleteModal, setShowDeleteModal] = useState(false)
     const { storeResults } = useAppSelector<companyStore>((state) => state.companyStore)
     const { count, from, page, pageSize, to, currentStoreLocation } = useAppSelector<RiderDetailType>((state) => state.riderDetails)
     const [riderDownload, riderDownloadResponse] = ridersService.useLazyRiderDetailsDownloadQuery()
     const { debounceFilter } = useDebounceInput({ globalFilter: globalFilter as string, delay: DEBOUNCE_DELAY })
+    const [deleteRider, deleteResponse] = ridersService.useRiderDeleteMutation()
     const {
         data: riders,
         isSuccess,
         isLoading,
         isFetching,
+        refetch,
     } = ridersService.useRiderDetailsQuery(
         {
             from: from,
@@ -105,6 +109,17 @@ const RiderDetails = () => {
             dispatch(setCount(riders.data.count || 0))
         }
     }, [riders, isSuccess, dispatch])
+
+    useEffect(() => {
+        if (deleteResponse?.isSuccess) {
+            notification.success({ message: 'Successfully Deleted' })
+            setShowDeleteModal(false)
+            refetch()
+        }
+        if (deleteResponse?.isError) {
+            notification.error({ message: 'Failed to delete Rider' })
+        }
+    }, [deleteResponse?.isSuccess, deleteResponse?.isError])
 
     useEffect(() => {
         if (riderDownloadResponse?.isSuccess) {
@@ -183,6 +198,15 @@ const RiderDetails = () => {
         [dispatch],
     )
 
+    const handleDelete = (row: RiderDetailsType) => {
+        setCurrentRow(row)
+        setShowDeleteModal(true)
+    }
+
+    const handleDeleteRider = () => {
+        deleteRider({ mobile: currentRow?.profile?.mobile as number })
+    }
+
     const columns = RiderColumns({
         sortedRiderDetails,
         handleActiveCareer,
@@ -191,6 +215,7 @@ const RiderDetails = () => {
         riderMobileStore,
         handleSelectAllRiders,
         handleSelectRiderMobile,
+        handleDelete,
     })
 
     const renderTabNavigation = () => (
@@ -390,9 +415,9 @@ const RiderDetails = () => {
                     setRiderType={setRiderType}
                 />
             )}
-            {isBulkRiderModal && (
-                <BulkEditRiderModal dialogIsOpen={isBulkRiderModal} setIsOpen={setIsBulkRiderModal} riderMobileStore={riderMobileStore} />
-            )}
+
+            <BulkEditRiderModal dialogIsOpen={isBulkRiderModal} setIsOpen={setIsBulkRiderModal} riderMobileStore={riderMobileStore} />
+            <DialogConfirm IsDelete IsOpen={showDeleteModal} closeDialog={() => setShowDeleteModal(false)} onDialogOk={handleDeleteRider} />
         </div>
     )
 }

@@ -1,4 +1,4 @@
-import LoadingSpinner from '@/common/LoadingSpinner'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useAppDispatch, useAppSelector } from '@/store'
 import { pickerService } from '@/store/services/pickerServices'
 import { PickerRequiredType, setPickerBoardData, setFrom, setTo } from '@/store/slices/pickerSlice/picker.slice'
@@ -10,37 +10,42 @@ import moment from 'moment'
 import { Button, Dropdown } from '@/components/ui'
 import { useNavigate } from 'react-router-dom'
 import PickerDetailModal from './pickerComponents/PickerDetailModal'
-import { pickerBoardData } from '@/store/types/picker.types'
+import { PickerTableData } from '@/store/types/picker.types'
 import PickerDetailEditModal from './pickerComponents/PickerDetailEditModal'
 import { notification } from 'antd'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { useDebounceInput } from '@/commonHooks/useDebounceInput'
 import { DEBOUNCE_DELAY } from '../../riderDetails/RiderDetailsCommon'
+import DialogConfirm from '@/common/DialogConfirm'
+import StoreSelectComponent from '@/common/StoreSelectComponent'
 
 const PickerBoard = () => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
+    const [storeId, setStoreId] = useState<any>(null)
     const [tabContent, setTabContent] = useState('active')
     const [showPickerDetailsModal, setShowPickerDetailsModal] = useState(false)
+    const [showPickerDeletesModal, setShowPickerDeletesModal] = useState(false)
     const [showPickerEditModal, setShowPickerEditModal] = useState<boolean>(false)
     const [globalFilter, setGlobalFilter] = useState('')
     const [particularMobile, setParticularMobile] = useState<string>('')
-    const [particularRowData, setParticularRowData] = useState<pickerBoardData>()
+    const [particularRowData, setParticularRowData] = useState<PickerTableData>()
     const [showPickerAddModal, setShowPickerAddModal] = useState<boolean>(false)
     const [riderSearchByType, setRiderSearchByType] = useState<'mobile' | 'name' | string>('name')
     const { debounceFilter } = useDebounceInput({ globalFilter: globalFilter as string, delay: DEBOUNCE_DELAY })
-
+    const [deletePicker, deleteResponse] = pickerService.usePickerDeleteMutation()
     const { pickerBoardData, from, to } = useAppSelector<PickerRequiredType>((state) => state.picker)
     const {
         data: boardData,
         isSuccess,
-        isLoading,
+        refetch,
     } = pickerService.usePickerBoardDataQuery({
-        from: from,
-        to: to,
-        checkin_status: tabContent === 'active' ? `true` : tabContent === 'in_active' ? `false` : '',
-        mobile: riderSearchByType === 'mobile' ? debounceFilter : '',
-        name: riderSearchByType === 'name' ? debounceFilter : '',
+        from,
+        to,
+        checkin_status: tabContent === 'active' ? 'true' : tabContent === 'in_active' ? 'false' : '',
+        ...(riderSearchByType === 'mobile' && globalFilter ? { mobile: debounceFilter } : {}),
+        ...(riderSearchByType === 'name' && globalFilter ? { name: debounceFilter } : {}),
+        ...(storeId?.id ? { store_id: storeId.id } : {}),
     })
 
     useEffect(() => {
@@ -56,29 +61,47 @@ const PickerBoard = () => {
         }
     }
 
+    useEffect(() => {
+        if (deleteResponse?.isSuccess) {
+            notification.success({ message: 'Successfully Deleted' })
+            setShowPickerDeletesModal(false)
+            refetch()
+        }
+        if (deleteResponse?.isError) {
+            notification.error({ message: 'Failed to delete picker' })
+        }
+    }, [deleteResponse?.isSuccess, deleteResponse?.isError])
+
     const handleDetailsModal = (mobile: string) => {
         setParticularMobile(mobile)
         setShowPickerDetailsModal(true)
     }
 
-    const handleEditModal = (rowData: pickerBoardData) => {
+    const handleEditModal = (rowData: PickerTableData) => {
         setParticularRowData(rowData)
         setShowPickerEditModal(true)
     }
+    const handleDelete = (rowData: PickerTableData) => {
+        setParticularRowData(rowData)
+        setShowPickerDeletesModal(true)
+    }
 
-    const columns = usePickerColumns({ handleDetailsModal, handleEditModal })
+    const handleDeletePicker = () => {
+        deletePicker({ mobile: particularRowData?.user?.mobile as string })
+    }
+
+    const columns = usePickerColumns({ handleDetailsModal, handleEditModal, handleDelete })
 
     const handleCopyLink = () => {
         navigator.clipboard.writeText('https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/builds/Picker+App/slikkPicker.apk')
         notification.success({ message: 'Copied' })
     }
 
-    if (isLoading) {
-        return <LoadingSpinner />
-    }
-
     return (
         <div className="p-4 md:p-6 bg-white shadow-2xl rounded-2xl border border-gray-200">
+            <div>
+                <StoreSelectComponent isSingle label="Select Store" store={storeId} setStore={setStoreId} />
+            </div>
             <div className="mb-10 flex flex-col xl:flex-row gap-4 xl:items-center xl:justify-between">
                 <div className="flex flex-col sm:flex-row items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-200 shadow-sm">
                     <input
@@ -171,24 +194,29 @@ const PickerBoard = () => {
             </div>
 
             {/* Modals */}
-            {showPickerDetailsModal && (
-                <PickerDetailModal
-                    dialogIsOpen={showPickerDetailsModal}
-                    setIsOpen={setShowPickerDetailsModal}
-                    mobile={particularMobile}
-                    from={from}
-                    to={to}
-                />
-            )}
-            {showPickerEditModal && (
-                <PickerDetailEditModal
-                    isEdit
-                    dialogIsOpen={showPickerEditModal}
-                    setIsOpen={setShowPickerEditModal}
-                    rowDetails={particularRowData as pickerBoardData}
-                />
-            )}
-            {showPickerAddModal && <PickerDetailEditModal dialogIsOpen={showPickerAddModal} setIsOpen={setShowPickerAddModal} />}
+
+            <PickerDetailModal
+                dialogIsOpen={showPickerDetailsModal}
+                setIsOpen={setShowPickerDetailsModal}
+                mobile={particularMobile}
+                from={from}
+                to={to}
+            />
+
+            <PickerDetailEditModal
+                isEdit
+                dialogIsOpen={showPickerEditModal}
+                setIsOpen={setShowPickerEditModal}
+                rowDetails={particularRowData as PickerTableData}
+            />
+
+            <PickerDetailEditModal dialogIsOpen={showPickerAddModal} setIsOpen={setShowPickerAddModal} />
+            <DialogConfirm
+                IsDelete
+                IsOpen={showPickerDeletesModal}
+                closeDialog={() => setShowPickerDeletesModal(false)}
+                onDialogOk={handleDeletePicker}
+            />
         </div>
     )
 }

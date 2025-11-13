@@ -46,15 +46,14 @@ const QcTabs = ({
         try {
             setDeleteSpinner(true)
             const res = await axioisInstance.delete(`/goods/received/${id}`, {
-                data: {
-                    force: isForce,
-                },
+                data: { force: isForce },
             })
             successMessage(res)
             return res?.data?.data
         } catch (error) {
             if (error instanceof AxiosError) {
-                errorMessage(error)
+                const errMsg = error?.response?.data?.message || error?.message
+                return { error: errMsg }
             }
         } finally {
             setDeleteSpinner(false)
@@ -62,17 +61,20 @@ const QcTabs = ({
     }
 
     const handleDeleteGrn = async (id: number) => {
-        const data = await deleteGrn('false', id)
-        if (data) {
+        const res = await deleteGrn('false', id)
+        if (res && !res.error) return
+        if (res?.error?.toLowerCase() === 'please confirm delete by setting confirm_delete to true') {
             Modal.confirm({
-                title: 'Confirm Force Update',
-                content: `Are you sure you want to delete the grn: `,
+                title: 'Confirm Force Delete',
+                content: 'Are you sure you want to force delete this GRN?',
                 okText: 'Yes',
                 cancelText: 'No',
-                onOk: () => {
-                    deleteGrn('true', id)
+                onOk: async () => {
+                    await deleteGrn('true', id)
                 },
             })
+        } else if (res?.error) {
+            errorMessage(res.error)
         }
     }
 
