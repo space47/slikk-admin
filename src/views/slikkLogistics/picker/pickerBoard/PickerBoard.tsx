@@ -214,6 +214,8 @@ const PickerBoard = () => {
             <DialogConfirm
                 IsDelete
                 IsOpen={showPickerDeletesModal}
+                headingName={`Delete Picker ${particularRowData?.user?.first_name} ${particularRowData?.user?.last_name}`}
+                label={`picker with number ${particularRowData?.user?.mobile} `}
                 closeDialog={() => setShowPickerDeletesModal(false)}
                 onDialogOk={handleDeletePicker}
             />

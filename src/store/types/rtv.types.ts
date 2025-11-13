@@ -61,7 +61,8 @@ export type Rtv_Products = {
     images: string
     inventory_locations: string
     is_picked: boolean
-    box_number: any
+    box_locations: any
+    locations: string
     create_date: string
     update_date: string
     rtv: {
