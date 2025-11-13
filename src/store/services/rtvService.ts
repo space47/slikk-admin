@@ -30,6 +30,7 @@ export const rtvService = RtkQueryService.injectEndpoints({
                 if (params.is_picked) parameters.is_picked = params.is_picked
                 if (params.rtv_number) parameters.rtv_number = params.rtv_number
                 if (params.rtv_id) parameters.rtv_id = params.rtv_id
+                if (params.sku) parameters.sku = params.sku
 
                 console.log('parameters', parameters)
                 return {
@@ -77,6 +78,15 @@ export const rtvService = RtkQueryService.injectEndpoints({
                     body: {
                         action: 'create_gdn',
                     },
+                }
+            },
+        }),
+        updateRtvProducts: builder.mutation<{ status: string; message: string }, Record<string, any>>({
+            query: (body) => {
+                return {
+                    url: `/rtv-products`,
+                    method: 'PATCH',
+                    body,
                 }
             },
         }),

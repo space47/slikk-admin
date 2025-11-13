@@ -2,15 +2,15 @@
 import React, { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
-import { FaEdit } from 'react-icons/fa'
-import { Switch } from 'antd'
+import { FaEdit, FaTrash } from 'react-icons/fa'
 
 interface Props {
     handleDetailsModal: (mobile: string) => void
     handleEditModal: (data: any) => void
+    handleDelete: (data: any) => void
 }
 
-export const usePickerColumns = ({ handleDetailsModal, handleEditModal }: Props) => {
+export const usePickerColumns = ({ handleDetailsModal, handleEditModal, handleDelete }: Props) => {
     const navigate = useNavigate()
 
     return useMemo(
@@ -129,7 +129,16 @@ export const usePickerColumns = ({ handleDetailsModal, handleEditModal }: Props)
                     </div>
                 ),
             },
+            {
+                header: 'Delete',
+                accessorKey: 'mobile',
+                cell: ({ row }: any) => (
+                    <div className="text-gray-700 dark:text-white">
+                        <FaTrash className="text-xl text-red-500" onClick={() => handleDelete(row?.original)} />
+                    </div>
+                ),
+            },
         ],
-        [handleEditModal, handleDetailsModal, navigate],
+        [handleEditModal, handleDetailsModal, navigate, handleDelete],
     )
 }

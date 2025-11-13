@@ -64,7 +64,11 @@ export type Rtv_Products = {
     box_number: any
     create_date: string
     update_date: string
-    rtv: number
+    rtv: {
+        document_number: string
+        id: number
+        rtv_number: string
+    }
     company: number
     picker: string
     last_updated_by: string
@@ -94,4 +98,5 @@ export type Rtv_Product_Params = {
     is_picked?: string
     rtv_number?: string
     rtv_id?: string
+    sku?: string
 }

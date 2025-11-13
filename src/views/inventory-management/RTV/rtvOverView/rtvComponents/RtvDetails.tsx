@@ -6,13 +6,14 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useRtvProductsColumn } from '../../rtvUtils/useRtvProductsColumns'
 import PageCommon from '@/common/PageCommon'
-import LoadingSpinner from '@/common/LoadingSpinner'
-import { Button, Spinner, Tabs } from '@/components/ui'
+import { Button, Input, Spinner, Tabs } from '@/components/ui'
 import RtvAssignPicker from './RtvAssignPickers'
 import { notification } from 'antd'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
+import { useDebounceInput } from '@/commonHooks/useDebounceInput'
+import RtvEditModal from './RtvEditModal'
 
 const RtvDetails = () => {
     const { rtv_number } = useParams()
@@ -24,15 +25,22 @@ const RtvDetails = () => {
     const [count, setCount] = useState(0)
     const [pageSize, setPageSize] = useState(10)
     const [tabValue, setTabValue] = useState('false')
-    const { data, isSuccess, isLoading, refetch, isError } = rtvService.useRtvProductsQuery({
+    const [searchInput, setSearchInput] = useState('')
+
+    const { debounceFilter } = useDebounceInput({ globalFilter: searchInput, delay: 500 })
+
+    const { data, isSuccess, isLoading, isFetching, refetch, isError } = rtvService.useRtvProductsQuery({
         rtv_id: rtv_number,
         page,
         pageSize,
         is_picked: tabValue,
+        sku: debounceFilter || '',
     })
     const { data: rtv, isSuccess: rtvSuccess } = rtvService.useRtvDataQuery({ rtv_id: rtv_number })
     const [assignPicker, pickerResponse] = rtvService.useAssignRtvPickerMutation()
     const [createGdn, gdnResponse] = rtvService.useCreateGdnFromRtvMutation()
+    const [currentRtvData, setCurrentRtvData] = useState<Rtv_Products>()
+    const [showEditModal, setShowEditModal] = useState(false)
     const [updateRtv, updateResponse] = rtvService.useUpdateRtvMutation()
 
     useEffect(() => {
@@ -94,17 +102,18 @@ const RtvDetails = () => {
         createGdn({ id: idToSend })
     }
 
-    const columns = useRtvProductsColumn()
+    const handleEditProducts = (data: Rtv_Products) => {
+        setCurrentRtvData(data)
+        setShowEditModal(true)
+    }
+
+    const columns = useRtvProductsColumn({ handleEditProducts })
 
     const handleRtvGeneration = () => {
         updateRtv({
             id: rtv_number as string,
             action: 'add_rtv_number',
         })
-    }
-
-    if (isLoading) {
-        return <LoadingSpinner />
     }
 
     return (
@@ -202,13 +211,29 @@ const RtvDetails = () => {
             </div>
             {isError && <NotFoundData />}
             {isSuccess && (
-                <div className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm">
-                    <EasyTable overflow columns={columns} mainData={rtvProductsData} page={page} pageSize={pageSize} />
+                <div className="space-y-6">
+                    <div className="flex w-1/2 items-center justify-between bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-3 transition-all hover:shadow-md">
+                        <Input
+                            type="search"
+                            value={searchInput}
+                            placeholder="Search by SKU... 🔎"
+                            onChange={(e) => setSearchInput(e.target.value)}
+                        />
+                    </div>
+                    {isLoading ||
+                        (isFetching && (
+                            <div className="flex items-center justify-center py-6">
+                                <Spinner size={35} className="text-primary animate-spin" />
+                            </div>
+                        ))}
+
+                    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-md overflow-hidden transition-all hover:shadow-lg">
+                        <EasyTable overflow columns={columns} mainData={rtvProductsData} page={page} pageSize={pageSize} />
+                    </div>
+                    <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={count} />
                 </div>
             )}
-            <>
-                <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={count} />
-            </>
+
             {isPickerModal && (
                 <RtvAssignPicker
                     isOpen={isPickerModal}
@@ -217,6 +242,15 @@ const RtvDetails = () => {
                     store_id={rtvData?.store?.id as number}
                     handleAssign={handleAssign}
                     onChange={(selectedUsers) => setSelectedUsers(selectedUsers)}
+                />
+            )}
+
+            {showEditModal && (
+                <RtvEditModal
+                    isOPen={showEditModal}
+                    rtvData={currentRtvData as Rtv_Products}
+                    setIsOpen={setShowEditModal}
+                    refetch={refetch}
                 />
             )}
         </div>

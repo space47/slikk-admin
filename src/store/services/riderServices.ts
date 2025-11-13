@@ -237,5 +237,13 @@ export const ridersService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
+        riderDelete: builder.mutation<{ success: string }, { mobile: string | number }>({
+            query: (params) => {
+                return {
+                    url: `/rider/profile/${params.mobile}`,
+                    method: 'DELETE',
+                }
+            },
+        }),
     }),
 })

@@ -3,8 +3,13 @@ import { ColumnDef } from '@tanstack/react-table'
 import React, { useMemo } from 'react'
 import moment from 'moment'
 import { Rtv_Products } from '@/store/types/rtv.types'
+import { FaEdit } from 'react-icons/fa'
 
-export const useRtvProductsColumn = () => {
+interface props {
+    handleEditProducts: (x: Rtv_Products) => void
+}
+
+export const useRtvProductsColumn = ({ handleEditProducts }: props) => {
     return useMemo<ColumnDef<Rtv_Products>[]>(
         () => [
             {
@@ -27,11 +32,14 @@ export const useRtvProductsColumn = () => {
                 accessorKey: 'quantity_accepted',
                 cell: ({ row }) => (
                     <span
-                        className={`text-center ${
+                        className={`text-center flex gap-4 items-center ${
                             row.original.quantity_accepted < row.original.quantity_required ? 'text-yellow-600' : 'text-green-700'
                         }`}
                     >
-                        {row.original.quantity_accepted}
+                        <span>{row.original.quantity_accepted}</span>{' '}
+                        <span>
+                            <FaEdit className="text-blue-600 cursor-pointer" onClick={() => handleEditProducts(row?.original)} />
+                        </span>
                     </span>
                 ),
             },
