@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FormContainer, FormItem, Input, Switcher } from '@/components/ui'
 import React from 'react'
-import { BusinessDetails } from '../sellerUtils/sellerFormCommon'
+import { BusinessDetails, NOBOptions, SpOptions } from '../sellerUtils/sellerFormCommon'
 import { Field } from 'formik'
 import FormUploadFile from '@/common/FormUploadFile'
 import RichTextCommon from '@/common/RichTextCommon'
+import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 
 interface Props {
     values?: any
@@ -24,7 +25,7 @@ const SellerBusinessDetails = ({ isEdit, values }: Props) => {
             </div>
 
             {/* Business Details */}
-            <FormContainer className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+            <FormContainer className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {BusinessDetails?.map((item, idx) => (
                     <FormItem key={idx} label={item?.label} asterisk={item?.isRequired} className="flex flex-col space-y-1">
                         <Field
@@ -32,10 +33,13 @@ const SellerBusinessDetails = ({ isEdit, values }: Props) => {
                             name={item?.name}
                             placeholder={`Enter ${item?.label}`}
                             component={item?.type === 'checkbox' ? Switcher : Input}
-                            className="!h-10"
                         />
                     </FormItem>
                 ))}
+            </FormContainer>
+            <FormContainer className="mt-5 grid grid-cols-1 xl:grid-cols-2 gap-3">
+                <CommonSelect name="sp_type" options={SpOptions()} label="Select SP Type" />
+                <CommonSelect name="business_nature" options={NOBOptions()} label="Nature of Business" />
             </FormContainer>
             <RichTextCommon label="Address" name="address" />
 
@@ -44,13 +48,6 @@ const SellerBusinessDetails = ({ isEdit, values }: Props) => {
                 <h5 className="text-md font-semibold text-gray-800 mb-4">Upload Documents</h5>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* <FormUploadFile
-                        isEdit={isEdit}
-                        label="Upload GST Certificate"
-                        fileList={values?.gstCertificateFile}
-                        name="gst_certificate"
-                        existingFile={values?.gst_certificate}
-                    /> */}
                     <FormUploadFile
                         isEdit={isEdit}
                         label="Upload PAN Copy"

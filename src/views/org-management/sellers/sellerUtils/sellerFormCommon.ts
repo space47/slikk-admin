@@ -9,9 +9,9 @@ export const BasicSellerInformation = [
 export const BusinessDetails = [
     { label: 'PAN Number', name: 'pan_number', type: 'text', isRequired: true, visible: true },
     { label: 'TAN Number', name: 'tan_number', type: 'text', isRequired: false, visible: true },
+    { label: 'GSTIN', name: 'gstin', type: 'text', isRequired: true, visible: true },
     { label: 'CIN', name: 'cin', type: 'text', isRequired: false, visible: true },
-    { label: 'Sole Proprietorship Type', name: 'sp_type', type: 'text', isRequired: false, visible: true },
-    { label: 'Pf Declaration', name: 'sp_type', type: 'checkbox', isRequired: false, visible: true },
+    { label: 'Pf Declaration', name: 'pf_declaration', type: 'checkbox', isRequired: false, visible: true },
 ]
 export const PocDetails = [
     { label: 'Vendor POC', name: 'poc', type: 'text', isRequired: false, visible: true },
@@ -29,7 +29,6 @@ export const SellerBankData = [
     { label: 'Account Holder Name', name: 'account_holder_name', type: 'text', isRequired: false, visible: true },
     { label: 'Account Number', name: 'account_number', type: 'number', isRequired: false, visible: true },
     { label: 'IFSC Code', name: 'ifsc', type: 'text', isRequired: true, visible: false },
-    { label: 'Account Type', name: 'account_type', type: 'text', isRequired: false, visible: true },
 ]
 
 export const SellerWarehouseArray = [
@@ -44,7 +43,6 @@ export const SellerCommercialsArray = [
     { label: 'Warehouse Charges Per Sku', name: 'warehouse_charges_per_sku', type: 'text', isRequired: true, visible: true },
     { label: 'Damages Per Sku', name: 'damages_charges_per_sku', type: 'text', isRequired: true, visible: true },
     { label: 'Removal Fee Per Sku', name: 'removal_fee_per_sku', type: 'text', isRequired: true, visible: true },
-    { label: 'Nature of Business', name: 'business_nature', type: 'text', isRequired: true, visible: true },
     { label: 'Settlement Days', name: 'settlement_days', type: 'text', isRequired: true, visible: true },
     { label: 'Approved Payment Terms', name: 'approved_payment_term', type: 'text', isRequired: true, visible: true },
 ]
@@ -63,5 +61,23 @@ export const MSMEOptions = () => {
     return ['small', 'medium', 'large'].map((msme) => ({
         label: msme,
         value: msme,
+    }))
+}
+export const SpOptions = () => {
+    return ['Sole Proprietorship', 'Partnership Firm', 'Private Limited Company', 'Limited Liability', 'Other'].map((sp) => ({
+        label: sp,
+        value: sp,
+    }))
+}
+export const NOBOptions = () => {
+    return ['OR', 'SOR'].map((nob) => ({
+        label: nob,
+        value: nob,
+    }))
+}
+export const AccountTypeOptions = () => {
+    return ['Savings', 'Current', 'Other'].map((nob) => ({
+        label: nob,
+        value: nob,
     }))
 }

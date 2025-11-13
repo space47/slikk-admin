@@ -2,8 +2,9 @@
 import { FormContainer, FormItem, Input } from '@/components/ui'
 import { Field } from 'formik'
 import React from 'react'
-import { SellerBankData } from '../sellerUtils/sellerFormCommon'
+import { AccountTypeOptions, SellerBankData } from '../sellerUtils/sellerFormCommon'
 import FormUploadFile from '@/common/FormUploadFile'
+import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 
 interface Props {
     values: any
@@ -23,15 +24,10 @@ const SellerBankDetails = ({ values, isEdit }: Props) => {
             <FormContainer className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-5">
                 {SellerBankData?.map((item, idx) => (
                     <FormItem key={idx} label={item?.label} asterisk={item?.isRequired} className="flex flex-col space-y-1">
-                        <Field
-                            type={item?.type}
-                            name={item?.name}
-                            placeholder={`Enter ${item?.label}`}
-                            component={Input}
-                            className="!h-10 w-full"
-                        />
+                        <Field type={item?.type} name={item?.name} placeholder={`Enter ${item?.label}`} component={Input} />
                     </FormItem>
                 ))}
+                <CommonSelect name="account_type" options={AccountTypeOptions()} label="Account Type" />
             </FormContainer>
             <div className="border-t pt-6 w-full">
                 <h5 className="text-md font-semibold text-gray-800 mb-4">Upload Documents</h5>
