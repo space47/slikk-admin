@@ -344,7 +344,6 @@ const SellerDetails = () => {
                         sellerData={sellerData as VendorDetails}
                         commentStructure={commentStructure}
                         handleComments={handleComments}
-                        handleProceed={handleProceed}
                         setConfirmModal={setConfirmModal}
                         setStatusToProceed={setStatusToProceed}
                     />
