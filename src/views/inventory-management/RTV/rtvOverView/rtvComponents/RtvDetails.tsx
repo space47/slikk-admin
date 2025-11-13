@@ -33,6 +33,7 @@ const RtvDetails = () => {
     const { data: rtv, isSuccess: rtvSuccess } = rtvService.useRtvDataQuery({ rtv_id: rtv_number })
     const [assignPicker, pickerResponse] = rtvService.useAssignRtvPickerMutation()
     const [createGdn, gdnResponse] = rtvService.useCreateGdnFromRtvMutation()
+    const [updateRtv, updateResponse] = rtvService.useUpdateRtvMutation()
 
     useEffect(() => {
         if (isSuccess) {
@@ -67,6 +68,15 @@ const RtvDetails = () => {
         }
     }, [gdnResponse.isSuccess, gdnResponse.isError])
 
+    useEffect(() => {
+        if (updateResponse?.isSuccess) {
+            notification.success({ message: updateResponse?.data?.message || 'Successfully Added Rtv Number' })
+        }
+        if (updateResponse?.isError) {
+            notification.error({ message: (updateResponse?.error as any)?.data?.message || 'Failed to Add Rtv Number' })
+        }
+    }, [updateResponse.isSuccess, updateResponse.isError])
+
     const handleAssign = async (actionType: string) => {
         const body = {
             action: 'assign_picker',
@@ -86,6 +96,13 @@ const RtvDetails = () => {
 
     const columns = useRtvProductsColumn()
 
+    const handleRtvGeneration = () => {
+        updateRtv({
+            id: rtv_number as string,
+            action: 'add_rtv_number',
+        })
+    }
+
     if (isLoading) {
         return <LoadingSpinner />
     }
@@ -94,9 +111,16 @@ const RtvDetails = () => {
         <div className="flex flex-col gap-8 p-6 bg-gray-50 dark:bg-gray-900 rounded-2xl shadow-lg">
             {rtvSuccess ? (
                 <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
-                        RTV Details
-                    </h2>
+                    <div className="flex justify-between">
+                        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
+                            RTV Details
+                        </h2>
+                        <div>
+                            <Button variant="new" size="sm" onClick={handleRtvGeneration}>
+                                RTV Number Generation
+                            </Button>
+                        </div>
+                    </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-3 gap-x-6 text-sm">
                         <div>
                             <span className="font-medium text-gray-500 dark:text-gray-400">Company Name:</span>

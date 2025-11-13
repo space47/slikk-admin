@@ -49,7 +49,7 @@ export const rtvService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        updateRtv: builder.mutation<{ status: string; message: string }, Record<string, any> & { id: number }>({
+        updateRtv: builder.mutation<{ status: string; message: string }, Record<string, any> & { id: number | string }>({
             query: ({ id, ...body }) => {
                 console.log('body is', body)
                 return {
@@ -59,7 +59,7 @@ export const rtvService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        assignRtvPicker: builder.mutation<{ status: string; message: string }, Record<string, any> & { id: number }>({
+        assignRtvPicker: builder.mutation<{ status: string; message: string }, Record<string, any> & { id: number | string }>({
             query: ({ id, ...body }) => {
                 console.log('body is', body)
                 return {
