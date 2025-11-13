@@ -10,6 +10,7 @@ interface ConfirmationDialogProps {
     IsConfirm?: boolean
     headingName?: string
     checkBox?: boolean
+    label?: string
     closeDialog?: () => void
 }
 
@@ -22,6 +23,7 @@ const DialogConfirm = ({
     headingName,
     checkBox,
     closeDialog,
+    label,
 }: ConfirmationDialogProps) => {
     const onDialogClose = () => {
         if (checkBox) {
@@ -41,7 +43,7 @@ const DialogConfirm = ({
                     <>
                         <div className="flex flex-col gap-4 font-bold">
                             <h3 className="text-blue-500">{headingName}</h3>
-                            <div className="">Are you sure you want to perform this action</div>
+                            <div className="">Are you sure you want to perform this {label || 'action'}</div>
                         </div>
                     </>
                 )}
@@ -49,7 +51,7 @@ const DialogConfirm = ({
                     <>
                         <div className="flex flex-col gap-4 font-bold">
                             <h3>{headingName}</h3>
-                            <div className="text-red-700">Are you sure you want to Delete this action</div>
+                            <div className="text-red-700">Are you sure you want to Delete this {label || 'action'}</div>
                         </div>
                     </>
                 )}

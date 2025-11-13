@@ -13,15 +13,36 @@ export const useRtvProductsColumn = ({ handleEditProducts }: props) => {
     return useMemo<ColumnDef<Rtv_Products>[]>(
         () => [
             {
+                header: 'Edit',
+                accessorKey: 'sku',
+                cell: ({ row }) => (
+                    <span>
+                        <FaEdit className="text-blue-600 cursor-pointer text-xl" onClick={() => handleEditProducts(row?.original)} />
+                    </span>
+                ),
+            },
+            {
                 header: 'SKU',
                 accessorKey: 'sku',
                 cell: ({ row }) => <span className="font-medium text-gray-800 dark:text-gray-200">{row.original.sku}</span>,
             },
             {
-                header: 'Picker',
-                accessorKey: 'picker',
-                cell: ({ row }) => <span>{row.original.picker || '-'}</span>,
+                header: 'Image',
+                accessorKey: 'image',
+                cell: ({ row }) => {
+                    const imageUrl = row?.original?.images.split(',')[0]
+                    return (
+                        <>
+                            <img src={imageUrl} alt="Image" className="w-24 h-20 object-cover cursor-pointer" />
+                        </>
+                    )
+                },
             },
+            // {
+            //     header: 'Picker',
+            //     accessorKey: 'picker',
+            //     cell: ({ row }) => <span>{row.original.picker || '-'}</span>,
+            // },
             {
                 header: 'Qty Required',
                 accessorKey: 'quantity_required',
@@ -37,9 +58,6 @@ export const useRtvProductsColumn = ({ handleEditProducts }: props) => {
                         }`}
                     >
                         <span>{row.original.quantity_accepted}</span>{' '}
-                        <span>
-                            <FaEdit className="text-blue-600 cursor-pointer" onClick={() => handleEditProducts(row?.original)} />
-                        </span>
                     </span>
                 ),
             },
@@ -59,9 +77,14 @@ export const useRtvProductsColumn = ({ handleEditProducts }: props) => {
             {
                 header: 'Box No.',
                 accessorKey: 'box_number',
-                cell: ({ row }) => <span>{row.original.box_number || '-'}</span>,
+                cell: ({ row }) => <span>{JSON.stringify(row?.original?.box_locations || 'N/A')}</span>,
             },
 
+            {
+                header: 'Locations',
+                accessorKey: 'locations',
+                cell: ({ row }) => <span>{row.original.locations || '-'}</span>,
+            },
             {
                 header: 'Created On',
                 accessorKey: 'create_date',

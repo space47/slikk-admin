@@ -216,7 +216,7 @@ const RtvDetails = () => {
                         <Input
                             type="search"
                             value={searchInput}
-                            placeholder="Search by SKU... 🔎"
+                            placeholder="Search by SKU... "
                             onChange={(e) => setSearchInput(e.target.value)}
                         />
                     </div>

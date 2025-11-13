@@ -417,7 +417,14 @@ const RiderDetails = () => {
             )}
 
             <BulkEditRiderModal dialogIsOpen={isBulkRiderModal} setIsOpen={setIsBulkRiderModal} riderMobileStore={riderMobileStore} />
-            <DialogConfirm IsDelete IsOpen={showDeleteModal} closeDialog={() => setShowDeleteModal(false)} onDialogOk={handleDeleteRider} />
+            <DialogConfirm
+                IsDelete
+                headingName={`Delete Rider: ${currentRow?.profile?.first_name}${currentRow?.profile?.last_name}`}
+                label={`rider with number ${currentRow?.profile?.mobile} `}
+                IsOpen={showDeleteModal}
+                closeDialog={() => setShowDeleteModal(false)}
+                onDialogOk={handleDeleteRider}
+            />
         </div>
     )
 }
