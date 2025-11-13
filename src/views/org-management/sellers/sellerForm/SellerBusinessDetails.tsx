@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Checkbox, FormContainer, FormItem, Input } from '@/components/ui'
+import { FormContainer, FormItem, Input, Switcher } from '@/components/ui'
 import React from 'react'
 import { BusinessDetails } from '../sellerUtils/sellerFormCommon'
 import { Field } from 'formik'
@@ -31,7 +31,7 @@ const SellerBusinessDetails = ({ isEdit, values }: Props) => {
                             type={item?.type}
                             name={item?.name}
                             placeholder={`Enter ${item?.label}`}
-                            component={item?.type === 'checkbox' ? Checkbox : Input}
+                            component={item?.type === 'checkbox' ? Switcher : Input}
                             className="!h-10"
                         />
                     </FormItem>

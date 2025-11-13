@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Checkbox, FormContainer, FormItem, Select } from '@/components/ui'
+import { FormContainer, FormItem, Select, Switcher } from '@/components/ui'
 import { Input } from 'antd'
 import { Field, FieldProps } from 'formik'
 import { SellerCommercialsArray } from '../sellerUtils/sellerFormCommon'
@@ -18,7 +18,7 @@ const SellerCommercials = () => {
                                 type={item?.type}
                                 name={item?.name}
                                 placeholder={`Enter ${item?.label}`}
-                                component={item?.type === 'checkbox' ? Checkbox : Input}
+                                component={item?.type === 'checkbox' ? Switcher : Input}
                             />
                         </FormItem>
                     )

@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Checkbox, FormContainer, FormItem } from '@/components/ui'
+import { FormContainer, FormItem, Switcher } from '@/components/ui'
 import { Input } from 'antd'
 import { Field } from 'formik'
+
 import FormUploadFile from '@/common/FormUploadFile'
-import { SellerMsMeArray } from '../sellerUtils/sellerFormCommon'
+import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
+import { MSMEOptions, SellerMsMeArray } from '../sellerUtils/sellerFormCommon'
 
 interface props {
     isEdit?: boolean
@@ -15,6 +17,9 @@ const SellerMsme = ({ isEdit, values }: props) => {
         <div className="w-full">
             <h4>MsMe Details</h4>
             <p>Provide essential details about vendor entity. All field marked with * are mandatory</p>
+            <FormContainer className="mt-10">
+                <CommonSelect name="msme_category" options={MSMEOptions()} label="MSME Category" />
+            </FormContainer>
             <FormContainer className="mt-8 grid grid-cols-2 gap-2">
                 {SellerMsMeArray?.map((item, idx) => {
                     return (
@@ -23,7 +28,7 @@ const SellerMsme = ({ isEdit, values }: props) => {
                                 type={item?.type}
                                 name={item?.name}
                                 placeholder={`Enter ${item?.label}`}
-                                component={item?.type === 'checkbox' ? Checkbox : Input}
+                                component={item?.type === 'checkbox' ? Switcher : Input}
                             />
                         </FormItem>
                     )

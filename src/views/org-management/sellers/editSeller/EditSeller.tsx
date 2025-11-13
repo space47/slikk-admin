@@ -10,6 +10,7 @@ import { AxiosError } from 'axios'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { errorMessage, successMessage } from '@/utils/responseMessages'
 import { getChangedFormData } from '@/utils/apiBodyUtility'
+import dayjs from 'dayjs'
 
 const EditSeller = () => {
     const { id } = useParams()
@@ -78,6 +79,8 @@ const EditSeller = () => {
         update_date: sellerData?.update_date || '',
         id: sellerData?.id || 0,
         confirm: sellerData?.account_number || '',
+        gst_details: sellerData?.gst_details || [],
+        date: dayjs().format('YYYY-MM-DD HH:mm:ss a'),
     }
 
     const handleSubmit = async (values: any) => {
@@ -85,75 +88,89 @@ const EditSeller = () => {
             notification.error({ message: 'Failure !! Alternate Mobile Number Should be different' })
             return
         }
+
         const formData = new FormData()
+
         const appendIfValid = (key: string, value: any) => {
             if (value !== undefined && value !== null && value !== '') {
                 formData.append(key, value)
             }
         }
-        appendIfValid('registered_name', values?.registered_name)
-        appendIfValid('is_active', values?.is_active)
-        appendIfValid('code', values?.code)
-        appendIfValid('head_name', values?.head_name)
-        appendIfValid('head_contact', values?.head_contact)
-        appendIfValid('head_email', values?.head_email)
-        appendIfValid('gst_certificate', values?.gst_certificate[0])
-        appendIfValid('gstin', values?.gstin)
-        appendIfValid('pan_copy', values?.pan_copy[0])
-        appendIfValid('pan_number', values?.pan_number)
-        appendIfValid('tan_number', values?.tan_number)
-        appendIfValid('tan_copy', values?.tan_copy[0])
-        appendIfValid('cin', values?.cin)
-        appendIfValid('address', values?.address)
-        appendIfValid('contact_number', values?.contact_number)
-        appendIfValid('alternate_contact_number', values?.alternate_contact_number)
-        appendIfValid('poc_email', values?.poc_email)
-        appendIfValid('poc', values?.poc_name)
-        appendIfValid('finance_name', values?.finance_name)
-        appendIfValid('finance_email', values?.finance_email)
-        appendIfValid('finance_contact_number', values?.finance_contact_number)
-        appendIfValid('account_number', values?.account_number)
-        appendIfValid('account_holder_name', values?.account_holder_name)
-        appendIfValid('ifsc', values?.ifsc)
-        appendIfValid('bank_name', values?.bank_name)
-        appendIfValid('branch_name', values?.branch_name)
-        appendIfValid('account_type', values?.account_type)
-        appendIfValid('cancelled_cheque', values?.cancelled_cheque[0])
-        appendIfValid('segment', values?.segment)
-        appendIfValid('settlement_days', values?.settlement_days)
-        appendIfValid('revenue_share', values?.revenue_share)
-        appendIfValid('handling_charges_per_order', values?.handling_charges_per_order)
-        appendIfValid('warehouse_charge_per_sku', values?.warehouse_charge_per_sku)
-        appendIfValid('damages_per_sku', values?.damages_per_sku)
-        appendIfValid('removal_fee_per_sku', values?.removal_fee_per_sku)
-        appendIfValid('approved_payment_term', values?.approved_payment_term)
-        appendIfValid('business_nature', values?.business_nature)
-        appendIfValid('sp_type', values?.sp_type)
-        appendIfValid('pf_declaration', values?.pf_declaration)
-        appendIfValid('pf_declaration_doc', values?.pf_declaration_doc[0])
-        appendIfValid('trade_mark_certificate', values?.trade_mark_certificate[0])
-        appendIfValid('is_msme', values?.is_msme)
-        appendIfValid('msme_category', values?.msme_category)
-        appendIfValid('msme_certificate', values?.msme_certificate[0])
-        appendIfValid('commercial_approval_doc', values?.commercial_approval_doc[0])
-        appendIfValid('approved_onboarding_doc', values?.approved_onboarding_doc[0])
-
-        appendIfValid(
-            'gst_details',
-            JSON.stringify([
-                {
-                    warehouse_name: values?.warehouse_name,
-                    warehouse_address: values?.address,
-                    gstin: values?.gstin,
-                    poc_name: values?.poc_name,
-                    poc_email: values?.poc_email,
-                },
-            ]),
-        )
-
-        appendIfValid('authorized_person', values?.authorized_person)
-        appendIfValid('name', values?.name)
-
+        const simpleFields = [
+            'registered_name',
+            'is_active',
+            'code',
+            'head_name',
+            'head_contact',
+            'head_email',
+            'gstin',
+            'pan_number',
+            'tan_number',
+            'cin',
+            'address',
+            'contact_number',
+            'alternate_contact_number',
+            'poc_email',
+            'poc_name',
+            'finance_name',
+            'finance_email',
+            'finance_contact_number',
+            'account_number',
+            'account_holder_name',
+            'ifsc',
+            'bank_name',
+            'branch_name',
+            'account_type',
+            'segment',
+            'settlement_days',
+            'revenue_share',
+            'handling_charges_per_order',
+            'warehouse_charge_per_sku',
+            'damages_per_sku',
+            'removal_fee_per_sku',
+            'approved_payment_term',
+            'business_nature',
+            'sp_type',
+            'pf_declaration',
+            'is_msme',
+            'msme_category',
+            'authorized_person',
+            'declaration_statement',
+            'name',
+        ]
+        simpleFields.forEach((key) => appendIfValid(key, values?.[key]))
+        const fileFields = [
+            'gst_certificate',
+            'pan_copy',
+            'tan_copy',
+            'cancelled_cheque',
+            'pf_declaration_doc',
+            'trade_mark_certificate',
+            'msme_certificate',
+            'commercial_approval_doc',
+            'approved_onboarding_doc',
+        ]
+        fileFields.forEach((key) => appendIfValid(key, values?.[key]?.[0]))
+        const existingDetails = initialValue?.gst_details || []
+        const updatedDetails = (values?.gst_details || []).map((warehouse: any, index: number) => {
+            const existing = existingDetails[index] || {}
+            if (warehouse?.gst_certificate?.[0] instanceof File) {
+                const certKey = `cert${index + 1}`
+                formData.append(certKey, warehouse.gst_certificate[0])
+                return {
+                    ...warehouse,
+                    gst_certificate: certKey,
+                }
+            }
+            return {
+                ...warehouse,
+                gst_certificate: existing?.gst_certificate,
+            }
+        })
+        const gstChanged = JSON.stringify(existingDetails) !== JSON.stringify(updatedDetails)
+        if (gstChanged) {
+            appendIfValid('gst_details', JSON.stringify(updatedDetails))
+        }
         const changedValue = getChangedFormData(formData, initialValue)
 
         try {
@@ -161,9 +178,7 @@ const EditSeller = () => {
             successMessage(res)
             navigate(-1)
         } catch (error) {
-            if (error instanceof AxiosError) {
-                errorMessage(error)
-            }
+            if (error instanceof AxiosError) errorMessage(error)
         }
     }
 
