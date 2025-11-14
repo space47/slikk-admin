@@ -147,6 +147,24 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                 return <div>{row.color}</div>
             },
         }),
+        columnHelper.accessor('location_details', {
+            header: 'Location Details',
+            cell: (props) => {
+                const row = props.row.original
+                const locationEntries = Object.entries(row?.location_details || {})
+                if (locationEntries.length === 0) return 'N/A'
+
+                return (
+                    <div>
+                        {locationEntries.map(([key, val]) => (
+                            <div key={key}>
+                                {key}: {val}
+                            </div>
+                        ))}
+                    </div>
+                )
+            },
+        }),
         columnHelper.accessor('sp', {
             header: 'Price',
             cell: (props) => {
