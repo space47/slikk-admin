@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Dialog from '@/components/ui/Dialog'
-import { pickerBoardData } from '@/store/types/picker.types'
+import { PickerTableData } from '@/store/types/picker.types'
 import { Field, Form, Formik } from 'formik'
 import { Button, FormContainer, FormItem, Input } from '@/components/ui'
 import FullTimePicker from '@/common/FullTimePicker'
@@ -24,15 +24,17 @@ interface props {
     isEdit?: boolean
     dialogIsOpen: boolean
     setIsOpen: (x: boolean) => void
-    rowDetails?: pickerBoardData
+    rowDetails?: PickerTableData
 }
 
 const PickerDetailEditModal = ({ dialogIsOpen, setIsOpen, rowDetails, isEdit }: props) => {
-    const mobile = rowDetails?.mobile
+    const mobile = rowDetails?.user?.mobile
 
     const query = useMemo(() => {
-        return `/picker/profile?mobile=${mobile}`
-    }, [])
+        if (mobile) {
+            return `/picker/profile?mobile=${mobile}`
+        }
+    }, [mobile])
 
     const { data: pickerData } = useFetchSingleData<any>({ url: query })
 

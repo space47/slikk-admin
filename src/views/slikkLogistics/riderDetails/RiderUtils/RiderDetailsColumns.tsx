@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Switch } from 'antd'
 import moment from 'moment'
+import { FaTrash } from 'react-icons/fa'
 
 interface RiderColumnsProps {
     sortedRiderDetails: any
     handleActiveCareer: (id: number, e: any, checked: boolean, mobile: string, name: string) => void
     handleProfileClick: (row: any) => void
+    handleDelete: (row: any) => void
     currentStoreLocation: Record<string, number | undefined>
     riderMobileStore: any[]
     handleSelectAllRiders: (x: any) => void
@@ -31,6 +33,7 @@ export const RiderColumns = ({
     sortedRiderDetails,
     handleSelectAllRiders,
     handleSelectRiderMobile,
+    handleDelete,
 }: RiderColumnsProps) => {
     return [
         {
@@ -219,5 +222,14 @@ export const RiderColumns = ({
         },
 
         { header: 'Estimate Time', accessorKey: 'recent_task_detail.estimate_time' },
+        {
+            header: 'Delete',
+            accessorKey: 'mobile',
+            cell: ({ row }: any) => (
+                <div className="text-gray-700 dark:text-white">
+                    <FaTrash className="text-xl text-red-500" onClick={() => handleDelete(row?.original)} />
+                </div>
+            ),
+        },
     ]
 }

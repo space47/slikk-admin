@@ -46,7 +46,7 @@ const SyncInventoryModal = ({ isOpen, setIsOpen, storeId }: Props) => {
         } catch (error) {
             if (error instanceof AxiosError) {
                 const message = error?.response?.data?.message
-
+                //changes according to message
                 if (message === 'Please confirm hard inventory sync' || message === 'Please confirm soft inventory sync') {
                     const { total_product, total_inventory, total_inventory_sum } = error?.response?.data || {}
 

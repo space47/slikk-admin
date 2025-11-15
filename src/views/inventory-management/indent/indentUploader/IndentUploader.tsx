@@ -74,7 +74,7 @@ const IndentUploader = () => {
             </Upload>
             <div className="flex flex-row w-full space-x-[2%] items-center justify-center">
                 <div className="flex flex-col w-full max-w-[400px]">
-                    <label className="font-semibold text-gray-700 mb-1">Select Store</label>
+                    <label className="font-semibold text-gray-700 mb-1">Select Target Store</label>
                     <Select
                         isClearable
                         options={storeList}

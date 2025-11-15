@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useMemo, useState, useCallback } from 'react'
 import moment from 'moment'
@@ -33,6 +34,7 @@ import { BUSY_STATUS_TABS, DEBOUNCE_DELAY, SEARCH_TYPES, STATUS_TABS, StoreOptio
 import PageCommon from '@/common/PageCommon'
 import { useDebounceInput } from '@/commonHooks/useDebounceInput'
 import { RiderDetailsType } from '@/store/types/riderAddTypes'
+import DialogConfirm from '@/common/DialogConfirm'
 
 const RiderDetails = () => {
     const navigate = useNavigate()
@@ -55,15 +57,19 @@ const RiderDetails = () => {
     const [shiftStart, setShiftStart] = useState('')
     const [shiftEnd, setShiftEnd] = useState('')
     const [currentRow, setCurrentRow] = useState<RiderDetailsType>()
+    const [showDeleteModal, setShowDeleteModal] = useState(false)
     const { storeResults } = useAppSelector<companyStore>((state) => state.companyStore)
     const { count, from, page, pageSize, to, currentStoreLocation } = useAppSelector<RiderDetailType>((state) => state.riderDetails)
     const [riderDownload, riderDownloadResponse] = ridersService.useLazyRiderDetailsDownloadQuery()
     const { debounceFilter } = useDebounceInput({ globalFilter: globalFilter as string, delay: DEBOUNCE_DELAY })
+    const [deleteRider, deleteResponse] = ridersService.useRiderDeleteMutation()
+    const [performanceDownload, performanceResponse] = ridersService.useLazyRiderPerformanceDownloadQuery()
     const {
         data: riders,
         isSuccess,
         isLoading,
         isFetching,
+        refetch,
     } = ridersService.useRiderDetailsQuery(
         {
             from: from,
@@ -107,6 +113,17 @@ const RiderDetails = () => {
     }, [riders, isSuccess, dispatch])
 
     useEffect(() => {
+        if (deleteResponse?.isSuccess) {
+            notification.success({ message: 'Successfully Deleted' })
+            setShowDeleteModal(false)
+            refetch()
+        }
+        if (deleteResponse?.isError) {
+            notification.error({ message: 'Failed to delete Rider' })
+        }
+    }, [deleteResponse?.isSuccess, deleteResponse?.isError])
+
+    useEffect(() => {
         if (riderDownloadResponse?.isSuccess) {
             notification.success({ message: riderDownloadResponse?.data?.message || 'File is sent to your registered mail' })
         }
@@ -114,6 +131,20 @@ const RiderDetails = () => {
             notification.error({ message: 'Failed to download rider data' })
         }
     }, [riderDownloadResponse.isError, riderDownloadResponse?.isSuccess])
+
+    useEffect(() => {
+        if (performanceResponse.isSuccess) {
+            notification.success({
+                message: performanceResponse.data?.message || 'File is sent to your registered mail',
+            })
+        }
+
+        if (performanceResponse.isError) {
+            notification.error({
+                message: 'Failed to download rider data',
+            })
+        }
+    }, [performanceResponse.isSuccess, performanceResponse.isError])
 
     const handleActiveCareer = useCallback((id: number, e: any, checked: boolean, mobile: string, name: string) => {
         setMobileForParticularRider(mobile)
@@ -183,6 +214,23 @@ const RiderDetails = () => {
         [dispatch],
     )
 
+    const handleDelete = (row: RiderDetailsType) => {
+        setCurrentRow(row)
+        setShowDeleteModal(true)
+    }
+
+    const handleDeleteRider = () => {
+        deleteRider({ mobile: currentRow?.profile?.mobile as number })
+    }
+
+    const handlePerformance = () => {
+        performanceDownload({
+            from,
+            to: moment(to).add(1, 'days').format('YYYY-MM-DD'),
+            _forceReset: Date.now(),
+        } as any)
+    }
+
     const columns = RiderColumns({
         sortedRiderDetails,
         handleActiveCareer,
@@ -191,6 +239,7 @@ const RiderDetails = () => {
         riderMobileStore,
         handleSelectAllRiders,
         handleSelectRiderMobile,
+        handleDelete,
     })
 
     const renderTabNavigation = () => (
@@ -309,13 +358,16 @@ const RiderDetails = () => {
                         )}
                         <div className="xl:mt-8" onClick={handleCopyLink}>
                             <a
-                                className="p-2 rounded-xl bg-gradient-to-r bg-blue-700/80 text-white no-underline flex gap-2 font-bold backdrop-blur-sm"
+                                className="px-4 py-2 text-white rounded-lg border border-gray-600 bg-gray-500 text-gray-800 no-underline flex gap-2 items-center hover:bg-gray-400 transition"
                                 href="https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/builds/Rider+App/rider-app-new.apk"
                             >
                                 App Link
                             </a>
                         </div>
 
+                        <Button variant="twoTone" color="gray" icon={<FaDownload />} className="xl:mt-8" onClick={handlePerformance}>
+                            Rider Performance Report
+                        </Button>
                         <UltimateDatePicker
                             dispatch={dispatch}
                             from={from}
@@ -390,9 +442,16 @@ const RiderDetails = () => {
                     setRiderType={setRiderType}
                 />
             )}
-            {isBulkRiderModal && (
-                <BulkEditRiderModal dialogIsOpen={isBulkRiderModal} setIsOpen={setIsBulkRiderModal} riderMobileStore={riderMobileStore} />
-            )}
+
+            <BulkEditRiderModal dialogIsOpen={isBulkRiderModal} setIsOpen={setIsBulkRiderModal} riderMobileStore={riderMobileStore} />
+            <DialogConfirm
+                IsDelete
+                headingName={`Delete Rider: ${currentRow?.profile?.first_name}${currentRow?.profile?.last_name}`}
+                label={`rider with number ${currentRow?.profile?.mobile} `}
+                IsOpen={showDeleteModal}
+                closeDialog={() => setShowDeleteModal(false)}
+                onDialogOk={handleDeleteRider}
+            />
         </div>
     )
 }

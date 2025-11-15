@@ -237,5 +237,27 @@ export const ridersService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
+        riderDelete: builder.mutation<{ success: string }, { mobile: string | number }>({
+            query: (params) => {
+                return {
+                    url: `/rider/profile/${params.mobile}`,
+                    method: 'DELETE',
+                }
+            },
+        }),
+        riderPerformanceDownload: builder.query<{ status: string; message: string }, { from?: string; to?: string }>({
+            query: (params) => {
+                const parameters: Record<string, string | string[]> = {}
+
+                if (params.from) parameters.from = params.from
+                if (params.to) parameters.to = params.to
+
+                return {
+                    url: `rider/performance/report`,
+                    method: 'GET',
+                    params: parameters,
+                }
+            },
+        }),
     }),
 })
