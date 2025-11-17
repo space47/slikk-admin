@@ -83,7 +83,7 @@ const OrderDetails = () => {
     }
 
     return (
-        <Container className="overflow-scroll scrollbar-hide ">
+        <Container className="scrollbar-hide w-full ">
             <Loading loading={loading}>
                 {!isEmpty(data) && (
                     <>
