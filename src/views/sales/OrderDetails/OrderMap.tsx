@@ -3,11 +3,13 @@ import React, { useEffect, useRef, useState } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import 'leaflet-rotatedmarker'
 import { FaMapMarkerAlt } from 'react-icons/fa'
 import polyline from '@mapbox/polyline'
 import axios from 'axios'
 import { BsFullscreenExit } from 'react-icons/bs'
 import { MdFullscreen } from 'react-icons/md'
+import { calculateBearing } from '@/utils/common'
 
 interface props {
     task_id: string
@@ -128,11 +130,25 @@ const OrderMap = ({ taskData }: props) => {
     const [destinationLatLong, setDestinationLatLong] = useState<[number, number]>([0, 0])
     const MAP_KEY = import.meta.env.VITE_OLA_API_KEY
 
-    const isNonEmpty = sourceLatLong[0] > 0 && sourceLatLong[1] > 0
+    const riderMarkerRef = useRef<L.Marker<any> | null>(null)
+    const lastPickupRef = useRef<{ lat: number; lng: number } | null>(null)
+    const lastDropRef = useRef<{ lat: number; lng: number } | null>(null)
 
-    console.log('source lat long', isNonEmpty)
+    const rawCheckpoints = Object.entries(taskData?.location_data || {})
+        .map(([, coords]) => coords)
+        .map(([lat, lng]) => [Number(lat), Number(lng)])
 
+    const filteredCheckpoints = rawCheckpoints.filter((pt, i, arr) => {
+        if (i === 0) return true
+        const prev = arr[i - 1]
+        return !(pt[0] === prev[0] && pt[1] === prev[1])
+    })
+
+    const [riderRoutePolyline, setRiderRoutePolyline] = useState('')
     const decodedPolyline = polyline.decode(polyLine)
+    const decodedRiderPolyline = polyline.decode(riderRoutePolyline)
+
+    const [currentAngle, setCurrentAngle] = useState(0)
 
     const fetchRouteDetails = async () => {
         try {
@@ -156,22 +172,107 @@ const OrderMap = ({ taskData }: props) => {
         }
     }
 
+    const fetchRiderRoute = async () => {
+        if (!destinationLatLong || !sourceLatLong || filteredCheckpoints.length < 2) return
+
+        const waypoints = filteredCheckpoints
+            .slice(-5)
+            .map(([lat, lng]) => `${Number(lat)},${Number(lng)}`)
+            .join('|')
+
+        try {
+            const response = await axios.post(`https://api.olamaps.io/routing/v1/directions/basic`, null, {
+                params: {
+                    origin: filteredCheckpoints?.[0].join(','),
+                    destination: destinationLatLong?.join(','),
+                    waypoints,
+                    alternatives: false,
+                    steps: true,
+                    overview: 'full',
+                    language: 'en',
+                    api_key: MAP_KEY,
+                },
+            })
+
+            setRiderRoutePolyline(response.data.routes[0].overview_polyline)
+        } catch (error) {
+            console.error('Error fetching rider route:', error)
+        }
+    }
+
+    //useEffect for fetching route details when source or destination changes
     useEffect(() => {
-        if (isNonEmpty) {
+        const isValidSourceAndDestination =
+            sourceLatLong[0] > 0 && sourceLatLong[1] > 0 && destinationLatLong[0] > 0 && destinationLatLong[1] > 0
+        if (isValidSourceAndDestination) {
             fetchRouteDetails()
         }
     }, [sourceLatLong, destinationLatLong])
 
+    //useEffect for setting pickup and drop locations (only when they change)
     useEffect(() => {
-        if (taskData?.pickup_details && taskData?.drop_details) {
-            const origin: [number, number] = [taskData?.pickup_details?.latitude, taskData?.pickup_details?.longitude]
-            const destination: [number, number] = [taskData?.drop_details?.latitude, taskData?.drop_details?.longitude]
-            setMapCenter(origin)
-            setSourceLatLong(origin)
-            setDestinationLatLong(destination)
-        }
-    }, [taskData])
+        const pickup = taskData?.pickup_details
+        const drop = taskData?.drop_details
+        if (!pickup || !drop) return
 
+        const origin: [number, number] = [pickup.latitude, pickup.longitude]
+        const destination: [number, number] = [drop.latitude, drop.longitude]
+
+        setMapCenter((prev) => {
+            if (!prev) return origin
+            return prev
+        })
+
+        const lastPickup = lastPickupRef.current
+        if (!lastPickup || lastPickup.lat !== origin[0] || lastPickup.lng !== origin[1]) {
+            setSourceLatLong(origin)
+            lastPickupRef.current = { lat: origin[0], lng: origin[1] }
+        }
+
+        const lastDrop = lastDropRef.current
+        if (!lastDrop || lastDrop.lat !== destination[0] || lastDrop.lng !== destination[1]) {
+            setDestinationLatLong(destination)
+            lastDropRef.current = { lat: destination[0], lng: destination[1] }
+        }
+    }, [
+        taskData?.pickup_details?.latitude,
+        taskData?.pickup_details?.longitude,
+        taskData?.drop_details?.latitude,
+        taskData?.drop_details?.longitude,
+    ])
+
+    useEffect(() => {
+        const lat = taskData?.runner_latitude
+        const lng = taskData?.runner_longitude
+        if (!lat || !lng) return
+
+        // Need at least 2 points to compute direction
+        if (filteredCheckpoints.length >= 2) {
+            const [prevLat, prevLng] = filteredCheckpoints[filteredCheckpoints.length - 2]
+            const [currLat, currLng] = filteredCheckpoints[filteredCheckpoints.length - 1]
+
+            const angle = calculateBearing(prevLat, prevLng, currLat, currLng)
+            console.log('Calculated angle:', angle)
+
+            setCurrentAngle(angle)
+
+            const marker = riderMarkerRef.current
+            if (marker && marker.setRotationAngle) {
+                marker.setRotationAngle(angle)
+                marker.setRotationOrigin('center center')
+            }
+        }
+        const isValidSourceAndDestination =
+            sourceLatLong[0] > 0 && sourceLatLong[1] > 0 && destinationLatLong[0] > 0 && destinationLatLong[1] > 0
+        if (isValidSourceAndDestination) fetchRiderRoute()
+    }, [JSON.stringify(taskData?.location_data), taskData?.runner_latitude, taskData?.runner_longitude])
+
+    const riderIcon = L.divIcon({
+        html: `<img id="rider-image" src="/img/logo/riderOnline-logo.png" style="width: 28px; transform-origin: center center;" />`,
+        className: '',
+        iconSize: [30, 30],
+        iconAnchor: [15, 15],
+    })
     if (!mapCenter) {
         return
     }
@@ -203,16 +304,9 @@ const OrderMap = ({ taskData }: props) => {
         )
     }
 
-    const ridersIcon = L.icon({
-        iconUrl: '/img/logo/riderOnline-logo.png',
-        iconSize: [20, 40],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-    })
-
     return (
         <div className="relative flex flex-col gap-10 ">
-            <div className="relative w-full" style={{ height: '500px' }}>
+            <div className="relative w-full" style={{ height: '500px', maxWidth: '900px' }}>
                 <MapContainer center={mapCenter} zoom={16} style={{ width: '100%', height: '100%', position: 'relative', zIndex: 0 }}>
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
@@ -232,12 +326,19 @@ const OrderMap = ({ taskData }: props) => {
 
                     {/* Runner Marker */}
                     {taskData?.runner_latitude && taskData?.runner_longitude && (
-                        <Marker position={[taskData?.runner_latitude, taskData?.runner_longitude]} icon={ridersIcon}>
+                        <Marker
+                            ref={riderMarkerRef}
+                            position={[taskData?.runner_latitude, taskData?.runner_longitude]}
+                            icon={riderIcon}
+                            rotationAngle={currentAngle}
+                            rotationOrigin="center center"
+                        >
                             <Popup>{taskData?.runner_detail?.name}</Popup>
                         </Marker>
                     )}
 
                     <Polyline positions={decodedPolyline} color="blue" />
+                    {decodedRiderPolyline.length > 0 && <Polyline positions={decodedRiderPolyline} color="red" weight={4} />}
                     <CurrentLocationButton />
                     <FullScreenMap mapCenter={mapCenter} taskData={taskData} decodedPolyline={decodedPolyline} />
                 </MapContainer>
