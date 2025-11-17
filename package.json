@@ -62,6 +62,7 @@
     "jsbarcode": "^3.11.6",
     "jspdf": "^2.5.2",
     "leaflet": "^1.9.4",
+    "leaflet-rotatedmarker": "^0.2.0",
     "leaflet-routing-machine": "^3.2.12",
     "leaflet.heat": "^0.2.0",
     "lodash": "^4.17.21",
