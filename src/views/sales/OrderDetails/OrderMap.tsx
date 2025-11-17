@@ -256,8 +256,8 @@ const OrderMap: React.FC<Props> = ({ taskData }) => {
                             <Popup>{taskData?.runner_detail?.name}</Popup>
                         </Marker>
                     )}
-                    {decodedPolyline.length > 0 && <Polyline positions={decodedPolyline as any} color="blue" />}
-                    {decodedRiderPolyline.length > 0 && <Polyline positions={decodedRiderPolyline as any} color="#FF000080" weight={4} />}
+                    {decodedPolyline.length > 0 && <Polyline positions={decodedPolyline} color="blue" />}
+                    {decodedRiderPolyline.length > 0 && <Polyline positions={decodedRiderPolyline} color="#FF000080" weight={4} />}
                     <CurrentLocationButton />
                 </MapContainer>
             </div>

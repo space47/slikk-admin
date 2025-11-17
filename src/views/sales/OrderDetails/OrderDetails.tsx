@@ -46,7 +46,7 @@ const OrderDetails = () => {
 
     const { data: taskData } = useFetchSingleData<TaskData>({
         url: query || '',
-        pollingInterval: query ? 10000 : undefined,
+        pollingInterval: query ? 60000 : undefined,
     })
 
     const { handlemarkAsPaid, handlePODAction, handleDownload, handleConvert, handleMarketingOrder } = useOrderDetailFunctions({
