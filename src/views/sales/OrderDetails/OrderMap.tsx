@@ -83,6 +83,7 @@ const OrderMap: React.FC<Props> = ({ taskData }) => {
     const [destinationLatLong, setDestinationLatLong] = useState<[number, number]>([0, 0])
 
     const [selectedPointCheckpoints, setSelectedPointCheckpoints] = useState<any>(null)
+    const [currentAngle, setCurrentAngle] = useState(0)
 
     useEffect(() => {
         console.log('selectedPointCheckpoints changed:', selectedPointCheckpoints)
@@ -198,6 +199,12 @@ const OrderMap: React.FC<Props> = ({ taskData }) => {
         }
     }, [MAP_KEY, destinationLatLong, taskData?.runner_latitude, taskData?.runner_longitude])
 
+    useEffect(() => {
+        const marker = riderMarkerRef.current
+        marker?.setRotationOrigin('center center')
+        marker?.setRotationAngle(currentAngle)
+    }, [currentAngle, showOnlyRiderPath])
+
     // Initialize map center + source/destination when pickup/drop available
     useEffect(() => {
         const pickup = taskData?.pickup_details
@@ -235,9 +242,7 @@ const OrderMap: React.FC<Props> = ({ taskData }) => {
             const curr = filteredCheckpoints[filteredCheckpoints.length - 1]
             const angle = calculateBearing(prev.lat, prev.lng, curr.lat, curr.lng)
 
-            const marker = riderMarkerRef.current
-            marker?.setRotationOrigin('center center')
-            marker?.setRotationAngle(angle)
+            setCurrentAngle(angle)
         }
         if (sourceLatLong[0] > 0 && destinationLatLong[0] > 0) {
             fetchRiderRoute()
@@ -279,7 +284,7 @@ const OrderMap: React.FC<Props> = ({ taskData }) => {
                             className="p-2 bg-white border-gray-300 border cursor-pointer rounded-md text-xs"
                             onClick={() => setShowOnlyRiderPath((prev) => !prev)}
                         >
-                            {showOnlyRiderPath ? 'Show All' : 'Rider Only'}
+                            {showOnlyRiderPath ? 'Show All' : 'Rider Path Only'}
                         </button>
                         <button
                             className="p-2 ml-1 bg-white border-gray-300 border-solid border cursor-pointer rounded-md"
@@ -321,10 +326,10 @@ const OrderMap: React.FC<Props> = ({ taskData }) => {
                             <CircleMarker
                                 key={`raw-${index}`}
                                 center={[pt.lat, pt.lng]}
-                                radius={6}
+                                radius={isHeavy ? 8 : 6}
                                 pathOptions={{
                                     color: 'black',
-                                    fillColor: isHeavy ? 'red' : '#fff',
+                                    fillColor: isHeavy ? '#FF0000AA' : '#fff',
                                     fillOpacity: 1,
                                 }}
                                 eventHandlers={{
