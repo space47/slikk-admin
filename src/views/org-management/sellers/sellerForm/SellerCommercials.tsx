@@ -2,8 +2,9 @@
 import { FormContainer, FormItem, Select, Switcher } from '@/components/ui'
 import { Input } from 'antd'
 import { Field, FieldProps } from 'formik'
-import { SellerCommercialsArray } from '../sellerUtils/sellerFormCommon'
+import { NOBOptions, SellerCommercialsArray } from '../sellerUtils/sellerFormCommon'
 import { SegmentOptions } from '@/constants/commonArray.constant'
+import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 
 const SellerCommercials = () => {
     return (
@@ -27,8 +28,8 @@ const SellerCommercials = () => {
             <FormItem asterisk label="Segment" className="col-span-1 w-full">
                 <Field name="segment">
                     {({ field, form }: FieldProps) => {
-                        const fieldValueArray = Array.isArray(field?.value) ? field?.value : field?.value.split(',')
-                        const selectedOptions = fieldValueArray.map((item: any) => {
+                        const fieldValueArray = Array.isArray(field?.value) ? field?.value : field?.value?.split(',') || []
+                        const selectedOptions = fieldValueArray?.map((item: any) => {
                             const selectedOption = SegmentOptions()?.find((options: any) => {
                                 return options?.label === item
                             })
@@ -52,6 +53,7 @@ const SellerCommercials = () => {
                     }}
                 </Field>
             </FormItem>
+            <CommonSelect name="business_nature" options={NOBOptions()} label="Nature of Business" />
         </div>
     )
 }

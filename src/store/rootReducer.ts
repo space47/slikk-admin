@@ -55,6 +55,7 @@ import storeSelectReducer from './slices/storeSelect/storeSelect.slice'
 import rtvSlice from './slices/rtv/rtv.slice'
 import dateRangeReducer from './slices/dateRange/dateRange.slice'
 import vendorReducer from './slices/vendorsSlice/vendors.slice'
+import riderZoneReducer from './slices/riderZoneSlice/riderZoneSlice'
 
 export type RootState = CombinedState<{
     authorization: CombinedState<Authorization>
@@ -122,6 +123,7 @@ const staticReducers = {
     storeSelect: storeSelectReducer,
     dateRange: dateRangeReducer,
     vendor: vendorReducer,
+    riderZone: riderZoneReducer,
     [rtvSlice.name]: rtvSlice.reducer,
     [remitanceApi.reducerPath]: remitanceApi.reducer,
     [RtkQueryService.reducerPath]: RtkQueryService.reducer,
