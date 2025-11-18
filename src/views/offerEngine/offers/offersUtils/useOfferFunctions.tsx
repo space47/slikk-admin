@@ -18,6 +18,7 @@ export const useOfferFunctions = ({ offersData }: props) => {
         min_purchase_amount: offersData?.min_purchase_amount || '',
         max_discount_amount: offersData?.max_discount_amount || '',
         is_active: offersData?.is_active ?? false,
+        is_freebie: offersData?.is_freebie ?? false,
         min_order_quantity: offersData?.min_order_quantity || '',
         max_order_quantity: offersData?.max_order_quantity || '',
         is_multi_unit_eligible: offersData?.is_multi_unit_eligible ?? false,
