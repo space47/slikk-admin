@@ -15,7 +15,6 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@ckeditor/ckeditor5-react": "^9.4.0",
     "@codemirror/lang-sql": "^6.8.0",
     "@ericblade/quagga2": "^1.8.4",
     "@floating-ui/react": "^0.26.22",
