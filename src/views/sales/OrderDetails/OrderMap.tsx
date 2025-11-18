@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap, CircleMarker } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet-rotatedmarker'
@@ -74,6 +74,7 @@ const OrderMap: React.FC<Props> = ({ taskData }) => {
     const mapContainerRef = useRef<any>(null)
     const riderMarkerRef = useRef<Leaflet.Marker | null>(null)
 
+    const [showOnlyRiderPath, setShowOnlyRiderPath] = useState(false)
     const [isFullScreen, setIsFullScreen] = useState(false)
     const [polyLine, setPolyLine] = useState('')
     const [riderRoutePolyline, setRiderRoutePolyline] = useState('')
@@ -81,21 +82,73 @@ const OrderMap: React.FC<Props> = ({ taskData }) => {
     const [sourceLatLong, setSourceLatLong] = useState<[number, number]>([0, 0])
     const [destinationLatLong, setDestinationLatLong] = useState<[number, number]>([0, 0])
 
+    const [selectedPointCheckpoints, setSelectedPointCheckpoints] = useState<any>(null)
+
+    useEffect(() => {
+        console.log('selectedPointCheckpoints changed:', selectedPointCheckpoints)
+    }, [selectedPointCheckpoints])
+
     const rawCheckpoints = useMemo(() => {
         if (!taskData?.location_data) return []
-        return Object.entries(taskData.location_data).map(([, coords]) => coords.map((v: any) => Number(v)) as [number, number])
+        const arr = Object.entries(taskData.location_data).map(([timestamp, coords]) => ({
+            lat: Number(coords?.[0]),
+            lng: Number(coords?.[1]),
+            timestamp,
+            ts: new Date(timestamp).getTime(),
+        }))
+        //Previous checkpoint details
+        return arr.map((pt, i, all) => {
+            if (i === 0) return { ...pt, prev: null, timeDiffMs: 0, distanceMeters: 0 }
+
+            const prev = all[i - 1]
+            const timeDiffMs = pt.ts - prev.ts
+            const distanceDiffMeters: number = L.latLng(pt.lat, pt.lng).distanceTo(L.latLng(prev.lat, prev.lng))
+            return { ...pt, prev, timeDiffMs, distanceDiffMeters }
+        })
     }, [JSON.stringify(taskData?.location_data)])
 
+    //Deduping consecutive identical points
     const filteredCheckpoints = useMemo(() => {
         if (!rawCheckpoints || rawCheckpoints.length === 0) return []
         return rawCheckpoints.filter((pt, i, arr) => {
             if (i === 0) return true
             const prev = arr[i - 1]
-            return !(pt[0] === prev[0] && pt[1] === prev[1])
+            return !(pt.lat === prev.lat && pt.lng === prev.lng)
         })
     }, [rawCheckpoints])
 
-    const lastFiveWaypoints = useMemo(() => filteredCheckpoints.slice(-5), [filteredCheckpoints])
+    const checkpointCounts = useMemo(() => {
+        const map = new Map<string, number>()
+        rawCheckpoints.forEach((pt) => {
+            const key = `${pt.lat},${pt.lng}`
+            map.set(key, (map.get(key) || 0) + 1)
+        })
+        return map
+    }, [rawCheckpoints])
+
+    const handleCheckpointClick = useCallback(
+        (pt) => {
+            const checkpointsHere = rawCheckpoints.filter((c) => c.lat === pt.lat && c.lng === pt.lng)
+
+            if (checkpointsHere.length === 0) return
+
+            checkpointsHere.sort((a, b) => a.ts - b.ts)
+
+            const waitMs = checkpointsHere[checkpointsHere.length - 1].ts - checkpointsHere[0].ts
+            const waitMin = Math.ceil(waitMs / 60000)
+
+            setSelectedPointCheckpoints({
+                coords: pt,
+                list: checkpointsHere,
+                waitMinutes: waitMin,
+                prev: checkpointsHere[0].prev,
+                prevTimeDiff: checkpointsHere[0].timeDiffMs,
+                prevDistance: checkpointsHere[0].distanceDiffMeters,
+            })
+        },
+        [rawCheckpoints],
+    )
+
     const decodedPolyline = useMemo(() => polyline.decode(polyLine), [polyLine])
     const decodedRiderPolyline = useMemo(() => polyline.decode(riderRoutePolyline), [riderRoutePolyline])
 
@@ -124,19 +177,14 @@ const OrderMap: React.FC<Props> = ({ taskData }) => {
 
     const fetchRiderRoute = useCallback(async () => {
         if (!MAP_KEY) return
-        if (filteredCheckpoints.length < 2) return
-
-        const originStr = filteredCheckpoints[0].join(',')
+        if (!taskData?.runner_latitude > 0 || !taskData?.runner_longitude > 0) return
         const destinationStr = destinationLatLong.join(',')
-        const waypoints = lastFiveWaypoints.map(([lat, lng]) => `${lat},${lng}`).join('|')
-        if (!waypoints) return
 
         try {
             const response = await axios.post(`https://api.olamaps.io/routing/v1/directions/basic`, null, {
                 params: {
-                    origin: originStr,
+                    origin: [taskData?.runner_latitude, taskData?.runner_longitude].join(','),
                     destination: destinationStr,
-                    waypoints,
                     alternatives: false,
                     steps: true,
                     overview: 'full',
@@ -148,7 +196,7 @@ const OrderMap: React.FC<Props> = ({ taskData }) => {
         } catch (err) {
             console.error('Error fetching rider route:', err)
         }
-    }, [MAP_KEY, filteredCheckpoints, lastFiveWaypoints, destinationLatLong])
+    }, [MAP_KEY, destinationLatLong, taskData?.runner_latitude, taskData?.runner_longitude])
 
     // Initialize map center + source/destination when pickup/drop available
     useEffect(() => {
@@ -183,9 +231,9 @@ const OrderMap: React.FC<Props> = ({ taskData }) => {
         if (!lat || !lng) return
 
         if (filteredCheckpoints.length >= 2) {
-            const [prevLat, prevLng] = filteredCheckpoints[filteredCheckpoints.length - 2]
-            const [currLat, currLng] = filteredCheckpoints[filteredCheckpoints.length - 1]
-            const angle = calculateBearing(prevLat, prevLng, currLat, currLng)
+            const prev = filteredCheckpoints[filteredCheckpoints.length - 2]
+            const curr = filteredCheckpoints[filteredCheckpoints.length - 1]
+            const angle = calculateBearing(prev.lat, prev.lng, curr.lat, curr.lng)
 
             const marker = riderMarkerRef.current
             marker?.setRotationOrigin('center center')
@@ -226,16 +274,16 @@ const OrderMap: React.FC<Props> = ({ taskData }) => {
                 }}
             >
                 <MapContainer center={mapCenter} zoom={16} style={{ width: '100%', height: '100%' }}>
-                    <div style={{ position: 'absolute', top: 10, right: 10, zIndex: 1000 }}>
+                    <div className="leaflet-control" style={{ position: 'absolute', top: 10, right: 10, zIndex: 1000 }}>
                         <button
+                            className="p-2 bg-white border-gray-300 border cursor-pointer rounded-md text-xs"
+                            onClick={() => setShowOnlyRiderPath((prev) => !prev)}
+                        >
+                            {showOnlyRiderPath ? 'Show All' : 'Rider Only'}
+                        </button>
+                        <button
+                            className="p-2 ml-1 bg-white border-gray-300 border-solid border cursor-pointer rounded-md"
                             onClick={toggleFullScreen}
-                            style={{
-                                padding: '8px 12px',
-                                background: 'white',
-                                border: '1px solid #ccc',
-                                borderRadius: 6,
-                                cursor: 'pointer',
-                            }}
                         >
                             {isFullScreen ? <BsFullscreenExit /> : <MdFullscreen />}
                         </button>
@@ -251,15 +299,106 @@ const OrderMap: React.FC<Props> = ({ taskData }) => {
                             <Popup>{taskData.drop_details.name}</Popup>
                         </Marker>
                     )}
-                    {taskData?.runner_latitude && taskData?.runner_longitude && (
+                    {taskData?.runner_latitude && taskData?.runner_longitude && !showOnlyRiderPath && (
                         <Marker ref={riderMarkerRef} position={[taskData.runner_latitude, taskData.runner_longitude]} icon={riderDivIcon}>
                             <Popup>{taskData?.runner_detail?.name}</Popup>
                         </Marker>
                     )}
-                    {decodedPolyline.length > 0 && <Polyline positions={decodedPolyline} color="blue" />}
-                    {decodedRiderPolyline.length > 0 && <Polyline positions={decodedRiderPolyline} color="#FF000080" weight={4} />}
+                    {filteredCheckpoints.length > 1 && (
+                        <Polyline positions={filteredCheckpoints} color="black" weight={3} dashArray="4 4" />
+                    )}
+                    {decodedRiderPolyline.length > 0 && !showOnlyRiderPath && (
+                        <Polyline positions={decodedRiderPolyline} color="#FF0000AA" dashArray="8 8" weight={4} />
+                    )}
+                    {decodedPolyline.length > 0 && !showOnlyRiderPath && <Polyline positions={decodedPolyline} color="#0000FFCC" />}
+
+                    {rawCheckpoints.map((pt, index) => {
+                        const key = `${pt.lat},${pt.lng}`
+                        const count = checkpointCounts.get(key) || 1
+                        const isHeavy = count > 2 // more than 2 checkpoints at same location
+
+                        return (
+                            <CircleMarker
+                                key={`raw-${index}`}
+                                center={[pt.lat, pt.lng]}
+                                radius={6}
+                                pathOptions={{
+                                    color: 'black',
+                                    fillColor: isHeavy ? 'red' : '#fff',
+                                    fillOpacity: 1,
+                                }}
+                                eventHandlers={{
+                                    click: () => {
+                                        handleCheckpointClick(pt)
+                                    },
+                                }}
+                            />
+                        )
+                    })}
+                    {selectedPointCheckpoints?.coords && (
+                        <Popup
+                            position={[selectedPointCheckpoints.coords.lat, selectedPointCheckpoints.coords.lng]}
+                            eventHandlers={{
+                                remove: () => {
+                                    setSelectedPointCheckpoints(null)
+                                },
+                            }}
+                        >
+                            <div>
+                                <h4 className="font-bold mb-2">Timestamps</h4>
+                                {selectedPointCheckpoints.waitMinutes > 0 && (
+                                    <p className="text-sm mb-2">
+                                        <b>Min. time elapsed:</b> {selectedPointCheckpoints.waitMinutes} min
+                                    </p>
+                                )}
+                                <ul className="text-sm overflow-y-scroll max-h-[150px]">
+                                    {selectedPointCheckpoints.list.map((c, i) => (
+                                        <li key={i}>
+                                            #{i + 1}: <b>{c.timestamp.toLocaleString()}</b>
+                                        </li>
+                                    ))}
+                                </ul>
+
+                                {selectedPointCheckpoints.prev && (
+                                    <div className="mb-3 text-sm">
+                                        <br />
+                                        <b>Previous checkpoint:</b>
+                                        <br />
+                                        Time taken: {Math.round(selectedPointCheckpoints.prevTimeDiff / 1000)} sec
+                                        <br />
+                                        Distance: {selectedPointCheckpoints.prevDistance.toFixed(1)} m
+                                        <hr className="my-2" />
+                                    </div>
+                                )}
+                            </div>
+                        </Popup>
+                    )}
                     <CurrentLocationButton />
                 </MapContainer>
+                <div
+                    style={{
+                        marginTop: 10,
+                        maxWidth: 400,
+                        background: 'white',
+                        padding: '8px 12px',
+                        borderRadius: 6,
+                        fontSize: 12,
+                        boxShadow: '0 0 6px rgba(0,0,0,0.3)',
+                        zIndex: 1000,
+                        lineHeight: '16px',
+                    }}
+                >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <div className="w-5 h-1 bg-black" /> Actual Rider Path
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+                        <div className="w-5 h-1 bg-red-500" />
+                        Recommended Rider Path
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+                        <div className="w-5 h-1 bg-blue-500" /> Warehouse → Delivery Address Shortest Path
+                    </div>
+                </div>
             </div>
         </div>
     )
