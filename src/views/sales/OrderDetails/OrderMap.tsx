@@ -148,7 +148,7 @@ const OrderMap: React.FC<Props> = ({ taskData }) => {
         } catch (err) {
             console.error('Error fetching rider route:', err)
         }
-    }, [MAP_KEY, filteredCheckpoints, lastFiveWaypoints, destination])
+    }, [MAP_KEY, filteredCheckpoints, lastFiveWaypoints])
 
     // Initialize map center + source/destination when pickup/drop available
     useEffect(() => {
