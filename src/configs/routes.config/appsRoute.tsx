@@ -1300,6 +1300,24 @@ const appsRoute: Routes = [
 
     // Tracking
     {
+        key: 'appstryAndBuy.riderZone',
+        path: `${APP_PREFIX_PATH}/riderZone`,
+        component: lazy(() => import('@/views/slikkLogistics/riderZone/riderZoneTable/RiderZoneTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appstryAndBuy.riderZone',
+        path: `${APP_PREFIX_PATH}/riderZone/add`,
+        component: lazy(() => import('@/views/slikkLogistics/riderZone/riderZoneAdd/RiderZoneAdd')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appstryAndBuy.riderZone',
+        path: `${APP_PREFIX_PATH}/riderZone/:id`,
+        component: lazy(() => import('@/views/slikkLogistics/riderZone/riderZoneEdit/RiderZoneEdit')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appstryAndBuy.taskTracking',
         path: `${APP_PREFIX_PATH}/tryAndBuy/taskTracking`,
         component: lazy(() => import('@/views/slikkLogistics/taskTracking/TaskTracking')),
