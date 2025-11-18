@@ -873,6 +873,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         subMenu: [],
                     },
                     {
+                        key: 'appstryAndBuy.riderZone',
+                        path: `${APP_PREFIX_PATH}/riderZone`,
+                        title: 'Rider Zone',
+                        translateKey: 'nav.appstryAndBuy.tryAndBuy',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
                         key: 'appstryAndBuy.taskTracking',
                         path: `${APP_PREFIX_PATH}/tryAndBuy/taskTracking`,
                         title: 'Forward Task ',
