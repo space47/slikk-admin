@@ -226,6 +226,7 @@ const RiderZoneMap = ({ coOrdinates, polygonPoints, setPolygonPoints }: RiderAdd
                     <div className="flex flex-wrap gap-2">
                         <button
                             disabled={isDrawing}
+                            type="button"
                             className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                             onClick={() => setIsDrawing(true)}
                         >
@@ -233,12 +234,14 @@ const RiderZoneMap = ({ coOrdinates, polygonPoints, setPolygonPoints }: RiderAdd
                         </button>
                         <button
                             disabled={!isDrawing || polygonPoints.length < 3}
+                            type="button"
                             className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                             onClick={handleCompletePolygon}
                         >
                             Complete Setting Zone
                         </button>
                         <button
+                            type="button"
                             className="px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
                             onClick={handleClearPolygon}
                         >
