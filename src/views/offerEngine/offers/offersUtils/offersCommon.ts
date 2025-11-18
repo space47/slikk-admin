@@ -17,6 +17,7 @@ export const OfferFromList1 = [
     { name: 'offer_name', label: 'Offer Name', type: 'text', required: true },
     { name: 'slab_id', label: 'Slab', type: 'number', required: true },
     { name: 'is_active', label: 'Is Active', type: 'checkbox', required: false },
+    { name: 'is_freebie', label: 'Is Freebie', type: 'checkbox', required: false },
     // { name: 'is_multi_unit_eligible', label: 'Is Multi Unit Eligible', type: 'checkbox', required: false },
 ]
 
@@ -60,6 +61,7 @@ export const offerBodyFile = (values: any, buyFilterId: number | string | undefi
         start_date: moment(values?.start_date, 'YYYY-MM-DD HH:mm:ss').utc().format() || '', // mandatory
         end_date: moment(values?.end_date, 'YYYY-MM-DD HH:mm:ss').utc().format() || '', // mandatory
         is_active: values?.is_active || false,
+        is_freebie: values?.is_freebie || false,
         min_order_quantity: values?.min_order_quantity || '',
         max_order_quantity: values?.max_order_quantity || '',
         is_multi_unit_eligible: values?.is_multi_unit_eligible || false,
