@@ -85,10 +85,6 @@ const OrderMap: React.FC<Props> = ({ taskData }) => {
     const [selectedPointCheckpoints, setSelectedPointCheckpoints] = useState<any>(null)
     const [currentAngle, setCurrentAngle] = useState(0)
 
-    useEffect(() => {
-        console.log('selectedPointCheckpoints changed:', selectedPointCheckpoints)
-    }, [selectedPointCheckpoints])
-
     const rawCheckpoints = useMemo(() => {
         if (!taskData?.location_data) return []
         const arr = Object.entries(taskData.location_data).map(([timestamp, coords]) => ({
