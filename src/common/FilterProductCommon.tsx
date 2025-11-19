@@ -20,7 +20,7 @@ interface PROPS {
     isRedux?: any
     setSortByFilter?: any
     isSorByFilter?: boolean
-    sortByFilter: string
+    sortByFilter?: string
 }
 
 const FilterProductCommon = ({

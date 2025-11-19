@@ -1,131 +1,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState, useMemo } from 'react'
-import Pagination from '@/components/ui/Pagination'
-import Select from '@/components/ui/Select'
-import Button from '@/components/ui/Button'
-import type { ColumnDef } from '@tanstack/react-table'
-import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAppSelector } from '@/store'
-import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
-import { FaEdit } from 'react-icons/fa'
 import AccessDenied from '@/views/pages/AccessDenied'
 import EasyTable from '@/common/EasyTable'
-import { pageSizeOptions } from '../sellers/sellerCommon'
-import { AxiosError } from 'axios'
 import { Dropdown, Input } from '@/components/ui'
 import { HiSearch } from 'react-icons/hi'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-
-interface User {
-    first_name: string
-    last_name: string
-    email: string
-    mobile: string
-    country_code: string
-    dob: string
-    gender: string
-    image: string
-    date_joined: string
-}
-
-type Option = {
-    value: number
-    label: string
-}
-
-const SEARCHOPTIONS = [
-    { value: 'mobile', label: 'Mobile' },
-    { value: 'name', label: 'Name' },
-]
+import { SEARCHOPTIONS } from './userCommonTypes/UserCommonTypes'
+import { useUserColumns } from './userUtils/useUserColumns'
+import PageCommon from '@/common/PageCommon'
+import { useUserApi } from './userUtils/useUserApi'
 
 const Seller = () => {
     const navigate = useNavigate()
-    const [data, setData] = useState<User[]>([])
-    const [totalData, setTotalData] = useState()
-    const [page, setPage] = useState(1)
-    const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
-    const [accessDenied, setAccessDenied] = useState(false)
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(SEARCHOPTIONS[0])
     const [searchOnEnter, setSearchOnEnter] = useState('')
+    const [page, setPage] = useState(1)
+    const [pageSize, setPageSize] = useState(10)
 
-    useEffect(() => {
-        const abortController = new AbortController()
-        const fetchData = async () => {
-            try {
-                let filterParam = ''
-                if (globalFilter) {
-                    currentSelectedPage?.value === 'name'
-                        ? (filterParam = `name=${globalFilter}`)
-                        : currentSelectedPage?.value === 'mobile'
-                          ? (filterParam = `mobile=${globalFilter}`)
-                          : ''
-                }
-
-                const response = await axiosInstance.get(`company/${selectedCompany.id}/users?${filterParam}`)
-                const data = response.data.data
-                const total = response.data.data.length
-                if (globalFilter && currentSelectedPage?.value === 'mobile') {
-                    setData([data])
-                } else {
-                    setData(data)
-                }
-                setTotalData(total)
-                setAccessDenied(false)
-            } catch (error: unknown) {
-                if (error instanceof AxiosError) {
-                    if (globalFilter.length > 9 && (error?.response?.status === 403 || error?.response?.status === 401)) {
-                        setAccessDenied(true)
-                    }
-                } else {
-                    console.error(error)
-                }
-            }
-        }
-        fetchData()
-
-        return () => {
-            abortController.abort()
-        }
-    }, [page, pageSize, selectedCompany.id, searchOnEnter, currentSelectedPage])
-
-    const paginatedData = data?.slice((page - 1) * pageSize, page * pageSize)
+    const { accessDenied, paginatedData, totalData } = useUserApi({ currentSelectedPage, globalFilter, page, pageSize, searchOnEnter })
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>, setSearchOnEnter: any) => {
         setSearchOnEnter(e.target.value)
     }
 
-    const columns = useMemo<ColumnDef<User>[]>(
-        () => [
-            {
-                header: 'Name',
-                accessorFn: (row) => `${row.first_name} ${row.last_name}`,
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Mobile',
-                accessorKey: 'mobile',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Image',
-                accessorKey: 'image',
-                cell: ({ getValue }) => <img src={getValue() as string} alt="User" className="w-12 h-12 object-cover" />,
-            },
-            {
-                header: 'Edit',
-                accessorKey: '',
-                cell: ({ row }) => (
-                    <Button onClick={() => navigate(`/app/users/edit/${row?.original?.mobile}`)} className="bg-none border-none">
-                        <FaEdit className="text-xl text-blue-600" />
-                    </Button>
-                ),
-            },
-        ],
-        [],
-    )
+    const columns = useUserColumns()
 
     return (
         <div>
@@ -190,21 +90,7 @@ const Seller = () => {
             ) : (
                 <>
                     <EasyTable mainData={paginatedData} columns={columns} page={page} pageSize={pageSize} />
-                    <div className="flex items-center justify-between mt-4">
-                        <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={(page) => setPage(page)} />
-                        <div style={{ minWidth: 130 }}>
-                            <Select<Option>
-                                size="sm"
-                                isSearchable={false}
-                                value={pageSizeOptions.find((option) => option.value === pageSize)}
-                                options={pageSizeOptions}
-                                onChange={(option) => {
-                                    setPage(1)
-                                    setPageSize(Number(option?.value))
-                                }}
-                            />
-                        </div>
-                    </div>
+                    <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={totalData} />
                 </>
             )}
         </div>

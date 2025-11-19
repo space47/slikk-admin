@@ -1,3 +1,5 @@
+import { ApiResponse } from './generic.types'
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type Rtv_Data = {
     id: number
@@ -45,13 +47,7 @@ export type RTV_DATA_DETAILS = {
     quantity_picked: number
 }
 
-export type Rtv_Data_Response = {
-    status: string
-    data: {
-        count: number
-        results: Rtv_Data[]
-    }
-}
+export type Rtv_Data_Response = ApiResponse<Rtv_Data>
 
 export type Rtv_Products = {
     id: number

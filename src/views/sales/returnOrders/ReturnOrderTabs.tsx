@@ -22,35 +22,40 @@ const tabs = [
 
 const ReturnOrderTabs = ({ tabSelect, handleSelectTab, orderCount }: Props) => {
     return (
-        <div className="p-4 rounded-lg xl:shadow-md overflow-x-auto scrollbar-hide">
+        <div className="w-full">
             <div
-                className={`
-                    flex flex-wrap xl:flex-nowrap
-                    gap-2 xl:gap-4
-                    justify-around xl:justify-start
-                    w-full
-                `}
+                className="
+                    flex overflow-x-auto scrollbar-hide 
+                    gap-2 md:gap-3 lg:gap-4
+                    p-2 md:p-3
+                    rounded-xl bg-white
+                    border border-gray-200
+                    md:shadow-sm
+                "
             >
                 {tabs.map((tab) => {
                     const isActive = tabSelect === tab.key
+
                     return (
                         <button
                             key={tab.key}
                             onClick={() => handleSelectTab(tab.key)}
                             className={`
-                                flex items-center justify-center
-                                px-4 py-2 rounded-lg font-semibold
-                                text-sm xl:text-base whitespace-nowrap
-                                transition-all duration-300
+                                whitespace-nowrap 
+                                px-3 py-1.5 
+                                md:px-4 md:py-2 
+                                rounded-full font-medium md:font-semibold
+                                transition-all duration-300 
+                                text-xs sm:text-sm md:text-base
                                 ${
                                     isActive
-                                        ? 'bg-gradient-to-r from-green-400 to-green-600 text-white shadow-lg'
-                                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300 hover:shadow-md'
+                                        ? 'bg-gradient-to-r from-green-400 to-green-600 text-white shadow-md scale-105'
+                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                 }
                             `}
                         >
                             {tab.label}
-                            {isActive && <span className="ml-1 text-xs xl:text-sm font-medium">({orderCount})</span>}
+                            {isActive && <span className="ml-1 text-[10px] sm:text-xs md:text-sm font-medium">({orderCount})</span>}
                         </button>
                     )
                 })}
