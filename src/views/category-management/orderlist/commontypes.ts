@@ -119,6 +119,7 @@ export const ORDER_STATUS = [
     { name: 'DELIVERY_CREATED', value: 'DELIVERY_CREATED' },
     { name: 'SHIPPED', value: 'SHIPPED' },
     { name: 'DELIVERED', value: 'DELIVERED' },
+    { name: 'RTO_DELIVERED', value: 'RTO_DELIVERED' },
     { name: 'CANCELLED', value: 'CANCELLED' },
     { name: 'COMPLETED', value: 'COMPLETED' },
     { name: 'CANCELLATION ON HOLD', value: 'CANCELLATION_ON_HOLD' },

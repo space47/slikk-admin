@@ -299,7 +299,7 @@ const OrderList = () => {
     })
 
     return (
-        <div className="p-4 bg-gray-50 dark:bg-slate-800 rounded-xl">
+        <div className="p-4 shadow-lg dark:bg-slate-800 rounded-xl">
             <div className="overflow-x-auto scrollbar-hide">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mb-10">
                     {/* Search + Dropdown */}
@@ -362,8 +362,6 @@ const OrderList = () => {
                                 <CiFilter className="text-xl font-bold" /> FILTER
                             </Button>
                         </div>
-
-                        {/* Download Button */}
                         <div className="xl:mt-7">
                             <button
                                 disabled={isDownloading}
@@ -395,7 +393,11 @@ const OrderList = () => {
                     tabSelect={tabSelect}
                     orderCount={showNumberLoading ? `...` : `${orderCount}`}
                 />
-                {loadingTable && <div className="flex font-bold text-xl items-center justify-center mt-10">Loading...</div>}
+                {loadingTable && (
+                    <div className="flex font-bold text-xl items-center justify-center mt-10">
+                        <Spinner size={30} />
+                    </div>
+                )}
                 {showNoData ? (
                     <NotFoundData />
                 ) : (
