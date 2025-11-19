@@ -1,3 +1,5 @@
+import { ApiResponse } from './generic.types'
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type RiderAddTypes = {
     task_id?: string
@@ -55,15 +57,7 @@ export type RiderAttendanceResults = Partial<{
     user_type: string
 }>
 
-export type RiderAttendanceResponseType = {
-    status?: string
-    data?: {
-        count?: number
-        next?: string
-        previous?: string
-        results?: RiderAttendanceResults[]
-    }
-}
+export type RiderAttendanceResponseType = ApiResponse<RiderAttendanceResults>
 
 // Rider Data
 
@@ -120,13 +114,7 @@ export type RiderDetailsType = Partial<{
     }
 }>
 
-export type RiderDetailResponseType = {
-    status?: string
-    data?: {
-        count: number
-        results?: RiderDetailsType[]
-    }
-}
+export type RiderDetailResponseType = ApiResponse<RiderDetailsType>
 
 export type RiderSlice = {
     riderAttendance: RiderAttendanceResults[]

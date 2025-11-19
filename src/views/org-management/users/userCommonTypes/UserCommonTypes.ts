@@ -78,3 +78,20 @@ export const ADD_USER_BASIC_FIELDS: UserFields = {
         component: Input,
     },
 }
+
+export interface User {
+    first_name: string
+    last_name: string
+    email: string
+    mobile: string
+    country_code: string
+    dob: string
+    gender: string
+    image: string
+    date_joined: string
+}
+
+export const SEARCHOPTIONS = [
+    { value: 'mobile', label: 'Mobile' },
+    { value: 'name', label: 'Name' },
+]

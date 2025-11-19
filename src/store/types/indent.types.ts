@@ -1,3 +1,5 @@
+import { ApiResponse } from './generic.types'
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface IndentParamsTypes {
     from?: string
@@ -14,13 +16,7 @@ export interface IndentResultType {
     id: string
 }
 
-export interface IndentResponseTypes {
-    data: {
-        count: number
-        results: IndentResultType[]
-    }
-    success: string
-}
+export type IndentResponseTypes = ApiResponse<IndentResultType>
 
 export interface IndentItem {
     intent_note: number

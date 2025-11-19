@@ -1,3 +1,5 @@
+import { ApiResponse } from './generic.types'
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type ProductVariant = {
     name: string
@@ -40,13 +42,7 @@ export const ProductFilterArray = [
     { label: 'Barcode', value: 'barcode' },
 ]
 
-export type ProductResponseType = {
-    status: string
-    data: {
-        count: number
-        results: ProductTypes[]
-    }
-}
+export type ProductResponseType = ApiResponse<ProductTypes>
 
 export type ProductLockType = {
     id: number
@@ -62,10 +58,4 @@ export type ProductLockType = {
     locked_by: string
 }
 
-export type ProductLockResponseType = {
-    status: string
-    data: {
-        count: number
-        results: ProductLockType[]
-    }
-}
+export type ProductLockResponseType = ApiResponse<ProductLockType>
