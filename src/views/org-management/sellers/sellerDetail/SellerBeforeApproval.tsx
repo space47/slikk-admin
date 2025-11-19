@@ -79,15 +79,15 @@ const SellerBeforeApproval = ({ commentStructure, handleComments, sellerData, se
                                                         <span className="font-medium text-gray-800">{subLabel}</span>
                                                     </div>
                                                     {isSubFile ? (
-                                                        <div className="flex items-center gap-2 flex-wrap">
+                                                        <div className="flex items-center gap-2 flex-wrap overflow-ellipsis text-ellipsis line-clamp-3">
                                                             <FaFilePdf className="text-red-500 text-lg" />
                                                             <a
                                                                 href={subValue}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="text-sm text-blue-600 underline"
+                                                                className="text-sm text-blue-600 underline "
                                                             >
-                                                                {subValue.split('/').pop()}
+                                                                {subValue?.split('/')?.pop()}
                                                             </a>
                                                         </div>
                                                     ) : (
