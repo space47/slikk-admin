@@ -32,9 +32,7 @@ export const useUserApi = ({ currentSelectedPage, globalFilter, searchOnEnter, p
                           : ''
                 }
 
-                // const company_id = !globalFilter ? `/${selectedCompany?.id}` : ''
-
-                const response = await axioisInstance.get(`company${selectedCompany?.id}/users?${filterParam}`)
+                const response = await axioisInstance.get(`company/${selectedCompany?.id}/users?${filterParam}`)
                 const data = response.data.data
                 const total = response.data.data.length
                 if (globalFilter && currentSelectedPage?.value === 'mobile') {
