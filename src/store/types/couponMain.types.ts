@@ -1,3 +1,5 @@
+import { ApiResponse } from './generic.types'
+
 export type CouponMainTypes = {
     code: string
     image: string
@@ -37,11 +39,4 @@ export type CouponMainTypes = {
     update_date: string
 }
 
-export type CouponResponseTypes = {
-    status: string
-    message: string
-    data: {
-        count: number
-        results: CouponMainTypes[]
-    }
-}
+export type CouponResponseTypes = ApiResponse<CouponMainTypes>
