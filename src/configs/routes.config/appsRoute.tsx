@@ -184,6 +184,14 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsOrgManagement.po',
+        path: `${APP_PREFIX_PATH}/po/addNew`,
+        component: lazy(
+            () => import('@/views/org-management/purchaseOrder/poAdd/PoAdd'), //p1
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsOrgManagement.stores',
         path: `${APP_PREFIX_PATH}/stores`,
         component: lazy(() => import('@/views/org-management/stores/Stores')),

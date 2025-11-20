@@ -3,6 +3,7 @@ import { PurchaseOrderTable } from '@/store/types/po.types'
 
 export interface PURCHASE_STATE {
     poList: PurchaseOrderTable[]
+    poStatus: string
     count: number
     page: number
     pageSize: number
@@ -10,6 +11,7 @@ export interface PURCHASE_STATE {
 
 const initialState: PURCHASE_STATE = {
     poList: [],
+    poStatus: 'All Status',
     count: 0,
     page: 1,
     pageSize: 10,
@@ -22,6 +24,9 @@ export const purchaseOrderSlice = createSlice({
         setPoList: (state, action: PayloadAction<PurchaseOrderTable[]>) => {
             state.poList = action.payload
         },
+        setPoStatus: (state, action: PayloadAction<string>) => {
+            state.poStatus = action.payload
+        },
         setCount: (state, action: PayloadAction<number>) => {
             state.count = action.payload
         },
@@ -33,5 +38,5 @@ export const purchaseOrderSlice = createSlice({
         },
     },
 })
-export const { setPoList, setCount, setPage, setPageSize } = purchaseOrderSlice.actions
+export const { setPoList, setCount, setPage, setPageSize, setPoStatus } = purchaseOrderSlice.actions
 export default purchaseOrderSlice.reducer
