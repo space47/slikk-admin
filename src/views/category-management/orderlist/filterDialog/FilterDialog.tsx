@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from 'react'
 import Drawer from '@/components/ui/Drawer'
 import { ORDER_STATUS, DELEIVERYOPTIONS, PAYMENTOPTIONS } from '../commontypes'
 // import { IoMdDownload } from 'react-icons/io'

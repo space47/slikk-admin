@@ -78,8 +78,6 @@ const OfferFormStep1 = ({ values }: props) => {
                     </FormItem>
                 ))}
             </div>
-
-            {/* Date Range Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
                     <FullDateForm label="Start Date" name="start_date" fieldname="start_date" />
@@ -87,7 +85,7 @@ const OfferFormStep1 = ({ values }: props) => {
                 <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
                     <FullDateForm label="End Date" name="end_date" fieldname="end_date" />
                 </div>
-                <FormItem label="WeekDays" className="col-span-1 w-full mb-6 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                <FormItem label="WeekDays" className="col-span-1 w-full mb-6  p-4 rounded-lg border border-gray-100">
                     <Field name="week_day_number">
                         {({ form, field }: FieldProps) => {
                             const selectedOptions = Array.isArray(field.value)
@@ -134,9 +132,6 @@ const OfferFormStep1 = ({ values }: props) => {
                     ))}
                 </div>
             </div>
-
-            {/* Second Row of Form Fields */}
-
             <FormItem label="Terms And Conditions" className="mt-6">
                 <Field name="terms_and_conditions">
                     {({ field, form }: FieldProps) => (
@@ -144,8 +139,6 @@ const OfferFormStep1 = ({ values }: props) => {
                     )}
                 </Field>
             </FormItem>
-
-            {/* Daily Time Windows Section */}
             <FormItem label="Daily Time Windows" className="bg-gray-50 p-5 rounded-xl border border-gray-200">
                 <FieldArray name="daily_time_windows">
                     {({ push, remove }) => (

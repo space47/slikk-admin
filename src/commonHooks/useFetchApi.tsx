@@ -2,19 +2,13 @@
 import { useState, useEffect, useCallback } from 'react'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { AxiosError } from 'axios'
+import { ApiResponse } from '@/store/types/generic.types'
 
 interface Api_Hooks_props<T> {
     url: string
     initialData?: T[]
     typeOfData?: 'Array' | 'Object'
     pollingInterval?: number
-}
-
-interface ApiResponse<T> {
-    data: {
-        count: number
-        results: T[]
-    } | null
 }
 
 export const useFetchApi = <T,>({ url, initialData = [], typeOfData, pollingInterval }: Api_Hooks_props<T>) => {

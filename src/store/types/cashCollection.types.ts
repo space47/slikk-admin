@@ -1,3 +1,5 @@
+import { ApiResponse } from './generic.types'
+
 export interface Rider {
     id: number
     user: RiderUser
@@ -37,10 +39,4 @@ export interface CashCollection {
     update_date: string // ISO datetime string
 }
 
-export interface CashResponseType {
-    status: string
-    data: {
-        count: number
-        results: CashCollection[]
-    }
-}
+export type CashResponseType = ApiResponse<CashCollection>
