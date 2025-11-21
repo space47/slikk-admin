@@ -48,7 +48,7 @@ export const cashCollectionService = RtkQueryService.injectEndpoints({
         >({
             query: ({ amount, collection_date, mobile }) => {
                 return {
-                    url: `rider/cash/daily/create`,
+                    url: `rider/cash/collection`,
                     method: 'POST',
                     body: {
                         amount,
