@@ -10,37 +10,63 @@ import { IoMdAdd } from 'react-icons/io'
 import { useOrderItemColumns } from './useOrderItemColumns'
 import EasyTable from '@/common/EasyTable'
 import PoOrderItemsDialog from './PoOrderItemsDialog'
-import { AxiosError } from 'axios'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { successMessage } from '@/utils/responseMessages'
 import PoUpload from './PoUpload'
+import { useParams } from 'react-router-dom'
+import NotFoundData from '@/views/pages/NotFound/Notfound'
+import PageCommon from '@/common/PageCommon'
 
-interface Props {
-    isEdit?: boolean
-    purchase_id?: string | number
-}
-
-const PoFormStepTwo = ({ isEdit, purchase_id }: Props) => {
+const PoOrderItems = () => {
+    const { purchase_id } = useParams()
     const [orderItems, setOrderItems] = useState<PurchaseOrderItem[]>([])
+    const [page, setPage] = useState(1)
+    const [pageSize, setPageSize] = useState(10)
+    const [count, setCount] = useState(0)
     const [addModal, setAddModal] = useState(false)
     const [editModal, setEditModal] = useState(false)
     const [uploadModal, setUploadModal] = useState(false)
     const [currentRow, setCurrentRow] = useState<PurchaseOrderItem>()
+    const [addOrderItems, addResponse] = purchaseOrderService.useCreateOrderItemsMutation()
+    const [updateOrderItems, updateResponse] = purchaseOrderService.useUpdateOrderItemsMutation()
 
     const { data, isSuccess, isError, error, refetch } = purchaseOrderService.useOrderItemsQuery(
         { purchase_order_id: purchase_id as string },
-        { skip: !isEdit },
+        { skip: !purchase_id },
     )
 
     useEffect(() => {
-        if (isSuccess && isEdit) {
-            setOrderItems(data?.data || [])
+        if (isSuccess) {
+            setOrderItems(data?.data?.results || [])
+            setCount(data?.data?.count)
         }
         if (isError) {
             const errorMessage = getApiErrorMessage(error) || 'Failed to load items'
             notification.error({ message: errorMessage })
         }
-    }, [isSuccess, isError, isEdit, data, error])
+    }, [isSuccess, isError, data, error])
+
+    useEffect(() => {
+        if (addResponse?.isSuccess) {
+            notification.success({ message: 'Successfully Added' })
+            refetch()
+            setAddModal(false)
+        }
+        if (addResponse?.isError) {
+            const errorMessage = getApiErrorMessage(addResponse?.error) || 'Failed to Add'
+            notification.error({ message: errorMessage })
+        }
+    }, [addResponse?.isSuccess, addResponse?.isError, error])
+
+    useEffect(() => {
+        if (updateResponse?.isSuccess) {
+            notification.success({ message: 'Successfully Updated' })
+            refetch()
+            setEditModal(false)
+        }
+        if (updateResponse?.isError) {
+            const errorMessage = getApiErrorMessage(updateResponse?.error) || 'Failed to Update'
+            notification.error({ message: errorMessage })
+        }
+    }, [updateResponse?.isSuccess, updateResponse?.isError, error])
 
     const handleEditRow = (row: PurchaseOrderItem) => {
         setCurrentRow(row)
@@ -49,45 +75,16 @@ const PoFormStepTwo = ({ isEdit, purchase_id }: Props) => {
 
     const columns = useOrderItemColumns({ handleEditRow })
 
-    /** ---------- Add Item ---------- **/
     const handleAdd = async (val: PurchaseOrderItem) => {
-        try {
-            const res = await axioisInstance.post(`/merchant/purchase/orderitem`, val)
-            const newItem = res?.data?.data
-            successMessage(res)
-
-            if (isEdit) {
-                refetch()
-            } else {
-                setOrderItems((prev) => [...prev, newItem])
-            }
-
-            setAddModal(false)
-        } catch (err) {
-            if (err instanceof AxiosError) {
-                notification.error({ message: err.message })
-            }
-        }
+        addOrderItems(val)
     }
     const handleEdit = async (val: Partial<PurchaseOrderItem>) => {
         const body = { id: currentRow?.id, ...val }
+        updateOrderItems(body)
+    }
 
-        try {
-            const res = await axioisInstance.patch(`/merchant/purchase/orderitem`, body)
-            successMessage(res)
-
-            if (isEdit) {
-                refetch()
-            } else {
-                setOrderItems((prev) => prev.map((item) => (item.id === body.id ? { ...item, ...val } : item)))
-            }
-
-            setEditModal(false)
-        } catch (err) {
-            if (err instanceof AxiosError) {
-                notification.error({ message: err.message })
-            }
-        }
+    if (!purchase_id) {
+        return <NotFoundData />
     }
 
     return (
@@ -111,16 +108,16 @@ const PoFormStepTwo = ({ isEdit, purchase_id }: Props) => {
 
             <div className="mt-10">
                 <EasyTable noPage columns={columns} mainData={orderItems} />
+                <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={count} />
             </div>
 
-            {addModal && <PoOrderItemsDialog isOpen={addModal} setIsOpen={setAddModal} handleSubmit={handleAdd} />}
+            <PoOrderItemsDialog isOpen={addModal} setIsOpen={setAddModal} handleSubmit={handleAdd} />
 
-            {editModal && (
-                <PoOrderItemsDialog isOpen={editModal} setIsOpen={setEditModal} currentRow={currentRow} handleSubmit={handleEdit} />
-            )}
-            {uploadModal && <PoUpload isOpen={uploadModal} setIsOpen={setUploadModal} />}
+            <PoOrderItemsDialog edit isOpen={editModal} setIsOpen={setEditModal} currentRow={currentRow} handleSubmit={handleEdit} />
+
+            {uploadModal && <PoUpload isOpen={uploadModal} setIsOpen={setUploadModal} purchase_id={purchase_id} />}
         </div>
     )
 }
 
-export default PoFormStepTwo
+export default PoOrderItems

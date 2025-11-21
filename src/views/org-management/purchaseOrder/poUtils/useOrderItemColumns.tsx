@@ -14,7 +14,9 @@ export const useOrderItemColumns = ({ handleEditRow }: Props) => {
             {
                 header: 'Edit',
                 accessorKey: 'id',
-                cell: ({ row }) => <div>{<FaEdit onClick={() => handleEditRow(row?.original)} />}</div>,
+                cell: ({ row }) => (
+                    <div>{<FaEdit className="text-xl text-blue-500 cursor-pointer" onClick={() => handleEditRow(row?.original)} />}</div>
+                ),
             },
             {
                 header: 'vendor Sku',

@@ -1,4 +1,4 @@
-import { ApiDataResponse, ApiResponse } from './generic.types'
+import { ApiResponse } from './generic.types'
 
 export type PurchaseOrderTable = {
     id: number
@@ -36,6 +36,12 @@ export type PurchaseOrderTable = {
     updated_at: string
 }
 
+export type PurchaseSingleData = {
+    data: PurchaseOrderTable
+    status: string
+    message: string
+}
+
 export type PurchaseOrderResponseType = ApiResponse<PurchaseOrderTable>
 
 export type PurchaseOrderItem = {
@@ -68,4 +74,10 @@ export type PurchaseOrderItem = {
     order: number
 }
 
-export type PurchaseOrderItemResponse = ApiDataResponse<PurchaseOrderItem>
+export type PurchaseOrderItemSingleResponse = {
+    data: PurchaseOrderItem
+    status: string
+    message: string
+}
+
+export type PurchaseOrderItemResponse = ApiResponse<PurchaseOrderItem>

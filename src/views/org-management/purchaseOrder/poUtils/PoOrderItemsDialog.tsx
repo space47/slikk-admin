@@ -16,11 +16,14 @@ interface Props {
 
 const PoOrderItemsDialog = ({ isOpen, setIsOpen, handleSubmit, edit, currentRow }: Props) => {
     const [item, setItems] = useState<PurchaseOrderItem>()
-    const { data, isSuccess } = purchaseOrderService.useOrderItemSingleDataQuery({ item_id: currentRow?.id as number }, { skip: !edit })
+    const { data, isSuccess } = purchaseOrderService.useOrderItemSingleDataQuery(
+        { item_id: currentRow?.id as number },
+        { skip: !currentRow?.id },
+    )
 
     useEffect(() => {
         if (isSuccess) {
-            setItems(data)
+            setItems(data?.data)
         }
     }, [isSuccess, data])
 
@@ -51,38 +54,48 @@ const PoOrderItemsDialog = ({ isOpen, setIsOpen, handleSubmit, edit, currentRow 
     }
 
     return (
-        <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)} width={1000} height={'80vh'}>
+        <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)} width={1200} height={'80vh'}>
             <div className="flex flex-col h-full">
-                <div className="flex-1 overflow-y-auto px-4 py-2 space-y-4">
-                    <Formik initialValues={edit ? initialValues : {}} onSubmit={handleSubmit}>
-                        {(formik) => (
-                            <Form className="space-y-6">
-                                <FormContainer className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                                    {PoOrderItemsArray?.map((item, idx) => (
-                                        <FormItem key={idx} label={item?.label} asterisk={item?.is_required}>
-                                            <Field
-                                                type={item?.type}
-                                                name={item?.name}
-                                                placeholder={`Enter ${item?.label}`}
-                                                component={item?.type === 'checkbox' ? Switcher : Input}
-                                            />
-                                        </FormItem>
-                                    ))}
-                                </FormContainer>
-
-                                <div className="border-t bg-white py-3 px-4 flex justify-end gap-3">
-                                    <Button variant="plain" size="sm" type="button" onClick={() => setIsOpen(false)}>
-                                        Cancel
-                                    </Button>
-
-                                    <Button variant="blue" size="sm" type="button" onClick={() => formik.submitForm()}>
-                                        Submit
-                                    </Button>
-                                </div>
-                            </Form>
-                        )}
-                    </Formik>
+                <div className="px-5 py-3 border-b bg-white">
+                    <h2 className="text-lg font-semibold">{edit ? 'Edit Item' : 'Add Item'}</h2>
                 </div>
+                <Formik initialValues={edit ? initialValues : {}} onSubmit={handleSubmit} enableReinitialize>
+                    {(formik) => (
+                        <>
+                            <div className="flex-1 overflow-y-auto px-5 py-4 bg-gray-50">
+                                <Form className="space-y-6">
+                                    <FormContainer className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+                                        {PoOrderItemsArray?.map((field, idx) => (
+                                            <FormItem
+                                                key={idx}
+                                                label={field.label}
+                                                asterisk={field.is_required}
+                                                className="bg-white p-3 rounded-xl shadow-sm"
+                                            >
+                                                <Field
+                                                    type={field.type}
+                                                    name={field.name}
+                                                    placeholder={`Enter ${field.label}`}
+                                                    component={field.type === 'checkbox' ? Switcher : Input}
+                                                    className="w-full"
+                                                />
+                                            </FormItem>
+                                        ))}
+                                    </FormContainer>
+                                </Form>
+                            </div>
+                            <div className="px-5 py-3 border-t bg-white flex justify-end gap-3 sticky bottom-0">
+                                <Button variant="plain" size="sm" type="button" onClick={() => setIsOpen(false)}>
+                                    Cancel
+                                </Button>
+
+                                <Button variant="blue" size="sm" type="button" onClick={() => formik.submitForm()}>
+                                    Submit
+                                </Button>
+                            </div>
+                        </>
+                    )}
+                </Formik>
             </div>
         </Dialog>
     )

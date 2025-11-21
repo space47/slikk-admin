@@ -11,9 +11,10 @@ import React, { useState } from 'react'
 interface props {
     isOpen: boolean
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+    purchase_id: string | number
 }
 
-const PoUpload = ({ isOpen, setIsOpen }: props) => {
+const PoUpload = ({ isOpen, setIsOpen, purchase_id }: props) => {
     const [fileList, setFileList] = useState<any>([])
     const [isSpinning, setIsSpinning] = useState(false)
 
@@ -21,6 +22,7 @@ const PoUpload = ({ isOpen, setIsOpen }: props) => {
         setIsSpinning
         try {
             const formData = new FormData()
+            formData.append('purchase_order_id', purchase_id as string)
             if (fileList && fileList.length > 0) {
                 fileList.forEach((file: any) => {
                     formData.append('purchase_order_file', file)
@@ -46,8 +48,8 @@ const PoUpload = ({ isOpen, setIsOpen }: props) => {
     }
     return (
         <div>
-            <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)} contentClassName="max-w-lg w-full">
-                <div className="p-6 max-w-lg mx-auto bg-white shadow-md rounded-2xl">
+            <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)} width={800}>
+                <div className="p-3 mx-auto bg-white shadow-md rounded-2xl">
                     <h2 className="text-xl font-semibold mb-2 text-center">Purchase Order Upload</h2>
                     <p className="text-gray-500 mb-6 text-center">Upload a CSV file to add Purchase Orders.</p>
                     <div className="flex flex-col items-center justify-center space-y-4 mb-10">

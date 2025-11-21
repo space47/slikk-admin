@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import RtkQueryService from '@/services/RtkQueryService'
-import { PurchaseOrderItem, PurchaseOrderItemResponse, PurchaseOrderResponseType } from '../types/po.types'
+import {
+    PurchaseOrderItemResponse,
+    PurchaseOrderItemSingleResponse,
+    PurchaseOrderResponseType,
+    PurchaseSingleData,
+} from '../types/po.types'
 
 export const purchaseOrderService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
@@ -23,6 +28,18 @@ export const purchaseOrderService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
+        purchaseSingleOrdersList: builder.query<PurchaseSingleData, { order_id?: string | number }>({
+            query: (params) => {
+                const parameters: Record<string, string | string[]> = {}
+                if (params.order_id) parameters.order_id = params.order_id?.toString()
+
+                return {
+                    url: `/merchant/purchase/order`,
+                    method: 'GET',
+                    params: parameters,
+                }
+            },
+        }),
         orderItems: builder.query<PurchaseOrderItemResponse, { purchase_order_id: number | string }>({
             query: (params) => {
                 const parameters: Record<string, string | string[]> = {}
@@ -35,7 +52,7 @@ export const purchaseOrderService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        orderItemSingleData: builder.query<PurchaseOrderItem, { item_id: number | string }>({
+        orderItemSingleData: builder.query<PurchaseOrderItemSingleResponse, { item_id: number | string }>({
             query: (params) => {
                 const parameters: Record<string, string | string[]> = {}
                 if (params.item_id) parameters.item_id = params.item_id?.toString()

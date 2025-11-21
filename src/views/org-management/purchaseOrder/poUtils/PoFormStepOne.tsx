@@ -4,10 +4,12 @@ import { PoFormFieldArray, PoNatureOption, SpecialTermsOption } from './poFormCo
 import { Field } from 'formik'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 import FullDateForm from '@/common/FullDateForm'
+import StoreSelectForm from '@/common/StoreSelectForm'
 
 const PoFormStepOne = () => {
     return (
         <FormContainer className="mt-8 grid grid-cols-2 gap-2">
+            <StoreSelectForm isSingle label="Select Warehouse" name="warehouse_id" />
             {PoFormFieldArray?.map((item, idx) => {
                 return (
                     <FormItem key={idx} label={item?.label} asterisk={item?.is_required}>

@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { errorMessage, successMessage } from '@/utils/responseMessages'
 import { AxiosError } from 'axios'
-import PoForm from '../poUtils/PoForm'
 import { buildFormData } from '@/utils/formDataBuilder'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+import { FormContainer } from '@/components/ui'
+import PoFormStepOne from '../poUtils/PoFormStepOne'
+import FormButton from '@/components/ui/Button/FormButton'
 
 const PoAdd = () => {
     const navigate = useNavigate()
@@ -28,10 +30,12 @@ const PoAdd = () => {
                 state_code: values.state_code,
                 expected_delivery_date: values.expected_delivery_date,
                 po_nature: values.po_nature,
+                warehouse_id: values?.warehouse_id?.id,
             }
 
             const formData = buildFormData(payload)
             const res = await axioisInstance.post(`/merchant/purchase/order`, formData)
+            navigate(`/app/po/orderItems/${res?.data?.id}`)
             successMessage(res)
         } catch (error) {
             if (error instanceof AxiosError) errorMessage(error)
@@ -44,7 +48,10 @@ const PoAdd = () => {
             <Formik enableReinitialize initialValues={{} as any} onSubmit={handleSubmit}>
                 {() => (
                     <Form className=" w-full p-5 bg-gray-50 rounded-xl shadow-xl ">
-                        <PoForm />
+                        <FormContainer>
+                            <PoFormStepOne />
+                            <FormButton value="Create" />
+                        </FormContainer>
                     </Form>
                 )}
             </Formik>
