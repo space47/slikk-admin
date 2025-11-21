@@ -69,7 +69,7 @@ export type SellerFormTypes = {
 export const SellerSteps = [
     'Basic Information',
     'Business Details',
-    'POC Details',
+    'POC-(Vendor)',
     'Bank Details',
     'Warehouse & GST',
     'MSME Details',

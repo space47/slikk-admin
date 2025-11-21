@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FormContainer, FormItem, Input, Switcher } from '@/components/ui'
 import React from 'react'
-import { BusinessDetails, NOBOptions, SpOptions } from '../sellerUtils/sellerFormCommon'
+import { BusinessDetails, SpOptions } from '../sellerUtils/sellerFormCommon'
 import { Field } from 'formik'
 import FormUploadFile from '@/common/FormUploadFile'
 import RichTextCommon from '@/common/RichTextCommon'
@@ -39,9 +39,8 @@ const SellerBusinessDetails = ({ isEdit, values }: Props) => {
             </FormContainer>
             <FormContainer className="mt-5 grid grid-cols-1 xl:grid-cols-2 gap-3">
                 <CommonSelect name="sp_type" options={SpOptions()} label="Select SP Type" />
-                <CommonSelect name="business_nature" options={NOBOptions()} label="Nature of Business" />
             </FormContainer>
-            <RichTextCommon label="Address" name="address" />
+            <RichTextCommon isRequired label="Address" name="address" />
 
             {/* Upload Section */}
             <div className="border-t pt-6">

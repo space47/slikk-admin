@@ -2,14 +2,14 @@ export const BasicSellerInformation = [
     { label: 'Vendor Business Name', name: 'registered_name', type: 'text', isRequired: true, visible: true },
     { label: 'Company Name', name: 'name', type: 'text', isRequired: true, visible: true },
     { label: 'Contact Person Name', name: 'head_name', type: 'text', isRequired: true, visible: true },
-    { label: 'Vendor Code', name: 'vendor_code', type: 'text', isRequired: true, visible: true },
-    { label: 'Email Address', name: 'head_email', type: 'text', isRequired: false, visible: true },
+    { label: 'Email Address', name: 'head_email', type: 'text', isRequired: true, visible: true },
+    { label: 'Fashion Style', name: 'fashion_style', type: 'text', isRequired: true, visible: true },
     { label: 'Phone Number', name: 'head_number', type: 'number', isRequired: true, visible: true },
 ]
 export const BusinessDetails = [
-    { label: 'PAN Number', name: 'pan_number', type: 'text', isRequired: true, visible: true },
+    { label: 'PAN Number', name: 'pan_number', type: 'text', isRequired: false, visible: true },
     { label: 'TAN Number', name: 'tan_number', type: 'text', isRequired: false, visible: true },
-    { label: 'GSTIN', name: 'gstin', type: 'text', isRequired: true, visible: true },
+    { label: 'GSTIN', name: 'gstin', type: 'text', isRequired: false, visible: true },
     { label: 'CIN', name: 'cin', type: 'text', isRequired: false, visible: true },
     { label: 'Pf Declaration', name: 'pf_declaration', type: 'checkbox', isRequired: false, visible: true },
 ]
@@ -28,7 +28,7 @@ export const SellerBankData = [
     { label: 'Branch Name', name: 'branch_name', type: 'text', isRequired: false, visible: true },
     { label: 'Account Holder Name', name: 'account_holder_name', type: 'text', isRequired: false, visible: true },
     { label: 'Account Number', name: 'account_number', type: 'number', isRequired: false, visible: true },
-    { label: 'IFSC Code', name: 'ifsc', type: 'text', isRequired: true, visible: false },
+    { label: 'IFSC Code', name: 'ifsc', type: 'text', isRequired: false, visible: false },
 ]
 
 export const SellerWarehouseArray = [
@@ -36,7 +36,7 @@ export const SellerWarehouseArray = [
     { label: 'GSTIN', name: 'gstin', type: 'text', isRequired: true, visible: true },
     { label: 'WareHouse Active', name: 'is_active', type: 'checkbox', isRequired: true, visible: true },
 ]
-export const SellerMsMeArray = [{ label: 'Is Registered Under MsMe', name: 'is_msme', type: 'checkbox', isRequired: true, visible: true }]
+export const SellerMsMeArray = [{ label: 'Is Registered Under MsMe', name: 'is_msme', type: 'checkbox', isRequired: false, visible: true }]
 export const SellerCommercialsArray = [
     { label: 'Revenue Share Percent', name: 'revenue_share', type: 'text', isRequired: true, visible: true },
     { label: 'Handling Charges Per Sku', name: 'handling_charges_per_sku', type: 'text', isRequired: true, visible: true },
@@ -51,10 +51,13 @@ export const SellerInternalArray = [
     { label: 'Slikk POC -Category Name', name: 'int_poc_name', type: 'text', isRequired: true, visible: true },
     { label: 'Slikk POC -Category Email', name: 'int_poc_email', type: 'text', isRequired: true, visible: true },
     { label: 'Slikk POC -Category Number', name: 'int_poc_number', type: 'text', isRequired: true, visible: true },
+    { label: 'Slikk POC -Operations Name', name: 'int_ops_name', type: 'text', isRequired: true, visible: true },
+    { label: 'Slikk POC -Operations Email', name: 'int_ops_email', type: 'text', isRequired: true, visible: true },
+    { label: 'Slikk POC -Operations Number', name: 'int_ops_number', type: 'text', isRequired: true, visible: true },
 ]
 export const SellerDeclarationArray = [
-    { label: 'Authorized Person', name: 'authorized_person', type: 'text', isRequired: true, visible: true },
-    { label: 'Declaration Statement', name: 'declaration_statement', type: 'text', isRequired: true, visible: true },
+    { label: 'Authorized Person', name: 'authorized_person', type: 'text', isRequired: false, visible: true },
+    { label: 'Declaration Statement', name: 'declaration_statement', type: 'text', isRequired: false, visible: true },
 ]
 
 export const MSMEOptions = () => {
