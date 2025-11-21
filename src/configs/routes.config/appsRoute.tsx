@@ -174,6 +174,39 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/org-management/sellers/sellerDetail/SellerDetails')),
         authority: [ADMIN, USER],
     },
+
+    {
+        key: 'appsOrgManagement.po',
+        path: `${APP_PREFIX_PATH}/po`,
+        component: lazy(
+            () => import('@/views/org-management/purchaseOrder/poTable/PoTable'), //p1
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOrgManagement.po',
+        path: `${APP_PREFIX_PATH}/po/addNew`,
+        component: lazy(
+            () => import('@/views/org-management/purchaseOrder/poAdd/PoAdd'), //p1
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOrgManagement.po',
+        path: `${APP_PREFIX_PATH}/po/orderItems/:purchase_id`,
+        component: lazy(
+            () => import('@/views/org-management/purchaseOrder/poUtils/PoOrderItems'), //p1
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOrgManagement.po',
+        path: `${APP_PREFIX_PATH}/po/:purchase_id`,
+        component: lazy(
+            () => import('@/views/org-management/purchaseOrder/poEdit/PoEdit'), //p1
+        ),
+        authority: [ADMIN, USER],
+    },
     {
         key: 'appsOrgManagement.stores',
         path: `${APP_PREFIX_PATH}/stores`,

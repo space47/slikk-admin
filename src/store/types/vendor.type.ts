@@ -25,6 +25,20 @@ export interface VendorList {
     removal_fee_per_sku: number
     create_date: string
     update_date: string
+    gst_details: {
+        id: number
+        warehouse_address: string
+        warehouse_name: string
+        gstin: string
+        gst_certificate: string
+        poc_name: string
+        poc_email: string
+        poc_contact_number: string
+        is_active: boolean
+        create_date: string
+        update_date: string
+        company: number
+    }[]
     status: string
     comments: string
 }
@@ -55,7 +69,20 @@ export interface VendorDetails {
     finance_email: string
     finance_name: string
     gst_certificate: string | null
-    gst_details: any[] // you can replace 'any' with a specific GST detail type if you know the structure
+    gst_details: {
+        id: number
+        warehouse_address: string
+        warehouse_name: string
+        gstin: string
+        gst_certificate: string
+        poc_name: string
+        poc_email: string
+        poc_contact_number: string
+        is_active: boolean
+        create_date: string
+        update_date: string
+        company: number
+    }[] // you can replace 'any' with a specific GST detail type if you know the structure
     gstin: string | null
     handling_charges_per_order: number
     head_contact: string | null
