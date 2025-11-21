@@ -54,7 +54,7 @@ const PoOrderItemsDialog = ({ isOpen, setIsOpen, handleSubmit, edit, currentRow 
     }
 
     return (
-        <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)} width={1200} height={'80vh'}>
+        <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)} width={1600} height={'80vh'}>
             <div className="flex flex-col h-full">
                 <div className="px-5 py-3 border-b bg-white">
                     <h2 className="text-lg font-semibold">{edit ? 'Edit Item' : 'Add Item'}</h2>
@@ -64,23 +64,44 @@ const PoOrderItemsDialog = ({ isOpen, setIsOpen, handleSubmit, edit, currentRow 
                         <>
                             <div className="flex-1 overflow-y-auto px-5 py-4 bg-gray-50">
                                 <Form className="space-y-6">
-                                    <FormContainer className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
-                                        {PoOrderItemsArray?.map((field, idx) => (
-                                            <FormItem
-                                                key={idx}
-                                                label={field.label}
-                                                asterisk={field.is_required}
-                                                className="bg-white p-3 rounded-xl shadow-sm"
-                                            >
-                                                <Field
-                                                    type={field.type}
-                                                    name={field.name}
-                                                    placeholder={`Enter ${field.label}`}
-                                                    component={field.type === 'checkbox' ? Switcher : Input}
-                                                    className="w-full"
-                                                />
-                                            </FormItem>
-                                        ))}
+                                    <FormContainer className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-5">
+                                        {(formik.values as any)?.is_catalog_available === true ? (
+                                            <>
+                                                {PoOrderItemsArray?.filter((item) => !item?.isOptional)?.map((field, idx) => (
+                                                    <FormItem
+                                                        key={idx}
+                                                        label={field.label}
+                                                        asterisk={field.is_required}
+                                                        className="bg-white p-3 rounded-xl shadow-sm"
+                                                    >
+                                                        <Field
+                                                            type={field.type}
+                                                            name={field.name}
+                                                            placeholder={`Enter ${field.label}`}
+                                                            component={field.type === 'checkbox' ? Switcher : Input}
+                                                        />
+                                                    </FormItem>
+                                                ))}
+                                            </>
+                                        ) : (
+                                            <>
+                                                {PoOrderItemsArray?.map((field, idx) => (
+                                                    <FormItem
+                                                        key={idx}
+                                                        label={field.label}
+                                                        asterisk={field.is_required}
+                                                        className="bg-white p-3 rounded-xl shadow-sm"
+                                                    >
+                                                        <Field
+                                                            type={field.type}
+                                                            name={field.name}
+                                                            placeholder={`Enter ${field.label}`}
+                                                            component={field.type === 'checkbox' ? Switcher : Input}
+                                                        />
+                                                    </FormItem>
+                                                ))}
+                                            </>
+                                        )}
                                     </FormContainer>
                                 </Form>
                             </div>

@@ -29,7 +29,7 @@ const PoOrderItems = () => {
     const [updateOrderItems, updateResponse] = purchaseOrderService.useUpdateOrderItemsMutation()
 
     const { data, isSuccess, isError, error, refetch } = purchaseOrderService.useOrderItemsQuery(
-        { purchase_order_id: purchase_id as string },
+        { purchase_order_id: purchase_id as string, page, pageSize },
         { skip: !purchase_id },
     )
 
@@ -76,7 +76,11 @@ const PoOrderItems = () => {
     const columns = useOrderItemColumns({ handleEditRow })
 
     const handleAdd = async (val: PurchaseOrderItem) => {
-        addOrderItems(val)
+        const body = {
+            purchase_order_id: parseInt(purchase_id as any),
+            ...val,
+        }
+        addOrderItems(body)
     }
     const handleEdit = async (val: Partial<PurchaseOrderItem>) => {
         const body = { id: currentRow?.id, ...val }

@@ -20,6 +20,11 @@ export const usePoListColumns = () => {
                 ),
             },
             {
+                header: 'PO-Number',
+                accessorKey: 'id',
+                cell: ({ row }) => <div>{`PO-${row?.original?.id}`}</div>,
+            },
+            {
                 header: 'Company Name',
                 accessorKey: 'company_name',
                 cell: ({ row }) => <div>{row.original.company_name || '-'}</div>,

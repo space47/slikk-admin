@@ -34,7 +34,6 @@ const PoTable = () => {
             page,
             pageSize,
             company_id: selectedCompany?.id,
-            brand: debounceFilter,
             ...(poStatus && poStatus !== 'All Status' && { status: poStatus }),
         }
     }, [page, pageSize, selectedCompany, debounceFilter, poStatus])
@@ -43,19 +42,35 @@ const PoTable = () => {
         skip: !selectedCompany?.id,
     })
 
+    const {
+        data: poSingleList,
+        isSuccess: poSingleSuccess,
+        isError: poSingleError,
+    } = purchaseOrderService.usePurchaseSingleOrdersListQuery(
+        {
+            order_id: debounceFilter?.split('-')?.at(-1),
+        },
+        { skip: !globalFilter },
+    )
+
     useEffect(() => {
+        if (globalFilter && poSingleSuccess && poSingleList?.data) {
+            dispatch(setPoList([poSingleList.data]))
+            dispatch(setCount(1))
+            return
+        }
         if (isSuccess && data?.data) {
             dispatch(setPoList(data.data.results ?? []))
             dispatch(setCount(data.data.count ?? 0))
         }
 
-        if (isError) {
+        if (isError || poSingleError) {
             const message = getApiErrorMessage(error)
             notification.error({
                 message: message || 'Failed to load purchase orders.',
             })
         }
-    }, [isSuccess, isError, data, error, dispatch])
+    }, [globalFilter, poSingleSuccess, poSingleList, poSingleError, isSuccess, isError, data, error, dispatch])
 
     const columns = usePoListColumns()
 
@@ -79,7 +94,7 @@ const PoTable = () => {
             <div className="sticky top-0 bg-white z-10 pb-4 mb-6 border-b border-gray-200">
                 <div className="flex gap-2 items-center">
                     <div className="flex flex-col w-full xl:w-[70%] md:w-[70%]">
-                        <label className="text-sm font-semibold text-gray-700 mb-1">Search Vendor</label>
+                        <label className="text-sm font-semibold text-gray-700 mb-1">Search </label>
                         <Input
                             value={globalFilter}
                             type="search"

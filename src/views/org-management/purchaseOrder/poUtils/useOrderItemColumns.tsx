@@ -18,6 +18,7 @@ export const useOrderItemColumns = ({ handleEditRow }: Props) => {
                     <div>{<FaEdit className="text-xl text-blue-500 cursor-pointer" onClick={() => handleEditRow(row?.original)} />}</div>
                 ),
             },
+
             {
                 header: 'vendor Sku',
                 accessorKey: 'vendor_sku',

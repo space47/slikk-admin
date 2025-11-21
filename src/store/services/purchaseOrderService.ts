@@ -40,10 +40,12 @@ export const purchaseOrderService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        orderItems: builder.query<PurchaseOrderItemResponse, { purchase_order_id: number | string }>({
+        orderItems: builder.query<PurchaseOrderItemResponse, { purchase_order_id: number | string; page?: number; pageSize?: number }>({
             query: (params) => {
                 const parameters: Record<string, string | string[]> = {}
                 if (params.purchase_order_id) parameters.purchase_order_id = params.purchase_order_id?.toString()
+                if (params.page) parameters.p = params.page?.toString()
+                if (params.pageSize) parameters.page_size = params.pageSize?.toString()
 
                 return {
                     url: `/merchant/purchase/bulkupload/orderitem`,

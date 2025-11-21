@@ -3,6 +3,7 @@ import { ApiResponse } from './generic.types'
 export type PurchaseOrderTable = {
     id: number
     store: number
+    warehouse_id: number
     company: number
     company_name: string
     brand_name: string

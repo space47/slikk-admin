@@ -15,11 +15,14 @@ import { notification } from 'antd'
 import { getChangedFormData } from '@/utils/apiBodyUtility'
 import { FaArrowCircleRight } from 'react-icons/fa'
 import FormButton from '@/components/ui/Button/FormButton'
+import { useAppSelector } from '@/store'
+import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 
 const PoEdit = () => {
     const { purchase_id } = useParams()
     const navigate = useNavigate()
     const [purchaseOrder, setPurchaseOrder] = useState<PurchaseOrderTable>()
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const { data, isSuccess, isError, isLoading, isFetching, error } = purchaseOrderService.usePurchaseSingleOrdersListQuery({
         order_id: purchase_id,
     })
@@ -46,13 +49,13 @@ const PoEdit = () => {
         expected_delivery_date: purchaseOrder?.expected_delivery_date,
         po_nature: purchaseOrder?.po_nature,
         store: purchaseOrder?.store,
+        warehouse_id: purchaseOrder?.warehouse_id,
     }
 
     const handleSubmit = async (values: any) => {
         try {
             const payload = {
                 store: values.store,
-                company: values.company,
                 order_billing_entity: values.order_billing_entity,
                 order_billing_address: values.order_billing_address,
                 order_shipping_address: values.order_shipping_address,
@@ -61,7 +64,7 @@ const PoEdit = () => {
                 discount_sharing_applicable: values.discount_sharing_applicable,
                 special_terms: values.special_terms,
                 state_code: values.state_code,
-                warehouse_id: values.warehouse_id,
+                warehouse_id: values?.warehouse_id?.id,
                 expected_delivery_date: values.expected_delivery_date,
                 po_nature: values.po_nature,
             }
@@ -69,6 +72,10 @@ const PoEdit = () => {
             const formData = buildFormData(payload)
 
             const filteredBody = getChangedFormData(formData, initialValue)
+
+            if (selectedCompany) {
+                filteredBody.append('company', selectedCompany?.id?.toString())
+            }
 
             const res = await axioisInstance.patch(`/merchant/purchase/order`, filteredBody)
 
