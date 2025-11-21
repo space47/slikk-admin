@@ -30,7 +30,8 @@ const DailyDepositModal: React.FC<DailyDepositModalProps> = ({ row, isOpen, setI
     const [taskId, setTaskId] = useState<TaskData | null>()
 
     const queryParams = useMemo(
-        () => `/logistic/slikk/task?p=${page}&page_size=${pageSize}&runner_mobile=${row?.rider?.user?.mobile}&from=${from}&to=${to}`,
+        () =>
+            `/logistic/slikk/task?p=${page}&page_size=${pageSize}&cash_only=true&runner_mobile=${row?.rider?.user?.mobile}&from=${from}&to=${to}`,
         [row?.rider?.user?.mobile, from, to, page, pageSize],
     )
 
@@ -142,25 +143,50 @@ const DailyDepositModal: React.FC<DailyDepositModalProps> = ({ row, isOpen, setI
 
             <Modal
                 title="Enter Deposit Amount"
-                okText="Confirm"
-                cancelText="Cancel"
                 open={amountModalVisible}
                 width={500}
                 className="custom-modal"
-                okButtonProps={{
-                    className: 'font-semibold',
-                    style: { backgroundColor: '#1D4ED8', color: '#FFFFFF', borderRadius: '8px' },
-                }}
-                cancelButtonProps={{
-                    className: 'font-semibold',
-                    style: { backgroundColor: '#6B7280', color: '#FFFFFF', borderRadius: '8px' },
-                }}
+                okText="Confirm"
+                cancelText="Cancel"
+                footer={
+                    taskId?.client_order_details?.payment_mode?.toLowerCase() === 'qr'
+                        ? [
+                              <button
+                                  key="cancel"
+                                  className="px-4 py-2 bg-gray-500 text-white rounded-lg font-semibold"
+                                  onClick={() => setAmountModalVisible(false)}
+                              >
+                                  Close
+                              </button>,
+                          ]
+                        : undefined
+                }
                 onOk={() => handleDailyDeposit(false)}
                 onCancel={() => setAmountModalVisible(false)}
             >
                 <div className="flex flex-col gap-4">
-                    <p className="text-base font-medium text-gray-700">Please enter the deposit amount:</p>
-                    <Input type="number" value={amount} placeholder="Enter amount" onChange={(e) => setAmount(e.target.value)} />
+                    {taskId?.client_order_details?.payment_mode?.toLowerCase() === 'qr' ? (
+                        <div className="rounded-2xl border border-green-300 bg-green-50 p-4 shadow-sm">
+                            <p className="text-lg font-semibold text-green-800 flex items-center gap-2">
+                                <span className="w-2 h-2 bg-green-600 rounded-full"></span>
+                                Payment Collected via QR
+                            </p>
+                            <p className="text-sm text-green-700 mt-1">
+                                The cash has already been collected through QR. No manual deposit is required.
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col gap-2">
+                            <p className="text-base font-medium text-gray-700">Please enter the deposit amount:</p>
+                            <Input
+                                type="number"
+                                value={amount}
+                                placeholder="Enter amount"
+                                className="h-11 rounded-xl"
+                                onChange={(e) => setAmount(e.target.value)}
+                            />
+                        </div>
+                    )}
                 </div>
             </Modal>
         </Dialog>
