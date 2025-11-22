@@ -37,14 +37,18 @@ export const CashCollectionTable: React.FC = () => {
     const [isCreateModal, setIsCreateModal] = useState(false)
     const [downloadSpinning, setDownloadSpinning] = useState(false)
     const toDate = useMemo(() => moment(to).add(1, 'days').format(DATE_FORMAT), [to])
+    const shouldFetch = Boolean(searchOnEnter?.trim())
 
-    const { data, isSuccess, isError, refetch, isLoading, isFetching } = cashCollectionService.useCashCollectionQuery({
-        from,
-        to: toDate,
-        page,
-        pageSize,
-        mobile: searchOnEnter || undefined,
-    })
+    const { data, isSuccess, isError, refetch, isLoading, isFetching, isUninitialized } = cashCollectionService.useCashCollectionQuery(
+        {
+            from,
+            to: toDate,
+            page,
+            pageSize,
+            mobile: searchOnEnter || undefined,
+        },
+        { skip: !shouldFetch },
+    )
 
     useEffect(() => {
         if (isSuccess && data?.data) {
@@ -58,8 +62,8 @@ export const CashCollectionTable: React.FC = () => {
     }, [data, isSuccess, isError])
 
     useEffect(() => {
-        refetch()
-    }, [searchTrigger, refetch])
+        if (!isUninitialized) refetch()
+    }, [searchTrigger, refetch, isUninitialized])
 
     const handleDownload = async () => {
         try {
