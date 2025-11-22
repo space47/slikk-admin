@@ -19,6 +19,7 @@ import { commonDownload } from '@/common/commonDownload'
 import { AxiosError } from 'axios'
 import { errorMessage } from '@/utils/responseMessages'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { should } from 'vitest'
 
 export const CashCollectionTable: React.FC = () => {
     const [cashData, setCashData] = useState<CashCollection[]>([])
@@ -39,7 +40,7 @@ export const CashCollectionTable: React.FC = () => {
     const toDate = useMemo(() => moment(to).add(1, 'days').format(DATE_FORMAT), [to])
     const shouldFetch = Boolean(searchOnEnter?.trim())
 
-    const { data, isSuccess, isError, refetch, isLoading, isFetching } = cashCollectionService.useCashCollectionQuery(
+    const { data, isSuccess, isError, refetch, isLoading, isFetching, isUninitialized } = cashCollectionService.useCashCollectionQuery(
         {
             from,
             to: toDate,
@@ -62,8 +63,8 @@ export const CashCollectionTable: React.FC = () => {
     }, [data, isSuccess, isError])
 
     useEffect(() => {
-        refetch()
-    }, [searchTrigger, refetch])
+        if (!isUninitialized) refetch()
+    }, [searchTrigger, refetch, isUninitialized])
 
     const handleDownload = async () => {
         try {
