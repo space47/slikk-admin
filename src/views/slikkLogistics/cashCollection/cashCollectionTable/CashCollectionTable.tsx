@@ -19,7 +19,6 @@ import { commonDownload } from '@/common/commonDownload'
 import { AxiosError } from 'axios'
 import { errorMessage } from '@/utils/responseMessages'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { should } from 'vitest'
 
 export const CashCollectionTable: React.FC = () => {
     const [cashData, setCashData] = useState<CashCollection[]>([])
