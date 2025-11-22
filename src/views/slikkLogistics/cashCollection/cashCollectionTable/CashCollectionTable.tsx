@@ -24,8 +24,7 @@ export const CashCollectionTable: React.FC = () => {
     const [cashData, setCashData] = useState<CashCollection[]>([])
     const [globalFilter, setGlobalFilter] = useState('')
     const [searchOnEnter, setSearchOnEnter] = useState('')
-    const [searchTrigger, setSearchTrigger] = useState(0)
-    const [page, setPage] = useState<number>(DEFAULT_PAGE)
+    const [page, setPage] = useState(DEFAULT_PAGE)
     const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
     const [count, setCount] = useState(0)
     const [from, setFrom] = useState(moment().format(DATE_FORMAT))
@@ -36,34 +35,39 @@ export const CashCollectionTable: React.FC = () => {
     const [isDailyDepositOpen, setIsDailyDepositOpen] = useState(false)
     const [isCreateModal, setIsCreateModal] = useState(false)
     const [downloadSpinning, setDownloadSpinning] = useState(false)
-    const toDate = useMemo(() => moment(to).add(1, 'days').format(DATE_FORMAT), [to])
-    const shouldFetch = Boolean(searchOnEnter?.trim())
 
-    const { data, isSuccess, isError, refetch, isLoading, isFetching, isUninitialized } = cashCollectionService.useCashCollectionQuery(
-        {
-            from,
-            to: toDate,
-            page,
-            pageSize,
-            mobile: searchOnEnter || undefined,
-        },
-        { skip: !shouldFetch },
-    )
+    const toDate = useMemo(() => moment(to).add(1, 'days').format(DATE_FORMAT), [to])
+
+    const { data, isSuccess, isError, refetch, isLoading, isFetching } = cashCollectionService.useCashCollectionQuery({
+        from,
+        to: toDate,
+        page,
+        pageSize,
+        mobile: searchOnEnter || '',
+    })
 
     useEffect(() => {
         if (isSuccess && data?.data) {
-            setCashData(data.data.results || [])
-            setCount(data.data.count || 0)
+            setCashData(data.data.results ?? [])
+            setCount(data.data.count ?? 0)
         }
-
         if (isError) {
             console.error('Error fetching cash collection data')
         }
     }, [data, isSuccess, isError])
 
-    useEffect(() => {
-        if (!isUninitialized) refetch()
-    }, [searchTrigger, refetch, isUninitialized])
+    const handleSearch = useCallback(() => {
+        setSearchOnEnter(globalFilter.trim())
+        setPage(DEFAULT_PAGE)
+    }, [globalFilter])
+
+    const handleDateChange = useCallback((dates: [Date | null, Date | null] | null) => {
+        if (dates?.[0]) {
+            setFrom(moment(dates[0]).format(DATE_FORMAT))
+            setTo(dates[1] ? moment(dates[1]).format(DATE_FORMAT) : moment().format(DATE_FORMAT))
+            setPage(DEFAULT_PAGE)
+        }
+    }, [])
 
     const handleDownload = async () => {
         try {
@@ -73,49 +77,20 @@ export const CashCollectionTable: React.FC = () => {
             commonDownload(res, 'CashCollection.csv')
             notification.success({ message: 'Successfully completed' })
         } catch (error) {
-            if (error instanceof AxiosError) {
-                errorMessage(error)
-            }
+            if (error instanceof AxiosError) errorMessage(error)
         } finally {
             setDownloadSpinning(false)
         }
     }
 
-    const handleDateChange = useCallback((dates: [Date | null, Date | null] | null) => {
-        if (dates?.[0]) {
-            setFrom(moment(dates[0]).format(DATE_FORMAT))
-            setTo(dates[1] ? moment(dates[1]).format(DATE_FORMAT) : moment().format(DATE_FORMAT))
-        }
-    }, [])
-
-    const handleSearch = useCallback(() => {
-        setSearchOnEnter(globalFilter)
-        setSearchTrigger((prev) => prev + 1)
-        setPage(DEFAULT_PAGE)
-    }, [globalFilter])
-
-    const handleCreateRiderCollection = () => {
-        setIsCreateModal(true)
-    }
-
     const handleDailyCash = (row: CashCollection) => {
-        setIsDailyDepositOpen(true)
         setDailyRow(row)
+        setIsDailyDepositOpen(true)
     }
 
     const handleUpdateCash = (row: CashCollection) => {
-        setIsUpdateDepositOpen(true)
         setUpdateDepositRow(row)
-    }
-
-    const handleCloseUpdateDeposit = () => {
-        setIsUpdateDepositOpen(false)
-        setUpdateDepositRow(undefined)
-    }
-
-    const handleCloseDailyDeposit = () => {
-        setIsDailyDepositOpen(false)
-        setDailyRow(undefined)
+        setIsUpdateDepositOpen(true)
     }
 
     const columns = useCashCollectionColumns({
@@ -146,19 +121,15 @@ export const CashCollectionTable: React.FC = () => {
                         </button>
                     </div>
 
-                    <div className="flex items-center flex-col xl:flex-row xl:justify-between lg:justify-end gap-3 w-full lg:w-auto">
-                        <Button variant="new" className="xl:mt-8" size="sm" onClick={handleCreateRiderCollection}>
+                    <div className="flex items-center flex-col xl:flex-row lg:justify-end gap-3 w-full lg:w-auto">
+                        <Button variant="new" size="sm" onClick={() => setIsCreateModal(true)}>
                             Create Daily Collection
                         </Button>
 
-                        <Button variant="new" className="xl:mt-8" size="sm" onClick={handleDownload}>
+                        <Button variant="new" size="sm" onClick={handleDownload}>
                             <span className="flex items-center gap-1">
                                 Download
-                                {downloadSpinning && (
-                                    <span>
-                                        <Spinner size={20} color="white" />
-                                    </span>
-                                )}
+                                {downloadSpinning && <Spinner size={20} color="white" />}
                             </span>
                         </Button>
 
@@ -171,15 +142,11 @@ export const CashCollectionTable: React.FC = () => {
                         <Spinner size={30} />
                     </div>
                 ) : cashData?.length > 0 ? (
-                    <>
-                        <div className="p-6 overflow-x-auto">
-                            <EasyTable mainData={cashData} columns={columns} page={page} pageSize={pageSize} />
-                        </div>
-                    </>
+                    <div className="p-6 overflow-x-auto">
+                        <EasyTable mainData={cashData} columns={columns} page={page} pageSize={pageSize} />
+                    </div>
                 ) : (
-                    <>
-                        <NotFoundData />
-                    </>
+                    <NotFoundData />
                 )}
 
                 <div className="mb-8 p-2">
@@ -189,7 +156,7 @@ export const CashCollectionTable: React.FC = () => {
             <UpdateDepositModal
                 from={from}
                 isOpen={isUpdateDepositOpen}
-                setIsOpen={handleCloseUpdateDeposit}
+                setIsOpen={() => setIsUpdateDepositOpen(false)}
                 row={updateDepositRow}
                 refetch={refetch}
             />
@@ -198,7 +165,7 @@ export const CashCollectionTable: React.FC = () => {
                 to={toDate}
                 from={from}
                 isOpen={isDailyDepositOpen}
-                setIsOpen={handleCloseDailyDeposit}
+                setIsOpen={() => setIsDailyDepositOpen(false)}
                 row={dailyRow}
                 refetch={refetch}
             />
