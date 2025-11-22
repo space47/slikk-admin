@@ -22,7 +22,9 @@ export const cashCollectionService = RtkQueryService.injectEndpoints({
                 if (params.to) {
                     parameters.to = params.to
                 }
-                if (params.mobile) parameters.mobile = params.mobile
+                if (params.mobile && params.mobile.trim() !== '') {
+                    parameters.mobile = params.mobile.trim()
+                }
 
                 return {
                     url: `/rider/cash/collection`,
