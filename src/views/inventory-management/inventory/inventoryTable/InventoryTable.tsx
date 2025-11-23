@@ -60,13 +60,10 @@ const InventoryTable = () => {
         setLocationTransferModal,
     })
 
-    console.log('columns are', columns)
-
     const handleDownload = async () => {
         try {
             setSpinner(true)
-            const downloadQuery = `${query}+&download=true`
-            const res = await axioisInstance.get(downloadQuery)
+            const res = await axioisInstance.get(`${query}+&download=true`)
             notification.success({ message: res?.data?.message || 'Successfully downloaded' })
         } catch (error) {
             if (error instanceof AxiosError) {
@@ -75,10 +72,6 @@ const InventoryTable = () => {
         } finally {
             setSpinner(false)
         }
-    }
-
-    const hanldeSync = async () => {
-        setIsInventorySync(true)
     }
 
     if (responseStatus === 403) {
@@ -110,8 +103,8 @@ const InventoryTable = () => {
                                 type="search"
                                 placeholder="Search SKU/Name"
                                 value={globalFilter}
-                                onChange={(e) => setGlobalFilter(e.target.value)}
                                 className="p-2 border rounded shadow-md w-full sm:w-auto"
+                                onChange={(e) => setGlobalFilter(e.target.value)}
                             />
                             <div className="bg-gray-100 items-center rounded-md dark:bg-blue-600 dark:text-white">
                                 <Dropdown
@@ -139,15 +132,15 @@ const InventoryTable = () => {
                                 <Button variant="reject" size="sm" onClick={() => setClearInventory(true)}>
                                     Clear Inventory
                                 </Button>
-                                <Button variant="accept" size="sm" onClick={hanldeSync}>
+                                <Button variant="accept" size="sm" onClick={() => setIsInventorySync(true)}>
                                     Sync Inventory
                                 </Button>
                                 <Button
                                     variant="new"
                                     color="yellow"
                                     size="sm"
-                                    onClick={handleDownload}
                                     className="flex gap-2 items-center justify-center"
+                                    onClick={handleDownload}
                                 >
                                     <span>Download</span>
                                     {spinner && <Spinner size={20} color="white" />}
@@ -177,10 +170,10 @@ const InventoryTable = () => {
                             pageSize={pageSize}
                             currentPage={page}
                             total={totalData}
+                            className="w-[400px] md:w-auto mb-4 md:mb-0 "
                             onChange={(page) => {
                                 setPage(page)
                             }}
-                            className="w-[400px] md:w-auto mb-4 md:mb-0 "
                         />
                         <div className="flex flex-row items-center justify-between xl:justify-normal w-full md:w-auto xl:gap-5">
                             <Select<Option>
