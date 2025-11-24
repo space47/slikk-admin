@@ -55,10 +55,15 @@ const OffersEdit = () => {
     const { initialValues } = useOfferFunctions({ offersData })
 
     const handleSubmit = async (values: any) => {
-        console.log('values', values)
-        const { body } = offerBodyFile(values, buyFilterId, getFilterId)
+        const { body } = offerBodyFile(values)
         const filteredBody = filterEmptyValues(body)
         const changedValues = getChangedValues(initialValues, filteredBody as any)
+
+        const bodyToSend = {
+            ...changedValues,
+            buy_filter_id: buyFilterId || null,
+            get_filter_id: values?.is_same_as_buy_filter ? values?.buy_filter_id : getFilterId || null,
+        }
 
         if (Object.keys(changedValues).length === 0) {
             notification.info({
@@ -68,7 +73,7 @@ const OffersEdit = () => {
             return
         }
 
-        const finalPayload = { id: Number(id), ...changedValues }
+        const finalPayload = { id: Number(id), ...bodyToSend }
 
         await editOffer(finalPayload)
     }

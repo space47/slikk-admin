@@ -36,9 +36,16 @@ const OffersAdd = () => {
 
     const handleSubmit = async (values: any) => {
         console.log(values)
-        const { body } = offerBodyFile(values, buyFilterId, getFilterId)
+        const { body } = offerBodyFile(values)
         const filteredBody = filterEmptyValues(body)
-        await addOffers(filteredBody)
+
+        const bodyToSend = {
+            ...filteredBody,
+            buy_filter_id: buyFilterId || null,
+            get_filter_id: values?.is_same_as_buy_filter ? values?.buy_filter_id : getFilterId || null,
+        }
+
+        await addOffers(bodyToSend)
     }
 
     return (
