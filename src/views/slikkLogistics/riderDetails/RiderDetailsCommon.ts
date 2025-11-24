@@ -36,6 +36,7 @@ export const RiderAgency = [
     { label: 'Pidge', value: 'pidge' },
     { label: 'Pico', value: 'pico' },
     { label: 'CareBazaar', value: 'careBazaar' },
+    { label: 'WD', value: 'WD' },
     { label: 'Shadow Fax', value: 'shadowfax' },
 ]
 

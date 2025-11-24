@@ -9,14 +9,7 @@ import { Product } from '../components/activityCommon'
 import { OrderCancelReasons } from '@/constants/commonArray.constant'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { errorMessage, successMessage } from '@/utils/responseMessages'
-
-interface LocationDetail {
-    location: string
-    quantity: number
-    product?: {
-        sku: string
-    }
-}
+import { LocationDetail, QuantityValidation } from '../orderList.common'
 
 interface RtoCancelModalProps {
     isOpen: boolean
@@ -24,15 +17,10 @@ interface RtoCancelModalProps {
     orderItems: Product[]
     invoice_id: string | undefined
     isCancel?: boolean
+    status?: string
 }
 
-interface QuantityValidation {
-    totalItemQuantity: number
-    calculatedQuantity: number
-    isValid: boolean
-}
-
-const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orderItems, invoice_id, isCancel = false }) => {
+const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orderItems, invoice_id, isCancel = false, status }) => {
     const navigate = useNavigate()
     const [locationWiseDetails, setLocationWiseDetails] = useState<Record<number, LocationDetail[]>>({})
     const [locationStore, setLocationStore] = useState<Record<number, string>>({})
@@ -54,22 +42,16 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
         () => locationWiseArray.reduce((total: number, item) => total + Number(item.quantity), 0),
         [locationWiseArray],
     )
-
     useEffect(() => {
         if (!isOpen) return
         const initialLocationStore: Record<number, string> = {}
-        orderItems.forEach((item) => {
-            initialLocationStore[item.id] = item.location || ''
-        })
-        setLocationStore(initialLocationStore)
-    }, [isOpen, orderItems])
-
-    useEffect(() => {
-        if (!isOpen) return
         const initialLocationDetails: Record<number, LocationDetail[]> = {}
         orderItems.forEach((item) => {
-            initialLocationDetails[item.id] = Array.isArray(locationWiseDetails[item.id]) ? locationWiseDetails[item.id] : []
+            initialLocationStore[item.id] = item.location || ''
+            initialLocationDetails[item.id] = locationWiseDetails[item.id] || []
         })
+
+        setLocationStore(initialLocationStore)
         setLocationWiseDetails(initialLocationDetails)
     }, [isOpen, orderItems])
 
@@ -95,12 +77,13 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
     const updateLocationDetail = useCallback((orderItemId: number, index: number, field: keyof LocationDetail, value: string | number) => {
         setLocationWiseDetails((prev) => {
             const currentLocations = prev[orderItemId] || []
+            if (currentLocations.length <= index) return prev
             const updatedLocations = [...currentLocations]
-            updatedLocations[index] = { ...updatedLocations[index], [field]: value }
-            return {
-                ...prev,
-                [orderItemId]: updatedLocations,
+            updatedLocations[index] = {
+                ...updatedLocations[index],
+                [field]: value,
             }
+            return { ...prev, [orderItemId]: updatedLocations }
         })
     }, [])
 
@@ -108,10 +91,7 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
         setLocationWiseDetails((prev) => {
             const currentLocations = prev[orderItemId] || []
             const updatedLocations = currentLocations.filter((_, i) => i !== index)
-            return {
-                ...prev,
-                [orderItemId]: updatedLocations,
-            }
+            return { ...prev, [orderItemId]: updatedLocations }
         })
     }, [])
 
@@ -128,11 +108,12 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
     const transformLocationDetails = useCallback((): Record<number, Record<string, number>> => {
         const transformed: Record<number, Record<string, number>> = {}
         Object.entries(locationWiseDetails).forEach(([id, details]) => {
-            if (Array.isArray(details)) {
-                transformed[Number(id)] = details.reduce(
+            const numericId = Number(id)
+            if (Array.isArray(details) && details.length > 0) {
+                transformed[numericId] = details.reduce(
                     (acc, { location, quantity }) => {
-                        if (location) {
-                            acc[location] = quantity
+                        if (location && location.trim() !== '') {
+                            acc[location] = (acc[location] || 0) + quantity
                         }
                         return acc
                     },
@@ -156,8 +137,28 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
         return isCancel ? '' : 'RTO Cancel'
     }, [cancelReason, customReason, isCancel])
 
-    // API calls
     const handleCancelOrder = useCallback(async () => {
+        const validation = validateQuantities()
+        if (!validation.isValid) {
+            notification.warning({
+                message: 'Quantity Mismatch',
+                description: `Total item quantity does not match assigned quantity or Location is not selected. Please ensure all fields are properly assigned.`,
+            })
+            return
+        }
+        let hasEmptyLocation = false
+        Object.entries(locationWiseDetails).forEach(([id, details]) => {
+            details.forEach(({ location }, index) => {
+                if (!location || location.trim() === '') {
+                    hasEmptyLocation = true
+                    notification.error({
+                        message: 'Location Required',
+                        description: `Please select a valid location for item ${id} at position ${index + 1}.`,
+                    })
+                }
+            })
+        })
+        if (hasEmptyLocation) return
         if (isCancel && !cancelReason && !customReason) {
             notification.error({
                 message: 'Reason Required',
@@ -165,45 +166,40 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
             })
             return
         }
-
         const body = {
-            // items_location: transformLocationDetails(),
+            items_location: transformLocationDetails(),
             return_reason: getCancelReason(),
         }
-
         try {
             setIsLoading(true)
             const response = await axioisInstance.post(`merchant/cancelorder/${invoice_id}`, body)
-
-            if (isCancel) {
-                notification.success({
-                    message: 'Success',
-                    description: response.data.message || 'Order successfully cancelled',
-                })
-                setIsOpen(false)
-            } else {
-                successMessage(response)
-                navigate(0)
-                setIsOpen(false)
-            }
+            successMessage(response)
+            navigate(0)
+            setIsOpen(false)
         } catch (error) {
             if (error instanceof AxiosError) {
                 errorMessage(error)
-            } else {
-                notification.error({
-                    message: 'Error',
-                    description: 'Order failed to cancel',
-                })
             }
         } finally {
             setIsLoading(false)
         }
-    }, [isCancel, cancelReason, customReason, getCancelReason, transformLocationDetails, invoice_id, setIsOpen, navigate])
+    }, [
+        validateQuantities,
+        locationWiseDetails,
+        isCancel,
+        cancelReason,
+        customReason,
+        getCancelReason,
+        transformLocationDetails,
+        invoice_id,
+        setIsOpen,
+        navigate,
+    ])
 
-    // Component rendering helpers
     const renderLocationInputs = (item: Product) => {
         const locations = locationWiseDetails[item.id] || []
         const assignedQuantity = locations.reduce((sum, loc) => sum + (Number(loc.quantity) || 0), 0)
+        const remainingQuantity = Number(item.quantity) - assignedQuantity
         const storedLocation = locationStore[item.id] || ''
 
         return (
@@ -213,7 +209,7 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
                     <Button
                         variant="blue"
                         disabled={assignedQuantity >= Number(item.quantity)}
-                        onClick={() => addLocation(item.id, parseInt(item.quantity))}
+                        onClick={() => addLocation(item.id, Number(item.quantity))}
                     >
                         Add Location
                     </Button>
@@ -232,9 +228,9 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
                             type="number"
                             placeholder="Quantity"
                             min={0}
-                            max={item.quantity}
-                            value={location.quantity}
-                            onChange={(e) => updateLocationDetail(item.id, index, 'quantity', Number(e.target.value))}
+                            max={remainingQuantity + location.quantity}
+                            value={location.quantity || ''}
+                            onChange={(e) => updateLocationDetail(item.id, index, 'quantity', Number(e.target.value) || 0)}
                             className="border p-2 rounded w-20"
                         />
                         <Button variant="reject" onClick={() => removeLocation(item.id, index)}>
@@ -248,8 +244,11 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
                         Original location: <span className="font-bold">{storedLocation}</span>
                     </small>
                     <small className="text-gray-500">
-                        Max Quantity: {item.quantity} | Assigned: {assignedQuantity}
+                        Max Quantity: {item.quantity} | Assigned: {assignedQuantity} | Remaining: {remainingQuantity}
                     </small>
+                    {remainingQuantity < 0 && (
+                        <small className="text-red-500 font-semibold">Warning: You have assigned more than the available quantity!</small>
+                    )}
                 </div>
             </div>
         )
@@ -257,7 +256,6 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
 
     const renderCancelReasonSection = () => {
         if (!isCancel) return null
-
         return (
             <div className="mt-4">
                 <div className="text-base font-bold mb-2 text-red-500">REASON FOR CANCELLING</div>
@@ -299,20 +297,20 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
         )
     }
 
-    const renderRTOCancelSection = () => {
-        if (isCancel) return null
+    // const renderRTOCancelSection = () => {
+    //     if (isCancel) return null
 
-        return (
-            <div className="text-center py-4">
-                <h1 className="text-lg font-bold text-red-600 mb-2">RTO Cancel</h1>
-                <p className="text-xl font-semibold">Are you sure you want to cancel the RTO order?</p>
-            </div>
-        )
-    }
+    //     return (
+    //         <div className="text-center py-4">
+    //             <h1 className="text-lg font-bold text-red-600 mb-2">RTO Cancel</h1>
+    //             <p className="text-xl font-semibold">Are you sure you want to cancel the RTO order?</p>
+    //         </div>
+    //     )
+    // }
 
     return (
         <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)} width={1000}>
-            <div className="p-1">
+            <div className="p-3">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
                         CANCEL ORDER
@@ -333,9 +331,12 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
                         </Button>
                     </div>
                 </div>
-                {/* <div className="max-h-[230px] overflow-y-auto pr-2 bg-blue-50 p-4 rounded-lg">{orderItems?.map(renderLocationInputs)}</div> */}
+                {status !== 'ACCEPTED' && (
+                    <div className="max-h-[230px] overflow-y-auto pr-2 bg-blue-50 p-4 rounded-lg">
+                        {orderItems?.map(renderLocationInputs)}
+                    </div>
+                )}
                 {renderCancelReasonSection()}
-                {renderRTOCancelSection()}
             </div>
         </Dialog>
     )
