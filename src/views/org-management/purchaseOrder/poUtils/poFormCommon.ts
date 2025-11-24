@@ -1,8 +1,10 @@
+//TODO: Change the state code to dropdown
+
 export const PoFormFieldArray = [
     { label: 'State Code', type: 'text', name: 'state_code', is_required: true },
-    { label: 'Order Billing Entity', type: 'text', name: 'order_billing_entity' },
-    { label: 'Order Billing Address', type: 'text', name: 'order_billing_address' },
-    { label: 'Order Shipping Address', type: 'text', name: 'order_shipping_address' },
+    { label: 'Vendor Billing Entity', type: 'text', name: 'order_billing_entity' },
+    { label: 'Vendor Billing Address(Bill-to)', type: 'text', name: 'order_billing_address' },
+    { label: 'Vendor Shipping Address(Ship-to)', type: 'text', name: 'order_shipping_address' },
     { label: 'Commercial Terms', type: 'text', name: 'commercial_terms' },
     { label: 'Payment Terms', type: 'text', name: 'payment_terms' },
     { label: 'special_terms', type: 'text', name: 'special_terms' },
