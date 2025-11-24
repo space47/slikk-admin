@@ -121,7 +121,21 @@ export const useReturnOrderFunctions = ({
     }
 
     const handleCompleteReturn = async (action: string, locationWiseDetails: any) => {
+        if (Object.entries(locationWiseDetails)?.length <= 0) {
+            notification.error({ message: 'Fill up the items as per the location to proceed further' })
+            return
+        }
         const totalItemQuantity = locationWiseArray?.reduce((total: number, item: any) => total + Number(item?.quantity), 0) || 0
+
+        for (const id of Object.keys(locationWiseDetails)) {
+            for (const { location } of locationWiseDetails[id]) {
+                if (!location || location?.trim() === '') {
+                    notification.error({ message: 'No location found. Please select a valid location.' })
+                    return
+                }
+            }
+        }
+
         Object.keys(locationWiseDetails)?.forEach((id) => {
             locationWiseDetails[id] = locationWiseDetails[id]?.reduce((acc: any, { location, quantity }: any) => {
                 acc[location] = quantity
