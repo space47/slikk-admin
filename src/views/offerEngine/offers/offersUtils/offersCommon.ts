@@ -46,7 +46,7 @@ export const WEEKDAY_ARRAY = [
     { label: 'Saturday', value: '7' },
 ]
 
-export const offerBodyFile = (values: any, buyFilterId: number | string | undefined, getFilterId: number | string | undefined) => {
+export const offerBodyFile = (values: any) => {
     console.log('values', values)
     const body = {
         offer_name: values?.offer_name || '', // mandatory
@@ -68,10 +68,8 @@ export const offerBodyFile = (values: any, buyFilterId: number | string | undefi
         set_size: values?.set_size || '',
         max_sets: values?.max_sets || '',
         buy_quantity: values?.buy_quantity || '', // mandatory
-        buy_filter_id: values?.buy_filter_id || buyFilterId || '', // mandatory
         get_quantity: values?.get_quantity || '',
         user_filter_id: values?.groupId?.id || '',
-        get_filter_id: values?.is_same_as_buy_filter ? values?.buy_filter_id : values?.get_filter_id || getFilterId || '',
         get_reward_type: values?.get_reward_type || '', //PERCENTAGE / FLAT / CONSTANT_PRICE
         get_reward_value: values?.get_reward_value || '',
         get_reward_limit: values?.get_reward_limit || '',
