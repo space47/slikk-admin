@@ -107,15 +107,19 @@ const OrderDetails = () => {
                             <span className="ml-2 text-xl">{data?.delivery_schedule_date}</span>
                         </span>
                     )}
-                    {data?.delivery_schedule_slot && (
+                    {data?.delivery_schedule_slot ? (
                         <span className="flex items-center justify-center md:justify-start text-gray-600 text-sm">
                             <span className="font-bold text-xl">Schedule Slot:</span>
+
                             <span className="ml-2 text-xl">
-                                {scheduleSlots[data.delivery_schedule_slot]
-                                    ? `${scheduleSlots[data.delivery_schedule_slot].start} - ${scheduleSlots[data.delivery_schedule_slot].end}`
-                                    : 'Invalid slot'}
+                                {(() => {
+                                    const slot = scheduleSlots[data.delivery_schedule_slot]
+                                    return slot?.start && slot?.end ? `${slot.start} - ${slot.end}` : 'Invalid slot'
+                                })()}
                             </span>
                         </span>
+                    ) : (
+                        <></>
                     )}
                 </div>
                 <div className="mt-4 md:mt-0 flex flex-col items-center xl:items-end gap-5 justify-center w-full xl:w-1/2">
@@ -137,7 +141,6 @@ const OrderDetails = () => {
                         )}
                     </div>
 
-                    {/* Standardized Order Lists */}
                     {data.return_order.length > 0 && (
                         <>
                             <OrderList

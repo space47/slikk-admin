@@ -55,6 +55,8 @@ const TaskTracking = () => {
         if (statusName) {
             if (statusName === 'cash_recon') {
                 currentStatusName = `&data_type=${statusName}`
+            } else if (statusName === 'cash_only') {
+                currentStatusName = `&cash_only=true`
             } else {
                 currentStatusName = `&status=${statusName}`
             }
