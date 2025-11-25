@@ -60,6 +60,7 @@ export const SEARCHOPTIONS = [
 ]
 export const STATUSARRAY = [
     { label: 'CASH RECON', value: 'cash_recon' },
+    { label: 'CASH ONLY', value: 'cash_only' },
     { label: 'CREATED', value: 'CREATED' },
     { label: 'ASSIGNED', value: 'ASSIGNED' },
     { label: 'OUT_FOR_DELIVERY', value: 'OUT_FOR_DELIVERY' },
