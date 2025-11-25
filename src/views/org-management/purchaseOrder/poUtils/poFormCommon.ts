@@ -50,7 +50,9 @@ export const PoStatusColor = (status: string) => {
             return 'bg-green-500'
         case 'rejected':
             return 'bg-red-500'
-        case 'pending':
+        case 'accepted':
+            return 'bg-blue-500'
+        case 'waiting_approval':
             return 'bg-yellow-500'
         default:
             return 'bg-gray-500'

@@ -1,24 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ColumnDef } from '@tanstack/react-table'
 import React, { useMemo } from 'react'
-import moment from 'moment'
 import { PurchaseOrderTable } from '@/store/types/po.types'
-import { FaEdit } from 'react-icons/fa'
+import { FaEdit, FaFilePdf, FaPaperPlane } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import { PoStatusColor } from './poFormCommon'
+import { MdOutlineGridView } from 'react-icons/md'
 
 export const usePoListColumns = () => {
     const navigate = useNavigate()
 
     return useMemo<ColumnDef<PurchaseOrderTable>[]>(
         () => [
-            {
-                header: 'Edit',
-                accessorKey: 'id',
-                cell: ({ row }) => (
-                    <div>{<FaEdit className="text-xl text-blue-500" onClick={() => navigate(`/app/po/${row?.original?.id}`)} />}</div>
-                ),
-            },
             {
                 header: 'PO-Number',
                 accessorKey: 'id',
@@ -58,29 +51,11 @@ export const usePoListColumns = () => {
                 header: 'Status',
                 accessorKey: 'status',
                 cell: ({ row }) => (
-                    <div className={`${PoStatusColor(row?.original?.status)} text-white p-2 rounded-xl items-center`}>
+                    <div className={`${PoStatusColor(row?.original?.status)} text-white p-2 flex justify-center rounded-xl items-center`}>
                         {row.original.status || '-'}
                     </div>
                 ),
             },
-
-            // {
-            //     header: 'PO Nature',
-            //     accessorKey: 'po_nature',
-            //     cell: ({ row }) => <div>{row.original.po_nature || '-'}</div>,
-            // },
-
-            // {
-            //     header: 'POC Name',
-            //     accessorKey: 'poc_name',
-            //     cell: ({ row }) => <div>{row.original.poc_name || '-'}</div>,
-            // },
-
-            // {
-            //     header: 'POC Contact',
-            //     accessorKey: 'poc_contact',
-            //     cell: ({ row }) => <div>{row.original.poc_contact || '-'}</div>,
-            // },
 
             {
                 header: 'Approver Name',
@@ -94,49 +69,59 @@ export const usePoListColumns = () => {
                 cell: ({ row }) => <div>₹ {row.original.total_amount || '0.00'}</div>,
             },
 
-            // {
-            //     header: 'PO Issued Date',
-            //     accessorKey: 'po_issued_date',
-            //     cell: ({ row }) => (
-            //         <div>{row.original.po_issued_date ? moment(row.original.po_issued_date).format('DD MMM YYYY') : '-'}</div>
-            //     ),
-            // },
-
-            // {
-            //     header: 'Delivery Date',
-            //     accessorKey: 'delivery_date',
-            //     cell: ({ row }) => <div>{row.original.delivery_date ? moment(row.original.delivery_date).format('DD MMM YYYY') : '-'}</div>,
-            // },
-
-            // {
-            //     header: 'Agreement Completed',
-            //     accessorKey: 'agreement_completed',
-            //     cell: ({ row }) => <div>{row.original.agreement_completed ? 'Yes' : 'No'}</div>,
-            // },
-
             {
                 header: 'Payment Terms',
                 accessorKey: 'payment_terms',
                 cell: ({ row }) => <div>{row.original.payment_terms || '-'}</div>,
             },
-
-            // {
-            //     header: 'State Code',
-            //     accessorKey: 'state_code',
-            //     cell: ({ row }) => <div>{row.original.state_code || '-'}</div>,
-            // },
-
-            // {
-            //     header: 'Created At',
-            //     accessorKey: 'created_at',
-            //     cell: ({ row }) => <div>{moment(row.original.created_at).format('DD MMM YYYY, hh:mm A')}</div>,
-            // },
-
-            // {
-            //     header: 'Updated At',
-            //     accessorKey: 'updated_at',
-            //     cell: ({ row }) => <div>{moment(row.original.updated_at).format('DD MMM YYYY, hh:mm A')}</div>,
-            // },
+            {
+                header: 'Actions',
+                accessorKey: 'status',
+                cell: ({ row }) => {
+                    const status = row?.original?.status?.toLowerCase() || ''
+                    const isPendingApproval =
+                        status === 'created' ||
+                        status === 'approval waiting' ||
+                        status === 'approval_waiting' ||
+                        status === 'waiting_approval'
+                    const ActionButton = ({ icon: Icon, label, onClick }: any) => (
+                        <button
+                            className="flex items-center whitespace-nowrap gap-2 px-3 py-2 
+                        bg-white text-gray-700 border border-gray-200 rounded-xl
+                        hover:bg-gray-100 hover:border-gray-300 hover:shadow-sm
+                        transition-all duration-200 text-sm font-medium"
+                            onClick={onClick}
+                        >
+                            <Icon className="text-sm shrink-0" />
+                            <span className="truncate">{label}</span>
+                        </button>
+                    )
+                    return (
+                        <div className="flex flex-col gap-2">
+                            {isPendingApproval ? (
+                                <>
+                                    <ActionButton
+                                        icon={MdOutlineGridView}
+                                        label="View Details"
+                                        onClick={() => navigate(`/app/po/details/${row?.original?.id}`)}
+                                    />
+                                    <ActionButton icon={FaEdit} label="Edit" onClick={() => navigate(`/app/po/${row?.original?.id}`)} />
+                                    <ActionButton icon={FaPaperPlane} label="Send for Approval" />
+                                </>
+                            ) : (
+                                <>
+                                    <ActionButton
+                                        icon={MdOutlineGridView}
+                                        label="View Details"
+                                        onClick={() => navigate(`/app/po/details/${row?.original?.id}`)}
+                                    />
+                                    <ActionButton icon={FaFilePdf} label="View PDF" />
+                                </>
+                            )}
+                        </div>
+                    )
+                },
+            },
         ],
         [],
     )
