@@ -157,7 +157,7 @@ const EditNewGroups = () => {
 
             const requestBody = {
                 name: values.cohort_name,
-                data: transformConditionsToRules(values.conditions),
+                rules: transformConditionsToRules(values.conditions),
                 ...(values.user
                     ? { user: values.user }
                     : csvFile
