@@ -58,9 +58,9 @@ export const useDepositColumns = ({ handleDepositClick }: props) => {
                 cell: ({ row }: any) => <span>{row.original.client_order_details.payment_mode ?? 'N/A'}</span>,
             },
             {
-                header: 'Address',
-                accessorKey: 'drop_details.address',
-                cell: ({ row }: any) => <span>{row.original.drop_details.address ?? 'N/A'}</span>,
+                header: 'Deposit Amount',
+                accessorKey: 'deposit_amount',
+                cell: ({ row }: any) => <span>{row.original.deposit_amount ?? 'N/A'}</span>,
             },
             {
                 header: 'Status',
