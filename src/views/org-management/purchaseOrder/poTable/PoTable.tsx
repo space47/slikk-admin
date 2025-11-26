@@ -72,25 +72,8 @@ const PoTable = () => {
         }
     }, [globalFilter, poSingleSuccess, poSingleList, poSingleError, isSuccess, isError, data, error, dispatch])
 
-    const columns = usePoListColumns()
-
-    if (isLoading) {
+    const InputUi = () => {
         return (
-            <div className="flex flex-col items-center justify-center py-20">
-                <div className="h-12 w-12 border-4 border-gray-300 border-t-primary-500 rounded-full animate-spin" />
-                <p className="mt-4 text-gray-600">Loading Purchase Orders...</p>
-            </div>
-        )
-    }
-
-    return (
-        <div className="p-6 bg-white rounded-2xl shadow-md border border-gray-100">
-            <div className="flex items-center justify-between mb-6">
-                <h4 className="text-2xl font-semibold text-gray-800">Purchase Order Dashboard</h4>
-                <Button variant="reject" size="sm" onClick={() => navigate(`/app/po/addNew`)}>
-                    + Create New
-                </Button>
-            </div>
             <div className="sticky top-0 bg-white z-10 pb-4 mb-6 border-b border-gray-200">
                 <div className="flex gap-2 items-center">
                     <div className="flex flex-col w-full xl:w-[70%] md:w-[70%]">
@@ -98,7 +81,7 @@ const PoTable = () => {
                         <Input
                             value={globalFilter}
                             type="search"
-                            placeholder="Search by Vendor Name"
+                            placeholder="Search by PO Number"
                             className="rounded-lg"
                             onChange={(e) => setGlobalFilter(e.target.value)}
                         />
@@ -120,19 +103,37 @@ const PoTable = () => {
                     </div>
                 </div>
             </div>
+        )
+    }
 
-            {/* Inline loader */}
+    const columns = usePoListColumns()
+
+    if (isLoading) {
+        return (
+            <div className="flex flex-col items-center justify-center py-20">
+                <div className="h-12 w-12 border-4 border-gray-300 border-t-primary-500 rounded-full animate-spin" />
+                <p className="mt-4 text-gray-600">Loading Purchase Orders...</p>
+            </div>
+        )
+    }
+
+    return (
+        <div className="p-6 bg-white rounded-2xl shadow-md border border-gray-100">
+            <div className="flex items-center justify-between mb-6">
+                <h4 className="text-2xl font-semibold text-gray-800">Purchase Order Dashboard</h4>
+                <Button variant="reject" size="sm" onClick={() => navigate(`/app/po/addNew`)}>
+                    + Create New
+                </Button>
+            </div>
+            {InputUi()}
             {isFetching && (
                 <div className="flex items-center justify-center my-4">
                     <Spinner size={30} />
                 </div>
             )}
-
-            {/* Table */}
             {poList?.length ? (
                 <>
                     <EasyTable overflow columns={columns} mainData={poList} page={page} pageSize={pageSize} />
-
                     <PageCommon
                         dispatch={dispatch}
                         page={page}

@@ -2,7 +2,7 @@
 import { ColumnDef } from '@tanstack/react-table'
 import React, { useMemo } from 'react'
 import { PurchaseOrderTable } from '@/store/types/po.types'
-import { FaEdit, FaFilePdf, FaPaperPlane } from 'react-icons/fa'
+import { FaEdit, FaFilePdf, FaPaperPlane, FaRegDotCircle } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import { PoStatusColor } from './poFormCommon'
 import { MdOutlineGridView } from 'react-icons/md'
@@ -51,7 +51,12 @@ export const usePoListColumns = () => {
                 header: 'Status',
                 accessorKey: 'status',
                 cell: ({ row }) => (
-                    <div className={`${PoStatusColor(row?.original?.status)} text-white p-2 flex justify-center rounded-xl items-center`}>
+                    <div
+                        className={`${PoStatusColor(row?.original?.status)} text-white p-2 flex gap-2 justify-center rounded-xl items-center`}
+                    >
+                        <span>
+                            <FaRegDotCircle className=" text-white" />
+                        </span>
                         {row.original.status || '-'}
                     </div>
                 ),
