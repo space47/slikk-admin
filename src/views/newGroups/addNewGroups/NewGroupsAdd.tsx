@@ -10,7 +10,6 @@ import {
     ConditionArray,
     ConditionsForEvent,
     DidAndNotArray,
-    OperatorArray,
     QuickFilterArray,
     TimeFrameArray,
 } from '../notificationUtils/notificationGroupsCommon'
@@ -46,10 +45,7 @@ const NewGroupsAdd = () => {
     const [quickFilter, setQuickFilter] = useState<{ [key: number]: boolean }>({})
 
     const fetchGroupNotification = async (inputValue = '') => {
-        let filter = ''
-        if (inputValue) {
-            filter = `&group_name=${inputValue}`
-        }
+        const filter = inputValue ? `&group_name=${inputValue}` : ''
         try {
             const response = await axioisInstance.get(`/notification/groups?p=1&page_size=10&is_active=true${filter}`)
             const data = response?.data?.data
@@ -59,10 +55,7 @@ const NewGroupsAdd = () => {
         }
     }
 
-    const formattedData = groupData.map((group) => ({
-        value: group.id,
-        label: group.name,
-    }))
+    const formattedData = groupData.map((group) => ({ value: group.id, label: group.name }))
 
     const handleSearch = (inputValue: string, index: number) => {
         setSearchInputs((prev) => ({ ...prev, [index]: inputValue }))
@@ -97,10 +90,8 @@ const NewGroupsAdd = () => {
     }
 
     const handleSubmit = async (values: any) => {
-        console.log('Form values on submit: 🚀🚀🚀🚀🚀', values)
         try {
             setSpinner(true)
-
             const requestBody = {
                 name: values.cohort_name,
                 rules: transformConditionsToRules(values.conditions),
@@ -110,10 +101,7 @@ const NewGroupsAdd = () => {
                       ? { user: Array.isArray(mobileNumbers) ? mobileNumbers.join(',') : '' }
                       : {}),
             }
-
-            console.log('Transformed request body:', JSON.stringify(requestBody, null, 2))
             const response = await axioisInstance.post('/notification/groups', requestBody)
-
             notification.success({
                 message: response?.data?.data?.message || response?.data?.message || 'Cohort created successfully',
             })
@@ -131,57 +119,86 @@ const NewGroupsAdd = () => {
     const transformConditionsToRules = (conditions: any[]) => {
         if (conditions.length === 0) {
             return {
-                type: 'group',
-                op: 'and',
+                operations: [],
                 rules: [],
             }
         }
         if (conditions.length === 1) {
-            return transformConditionToRule(conditions[0])
-        }
-        const groupedRules: any[] = []
-        let currentGroup: any = null
-
-        conditions.forEach((condition, index) => {
-            const relation = condition.relation || 'AND'
-            if (index === 0 || (currentGroup && currentGroup.op !== relation.toLowerCase())) {
-                currentGroup = {
-                    type: 'group',
-                    op: relation.toLowerCase(),
-                    rules: [transformConditionToRule(condition)],
-                }
-                groupedRules.push(currentGroup)
-            } else {
-                currentGroup.rules.push(transformConditionToRule(condition))
-            }
-        })
-
-        const allSameRelation = groupedRules.every((group) => group.op === groupedRules[0].op)
-        if (allSameRelation) {
             return {
-                type: 'group',
-                op: groupedRules[0].op,
-                rules: groupedRules.flatMap((group) => group.rules),
+                operations: [],
+                rules: [transformConditionToRule(conditions[0])],
             }
         }
-        return {
-            type: 'group',
-            op: 'and',
-            rules: groupedRules,
+        const operations: string[] = []
+        const rules: any[] = []
+        rules.push(transformConditionToRule(conditions[0]))
+        for (let i = 1; i < conditions.length; i++) {
+            const currentCondition = conditions[i]
+            const previousRelation = conditions[i].relation || 'Error'
+            operations.push(previousRelation)
+            rules.push(transformConditionToRule(currentCondition))
         }
+
+        return { operations, rules }
     }
 
     const transformConditionToRule = (condition: any) => {
-        console.log('Transforming condition:', condition)
         let propertyValue: any
+        let properties: any[] = []
         if (condition.condition?.includes('BETWEEN') || condition.condition?.includes('Not Between')) {
             propertyValue = [condition.value_a, condition.value_b]
-        } else if (condition.value === 'true' || condition.value === 'false') {
-            propertyValue = condition.value === 'true'
-        } else if (!isNaN(condition.value) && condition.value !== '') {
-            propertyValue = Number(condition.value)
+            properties.push({
+                path: condition?.property?.toLowerCase(),
+                op: mapConditionToOperator(condition.condition),
+                value: propertyValue,
+            })
         } else {
-            propertyValue = condition.value
+            if (condition.value === 'true' || condition.value === 'false') {
+                propertyValue = condition.value === 'true'
+            } else if (!isNaN(condition.value) && condition.value !== '') {
+                propertyValue = Number(condition.value)
+            } else {
+                propertyValue = condition.value
+            }
+
+            properties.push({
+                path: condition?.property?.toLowerCase(),
+                op: mapConditionToOperator(condition.condition),
+                value: propertyValue,
+            })
+        }
+        if (condition?.property?.toLocaleLowerCase()?.includes('category') && condition.value) {
+            properties = [
+                {
+                    path: condition?.property?.toLowerCase(),
+                    op: mapConditionToOperator(condition.condition),
+                    value: condition.value,
+                },
+            ]
+        } else if (condition?.property?.toLocaleLowerCase()?.includes('division') && condition.value) {
+            properties = [
+                {
+                    path: condition?.property?.toLowerCase(),
+                    op: mapConditionToOperator(condition.condition),
+                    value: condition.value,
+                },
+            ]
+        } else if (condition?.property?.toLocaleLowerCase()?.includes('sub category') && condition.value) {
+            properties = [
+                {
+                    path: condition?.property?.toLowerCase(),
+                    op: mapConditionToOperator(condition.condition),
+                    value: condition.value,
+                },
+            ]
+        } else if (condition?.property?.toLocaleLowerCase()?.includes('brand') && condition.value) {
+            properties = [
+                {
+                    path: condition?.property?.toLowerCase(),
+                    op: mapConditionToOperator(condition.condition),
+                    value: condition.value,
+                },
+            ]
         }
 
         const range: any = {}
@@ -196,18 +213,13 @@ const NewGroupsAdd = () => {
         const timeFrame: any = { range }
 
         const rule: any = {
-            type: 'rule',
-            include: condition.didDidNot === 'Did',
-            event: condition.event,
-            properties: [
-                {
-                    path: condition?.property?.toLowerCase(),
-                    op: mapConditionToOperator(condition.condition),
-                    value: propertyValue,
-                },
-            ],
+            event: condition.event?.value || condition.event,
+            properties: properties,
         }
-        if (Object.keys(timeFrame).length > 0) {
+        if (condition.didDidNot === 'Did Not') {
+            rule.exclude = true
+        }
+        if (Object.keys(timeFrame.range).length > 0) {
             rule.time_frame = timeFrame
         }
         if (condition.includeExclude === true && condition.cohort_id) {
@@ -221,10 +233,26 @@ const NewGroupsAdd = () => {
     }
 
     const mapConditionToOperator = (condition: string): string => {
-        return condition
+        const operatorMap: { [key: string]: string } = {
+            '=': '=',
+            '!=': '!=',
+            '>': '>',
+            '<': '<',
+            '>=': '>=',
+            '<=': '<=',
+            BETWEEN: 'BETWEEN',
+            'Not Between': 'NOT BETWEEN',
+            Contains: 'CONTAINS',
+            'Not Contains': 'NOT CONTAINS',
+            'Starts With': 'STARTS WITH',
+            'Ends With': 'ENDS WITH',
+        }
+
+        return operatorMap[condition] || condition
     }
 
     const handleAddCondition = (push: any, relation: string) => {
+        console.log('relation is', relation)
         push({
             ...ConditionsForEvent,
             relation: relation,
@@ -316,9 +344,10 @@ const NewGroupsAdd = () => {
                             {({ push, remove }) => (
                                 <>
                                     {values.conditions.map((cond, index) => {
-                                        console.log('Condition:', cond)
+                                        const nextConditionRelation =
+                                            index < values.conditions.length - 1 ? values.conditions[index + 1]?.relation : null
                                         return (
-                                            <div key={index}>
+                                            <div key={index} className="relative">
                                                 <div className="flex justify-between items-center mb-2">
                                                     <div className="font-bold text-sl">ADD RULES #{index + 1}</div>
                                                     <div className="flex gap-4 items-center">
@@ -367,39 +396,28 @@ const NewGroupsAdd = () => {
                                                         label="Event Names"
                                                         name={`conditions[${index}].event`}
                                                     />
-
-                                                    {/* <CommonSelect
-                                                        label="Operator"
-                                                        options={OperatorArray}
-                                                        name={`conditions[${index}].operator`}
-                                                    /> */}
-
                                                     <GetPropertiesFromEvent
-                                                        eventId={values.conditions[index]?.event?.id}
+                                                        eventId={(values.conditions[index]?.event as any)?.id}
                                                         customClassName="w-full "
                                                         label="Property"
                                                         name={`conditions[${index}].property`}
                                                         eventName={values.conditions[index]?.event}
                                                     />
-
                                                     <CommonSelect
                                                         label="Condition"
                                                         options={ConditionArray}
                                                         name={`conditions[${index}].condition`}
                                                     />
-
                                                     {cond?.property?.toLocaleLowerCase()?.includes('category') && (
                                                         <FormItem label="value">
                                                             <FiltersSelect index={index} filter={category?.categories} />
                                                         </FormItem>
                                                     )}
-
                                                     {cond?.property?.toLocaleLowerCase()?.includes('division') && (
                                                         <FormItem label="value">
                                                             <FiltersSelect index={index} filter={divisions?.divisions} />
                                                         </FormItem>
                                                     )}
-
                                                     {cond?.property?.toLocaleLowerCase()?.includes('sub category') && (
                                                         <FormItem label="value">
                                                             <FiltersSelect index={index} filter={subCategoryData?.subcategories} />
@@ -410,7 +428,6 @@ const NewGroupsAdd = () => {
                                                             <FiltersSelect index={index} filter={brands?.brands} />
                                                         </FormItem>
                                                     )}
-
                                                     {!(
                                                         cond?.property?.toLocaleLowerCase()?.includes('category') ||
                                                         cond?.property?.toLocaleLowerCase()?.includes('division') ||
@@ -464,8 +481,6 @@ const NewGroupsAdd = () => {
                                                             />
                                                         </FormContainer>
                                                     )}
-
-                                                    {/* Includes/excludes */}
                                                     <FormItem label="Include/Exclude" className="flex justify-center items-center">
                                                         <Field
                                                             type="checkbox"
@@ -500,21 +515,49 @@ const NewGroupsAdd = () => {
                                                         </Field>
                                                     </FormItem>
                                                 </FormContainer>
-
-                                                {/* AND / OR Buttons */}
-                                                <div className="flex gap-4 mt-4 justify-center items-center">
-                                                    <Button variant="twoTone" type="button" onClick={() => handleAddCondition(push, 'AND')}>
+                                                <div className="flex gap-4 mt-6 justify-center items-center relative z-10">
+                                                    <Button
+                                                        variant="twoTone"
+                                                        type="button"
+                                                        onClick={() => handleAddCondition(push, 'AND')}
+                                                        className={`relative px-6 py-2 transition-all ${
+                                                            nextConditionRelation === 'AND'
+                                                                ? 'bg-blue-600 text-white shadow-md ring-2 ring-blue-200'
+                                                                : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                                                        }`}
+                                                    >
                                                         AND
+                                                        {nextConditionRelation === 'AND' && (
+                                                            <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
+                                                                <div className="w-1 h-4 bg-blue-500 rounded-t"></div>
+                                                                <div className="w-2 h-2 bg-blue-500 rounded-full rotate-45"></div>
+                                                            </div>
+                                                        )}
                                                     </Button>
-                                                    <Button variant="twoTone" type="button" onClick={() => handleAddCondition(push, 'OR')}>
+
+                                                    <Button
+                                                        variant="twoTone"
+                                                        type="button"
+                                                        onClick={() => handleAddCondition(push, 'OR')}
+                                                        className={`relative px-6 py-2 transition-all ${
+                                                            nextConditionRelation === 'OR'
+                                                                ? 'bg-orange-600 text-white shadow-md ring-2 ring-orange-200'
+                                                                : 'bg-orange-100 text-orange-700 hover:bg-orange-200'
+                                                        }`}
+                                                    >
                                                         OR
+                                                        {nextConditionRelation === 'OR' && (
+                                                            <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
+                                                                <div className="w-1 h-4 bg-orange-500 rounded-t"></div>
+                                                                <div className="w-2 h-2 bg-orange-500 rounded-full rotate-45"></div>
+                                                            </div>
+                                                        )}
                                                     </Button>
+
                                                     {index > 0 && (
                                                         <MdDelete
-                                                            className="text-xl text-red-500 cursor-pointer hover:text-red-700"
-                                                            onClick={() => {
-                                                                remove(index)
-                                                            }}
+                                                            className="text-xl text-red-500 cursor-pointer hover:text-red-700 transition-colors"
+                                                            onClick={() => remove(index)}
                                                         />
                                                     )}
                                                 </div>
