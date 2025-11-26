@@ -30,7 +30,7 @@ const StatusModal = ({ name, isOpen, onClose }: Props) => {
     const fetchStatus = async () => {
         setLoading(true)
         try {
-            const res = await axioisInstance.get(`/notification/stats?name=${name}`)
+            const res = await axioisInstance.get(`/notification/stats?notification_name=${name}`)
             const data = res?.data?.data?.results
             setStatusData(data[0])
         } catch (error) {

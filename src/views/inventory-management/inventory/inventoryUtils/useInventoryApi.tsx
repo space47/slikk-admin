@@ -1,6 +1,7 @@
 import { useFetchApi } from '@/commonHooks/useFetchApi'
 import { useMemo, useState } from 'react'
 import { InventoryType } from './inventoryCommon'
+import { useDebounceInput } from '@/commonHooks/useDebounceInput'
 
 interface Props {
     searchType: { value: string; label?: string }
@@ -13,18 +14,19 @@ export const useInventoryApi = ({ searchType, store_code, typeFetch, sortByFilte
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
+    const { debounceFilter } = useDebounceInput({ globalFilter, delay: 500 })
 
     const query = useMemo(() => {
-        let params = !globalFilter ? `p=${page}&page_size=${pageSize}` : ''
+        let params = `p=${page}&page_size=${pageSize}` || ''
         let sort = ''
 
         if (typeFetch) params += `&${typeFetch}`
         if (store_code) params += `&store_code=${encodeURIComponent(store_code)}`
-        if (globalFilter) params += `&${searchType.value}=${encodeURIComponent(globalFilter)}`
+        if (debounceFilter) params += `&${searchType.value}=${encodeURIComponent(debounceFilter)}`
         if (sortByFilter) sort = `&sort=${sortByFilter}`
 
         return `/inventory-location?${params}${sort}`
-    }, [page, pageSize, globalFilter, searchType.value, store_code, typeFetch, sortByFilter])
+    }, [page, pageSize, debounceFilter, searchType.value, store_code, typeFetch, sortByFilter])
 
     const { data, responseStatus, totalData, loading } = useFetchApi<InventoryType>({ url: query })
 

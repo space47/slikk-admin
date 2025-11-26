@@ -173,3 +173,17 @@ export interface LogisticPartner {
 
 export const NOTIFICATION_DURATION = 3000
 export const NAVIGATION_DELAY = 2000
+
+export interface QuantityValidation {
+    totalItemQuantity: number
+    calculatedQuantity: number
+    isValid: boolean
+}
+
+export interface LocationDetail {
+    location: string
+    quantity: number
+    product?: {
+        sku: string
+    }
+}

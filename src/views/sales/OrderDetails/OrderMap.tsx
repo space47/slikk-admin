@@ -326,6 +326,7 @@ const OrderMap: React.FC<Props> = ({ taskData }) => {
                                 pathOptions={{
                                     color: 'black',
                                     fillColor: isHeavy ? '#FF0000AA' : '#fff',
+
                                     fillOpacity: 1,
                                 }}
                                 eventHandlers={{

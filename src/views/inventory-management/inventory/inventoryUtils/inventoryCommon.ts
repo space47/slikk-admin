@@ -1,6 +1,7 @@
 export const InventoryFilters = [
     { label: 'SKU', value: 'sku' },
     { label: 'LOCATION', value: 'location' },
+    { label: 'Rack', value: 'rack' },
     { label: 'SKID', value: 'skid' },
     { label: 'Barcode', value: 'barcode' },
 ]

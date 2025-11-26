@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo, useState } from 'react'
-import { Dialog, Input } from '@/components/ui'
+import { Dialog, Input, Upload } from '@/components/ui'
 import { Modal, notification } from 'antd'
 import { useFetchApi } from '@/commonHooks/useFetchApi'
 import { CashCollection } from '@/store/types/cashCollection.types'
@@ -12,6 +12,9 @@ import { AxiosError } from 'axios'
 import { GiFullMotorcycleHelmet } from 'react-icons/gi'
 import PageCommon from '@/common/PageCommon'
 import { useDepositColumns } from './useDepositColumns'
+import { beforeUpload } from '@/common/beforeUpload'
+import { handleimage } from '@/common/handleImage'
+import { filterEmptyValues } from '@/utils/apiBodyUtility'
 
 interface DailyDepositModalProps {
     isOpen: boolean
@@ -25,12 +28,14 @@ interface DailyDepositModalProps {
 const DailyDepositModal: React.FC<DailyDepositModalProps> = ({ row, isOpen, setIsOpen, from, to, refetch }) => {
     const [amount, setAmount] = useState('')
     const [amountModalVisible, setAmountModalVisible] = useState(false)
+    const [uploadFile, setUploadFile] = useState<any[]>([])
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [taskId, setTaskId] = useState<TaskData | null>()
 
     const queryParams = useMemo(
-        () => `/logistic/slikk/task?p=${page}&page_size=${pageSize}&runner_mobile=${row?.rider?.user?.mobile}&from=${from}&to=${to}`,
+        () =>
+            `/logistic/slikk/task?p=${page}&page_size=${pageSize}&cash_only=true&runner_mobile=${row?.rider?.user?.mobile}&from=${from}&to=${to}`,
         [row?.rider?.user?.mobile, from, to, page, pageSize],
     )
 
@@ -52,9 +57,13 @@ const DailyDepositModal: React.FC<DailyDepositModalProps> = ({ row, isOpen, setI
             return
         }
 
-        const body = { amount: parseInt(amount, 10), force: isForce }
+        const imageUrl = uploadFile?.length ? await handleimage('product', uploadFile) : ''
+
+        const body = { amount: parseInt(amount, 10), force: isForce, deposit_image: imageUrl || '' }
+        const filteredBody = filterEmptyValues(body)
+
         try {
-            const res = await axiosInstance.patch(`/logistic/order/cash/deposit/${taskId?.task_id}`, body)
+            const res = await axiosInstance.patch(`/logistic/order/cash/deposit/${taskId?.task_id}`, filteredBody)
             successMessage(res)
             refetch()
             taskRefetch()
@@ -86,9 +95,7 @@ const DailyDepositModal: React.FC<DailyDepositModalProps> = ({ row, isOpen, setI
     }
 
     const cashCollectionTable = useMemo(() => {
-        return taskData?.filter(
-            (item) => Math.round(item.client_order_details?.cash_to_be_collected as number) > 0 && item?.status === 'COMPLETED',
-        )
+        return taskData?.filter((item) => item?.status === 'COMPLETED')
     }, [taskData])
 
     const columns = useDepositColumns({ handleDepositClick })
@@ -141,26 +148,76 @@ const DailyDepositModal: React.FC<DailyDepositModalProps> = ({ row, isOpen, setI
             </div>
 
             <Modal
-                title="Enter Deposit Amount"
-                okText="Confirm"
-                cancelText="Cancel"
+                title={null}
                 open={amountModalVisible}
-                width={500}
+                width={600}
                 className="custom-modal"
-                okButtonProps={{
-                    className: 'font-semibold',
-                    style: { backgroundColor: '#1D4ED8', color: '#FFFFFF', borderRadius: '8px' },
-                }}
-                cancelButtonProps={{
-                    className: 'font-semibold',
-                    style: { backgroundColor: '#6B7280', color: '#FFFFFF', borderRadius: '8px' },
-                }}
+                footer={
+                    taskId?.client_order_details?.payment_mode?.toLowerCase() === 'qr'
+                        ? [
+                              <button
+                                  key="cancel"
+                                  className="px-5 py-2.5 bg-gray-600 text-white rounded-xl font-semibold hover:bg-gray-700 transition"
+                                  onClick={() => setAmountModalVisible(false)}
+                              >
+                                  Close
+                              </button>,
+                          ]
+                        : undefined
+                }
                 onOk={() => handleDailyDeposit(false)}
                 onCancel={() => setAmountModalVisible(false)}
             >
-                <div className="flex flex-col gap-4">
-                    <p className="text-base font-medium text-gray-700">Please enter the deposit amount:</p>
-                    <Input type="number" value={amount} placeholder="Enter amount" onChange={(e) => setAmount(e.target.value)} />
+                <div className="flex flex-col gap-6 pb-2">
+                    <div className="flex flex-col items-center text-center gap-1">
+                        <h2 className="text-2xl font-bold text-gray-800">
+                            {taskId?.client_order_details?.payment_mode?.toLowerCase() === 'qr' ? 'Payment Status' : 'Enter Deposit Amount'}
+                        </h2>
+                        <p className="text-gray-500 text-sm">
+                            {taskId?.client_order_details?.payment_mode?.toLowerCase() === 'qr'
+                                ? 'This order has been paid via QR code'
+                                : 'Fill the required details below'}
+                        </p>
+                    </div>
+                    {taskId?.client_order_details?.payment_mode?.toLowerCase() === 'qr' ? (
+                        <div className="rounded-2xl border border-green-300 bg-green-50 p-5 shadow-sm">
+                            <p className="text-lg font-semibold text-green-700 flex items-center gap-2">
+                                <span className="w-3 h-3 bg-green-600 rounded-full"></span>
+                                Payment Collected via QR
+                            </p>
+                            <p className="text-sm text-green-600 mt-1 leading-relaxed">
+                                The customer has already completed the payment using QR. No manual deposit entry is required.
+                            </p>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="flex flex-col gap-s items-center shadow-xl p-2 ">
+                                <p className="mb-6">Enter Supporting Image or File</p>
+                                <div>
+                                    <Upload
+                                        uploadLimit={1}
+                                        className="w-full"
+                                        beforeUpload={beforeUpload}
+                                        fileList={uploadFile}
+                                        onChange={(file) => setUploadFile(file)}
+                                        onFileRemove={() => setUploadFile([])}
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <label className="font-medium text-gray-700">
+                                    Deposit Amount (Rs. {taskId?.client_order_details?.cash_to_be_collected}) :
+                                </label>
+                                <Input
+                                    type="number"
+                                    value={amount}
+                                    placeholder="Enter amount"
+                                    className="h-11 rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                                    onChange={(e) => setAmount(e.target.value)}
+                                />
+                            </div>
+                        </>
+                    )}
                 </div>
             </Modal>
         </Dialog>
