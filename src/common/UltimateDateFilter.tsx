@@ -131,7 +131,7 @@ const UltimateDatePicker = ({ setFrom, setTo, handleDateChange, dispatch, custom
     }
 
     return (
-        <div className="flex gap-1 items-center xl:mr-14">
+        <div className="flex gap-1 items-center">
             <div
                 className={
                     customClass ? customClass : 'border w-auto rounded-md h-auto font-bold mt-8 bg-black text-white flex justify-center'

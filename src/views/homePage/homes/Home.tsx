@@ -207,7 +207,9 @@ const Home = () => {
                     </div>
                 </div>
 
-                <UltimateDatePicker from={from} setFrom={setFrom} to={to} setTo={setTo} handleDateChange={handleDateChange} />
+                <div className="xl:mr-16">
+                    <UltimateDatePicker from={from} setFrom={setFrom} to={to} setTo={setTo} handleDateChange={handleDateChange} />
+                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 xl:mx-10">

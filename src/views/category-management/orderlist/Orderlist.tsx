@@ -2,10 +2,8 @@
 import { SetStateAction, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
-import Pagination from '@/components/ui/Pagination'
-import Select from '@/components/ui/Select'
 import moment from 'moment'
-import { CHANGE_DELIVERY_OPTIONS, pageSizeOptions, SEARCHOPTIONS, type DropdownStatus, type Order } from './commontypes'
+import { CHANGE_DELIVERY_OPTIONS, SEARCHOPTIONS, type DropdownStatus, type Order } from './commontypes'
 import { Button, Dropdown, Input, Spinner } from '@/components/ui'
 import { IoMdDownload } from 'react-icons/io'
 import FilterDialogOrder from './filterDialog/FilterDialog'
@@ -17,23 +15,15 @@ import { notification } from 'antd'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 import RedMarkTable from '@/common/RedMarkTable'
 import { HiSearch } from 'react-icons/hi'
-import { Option } from '@/views/org-management/sellers/sellerCommon'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 import TabSelectOrder from './filter'
 import OrderlistMobile from './OrderlistMobile'
 import { generatePrintingData } from './orderListFunctions'
 import { useOrderListColumns } from './orderListUtils/OrderListColumns'
-import {
-    handleDateChange,
-    handleDownload,
-    handleSearch,
-    handleSearchWithIcon,
-    handleSelect,
-    onPaginationChange,
-    onSelectChange,
-} from './orderListUtils/OrderListFunctions'
+import { handleDateChange, handleDownload, handleSearch, handleSearchWithIcon, handleSelect } from './orderListUtils/OrderListFunctions'
 import { getStatusFilter } from './orderListUtils/OrderListUtils'
 import OrderReAssignModal from './orderListUtils/OrderReAssignModal'
+import PageCommon from '@/common/PageCommon'
 
 const OrderList = () => {
     const location = useLocation()
@@ -302,7 +292,6 @@ const OrderList = () => {
         <div className="p-4 shadow-lg dark:bg-slate-800 rounded-xl">
             <div className="overflow-x-auto scrollbar-hide">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mb-10">
-                    {/* Search + Dropdown */}
                     <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center order-2 lg:order-1 w-full lg:w-auto">
                         <div className="flex items-center gap-2 bg-white dark:bg-gray-900 px-3 py-2 rounded-lg shadow-md w-full sm:w-auto">
                             <Input
@@ -340,51 +329,46 @@ const OrderList = () => {
                             </div>
                         </div>
                     </div>
-
-                    {/* Right side controls */}
                     <div className="flex flex-col gap-4 lg:flex-row items-center w-full lg:justify-end order-1 lg:order-2">
-                        {/* Date picker */}
                         <UltimateDatePicker
                             from={from}
                             setFrom={setFrom}
                             to={to}
                             setTo={setTo}
+                            customClass="border w-auto rounded-md h-auto font-bold bg-black text-white flex justify-center"
                             handleDateChange={(e: [Date | null, Date | null] | null) => handleDateChange(e, setFrom, setTo)}
                         />
-
-                        {/* Buttons */}
-                        <div className="flex flex-row xl:mt-7   gap-3 items-center">
-                            <Button variant="new" size="sm" onClick={() => setIsReAssign(true)}>
-                                Reassign
-                            </Button>
-
-                            <Button variant="new" size="sm" className="flex gap-2 items-center" onClick={() => setShowFilter(true)}>
-                                <CiFilter className="text-xl font-bold" /> FILTER
-                            </Button>
-                        </div>
-                        <div className="xl:mt-7">
-                            <button
-                                disabled={isDownloading}
-                                className="bg-gray-700 hover:bg-gray-600 dark:bg-gray-500 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-                                onClick={() =>
-                                    handleDownload(
-                                        from,
-                                        to,
-                                        dropdownStatus,
-                                        deliveryType,
-                                        paymentType,
-                                        currentSelectedPage,
-                                        searchInput,
-                                        setIsDownloading,
-                                    )
-                                }
-                            >
-                                <IoMdDownload className="text-xl hidden md:block" />
-                                <span className="flex gap-2 items-center">
-                                    EXPORT {isDownloading && <Spinner size={20} color="white" />}
-                                </span>
-                            </button>
-                        </div>
+                        <Button variant="new" size="sm" onClick={() => setIsReAssign(true)}>
+                            Reassign
+                        </Button>
+                        <Button
+                            variant="new"
+                            size="sm"
+                            icon={<CiFilter className="text-xl font-bold" />}
+                            onClick={() => setShowFilter(true)}
+                        >
+                            FILTER
+                        </Button>
+                        <Button
+                            variant="new"
+                            size="sm"
+                            icon={<IoMdDownload className="text-xl hidden md:block" />}
+                            loading={isDownloading}
+                            onClick={() =>
+                                handleDownload(
+                                    from,
+                                    to,
+                                    dropdownStatus,
+                                    deliveryType,
+                                    paymentType,
+                                    currentSelectedPage,
+                                    searchInput,
+                                    setIsDownloading,
+                                )
+                            }
+                        >
+                            EXPORT
+                        </Button>
                     </div>
                 </div>
 
@@ -417,26 +401,9 @@ const OrderList = () => {
                 </div>
             </div>
             <div className="flex flex-col md:flex-row items-center justify-between mt-4">
-                {numberClick !== true && (
-                    <Pagination
-                        pageSize={pageSize}
-                        currentPage={page}
-                        total={orderCount}
-                        className="mb-4 md:mb-0"
-                        onChange={(e) => onPaginationChange(e, setPage)}
-                    />
+                {numberClick !== true && orders.length !== 0 && (
+                    <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={orderCount} />
                 )}
-                <div className="min-w-[130px] flex gap-5">
-                    {numberClick !== true && orders.length !== 0 && (
-                        <Select<Option>
-                            size="sm"
-                            isSearchable={false}
-                            value={pageSizeOptions.find((option) => option.value === pageSize)}
-                            options={pageSizeOptions}
-                            onChange={(option) => onSelectChange(option?.value, setPageSize, setPage)}
-                        />
-                    )}
-                </div>
             </div>
             {showFilter && (
                 <FilterDialogOrder
@@ -450,7 +417,6 @@ const OrderList = () => {
                     handlePaymentSelect={(val: any) => handleSelectFilters(paymentType, setPaymentType, val)}
                     paymentStatus={paymentStatus}
                     handlePaymentStatusSelect={(val: any) => handleSelectFilters(paymentStatus, setPaymentStatus, val)}
-                    handleDateChange={handleDateChange}
                 />
             )}
             {soundEnabled && <NotificationSound shouldPlay={soundEnabled} />}

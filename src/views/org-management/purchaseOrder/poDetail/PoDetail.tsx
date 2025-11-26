@@ -80,12 +80,8 @@ const PoDetail = () => {
             </div>
             <div>{ActivityBar()}</div>
             <div className="flex xl:flex-row md:flex-row flex-col  gap-4 w-full items-stretch">
-                <div className="flex-1">
-                    <VendorInformation />
-                </div>
-                <div className="flex-1">
-                    <OrderInformation />
-                </div>
+                <div className="flex-1">{VendorInformation()}</div>
+                <div className="flex-1">{OrderInformation()}</div>
             </div>
             <Card className="p-2 shadow-xl">
                 <div className="mt-2 mb-5">
