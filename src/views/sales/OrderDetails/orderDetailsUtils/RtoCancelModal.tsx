@@ -11,6 +11,7 @@ import { OrderCancelReasons } from '@/constants/commonArray.constant'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { errorMessage, successMessage } from '@/utils/responseMessages'
 import { LocationDetail, QuantityValidation } from '../orderList.common'
+import { FaTrash } from 'react-icons/fa'
 
 interface RtoCancelModalProps {
     isOpen: boolean
@@ -155,8 +156,7 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
                     if (!location || location.trim() === '') {
                         hasEmptyLocation = true
                         notification.error({
-                            message: 'Location Required',
-                            description: `Please select a valid location for item ${id} at position ${index + 1}.`,
+                            message: `Location Required : Please select a valid location for item ${id} at position ${index + 1}.`,
                         })
                     }
                 })
@@ -165,19 +165,11 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
         }
 
         if (isCancel && !cancelReason && !customReason) {
-            notification.error({
-                message: 'Reason Required',
-                description: 'Please select or enter a cancel reason before proceeding.',
-            })
+            notification.error({ message: 'Reason Required : Please select or enter a cancel reason before proceeding.' })
             return
         }
-        const body: any = {
-            return_reason: getCancelReason(),
-        }
-
-        if (!isAccepted) {
-            body.items_location = transformLocationDetails()
-        }
+        const body: any = { return_reason: getCancelReason() }
+        if (!isAccepted) body.items_location = transformLocationDetails()
 
         try {
             setIsLoading(true)
@@ -226,7 +218,7 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
                 </div>
 
                 {locations.map((location, index) => (
-                    <div key={index} className="flex gap-3 mb-2 items-center">
+                    <div key={index} className="flex xl:flex-row md:flex-row flex-col gap-3 mb-2 items-center">
                         <input
                             type="text"
                             placeholder="Location"
@@ -241,10 +233,10 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
                             max={remainingQuantity + location.quantity}
                             value={location.quantity || ''}
                             onChange={(e) => updateLocationDetail(item.id, index, 'quantity', Number(e.target.value) || 0)}
-                            className="border p-2 rounded w-20"
+                            className="border p-2 rounded w-32"
                         />
                         <Button variant="reject" onClick={() => removeLocation(item.id, index)}>
-                            Remove
+                            <FaTrash />
                         </Button>
                     </div>
                 ))}
@@ -286,9 +278,9 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
                         ))}
                     </Dropdown>
                     <button
-                        onClick={() => setShowCancelInput(true)}
                         className="p-2 text-green-600 hover:text-green-700 transition-colors"
                         aria-label="Add custom reason"
+                        onClick={() => setShowCancelInput(true)}
                     >
                         <IoIosAddCircle size={24} />
                     </button>
@@ -299,42 +291,31 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
                         type="text"
                         placeholder="Enter custom reason"
                         value={customReason}
-                        onChange={(e) => setCustomReason(e.target.value)}
                         className="mt-2 border p-2 rounded-lg w-full"
+                        onChange={(e) => setCustomReason(e.target.value)}
                     />
                 )}
             </div>
         )
     }
 
-    // const renderRTOCancelSection = () => {
-    //     if (isCancel) return null
-
-    //     return (
-    //         <div className="text-center py-4">
-    //             <h1 className="text-lg font-bold text-red-600 mb-2">RTO Cancel</h1>
-    //             <p className="text-xl font-semibold">Are you sure you want to cancel the RTO order?</p>
-    //         </div>
-    //     )
-    // }
-
     return (
         <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)} width={1000}>
             <div className="p-3">
-                <div className="flex justify-between items-center mb-6">
+                <div className="flex xl:flex-row md:flex-row xl:justify-between flex-col items-center mb-6">
                     <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
                         CANCEL ORDER
                         <IoIosWarning className="text-yellow-600 text-2xl" />
                     </h2>
                     <div className="flex gap-2 items-center">
-                        <Button variant="reject" onClick={() => setIsOpen(false)} disabled={isLoading}>
+                        <Button variant="reject" disabled={isLoading} onClick={() => setIsOpen(false)}>
                             Cancel
                         </Button>
                         <Button
                             variant="accept"
                             className="flex items-center gap-2 min-w-24"
-                            onClick={handleCancelOrder}
                             disabled={isLoading}
+                            onClick={handleCancelOrder}
                         >
                             <span>Confirm</span>
                             {isLoading && <Spinner size={20} color="white" />}
@@ -343,7 +324,13 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
                 </div>
                 {status !== 'ACCEPTED' && (
                     <div className="max-h-[230px] overflow-y-auto pr-2 bg-blue-50 p-4 rounded-lg">
-                        {orderItems?.map(renderLocationInputs)}
+                        {orderItems
+                            ?.filter((item) =>
+                                typeof item?.fulfilled_quantity === 'number'
+                                    ? item?.fulfilled_quantity > 0
+                                    : parseInt(item?.fulfilled_quantity) > 0,
+                            )
+                            ?.map(renderLocationInputs)}
                     </div>
                 )}
                 {renderCancelReasonSection()}
