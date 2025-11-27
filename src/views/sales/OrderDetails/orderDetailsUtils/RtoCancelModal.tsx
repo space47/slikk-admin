@@ -330,7 +330,7 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
                                     ? item?.fulfilled_quantity > 0
                                     : parseInt(item?.fulfilled_quantity) > 0,
                             )
-                            .map(renderLocationInputs)}
+                            ?.map(renderLocationInputs)}
                     </div>
                 )}
                 {renderCancelReasonSection()}
