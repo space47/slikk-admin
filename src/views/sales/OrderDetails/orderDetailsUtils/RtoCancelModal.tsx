@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { notification } from 'antd'
@@ -138,27 +139,31 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
     }, [cancelReason, customReason, isCancel])
 
     const handleCancelOrder = useCallback(async () => {
-        const validation = validateQuantities()
-        if (!validation.isValid) {
-            notification.warning({
-                message: 'Quantity Mismatch',
-                description: `Total item quantity does not match assigned quantity or Location is not selected. Please ensure all fields are properly assigned.`,
+        const isAccepted = status === 'ACCEPTED'
+        if (!isAccepted) {
+            const validation = validateQuantities()
+            if (!validation.isValid) {
+                notification.warning({
+                    message: 'Quantity Mismatch',
+                    description: `Total item quantity does not match assigned quantity or Location is not selected. Please ensure all fields are properly assigned.`,
+                })
+                return
+            }
+            let hasEmptyLocation = false
+            Object.entries(locationWiseDetails).forEach(([id, details]) => {
+                details.forEach(({ location }, index) => {
+                    if (!location || location.trim() === '') {
+                        hasEmptyLocation = true
+                        notification.error({
+                            message: 'Location Required',
+                            description: `Please select a valid location for item ${id} at position ${index + 1}.`,
+                        })
+                    }
+                })
             })
-            return
+            if (hasEmptyLocation) return
         }
-        let hasEmptyLocation = false
-        Object.entries(locationWiseDetails).forEach(([id, details]) => {
-            details.forEach(({ location }, index) => {
-                if (!location || location.trim() === '') {
-                    hasEmptyLocation = true
-                    notification.error({
-                        message: 'Location Required',
-                        description: `Please select a valid location for item ${id} at position ${index + 1}.`,
-                    })
-                }
-            })
-        })
-        if (hasEmptyLocation) return
+
         if (isCancel && !cancelReason && !customReason) {
             notification.error({
                 message: 'Reason Required',
@@ -166,10 +171,14 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
             })
             return
         }
-        const body = {
-            items_location: transformLocationDetails(),
+        const body: any = {
             return_reason: getCancelReason(),
         }
+
+        if (!isAccepted) {
+            body.items_location = transformLocationDetails()
+        }
+
         try {
             setIsLoading(true)
             const response = await axioisInstance.post(`merchant/cancelorder/${invoice_id}`, body)
@@ -184,6 +193,7 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
             setIsLoading(false)
         }
     }, [
+        status,
         validateQuantities,
         locationWiseDetails,
         isCancel,
