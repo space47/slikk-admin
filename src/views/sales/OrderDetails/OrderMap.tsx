@@ -59,7 +59,6 @@ const CurrentLocationButton = () => {
                 padding: 8,
                 boxShadow: '0 0 5px rgba(0,0,0,0.3)',
                 cursor: 'pointer',
-                zIndex: 1000,
             }}
             aria-label="Center map"
         >
@@ -267,6 +266,7 @@ const OrderMap: React.FC<Props> = ({ taskData }) => {
             <div
                 ref={mapContainerRef}
                 style={{
+                    zIndex: 0,
                     width: '100%',
                     height: isFullScreen ? '100vh' : 500,
                     maxWidth: 900,
@@ -275,7 +275,7 @@ const OrderMap: React.FC<Props> = ({ taskData }) => {
                 }}
             >
                 <MapContainer center={mapCenter} zoom={16} style={{ width: '100%', height: '100%' }}>
-                    <div className="leaflet-control" style={{ position: 'absolute', top: 10, right: 10, zIndex: 1000 }}>
+                    <div className="leaflet-control" style={{ position: 'absolute', top: 10, right: 10 }}>
                         <button
                             className="p-2 bg-white border-gray-300 border cursor-pointer rounded-md text-xs"
                             onClick={() => setShowOnlyRiderPath((prev) => !prev)}
@@ -386,7 +386,6 @@ const OrderMap: React.FC<Props> = ({ taskData }) => {
                         borderRadius: 6,
                         fontSize: 12,
                         boxShadow: '0 0 6px rgba(0,0,0,0.3)',
-                        zIndex: 1000,
                         lineHeight: '16px',
                     }}
                 >

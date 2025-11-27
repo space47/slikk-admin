@@ -331,16 +331,16 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                         <Button variant="solid" onClick={() => showModal(content)}>
                             {buttonText}
                         </Button>
-                        <div>
-                            {data[data.length - 1]?.status === 'RTO_DELIVERED' && (
-                                <Button className="ml-2" variant="reject" onClick={() => setRtoCancel(true)}>
-                                    Cancel
-                                </Button>
-                            )}
-                        </div>
                     </div>
                 )
             )}
+            <div className="flex items-center justify-center mt-3">
+                {data[data.length - 1]?.status === 'RTO_DELIVERED' && (
+                    <Button className="ml-2" variant="reject" onClick={() => setRtoCancel(true)}>
+                        Cancel
+                    </Button>
+                )}
+            </div>
 
             {rejectModal && (
                 <div className="flex justify-center items-center h-screen">
@@ -477,7 +477,9 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                 />
             )}
 
-            {rtoCancel && <RtoCancelModal isOpen={rtoCancel} setIsOpen={setRtoCancel} orderItems={product} invoice_id={invoice_id} />}
+            <div style={{ zIndex: 1000 }}>
+                <RtoCancelModal isOpen={rtoCancel} setIsOpen={setRtoCancel} orderItems={product} invoice_id={invoice_id} />
+            </div>
         </Card>
     )
 }
