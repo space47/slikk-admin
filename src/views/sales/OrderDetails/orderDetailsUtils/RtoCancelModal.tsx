@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { notification } from 'antd'
-import { IoIosAddCircle, IoIosWarning } from 'react-icons/io'
+import { IoIosAddCircle, IoIosCheckmarkCircle, IoIosCube, IoIosInformationCircle, IoIosListBox, IoIosWarning } from 'react-icons/io'
 import { AxiosError } from 'axios'
 import { Button, Dialog, Dropdown, Spinner } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
@@ -31,31 +31,40 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
     const [customReason, setCustomReason] = useState('')
     const [isLoading, setIsLoading] = useState(false)
 
-    const locationWiseArray = useMemo(
+    const filteredOrderItems = useMemo(
         () =>
-            orderItems?.map((item) => ({
-                order_id: item.id,
-                quantity: item.quantity,
-            })) || [],
+            orderItems?.filter((item) =>
+                typeof item?.fulfilled_quantity === 'number' ? item?.fulfilled_quantity > 0 : parseInt(item?.fulfilled_quantity) > 0,
+            ) || [],
         [orderItems],
     )
 
     const totalItemQuantity = useMemo(
-        () => locationWiseArray.reduce((total: number, item) => total + Number(item.quantity), 0),
-        [locationWiseArray],
+        () => filteredOrderItems.reduce((total: number, item) => total + Number(item.quantity), 0),
+        [filteredOrderItems],
     )
+
+    // const locationWiseArray = useMemo(
+    //     () =>
+    //         filteredOrderItems?.map((item) => ({
+    //             order_id: item.id,
+    //             quantity: item.quantity,
+    //         })) || [],
+    //     [filteredOrderItems],
+    // )
+
     useEffect(() => {
         if (!isOpen) return
         const initialLocationStore: Record<number, string> = {}
         const initialLocationDetails: Record<number, LocationDetail[]> = {}
-        orderItems.forEach((item) => {
+        filteredOrderItems.forEach((item) => {
             initialLocationStore[item.id] = item.location || ''
             initialLocationDetails[item.id] = locationWiseDetails[item.id] || []
         })
 
         setLocationStore(initialLocationStore)
         setLocationWiseDetails(initialLocationDetails)
-    }, [isOpen, orderItems])
+    }, [isOpen, filteredOrderItems])
 
     const addLocation = useCallback(
         (orderItemId: number, maxQuantity: number) => {
@@ -258,82 +267,142 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
 
     const renderCancelReasonSection = () => {
         if (!isCancel) return null
+
         return (
-            <div className="mt-4">
-                <div className="text-base font-bold mb-2 text-red-500">REASON FOR CANCELLING</div>
-                <div className="flex gap-2 items-center">
-                    <Dropdown
-                        className="bg-gray-100 border rounded-lg flex-1"
-                        title={
-                            cancelReason
-                                ? OrderCancelReasons.find((reason) => reason.value === cancelReason)?.label
-                                : 'SELECT RETURN REASON'
-                        }
-                        onSelect={setCancelReason}
-                    >
-                        {OrderCancelReasons.map((reason) => (
-                            <DropdownItem key={reason.value} eventKey={reason.value}>
-                                {reason.label}
-                            </DropdownItem>
-                        ))}
-                    </Dropdown>
-                    <button
-                        className="p-2 text-green-600 hover:text-green-700 transition-colors"
-                        aria-label="Add custom reason"
-                        onClick={() => setShowCancelInput(true)}
-                    >
-                        <IoIosAddCircle size={24} />
-                    </button>
+            <div className="mt-6 bg-red-50 border border-red-100 rounded-lg p-4">
+                <div className="flex items-center gap-2 mb-3">
+                    <IoIosWarning className="text-red-500 text-xl" />
+                    <h3 className="text-lg font-bold text-red-700">REASON FOR CANCELLATION</h3>
                 </div>
 
-                {showCancelInput && (
-                    <input
-                        type="text"
-                        placeholder="Enter custom reason"
-                        value={customReason}
-                        className="mt-2 border p-2 rounded-lg w-full"
-                        onChange={(e) => setCustomReason(e.target.value)}
-                    />
-                )}
+                <div className="space-y-3">
+                    <div className="flex gap-2 items-center">
+                        <Dropdown
+                            className="bg-white border border-gray-300 rounded-lg flex-1 shadow-sm hover:shadow-md transition-shadow"
+                            title={
+                                cancelReason
+                                    ? OrderCancelReasons.find((reason) => reason.value === cancelReason)?.label
+                                    : 'Select cancellation reason'
+                            }
+                            onSelect={setCancelReason}
+                        >
+                            {OrderCancelReasons.map((reason) => (
+                                <DropdownItem key={reason.value} eventKey={reason.value}>
+                                    {reason.label}
+                                </DropdownItem>
+                            ))}
+                        </Dropdown>
+                        <button
+                            className="p-2 text-green-600 hover:text-green-700 transition-colors bg-white border border-green-200 rounded-lg hover:bg-green-50"
+                            aria-label="Add custom reason"
+                            onClick={() => setShowCancelInput(true)}
+                        >
+                            <IoIosAddCircle size={24} />
+                        </button>
+                    </div>
+
+                    {showCancelInput && (
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="text"
+                                placeholder="Enter custom reason..."
+                                value={customReason}
+                                className="flex-1 border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                                onChange={(e) => setCustomReason(e.target.value)}
+                            />
+                            <Button
+                                variant="reject"
+                                onClick={() => {
+                                    setShowCancelInput(false)
+                                    setCustomReason('')
+                                }}
+                                className="px-3"
+                            >
+                                Cancel
+                            </Button>
+                        </div>
+                    )}
+                </div>
             </div>
         )
     }
 
     return (
-        <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)} width={1000}>
-            <div className="p-3">
-                <div className="flex xl:flex-row md:flex-row xl:justify-between flex-col items-center mb-6">
-                    <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-                        CANCEL ORDER
-                        <IoIosWarning className="text-yellow-600 text-2xl" />
-                    </h2>
-                    <div className="flex gap-2 items-center">
-                        <Button variant="reject" disabled={isLoading} onClick={() => setIsOpen(false)}>
+        <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)} width={1000} height={'85vh'} preventScroll>
+            <div className="p-0 h-[80vh] overflow-scroll">
+                {/* Header */}
+                <div
+                    className="  flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4 mb-8
+    sticky top-0 bg-blue-50 dark:bg-gray-900 z-20 shadow-sm p-2 rounded-md"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="bg-red-100 p-2 rounded-full">
+                            <IoIosWarning className="text-red-600 text-2xl" />
+                        </div>
+                        <div>
+                            <h2 className="text-2xl font-bold text-gray-900">Cancel Order</h2>
+                            <p className="text-gray-600 text-sm">Please review and confirm order cancellation</p>
+                        </div>
+                    </div>
+
+                    <div className="flex gap-3 items-center">
+                        <Button variant="reject" disabled={isLoading} onClick={() => setIsOpen(false)} className="min-w-24">
                             Cancel
                         </Button>
                         <Button
                             variant="accept"
-                            className="flex items-center gap-2 min-w-24"
+                            className="flex items-center gap-2 min-w-32 bg-red-600 hover:bg-red-700"
                             disabled={isLoading}
                             onClick={handleCancelOrder}
                         >
-                            <span>Confirm</span>
-                            {isLoading && <Spinner size={20} color="white" />}
+                            {isLoading ? (
+                                <>
+                                    <Spinner size={20} color="white" />
+                                    <span>Cancelling...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <IoIosCheckmarkCircle size={18} />
+                                    <span>Confirm Cancel</span>
+                                </>
+                            )}
                         </Button>
                     </div>
                 </div>
+
+                {/* Order Items Section */}
                 {status !== 'ACCEPTED' && (
-                    <div className="max-h-[230px] overflow-y-auto pr-2 bg-blue-50 p-4 rounded-lg">
-                        {orderItems
-                            ?.filter((item) =>
-                                typeof item?.fulfilled_quantity === 'number'
-                                    ? item?.fulfilled_quantity > 0
-                                    : parseInt(item?.fulfilled_quantity) > 0,
-                            )
-                            ?.map(renderLocationInputs)}
+                    <div className="mb-6">
+                        <div className="flex items-center gap-2 mb-3">
+                            <IoIosListBox className="text-blue-600 text-xl" />
+                            <h3 className="text-lg font-semibold text-gray-800">Order Items & Locations</h3>
+                        </div>
+                        <div className="max-h-[400px] overflow-y-auto pr-2 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                            {filteredOrderItems?.length > 0 ? (
+                                filteredOrderItems.map(renderLocationInputs)
+                            ) : (
+                                <div className="text-center py-8 text-gray-500">
+                                    <IoIosCube className="mx-auto text-3xl mb-2" />
+                                    <p>No order items to display</p>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 )}
+
+                {/* Cancel Reason Section */}
                 {renderCancelReasonSection()}
+
+                {/* Footer Note */}
+                <div className="mt-6 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <div className="flex items-start gap-2">
+                        <IoIosInformationCircle className="text-yellow-600 text-lg mt-0.5 flex-shrink-0" />
+                        <p className="text-sm text-yellow-800">
+                            <strong>Note:</strong> This action cannot be undone. Once cancelled, the order will be permanently marked as
+                            cancelled in the system.
+                        </p>
+                    </div>
+                </div>
             </div>
         </Dialog>
     )
