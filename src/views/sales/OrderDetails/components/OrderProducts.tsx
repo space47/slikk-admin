@@ -255,8 +255,9 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
 
     return (
         <AdaptableCard className="mb-4">
+            <div className="mb-2 text-red-500 font-bold ">{status?.toLowerCase() === 'cancelled' && 'ORDER CANCELLED'}</div>
             <div className="xl:block hidden">
-                <Table overflow>
+                <Table overflow className={status?.toLowerCase() === 'cancelled' ? 'bg-red-200' : ''}>
                     <THead>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <Tr key={headerGroup.id}>
@@ -283,7 +284,6 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                     </TBody>
                 </Table>
             </div>
-
             <div>
                 {data && data.length > 0 && (
                     <div className="grid grid-cols-1 gap-4 xl:hidden ">

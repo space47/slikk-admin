@@ -44,15 +44,6 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
         [filteredOrderItems],
     )
 
-    // const locationWiseArray = useMemo(
-    //     () =>
-    //         filteredOrderItems?.map((item) => ({
-    //             order_id: item.id,
-    //             quantity: item.quantity,
-    //         })) || [],
-    //     [filteredOrderItems],
-    // )
-
     useEffect(() => {
         if (!isOpen) return
         const initialLocationStore: Record<number, string> = {}
@@ -327,50 +318,53 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
         )
     }
 
-    return (
-        <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)} width={1000} height={'85vh'} preventScroll>
-            <div className="p-0 h-[80vh] overflow-scroll">
-                {/* Header */}
-                <div
-                    className="  flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4 mb-8
+    const cancelHeaderSection = () => {
+        return (
+            <div
+                className="  flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4 mb-8
     sticky top-0 bg-blue-50 dark:bg-gray-900 z-20 shadow-sm p-2 rounded-md"
-                >
-                    <div className="flex items-center gap-3">
-                        <div className="bg-red-100 p-2 rounded-full">
-                            <IoIosWarning className="text-red-600 text-2xl" />
-                        </div>
-                        <div>
-                            <h2 className="text-2xl font-bold text-gray-900">Cancel Order</h2>
-                            <p className="text-gray-600 text-sm">Please review and confirm order cancellation</p>
-                        </div>
+            >
+                <div className="flex items-center gap-3">
+                    <div className="bg-red-100 p-2 rounded-full">
+                        <IoIosWarning className="text-red-600 text-2xl" />
                     </div>
-
-                    <div className="flex gap-3 items-center">
-                        <Button variant="reject" disabled={isLoading} onClick={() => setIsOpen(false)} className="min-w-24">
-                            Cancel
-                        </Button>
-                        <Button
-                            variant="accept"
-                            className="flex items-center gap-2 min-w-32 bg-red-600 hover:bg-red-700"
-                            disabled={isLoading}
-                            onClick={handleCancelOrder}
-                        >
-                            {isLoading ? (
-                                <>
-                                    <Spinner size={20} color="white" />
-                                    <span>Cancelling...</span>
-                                </>
-                            ) : (
-                                <>
-                                    <IoIosCheckmarkCircle size={18} />
-                                    <span>Confirm Cancel</span>
-                                </>
-                            )}
-                        </Button>
+                    <div>
+                        <h2 className="text-2xl font-bold text-gray-900">Cancel Order</h2>
+                        <p className="text-gray-600 text-sm">Please review and confirm order cancellation</p>
                     </div>
                 </div>
 
-                {/* Order Items Section */}
+                <div className="flex gap-3 items-center">
+                    <Button variant="reject" disabled={isLoading} onClick={() => setIsOpen(false)} className="min-w-24">
+                        Cancel
+                    </Button>
+                    <Button
+                        variant="accept"
+                        className="flex items-center gap-2 min-w-32 bg-red-600 hover:bg-red-700"
+                        disabled={isLoading}
+                        onClick={handleCancelOrder}
+                    >
+                        {isLoading ? (
+                            <>
+                                <Spinner size={20} color="white" />
+                                <span>Cancelling...</span>
+                            </>
+                        ) : (
+                            <>
+                                <IoIosCheckmarkCircle size={18} />
+                                <span>Confirm Cancel</span>
+                            </>
+                        )}
+                    </Button>
+                </div>
+            </div>
+        )
+    }
+
+    return (
+        <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)} width={1000} height={'85vh'} preventScroll>
+            <div className="p-0 h-[80vh] overflow-scroll">
+                {cancelHeaderSection()}
                 {status !== 'ACCEPTED' && (
                     <div className="mb-6">
                         <div className="flex items-center gap-2 mb-3">
@@ -389,11 +383,7 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
                         </div>
                     </div>
                 )}
-
-                {/* Cancel Reason Section */}
                 {renderCancelReasonSection()}
-
-                {/* Footer Note */}
                 <div className="mt-6 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                     <div className="flex items-start gap-2">
                         <IoIosInformationCircle className="text-yellow-600 text-lg mt-0.5 flex-shrink-0" />
