@@ -5,13 +5,14 @@ import { FaCheck, FaRegCommentDots } from 'react-icons/fa'
 
 interface Props {
     purchaseDetail: PurchaseOrderTable
+    handleApprove?: () => void
 }
 
-export const usePoDetailUi = ({ purchaseDetail }: Props) => {
+export const usePoDetailUi = ({ purchaseDetail, handleApprove }: Props) => {
     const ButtonUI = () => {
         return (
             <div className="flex xl:flex-row flex-col gap-3 items-center">
-                <Button variant="blue" size="sm" icon={<FaCheck />}>
+                <Button variant="blue" size="sm" icon={<FaCheck />} onClick={handleApprove}>
                     Approve and Send to Vendor
                 </Button>
                 <Button variant="blue" size="sm" icon={<FaRegCommentDots />}>

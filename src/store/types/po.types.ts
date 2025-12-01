@@ -43,7 +43,21 @@ export type PurchaseSingleData = {
     message: string
 }
 
-export type PurchaseOrderResponseType = ApiResponse<PurchaseOrderTable>
+export type PurchaseOrderResponseType = {
+    data: {
+        results: PurchaseOrderTable[]
+        count: number
+        next?: boolean
+        previous?: boolean
+        summary: {
+            total_amount: number
+            total_approved: number
+            total_waiting: number
+        }
+    }
+    status: string
+    message?: string
+}
 
 export type PurchaseOrderItem = {
     id: number

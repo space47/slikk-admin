@@ -1,8 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { PurchaseOrderTable } from '@/store/types/po.types'
 
+interface Summary {
+    total_amount: number
+    total_approved: number
+    total_waiting: number
+}
 export interface PURCHASE_STATE {
     poList: PurchaseOrderTable[]
+    poSummary: Summary | null
     poStatus: string
     count: number
     page: number
@@ -11,6 +17,7 @@ export interface PURCHASE_STATE {
 
 const initialState: PURCHASE_STATE = {
     poList: [],
+    poSummary: null,
     poStatus: 'All Status',
     count: 0,
     page: 1,
@@ -23,6 +30,9 @@ export const purchaseOrderSlice = createSlice({
     reducers: {
         setPoList: (state, action: PayloadAction<PurchaseOrderTable[]>) => {
             state.poList = action.payload
+        },
+        setPoSummary: (state, action: PayloadAction<Summary | null>) => {
+            state.poSummary = action.payload
         },
         setPoStatus: (state, action: PayloadAction<string>) => {
             state.poStatus = action.payload
@@ -38,5 +48,5 @@ export const purchaseOrderSlice = createSlice({
         },
     },
 })
-export const { setPoList, setCount, setPage, setPageSize, setPoStatus } = purchaseOrderSlice.actions
+export const { setPoList, setCount, setPage, setPageSize, setPoStatus, setPoSummary } = purchaseOrderSlice.actions
 export default purchaseOrderSlice.reducer

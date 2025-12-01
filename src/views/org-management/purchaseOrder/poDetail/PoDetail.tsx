@@ -11,6 +11,9 @@ import { useOrderItemColumns } from '../poUtils/useOrderItemColumns'
 import PageCommon from '@/common/PageCommon'
 import LoadingSpinner from '@/common/LoadingSpinner'
 import { usePoDetailUi } from './usePoDetailUi'
+import DialogConfirm from '@/common/DialogConfirm'
+import { FaDownload } from 'react-icons/fa'
+import { usePoDetailFunction } from './usePoDetailFunction'
 
 const PoDetail = () => {
     const { purchase_id } = useParams()
@@ -32,6 +35,13 @@ const PoDetail = () => {
         isLoading: itemsLoading,
     } = purchaseOrderService.useOrderItemsQuery({ purchase_order_id: purchase_id as string, page, pageSize }, { skip: !purchase_id })
 
+    const [isDownloading, setIsDownloading] = useState(false)
+
+    const [isApproveConfirm, setIsConfirmApprove] = useState(false)
+    const [verifyPo, verifyResponse] = purchaseOrderService.useVerifyPoMutation()
+
+    const { handleDownloadPo } = usePoDetailFunction({ id: Number(purchase_id), setIsDownloading })
+
     useEffect(() => {
         if (isSuccess) setPurchaseDetail(data?.data)
         if (isError) {
@@ -51,11 +61,30 @@ const PoDetail = () => {
         }
     }, [itemSuccess, itemIsError])
 
+    useEffect(() => {
+        if (verifyResponse.isSuccess) {
+            notification.success({ message: verifyResponse?.data?.message || 'Successfully Approved' })
+        }
+        if (verifyResponse.isError) {
+            const message = getApiErrorMessage(verifyResponse.error) || 'Failed to Approve'
+            notification.error({ message })
+        }
+    }, [verifyResponse.isSuccess, verifyResponse.isError])
+
     const { ActivityBar, ButtonUI, OrderInformation, VendorInformation } = usePoDetailUi({
         purchaseDetail: purchaseDetail as PurchaseOrderTable,
+        handleApprove,
     })
 
     const columns = useOrderItemColumns({})
+
+    function handleApprove() {
+        setIsConfirmApprove(true)
+    }
+
+    function handleApproveConfirm() {
+        verifyPo({ id: Number(purchase_id), status: 'APPROVED' })
+    }
 
     if (isLoading) {
         return <LoadingSpinner />
@@ -84,8 +113,11 @@ const PoDetail = () => {
                 <div className="flex-1">{OrderInformation()}</div>
             </div>
             <Card className="p-2 shadow-xl">
-                <div className="mt-2 mb-5">
+                <div className="mt-2 mb-5 flex justify-between">
                     <h4>Line Items</h4>
+                    <Button variant="blue" size="sm" icon={<FaDownload />} onClick={handleDownloadPo} loading={isDownloading}>
+                        Download
+                    </Button>
                 </div>
                 {itemsLoading ||
                     (itemsFetching && (
@@ -95,6 +127,16 @@ const PoDetail = () => {
                     ))}
                 <EasyTable overflow columns={columns} mainData={lineItems} page={page} pageSize={pageSize} />
                 <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={count} />
+                {isApproveConfirm && (
+                    <DialogConfirm
+                        IsConfirm
+                        IsOpen={isApproveConfirm}
+                        headingName={`Approve purchase order: PO-${purchase_id}`}
+                        label="this action to approve the purchase Order"
+                        closeDialog={() => setIsConfirmApprove(false)}
+                        onDialogOk={handleApproveConfirm}
+                    />
+                )}
             </Card>
         </div>
     )

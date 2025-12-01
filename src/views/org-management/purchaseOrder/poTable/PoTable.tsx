@@ -8,6 +8,7 @@ import {
     setPage,
     setPageSize,
     setPoStatus,
+    setPoSummary,
 } from '@/store/slices/purchaseOrderSlice/purchaseOrder.slice'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { notification } from 'antd'
@@ -16,17 +17,20 @@ import { usePoListColumns } from '../poUtils/usePoListColumns'
 import EasyTable from '@/common/EasyTable'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 import PageCommon from '@/common/PageCommon'
-import { Button, Input, Select, Spinner } from '@/components/ui'
+import { Button, Card, Input, Select, Spinner } from '@/components/ui'
 import { useDebounceInput } from '@/commonHooks/useDebounceInput'
 import { PoStatusArray } from '../poUtils/poCommon'
 import { useNavigate } from 'react-router-dom'
+import { MdOutlineFormatListNumbered } from 'react-icons/md'
+import { FaCheck, FaRupeeSign } from 'react-icons/fa'
+import { CgLock } from 'react-icons/cg'
 
 const PoTable = () => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const [globalFilter, setGlobalFilter] = useState('')
-    const { count, page, pageSize, poList, poStatus } = useAppSelector<PURCHASE_STATE>((state) => state.purchaseOrder)
+    const { count, page, pageSize, poList, poStatus, poSummary } = useAppSelector<PURCHASE_STATE>((state) => state.purchaseOrder)
     const { debounceFilter } = useDebounceInput({ globalFilter, delay: 500 })
 
     const queryParams = useMemo(() => {
@@ -50,17 +54,19 @@ const PoTable = () => {
         {
             order_id: debounceFilter?.split('-')?.at(-1),
         },
-        { skip: !globalFilter },
+        { skip: !debounceFilter?.split('-')?.at(-1) },
     )
 
     useEffect(() => {
         if (globalFilter && poSingleSuccess && poSingleList?.data) {
             dispatch(setPoList([poSingleList.data]))
+            dispatch(setPoSummary(null))
             dispatch(setCount(1))
             return
         }
         if (isSuccess && data?.data) {
             dispatch(setPoList(data.data.results ?? []))
+            dispatch(setPoSummary(data?.data?.summary))
             dispatch(setCount(data.data.count ?? 0))
         }
 
@@ -106,6 +112,51 @@ const PoTable = () => {
         )
     }
 
+    const SummaryUi = () => {
+        const SummaryArray = [
+            {
+                label: 'Total PO',
+                value: count || 0,
+                icon: <MdOutlineFormatListNumbered className="w-6 h-6 text-blue-600" />,
+                bg: 'bg-blue-50',
+            },
+            {
+                label: 'Total Amount',
+                value: poSummary?.total_amount || 0,
+                icon: <FaRupeeSign className="w-6 h-6 text-blue-600" />,
+                bg: 'bg-blue-50',
+            },
+            {
+                label: 'Waiting Approval',
+                value: poSummary?.total_waiting || 0,
+                icon: <CgLock className="w-6 h-6 text-yellow-600" />,
+                bg: 'bg-yellow-50',
+            },
+            {
+                label: 'Approved',
+                value: poSummary?.total_approved || 0,
+                icon: <FaCheck className="w-6 h-6 text-green-600" />,
+                bg: 'bg-green-50',
+            },
+        ]
+
+        return (
+            <div className="w-full flex justify-around mb-6">
+                {SummaryArray.map((item, index) => (
+                    <Card key={index} className="shadow-sm hover:shadow-md transition-all cursor-pointer">
+                        <div className="py-3 px-6 flex items-center gap-4">
+                            <div className={`p-3 rounded-xl ${item.bg}`}>{item.icon}</div>
+                            <div>
+                                <p className="text-sm text-gray-500 font-bold">{item.label}</p>
+                                <h2 className="text-xl font-bold text-gray-800">{item.value}</h2>
+                            </div>
+                        </div>
+                    </Card>
+                ))}
+            </div>
+        )
+    }
+
     const columns = usePoListColumns()
 
     if (isLoading) {
@@ -125,6 +176,7 @@ const PoTable = () => {
                     + Create New
                 </Button>
             </div>
+            <div>{poSummary && SummaryUi()}</div>
             {InputUi()}
             {isFetching && (
                 <div className="flex items-center justify-center my-4">
