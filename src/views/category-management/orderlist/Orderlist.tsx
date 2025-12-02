@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { SetStateAction, useEffect, useRef, useState } from 'react'
+import { SetStateAction, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import moment from 'moment'
@@ -55,7 +56,7 @@ const OrderList = () => {
     const [showNumberLoading, setShowNumberLoading] = useState(false)
     const [isReAssign, setIsReAssign] = useState(false)
     const [loadingTable, setLoadingTable] = useState(false)
-    const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
+    const To_Date = useMemo(() => moment(to).add(1, 'days').format('YYYY-MM-DD'), [to])
 
     const handleSelectTab = (value: string) => {
         setShowNumberLoading(true)
@@ -153,11 +154,8 @@ const OrderList = () => {
     }
 
     useEffect(() => {
-        if (!numberClick) {
-            fetchOrders()
-        }
+        if (!numberClick) fetchOrders()
         const noFilters = noFilterFunc(false)
-
         if (noFilters && (tabSelect === 'all' || tabSelect === 'pending')) {
             const interval = setInterval(() => {
                 fetchOrders()

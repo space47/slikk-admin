@@ -10,8 +10,10 @@ import SideNav from '@/components/template/SideNav'
 import View from '@/views'
 import Infor from '../template/VerticalMenuContent/Infor'
 import StoreSelect from '../template/VerticalMenuContent/StoreSelect'
+import store from '@/store'
 
 const HeaderActionsStart = () => {
+    const storeCodes = store.getState().storeSelect.store_ids
     return (
         <>
             <div className="flex items-center ">
@@ -21,7 +23,10 @@ const HeaderActionsStart = () => {
                 <div className="text-xl ">
                     <Infor />
                 </div>
-                <StoreSelect />
+                <div className="flex  flex-row gap-2 items-center text-[18px]">
+                    <span className="font-semibold">Total Store Selected:</span>
+                    <span className="font-semibold text-blue-600">{storeCodes?.length || 0}</span>
+                </div>
             </div>
         </>
     )
