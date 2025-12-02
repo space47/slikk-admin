@@ -8,7 +8,7 @@ const StoreSelect = () => {
     const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
     const { store_ids } = useAppSelector((state) => state.storeSelect)
 
-    console.log('Selected Store IDs:', store_ids)
+    console.log('store id is', store_ids)
 
     return (
         <div className="flex flex-col w-full ">
@@ -19,7 +19,7 @@ const StoreSelect = () => {
                 options={storeList}
                 placeholder="Select Store"
                 getOptionLabel={(option) => option.name}
-                getOptionValue={(option) => option.id}
+                getOptionValue={(option) => option.id?.toString()}
                 value={storeList.filter((store) => store_ids.includes(store.id))}
                 onChange={(selectedOptions) => {
                     dispatch(setStoreIds(selectedOptions?.map((opt) => opt.id) || []))
