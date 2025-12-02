@@ -8,6 +8,7 @@ import { AxiosError } from 'axios'
 import { Form, Formik } from 'formik'
 import React, { useState } from 'react'
 import InventoryActionForm from './InventoryActionForm'
+import { Modal } from 'antd'
 
 interface props {
     isOpen: boolean
@@ -18,7 +19,7 @@ interface props {
 const ClearInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
     const [spinner, setSpinner] = useState(false)
 
-    const handleSubmit = async (values: any) => {
+    const handleSubmit = async (values: any, extraData?: Record<string, any>) => {
         setSpinner(true)
         const body = {
             store_id: storeId,
@@ -29,6 +30,7 @@ const ClearInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
             division: values?.division?.name || '',
             row: values?.row || '',
             location: values?.location || '',
+            ...extraData,
         }
         const filteredBody = filterEmptyValues(body)
         try {
@@ -37,7 +39,22 @@ const ClearInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
             setIsOpen(false)
         } catch (error) {
             if (error instanceof AxiosError) {
-                errorMessage(error)
+                const message = error?.response?.data?.message as string
+                if (message?.toLowerCase() === 'please confirm clearing inventory location') {
+                    const { total_product, total_inventory, total_inventory_sum } = error?.response?.data || {}
+
+                    Modal.confirm({
+                        title: 'Confirm  Clear',
+                        content: `Are you sure you want to hard sync with total Product: ${total_product || 0}, total Inventory: ${total_inventory || 0}, and inventory sum of: ${total_inventory_sum || 0}?`,
+                        okText: 'Yes',
+                        cancelText: 'No',
+                        onOk: () => {
+                            handleSubmit(values, { confirm_clear: true })
+                        },
+                    })
+                } else {
+                    errorMessage(error)
+                }
             }
         } finally {
             setSpinner(false)
