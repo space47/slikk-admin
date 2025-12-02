@@ -6,6 +6,7 @@ import withHeaderItem from '@/utils/hoc/withHeaderItem'
 import { setPanelExpand, useAppSelector, useAppDispatch } from '@/store'
 import type { CommonProps } from '@/@types/common'
 import StoreSelect from '../VerticalMenuContent/StoreSelect'
+import { useEffect } from 'react'
 
 type SidePanelProps = SidePanelContentProps & CommonProps
 
@@ -21,6 +22,9 @@ const _SidePanel = (props: SidePanelProps) => {
     const openPanel = () => {
         dispatch(setPanelExpand(true))
     }
+    useEffect(() => {
+        closePanel()
+    }, [])
 
     const closePanel = () => {
         dispatch(setPanelExpand(false))
@@ -39,7 +43,6 @@ const _SidePanel = (props: SidePanelProps) => {
                 title="Dashboard Settings"
                 isOpen={panelExpand}
                 placement={direction === 'rtl' ? 'left' : 'right'}
-                width={375}
                 onClose={closePanel}
                 onRequestClose={closePanel}
             >
