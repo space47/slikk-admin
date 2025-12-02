@@ -69,7 +69,7 @@ const OrderDetails = () => {
             <div className="mb-8 flex flex-col justify-center xl:flex-row xl:justify-between">
                 <div className="w-full xl:w-1/2">
                     <div className="flex flex-col md:flex-row items-center mb-4 xl:justify-between justify-center w-full">
-                        <div className="text-3xl font-bold text-gray-800 text-center md:text-left flex gap-2">
+                        <div className="text-3xl font-bold text-gray-800 text-center md:text-left flex flex-col gap-2">
                             <span>Order</span>
                             <span className="ml-2 text-red-600 flex gap-3">
                                 #{data.invoice_id}
@@ -86,12 +86,9 @@ const OrderDetails = () => {
                                     </div>
                                 ) : null}
                                 <div>
-                                    <button
-                                        className="text-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-200"
-                                        onClick={handleMarketingOrder}
-                                    >
+                                    <Button variant="blue" size="sm" onClick={handleMarketingOrder}>
                                         {data?.is_internal_order ? 'Marketing Marked' : 'Mark as Marketing'}
-                                    </button>
+                                    </Button>
                                 </div>
                             </span>
                         </div>

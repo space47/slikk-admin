@@ -35,24 +35,27 @@ const _SidePanel = (props: SidePanelProps) => {
     }
 
     return (
-        <>
+        <div className="">
             <div className={classNames('text-2xl xl:block', className)} onClick={openPanel} {...rest}>
                 <HiOutlineCog />
             </div>
             <Drawer
                 title="Dashboard Settings"
+                className={'p-4'}
                 isOpen={panelExpand}
                 placement={direction === 'rtl' ? 'left' : 'right'}
                 onClose={closePanel}
                 onRequestClose={closePanel}
             >
-                <div className="w-full mb-10">
+                <div className="w-full mb-10 p-4">
                     <h5>Select Store</h5>
                     <StoreSelect />
                 </div>
-                <SidePanelContent callBackClose={closePanel} />
+                <div className="p-4">
+                    <SidePanelContent callBackClose={closePanel} />
+                </div>
             </Drawer>
-        </>
+        </div>
     )
 }
 
