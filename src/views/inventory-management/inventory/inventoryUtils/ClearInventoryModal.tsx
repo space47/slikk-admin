@@ -40,12 +40,12 @@ const ClearInventoryModal = ({ isOpen, setIsOpen, storeId }: props) => {
         } catch (error) {
             if (error instanceof AxiosError) {
                 const message = error?.response?.data?.message as string
-                if (message?.toLowerCase() === 'please confirm clearing inventory location') {
-                    const { total_product, total_inventory, total_inventory_sum } = error?.response?.data || {}
+                if (message?.toLowerCase() === 'please confirm clearing inventory locations') {
+                    const { total_locations, total_quantities } = error?.response?.data || {}
 
                     Modal.confirm({
                         title: 'Confirm  Clear',
-                        content: `Are you sure you want to hard sync with total Product: ${total_product || 0}, total Inventory: ${total_inventory || 0}, and inventory sum of: ${total_inventory_sum || 0}?`,
+                        content: `Are you sure you want to clear inventory with total quantities:${total_quantities || 0} and total locations: ${total_locations || 0} `,
                         okText: 'Yes',
                         cancelText: 'No',
                         onOk: () => {
