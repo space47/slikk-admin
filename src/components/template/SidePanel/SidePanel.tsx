@@ -5,6 +5,7 @@ import SidePanelContent, { SidePanelContentProps } from './SidePanelContent'
 import withHeaderItem from '@/utils/hoc/withHeaderItem'
 import { setPanelExpand, useAppSelector, useAppDispatch } from '@/store'
 import type { CommonProps } from '@/@types/common'
+import StoreSelect from '../VerticalMenuContent/StoreSelect'
 
 type SidePanelProps = SidePanelContentProps & CommonProps
 
@@ -31,17 +32,21 @@ const _SidePanel = (props: SidePanelProps) => {
 
     return (
         <>
-            <div className={classNames('text-2xl xl:block hidden', className)} onClick={openPanel} {...rest}>
+            <div className={classNames('text-2xl xl:block', className)} onClick={openPanel} {...rest}>
                 <HiOutlineCog />
             </div>
             <Drawer
-                title="Mode Selection"
+                title="Dashboard Settings"
                 isOpen={panelExpand}
                 placement={direction === 'rtl' ? 'left' : 'right'}
                 width={375}
                 onClose={closePanel}
                 onRequestClose={closePanel}
             >
+                <div className="w-full mb-10">
+                    <h5>Select Store</h5>
+                    <StoreSelect />
+                </div>
                 <SidePanelContent callBackClose={closePanel} />
             </Drawer>
         </>
