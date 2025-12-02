@@ -43,7 +43,7 @@ const HeaderActionsStart = () => {
                             text-blue-700 dark:text-blue-300 
                             border border-blue-200 dark:border-blue-700 
                             rounded-lg 
-                            truncate max-w-[120px] sm:max-w-[180px] md:max-w-[250px] lg:max-w-none
+                            truncate max-w-[120px] sm:max-w-[150px] md:max-w-[250px] lg:max-w-none
                             hover:bg-blue-100 dark:hover:bg-blue-900/30 
                             transition-colors duration-200
                         `}
@@ -73,7 +73,7 @@ const HeaderActionsStart = () => {
 
 const HeaderActionsEnd = () => {
     return (
-        <div className="flex items-center gap-2 sm:gap-4">
+        <div className="flex items-center  sm:gap-4 ">
             <div className="hidden lg:block">{/* <StoreSelect /> */}</div>
             <SidePanel />
             <UserDropdown hoverable={false} />
