@@ -11,11 +11,11 @@ const StoreSelect = () => {
     console.log('Selected Store IDs:', store_ids)
 
     return (
-        <div className="flex flex-col w-full max-w-[400px]">
+        <div className="flex flex-col w-full ">
             <Select
                 isClearable
                 isMulti
-                className="xl:w-[600px] md:w-[400px] w-full"
+                className=" w-full"
                 options={storeList}
                 placeholder="Select Store"
                 getOptionLabel={(option) => option.name}
