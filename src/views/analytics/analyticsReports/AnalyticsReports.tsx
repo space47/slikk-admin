@@ -44,7 +44,7 @@ const AnalyticsReports = () => {
         try {
             const brandData = brandValue ? `&brand=${encodeURIComponent(brandValue?.name)}` : ''
             const response = await axiosInstance.get(
-                `/merchant/product/sales?from=${moment().startOf('week').format('YYYY-MM-DD')}&to=${moment().startOf('week').format('YYYY-MM-DD')}${brandData}`,
+                `/merchant/product/sales?from=${moment().startOf('week').format('YYYY-MM-DD')}&to=${moment().endOf('week').format('YYYY-MM-DD')}${brandData}`,
             )
             const remitanceData = response.data?.data.items
             setFullRemitanceResponse(response.data?.data)
@@ -201,7 +201,7 @@ const AnalyticsReports = () => {
                         </div>
                     }
                     key="1"
-                    className="mb-4 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
+                    className="mb-4 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 "
                 >
                     <div className="space-y-6 pt-4">
                         <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
@@ -255,6 +255,7 @@ const AnalyticsReports = () => {
                                     <label className="text-sm font-medium text-gray-800 dark:text-gray-300">Brands</label>
                                     <div className="flex flex-col xl:flex-row items-start gap-2">
                                         <Select
+                                            isClearable
                                             options={brands.brands}
                                             getOptionLabel={(option) => option.name}
                                             getOptionValue={(option) => option.id.toString()}
@@ -309,7 +310,7 @@ const AnalyticsReports = () => {
                         </div>
                     }
                     key="2"
-                    className="mb-4 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
+                    className="mb-4 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700"
                 >
                     <div className="space-y-6 pt-4">
                         <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">

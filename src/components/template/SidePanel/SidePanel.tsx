@@ -12,11 +12,8 @@ type SidePanelProps = SidePanelContentProps & CommonProps
 
 const _SidePanel = (props: SidePanelProps) => {
     const dispatch = useAppDispatch()
-
     const { className, ...rest } = props
-
     const panelExpand = useAppSelector((state) => state.theme.panelExpand)
-
     const direction = useAppSelector((state) => state.theme.direction)
 
     const openPanel = () => {
@@ -47,12 +44,12 @@ const _SidePanel = (props: SidePanelProps) => {
                 onClose={closePanel}
                 onRequestClose={closePanel}
             >
-                <div className="w-full mb-10 p-4">
-                    <h5>Select Store</h5>
-                    <StoreSelect />
-                </div>
                 <div className="p-4">
                     <SidePanelContent callBackClose={closePanel} />
+                </div>
+                <div className="w-full mt-1 p-4">
+                    <h5>Select Store</h5>
+                    <StoreSelect />
                 </div>
             </Drawer>
         </div>
