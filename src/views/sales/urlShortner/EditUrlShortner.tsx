@@ -131,6 +131,7 @@ const EditUrlShortner = () => {
         }
         const formData = {
             ...rest,
+            search_key: values?.search_key,
             extra_attributes: extra_attributes_fields,
             short_code: values?.short_code,
             ios_url: !values.select_filter
@@ -171,6 +172,7 @@ const EditUrlShortner = () => {
             ios_url: pageUrl,
             web_url: webPageUrl,
             android_url: pageUrl,
+            search_key: values?.search_key,
         }
         try {
             const body = values?.is_custom ? customBody : formData

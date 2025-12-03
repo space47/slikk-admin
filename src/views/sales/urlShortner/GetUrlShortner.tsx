@@ -29,7 +29,7 @@ const GetUrlShortner = () => {
 
     const fetchForGlobalFilter = async () => {
         try {
-            const response = await axioisInstance.get(`/short_urls?short_code=${globalFilter}`)
+            const response = await axioisInstance.get(`/short_urls?search_key=${globalFilter}`)
             const data = response?.data?.message
             setUrlData(data?.results)
         } catch (error) {
