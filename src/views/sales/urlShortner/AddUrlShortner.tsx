@@ -60,7 +60,6 @@ const AddUrlShortner = () => {
             is_banner: values?.is_banner,
             banner_id: values?.banners && values.banners[0]?.id,
         }
-        console.log('1')
         const filters = [
             ...(values.filters || []),
             ...UtmArray.filter((item) => values[item.name] !== undefined).map(
@@ -72,21 +71,13 @@ const AddUrlShortner = () => {
             ...(values?.banners ? [`bannerId_${values.banners[0]?.id}`] : []),
             values?.discountTags && values?.discountTags,
         ].join(',')
-        console.log('2')
-
         const noSelectFilters = UtmArray.filter((item) => values[item.name] !== undefined)
             .map((item) => `${item.name.replace('_', '-')}=${values[item.name]}`)
             .join('&')
-
-        console.log('3')
         let utmFilters = noSelectFilters ? `&${noSelectFilters}` : ''
-        console.log('4')
         let filterSelect = values?.select_filter ? `&filters=${filters}` : `&${noSelectFilters}` || ''
-        console.log('5')
         if (values?.is_custom) utmFilters = noSelectFilters ? `?${noSelectFilters}` : ''
-        console.log('6')
         if (values?.is_custom) filterSelect = values?.select_filter ? `?filters=${filters}` : `?${noSelectFilters}` || ''
-        console.log('7')
 
         const { page_title, ...rest } = values
         console.log(page_title)
@@ -98,10 +89,9 @@ const AddUrlShortner = () => {
         if (values?.target_page) target_page = `/${values?.target_page}`
         let subPage = ''
         if (values?.sub_page && values?.target_page === 'home') subPage = `sub_page=${values?.sub_page?.name}`
-        console.log('8')
-
         const formData = {
             ...rest,
+            search_key: values?.search_key,
             extra_attributes: extra_attributes_fields,
             short_code: values?.short_code,
             ios_url: !values.select_filter
@@ -129,6 +119,7 @@ const AddUrlShortner = () => {
             ios_url: pageUrl,
             web_url: webPageUrl,
             android_url: pageUrl,
+            search_key: values?.search_key,
         }
         try {
             const body = values?.is_custom ? customBody : formData

@@ -99,6 +99,15 @@ const UrlShortnerForm = ({ values, pageNamesData, setSelectedPageName, subPageNa
                                         />
                                     </FormItem>
                                 )}
+                                <FormItem label="SearchBy Name" className="animate-fadeIn">
+                                    <Field
+                                        type="text"
+                                        name="search_key"
+                                        placeholder="Enter name through which you want to search"
+                                        component={Input}
+                                        className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    />
+                                </FormItem>
                             </div>
 
                             <div className="space-y-6">
