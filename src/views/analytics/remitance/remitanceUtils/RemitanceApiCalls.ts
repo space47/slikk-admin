@@ -33,7 +33,7 @@ const RemitanceApis = ({
         try {
             const brandData = brandValue ? `&brand=${encodeURIComponent(brandValue?.name)}` : ''
             const response = await axioisInstance.get(
-                `/merchant/product/sales?from=${moment().startOf('week').format('YYYY-MM-DD')}&to=${moment().startOf('week').format('YYYY-MM-DD')}${brandData}`,
+                `/merchant/product/sales?from=${moment().startOf('week').format('YYYY-MM-DD')}&to=${moment().endOf('week').format('YYYY-MM-DD')}${brandData}`,
             )
             const remitanceData = response.data?.data.items
             setFullRemitanceResponse(response.data?.data)
