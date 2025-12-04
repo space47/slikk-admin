@@ -10,26 +10,46 @@ import { AxiosError } from 'axios'
 const EventAdd = () => {
     const initialValues = {
         name: '',
-        properties: [{ key: '', type: '' }],
+        properties: [{ key: '', path: '', type: '' }],
+        aggregation: [{ key: '', path: '', type: '' }],
     }
 
     const handleSubmit = async (values: any) => {
         console.log('Form submitted with values:', values)
-        const formattedProps: Record<string, string> = {}
+
+        const formattedProperties: Record<string, any> = {}
         values.properties.forEach((item: any) => {
-            if (item.key && item.type) {
-                formattedProps[item.key] = item.type
+            if (item.key) {
+                formattedProperties[item.key] = {
+                    path: item.path,
+                    type: item.type,
+                }
+            }
+        })
+
+        const formattedAggregation: Record<string, any> = {}
+        values.aggregation.forEach((item: any) => {
+            if (item.key) {
+                formattedAggregation[item.key] = {
+                    path: item.path,
+                    type: item.type,
+                }
             }
         })
 
         const finalPayload = {
             name: values.name,
-            attributes: formattedProps,
+            attributes: {
+                properties: formattedProperties,
+                aggregation: formattedAggregation,
+            },
         }
+
+        console.log('FINAL PAYLOAD =>', finalPayload)
 
         try {
             const res = await axioisInstance.post(`notification/event`, finalPayload)
-            notification.success({ message: res?.data?.data?.message || 'Event updated successfully' })
+            notification.success({ message: res?.data?.data?.message || 'Event created successfully' })
         } catch (error) {
             if (error instanceof AxiosError) {
                 notification.error({ message: error?.response?.data?.message || 'Error updating event' })
@@ -40,13 +60,8 @@ const EventAdd = () => {
 
     return (
         <div>
-            <Formik
-                enableReinitialize
-                initialValues={initialValues}
-                // validationSchema={validationSchema}
-                onSubmit={handleSubmit}
-            >
-                {({ values, setFieldValue, resetForm }) => (
+            <Formik enableReinitialize initialValues={initialValues} onSubmit={handleSubmit}>
+                {({ values }) => (
                     <Form className="w-full shadow-xl p-3 rounded-2xl ">
                         <EventForm values={values} />
                         <FormContainer className="mt-10">
