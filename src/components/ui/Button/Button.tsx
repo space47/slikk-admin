@@ -19,7 +19,7 @@ export interface ButtonProps extends CommonProps, Omit<ComponentPropsWithRef<'bu
     onClick?: (e: MouseEvent<HTMLButtonElement>) => void
     shape?: TypeAttributes.Shape
     size?: TypeAttributes.Size
-    variant?: 'solid' | 'twoTone' | 'plain' | 'default' | 'new' | 'accept' | 'reject' | 'pending' | 'yellow' | 'blue'
+    variant?: 'solid' | 'twoTone' | 'plain' | 'default' | 'new' | 'accept' | 'reject' | 'pending' | 'yellow' | 'blue' | 'gray'
 }
 
 type ButtonColor = {
@@ -134,6 +134,15 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
         }
         return getBtnColor(btn)
     }
+    const gray = () => {
+        const btn = {
+            bgColor: `bg-gray-500 border border-gray-700 dark:bg-gray-600 dark:border-gray-800`,
+            textColor: `text-white dark:text-white`,
+            hoverColor: `hover:bg-gray-600 dark:hover:bg-gray-700`,
+            activeColor: `active:bg-gray-500 dark:active:bg-gray-500 dark:active:border-gray-700`,
+        }
+        return getBtnColor(btn)
+    }
     const yellowColor = () => {
         const btn = {
             bgColor: `bg-yellow-600 border border-yellow-700 dark:bg-yellow-600 dark:border-yellow-800`,
@@ -221,6 +230,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
                 return pendingColor()
             case 'blue':
                 return blueColor()
+            case 'gray':
+                return gray()
             default:
                 return defaultColor()
         }

@@ -3,6 +3,7 @@ import { useMemo } from 'react'
 import { TaskDetails } from '../TaskCommonType'
 import { MdAssignment, MdAssignmentLate } from 'react-icons/md'
 import moment from 'moment'
+import { ColumnDef } from '@tanstack/react-table'
 
 interface columnProps {
     handleAssignClick: (task_id: TaskDetails) => void
@@ -12,21 +13,21 @@ interface columnProps {
 }
 
 export const TaskTrackingColumns = ({ handleAssignClick, handleReAssignClick, handleRiderProfile }: columnProps) => {
-    return useMemo(
+    return useMemo<ColumnDef<TaskDetails>[]>(
         () => [
             {
                 header: 'Assign Task',
-                accessor: 'task_id',
-                format: (value: any, row: TaskDetails) => {
+                accessorKey: 'task_id',
+                cell: ({ row }) => {
                     return (
                         <div>
-                            {row.status == 'CREATED' && (
-                                <button className="bg-none border-none" onClick={() => handleAssignClick(row)}>
+                            {row?.original?.status == 'CREATED' && (
+                                <button className="bg-none border-none" onClick={() => handleAssignClick(row?.original)}>
                                     <MdAssignment className="text-3xl text-yellow-500" />
                                 </button>
                             )}
-                            {row.status !== 'CREATED' && (
-                                <button className="bg-none border-none" onClick={() => handleReAssignClick(row)}>
+                            {row?.original?.status !== 'CREATED' && (
+                                <button className="bg-none border-none" onClick={() => handleReAssignClick(row?.original)}>
                                     <MdAssignmentLate className="text-3xl text-red-500" />
                                 </button>
                             )}
@@ -36,34 +37,34 @@ export const TaskTrackingColumns = ({ handleAssignClick, handleReAssignClick, ha
             },
             {
                 header: 'Task ID',
-                accessor: 'task_id',
-                format: (_: any, row: TaskDetails) => {
+                accessorKey: 'task_id',
+                cell: ({ row }) => {
                     return (
                         <button className="px-3 py-2 bg-gray-400 text-white rounded-[10px]">
-                            <a href={`/app/tryAndBuy/taskTracking/${row?.task_id}`} target="_blank" rel="noreferrer">
-                                {row.task_id}
+                            <a href={`/app/tryAndBuy/taskTracking/${row?.original?.task_id}`} target="_blank" rel="noreferrer">
+                                {row?.original?.task_id}
                             </a>
                         </button>
                     )
                 },
             },
-            { header: 'Status', accessor: 'status' },
+            { header: 'Status', accessorKey: 'status' },
             {
                 header: 'Payment Mode',
-                accessor: 'client_order_details.payment_mode',
-                format: (_: any, row: TaskDetails) => {
-                    return <div>{row?.client_order_details?.payment_mode}</div>
+                accessorKey: 'client_order_details.payment_mode',
+                cell: ({ row }) => {
+                    return <div>{row?.original?.client_order_details?.payment_mode}</div>
                 },
             },
             {
                 header: 'Cash to be Collected',
-                accessor: 'client_order_details.cash_to_be_collected',
-                format: (_: any, row: TaskDetails) => {
+                accessorKey: 'client_order_details.cash_to_be_collected',
+                cell: ({ row }) => {
                     return (
                         <div>
-                            {row?.client_order_details?.cash_to_be_collected ? (
+                            {row?.original?.client_order_details?.cash_to_be_collected ? (
                                 <>
-                                    <div>Rs. {row?.client_order_details?.cash_to_be_collected}</div>
+                                    <div>Rs. {row?.original?.client_order_details?.cash_to_be_collected}</div>
                                 </>
                             ) : (
                                 'N/A'
@@ -74,105 +75,104 @@ export const TaskTrackingColumns = ({ handleAssignClick, handleReAssignClick, ha
             },
             {
                 header: 'Cash Collected',
-                accessor: 'client_order_details?.cash_collected',
-                format: (_: any, row: TaskDetails) => {
-                    return <div>{row?.client_order_details?.cash_collected ? 'Yes' : 'No'}</div>
+                accessorKey: 'client_order_details?.cash_collected',
+                cell: ({ row }) => {
+                    return <div>{row?.original?.client_order_details?.cash_collected ? 'Yes' : 'No'}</div>
                 },
             },
 
-            { header: 'Task Type', accessor: 'task_type' },
+            { header: 'Task Type', accessorKey: 'task_type' },
             {
                 header: 'Runner Name',
-                accessor: 'runner_detail.name',
-                format: (_: any, row: TaskDetails) => {
-                    const runnerMobile = row.runner_detail?.mobile
+                accessorKey: 'runner_detail.name',
+                cell: ({ row }) => {
+                    const runnerMobile = row?.original?.runner_detail?.mobile
                     return (
                         <div className="hover:text-blue-700 cursor-pointer" onClick={() => handleRiderProfile(runnerMobile)}>
-                            {row.runner_detail?.name || ''}
+                            {row?.original?.runner_detail?.name || ''}
                         </div>
                     )
                 },
             },
             {
                 header: 'Runner Contact Number',
-                accessor: 'runner_detail.mobile',
-                format: (_: any, row: TaskDetails) => row.runner_detail?.mobile || '',
+                accessorKey: 'runner_detail.mobile',
+                cell: ({ row }) => row?.original?.runner_detail?.mobile || '',
             },
             {
                 header: 'Pickup Name',
-                accessor: 'pickup_details.name',
-                format: (_: any, row: TaskDetails) => row.pickup_details?.name || '',
+                accessorKey: 'pickup_details.name',
+                cell: ({ row }) => row?.original?.pickup_details?.name || '',
             },
             {
                 header: 'Pickup Address',
-                accessor: 'pickup_details.address',
-                format: (_: any, row: TaskDetails) => row.pickup_details?.address || '',
+                accessorKey: 'pickup_details.address',
+                cell: ({ row }) => row?.original?.pickup_details?.address || '',
             },
             {
                 header: 'Pickup Contact Number',
-                accessor: 'pickup_details.contact_number',
-                format: (_: any, row: TaskDetails) => row.pickup_details?.contact_number || '',
+                accessorKey: 'pickup_details.contact_number',
+                cell: ({ row }) => row?.original?.pickup_details?.contact_number || '',
             },
             {
                 header: 'Drop Name',
-                accessor: 'drop_details.name',
-                format: (_: any, row: TaskDetails) => row.drop_details?.name || '',
+                accessorKey: 'drop_details.name',
+                cell: ({ row }) => row?.original?.drop_details?.name || '',
             },
             {
                 header: 'Drop Address',
-                accessor: 'drop_details.address',
-                format: (_: any, row: TaskDetails) => row.drop_details?.address || '',
+                accessorKey: 'drop_details.address',
+                cell: ({ row }) => row?.original?.drop_details?.address || '',
             },
             // {
             //     header: 'Drop Landmark',
-            //     accessor: 'drop_details.landmark',
-            //     format: (_: any, row: TaskDetails) => row.drop_details?.landmark || '',
+            //     accessorKey: 'drop_details.landmark',
+            //     cell: ({row}) => row?.original?.drop_details?.landmark || '',
             // },
             {
                 header: 'Drop Contact Number',
-                accessor: 'drop_details.contact_number',
-                format: (_: any, row: TaskDetails) => row.drop_details?.contact_number || '',
+                accessorKey: 'drop_details.contact_number',
+                cell: ({ row }) => row?.original?.drop_details?.contact_number || '',
             },
             // {
             //     header: 'User Credits Key',
-            //     accessor: 'user_details.credits_key',
-            //     format: (_: any, row: TaskDetails) => row.user_details?.credits_key || '',
+            //     accessorKey: 'user_details.credits_key',
+            //     cell: ({row}) => row?.original?.user_details?.credits_key || '',
             // },
             {
                 header: 'User Contact Number',
-                accessor: 'user_details.contact_number',
-                format: (_: any, row: TaskDetails) => row.user_details?.contact_number || '',
+                accessorKey: 'user_details.contact_number',
+                cell: ({ row }) => row?.original?.user_details?.contact_number || '',
             },
             {
                 header: 'Order ID',
-                accessor: 'client_order_details.order_id',
-                format: (_: any, row: TaskDetails) => row.client_order_details?.order_id || '',
+                accessorKey: 'client_order_details.order_id',
+                cell: ({ row }) => row?.original?.client_order_details?.order_id || '',
             },
             {
                 header: 'Is Prepaid',
-                accessor: 'client_order_details.is_prepaid',
-                format: (_: any, row: TaskDetails) => (row.client_order_details?.is_prepaid ? 'Yes' : 'No'),
+                accessorKey: 'client_order_details.is_prepaid',
+                cell: ({ row }) => (row?.original?.client_order_details?.is_prepaid ? 'Yes' : 'No'),
             },
 
             {
                 header: 'Delivery Charge from Customer',
-                accessor: 'client_order_details.delivery_charge_to_be_collected_from_customer',
-                format: (_: any, row: TaskDetails) =>
-                    row.client_order_details?.delivery_charge_to_be_collected_from_customer ? 'Yes' : 'No',
+                accessorKey: 'client_order_details.delivery_charge_to_be_collected_from_customer',
+                cell: ({ row }) => (row?.original?.client_order_details?.delivery_charge_to_be_collected_from_customer ? 'Yes' : 'No'),
             },
             {
                 header: 'Client Order ID',
-                accessor: 'client_order_id',
-                format: (_: any, row: TaskDetails) => row.client_order_id || '',
+                accessorKey: 'client_order_id',
+                cell: ({ row }) => row?.original?.client_order_id || '',
             },
             {
                 header: 'Create Update',
-                accessor: 'create_date',
+                accessorKey: 'create_date',
                 cell: ({ getValue }: any) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
             },
             {
                 header: 'Last Update',
-                accessor: 'update_date',
+                accessorKey: 'update_date',
                 cell: ({ getValue }: any) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
             },
         ],

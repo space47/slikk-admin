@@ -133,7 +133,14 @@ export const CashCollectionTable: React.FC = () => {
                             </span>
                         </Button>
 
-                        <UltimateDatePicker from={from} to={to} setFrom={setFrom} setTo={setTo} handleDateChange={handleDateChange} />
+                        <UltimateDatePicker
+                            customClass="border w-auto rounded-md h-auto font-bold  bg-black text-white flex justify-center"
+                            from={from}
+                            to={to}
+                            setFrom={setFrom}
+                            setTo={setTo}
+                            handleDateChange={handleDateChange}
+                        />
                     </div>
                 </div>
 
