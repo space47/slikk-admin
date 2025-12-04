@@ -127,7 +127,7 @@ const DailyDepositModal: React.FC<DailyDepositModalProps> = ({ row, isOpen, setI
                     </div>
                 </div>
             </div>
-            <div className="h-[70vh] overflow-y-auto space-y-4 p-4">
+            <div className="h-[70vh]  space-y-4 p-4">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-gray-50 dark:bg-gray-800 p-4 rounded-lg shadow-sm">
                     <p className="text-gray-800 dark:text-gray-200 font-medium">
                         <span className="font-semibold">Expected Cash:</span> ₹{row?.expected_cash_collected ?? 0}
