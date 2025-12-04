@@ -3,10 +3,10 @@ import { Button, FormContainer, FormItem, Input, Select, Switcher, Tooltip } fro
 import { notification } from 'antd'
 import { Field, Form, Formik, FieldArray, FieldProps } from 'formik'
 import React, { useEffect, useMemo, useState } from 'react'
-import { MdDelete } from 'react-icons/md'
+import { MdCloudUpload, MdDelete } from 'react-icons/md'
 import Papa from 'papaparse'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
-import { ConditionArray, ConditionsForEvent, DidAndNotArray, TimeFrameArray } from '../notificationUtils/notificationGroupsCommon'
+import { ConditionArray, ConditionsForEvent, TimeFrameArray } from '../notificationUtils/notificationGroupsCommon'
 import FullDateForm from '@/common/FullDateForm'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import GetEvenNames from '@/common/GetEvenNames'
@@ -23,6 +23,7 @@ import GetPropertiesFromEvent from '@/common/GetPropertiesFromEvent'
 import { useNavigate, useParams } from 'react-router-dom'
 import FormButton from '@/components/ui/Button/FormButton'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
+import { FaCheckCircle } from 'react-icons/fa'
 
 const EditNewGroups = () => {
     const dispatch = useAppDispatch()
@@ -213,94 +214,64 @@ const EditNewGroups = () => {
     }
 
     const transformConditionToRule = (condition: any) => {
-        console.log('Transforming condition:', condition)
-        let propertyValue: any
-        let properties: any[] = []
+        const normalizeValue = (val: any) => {
+            if (val === 'true' || val === 'false') return val === 'true'
+            if (!isNaN(val) && val !== '') return Number(val)
+            return val
+        }
 
-        if (condition.condition?.includes('BETWEEN') || condition.condition?.includes('Not Between')) {
-            propertyValue = [condition.value_a, condition.value_b]
-            properties.push({
-                path: condition?.property?.toLowerCase(),
-                op: mapConditionToOperator(condition.condition),
-                value: propertyValue,
-            })
-        } else {
-            if (condition.value === 'true' || condition.value === 'false') {
-                propertyValue = condition.value === 'true'
-            } else if (!isNaN(condition.value) && condition.value !== '') {
-                propertyValue = Number(condition.value)
+        const buildBlock = (pathKey: string, condKey: string, fnc: string, valA: string, valB: string, valueKey: string) => {
+            console.log('fnc is', fnc)
+            let value: any
+            let result: any[] = []
+
+            const property = condition[pathKey]?.toLowerCase()
+            const operator = mapConditionToOperator(condition[condKey])
+
+            if (condition[condKey]?.includes('BETWEEN') || condition[condKey]?.includes('Not Between')) {
+                value = [condition[valA], condition[valB]]
             } else {
-                propertyValue = condition.value
+                value = normalizeValue(condition[valueKey])
             }
 
-            properties.push({
-                path: condition?.property?.toLowerCase(),
-                op: mapConditionToOperator(condition.condition),
-                value: propertyValue,
-            })
+            if (condition[fnc]) {
+                result.push({ path: property, op: operator, value, function: condition[fnc] })
+            } else {
+                result.push({ path: property, op: operator, value })
+            }
+
+            const lower = property?.toLowerCase() || ''
+            const specialKeys = ['category', 'division', 'sub category', 'brand']
+
+            if (specialKeys.some((k) => lower.includes(k)) && condition[valueKey]) {
+                result = [{ path: property, op: operator, value: condition[valueKey] }]
+            }
+
+            return result
         }
 
-        if (condition?.property?.toLocaleLowerCase()?.includes('category') && condition.value) {
-            properties = [
-                {
-                    path: condition?.property?.toLowerCase(),
-                    op: mapConditionToOperator(condition.condition),
-                    value: condition.value,
-                },
-            ]
-        } else if (condition?.property?.toLocaleLowerCase()?.includes('division') && condition.value) {
-            properties = [
-                {
-                    path: condition?.property?.toLowerCase(),
-                    op: mapConditionToOperator(condition.condition),
-                    value: condition.value,
-                },
-            ]
-        } else if (condition?.property?.toLocaleLowerCase()?.includes('sub category') && condition.value) {
-            properties = [
-                {
-                    path: condition?.property?.toLowerCase(),
-                    op: mapConditionToOperator(condition.condition),
-                    value: condition.value,
-                },
-            ]
-        } else if (condition?.property?.toLocaleLowerCase()?.includes('brand') && condition.value) {
-            properties = [
-                {
-                    path: condition?.property?.toLowerCase(),
-                    op: mapConditionToOperator(condition.condition),
-                    value: condition.value,
-                },
-            ]
-        }
+        const properties = buildBlock('property', 'condition', '', 'value_a', 'value_b', 'value')
+        const aggregation = buildBlock('aggregation', 'agg_condition', 'agg_function', 'agg_value_a', 'agg_value_b', 'agg_value')
 
         const range: any = {}
         if (condition.timeFrame && condition.timeFrame !== 'custom_range') {
             range.start = moment().startOf('isoWeek').format('YYYY-MM-DD')
             range.end = moment().endOf('isoWeek').format('YYYY-MM-DD')
-        } else if (condition?.timeFrame === 'custom_range' && condition.start_date && condition.end_date) {
-            range.start = condition?.start_date
-            range.end = condition?.end_date
+        } else if (condition.timeFrame === 'custom_range' && condition.start_date && condition.end_date) {
+            range.start = condition.start_date
+            range.end = condition.end_date
         }
-
-        const timeFrame: any = { range }
 
         const rule: any = {
-            event: typeof condition.event?.value === 'object' ? condition.event?.value?.value : condition.event?.value,
-            properties: properties,
+            event: condition.event?.value || condition.event,
+            properties: properties[0],
+            aggregation: aggregation[0],
         }
-        if (condition.didDidNot === 'Did Not') {
-            rule.exclude = true
-        }
-        if (Object.keys(timeFrame.range).length > 0) {
-            rule.time_frame = timeFrame
-        }
-        if (condition.includeExclude === true && condition.cohort_id) {
-            rule.include_cohort_id = [condition.cohort_id]
-        }
-        if (condition.includeExclude === false && condition.cohort_id) {
-            rule.exclude_cohort_id = [condition.cohort_id]
-        }
+
+        if (condition.didDidNot === 'Did Not') rule.exclude = true
+        if (Object.keys(range).length > 0) rule.time_frame = { range }
+        if (condition.includeExclude === true && condition.cohort_id) rule.include_cohort_id = [condition.cohort_id]
+        if (condition.includeExclude === false && condition.cohort_id) rule.exclude_cohort_id = [condition.cohort_id]
 
         return rule
     }
@@ -351,40 +322,14 @@ const EditNewGroups = () => {
                                 <FormItem label="" className="flex flex-col gap-2">
                                     <div className="flex items-center gap-4">
                                         <label className="flex flex-col items-center justify-center w-64 h-32 px-4 py-6 bg-white text-blue-500 rounded-lg border-2 border-dashed border-blue-300 cursor-pointer hover:bg-blue-50 transition-colors">
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                className="h-10 w-10 mb-2"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                                                />
-                                            </svg>
+                                            <MdCloudUpload className="text-3xl" />
                                             <span className="text-sm font-medium">Click to upload CSV for Users</span>
                                             <span className="text-xs text-gray-500 mt-1">or drag and drop</span>
                                             <input type="file" accept=".csv" className="hidden" onChange={handleCSVFileChange} />
                                         </label>
                                         {csvFile && (
                                             <div className="flex items-center gap-2 bg-green-50 text-green-700 px-3 py-2 rounded-md">
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    className="h-5 w-5"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    stroke="currentColor"
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth={2}
-                                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                                    />
-                                                </svg>
+                                                <FaCheckCircle className="text-xl" />
                                                 <span className="text-sm">{csvFile.name}</span>
                                                 <MdDelete
                                                     className="text-xl text-red-500 cursor-pointer hover:text-red-700 ml-2"
@@ -432,12 +377,6 @@ const EditNewGroups = () => {
                                                     </div>
                                                 </div>
                                                 <FormContainer className="grid grid-cols-6 gap-3 bg-blue-50 p-4 rounded-lg mt-4">
-                                                    <CommonSelect
-                                                        label="Did/Did Not"
-                                                        options={DidAndNotArray}
-                                                        name={`conditions[${index}].didDidNot`}
-                                                    />
-
                                                     <GetEvenNames
                                                         hideButtons
                                                         customClassName="w-full "
@@ -456,10 +395,6 @@ const EditNewGroups = () => {
                                                     <FormItem label="Condition" className={'col-span-1 w-full'}>
                                                         <Field name={`conditions[${index}].condition`}>
                                                             {({ field, form }: FieldProps<any>) => {
-                                                                console.log(
-                                                                    'field for condition and event id',
-                                                                    values.conditions[index]?.condition,
-                                                                )
                                                                 return (
                                                                     <Select
                                                                         isClearable
@@ -471,7 +406,6 @@ const EditNewGroups = () => {
                                                                         onChange={(option) => {
                                                                             const value = option ? option.value : ''
                                                                             form.setFieldValue(field.name, value)
-                                                                            console.log('FIELD.NAME', field.name, value)
                                                                         }}
                                                                         onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
                                                                     />

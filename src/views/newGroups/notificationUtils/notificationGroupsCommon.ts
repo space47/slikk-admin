@@ -4,12 +4,12 @@ export const DidAndNotArray = [
 ]
 
 export const OperatorArray = [
-    { label: 'Sum', value: 'Sum' },
-    { label: 'Average', value: 'Average' },
-    { label: 'Total Count', value: 'Total Count' },
+    { label: 'Sum', value: 'SUM' },
+    { label: 'Average', value: 'AVERAGE' },
+    { label: 'Count', value: 'COUNT' },
     { label: 'Distinct Count', value: 'Distinct Count' },
-    { label: 'Min', value: 'Min' },
-    { label: 'Max', value: 'Max' },
+    { label: 'Min', value: 'MIN' },
+    { label: 'Max', value: 'MAX' },
     { label: 'No Aggregation', value: 'No Aggregation' },
 ]
 
@@ -27,7 +27,6 @@ export const ConditionArray = [
 export const QuickFilterArray = [
     { label: 'Registered', value: 'registered' },
     { label: 'Non-Registered', value: 'non_registered' },
-
     { label: 'First Time', value: 'first_time' },
     { label: 'Try&Buy', value: 'try_and_buy' },
     { label: 'Express', value: 'express' },
@@ -91,4 +90,30 @@ export const ConditionsForEvent = {
     start_date: '',
     end_date: '',
     relation: '',
+    aggregation: '',
+    agg_condition: '',
+    agg_value: '',
+    agg_value_a: '',
+    agg_value_b: '',
+    agg_function: '',
+    agg_operator: '',
+}
+
+export const mapConditionToOperator = (condition: string): string => {
+    const operatorMap: { [key: string]: string } = {
+        '=': '=',
+        '!=': '!=',
+        '>': '>',
+        '<': '<',
+        '>=': '>=',
+        '<=': '<=',
+        BETWEEN: 'BETWEEN',
+        'Not Between': 'NOT BETWEEN',
+        Contains: 'CONTAINS',
+        'Not Contains': 'NOT CONTAINS',
+        'Starts With': 'STARTS WITH',
+        'Ends With': 'ENDS WITH',
+    }
+
+    return operatorMap[condition] || condition
 }

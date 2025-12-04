@@ -13,7 +13,7 @@ interface props {
     eventName?: string
 }
 
-const GetPropertiesFromEvent = ({ label, name, customClassName, eventId, eventName }: props) => {
+const GetAggregationFromEvents = ({ label, name, customClassName, eventId, eventName }: props) => {
     console.log('eventId in get properties', eventName)
     const [eventNamesData, setEventNamesDataState] = useState<any>(null)
     const { data: eventNameList, isSuccess } = eventNameService.useEventNamesDataQuery({
@@ -33,14 +33,14 @@ const GetPropertiesFromEvent = ({ label, name, customClassName, eventId, eventNa
     }, [isSuccess, eventNameList, eventName])
 
     const merged = eventNameList?.results
-        ?.map((item: any) => item.attributes?.properties)
+        ?.map((item: any) => item.attributes?.aggregation)
         ?.flatMap((i: any) => i)
         .reduce<Record<string, FieldType>>((acc, obj) => {
             Object.assign(acc, obj)
             return acc
         }, {})
 
-    const properties = eventName ? eventNamesData?.attributes?.properties : merged
+    const properties = eventName ? eventNamesData?.attributes?.aggregation : merged
 
     console.log('properties', properties)
 
@@ -53,28 +53,32 @@ const GetPropertiesFromEvent = ({ label, name, customClassName, eventId, eventNa
 
     return (
         <div>
-            <FormItem label={label} className={customClassName ? customClassName : 'col-span-1 w-1/2'}>
-                <Field name={name}>
-                    {({ field, form }: FieldProps<any>) => {
-                        console.log('field for properties', field)
-                        return (
-                            <Select
-                                isClearable
-                                field={field}
-                                form={form}
-                                options={propertyArray || []}
-                                value={propertyArray?.find((option) => option.value?.toLocaleLowerCase() === field.value)}
-                                onChange={(newVal) => {
-                                    console.log(newVal?.value)
-                                    form.setFieldValue(field.name, newVal?.value)
-                                }}
-                            />
-                        )
-                    }}
-                </Field>
-            </FormItem>
+            {eventName && propertyArray?.length ? (
+                <FormItem label={label} className={customClassName ? customClassName : 'col-span-1 w-1/2'}>
+                    <Field name={name}>
+                        {({ field, form }: FieldProps<any>) => {
+                            console.log('field for properties', field)
+                            return (
+                                <Select
+                                    isClearable
+                                    field={field}
+                                    form={form}
+                                    options={propertyArray || []}
+                                    value={propertyArray?.find((option) => option.value?.toLocaleLowerCase() === field.value)}
+                                    onChange={(newVal) => {
+                                        console.log(newVal?.value)
+                                        form.setFieldValue(field.name, newVal?.value)
+                                    }}
+                                />
+                            )
+                        }}
+                    </Field>
+                </FormItem>
+            ) : (
+                ''
+            )}
         </div>
     )
 }
 
-export default GetPropertiesFromEvent
+export default GetAggregationFromEvents
