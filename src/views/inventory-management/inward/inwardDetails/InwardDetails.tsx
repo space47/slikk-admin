@@ -17,6 +17,7 @@ import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { FaDownload } from 'react-icons/fa'
 import { inwardDetailsResponse } from './inwardCommon'
 import QcTabs from './components/QcTabs'
+import { Button } from '@/components/ui'
 
 const InwardDetails = () => {
     const [loading, setLoading] = useState(true)
@@ -34,10 +35,8 @@ const InwardDetails = () => {
         const fetchOrders = async () => {
             try {
                 const response = await axioisInstance.get(`goods/received?grn_number=${document_number}`)
-
                 const ordersData = response.data?.data || []
                 setLoading(false)
-
                 setData(ordersData)
                 setCompanyId(ordersData?.company)
             } catch (error) {
@@ -160,87 +159,107 @@ const InwardDetails = () => {
     }
 
     return (
-        <Container className="h-full">
+        <Container className="">
             <Loading loading={loading}>
                 {!isEmpty(data) && (
                     <>
-                        <div className="mb-6">
-                            <div className="flex flex-col  mb-2">
+                        <div className="mb-8 p-6 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-200 shadow-sm">
+                            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
                                 <div>
-                                    <div className="flex gap-5">
-                                        <div>
-                                            <span className="font-bold text-xl">GRN:</span>
-                                            <span className="ltr:ml-2 rtl:mr-2 ont-bold text-xl">#{data.grn_number}</span>
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                                            <span className="font-semibold text-sm">GRN</span>
                                         </div>
-
-                                        <div
-                                            className="flex p-2 bg-gray-200 gap-2 rounded-lg cursor-pointer"
-                                            onClick={() => handleRegenerateGrn(data.document_number)}
-                                        >
-                                            <span className="font-bold">Export</span> <FaDownload className="text-xl" />
-                                        </div>
+                                        <h1 className="text-2xl font-bold text-gray-800">#{data.grn_number}</h1>
                                     </div>
-                                    {data?.document_url ? (
-                                        <>
-                                            <div className="docs flex flex-col w-1/2">
-                                                {data.document_url?.split(',')?.map((item, key) => {
-                                                    return (
-                                                        <div className="cursor-pointer" onClick={() => handleUrl(item)} key={key}>
-                                                            <p className="cursor-pointer p-2 text-blue-500">
-                                                                {data?.grn_number}_{key + 1}
-                                                            </p>
-                                                        </div>
-                                                    )
-                                                })}
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <>No document url</>
-                                    )}
-                                </div>
-                            </div>
-                            <span className="flex items-center">
-                                <HiOutlineCalendar className="text-lg" />
-                                <span className="ltr:ml-1 rtl:mr-1">{moment(data.document_date).format('MM/DD/YYYY hh:mm:ss a')}</span>
-                            </span>
-                        </div>
-                        <div className="xl:flex gap-4">
-                            <div className="w-full">
-                                <div className="xl:grid grid-cols-2 gap-4">
-                                    <ShippingInfo company={data.company} origin_address={data.origin_address} />
-                                    <PaymentSummary received_address={data.received_address} received_by={data.received_by} />
-                                </div>
-                            </div>
-                            <div className="xl:max-w-[360px] w-full">
-                                <CustomerInfo
-                                    last_updated_by={data.last_updated_by}
-                                    total_sku={data.total_sku}
-                                    total_quantity={data.total_quantity}
-                                />
-                            </div>
-                            <hr className="" />
-                        </div>
-                        {/* From Here */}
-                        <br />
-                        <QcTabs
-                            data={data}
-                            handleSyncClick={handleSyncClick}
-                            showSyncModal={showSyncModal}
-                            syncGRN={syncGRN}
-                            handleCloseModal={handleCloseModal}
-                            isSyncing={isSyncing}
-                            setSelectValue={setSelectValue}
-                            handleRegenerateGrn={handleRegenerateGrn}
-                        />
 
-                        {/* To here */}
+                                    <div className="flex items-center text-gray-600">
+                                        <HiOutlineCalendar className="text-lg mr-2" />
+                                        <span className="font-medium">{moment(data.document_date).format('MMM DD, YYYY hh:mm A')}</span>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-3">
+                                    {data?.document_url && (
+                                        <div className="flex flex-wrap gap-2">
+                                            {data.document_url?.split(',')?.map((item, key) => (
+                                                <Button key={key} variant="blue" onClick={() => handleUrl(item)}>
+                                                    <span className="text-blue-600 font-medium">
+                                                        {data?.grn_number}_{key + 1}
+                                                    </span>
+                                                </Button>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    <Button
+                                        variant="blue"
+                                        size="sm"
+                                        icon={<FaDownload />}
+                                        onClick={() => handleRegenerateGrn(data.document_number)}
+                                    >
+                                        <span className="font-semibold">Export</span>
+                                    </Button>
+                                </div>
+                            </div>
+
+                            {!data?.document_url && <span className="text-yellow-700">No documents available</span>}
+                        </div>
+                        <div className="mb-8">
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                <div className="lg:col-span-1">
+                                    <div className="bg-white rounded-xl border border-gray-200 shadow-xl p-5 h-full">
+                                        <ShippingInfo company={data.company} origin_address={data.origin_address} />
+                                    </div>
+                                </div>
+
+                                <div className="lg:col-span-1">
+                                    <div className="bg-white rounded-xl border border-gray-200 shadow-xl p-5 h-full">
+                                        <PaymentSummary received_address={data.received_address} received_by={data.received_by} />
+                                    </div>
+                                </div>
+
+                                <div className="lg:col-span-1">
+                                    <div className="bg-white rounded-xl border border-gray-200 shadow-xl p-5 h-full">
+                                        <CustomerInfo
+                                            last_updated_by={data.last_updated_by}
+                                            total_sku={data.total_sku}
+                                            total_quantity={data.total_quantity}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                            <QcTabs
+                                data={data}
+                                handleSyncClick={handleSyncClick}
+                                showSyncModal={showSyncModal}
+                                syncGRN={syncGRN}
+                                handleCloseModal={handleCloseModal}
+                                isSyncing={isSyncing}
+                                setSelectValue={setSelectValue}
+                                handleRegenerateGrn={handleRegenerateGrn}
+                            />
+                        </div>
                     </>
                 )}
             </Loading>
+
             {!loading && isEmpty(data) && (
-                <div className="h-full flex flex-col items-center justify-center">
-                    <DoubleSidedImage src="/img/others/img-2.png" darkModeSrc="/img/others/img-2-dark.png" alt="No GRN found!" />
-                    <h3 className="mt-8">No GRN found!</h3>
+                <div className=" flex flex-col items-center justify-center p-8">
+                    <div className="mb-6">
+                        <DoubleSidedImage
+                            src="/img/others/img-2.png"
+                            darkModeSrc="/img/others/img-2-dark.png"
+                            alt="No GRN found!"
+                            className="w-64 h-64"
+                        />
+                    </div>
+                    <h3 className="text-2xl font-semibold text-gray-700 mb-2">No GRN found!</h3>
+                    <p className="text-gray-500 text-center max-w-md">
+                        The requested Goods Received Note could not be found. Please check the GRN number and try again.
+                    </p>
                 </div>
             )}
         </Container>

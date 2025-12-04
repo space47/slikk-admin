@@ -1,67 +1,30 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState } from 'react'
 import Input from '@/components/ui/Input'
 import type { ColumnDef } from '@tanstack/react-table'
-import type { InputHTMLAttributes } from 'react'
-import Pagination from '@/components/ui/Pagination'
-import Select from '@/components/ui/Select'
 import EasyTable from '@/common/EasyTable'
-import { grn_quality_check, pageSizeOptions } from './QCTableCommon'
+import { grn_quality_check } from './QCTableCommon'
 import { useParams } from 'react-router-dom'
 import { useFetchApi } from '@/commonHooks/useFetchApi'
-
-interface DebouncedInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size' | 'prefix'> {
-    value: string | number
-    onChange: (value: string | number) => void
-    debounce?: number
-}
-
-function DebouncedInput({ value: initialValue, onChange, debounce = 500, ...props }: DebouncedInputProps) {
-    const [value, setValue] = useState(initialValue)
-
-    useEffect(() => {
-        setValue(initialValue)
-    }, [initialValue])
-
-    useEffect(() => {
-        const timeout = setTimeout(() => {
-            onChange(value)
-        }, debounce)
-
-        return () => clearTimeout(timeout)
-    }, [value])
-
-    return (
-        <div className="main">
-            <div className="text-xl font-bold mt-5 mb-4"></div>
-            <div className="flex justify-start mb-6">
-                <div className="flex items-center mb-4">
-                    <span className="mr-2"></span>
-                    <Input {...props} value={value} onChange={(e) => setValue(e.target.value)} />
-                </div>
-            </div>
-        </div>
-    )
-}
+import NotFoundData from '@/views/pages/NotFound/Notfound'
+import { useDebounceInput } from '@/commonHooks/useDebounceInput'
+import PageCommon from '@/common/PageCommon'
 
 const QCtable = () => {
     const { document_number } = useParams()
     const [globalFilter, setGlobalFilter] = useState('')
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
-
-    const onSelectChange = (value = 0) => {
-        setPageSize(Number(value))
-    }
+    const { debounceFilter } = useDebounceInput({ globalFilter, delay: 500 })
 
     const query = useMemo(() => {
         let filterData = ''
-        if (globalFilter) {
-            filterData = `&sku=${globalFilter}`
+        if (debounceFilter) {
+            filterData = `&sku=${debounceFilter}`
         }
 
         return `goods/qualitycheck?grn_number=${document_number}&p=${page}&page_size=${pageSize}${filterData}`
-    }, [document_number, page, pageSize, globalFilter])
+    }, [document_number, page, pageSize, debounceFilter])
 
     const { data, totalData } = useFetchApi<grn_quality_check>({ url: query, initialData: [] })
 
@@ -160,34 +123,28 @@ const QCtable = () => {
         [],
     )
 
-    const onPaginationChange = (page: number) => {
-        setPage(page)
-    }
-
     return (
         <>
-            <DebouncedInput
-                value={globalFilter ?? ''}
-                type="search"
-                className="p-2 font-lg shadow border border-block"
-                placeholder="Search all columns..."
-                onChange={(value) => setGlobalFilter(String(value))}
-            />
-
-            <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
-
-            <div className="flex xl:justify-between xl:flex-row flex-col gap-3 justify-center items-center mt-3 ">
-                <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
-
-                <Select
-                    size="sm"
-                    isSearchable={true}
-                    value={pageSizeOptions.find((option) => option.value === pageSize)}
-                    options={pageSizeOptions}
-                    className="xl:w-[10%] w-[50%]"
-                    onChange={(option) => onSelectChange(option?.value)}
+            <div className="w-1/2 p-2">
+                <Input
+                    value={globalFilter ?? ''}
+                    type="search"
+                    className="p-2 font-lg rounded-md shadow border border-block"
+                    placeholder="Search all columns..."
+                    onChange={(value) => setGlobalFilter(String(value))}
                 />
             </div>
+
+            {data?.length ? (
+                <div className="mb-3">
+                    <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
+                    <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={totalData} />
+                </div>
+            ) : (
+                <>
+                    <NotFoundData />
+                </>
+            )}
         </>
     )
 }
