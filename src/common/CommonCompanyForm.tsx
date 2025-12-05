@@ -9,9 +9,10 @@ interface Props {
     label: string
     name: string
     queryVal: keyof SINGLE_COMPANY_DATA
+    customClass: string
 }
 
-const CommonCompanyForm = ({ label, name, queryVal }: Props) => {
+const CommonCompanyForm = ({ label, name, queryVal, customClass }: Props) => {
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
 
     return (
@@ -23,7 +24,7 @@ const CommonCompanyForm = ({ label, name, queryVal }: Props) => {
                     return (
                         <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
                             <Select
-                                className="w-full"
+                                className={customClass ? customClass : 'w-full'}
                                 options={companyList}
                                 getOptionLabel={(option) => option.name}
                                 getOptionValue={(option) => option[queryVal]?.toString() ?? ''}
