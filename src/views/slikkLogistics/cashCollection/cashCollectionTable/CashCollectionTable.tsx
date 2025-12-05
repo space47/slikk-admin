@@ -169,8 +169,6 @@ export const CashCollectionTable: React.FC = () => {
             />
 
             <DailyDepositModal
-                to={toDate}
-                from={from}
                 isOpen={isDailyDepositOpen}
                 setIsOpen={() => setIsDailyDepositOpen(false)}
                 row={dailyRow}

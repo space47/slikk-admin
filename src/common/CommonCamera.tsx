@@ -1,16 +1,19 @@
-import React, { useEffect, useRef } from 'react'
+import { Button } from '@/components/ui'
+import React, { useEffect, useRef, useState } from 'react'
+import { FaArrowRotateLeft } from 'react-icons/fa6'
 
 interface CommonCameraProps {
     onCapture: (file: File) => void
     onClose?: () => void
     width?: number
-    facingMode?: 'user' | 'environment'
 }
 
-const CommonCamera: React.FC<CommonCameraProps> = ({ onCapture, onClose, width = 350, facingMode = 'user' }) => {
+const CommonCamera: React.FC<CommonCameraProps> = ({ onCapture, onClose, width = 350 }) => {
     const videoRef = useRef<HTMLVideoElement | null>(null)
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
     const streamRef = useRef<MediaStream | null>(null)
+    const [rotateCamera, setRotateCamera] = useState(false)
+    const video = rotateCamera ? { facingMode: { exact: 'environment' } } : { facingMode: 'user' }
 
     const stopCamera = () => {
         try {
@@ -45,7 +48,8 @@ const CommonCamera: React.FC<CommonCameraProps> = ({ onCapture, onClose, width =
             try {
                 console.log('[CommonCamera] requesting camera...')
                 const stream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: { exact: 'environment' } },
+                    video: video,
+
                     audio: false,
                 })
                 if (!mounted) {
@@ -139,6 +143,13 @@ const CommonCamera: React.FC<CommonCameraProps> = ({ onCapture, onClose, width =
                         Close
                     </button>
                 )}
+                <Button
+                    variant="gray"
+                    icon={<FaArrowRotateLeft className={rotateCamera ? 'rotate-180' : 'rotate-0'} />}
+                    onClick={() => setRotateCamera((prev) => !prev)}
+                >
+                    Rotate
+                </Button>
             </div>
         </div>
     )
