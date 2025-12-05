@@ -6,12 +6,13 @@ import React from 'react'
 interface FiltersSelectProps {
     index: number
     filter: any[]
+    is_aggregation?: boolean
 }
 
-const FiltersSelect = ({ filter, index }: FiltersSelectProps) => {
+const FiltersSelect = ({ filter, index, is_aggregation }: FiltersSelectProps) => {
     return (
         <div>
-            <Field name={`conditions[${index}].value`}>
+            <Field name={is_aggregation ? `conditions[${index}].agg_value` : `conditions[${index}].value`}>
                 {({ field, form }: FieldProps) => {
                     const options =
                         filter?.map((c: any) => ({
