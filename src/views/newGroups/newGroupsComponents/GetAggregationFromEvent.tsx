@@ -14,13 +14,11 @@ interface props {
 }
 
 const GetAggregationFromEvents = ({ label, name, customClassName, eventId, eventName }: props) => {
-    console.log('eventId in get properties', eventName)
+    console.log('eventId in get properties', eventName, eventId)
     const [eventNamesData, setEventNamesDataState] = useState<any>(null)
     const { data: eventNameList, isSuccess } = eventNameService.useEventNamesDataQuery({
         event_name: eventName && typeof eventName !== 'object' ? eventName?.toString() : '',
     })
-
-    console.log('eventId', eventName)
 
     useEffect(() => {
         if (isSuccess) {
@@ -41,8 +39,6 @@ const GetAggregationFromEvents = ({ label, name, customClassName, eventId, event
         }, {})
 
     const properties = eventName ? eventNamesData?.attributes?.aggregation : merged
-
-    console.log('properties', properties)
 
     const propertyArray = properties
         ? Object.keys(properties).map((key) => ({
@@ -66,8 +62,12 @@ const GetAggregationFromEvents = ({ label, name, customClassName, eventId, event
                                     options={propertyArray || []}
                                     value={propertyArray?.find((option) => option.value?.toLocaleLowerCase() === field.value)}
                                     onChange={(newVal) => {
-                                        console.log(newVal?.value)
-                                        form.setFieldValue(field.name, newVal?.value)
+                                        if (eventName && propertyArray?.length) {
+                                            console.log(newVal?.value)
+                                            form.setFieldValue(field.name, newVal?.value)
+                                        } else {
+                                            form.setFieldValue(field.name, '')
+                                        }
                                     }}
                                 />
                             )

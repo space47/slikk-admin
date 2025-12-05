@@ -2,9 +2,9 @@
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 import React, { useEffect } from 'react'
 import { ConditionArray, OperatorArray } from './notificationGroupsCommon'
-import { FormContainer, FormItem, Input } from '@/components/ui'
+import { FormContainer, FormItem, Input, Select } from '@/components/ui'
 import FiltersSelect from './FiltersSelect'
-import { Field } from 'formik'
+import { Field, FieldProps } from 'formik'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { DIVISION_STATE } from '@/store/types/division.types'
 import { CATEGORY_STATE } from '@/store/types/category.types'
@@ -14,16 +14,12 @@ import { getAllBrandsAPI } from '@/store/action/brand.action'
 
 interface Props {
     isFunction?: boolean
+    isEdit?: boolean
     index: number
     cond: any
-    condition_name: string
-    function_name?: string
-    value_name: string
-    value_name_A: string
-    value_name_B: string
 }
 
-const ConditonMapings = ({ cond, index, isFunction, condition_name, function_name, value_name, value_name_A, value_name_B }: Props) => {
+const ConditonMapings = ({ cond, index, isFunction, isEdit }: Props) => {
     const dispatch = useAppDispatch()
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
@@ -34,50 +30,100 @@ const ConditonMapings = ({ cond, index, isFunction, condition_name, function_nam
         dispatch(getAllBrandsAPI())
     }, [])
 
+    const selectedAggregation = isFunction ? cond?.aggregation : cond?.property
+    const selectedCondition = isFunction ? cond?.agg_condition : cond?.condition
+
     return (
         <>
-            <CommonSelect label={`${isFunction ? 'Aggregation' : ''} Condition`} options={ConditionArray} name={condition_name} />
-            {isFunction && <CommonSelect label="Aggregation Operator" options={OperatorArray} name={function_name as string} />}
+            {isEdit ? (
+                <FormItem label={`${isFunction ? 'Aggregation' : ''} Condition`} className={'col-span-1 w-full'}>
+                    <Field name={isFunction ? `conditions[${index}].agg_condition` : `conditions[${index}].condition`}>
+                        {({ field, form }: FieldProps<any>) => {
+                            return (
+                                <Select
+                                    isClearable
+                                    isSearchable
+                                    options={ConditionArray}
+                                    value={ConditionArray?.find((option) => option.value?.toLowerCase() === field.value)}
+                                    onChange={(option) => {
+                                        const value = option ? option.value : ''
+                                        form.setFieldValue(field.name, value)
+                                    }}
+                                    onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+                                />
+                            )
+                        }}
+                    </Field>
+                </FormItem>
+            ) : (
+                <CommonSelect
+                    label={`${isFunction ? 'Aggregation' : ''} Condition`}
+                    options={ConditionArray}
+                    name={isFunction ? `conditions[${index}].agg_condition` : `conditions[${index}].condition`}
+                />
+            )}
 
-            {cond?.aggregation?.toLocaleLowerCase()?.includes('category') && (
+            {isFunction && <CommonSelect label="Aggregation Operator" options={OperatorArray} name={`conditions[${index}].agg_function`} />}
+
+            {/* CATEGORY */}
+            {selectedAggregation?.toLowerCase()?.includes('category') && (
                 <FormItem label={`${isFunction ? 'Aggregation' : ''} Value`}>
                     <FiltersSelect is_aggregation={isFunction} index={index} filter={category?.categories} />
                 </FormItem>
             )}
-            {cond?.aggregation?.toLocaleLowerCase()?.includes('division') && (
+
+            {/* DIVISION */}
+            {selectedAggregation?.toLowerCase()?.includes('division') && (
                 <FormItem label={`${isFunction ? 'Aggregation' : ''} Value`}>
                     <FiltersSelect is_aggregation={isFunction} index={index} filter={divisions?.divisions} />
                 </FormItem>
             )}
-            {cond?.aggregation?.toLocaleLowerCase()?.includes('sub category') && (
+
+            {/* SUBCATEGORY */}
+            {selectedAggregation?.toLowerCase()?.includes('sub category') && (
                 <FormItem label={`${isFunction ? 'Aggregation' : ''} Value`}>
                     <FiltersSelect is_aggregation={isFunction} index={index} filter={subCategoryData?.subcategories} />
                 </FormItem>
             )}
-            {cond?.aggregation?.toLocaleLowerCase()?.includes('brand') && (
+
+            {/* BRAND */}
+            {selectedAggregation?.toLowerCase()?.includes('brand') && (
                 <FormItem label={`${isFunction ? 'Aggregation' : ''} Value`}>
                     <FiltersSelect is_aggregation={isFunction} index={index} filter={brands?.brands} />
                 </FormItem>
             )}
 
+            {/* NUMERIC INPUT HANDLING */}
             {!(
-                cond?.aggregation?.toLocaleLowerCase()?.includes('category') ||
-                cond?.aggregation?.toLocaleLowerCase()?.includes('division') ||
-                cond?.aggregation?.toLocaleLowerCase()?.includes('sub category') ||
-                cond?.aggregation?.toLocaleLowerCase()?.includes('brand')
+                selectedAggregation?.toLowerCase()?.includes('category') ||
+                selectedAggregation?.toLowerCase()?.includes('division') ||
+                selectedAggregation?.toLowerCase()?.includes('sub category') ||
+                selectedAggregation?.toLowerCase()?.includes('brand')
             ) &&
-                (cond?.agg_condition?.includes('BETWEEN') || cond?.agg_condition?.includes('Not Between') ? (
+                (selectedCondition?.toLowerCase()?.includes('between') || selectedCondition?.includes('Not Between') ? (
                     <FormContainer className="grid grid-cols-2 gap-2 col-span-2">
                         <FormItem label={`${isFunction ? 'Aggregation' : ''} Value(A)`}>
-                            <Field name={value_name_A} placeholder="Value A" component={Input} />
+                            <Field
+                                name={isFunction ? `conditions[${index}].agg_value_a` : `conditions[${index}].value_a`}
+                                placeholder="Value A"
+                                component={Input}
+                            />
                         </FormItem>
                         <FormItem label={`${isFunction ? 'Aggregation' : ''} Value(B)`}>
-                            <Field name={value_name_B} placeholder="Value B" component={Input} />
+                            <Field
+                                name={isFunction ? `conditions[${index}].agg_value_b` : `conditions[${index}].value_b`}
+                                placeholder="Value B"
+                                component={Input}
+                            />
                         </FormItem>
                     </FormContainer>
                 ) : (
                     <FormItem label={`${isFunction ? 'Aggregation' : ''} Value`}>
-                        <Field name={value_name} placeholder="Value " component={Input} />
+                        <Field
+                            name={isFunction ? `conditions[${index}].agg_value` : `conditions[${index}].value`}
+                            placeholder="Value"
+                            component={Input}
+                        />
                     </FormItem>
                 ))}
         </>
