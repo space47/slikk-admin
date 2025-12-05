@@ -17,17 +17,16 @@ import { filterEmptyValues } from '@/utils/apiBodyUtility'
 import CommonCamera from '@/common/CommonCamera'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { FaCamera, FaCheck, FaCheckCircle, FaMoneyBillWave, FaPhoneAlt, FaRupeeSign, FaTimes } from 'react-icons/fa'
+import moment from 'moment'
 
 interface DailyDepositModalProps {
     isOpen: boolean
     setIsOpen: (open: boolean) => void
     row?: CashCollection
-    from: string
-    to: string
     refetch: any
 }
 
-const DailyDepositModal: React.FC<DailyDepositModalProps> = ({ row, isOpen, setIsOpen, from, to, refetch }) => {
+const DailyDepositModal: React.FC<DailyDepositModalProps> = ({ row, isOpen, setIsOpen, refetch }) => {
     const [amount, setAmount] = useState('')
     const [amountModalVisible, setAmountModalVisible] = useState(false)
     const [uploadFile, setUploadFile] = useState<any[]>([])
@@ -39,8 +38,9 @@ const DailyDepositModal: React.FC<DailyDepositModalProps> = ({ row, isOpen, setI
 
     const queryParams = useMemo(
         () =>
-            `/logistic/slikk/task?p=${page}&page_size=${pageSize}&cash_only=true&runner_mobile=${row?.rider?.user?.mobile}&from=${from}&to=${to}`,
-        [row?.rider?.user?.mobile, from, to, page, pageSize],
+            `/logistic/slikk/task?p=${page}&page_size=${pageSize}&cash_only=true&runner_mobile=${row?.rider?.user?.mobile}&from=${moment(row?.create_date).format('YYYY-MM-DD')}&to=${moment(row?.create_date).add(1, 'days').format('YYYY-MM-DD')}`,
+
+        [row?.rider?.user?.mobile, page, pageSize, row?.create_date],
     )
 
     const { data: taskData, totalData, refetch: taskRefetch } = useFetchApi<TaskData>({ url: queryParams })
@@ -135,14 +135,15 @@ const DailyDepositModal: React.FC<DailyDepositModalProps> = ({ row, isOpen, setI
     return (
         <Dialog
             isOpen={isOpen}
-            className="overflow-scroll"
+            className="scrollbar-hide"
+            height={'auto'}
             width={1200}
             onClose={() => {
                 setIsOpen(false)
                 setPage(1)
             }}
         >
-            <div className="flex flex-col h-full">
+            <div className="flex flex-col h-[70vh]">
                 <div className="px-4 pt-6 pb-4 md:px-6 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
                     <div className="flex items-start gap-4">
                         <div className="hidden sm:flex items-center justify-center w-16 h-16 rounded-xl bg-blue-50 dark:bg-blue-900/30">
@@ -182,11 +183,11 @@ const DailyDepositModal: React.FC<DailyDepositModalProps> = ({ row, isOpen, setI
                             <span className="font-semibold">Deposited Cash:</span> ₹{row?.cash_deposited ?? 0}
                         </p>
                     </div>
-
-                    <EasyTable noPage overflow mainData={cashCollectionTable} columns={columns} />
-
-                    <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={totalData} />
                 </div>
+                <div className="overflow-scroll h-[400px]">
+                    <EasyTable noPage overflow mainData={cashCollectionTable} columns={columns} />
+                </div>
+                <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={totalData} />
             </div>
 
             <Modal
@@ -228,19 +229,21 @@ const DailyDepositModal: React.FC<DailyDepositModalProps> = ({ row, isOpen, setI
                                             setIsCamera(false)
                                             handleUpload('product', file)
                                         }}
-                                        onClose={() => setIsCamera(false)}
+                                        // onClose={() => setIsCamera(false)}
                                     />
                                 </div>
                             )}
-                            <div className="w-full max-w-md flex justify-center items-center">
-                                <Upload
-                                    uploadLimit={1}
-                                    beforeUpload={beforeUpload}
-                                    fileList={uploadFile}
-                                    onChange={(file) => setUploadFile(file)}
-                                    onFileRemove={() => setUploadFile([])}
-                                />
-                            </div>
+                            {!isCamera && (
+                                <div className="w-full max-w-md flex justify-center items-center">
+                                    <Upload
+                                        uploadLimit={1}
+                                        beforeUpload={beforeUpload}
+                                        fileList={uploadFile}
+                                        onChange={(file) => setUploadFile(file)}
+                                        onFileRemove={() => setUploadFile([])}
+                                    />
+                                </div>
+                            )}
                             <Button
                                 size="sm"
                                 variant={isCamera ? 'reject' : 'blue'}
