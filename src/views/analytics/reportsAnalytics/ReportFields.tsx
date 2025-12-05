@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import CommonCompanyForm from '@/common/CommonCompanyForm'
 import { Button, FormContainer, FormItem, Input, Select } from '@/components/ui'
 import { FashionList } from '@/constants/commonArray.constant'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
+import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { companyStore } from '@/store/types/companyStore.types'
 import { Field, FieldArray, FieldProps } from 'formik'
 import React, { useEffect, useState } from 'react'
@@ -18,6 +20,7 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
     const [showInfo, setShowInfo] = useState(false)
     const dispatch = useAppDispatch()
     const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
+    const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
 
     useEffect(() => {
         dispatch(fetchCompanyStore())
@@ -104,8 +107,6 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
                                                 }
 
                                                 if (dataType === 'Select' && key === 'store_code') {
-                                                    console.log('field value', field?.value)
-
                                                     return (
                                                         <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
                                                             <Select
@@ -119,6 +120,35 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
                                                                     form.setFieldValue(`required_fields[${index}].value`, newVal?.code)
                                                                 }}
                                                             />
+                                                        </div>
+                                                    )
+                                                }
+                                                if (dataType === 'Select' && key === 'company_code') {
+                                                    return (
+                                                        <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
+                                                            <Field name={`required_fields[${index}].value`}>
+                                                                {({ field, form }: FieldProps) => {
+                                                                    const selectedCompany = companyList.find(
+                                                                        (option) => option?.code?.toString() === field.value?.toString(),
+                                                                    )
+
+                                                                    return (
+                                                                        <Select
+                                                                            className={'md:w-[200px] xl:w-[280px]'}
+                                                                            options={companyList}
+                                                                            getOptionLabel={(option) => option.name}
+                                                                            getOptionValue={(option) => option?.code?.toString() ?? ''}
+                                                                            value={selectedCompany || null}
+                                                                            onChange={(newVal: any) => {
+                                                                                form.setFieldValue(
+                                                                                    `required_fields[${index}].value`,
+                                                                                    newVal?.code ?? '',
+                                                                                )
+                                                                            }}
+                                                                        />
+                                                                    )
+                                                                }}
+                                                            </Field>
                                                         </div>
                                                     )
                                                 }
