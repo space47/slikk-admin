@@ -38,7 +38,7 @@ const DailyDepositModal: React.FC<DailyDepositModalProps> = ({ row, isOpen, setI
 
     const queryParams = useMemo(
         () =>
-            `/logistic/slikk/task?p=${page}&page_size=${pageSize}&cash_only=true&runner_mobile=${row?.rider?.user?.mobile}&from=${moment(row?.create_date).format('YYYY-MM-DD')}&to=${moment(row?.create_date).add(1, 'days').format('YYYY-MM-DD')}`,
+            `/logistic/slikk/task?p=${page}&page_size=${pageSize}&cash_only=true&runner_mobile=${row?.rider?.user?.mobile}&from=${moment(row?.collection_date).format('YYYY-MM-DD')}&to=${moment(row?.collection_date).add(1, 'days').format('YYYY-MM-DD')}`,
 
         [row?.rider?.user?.mobile, page, pageSize, row?.create_date],
     )
