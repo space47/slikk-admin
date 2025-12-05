@@ -27,22 +27,50 @@ const EventEdit = () => {
 
     const initialValues = {
         name: eventData?.name || '',
-        properties: eventData?.attributes
-            ? Object.entries(eventData?.attributes).map(([key, type]) => ({ key, type }))
-            : [{ key: '', type: '' }],
+        properties: eventData?.attributes?.properties
+            ? Object?.entries(eventData?.attributes?.properties)?.map(([key, val]: any) => ({
+                  key: key,
+                  path: val?.path,
+                  type: val?.type,
+              }))
+            : [{ key: '', path: '', type: '' }],
+        aggregation: eventData?.attributes?.aggregation
+            ? Object?.entries(eventData?.attributes?.aggregation)?.map(([key, val]: any) => ({
+                  key: key,
+                  path: val?.path,
+                  type: val?.type,
+              }))
+            : [{ key: '', path: '', type: '' }],
     }
+
     const handleSubmit = async (values: any) => {
         console.log('Form submitted with values:', values)
-        const formattedProps: Record<string, string> = {}
-        values.properties.forEach((item) => {
-            if (item.key && item.type) {
-                formattedProps[item.key] = item.type
+        const formattedProperties: Record<string, any> = {}
+        values.properties.forEach((item: any) => {
+            if (item.key) {
+                formattedProperties[item.key] = {
+                    path: item.path,
+                    type: item.type,
+                }
+            }
+        })
+
+        const formattedAggregation: Record<string, any> = {}
+        values.aggregation.forEach((item: any) => {
+            if (item.key) {
+                formattedAggregation[item.key] = {
+                    path: item.path,
+                    type: item.type,
+                }
             }
         })
 
         const finalPayload = {
             name: values.name,
-            attributes: formattedProps,
+            attributes: {
+                properties: formattedProperties,
+                aggregation: formattedAggregation,
+            },
         }
 
         try {
