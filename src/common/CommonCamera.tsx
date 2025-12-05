@@ -45,7 +45,7 @@ const CommonCamera: React.FC<CommonCameraProps> = ({ onCapture, onClose, width =
             try {
                 console.log('[CommonCamera] requesting camera...')
                 const stream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode },
+                    video: { facingMode: { exact: 'environment' } },
                     audio: false,
                 })
                 if (!mounted) {
