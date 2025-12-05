@@ -13,7 +13,6 @@ const CommonCamera: React.FC<CommonCameraProps> = ({ onCapture, onClose, width =
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
     const streamRef = useRef<MediaStream | null>(null)
     const [rotateCamera, setRotateCamera] = useState(false)
-    const video = rotateCamera ? { facingMode: { exact: 'environment' } } : { facingMode: 'user' }
 
     const stopCamera = () => {
         try {
@@ -44,12 +43,12 @@ const CommonCamera: React.FC<CommonCameraProps> = ({ onCapture, onClose, width =
 
     useEffect(() => {
         let mounted = true
-        const start = async () => {
-            try {
-                console.log('[CommonCamera] requesting camera...')
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: video,
 
+        const start = async () => {
+            stopCamera() // stop previous stream if any
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: rotateCamera ? { facingMode: { exact: 'environment' } } : { facingMode: 'user' },
                     audio: false,
                 })
                 if (!mounted) {
@@ -67,7 +66,6 @@ const CommonCamera: React.FC<CommonCameraProps> = ({ onCapture, onClose, width =
                         console.warn('[CommonCamera] video.play() error:', err)
                     }
                 }
-                console.log('[CommonCamera] camera started')
             } catch (err) {
                 console.error('[CommonCamera] getUserMedia error:', err)
             }
@@ -78,9 +76,8 @@ const CommonCamera: React.FC<CommonCameraProps> = ({ onCapture, onClose, width =
         return () => {
             mounted = false
             stopCamera()
-            console.log('[CommonCamera] unmount cleanup ran')
         }
-    }, [])
+    }, [rotateCamera])
 
     const base64ToFile = (dataUrl: string, fileName: string): File => {
         const arr = dataUrl.split(',')
