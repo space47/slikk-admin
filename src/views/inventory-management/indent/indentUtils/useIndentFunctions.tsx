@@ -27,7 +27,7 @@ export const useIndentFunctions = ({
         console.log('Selected users in handleAssign:', actionType)
         const body = {
             action: 'assign_pickers',
-            pickers: selectedUsers,
+            pickers: selectedUsers?.filter((item) => item !== undefined),
             indent_number: data?.intent_number,
             assign_action: actionType,
         }
