@@ -3,9 +3,10 @@ import Button from '@/components/ui/Button'
 import Dialog from '@/components/ui/Dialog'
 import { Field, FieldProps, Form, Formik } from 'formik'
 import { TagsDataTypes } from '@/store/types/productTags.types'
-import { Checkbox, FormContainer, FormItem, Input, Select } from '@/components/ui'
+import { Checkbox, FormItem, Input, Select } from '@/components/ui'
 import { ProductTagFromFields } from '../productTagCommon'
 import { SegmentOptions } from '@/constants/commonArray.constant'
+import { notification } from 'antd'
 
 interface props {
     particularRow: TagsDataTypes | undefined
@@ -37,65 +38,108 @@ const ProductTagEditModal = ({ isOpen, setIsOpen, particularRow, setParticularRo
         }
         const updatedRow = { ...particularRow, ...updatedValues }
         setParticularRow(updatedRow)
+        notification.info({ message: 'The Tag has been set....you have to update tags to add it', placement: 'bottomRight' })
         setIsOpen(false)
     }
 
     return (
         <div className="overflow-auto max-h-[90vh]">
-            <Dialog isOpen={isOpen} width={800} onClose={() => setIsOpen(false)} onRequestClose={() => setIsOpen(false)}>
+            <Dialog isOpen={isOpen} width={1200} onClose={() => setIsOpen(false)}>
                 <Formik enableReinitialize initialValues={initialValue} onSubmit={onDialogOk}>
-                    {() => (
-                        <Form className="w-full">
-                            <FormContainer className="grid grid-cols-2 gap-3">
-                                {ProductTagFromFields?.map((item, key) => (
-                                    <FormItem key={key} label={item?.label}>
-                                        <Field
-                                            placeholder={`Enter ${item?.label}`}
-                                            type={item?.type}
-                                            name={item?.name}
-                                            component={item?.type === 'checkbox' ? Checkbox : Input}
-                                        />
-                                    </FormItem>
-                                ))}
-                                <FormItem asterisk label="Domains" className="col-span-1 w-full">
-                                    <Field name="domains">
-                                        {({ field, form }: FieldProps) => {
-                                            const fieldValueArray = Array.isArray(field?.value) ? field?.value : field?.value?.split(',')
-                                            const selectedOptions = fieldValueArray?.map((item: any) => {
-                                                const selectedOption = SegmentOptions()?.find((options: any) => {
-                                                    return options?.label === item
-                                                })
-                                                return selectedOption
-                                            })
-                                            return (
-                                                <Select
-                                                    isMulti
-                                                    isClearable
-                                                    className="w-full"
-                                                    options={SegmentOptions()}
-                                                    getOptionLabel={(option) => option?.label}
-                                                    getOptionValue={(option) => option?.value?.toString()}
-                                                    value={selectedOptions}
-                                                    onChange={(newVals) => {
-                                                        const selectedValues = newVals?.map((val: any) => val.value) || []
-                                                        form.setFieldValue(`domains`, selectedValues)
+                    {({ values }) => {
+                        const showFilterFields = values.is_filter
+
+                        return (
+                            <Form className="w-full p-3">
+                                <div className="space-y-6">
+                                    {/* -------- Basic Info Section -------- */}
+                                    <div>
+                                        <h3 className="text-lg font-semibold mb-3 text-gray-700">Basic Details</h3>
+
+                                        <div className="grid grid-cols-2 gap-3">
+                                            {ProductTagFromFields.filter((f) => f.section === 'basic').map((item, idx) => (
+                                                <FormItem key={idx} label={item.label}>
+                                                    <Field
+                                                        type={item.type}
+                                                        placeholder={`Enter ${item.label}`}
+                                                        name={item.name}
+                                                        component={Input}
+                                                    />
+                                                </FormItem>
+                                            ))}
+
+                                            {/* Domains Select */}
+                                            <FormItem label="Domains">
+                                                <Field name="domains">
+                                                    {({ field, form }: FieldProps) => {
+                                                        const selected = Array.isArray(field.value)
+                                                            ? field.value.map((v) => SegmentOptions().find((o) => o.value === v))
+                                                            : []
+
+                                                        return (
+                                                            <Select
+                                                                isMulti
+                                                                options={SegmentOptions()}
+                                                                getOptionLabel={(o) => o?.label as string}
+                                                                getOptionValue={(o) => String(o?.value)}
+                                                                value={selected}
+                                                                onChange={(vals) =>
+                                                                    form.setFieldValue('domains', vals?.map((v) => v?.value) || [])
+                                                                }
+                                                            />
+                                                        )
                                                     }}
-                                                />
-                                            )
-                                        }}
-                                    </Field>
-                                </FormItem>
-                            </FormContainer>
-                            <div className="text-right mt-6 col-span-2">
-                                <Button className="mr-2" variant="plain" onClick={() => setIsOpen(false)}>
-                                    Cancel
-                                </Button>
-                                <Button variant="solid" type="submit">
-                                    Edit
-                                </Button>
-                            </div>
-                        </Form>
-                    )}
+                                                </Field>
+                                            </FormItem>
+                                        </div>
+                                    </div>
+
+                                    {/* -------- Filter Section (Conditional) -------- */}
+                                    {showFilterFields && (
+                                        <div>
+                                            <h3 className="text-lg font-semibold mb-3 text-blue-600">Filter Settings</h3>
+
+                                            <div className="grid grid-cols-2 gap-3">
+                                                {ProductTagFromFields.filter((f) => f.section === 'filter').map((item, idx) => (
+                                                    <FormItem key={idx} label={item.label}>
+                                                        <Field
+                                                            type={item.type}
+                                                            name={item.name}
+                                                            placeholder={`Enter ${item.label}`}
+                                                            component={Input}
+                                                        />
+                                                    </FormItem>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* -------- Flags Section -------- */}
+                                    <div>
+                                        <h3 className="text-lg font-semibold mb-3 text-gray-700">Flags</h3>
+
+                                        <div className="grid grid-cols-3 gap-3">
+                                            {ProductTagFromFields.filter((f) => f.section === 'flags').map((item, idx) => (
+                                                <FormItem key={idx} label={item.label}>
+                                                    <Field type="checkbox" name={item.name} component={Checkbox} />
+                                                </FormItem>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Footer */}
+                                <div className="text-right mt-6">
+                                    <Button className="mr-2" variant="plain" onClick={() => setIsOpen(false)}>
+                                        Cancel
+                                    </Button>
+                                    <Button variant="solid" type="submit">
+                                        Add
+                                    </Button>
+                                </div>
+                            </Form>
+                        )
+                    }}
                 </Formik>
             </Dialog>
         </div>
