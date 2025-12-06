@@ -88,7 +88,7 @@ const RtvDetails = () => {
     const handleAssign = async (actionType: string) => {
         const body = {
             action: 'assign_picker',
-            pickers: selectedUsers,
+            pickers: selectedUsers?.filter((item) => item !== undefined),
             assign_action: actionType,
         }
         assignPicker({
