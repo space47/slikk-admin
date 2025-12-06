@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react'
 import moment from 'moment'
 import EasyTable from '@/common/EasyTable'
-import { Button, Input, Spinner } from '@/components/ui'
+import { Button, Dropdown, Input, Spinner } from '@/components/ui'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 import PageCommon from '@/common/PageCommon'
 import UpdateDepositModal from '../cashCollectionUtils/UpdateDepositModal'
@@ -12,18 +12,20 @@ import { CashCollection } from '@/store/types/cashCollection.types'
 import { useCashCollectionColumns } from '../cashCollectionUtils/useCashCollectionColumns'
 import { HiSearch } from 'react-icons/hi'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
-import { DATE_FORMAT, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '../cashCollectionCommon'
+import { DATE_FORMAT, DEFAULT_PAGE, DEFAULT_PAGE_SIZE, DownloadOptions } from '../cashCollectionCommon'
 import CreateCollectionModal from '../cashCollectionUtils/CreateCollectionModal'
 import { notification } from 'antd'
 import { commonDownload } from '@/common/commonDownload'
 import { AxiosError } from 'axios'
 import { errorMessage } from '@/utils/responseMessages'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 
 export const CashCollectionTable: React.FC = () => {
     const [cashData, setCashData] = useState<CashCollection[]>([])
     const [globalFilter, setGlobalFilter] = useState('')
     const [searchOnEnter, setSearchOnEnter] = useState('')
+    const [selectedOption, setSelectedOption] = useState('')
     const [page, setPage] = useState(DEFAULT_PAGE)
     const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
     const [count, setCount] = useState(0)
@@ -69,17 +71,24 @@ export const CashCollectionTable: React.FC = () => {
         }
     }, [])
 
-    const handleDownload = async () => {
+    const handleSelect = (val: string) => {
+        setSelectedOption(val)
+        handleDownload(val)
+    }
+
+    const handleDownload = async (val: string) => {
         try {
             setDownloadSpinning(true)
             notification.info({ message: 'Download in progress' })
-            const res = await axioisInstance.get(`/rider/cash/collection?from=${from}&to=${to}&download=true`)
+            const reportType = val === 'order_level' ? `&report_type=order_level` : ''
+            const res = await axioisInstance.get(`/rider/cash/collection?from=${from}&to=${to}&download=true${reportType}`)
             commonDownload(res, 'CashCollection.csv')
             notification.success({ message: 'Successfully completed' })
         } catch (error) {
             if (error instanceof AxiosError) errorMessage(error)
         } finally {
             setDownloadSpinning(false)
+            setSelectedOption('')
         }
     }
 
@@ -125,13 +134,22 @@ export const CashCollectionTable: React.FC = () => {
                         <Button variant="new" size="sm" onClick={() => setIsCreateModal(true)}>
                             Create Daily Collection
                         </Button>
-
-                        <Button variant="new" size="sm" onClick={handleDownload}>
-                            <span className="flex items-center gap-1">
-                                Download
-                                {downloadSpinning && <Spinner size={20} color="white" />}
-                            </span>
-                        </Button>
+                        <div className={'border w-auto rounded-md h-auto font-bold bg-black text-white flex justify-center'}>
+                            <Dropdown
+                                className="text-xl text-white bg-white font-bold border-2 border-blue-600"
+                                title={selectedOption || 'Download Report'}
+                                onSelect={(value) => handleSelect(value.toString())}
+                            >
+                                {DownloadOptions.map((item) => (
+                                    <DropdownItem key={item.value} eventKey={item.value}>
+                                        <span className="flex items-center gap-1">
+                                            <span> {downloadSpinning && <Spinner size={30} />}</span>
+                                            <span>{item.label}</span>
+                                        </span>
+                                    </DropdownItem>
+                                ))}
+                            </Dropdown>
+                        </div>
 
                         <UltimateDatePicker
                             customClass="border w-auto rounded-md h-auto font-bold  bg-black text-white flex justify-center"
