@@ -39,7 +39,6 @@ export const useDepositColumns = ({ handleDepositClick }: props) => {
                             target="_blank"
                             rel="noreferrer"
                             className="px-3 py-1 text-sm rounded-md bg-indigo-500 text-white hover:bg-indigo-600 transition-colors shadow-sm"
-                            onClick={() => navigate(link)}
                         >
                             {id ?? 'N/A'}
                         </a>
