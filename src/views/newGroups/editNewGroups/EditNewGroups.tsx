@@ -99,10 +99,9 @@ const EditNewGroups = () => {
                       : {}),
             }
 
-            console.log('Transformed request body:', JSON.stringify(requestBody, null, 2))
             const response = await axioisInstance.patch(`/notification/groups/${id}`, requestBody)
             successMessage(response)
-            navigate(-1)
+            navigate(0)
         } catch (error) {
             if (error instanceof AxiosError) {
                 errorMessage(error)
