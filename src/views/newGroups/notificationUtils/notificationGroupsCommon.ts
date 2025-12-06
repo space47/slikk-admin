@@ -156,7 +156,6 @@ export const transformRulesToConditions = (rules: any) => {
 
 export const transformSingleRuleToCondition = (rule: any) => {
     const isBetween = rule.properties?.[0]?.op === 'BETWEEN' || rule.properties?.[0]?.op === 'NOT BETWEEN'
-    console.log('rule is', rule?.proper1)
     const propertyValue = rule.properties?.value
     const aggregationValue = rule?.aggregation?.value
     return {
@@ -166,9 +165,10 @@ export const transformSingleRuleToCondition = (rule: any) => {
             label: rule.event,
         },
         property: rule.properties?.path || '',
+        aggregation: rule?.aggregation?.path || '',
         condition: rule.properties?.op,
-        agg_condition: rule?.aggregation?.path,
-        agg_function: rule?.aggregation?.agg_function,
+        agg_condition: rule?.aggregation?.op,
+        agg_function: rule?.aggregation?.function,
         operator: rule.properties?.op,
         value: isBetween ? '' : Array.isArray(propertyValue) ? propertyValue[0] : propertyValue,
         value_a: isBetween && Array.isArray(propertyValue) ? propertyValue[0] : '',
@@ -185,38 +185,72 @@ export const transformSingleRuleToCondition = (rule: any) => {
     }
 }
 
-export const transformConditionToRule = (condition: any) => {
+export const transformConditionToRule = (condition: any = {}) => {
     const normalizeValue = (val: any) => {
-        if (val?.toLowerCase() === 'true' || val?.toLowerCase() === 'false') return val === 'true'
+        if (typeof val === 'string') {
+            const lower = val.toLowerCase()
+            if (lower === 'true' || lower === 'false') return lower === 'true'
+        }
         if (!isNaN(val) && val !== '') return Number(val)
         return val
     }
 
+    const safeLower = (v: any) => (typeof v === 'string' ? v.toLowerCase() : (v ?? ''))
+
+    const safeIncludes = (hay: any, needle: string) => typeof hay === 'string' && hay.includes(needle)
+
     const propertyBuilder = (pathKey: string, condKey: string, fnc: string, valA: string, valB: string, valueKey: string) => {
+        if (!condition[pathKey] || !condition[condKey]) return []
+
+        const property = safeLower(condition[pathKey])
+        const rawCond = condition[condKey] || ''
+        const operator = mapConditionToOperator(rawCond)
+
         let value: any
-        let result: any[] = []
-        const property = condition[pathKey]?.toLowerCase()
-        const operator = mapConditionToOperator(condition[condKey])
-        if (condition[condKey]?.includes('BETWEEN') || condition[condKey]?.includes('Not Between')) {
+
+        if (safeIncludes(rawCond, 'BETWEEN') || safeIncludes(rawCond, 'Not Between')) {
             value = [condition[valA], condition[valB]]
         } else {
             value = normalizeValue(condition[valueKey])
         }
 
+        let result: any[] = []
+
         if (condition[fnc]) {
-            result.push({ path: property, op: operator, value, function: condition[fnc] })
+            result.push({
+                path: property,
+                op: operator,
+                value,
+                function: condition[fnc],
+            })
         } else {
-            result.push({ path: property, op: operator, value })
+            result.push({
+                path: property,
+                op: operator,
+                value,
+            })
         }
-        const lower = property?.toLowerCase() || ''
+
+        // special override
         const specialKeys = ['category', 'division', 'sub category', 'brand']
-        if (specialKeys.some((k) => lower.includes(k)) && condition[valueKey]) {
-            result = [{ path: property, op: operator, value: condition[valueKey] }]
+        if (specialKeys.some((k) => property?.includes(k)) && condition[valueKey] !== undefined) {
+            result = [
+                {
+                    path: property,
+                    op: operator,
+                    value: condition[valueKey],
+                },
+            ]
         }
+
         return result
     }
+
     const properties = propertyBuilder('property', 'condition', '', 'value_a', 'value_b', 'value')
+
     const aggregation = propertyBuilder('aggregation', 'agg_condition', 'agg_function', 'agg_value_a', 'agg_value_b', 'agg_value')
+
+    // TIME RANGE
     const range: any = {}
     if (condition.timeFrame && condition.timeFrame !== 'custom_range') {
         range.start = moment().startOf('isoWeek').format('YYYY-MM-DD')
@@ -225,14 +259,34 @@ export const transformConditionToRule = (condition: any) => {
         range.start = condition.start_date
         range.end = condition.end_date
     }
-    const rule: any = {
-        event: condition.event?.value || condition.event,
-        properties: properties[0],
-        aggregation: aggregation[0],
+
+    const rule: any = {}
+
+    if (condition.event) {
+        rule.event = condition.event?.value || condition.event
     }
-    if (Object.keys(range).length > 0) rule.time_frame = { range }
-    if (condition.includeExclude === true && condition.cohort_id) rule.include_cohort_id = [condition.cohort_id]
-    if (condition.includeExclude === false && condition.cohort_id) rule.exclude_cohort_id = [condition.cohort_id]
+
+    if (properties.length > 0) {
+        rule.properties = properties[0]
+    }
+
+    if (aggregation.length > 0) {
+        rule.aggregation = aggregation[0]
+    }
+
+    if (Object.keys(range).length > 0) {
+        rule.time_frame = { range }
+    }
+
+    // include/exclude cohort
+    if (condition.cohort_id) {
+        if (condition.includeExclude === true) {
+            rule.include_cohort_id = [condition.cohort_id]
+        } else if (condition.includeExclude === false) {
+            rule.exclude_cohort_id = [condition.cohort_id]
+        }
+    }
+
     return rule
 }
 
