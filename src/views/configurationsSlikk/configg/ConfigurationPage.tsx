@@ -135,20 +135,6 @@ const ConfigurationPage = () => {
                                 <option value="date">Sort by Date</option>
                             </select>
                         </div>
-
-                        {/* Active Filter Toggle */}
-                        <button
-                            onClick={() => setShowActiveOnly(!showActiveOnly)}
-                            className={`flex items-center gap-2 px-4 py-3 rounded-lg border transition-all ${
-                                showActiveOnly
-                                    ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400'
-                                    : 'bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300'
-                            }`}
-                        >
-                            <HiOutlineStatusOnline />
-                            <span>{showActiveOnly ? 'Active Only' : 'All Status'}</span>
-                            {showActiveOnly && <FaFilter className="text-green-500" />}
-                        </button>
                     </div>
                 </div>
 
