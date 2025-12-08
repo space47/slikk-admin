@@ -11,6 +11,7 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { errorMessage, successMessage } from '@/utils/responseMessages'
 import { getChangedFormData } from '@/utils/apiBodyUtility'
 import dayjs from 'dayjs'
+import { fileFields, simpleFields } from '../sellerUtils/sellerFormCommon'
 
 const EditSeller = () => {
     const { id } = useParams()
@@ -88,68 +89,13 @@ const EditSeller = () => {
             notification.error({ message: 'Failure !! Alternate Mobile Number Should be different' })
             return
         }
-
         const formData = new FormData()
-
         const appendIfValid = (key: string, value: any) => {
             if (value !== undefined && value !== null && value !== '') {
                 formData.append(key, value)
             }
         }
-        const simpleFields = [
-            'registered_name',
-            'is_active',
-            'code',
-            'head_name',
-            'head_contact',
-            'head_email',
-            'gstin',
-            'pan_number',
-            'tan_number',
-            'cin',
-            'address',
-            'contact_number',
-            'alternate_contact_number',
-            'poc_email',
-            'poc_name',
-            'finance_name',
-            'finance_email',
-            'finance_contact_number',
-            'account_number',
-            'account_holder_name',
-            'ifsc',
-            'bank_name',
-            'branch_name',
-            'account_type',
-            'segment',
-            'settlement_days',
-            'revenue_share',
-            'handling_charges_per_order',
-            'warehouse_charge_per_sku',
-            'damages_per_sku',
-            'removal_fee_per_sku',
-            'approved_payment_term',
-            'business_nature',
-            'sp_type',
-            'pf_declaration',
-            'is_msme',
-            'msme_category',
-            'authorized_person',
-            'declaration_statement',
-            'name',
-        ]
         simpleFields.forEach((key) => appendIfValid(key, values?.[key]))
-        const fileFields = [
-            'gst_certificate',
-            'pan_copy',
-            'tan_copy',
-            'cancelled_cheque',
-            'pf_declaration_doc',
-            'trade_mark_certificate',
-            'msme_certificate',
-            'commercial_approval_doc',
-            'approved_onboarding_doc',
-        ]
         fileFields.forEach((key) => appendIfValid(key, values?.[key]?.[0]))
         const existingDetails = initialValue?.gst_details || []
         const updatedDetails = (values?.gst_details || []).map((warehouse: any, index: number) => {
@@ -157,15 +103,9 @@ const EditSeller = () => {
             if (warehouse?.gst_certificate?.[0] instanceof File) {
                 const certKey = `cert${index + 1}`
                 formData.append(certKey, warehouse.gst_certificate[0])
-                return {
-                    ...warehouse,
-                    gst_certificate: certKey,
-                }
+                return { ...warehouse, gst_certificate: certKey }
             }
-            return {
-                ...warehouse,
-                gst_certificate: existing?.gst_certificate,
-            }
+            return { ...warehouse, gst_certificate: existing?.gst_certificate }
         })
         const gstChanged = JSON.stringify(existingDetails) !== JSON.stringify(updatedDetails)
         if (gstChanged) {

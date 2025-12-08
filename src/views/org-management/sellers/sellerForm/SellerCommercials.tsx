@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormContainer, FormItem, Select, Switcher } from '@/components/ui'
-import { Input } from 'antd'
+import { FormContainer, FormItem, Input, Select, Switcher } from '@/components/ui'
 import { Field, FieldProps } from 'formik'
 import { NOBOptions, SellerCommercialsArray } from '../sellerUtils/sellerFormCommon'
 import { SegmentOptions } from '@/constants/commonArray.constant'
@@ -12,18 +11,16 @@ const SellerCommercials = () => {
             <h4>MsMe Details</h4>
             <p>Provide essential details about vendor entity. All field marked with * are mandatory</p>
             <FormContainer className="mt-8 grid grid-cols-2 gap-2">
-                {SellerCommercialsArray?.map((item, idx) => {
-                    return (
-                        <FormItem key={idx} label={item?.label} asterisk={item?.isRequired}>
-                            <Field
-                                type={item?.type}
-                                name={item?.name}
-                                placeholder={`Enter ${item?.label}`}
-                                component={item?.type === 'checkbox' ? Switcher : Input}
-                            />
-                        </FormItem>
-                    )
-                })}
+                {SellerCommercialsArray?.map((item, idx) => (
+                    <FormItem key={idx} label={item?.label} asterisk={item?.isRequired} className="flex flex-col space-y-1">
+                        <Field
+                            type={item?.type}
+                            name={item?.name}
+                            placeholder={`Enter ${item?.label}`}
+                            component={item?.type === 'checkbox' ? Switcher : Input}
+                        />
+                    </FormItem>
+                ))}
             </FormContainer>
             <FormItem asterisk label="Segment" className="col-span-1 w-full">
                 <Field name="segment">

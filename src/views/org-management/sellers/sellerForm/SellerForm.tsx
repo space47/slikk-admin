@@ -33,7 +33,7 @@ const SellerForm = ({ values }: props) => {
                                             : 'text-inherit font-normal'
                                     }`}
                                 >
-                                    <span onClick={() => setCurrentStep(index)} className="cursor-pointer">
+                                    <span className="cursor-pointer" onClick={() => setCurrentStep(index)}>
                                         {stepTitle}
                                     </span>
                                 </span>
