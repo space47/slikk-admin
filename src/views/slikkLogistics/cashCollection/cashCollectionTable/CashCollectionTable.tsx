@@ -81,7 +81,7 @@ export const CashCollectionTable: React.FC = () => {
             setDownloadSpinning(true)
             notification.info({ message: 'Download in progress' })
             const reportType = val === 'order_level' ? `&report_type=order_level` : ''
-            const res = await axioisInstance.get(`/rider/cash/collection?from=${from}&to=${to}&download=true${reportType}`)
+            const res = await axioisInstance.get(`/rider/cash/collection?from=${from}&to=${toDate}&download=true${reportType}`)
             commonDownload(res, 'CashCollection.csv')
             notification.success({ message: 'Successfully completed' })
         } catch (error) {
