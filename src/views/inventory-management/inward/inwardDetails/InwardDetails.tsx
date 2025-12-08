@@ -171,39 +171,38 @@ const InwardDetails = () => {
                                             <span className="font-semibold text-sm">GRN</span>
                                         </div>
                                         <h1 className="text-2xl font-bold text-gray-800">#{data.grn_number}</h1>
+                                        <Button
+                                            variant="blue"
+                                            size="sm"
+                                            icon={<FaDownload />}
+                                            onClick={() => handleRegenerateGrn(data.document_number)}
+                                        ></Button>
                                     </div>
 
-                                    <div className="flex items-center text-gray-600">
+                                    <div className="flex items-center gap-2 text-gray-600">
                                         <HiOutlineCalendar className="text-lg mr-2" />
                                         <span className="font-medium">{moment(data.document_date).format('MMM DD, YYYY hh:mm A')}</span>
                                     </div>
                                 </div>
-
-                                <div className="flex items-center gap-3">
-                                    {data?.document_url && (
-                                        <div className="flex flex-wrap gap-2">
-                                            {data.document_url?.split(',')?.map((item, key) => (
-                                                <Button key={key} variant="blue" onClick={() => handleUrl(item)}>
-                                                    <span className="text-blue-600 font-medium">
-                                                        {data?.grn_number}_{key + 1}
-                                                    </span>
-                                                </Button>
-                                            ))}
-                                        </div>
-                                    )}
-
-                                    <Button
-                                        variant="blue"
-                                        size="sm"
-                                        icon={<FaDownload />}
-                                        onClick={() => handleRegenerateGrn(data.document_number)}
-                                    >
-                                        <span className="font-semibold">Export</span>
-                                    </Button>
-                                </div>
                             </div>
 
-                            {!data?.document_url && <span className="text-yellow-700">No documents available</span>}
+                            {data?.document_url ? (
+                                <>
+                                    <div className="docs flex flex-col">
+                                        {data.document_url?.split(',')?.map((item, key) => {
+                                            return (
+                                                <div className="cursor-pointer" onClick={() => handleUrl(item)} key={key}>
+                                                    <p className="cursor-pointer p-2 rounded-xl bg-blue-600 text-white">
+                                                        {data?.grn_number}_{key + 1}
+                                                    </p>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </>
+                            ) : (
+                                <>No document url</>
+                            )}
                         </div>
                         <div className="mb-8">
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
