@@ -6,25 +6,17 @@ export const cashCollectionService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
         cashCollection: builder.query<
             CashResponseType,
-            { page?: number; pageSize?: number; from?: string; to?: string; mobile?: string; download?: string }
+            { page?: number; pageSize?: number; from?: string; to?: string; mobile?: string; agency?: string; store_id?: string }
         >({
             query: (params) => {
                 const parameters: Record<string, string | string[]> = {}
-                if (params.page) {
-                    parameters.p = params.page?.toString()
-                }
-                if (params.pageSize) {
-                    parameters.page_size = params.pageSize?.toString()
-                }
-                if (params.from) {
-                    parameters.from = params.from
-                }
-                if (params.to) {
-                    parameters.to = params.to
-                }
-                if (params.mobile && params.mobile.trim() !== '') {
-                    parameters.mobile = params.mobile.trim()
-                }
+                if (params.page) parameters.p = params.page?.toString()
+                if (params.pageSize) parameters.page_size = params.pageSize?.toString()
+                if (params.from) parameters.from = params.from
+                if (params.to) parameters.to = params.to
+                if (params.mobile && params.mobile.trim() !== '') parameters.mobile = params.mobile.trim()
+                if (params.agency) parameters.agency = params?.agency
+                if (params.store_id) parameters.store_id = params?.store_id
 
                 return {
                     url: `/rider/cash/collection`,
