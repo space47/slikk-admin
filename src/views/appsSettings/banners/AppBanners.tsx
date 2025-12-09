@@ -93,8 +93,12 @@ const AppBanners = () => {
         if (currentSelectedSubPage) {
             subPage = `&sub_page=${encodeURIComponent(currentSelectedSubPage?.name)}`
         }
-        const divisionFilter = selectedDivision !== 'Select Division' ? `&division=${encodeURIComponent(selectedDivision)}` : ''
-        return `/banners?p=${page}&page_size=${pageSize}&name=${debounceFilter}&page=${currentSelectedPage?.value}${sectionHeading}${divisionFilter}${subPage}`
+        let division = ''
+        if (selectedDivision && selectedDivision !== 'Select Division') {
+            division = `&division=${encodeURIComponent(selectedDivision)}`
+        }
+
+        return `/banners?p=${page}&page_size=${pageSize}&name=${debounceFilter}&page=${currentSelectedPage?.value}${sectionHeading}${division}${subPage}`
     }, [
         page,
         pageSize,
@@ -155,6 +159,8 @@ const AppBanners = () => {
         const selectedPage = SUB_PAGE_NAME.find((page: any) => page.value === value)
         if (selectedPage) setCurrentSelectedSubPage(selectedPage)
     }
+
+    console.log('selected division', selectedDivision)
 
     const handleDeleteClick = (id: number) => {
         setShowDeleteModal(true)
@@ -299,7 +305,7 @@ const AppBanners = () => {
                                     allowClear
                                     showSearch
                                     className="w-full"
-                                    value={selectedDivision || undefined}
+                                    value={selectedDivision || 'Select Division'}
                                     placeholder="Select Division"
                                     options={DivisionArray?.map((item: any) => ({
                                         label: item.name,
