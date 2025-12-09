@@ -3,19 +3,8 @@ import { Card, Input } from '@/components/ui'
 import React, { useEffect, useState } from 'react'
 import { ConfigInterface } from './componentsConfigg/commonConfigTypes'
 import moment from 'moment'
-import {
-    FaEdit,
-    FaSearch,
-    FaFilter,
-    FaCheckCircle,
-    FaTimesCircle,
-    FaCalendarAlt,
-    FaUserEdit,
-    FaIdCard,
-    FaSortAmountDown,
-} from 'react-icons/fa'
+import { FaEdit, FaSearch, FaCheckCircle, FaTimesCircle, FaCalendarAlt, FaUserEdit, FaIdCard, FaSortAmountDown } from 'react-icons/fa'
 import { MdRefresh } from 'react-icons/md'
-import { HiOutlineStatusOnline } from 'react-icons/hi'
 import { RiSettings5Fill } from 'react-icons/ri'
 import AccessDenied from '@/views/pages/AccessDenied'
 import LoadingSpinner from '@/common/LoadingSpinner'
@@ -26,7 +15,6 @@ const ConfigurationPage = () => {
     const [searchConfig, setSearchConfig] = useState('')
     const [filteredData, setFilteredData] = useState<ConfigInterface[]>([])
     const [sortBy, setSortBy] = useState<'id' | 'name' | 'date'>('id')
-    const [showActiveOnly, setShowActiveOnly] = useState(false)
 
     const {
         data: configurationData,
@@ -40,20 +28,11 @@ const ConfigurationPage = () => {
 
     useEffect(() => {
         let data = [...configurationData]
-
-        // Apply active filter
-        if (showActiveOnly) {
-            data = data.filter((item) => item.is_active)
-        }
-
-        // Apply search filter
         if (searchConfig.trim() !== '') {
             data = data.filter(
                 (item) => item.name.toLowerCase().includes(searchConfig.toLowerCase()) || item.id.toString().includes(searchConfig),
             )
         }
-
-        // Apply sorting
         data.sort((a: any, b: any) => {
             switch (sortBy) {
                 case 'name':
@@ -67,7 +46,7 @@ const ConfigurationPage = () => {
         })
 
         setFilteredData(data)
-    }, [searchConfig, configurationData, sortBy, showActiveOnly])
+    }, [searchConfig, configurationData, sortBy])
 
     const handleRefresh = () => {
         refetch()
