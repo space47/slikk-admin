@@ -9,7 +9,7 @@ import ImageMODAL from '@/common/ImageModal'
 import ReplaceDrawer from './ReplaceDrawer'
 import { Button, Dialog } from '@/components/ui'
 import QRCode from 'react-qr-code'
-import { MdQrCodeScanner } from 'react-icons/md'
+import { MdImageNotSupported, MdQrCodeScanner } from 'react-icons/md'
 import { CommonOrderProduct } from '../orderList.common'
 
 type OrderProductsProps = {
@@ -123,6 +123,13 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularROwImage] = useState('')
     const [qrCode, setQrCode] = useState('')
+    const [showPackageImage, setShowPackageImage] = useState(false)
+    const [packageImage, setPackageImage] = useState('')
+
+    const handleOpenModal = (img: any) => {
+        setPackageImage(img)
+        setShowPackageImage(true)
+    }
 
     const columns = [
         columnHelper.accessor('name', {
@@ -151,6 +158,7 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                 return <div>{row.color}</div>
             },
         }),
+
         columnHelper.accessor('location_details', {
             header: 'Location Details',
             cell: (props) => {
@@ -206,6 +214,27 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
 
         columnHelper.accessor('fulfilled_quantity', {
             header: 'Fulfilled Quantity',
+        }),
+        columnHelper.accessor('packing_images', {
+            header: 'Packing Images',
+            cell: (props) => {
+                const imageUrl = props.row?.original?.packing_images?.split(',')[0] || ''
+                return imageUrl ? (
+                    <>
+                        <img
+                            src={imageUrl}
+                            alt="Image"
+                            className="w-24 h-20 object-cover cursor-pointer"
+                            onClick={() => handleOpenModal(props.row?.original?.packing_images)}
+                        />
+                    </>
+                ) : (
+                    <div>
+                        <MdImageNotSupported className="text-2xl text-red-500" />
+                        <span>No Image</span>
+                    </div>
+                )
+            },
         }),
         columnHelper.accessor('llinfo', {
             header: 'LLInfo',
@@ -377,6 +406,13 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                     dialogIsOpen={showImageModal}
                     setIsOpen={setShowImageModal}
                     image={particularRowImage && particularRowImage?.split(',')}
+                />
+            )}
+            {showPackageImage && (
+                <ImageMODAL
+                    dialogIsOpen={showPackageImage}
+                    setIsOpen={setShowPackageImage}
+                    image={packageImage && packageImage?.split(',')}
                 />
             )}
             {replaceDrawer && (

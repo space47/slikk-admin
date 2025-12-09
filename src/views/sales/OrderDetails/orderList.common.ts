@@ -154,6 +154,7 @@ export type CommonOrderProduct = Partial<{
     is_gift_wrap: boolean
     llinfo?: string
     location_details: Record<string, string>
+    packing_images: string
 }>
 
 export interface FulfilledQuantities {
