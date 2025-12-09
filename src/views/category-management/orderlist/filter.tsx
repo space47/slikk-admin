@@ -8,6 +8,7 @@ const tabs = [
     { label: 'ALL', key: 'all' },
     { label: 'PENDING', key: 'pending' },
     { label: 'ACCEPTED', key: 'accepted' },
+    { label: 'PICKING', key: 'picking' },
     { label: 'PACKED', key: 'packed' },
     { label: 'DEL. CREATED', key: 'delivery_created' },
     { label: 'OUT FOR DELIVERY', key: 'out_for_delivery' },

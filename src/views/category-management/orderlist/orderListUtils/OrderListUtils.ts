@@ -6,6 +6,8 @@ export const getStatusFilter = (tabSelect: string) => {
             return '&status=ACCEPTED'
         case 'packed':
             return '&status=PACKED'
+        case 'picking':
+            return '&status=PICKING'
         case 'delivery_created':
             return '&status=DELIVERY_CREATED'
         case 'delivery_assigned':

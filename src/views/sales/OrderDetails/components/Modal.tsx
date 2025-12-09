@@ -2,8 +2,8 @@
 import React from 'react'
 import { Modal, Select } from 'antd'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-import { Dropdown, Input } from '@/components/ui'
-import { FaRupeeSign, FaTrash } from 'react-icons/fa'
+import { Button, Dropdown, Input } from '@/components/ui'
+import { FaCamera, FaRupeeSign, FaTimes, FaTrash } from 'react-icons/fa'
 import { LOGISTIC_PARTNER, Product } from './activityCommon'
 
 const { Option } = Select
@@ -29,6 +29,17 @@ type Props = {
     handleLocationClick: any
     selectedLocations: { [productId: number]: { [location: string]: number } }
     handleRemoveLocation: (productId: number, location: string) => void
+    setIsPhotoCamera: (x: boolean) => void
+    setCurrentId: (x: number) => void
+    storePhoto: {
+        [key: number]: string[]
+    }
+    setStorePhoto: React.Dispatch<
+        React.SetStateAction<{
+            [key: number]: string[]
+        }>
+    >
+    handleSetPhoto: (id: number, images: string[]) => Promise<void>
 }
 
 export const CustomModal: React.FC<Props> = ({
@@ -50,6 +61,11 @@ export const CustomModal: React.FC<Props> = ({
     handleLocationClick,
     selectedLocations,
     handleRemoveLocation,
+    setCurrentId,
+    setIsPhotoCamera,
+    storePhoto,
+    setStorePhoto,
+    handleSetPhoto,
 }) => {
     return (
         <Modal
@@ -75,37 +91,40 @@ export const CustomModal: React.FC<Props> = ({
                 </div>
             }
             footer={null}
-            width={800}
-            className="custom-modal"
+            width={1000}
+            className="custom-modal h-[90vh]"
             open={isModalOpen}
             onCancel={handleCancel}
         >
             <p className="text-lg font-bold mb-4">{modalContent}</p>
 
             <div className="flex flex-col gap-4 mb-6 bg-white shadow-md rounded-lg p-4">
-                <div className="flex items-center text-[18px] font-semibold gap-2">
-                    <span>Invoice Id:</span>
-                    <span className="text-white bg-red-600 px-3 py-1 rounded-full font-semibold">{invoice_id}</span>
-                </div>
-                <div className="flex items-center text-[16px] font-semibold">
-                    <span>Total Amount:</span>
-                    <div className="flex items-center ml-2">
-                        <FaRupeeSign className="text-green-600" />
-                        <span className="ml-1 font-normal text-gray-700">{payment?.amount}</span>
+                <div className="flex justify-between">
+                    <div>
+                        <div className="flex items-center text-[18px] font-semibold gap-2">
+                            <span>Invoice Id:</span>
+                            <span className="text-white bg-red-600 px-3 py-1 rounded-full font-semibold">{invoice_id}</span>
+                        </div>
+                        <div className="flex items-center text-[16px] font-semibold">
+                            <span>Total Amount:</span>
+                            <div className="flex items-center ml-2">
+                                <FaRupeeSign className="text-green-600" />
+                                <span className="ml-1 font-normal text-gray-700">{payment?.amount}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="mb-6">
+                        <label className="block font-semibold mb-2">Bags Count</label>
+                        <Input
+                            value={bagsCount}
+                            className="w-full rounded-xl border-gray-300"
+                            placeholder="Enter Bags Count"
+                            onChange={(e) => setBagsCount(e.target.value)}
+                        />
                     </div>
                 </div>
             </div>
             {errorMessage && <div className="text-red-500 mt-4 text-center font-semibold">{errorMessage}</div>}
-
-            <div className="mb-6">
-                <label className="block font-semibold mb-2">Bags Count</label>
-                <Input
-                    value={bagsCount}
-                    className="w-1/2 rounded-xl border-gray-300"
-                    placeholder="Enter Bags Count"
-                    onChange={(e) => setBagsCount(e.target.value)}
-                />
-            </div>
 
             {product && product.length > 0 && (
                 <div className="grid grid-cols-1 gap-4 overflow-y-auto max-h-[300px] pr-2">
@@ -186,7 +205,49 @@ export const CustomModal: React.FC<Props> = ({
                                             )}
                                         </div>
                                     )}
+                                {/* camera logic here */}
+
+                                {/* if selected Locations[pdts?.id] > 0 then a take photo button.......after clicking upload to s3 ....get the returnned url and store it against the id in a array
+                                    ...then show the image in a image tag with a button to remove .....then a button to save...this will call the api
+                                    */}
+                                <div className="mt-6 flex items-center gap-2">
+                                    <Button
+                                        variant="accept"
+                                        size="sm"
+                                        onClick={() => {
+                                            setIsPhotoCamera(true)
+                                            setCurrentId(pdts?.id)
+                                        }}
+                                        icon={<FaCamera />}
+                                    >
+                                        Take Photo
+                                    </Button>
+                                    {!!storePhoto[pdts?.id]?.length && (
+                                        <Button variant="blue" size="sm" onClick={() => handleSetPhoto(pdts?.id, storePhoto[pdts?.id])}>
+                                            Save Photo
+                                        </Button>
+                                    )}
+                                </div>
                             </div>
+
+                            {storePhoto[pdts?.id]?.map((img, index) => (
+                                <div key={index}>
+                                    <div className="relative w-20 h-20 rounded-lg overflow-hidden border-2 border-gray-300 dark:border-gray-600">
+                                        <img src={img} alt="Captured" className="w-full h-full object-cover" />
+                                        <button
+                                            onClick={() => {
+                                                setStorePhoto((prev) => ({
+                                                    ...prev,
+                                                    [pdts.id]: prev[pdts.id].filter((_, i) => i !== index),
+                                                }))
+                                            }}
+                                            className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                                        >
+                                            <FaTimes className="w-3 h-3" />
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     ))}
                 </div>

@@ -14,6 +14,8 @@ import { ActivityProps, LOGISTIC_PARTNER } from './activityCommon'
 import { getButtonAndModalContent, particularApiCall } from './activityFunctions'
 import { AxiosError } from 'axios'
 import RtoCancelModal from '../orderDetailsUtils/RtoCancelModal'
+import OrderCameraModal from './OrderCameraModal'
+import { errorMessage, successMessage } from '@/utils/responseMessages'
 
 const Activity = ({ data = [], status, product = [], payment, invoice_id, mainData, delivery_type }: ActivityProps) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -43,6 +45,9 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
     const [bagsCount, setBagsCount] = useState('1')
     const [binNumber, setBinNumber] = useState('1')
     const [selectedLocations, setSelectedLocations] = useState<{ [productId: number]: { [location: string]: number } }>({})
+    const [isPhotoCamera, setIsPhotoCamera] = useState(false)
+    const [currentId, setCurrentId] = useState<number | null>(null)
+    const [storePhoto, setStorePhoto] = useState<{ [key: number]: string[] }>({})
 
     const rejectData = mainData.order_items?.filter((item) => !fulfilledIDs.includes(item.id.toString()))?.map((item) => item.id)
 
@@ -97,6 +102,24 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
 
             return updated
         })
+    }
+
+    const handleSetPhoto = async (id: number, images: string[]) => {
+        const bodyData = {
+            action: 'ADD_ITEM_PACKING_IMAGES',
+            dashboard: false,
+            item_id: id,
+            packing_image: images?.join(','),
+        }
+        try {
+            const res = await axiosInstance.patch(`/merchant/order/${invoice_id}`, bodyData)
+            successMessage(res)
+            setStorePhoto([])
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                errorMessage(error)
+            }
+        }
     }
 
     const handleSelectChange = (id: number, value: string) => {
@@ -392,7 +415,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                     setBinNumber={setBinNumber}
                 />
             )}
-            {data[data.length - 1]?.status === 'ACCEPTED' && (
+            {(data[data.length - 1]?.status === 'ACCEPTED' || data[data.length - 1]?.status === 'PICKING') && (
                 <CustomModal
                     isModalOpen={isModalOpen}
                     handleOk={() => {
@@ -416,6 +439,11 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                     handleLocationClick={handleLocationClick}
                     handleRemoveLocation={handleRemoveLocation}
                     selectedLocations={selectedLocations}
+                    setCurrentId={setCurrentId}
+                    setIsPhotoCamera={setIsPhotoCamera}
+                    storePhoto={storePhoto}
+                    setStorePhoto={setStorePhoto}
+                    handleSetPhoto={handleSetPhoto}
                 />
             )}
 
@@ -480,6 +508,14 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
             <div style={{ zIndex: 1000 }}>
                 <RtoCancelModal isOpen={rtoCancel} setIsOpen={setRtoCancel} orderItems={product} invoice_id={invoice_id} />
             </div>
+            {
+                <OrderCameraModal
+                    isOpen={isPhotoCamera}
+                    currentId={currentId as number}
+                    setIsOpen={setIsPhotoCamera}
+                    setStorePhoto={setStorePhoto}
+                />
+            }
         </Card>
     )
 }
