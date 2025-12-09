@@ -108,8 +108,10 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
         const bodyData = {
             action: 'ADD_ITEM_PACKING_IMAGES',
             dashboard: false,
-            item_id: id,
-            packing_image: images?.join(','),
+            data: {
+                item_id: id,
+                packing_image: images?.join(','),
+            },
         }
         try {
             const res = await axiosInstance.patch(`/merchant/order/${invoice_id}`, bodyData)
