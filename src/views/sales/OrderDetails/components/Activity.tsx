@@ -392,7 +392,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                     setBinNumber={setBinNumber}
                 />
             )}
-            {data[data.length - 1]?.status === 'ACCEPTED' && (
+            {(data[data.length - 1]?.status === 'ACCEPTED' || data[data.length - 1]?.status === 'PICKING') && (
                 <CustomModal
                     isModalOpen={isModalOpen}
                     handleOk={() => {
