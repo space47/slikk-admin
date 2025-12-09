@@ -60,7 +60,7 @@ export const getButtonAndModalContent = (data: Event[], mainData?: { delivery_ty
     if (lastLogStatus === 'PACKED') {
         return { buttonText: 'CREATE DELIVERY' }
     }
-    if (lastLogStatus === 'ACCEPTED') {
+    if (lastLogStatus === 'ACCEPTED' || lastLogStatus === 'PICKING') {
         return { buttonText: 'PACK/REJECT', modalContent: 'Pick and Pack' }
     }
     if (isShipped && !isOrderDone && !isOrderCancelled) {
