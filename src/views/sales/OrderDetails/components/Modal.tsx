@@ -172,7 +172,7 @@ export const CustomModal: React.FC<Props> = ({
                                     <div className="text-sm font-medium text-gray-600">Total Amount</div>
                                     <div className="flex items-center mt-1">
                                         <FaRupeeSign className="text-green-700 text-lg" />
-                                        <span className="text-2xl font-bold text-gray-900 ml-1">{payment?.amount.toLocaleString()}</span>
+                                        <span className="text-2xl font-bold text-gray-900 ml-1">{payment?.amount?.toLocaleString()}</span>
                                     </div>
                                 </div>
                             </div>
