@@ -83,9 +83,9 @@ export const CustomModal: React.FC<Props> = ({
                     <div className="flex xl:flex-row gap-3 p-5 flex-col">
                         <button
                             className="flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold transition-all duration-200 bg-gray-600 hover:bg-gray-700 active:bg-gray-800 text-white shadow-sm hover:shadow"
-                            onClick={status === 'ACCEPTED' ? handleReject : handleCancel}
+                            onClick={status === 'ACCEPTED' || status === 'PICKING' ? handleReject : handleCancel}
                         >
-                            {status === 'ACCEPTED' ? (
+                            {status === 'ACCEPTED' || status === 'PICKING' ? (
                                 <>
                                     <FaTimes className="text-sm" />
                                     REJECT ORDERS
