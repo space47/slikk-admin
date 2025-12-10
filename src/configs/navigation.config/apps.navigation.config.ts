@@ -752,7 +752,7 @@ const appsNavigationConfig: NavigationTree[] = [
             {
                 key: 'apps.communcication',
                 path: `${APP_PREFIX_PATH}/communication`,
-                title: 'Communciation',
+                title: 'Communication',
                 translateKey: 'nav.appsCommuncication.communcication',
                 icon: 'communication',
                 type: NAV_ITEM_TYPE_COLLAPSE,
@@ -1081,7 +1081,7 @@ const appsNavigationConfig: NavigationTree[] = [
                     {
                         key: 'appsConfiguration.loyality',
                         path: `${APP_PREFIX_PATH}/loyality`,
-                        title: 'Loyality',
+                        title: 'Loyalty',
                         translateKey: 'nav.appsConfiguration.loyality',
                         icon: '',
                         type: NAV_ITEM_TYPE_ITEM,
