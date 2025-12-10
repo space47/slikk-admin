@@ -20,7 +20,7 @@ export const useIndentColumns = ({ storeList, handleStatusClick }: IndentColumns
     return useMemo<ColumnDef<any>[]>(
         () => [
             {
-                header: 'Intent No.',
+                header: 'Indent No.',
                 accessorKey: 'intent_number',
                 cell: ({ row }) => (
                     <a
