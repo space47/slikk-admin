@@ -34,7 +34,7 @@ export const useItemsColumns = ({ handleUpdate, data }: props) => {
     return useMemo<ColumnDef<ItemType, any>[]>(
         () => [
             {
-                header: 'Intent Note',
+                header: 'Indent Note',
                 accessorKey: 'intent_note',
             },
             {

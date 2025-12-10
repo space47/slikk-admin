@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { SalesData } from './homes.common'
 import Card from '@/components/ui/Card'
 import { RiFileList3Fill } from 'react-icons/ri'
@@ -33,9 +33,12 @@ const Home = () => {
     const [activeTab, setActiveTab] = useState('orders')
     const [viewMap, setViewMap] = useState(false)
     const navigate = useNavigate()
-    const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
     const [analyticsShow, setAnalyticsShow] = useState(false)
     const [splitOrders, setSplitOrders] = useState(false)
+
+    const To_Date = useMemo(() => {
+        return moment(to).add(1, 'days').format('YYYY-MM-DD')
+    }, [to])
 
     const {
         data: homeData,
@@ -95,12 +98,14 @@ const Home = () => {
     const handleCompleted = (from: string, to: string) => {
         navigate('/app/orders/completed', { state: { var1: from, var2: to } })
     }
-    const handleDateChange = (dates: [Date | null, Date | null] | null) => {
-        if (dates && dates[0]) {
-            setFrom(moment(dates[0]).format('YYYY-MM-DD'))
-            setTo(dates[1] ? moment(dates[1]).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'))
+    const handleDateChange = useCallback(() => {
+        return (dates: [Date | null, Date | null] | null) => {
+            if (dates && dates[0]) {
+                setFrom(moment(dates[0]).format('YYYY-MM-DD'))
+                setTo(dates[1] ? moment(dates[1]).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'))
+            }
         }
-    }
+    }, [])
 
     const CARDDATA = [
         {
