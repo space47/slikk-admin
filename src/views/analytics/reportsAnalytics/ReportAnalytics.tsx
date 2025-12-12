@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { FormContainer, FormItem, Input, Select, Spinner } from '@/components/ui'
+import { Button, FormContainer, FormItem, Input, Select, Spinner } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { Field, FieldProps, Form, Formik } from 'formik'
 import { useEffect, useState } from 'react'
@@ -287,18 +287,14 @@ const ReportAnalytics = () => {
                                 </div>
 
                                 <div>
-                                    <button
+                                    <Button
                                         type="button"
-                                        className={`px-5 py-2 text-base font-semibold rounded-xl transition-all duration-200 shadow-sm text-white disabled:cursor-not-allowed disabled:opacity-50 ${
-                                            isCustomQuery
-                                                ? 'bg-red-500 hover:bg-red-400 focus:ring-2 focus:ring-red-300'
-                                                : 'bg-green-500 hover:bg-green-400 focus:ring-2 focus:ring-green-300'
-                                        }`}
-                                        onClick={() => setIsCustomQuery((Prev) => !Prev)}
+                                        variant={isCustomQuery ? 'reject' : 'accept'}
                                         disabled={!!storeName}
+                                        onClick={() => setIsCustomQuery((Prev) => !Prev)}
                                     >
                                         {isCustomQuery ? 'Close Custom Query' : 'Add Custom Query'}
-                                    </button>
+                                    </Button>
                                 </div>
                             </div>
                         </FormContainer>

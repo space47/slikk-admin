@@ -12,11 +12,11 @@ export const DocumentArray = [
 ]
 
 export const Addresses = [
-    {
-        label: 'Received By Name',
-        name: 'received_by.name',
-        type: 'text',
-    },
+    // {
+    //     label: 'Received By Name',
+    //     name: 'received_by.name',
+    //     type: 'text',
+    // },
     {
         label: 'Received By Mobile',
         name: 'received_by.mobile',
