@@ -15,7 +15,7 @@ import NotFoundData from '@/views/pages/NotFound/Notfound'
 import SyncInventoryModal from '../inventoryUtils/SyncInventoryModal'
 import ClearInventoryModal from '../inventoryUtils/ClearInventoryModal'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { notification } from 'antd'
+import { notification, Tag } from 'antd'
 import { AxiosError } from 'axios'
 import { errorMessage } from '@/utils/responseMessages'
 import { Filter } from 'lucide-react'
@@ -39,13 +39,25 @@ const InventoryTable = () => {
     const [brandList, setBrandList] = useState([])
     const [sortByFilter, setSortByFilter] = useState('')
 
-    const { data, responseStatus, totalData, setPage, setPageSize, setGlobalFilter, page, pageSize, globalFilter, query, loading } =
-        useInventoryApi({
-            searchType,
-            store_code: storeCode,
-            typeFetch: typeFetch,
-            sortByFilter,
-        })
+    const {
+        data,
+        responseStatus,
+        totalData,
+        setPage,
+        setPageSize,
+        setGlobalFilter,
+        page,
+        pageSize,
+        query,
+        totalQuantity,
+        globalFilter,
+        loading,
+    } = useInventoryApi({
+        searchType,
+        store_code: storeCode,
+        typeFetch: typeFetch,
+        sortByFilter,
+    })
 
     const handleOpenModal = (img: string) => {
         setParticularRowImage(img)
@@ -63,7 +75,7 @@ const InventoryTable = () => {
     const handleDownload = async () => {
         try {
             setSpinner(true)
-            const res = await axioisInstance.get(`${query}+&download=true`)
+            const res = await axioisInstance.get(`${query()}+&download=true`)
             notification.success({ message: res?.data?.message || 'Successfully downloaded' })
         } catch (error) {
             if (error instanceof AxiosError) {
@@ -163,6 +175,11 @@ const InventoryTable = () => {
             {data?.length > 0 && (
                 <>
                     <div>
+                        {totalQuantity && (
+                            <div className="mb-6">
+                                <Tag className="text-blue-600">Total Quantity: {totalQuantity}</Tag>
+                            </div>
+                        )}
                         <EasyTable overflow mainData={data} columns={columns} page={page} pageSize={pageSize} />
                     </div>
                     <div className="flex flex-col md:flex-row items-center justify-between mt-4">
