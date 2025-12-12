@@ -1,6 +1,5 @@
 import React from 'react'
 import CartItems from './CartItems'
-import CartTabs from './CartTabs'
 
 const CartHome = () => {
     return (
