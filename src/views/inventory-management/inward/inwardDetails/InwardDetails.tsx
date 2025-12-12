@@ -220,16 +220,12 @@ const InwardDetails = () => {
 
                                 <div className="lg:col-span-1">
                                     <div className="bg-white rounded-xl border border-gray-200 shadow-xl p-5 h-full">
-                                        <CustomerInfo
-                                            last_updated_by={data.last_updated_by}
-                                            total_sku={data.total_sku}
-                                            total_quantity={data.total_quantity}
-                                        />
+                                        <CustomerInfo data={data} />
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div className="bg-white rounded-xl border border-gray-200 shadow-sm ">
                             <QcTabs
                                 data={data}
                                 handleSyncClick={handleSyncClick}
