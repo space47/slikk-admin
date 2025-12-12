@@ -136,10 +136,12 @@ const QCtable = () => {
             </div>
 
             {data?.length ? (
-                <div className="mb-3">
-                    <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
+                <>
+                    <div className="mb-3">
+                        <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
+                    </div>
                     <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={totalData} />
-                </div>
+                </>
             ) : (
                 <>
                     <NotFoundData />

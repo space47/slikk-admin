@@ -45,6 +45,8 @@ export type inwardDetailsResponse = {
     document_url: string
     total_quantity: number
     grn_quality_check: GRN_QUALITY_CHECK[]
+    qc_passed_quantity?: number
+    synced_quantity?: number
 }
 
 export const InwardTabs = [
