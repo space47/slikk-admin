@@ -39,6 +39,20 @@ const CartItems = () => {
                 return <div>{row.brand ? row.brand.toUpperCase() : ''}</div>
             },
         }),
+        columnHelper.accessor('sku', {
+            header: 'SKU',
+            cell: (props) => {
+                const row = props.row.original
+                return <div>{row.size ? row.sku : ''}</div>
+            },
+        }),
+        columnHelper.accessor('barcode', {
+            header: 'Barcode',
+            cell: (props) => {
+                const row = props.row.original
+                return <div>{row.barcode ? row.barcode : ''}</div>
+            },
+        }),
 
         columnHelper.accessor('size', {
             header: 'Size',
