@@ -56,8 +56,6 @@ export const CashCollectionTable: React.FC = () => {
         store_id: store?.map((item) => item?.id).join(',') || '',
     })
 
-    console.log('store')
-
     useEffect(() => {
         if (isSuccess && data?.data) {
             setCashData(data.data.results ?? [])

@@ -4,15 +4,15 @@
 import EasyTable from '@/common/EasyTable'
 import { textParser } from '@/common/textParser'
 import { RichTextEditor } from '@/components/shared'
-import { Card, FormItem, Pagination, Select, Input, Button, Spinner } from '@/components/ui'
+import { Card, FormItem, Input, Button, Spinner } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { Option } from '@/views/org-management/sellers/sellerCommon'
 import { notification } from 'antd'
 import moment from 'moment'
 import React, { useEffect, useMemo, useState } from 'react'
-import { pageSizeOptions } from '../overview/analyticsCommon'
 import { customQueryService } from '@/store/services/customQueryService'
 import { escapeCsvValue, handleDownloadCsv } from '@/common/allTypesCommon'
+import { FaDownload, FaLocationArrow } from 'react-icons/fa'
+import PageCommon from '@/common/PageCommon'
 
 interface TableItem {
     table_name: string
@@ -27,6 +27,7 @@ interface TableDataObject {
 
 const ReportCustomQuery = () => {
     const [value, setValue] = useState('')
+    const [generatingQuery, setGeneratingQuery] = useState(false)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [customReportData, setCustomReportData] = useState<any[]>([])
@@ -35,6 +36,7 @@ const ReportCustomQuery = () => {
     const [search, setSearch] = useState('')
     const [selectedTable, setSelectedTable] = useState<string | null>(null)
     const [columnNames, setColumnNames] = useState<string[]>([])
+    const [downloadingQuery, setDownloadingQuery] = useState(false)
 
     useEffect(() => {
         setColumnNames([])
@@ -135,6 +137,7 @@ const ReportCustomQuery = () => {
         const body = {
             query_string: parsedValue,
         }
+        setGeneratingQuery(true)
         try {
             const res = await axioisInstance.post(`/query/execute/custom_report`, body)
             const data = res?.data?.data
@@ -144,6 +147,8 @@ const ReportCustomQuery = () => {
             console.log(error)
             notification.error({ message: error?.response?.data?.message || 'Failed to generate custom query' })
             setErrorData(error?.response?.data?.message || 'Failed to generate custom query')
+        } finally {
+            setGeneratingQuery(false)
         }
     }
 
@@ -192,9 +197,16 @@ const ReportCustomQuery = () => {
         return `${header}\n${rows}`
     }
 
-    const handleDownloadCsvData = () => {
+    const handleDownloadCsvData = async () => {
         notification.info({ message: 'Download in process' })
-        handleDownloadCsv(paginatedData, columns, convertToCSV, 'Sellers.csv')
+        setDownloadingQuery(true)
+        try {
+            await handleDownloadCsv(customReportData, columns, convertToCSV, 'Sellers.csv')
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setDownloadingQuery(false)
+        }
         notification.success({ message: 'Download complete' })
     }
 
@@ -269,37 +281,34 @@ const ReportCustomQuery = () => {
                 </div>
             </div>
             <div>
-                <button
+                <Button
                     type="button"
-                    className="text-white p-2 rounded-xl font-bold disabled:cursor-not-allowed disabled:opacity-50 bg-blue-500 hover:bg-blue-600"
+                    variant="blue"
+                    loading={generatingQuery}
                     disabled={!value || value === '<p><br></p>'}
                     onClick={handleGenerateCustomQuery}
+                    icon={<FaLocationArrow />}
                 >
                     Generate
-                </button>
+                </Button>
             </div>
             {customReportData.length > 0 && (
                 <>
                     <div className="flex justify-end">
-                        <Button variant="new" onClick={handleDownloadCsvData}>
+                        <Button
+                            type="button"
+                            variant="new"
+                            onClick={handleDownloadCsvData}
+                            icon={<FaDownload />}
+                            loading={downloadingQuery}
+                            disabled={downloadingQuery}
+                        >
                             Download
                         </Button>
                     </div>
                     <div className="mt-10 mb-8 font-bold text-xl">Custom Query Table</div>
                     <EasyTable mainData={paginatedData} columns={columns} overflow />
-
-                    <div className="flex items-center justify-between mt-4">
-                        <Pagination currentPage={page} total={totalPages} onChange={(page) => setPage(page)} />
-                        <div style={{ minWidth: 130 }}>
-                            <Select<Option>
-                                size="sm"
-                                isSearchable={false}
-                                value={pageSizeOptions.find((option) => option.value === pageSize)}
-                                options={pageSizeOptions}
-                                onChange={(option) => setPageSize(Number(option?.value))}
-                            />
-                        </div>
-                    </div>
+                    <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={totalPages} />
                 </>
             )}
             {errorData && <div className="mt-10 mb-8 font-bold text-xl text-red-500">Error: {errorData}</div>}

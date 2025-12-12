@@ -17,8 +17,9 @@ import {
     FaVenusMars,
     FaShoppingBag,
     FaRupeeSign,
+    FaBriefcase,
 } from 'react-icons/fa'
-import { MdCancel, MdPerson, MdEmail } from 'react-icons/md'
+import { MdCancel, MdPerson, MdEmail, MdNumbers } from 'react-icons/md'
 import { HiOutlineUserGroup } from 'react-icons/hi'
 import { RiEditFill } from 'react-icons/ri'
 import { BiUserCircle } from 'react-icons/bi'
@@ -206,6 +207,13 @@ const CustomerData = ({ data }: CustomerProps) => {
                             title="Date of Birth"
                             value={data?.profile?.dob ? moment(data?.profile?.dob).format('DD MMM YYYY') : 'Not Set'}
                         />
+                        {data?.profile?.age_range && (
+                            <InfoCard
+                                icon={<MdNumbers className="text-amber-700-500" />}
+                                title="Age Range"
+                                value={data?.profile?.age_range}
+                            />
+                        )}
                     </div>
                     <div className="space-y-4">
                         <InfoCard
@@ -223,6 +231,13 @@ const CustomerData = ({ data }: CustomerProps) => {
                             title="Gender"
                             value={data?.profile?.gender || 'Not Specified'}
                         />
+                        {data?.profile?.profession && (
+                            <InfoCard
+                                icon={<FaBriefcase className="text-red-800" />}
+                                title="Profession"
+                                value={data?.profile?.profession}
+                            />
+                        )}
                     </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -260,7 +275,7 @@ const CustomerData = ({ data }: CustomerProps) => {
                 {/* Footer */}
                 <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
                     <div className="text-center text-sm text-gray-500 dark:text-gray-400">
-                        Customer ID: {data?.profile?.id || 'N/A'} • Last Updated: {moment().format('DD MMM YYYY')}
+                        Last Updated: {moment().format('DD MMM YYYY')}
                     </div>
                 </div>
             </div>
