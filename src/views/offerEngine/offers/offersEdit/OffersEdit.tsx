@@ -9,7 +9,7 @@ import OfferFormStep1 from '../offersUtils/OfferFormStep1'
 import OfferFormStep2 from '../offersUtils/OfferFormStep2'
 import { offersService } from '@/store/services/offersService'
 import { notification } from 'antd'
-import { filterEmptyValues, getChangedValues } from '@/utils/apiBodyUtility'
+import { filterEmptyChangedValues, getChangedValues } from '@/utils/apiBodyUtility'
 import { offerBodyFile } from '../offersUtils/offersCommon'
 
 const OffersEdit = () => {
@@ -56,16 +56,16 @@ const OffersEdit = () => {
 
     const handleSubmit = async (values: any) => {
         const { body } = offerBodyFile(values)
-        const filteredBody = filterEmptyValues(body)
-        const changedValues = getChangedValues(initialValues, filteredBody as any)
+        const changedValues = getChangedValues(initialValues, body as any)
+        const filteredBody = filterEmptyChangedValues(initialValues, changedValues)
 
         const bodyToSend = {
-            ...changedValues,
+            ...filteredBody,
             buy_filter_id: buyFilterId || null,
             get_filter_id: values?.is_same_as_buy_filter ? values?.buy_filter_id : getFilterId || null,
         }
 
-        if (Object.keys(changedValues).length === 0) {
+        if (Object.keys(filteredBody).length === 0) {
             notification.info({
                 message: 'No changes detected',
                 description: 'You have not modified any fields.',
