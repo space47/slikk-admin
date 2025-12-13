@@ -109,7 +109,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
             textColor: `text-${buttonColor}-${buttonColorLevel} dark:text-${buttonColor}-50`,
             hoverColor: active
                 ? ''
-                : `hover:bg-${buttonColor}-500 hover:text-white dark:hover:bg-${buttonColor}-500 dark:hover:bg-opacity-30`,
+                : `hover:bg-${buttonColor}-300 hover:text-gray-500 dark:hover:bg-${buttonColor}-300 dark:hover:bg-opacity-30`,
             activeColor: `active:bg-${buttonColor}-200 dark:active:bg-${buttonColor}-500 dark:active:bg-opacity-40`,
         }
         return getBtnColor(btn)
