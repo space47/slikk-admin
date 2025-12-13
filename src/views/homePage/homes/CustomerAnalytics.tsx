@@ -17,6 +17,7 @@ import CartItems from './componentsHomes/CartItems'
 
 const CustomerAnalytics = () => {
     const [blockUser, setBlockUser] = useState(false)
+    const [unBlockUser, setUnBlockUser] = useState(false)
     const dispatch = useAppDispatch()
     const { mobile } = useParams<{ mobile: string }>()
 
@@ -28,10 +29,10 @@ const CustomerAnalytics = () => {
         }
     }, [dispatch])
 
-    const handleBlockUser = async () => {
+    const handleBlockUser = async (status: string) => {
         const body = { mobile: mobile }
         try {
-            const response = await axioisInstance.post(`/merchant/user/block`, body)
+            const response = await axioisInstance.post(`/merchant/user/${status}`, body)
             notification.success({ message: response?.data?.message || 'Successfully blacklisted user' })
         } catch (error: any) {
             notification.error({ message: error?.response?.data?.message || error?.response?.data?.data.message || 'Failed to block User' })
@@ -48,9 +49,14 @@ const CustomerAnalytics = () => {
         <div className="p-4 sm:p-6 bg-gray-50 min-h-screen dark:bg-gray-800 dark:text-white">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-800 dark:text-white">Customer Analytics</h1>
-                <Button variant="new" size="sm" onClick={() => setBlockUser(true)}>
-                    Block User
-                </Button>
+                <div className="flex items-center gap-2">
+                    <Button variant="accept" size="sm" onClick={() => setUnBlockUser(true)}>
+                        Unblock Block User
+                    </Button>
+                    <Button variant="new" size="sm" onClick={() => setBlockUser(true)}>
+                        Block User
+                    </Button>
+                </div>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6 mb-6">
                 <div className="h-full">
@@ -81,7 +87,16 @@ const CustomerAnalytics = () => {
                 <BlockUserModal
                     dialogIsOpen={blockUser}
                     setIsOpen={setBlockUser}
-                    handleDialogOk={handleBlockUser}
+                    handleDialogOk={() => handleBlockUser('block')}
+                    name={customerData?.profile?.first_name}
+                />
+            )}
+            {unBlockUser && (
+                <BlockUserModal
+                    unBlock
+                    dialogIsOpen={unBlockUser}
+                    setIsOpen={setUnBlockUser}
+                    handleDialogOk={() => handleBlockUser('unblock')}
                     name={customerData?.profile?.first_name}
                 />
             )}

@@ -1,4 +1,5 @@
-import { useState } from 'react'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import Button from '@/components/ui/Button'
 import Dialog from '@/components/ui/Dialog'
 import type { MouseEvent } from 'react'
@@ -8,9 +9,10 @@ interface BlockUserModal {
     setIsOpen: (x: boolean) => void
     handleDialogOk: any
     name?: any
+    unBlock?: boolean
 }
 
-const BlockUserModal = ({ dialogIsOpen, setIsOpen, handleDialogOk, name }: BlockUserModal) => {
+const BlockUserModal = ({ dialogIsOpen, setIsOpen, handleDialogOk, name, unBlock }: BlockUserModal) => {
     const onDialogClose = (e: MouseEvent) => {
         console.log('onDialogClose', e)
         setIsOpen(false)
@@ -20,9 +22,10 @@ const BlockUserModal = ({ dialogIsOpen, setIsOpen, handleDialogOk, name }: Block
         <div>
             <Dialog isOpen={dialogIsOpen} onClose={onDialogClose} onRequestClose={onDialogClose}>
                 <div className="flex flex-col gap-4 font-bold">
-                    <h3 className="text-red-500">Block User</h3>
+                    <h3 className="text-red-500">{unBlock ? 'Un-Block' : 'Block'} User</h3>
                     <div className="">
-                        Are you sure you want to Block <span className="text-gray-700 underline">{name}</span>
+                        Are you sure you want to {unBlock ? 'Un-Block' : 'Block'}
+                        <span className="text-gray-700 underline">{name}</span>
                     </div>
                 </div>
                 <div className="text-right mt-6">
@@ -30,7 +33,7 @@ const BlockUserModal = ({ dialogIsOpen, setIsOpen, handleDialogOk, name }: Block
                         Cancel
                     </Button>
                     <Button variant="reject" onClick={handleDialogOk}>
-                        Block
+                        {unBlock ? 'Un-Block' : 'Block'}
                     </Button>
                 </div>
             </Dialog>
