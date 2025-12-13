@@ -21,6 +21,7 @@ const RefundActivity = () => {
     const returnDetails = returnOrder?.returnOrders
     const returnOrderItems = returnOrder?.returnOrders?.return_order_items || []
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isCompleting, setIsCompleting] = useState(false)
     const [action, setAction] = useState('')
     const [triggerPickedUpGenerate, setTriggerPickedUpGenerate] = useState<boolean>(false)
     const [valueInsideModal, setValueInsideModal] = useState({ refundAmount: '', refundId: '' })
@@ -66,6 +67,7 @@ const RefundActivity = () => {
         valueInsideModal,
         setTriggerPickedUpGenerate,
         locationWiseArray,
+        setIsCompleting,
     })
 
     useEffect(() => {
@@ -190,6 +192,7 @@ const RefundActivity = () => {
             {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'DELIVERED' &&
                 !returnDetails?.log?.some((item) => item?.status === 'REFUNDED') && (
                     <CompleteReturnModal
+                        isCompleting={isCompleting}
                         handleAction={handleCompleteReturn}
                         returnOrderItems={returnOrderItems as any}
                         isModalOpen={isModalOpen}
@@ -202,6 +205,7 @@ const RefundActivity = () => {
                 returnDetails?.log?.some((item) => item?.status?.includes('REFUNDED'))) &&
                 !returnDetails?.log?.some((item) => item?.status?.includes('COMPLETED')) && (
                     <CompleteReturnModal
+                        isCompleting={isCompleting}
                         handleAction={handleCompleteReturn}
                         returnOrderItems={returnOrderItems as any}
                         isModalOpen={isModalOpen}

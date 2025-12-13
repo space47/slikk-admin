@@ -13,6 +13,7 @@ interface ReturnOrderState {
     valueInsideModal: { refundAmount: string; refundId: string }
     setTriggerPickedUpGenerate: React.Dispatch<React.SetStateAction<boolean>>
     locationWiseArray: any[]
+    setIsCompleting: (x: boolean) => void
 }
 
 export const useReturnOrderFunctions = ({
@@ -23,6 +24,7 @@ export const useReturnOrderFunctions = ({
     valueInsideModal,
     setTriggerPickedUpGenerate,
     locationWiseArray,
+    setIsCompleting,
 }: ReturnOrderState) => {
     const navigate = useNavigate()
     const triggerApiCall = async () => {
@@ -121,6 +123,7 @@ export const useReturnOrderFunctions = ({
     }
 
     const handleCompleteReturn = async (action: string, locationWiseDetails: any) => {
+        setIsCompleting(true)
         if (Object.entries(locationWiseDetails)?.length <= 0) {
             notification.error({ message: 'Fill up the items as per the location to proceed further' })
             return
@@ -168,6 +171,11 @@ export const useReturnOrderFunctions = ({
             if (error instanceof AxiosError) {
                 notification.error({ message: error?.response?.data?.message || error?.message || 'Failed to create return order' })
             }
+            setTimeout(() => {
+                navigate(0)
+            }, 500)
+        } finally {
+            setIsCompleting(false)
         }
     }
 

@@ -36,9 +36,9 @@ export const useInventoryApi = ({ searchType, store_code, typeFetch, sortByFilte
     }
 
     const fetchData = async () => {
+        setData([])
+        setLoading(true)
         try {
-            setLoading(true)
-
             const res = await axioisInstance.get(query())
             setTotalData(res?.data?.data?.count)
             setTotalQuantity(res?.data?.data?.total_quantity)
