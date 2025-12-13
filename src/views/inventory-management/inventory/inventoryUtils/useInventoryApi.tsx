@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { InventoryType } from './inventoryCommon'
 import { useDebounceInput } from '@/commonHooks/useDebounceInput'
 import { AxiosError } from 'axios'
@@ -24,25 +24,23 @@ export const useInventoryApi = ({ searchType, store_code, typeFetch, sortByFilte
     const { debounceFilter } = useDebounceInput({ globalFilter, delay: 500 })
 
     const query = () => {
-        let params = `p=${page}&page_size=${pageSize}` || ''
-        let sort = ''
+        let params = `p=${page}&page_size=${pageSize}`
 
         if (typeFetch) params += `&${typeFetch}`
         if (store_code) params += `&store_code=${encodeURIComponent(store_code)}`
         if (debounceFilter) params += `&${searchType.value}=${encodeURIComponent(debounceFilter)}`
-        if (sortByFilter) sort = `&sort=${sortByFilter}`
+        if (sortByFilter) params += `&sort=${sortByFilter}`
 
-        return `/inventory-location?${params}${sort}`
+        return `/inventory-location?${params}`
     }
 
-    const fetchData = async () => {
-        setData([])
+    const refetch = useCallback(async () => {
         setLoading(true)
         try {
             const res = await axioisInstance.get(query())
-            setTotalData(res?.data?.data?.count)
-            setTotalQuantity(res?.data?.data?.total_quantity)
-            setData(res?.data?.data?.results)
+            setTotalData(res?.data?.data?.count || 0)
+            setTotalQuantity(res?.data?.data?.total_quantity || 0)
+            setData(res?.data?.data?.results || [])
             setResponseStatus(res?.status)
         } catch (error) {
             if (error instanceof AxiosError) {
@@ -53,15 +51,14 @@ export const useInventoryApi = ({ searchType, store_code, typeFetch, sortByFilte
         } finally {
             setLoading(false)
         }
-    }
+    }, [page, pageSize, debounceFilter, searchType.value, store_code, typeFetch, sortByFilter])
 
     useEffect(() => {
-        fetchData()
-    }, [page, pageSize, debounceFilter, searchType.value, store_code, typeFetch, sortByFilter])
+        refetch()
+    }, [refetch])
 
     return {
         data,
-        query,
         totalQuantity,
         responseStatus,
         totalData,
@@ -69,8 +66,10 @@ export const useInventoryApi = ({ searchType, store_code, typeFetch, sortByFilte
         setPageSize,
         setGlobalFilter,
         page,
+        query,
         pageSize,
         globalFilter,
         loading,
+        refetch,
     }
 }

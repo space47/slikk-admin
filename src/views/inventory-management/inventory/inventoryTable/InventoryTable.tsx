@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react'
 import { useInventoryApi } from '../inventoryUtils/useInventoryApi'
-import { Button, Dropdown, Pagination, Select, Spinner } from '@/components/ui'
+import { Button, Dropdown, Select, Spinner, Tooltip } from '@/components/ui'
 import { useAppSelector } from '@/store'
 import { USER_PROFILE_DATA } from '@/store/types/company.types'
 import { InventoryFilters } from '../inventoryUtils/inventoryCommon'
@@ -8,7 +8,6 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { useInventoryLocationColumns } from '../inventoryUtils/useInventoryLocationTable'
 import ImageMODAL from '@/common/ImageModal'
 import EasyTable from '@/common/EasyTable'
-import { Option, pageSizeOptions } from '@/constants/pageUtils.constants'
 import AccessDenied from '@/views/pages/AccessDenied'
 import LocationTransferModal from '../inventoryUtils/locationTransferModal'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
@@ -20,6 +19,8 @@ import { AxiosError } from 'axios'
 import { errorMessage } from '@/utils/responseMessages'
 import { Filter } from 'lucide-react'
 import FilterProductCommon from '@/common/FilterProductCommon'
+import { FaSync } from 'react-icons/fa'
+import PageCommon from '@/common/PageCommon'
 
 const InventoryTable = () => {
     const locationInputRef = useRef<{ [key: number]: HTMLInputElement | null }>({})
@@ -52,6 +53,7 @@ const InventoryTable = () => {
         totalQuantity,
         globalFilter,
         loading,
+        refetch,
     } = useInventoryApi({
         searchType,
         store_code: storeCode,
@@ -178,36 +180,14 @@ const InventoryTable = () => {
                         {totalQuantity && (
                             <div className="mb-6 ">
                                 <Tag className="text-blue-600 text-xl font-bold">Total Quantity: {totalQuantity}</Tag>
+                                <Tooltip title="Refresh">
+                                    <Button variant="twoTone" color="gray" size="sm" icon={<FaSync />} onClick={() => refetch()}></Button>
+                                </Tooltip>
                             </div>
                         )}
                         <EasyTable overflow mainData={data} columns={columns} page={page} pageSize={pageSize} />
                     </div>
-                    <div className="flex flex-col md:flex-row items-center justify-between mt-4">
-                        <Pagination
-                            pageSize={pageSize}
-                            currentPage={page}
-                            total={totalData}
-                            className="w-[400px] md:w-auto mb-4 md:mb-0 "
-                            onChange={(page) => {
-                                setPage(page)
-                            }}
-                        />
-                        <div className="flex flex-row items-center justify-between xl:justify-normal w-full md:w-auto xl:gap-5">
-                            <Select<Option>
-                                size="sm"
-                                isSearchable={false}
-                                value={pageSizeOptions.find((option) => option.value === pageSize)}
-                                options={pageSizeOptions}
-                                className="w-1/2 md:w-auto"
-                                onChange={(option) => {
-                                    if (option) {
-                                        setPageSize(option.value)
-                                        setPage(1)
-                                    }
-                                }}
-                            />
-                        </div>
-                    </div>
+                    <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={totalData} />
                 </>
             )}
             {(responseStatus === 400 || responseStatus === 404) && (
