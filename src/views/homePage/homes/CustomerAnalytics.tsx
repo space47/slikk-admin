@@ -7,13 +7,14 @@ import { fetchUserSummary } from '@/store/slices/orderUserSummary/UserSummary.sl
 import { Button } from '@/components/ui'
 import BlockUserModal from './componentsHomes/BlockUserModal'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { notification } from 'antd'
 import CustomerData from './componentsHomes/CustomerData'
 import CartPaymentSummary from './componentsHomes/CartPaymentSummary'
 import CartShipping from './componentsHomes/CartShipping'
 import CartTabs from './componentsHomes/CartTabs'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 import CartItems from './componentsHomes/CartItems'
+import { AxiosError } from 'axios'
+import { errorMessage, successMessage } from '@/utils/responseMessages'
 
 const CustomerAnalytics = () => {
     const [blockUser, setBlockUser] = useState(false)
@@ -33,10 +34,11 @@ const CustomerAnalytics = () => {
         const body = { mobile: mobile }
         try {
             const response = await axioisInstance.post(`/merchant/user/${status}`, body)
-            notification.success({ message: response?.data?.message || 'Successfully blacklisted user' })
-        } catch (error: any) {
-            notification.error({ message: error?.response?.data?.message || error?.response?.data?.data.message || 'Failed to block User' })
-            console.log(error)
+            successMessage(response || 'Successfully blacklisted user')
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                errorMessage(error)
+            }
         } finally {
             setBlockUser(false)
         }
