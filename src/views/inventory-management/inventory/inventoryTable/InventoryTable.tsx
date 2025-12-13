@@ -176,8 +176,8 @@ const InventoryTable = () => {
                 <>
                     <div>
                         {totalQuantity && (
-                            <div className="mb-6">
-                                <Tag className="text-blue-600">Total Quantity: {totalQuantity}</Tag>
+                            <div className="mb-6 ">
+                                <Tag className="text-blue-600 text-xl font-bold">Total Quantity: {totalQuantity}</Tag>
                             </div>
                         )}
                         <EasyTable overflow mainData={data} columns={columns} page={page} pageSize={pageSize} />
