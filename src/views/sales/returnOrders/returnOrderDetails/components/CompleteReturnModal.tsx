@@ -26,6 +26,7 @@ interface Props {
     handleAction: (action: string, locationWiseDetails: any) => void
     valueInsideModal: { refundAmount: string; refundId: string }
     handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+    isCompleting: boolean
 }
 
 const CompleteReturnModal: React.FC<Props> = ({
@@ -35,6 +36,7 @@ const CompleteReturnModal: React.FC<Props> = ({
     handleAction,
     valueInsideModal,
     handleInputChange,
+    isCompleting,
 }) => {
     const [locationWiseDetails, setLocationWiseDetails] = useState<Record<number, LocationDetail[]>>({})
     const [locationStore, setLocationStore] = useState<Record<number, string>>({})
@@ -94,6 +96,10 @@ const CompleteReturnModal: React.FC<Props> = ({
             open={isModalOpen}
             okText={'Return Order'}
             width={600}
+            okButtonProps={{
+                disabled: isCompleting,
+                loading: isCompleting,
+            }}
             onOk={() => handleAction('return_completed', locationWiseDetails)}
             onCancel={() => setIsModalOpen(false)}
             height={400}
