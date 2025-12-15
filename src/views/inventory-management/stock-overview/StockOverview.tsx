@@ -14,14 +14,15 @@ import FilterProductCommon from '@/common/FilterProductCommon'
 import { commonDownload } from '@/common/commonDownload'
 import { HiFilter, HiRefresh, HiSearch } from 'react-icons/hi'
 import { useFetchApi } from '@/commonHooks/useFetchApi'
-import StoreSelectComponent from '@/common/StoreSelectComponent'
-import { companyStore } from '@/store/types/companyStore.types'
 import { BsBoxSeam } from 'react-icons/bs'
 import { FiGrid, FiPlusCircle } from 'react-icons/fi'
 import { Button } from '@/components/ui'
 import { errorMessage, successMessage } from '@/utils/responseMessages'
 import { AxiosError } from 'axios'
 import PageCommon from '@/common/PageCommon'
+import { USER_PROFILE_DATA } from '@/store/types/company.types'
+import { useAppSelector } from '@/store'
+import { FaStore } from 'react-icons/fa'
 
 const FilterArray = [
     { label: 'SKU', value: 'sku' },
@@ -40,6 +41,7 @@ const StockOverview = () => {
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularROwImage] = useState<any>([])
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(FilterArray[0])
+    const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
     const navigate = useNavigate()
     const [brandList, setBrandList] = useState([])
     const [typeFetch, setTypeFetch] = useState('')
@@ -49,15 +51,15 @@ const StockOverview = () => {
     const [isDownloading, setIsDownloading] = useState(false)
     const [stockCount, setStockCount] = useState(0)
     const [searchTrigger, setSearchTrigger] = useState(0)
-    const [store, setStore] = useState<companyStore['storeResults']>([])
+    const [store, setStore] = useState<number[]>([])
 
     const query = useMemo(() => {
         const filterValue = searchOnEnter ? `&${currentSelectedPage?.value}=${encodeURIComponent(searchOnEnter ?? '')}` : ''
-        const storeId = store?.length ? `&store_id=${store?.map((item) => item?.id)?.join(',')}` : ''
+        const storeId = store?.length ? `&store_id=${store?.join(',')}` : ''
         return `inventory?p=${page}&page_size=${pageSize}&${typeFetch}${filterValue}${storeId}`
     }, [page, pageSize, searchOnEnter, typeFetch, currentSelectedPage, searchTrigger, store])
 
-    const { data, responseData, totalData, responseStatus } = useFetchApi<Stock>({ url: query, initialData: [] })
+    const { data, responseData, totalData, responseStatus, refetch, loading } = useFetchApi<Stock>({ url: query, initialData: [] })
 
     useEffect(() => {
         if (responseData) {
@@ -201,9 +203,22 @@ const StockOverview = () => {
                         </div>
                     </div>
 
-                    <div className="mb-4 mt-2 flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
-                        <div className="min-w-[200px]">
-                            <StoreSelectComponent label="Select Store" setStore={setStore} store={store} customCss="w-full" />
+                    <div className="mb-4 mt-4 flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
+                        <div className="w-1/2">
+                            <div className="flex items-center gap-2 mb-1">
+                                <FaStore className="text-blue-600 text-lg" />
+                                <h2 className="text-lg font-semibold text-gray-800">Store Selection</h2>
+                            </div>
+                            <Select
+                                isClearable
+                                isMulti
+                                options={storeList}
+                                getOptionLabel={(option) => option.name}
+                                getOptionValue={(option) => option.id?.toString()}
+                                onChange={(selectedOptions) => {
+                                    setStore(selectedOptions?.map((opt) => opt.id) || [])
+                                }}
+                            />
                         </div>
                         <div className="flex flex-wrap gap-3">
                             <div>
@@ -245,12 +260,18 @@ const StockOverview = () => {
                                 </div>
                             </div>
                             <div className="hidden md:block">
-                                <Button icon={<HiRefresh className="text-lg" />} size="sm" onClick={() => window.location.reload()}>
+                                <Button icon={<HiRefresh className="text-lg" />} size="sm" onClick={() => refetch()}>
                                     Refresh Data
                                 </Button>
                             </div>
                         </div>
                     </div>
+                    {loading && (
+                        <div className="flex flex-col items-center justify-center py-12">
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+                            <p className="text-gray-600">Loading inventory data...</p>
+                        </div>
+                    )}
                     <div className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm">
                         <EasyTable overflow mainData={data || []} columns={columns} page={page} pageSize={pageSize} />
                     </div>
