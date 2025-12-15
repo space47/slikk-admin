@@ -23,6 +23,7 @@ import { FiEye, FiEyeOff } from 'react-icons/fi'
 import HomepageMaps from './componentsHomes/HomepageMaps'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 import { HomeCalculations } from './homesUtils/homeFunctions'
+import WeeklyMis from './componentsHomes/WeeklyMis'
 
 const Home = () => {
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
@@ -33,8 +34,8 @@ const Home = () => {
     const [activeTab, setActiveTab] = useState('orders')
     const [viewMap, setViewMap] = useState(false)
     const navigate = useNavigate()
-    const [analyticsShow, setAnalyticsShow] = useState(false)
-    const [splitOrders, setSplitOrders] = useState(false)
+
+    const [showReportData, setShowReportData] = useState('')
 
     const To_Date = useMemo(() => {
         return moment(to).add(1, 'days').format('YYYY-MM-DD')
@@ -283,23 +284,51 @@ const Home = () => {
             <div className="flex items-center border-b border-gray-300 gap-2 mt-3">
                 <button
                     className={`px-4 py-2  transition-all duration-200 text-xl font-bold ${
-                        analyticsShow ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500 hover:text-green-600'
+                        showReportData === 'sessions' ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500 hover:text-green-600'
                     }`}
-                    onClick={() => setAnalyticsShow((prev) => !prev)}
+                    onClick={() => setShowReportData((prev) => (prev === 'sessions' ? '' : 'sessions'))}
                 >
                     Sessions
                 </button>
                 <button
                     className={`px-4 py-2 text-xl font-bold transition-all duration-200 ${
-                        splitOrders ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500 hover:text-green-600'
+                        showReportData === 'split_orders'
+                            ? 'border-b-2 border-green-500 text-green-600'
+                            : 'text-gray-500 hover:text-green-600'
                     }`}
-                    onClick={() => setSplitOrders((prev) => !prev)}
+                    onClick={() => setShowReportData((prev) => (prev === 'split_orders' ? '' : 'split_orders'))}
                 >
                     Split Orders
                 </button>
+                <button
+                    className={`px-4 py-2 text-xl font-bold transition-all duration-200 ${
+                        showReportData === 'mis_report'
+                            ? 'border-b-2 border-green-500 text-green-600'
+                            : 'text-gray-500 hover:text-green-600'
+                    }`}
+                    onClick={() => setShowReportData((prev) => (prev === 'mis_report' ? '' : 'mis_report'))}
+                >
+                    Mis Report
+                </button>
+                {/* <button
+                    className={`px-4 py-2 text-xl font-bold transition-all duration-200 ${
+                        showReportData === 'division' ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500 hover:text-green-600'
+                    }`}
+                    onClick={() => setShowReportData((prev) => (prev === 'division' ? '' : 'division'))}
+                >
+                    Division Distribution
+                </button>
+                <button
+                    className={`px-4 py-2 text-xl font-bold transition-all duration-200 ${
+                        showReportData === 'category' ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500 hover:text-green-600'
+                    }`}
+                    onClick={() => setShowReportData((prev) => (prev === 'mis_report' ? '' : 'mis_report'))}
+                >
+                    Category Distribution
+                </button> */}
             </div>
 
-            {analyticsShow && (
+            {showReportData === 'sessions' && (
                 <div className="mt-4">
                     <ActiveUserTable
                         from={from}
@@ -310,7 +339,7 @@ const Home = () => {
                     />
                 </div>
             )}
-            {splitOrders && (
+            {showReportData === 'split_orders' && (
                 <div className="mt-4">
                     <ActiveUserTable
                         isTable
@@ -320,6 +349,11 @@ const Home = () => {
                         queryName="Bangalore Orders Overall"
                         label="Split orders"
                     />
+                </div>
+            )}
+            {showReportData === 'mis_report' && (
+                <div className="mt-4">
+                    <WeeklyMis from={from} to={to} />
                 </div>
             )}
 

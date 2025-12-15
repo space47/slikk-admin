@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useRef, useState } from 'react'
 import { useInventoryApi } from '../inventoryUtils/useInventoryApi'
-import { Button, Dropdown, Select, Spinner, Tooltip } from '@/components/ui'
+import { Button, Dropdown, Select, Spinner } from '@/components/ui'
 import { useAppSelector } from '@/store'
 import { USER_PROFILE_DATA } from '@/store/types/company.types'
 import { InventoryFilters } from '../inventoryUtils/inventoryCommon'
@@ -14,13 +15,16 @@ import NotFoundData from '@/views/pages/NotFound/Notfound'
 import SyncInventoryModal from '../inventoryUtils/SyncInventoryModal'
 import ClearInventoryModal from '../inventoryUtils/ClearInventoryModal'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { notification, Tag } from 'antd'
+import { notification } from 'antd'
 import { AxiosError } from 'axios'
 import { errorMessage } from '@/utils/responseMessages'
 import { Filter } from 'lucide-react'
 import FilterProductCommon from '@/common/FilterProductCommon'
-import { FaSync } from 'react-icons/fa'
+import { FaStore } from 'react-icons/fa'
 import PageCommon from '@/common/PageCommon'
+import { BsBoxSeam } from 'react-icons/bs'
+import { FiGrid } from 'react-icons/fi'
+import { HiRefresh } from 'react-icons/hi'
 
 const InventoryTable = () => {
     const locationInputRef = useRef<{ [key: number]: HTMLInputElement | null }>({})
@@ -93,13 +97,24 @@ const InventoryTable = () => {
     }
 
     return (
-        <div>
-            <div>
-                <div className="flex flex-col w-full max-w-[600px] mb-10">
-                    <label className="font-semibold text-gray-700 mb-1">Select Store</label>
+        <div className="min-h-screen bg-gray-50 p-4 md:p-6">
+            <div className="mb-8">
+                <div className="flex items-center gap-2">
+                    <BsBoxSeam className="text-blue-600 xl:text-4xl text-xl dark:text-blue-400" />
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Inventory Location</h1>
+                </div>
+                <p className="text-gray-600">Manage Slikk Inventory Location</p>
+            </div>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+                <div className="flex items-center gap-2 mb-4">
+                    <FaStore className="text-blue-600 text-lg" />
+                    <h2 className="text-lg font-semibold text-gray-800">Store Selection</h2>
+                </div>
+                <div className="max-w-md">
                     <Select
                         isClearable
-                        className="xl:w-[300px]"
+                        className="w-full"
+                        placeholder="Choose a store..."
                         options={storeList}
                         getOptionLabel={(option) => option.name}
                         getOptionValue={(option) => option.id.toString()}
@@ -109,8 +124,9 @@ const InventoryTable = () => {
                         }}
                     />
                 </div>
-
-                <div className="flex flex-col xl:flex-row xl:justify-between items-center gap-4 mb-10">
+            </div>
+            {storeCode && storeCode !== '' && (
+                <div className="flex flex-col xl:flex-row xl:justify-between shadow-xl p-6 bg-white rounded-xl items-center gap-4 mb-10">
                     <div className="flex flex-col sm:flex-row gap-2 w-full xl:w-auto">
                         <div className="flex flex-col sm:flex-row gap-2 w-full">
                             <input
@@ -168,34 +184,44 @@ const InventoryTable = () => {
                         </div>
                     )}
                 </div>
-            </div>
+            )}
             {loading && (
-                <div className="flex items-center justify-center mt-2 mb-5">
-                    <Spinner size={20} />
+                <div className="flex flex-col items-center justify-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+                    <p className="text-gray-600">Loading inventory data...</p>
                 </div>
             )}
             {data?.length > 0 && (
-                <>
-                    <div>
-                        {totalQuantity && (
-                            <div className="mb-6 ">
-                                <Tag className="text-blue-600 text-xl font-bold">Total Quantity: {totalQuantity}</Tag>
-                                <Tooltip title="Refresh">
-                                    <Button variant="twoTone" color="gray" size="sm" icon={<FaSync />} onClick={() => refetch()}></Button>
-                                </Tooltip>
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-800 border border-blue-100 dark:border-gray-700 rounded-xl p-5 mb-6">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg mt-2">
+                                    <FiGrid className="text-2xl text-blue-600 dark:text-blue-400" />
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Total Quantity</p>
+                                    <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
+                                        {totalQuantity?.toLocaleString() || 0}
+                                    </p>
+                                </div>
                             </div>
-                        )}
+                            <div className="hidden md:block">
+                                <Button icon={<HiRefresh className="text-lg" />} size="sm" onClick={() => refetch()}>
+                                    Refresh Data
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="p-6">
                         <EasyTable overflow mainData={data} columns={columns} page={page} pageSize={pageSize} />
                     </div>
-                    <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={totalData} />
-                </>
-            )}
-            {(responseStatus === 400 || responseStatus === 404) && (
-                <div>
-                    <NotFoundData />
+                    <div className="px-6 py-4 border-t border-gray-200">
+                        <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={totalData} />
+                    </div>
                 </div>
             )}
-
+            {!loading && (responseStatus === 400 || responseStatus === 404) && <NotFoundData />}
             {showImageModal && (
                 <ImageMODAL
                     dialogIsOpen={showImageModal}
@@ -206,7 +232,6 @@ const InventoryTable = () => {
             <LocationTransferModal isOpen={locationTransferModal} setIsOpen={setLocationTransferModal} />
             <SyncInventoryModal isOpen={isInventorySync} setIsOpen={setIsInventorySync} storeId={storeId as number} />
             <ClearInventoryModal isOpen={clearInventory} setIsOpen={setClearInventory} storeId={storeId as number} />
-
             <FilterProductCommon
                 isSorByFilter
                 showDrawer={showFilter}
