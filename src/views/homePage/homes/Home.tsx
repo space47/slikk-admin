@@ -23,7 +23,6 @@ import { FiEye, FiEyeOff } from 'react-icons/fi'
 import HomepageMaps from './componentsHomes/HomepageMaps'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 import { HomeCalculations } from './homesUtils/homeFunctions'
-import WeeklyMis from './componentsHomes/WeeklyMis'
 
 const Home = () => {
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
@@ -300,32 +299,6 @@ const Home = () => {
                 >
                     Split Orders
                 </button>
-                <button
-                    className={`px-4 py-2 text-xl font-bold transition-all duration-200 ${
-                        showReportData === 'mis_report'
-                            ? 'border-b-2 border-green-500 text-green-600'
-                            : 'text-gray-500 hover:text-green-600'
-                    }`}
-                    onClick={() => setShowReportData((prev) => (prev === 'mis_report' ? '' : 'mis_report'))}
-                >
-                    Mis Report
-                </button>
-                {/* <button
-                    className={`px-4 py-2 text-xl font-bold transition-all duration-200 ${
-                        showReportData === 'division' ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500 hover:text-green-600'
-                    }`}
-                    onClick={() => setShowReportData((prev) => (prev === 'division' ? '' : 'division'))}
-                >
-                    Division Distribution
-                </button>
-                <button
-                    className={`px-4 py-2 text-xl font-bold transition-all duration-200 ${
-                        showReportData === 'category' ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500 hover:text-green-600'
-                    }`}
-                    onClick={() => setShowReportData((prev) => (prev === 'mis_report' ? '' : 'mis_report'))}
-                >
-                    Category Distribution
-                </button> */}
             </div>
 
             {showReportData === 'sessions' && (
@@ -349,11 +322,6 @@ const Home = () => {
                         queryName="Bangalore Orders Overall"
                         label="Split orders"
                     />
-                </div>
-            )}
-            {showReportData === 'mis_report' && (
-                <div className="mt-4">
-                    <WeeklyMis from={from} to={to} />
                 </div>
             )}
 
