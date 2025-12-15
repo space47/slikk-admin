@@ -10,7 +10,7 @@ export const riderZoneService = RtkQueryService.injectEndpoints({
                 if (params.page) parameters.p = params.page
                 if (params.pageSize) parameters.page_size = params.pageSize
                 return {
-                    url: `/logistic-service-zone/`,
+                    url: `/logistic-service-zones/`,
                     method: 'GET',
                     params: parameters,
                 }
@@ -19,7 +19,7 @@ export const riderZoneService = RtkQueryService.injectEndpoints({
         singleZones: builder.query<LiveZones, { id?: string | number }>({
             query: ({ id }) => {
                 return {
-                    url: `/logistic-service-zone/${id ?? ''}/`,
+                    url: `/logistic-service-zones/${id ?? ''}/`,
                     method: 'GET',
                 }
             },
@@ -28,7 +28,7 @@ export const riderZoneService = RtkQueryService.injectEndpoints({
             query: (body) => {
                 console.log('body is', body)
                 return {
-                    url: `/logistic-service-zone/`,
+                    url: `/logistic-service-zones/`,
                     method: 'POST',
                     body,
                 }
@@ -38,7 +38,7 @@ export const riderZoneService = RtkQueryService.injectEndpoints({
             query: ({ id, ...body }) => {
                 console.log('body is', body)
                 return {
-                    url: `/logistic-service-zone/${id}/`,
+                    url: `/logistic-service-zones/${id}/`,
                     method: 'PATCH',
                     body,
                 }
