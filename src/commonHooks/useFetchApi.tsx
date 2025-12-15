@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // hooks/useFetchConfigurations.ts
 import { useState, useEffect, useCallback } from 'react'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -13,14 +14,17 @@ interface Api_Hooks_props<T> {
 
 export const useFetchApi = <T,>({ url, initialData = [], typeOfData, pollingInterval }: Api_Hooks_props<T>) => {
     const [data, setData] = useState<T[]>(initialData)
+    const [responseData, setResponseData] = useState<any>()
     const [totalData, setTotalData] = useState<number>(0)
     const [loading, setLoading] = useState(false)
     const [responseStatus, setResponseStatus] = useState<string | number>()
+
     const fetchData = useCallback(async () => {
         try {
             setLoading(true)
             setData([])
             const response = await axioisInstance.get<ApiResponse<T>>(url)
+            setResponseData(response?.data)
             if (typeOfData === 'Object') {
                 const data = response.data
                 const dataArray = Object.values(data) as T[]
@@ -51,5 +55,5 @@ export const useFetchApi = <T,>({ url, initialData = [], typeOfData, pollingInte
         }
     }, [url, pollingInterval])
 
-    return { data, loading, setData, totalData, setTotalData, responseStatus, refetch: fetchData, pollingInterval }
+    return { data, loading, setData, totalData, setTotalData, responseStatus, refetch: fetchData, pollingInterval, responseData }
 }
