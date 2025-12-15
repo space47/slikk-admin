@@ -204,7 +204,7 @@ const StockOverview = () => {
                     </div>
 
                     <div className="mb-4 mt-4 flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
-                        <div className="w-1/2">
+                        <div className="w-full xl:w-1/2 md:w-1/2">
                             <div className="flex items-center gap-2 mb-1">
                                 <FaStore className="text-blue-600 text-lg" />
                                 <h2 className="text-lg font-semibold text-gray-800">Store Selection</h2>
@@ -254,14 +254,14 @@ const StockOverview = () => {
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Total Stock Count</p>
-                                    <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
+                                    <p className="xl:md:text-3xl text-md  font-bold text-gray-900 dark:text-white mt-1">
                                         {stockCount?.toLocaleString() || 0}
                                     </p>
                                 </div>
                             </div>
-                            <div className="hidden md:block">
+                            <div className="  md:block">
                                 <Button icon={<HiRefresh className="text-lg" />} size="sm" onClick={() => refetch()}>
-                                    Refresh Data
+                                    <span className="xl:block md:block hidden">Refresh Data</span>
                                 </Button>
                             </div>
                         </div>

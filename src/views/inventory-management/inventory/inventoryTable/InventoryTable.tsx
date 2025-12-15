@@ -201,14 +201,14 @@ const InventoryTable = () => {
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Total Quantity</p>
-                                    <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
+                                    <p className="xl:md:text-3xl text-md  font-bold text-gray-900 dark:text-white mt-1">
                                         {totalQuantity?.toLocaleString() || 0}
                                     </p>
                                 </div>
                             </div>
-                            <div className="hidden md:block">
+                            <div className=" md:block">
                                 <Button icon={<HiRefresh className="text-lg" />} size="sm" onClick={() => refetch()}>
-                                    Refresh Data
+                                    <span className="xl:block md:block hidden">Refresh Data</span>
                                 </Button>
                             </div>
                         </div>
