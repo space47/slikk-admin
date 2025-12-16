@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AccessDenied from '@/views/pages/AccessDenied'
@@ -20,13 +18,15 @@ import { SEARCHOPTIONS, STATUSARRAY, TaskDetails } from '../TaskCommonType'
 import { TaskTrackingColumns } from './TaskTrakingColumns'
 import TrackModal from '../TrackModal'
 import FilterByRunner from '../FilterByRunner'
+import { GoTasklist } from 'react-icons/go'
 
 interface Props {
+    label: string
     type: string
     download_name: string
 }
 
-const BaseTracking = ({ download_name, type }: Props) => {
+const BaseTracking = ({ download_name, type, label }: Props) => {
     const navigate = useNavigate()
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
@@ -36,7 +36,7 @@ const BaseTracking = ({ download_name, type }: Props) => {
     const [showAssignModal, setShowAssignModal] = useState(false)
     const [storeTaskId, setStoreTaskId] = useState<TaskDetails>()
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(SEARCHOPTIONS[0])
-    const [currentStatus, setCurrentStatus] = useState<any>()
+    const [currentStatus, setCurrentStatus] = useState<Record<string, string>>()
     const [showFilterByRunner, SetShowFilterByRunner] = useState(false)
     const [particularMobileOfRunner, SetParticularMobileOfRunner] = useState<string>('')
     const [statusName, setStatusName] = useState('')
@@ -55,7 +55,7 @@ const BaseTracking = ({ download_name, type }: Props) => {
         }
 
         let statusFilter = ''
-        if (statusName) {
+        if (statusName && currentStatus?.value !== 'select_type') {
             statusFilter =
                 statusName === 'cash_recon'
                     ? `&data_type=${statusName}`
@@ -63,16 +63,12 @@ const BaseTracking = ({ download_name, type }: Props) => {
                       ? `&cash_only=true`
                       : `&status=${statusName}`
         }
-
         if (!globalFilter) deliveryType = `task_type=${type}`
 
         return `logistic/slikk/task?${deliveryType}&p=${page}&page_size=${pageSize}${searchData}${runnerFilter}${statusFilter}&from=${from}&to=${To_Date}`
-    }, [from, particularMobileOfRunner, globalFilter, currentStatus, page, pageSize, currentSelectedPage, To_Date])
+    }, [from, particularMobileOfRunner, globalFilter, currentStatus, page, pageSize, currentSelectedPage, To_Date, statusName])
 
-    const { data, totalData, responseStatus } = useFetchApi<TaskDetails>({
-        url: queryUrl,
-        initialData: [],
-    })
+    const { data, totalData, responseStatus } = useFetchApi<TaskDetails>({ url: queryUrl, initialData: [] })
 
     const handleAssignClick = (task: TaskDetails) => {
         setShowAssignModal(true)
@@ -127,6 +123,17 @@ const BaseTracking = ({ download_name, type }: Props) => {
     if (responseStatus === '403') return <AccessDenied />
     return (
         <div className="p-6 bg-white dark:bg-gray-900 rounded-2xl shadow-xl transition-all duration-300">
+            <div className="flex  items-center justify-between mb-8">
+                <div className="flex items-center gap-3 bg-gray-50 p-4 rounded-md">
+                    <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 rounded-2xl shadow-lg">
+                        <GoTasklist className="text-2xl text-white" />
+                    </div>
+                    <div>
+                        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">{label} Task Management</h1>
+                        <p className="text-gray-500 dark:text-gray-400 mt-2">Track, and analyze Logistic Tasks</p>
+                    </div>
+                </div>
+            </div>
             <div className="flex flex-col lg:flex-row justify-between items-start gap-6 mb-6">
                 <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
                     <input
@@ -140,7 +147,18 @@ const BaseTracking = ({ download_name, type }: Props) => {
 
                     <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                         <DropDownCommon Options={SEARCHOPTIONS} currentSelectedPage={currentSelectedPage} handleSelect={handleSelect} />
-                        <DropDownCommon Options={STATUSARRAY} currentSelectedPage={currentStatus} handleSelect={handleSelectStatus} />
+                        <DropDownCommon
+                            Options={STATUSARRAY}
+                            currentSelectedPage={currentStatus as Record<string, string>}
+                            handleSelect={handleSelectStatus}
+                            handleRemove={() => {
+                                setCurrentStatus({
+                                    label: 'Select Type',
+                                    value: 'select_type',
+                                })
+                                setStatusName('')
+                            }}
+                        />
                     </div>
                 </div>
                 <div className="flex flex-col xl:flex-row gap-3 items-center">

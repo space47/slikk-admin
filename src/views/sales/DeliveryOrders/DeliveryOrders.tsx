@@ -215,9 +215,11 @@ const DeliveryOrders = () => {
                                     >
                                         {SEARCHOPTIONS?.map((item, key) => {
                                             return (
-                                                <DropdownItem key={key} eventKey={item.value}>
-                                                    <span>{item.label}</span>
-                                                </DropdownItem>
+                                                <>
+                                                    <DropdownItem key={key} eventKey={item.value}>
+                                                        <span>{item.label}</span>
+                                                    </DropdownItem>
+                                                </>
                                             )
                                         })}
                                     </Dropdown>

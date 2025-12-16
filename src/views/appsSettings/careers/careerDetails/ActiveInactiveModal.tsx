@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Button from '@/components/ui/Button'
 import Dialog from '@/components/ui/Dialog'
 import type { MouseEvent } from 'react'
@@ -13,9 +14,10 @@ interface Props {
     isActive: boolean
     url?: string
     label?: string
+    refetch?: any
 }
 
-const ActiveInactiveModal = ({ dialogIsOpen, setIsOpen, idForUpdate, isActive, url, label }: Props) => {
+const ActiveInactiveModal = ({ dialogIsOpen, setIsOpen, idForUpdate, isActive, url, label, refetch }: Props) => {
     const navigate = useNavigate()
     const onDialogClose = (e: MouseEvent) => {
         console.log('onDialogClose', e)
@@ -33,7 +35,8 @@ const ActiveInactiveModal = ({ dialogIsOpen, setIsOpen, idForUpdate, isActive, u
             notification.success({
                 message: response?.data?.message || 'Successfully updated',
             })
-            navigate(0)
+            refetch()
+            setIsOpen(false)
         } catch (error) {
             if (error instanceof AxiosError) {
                 notification.error({
