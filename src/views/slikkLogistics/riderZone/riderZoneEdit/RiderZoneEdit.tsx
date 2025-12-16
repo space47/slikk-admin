@@ -55,6 +55,8 @@ const RiderZoneEdit = () => {
         updateZone({ id: id as string, ...body })
     }
 
+    console.log('co ordinates data', zoneData?.geojson?.coordinates)
+
     return (
         <div className="p-2">
             <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
