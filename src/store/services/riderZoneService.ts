@@ -4,11 +4,12 @@ import { LiveZoneResponseType, LiveZones } from '../types/riderZone.type'
 
 export const riderZoneService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
-        liveZones: builder.query<LiveZoneResponseType, { page: number; pageSize: number }>({
+        liveZones: builder.query<LiveZoneResponseType, { page: number; pageSize: number; name?: string }>({
             query: (params) => {
                 const parameters: Record<string, string | number> = {}
                 if (params.page) parameters.p = params.page
                 if (params.pageSize) parameters.page_size = params.pageSize
+                if (params.name) parameters.name = params.name
                 return {
                     url: `/logistic-service-zones/`,
                     method: 'GET',
@@ -41,6 +42,14 @@ export const riderZoneService = RtkQueryService.injectEndpoints({
                     url: `/logistic-service-zones/${id}/`,
                     method: 'PATCH',
                     body,
+                }
+            },
+        }),
+        deleteZone: builder.mutation<LiveZones, { id: number | string }>({
+            query: ({ id }) => {
+                return {
+                    url: `/logistic-service-zones/${id}/`,
+                    method: 'DELETE',
                 }
             },
         }),
