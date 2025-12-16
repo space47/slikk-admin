@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Button from '@/components/ui/Button'
 import Dialog from '@/components/ui/Dialog'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import type { MouseEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 interface props {
     dialogIsOpen: boolean
@@ -11,10 +11,10 @@ interface props {
     mobile: string
     name: string
     checkOutRider?: boolean
+    refetch: any
 }
 
-const RiderCheckinModal = ({ dialogIsOpen, setIsOpen, mobile, name, checkOutRider }: props) => {
-    const navigate = useNavigate()
+const RiderCheckinModal = ({ dialogIsOpen, setIsOpen, mobile, name, checkOutRider, refetch }: props) => {
     const onDialogClose = (e: MouseEvent) => {
         console.log('onDialogClose', e)
         setIsOpen(false)
@@ -38,6 +38,7 @@ const RiderCheckinModal = ({ dialogIsOpen, setIsOpen, mobile, name, checkOutRide
             notification.success({
                 message: response?.data?.message || checkOutRider ? 'Rider Checked out' : 'Successfully Checked in rider',
             })
+            refetch()
         } catch (error) {
             console.error(error)
             notification.error({
@@ -45,7 +46,6 @@ const RiderCheckinModal = ({ dialogIsOpen, setIsOpen, mobile, name, checkOutRide
             })
         } finally {
             setIsOpen(false)
-            navigate(0)
         }
     }
 

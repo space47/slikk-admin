@@ -8,7 +8,6 @@ import { notification } from 'antd'
 import FullTimePicker from '@/common/FullTimePicker'
 import { ridersService } from '@/store/services/riderServices'
 import { RiderAddTypes } from '@/store/types/riderAddTypes'
-import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { RiderDetailType, setRiderProfile } from '@/store/slices/riderDetails/riderDetails.slice'
 import { GenericCommonTypes } from '@/common/allTypesCommon'
@@ -20,7 +19,6 @@ import AddBulk from '../RiderComponents/AddBulk'
 import StoreSelectForm from '@/common/StoreSelectForm'
 
 const AddRider = () => {
-    const navigate = useNavigate()
     const dispatch = useAppDispatch()
     const [selectedRider, setSelectedRider] = useState<string | number>()
     const [ridersData, riderDataResponse] = ridersService.useAddRidersMutation()
@@ -89,12 +87,13 @@ const AddRider = () => {
             notification.success({
                 message: riderDataResponse?.data?.success || 'Successfully Added Rider',
             })
-            navigate(-1)
+            refetch()
         }
         if (riderEditResponse?.isSuccess) {
             notification.success({
                 message: riderEditResponse?.data?.success || 'Successfully Updated Rider',
             })
+            refetch()
             // navigate(-1)
         }
     }, [riderDataResponse, riderEditResponse])
@@ -115,7 +114,7 @@ const AddRider = () => {
                 shift_end_time: values?.shift_end_time,
                 is_active: values?.is_active || false,
                 agency: values?.agency || '',
-                store_id: values?.store?.id || '',
+                store_id: (values?.store as any)?.id || '',
                 rider_delivery_type: values?.rider_delivery_type || 'standard',
             }
             if (isAddRider) {
