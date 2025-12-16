@@ -8,6 +8,7 @@ import { Button, Select } from '@/components/ui'
 import { AxiosError } from 'axios'
 import { errorMessage, successMessage } from '@/utils/responseMessages'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import DialogConfirm from '@/common/DialogConfirm'
 
 interface props {
     handleSyncClick: any
@@ -36,6 +37,7 @@ const QcTabs = ({
 }: props) => {
     const [tabSelect, setTabSelect] = useState('quality_checklist')
     const [deleteSpinner, setDeleteSpinner] = useState(false)
+    const [isDeleteGrn, setIsDeleteGrn] = useState(false)
 
     const handleSelectTab = (value: string) => {
         setTabSelect(value)
@@ -59,7 +61,7 @@ const QcTabs = ({
         }
     }
 
-    const handleDeleteGrn = async (id: number) => {
+    const handleDelete = async (id: number) => {
         const res = await deleteGrn('false', id)
         if (res && !res.error) return
         if (res?.error?.toLowerCase() === 'please confirm delete by setting confirm_delete to true') {
@@ -156,7 +158,7 @@ const QcTabs = ({
                                             size="sm"
                                             icon={<FaTrash className="w-4 h-4" />}
                                             loading={deleteSpinner}
-                                            onClick={() => handleDeleteGrn(data.id)}
+                                            onClick={() => setIsDeleteGrn(true)}
                                         >
                                             Delete GRN
                                         </Button>
@@ -230,6 +232,17 @@ const QcTabs = ({
                         </div>
                     </div>
                 </div>
+            )}
+            {isDeleteGrn && (
+                <DialogConfirm
+                    IsDelete
+                    IsOpen={isDeleteGrn}
+                    closeDialog={() => setIsDeleteGrn(false)}
+                    headingName="Delete Grn"
+                    setIsOpen={setIsDeleteGrn}
+                    label="Grn"
+                    onDialogOk={() => handleDelete(data?.id)}
+                />
             )}
         </div>
     )
