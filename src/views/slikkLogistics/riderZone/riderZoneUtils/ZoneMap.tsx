@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo, useRef, useState } from 'react'
-import { MapContainer, Marker, TileLayer, useMap, useMapEvents, Polygon, Polyline, Tooltip } from 'react-leaflet'
+import { MapContainer, Marker, TileLayer, useMapEvents, Polygon, Polyline, Tooltip } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import * as L from 'leaflet'
 import icon from 'leaflet/dist/images/marker-icon.png'
@@ -10,8 +10,7 @@ import store, { useAppSelector } from '@/store'
 import { USER_PROFILE_DATA } from '@/store/types/company.types'
 import { BsArrowsFullscreen } from 'react-icons/bs'
 import { Button } from '@/components/ui'
-
-/* ---------------------------------- Icons --------------------------------- */
+import { LiveZones } from '@/store/types/riderZone.type'
 
 const PinIcon = L.divIcon({
     html: `<div style="width:14px;height:14px;background:#dc2626;border:2px solid white;border-radius:50%"></div>`,
@@ -26,48 +25,17 @@ const DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon
 
-/* ---------------------------------- Types --------------------------------- */
-
-interface Zone {
-    id: number
-    geojson: {
-        type: 'Polygon'
-        coordinates: number[][][]
-    }
-    name: string
-    store_id?: number
-}
-
 interface RiderAddProps {
-    zones: Zone[]
+    zones: LiveZones[]
     polygonPoints: Point[]
     setPolygonPoints: React.Dispatch<React.SetStateAction<Point[]>>
 }
 
-/* ----------------------------- Helper Functions ---------------------------- */
-
-// Stable random color per zone
-const getColorFromId = (id: number) => {
-    let hash = 0
-    for (const char of id.toString()) {
-        hash = char.charCodeAt(0) + ((hash << 5) - hash)
-    }
-    const hue = hash % 360
-    return {
-        stroke: `hsl(${hue}, 70%, 45%)`,
-        fill: `hsl(${hue}, 70%, 55%)`,
-    }
-}
-
-// GeoJSON → Leaflet
 const geoJsonToLatLngs = (coordinates: number[][][]) => coordinates[0].map(([lng, lat]) => [lat, lng] as [number, number])
-
-/* -------------------------------- Component ------------------------------- */
 
 const ZoneMap = ({ zones, polygonPoints, setPolygonPoints }: RiderAddProps) => {
     const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
     const storeCodes = store.getState().storeSelect.store_ids
-
     const storeData = useMemo(() => {
         return storeList?.find((item) => item?.id === storeCodes[0])
     }, [storeList, storeCodes])
@@ -77,11 +45,8 @@ const ZoneMap = ({ zones, polygonPoints, setPolygonPoints }: RiderAddProps) => {
     }, [storeData])
     const [isDrawing, setIsDrawing] = useState(false)
 
-    const mapWrapperRef = useRef<HTMLDivElement | null>(null)
-
+    const fullScreenRef = useRef<HTMLDivElement | null>(null)
     const defaultCenter: [number, number] = [12.9182266, 77.6202128]
-
-    /* ----------------------------- Map Events ----------------------------- */
 
     const MapEvents = () => {
         useMapEvents({
@@ -92,14 +57,6 @@ const ZoneMap = ({ zones, polygonPoints, setPolygonPoints }: RiderAddProps) => {
         })
         return null
     }
-
-    const SetView = ({ center }: { center: [number, number] }) => {
-        const map = useMap()
-        map.setView(center, map.getZoom())
-        return null
-    }
-
-    /* --------------------------- Drawing Logic ---------------------------- */
 
     const handleSetZone = () => {
         setPolygonPoints([])
@@ -122,13 +79,10 @@ const ZoneMap = ({ zones, polygonPoints, setPolygonPoints }: RiderAddProps) => {
         setIsDrawing(false)
     }
 
-    /* -------------------------- Fullscreen Logic -------------------------- */
-
     const toggleFullscreen = () => {
-        if (!mapWrapperRef.current) return
-
+        if (!fullScreenRef.current) return
         if (!document.fullscreenElement) {
-            mapWrapperRef.current.requestFullscreen()
+            fullScreenRef.current.requestFullscreen()
         } else {
             document.exitFullscreen()
         }
@@ -143,30 +97,29 @@ const ZoneMap = ({ zones, polygonPoints, setPolygonPoints }: RiderAddProps) => {
                     Set Zone
                 </Button>
 
-                <button
+                <Button
                     type="button"
+                    size="sm"
                     disabled={!isDrawing || polygonPoints.length < 3}
-                    className="px-4 py-2 bg-green-600 text-white rounded disabled:bg-gray-300"
+                    variant="accept"
                     onClick={handleCompletePolygon}
                 >
                     Complete
-                </button>
+                </Button>
 
-                <button type="button" className="px-4 py-2 bg-red-600 text-white rounded" onClick={handleClearPolygon}>
+                <Button type="button" variant="reject" size="sm" onClick={handleClearPolygon}>
                     Clear
-                </button>
+                </Button>
             </div>
-
-            {/* ------------------------------ Map ------------------------------ */}
-            <div ref={mapWrapperRef} className="relative w-full h-screen">
-                {/* Fullscreen Button */}
-                <button
+            <div ref={fullScreenRef} className="relative w-full h-screen">
+                <Button
                     type="button"
+                    variant="new"
+                    size="sm"
+                    className="absolute top-3 right-3 z-[1000]"
+                    icon={<BsArrowsFullscreen className="text-xl" />}
                     onClick={toggleFullscreen}
-                    className="absolute top-3 right-3 z-[1000] bg-black/70 text-white px-4 py-2 rounded hover:bg-black transition"
-                >
-                    <BsArrowsFullscreen className="text-xl" />
-                </button>
+                ></Button>
 
                 <MapContainer
                     center={position ? [position.lat, position.lng] : defaultCenter}
@@ -177,23 +130,18 @@ const ZoneMap = ({ zones, polygonPoints, setPolygonPoints }: RiderAddProps) => {
                     }}
                     className="rounded-lg"
                 >
-                    <SetView center={position ? [position.lat, position.lng] : defaultCenter} />
                     <MapEvents />
-
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-
-                    {/* Existing Zones */}
                     {zones.map((zone) => {
                         if (!zone.geojson?.coordinates?.length) return null
-                        const colors = getColorFromId(zone.id)
 
                         return (
                             <Polygon
                                 key={zone.id}
                                 positions={geoJsonToLatLngs(zone.geojson.coordinates)}
                                 pathOptions={{
-                                    color: colors.stroke,
-                                    fillColor: colors.fill,
+                                    color: 'red',
+                                    fillColor: 'green',
                                     fillOpacity: 0.35,
                                     weight: 2,
                                 }}
@@ -202,8 +150,6 @@ const ZoneMap = ({ zones, polygonPoints, setPolygonPoints }: RiderAddProps) => {
                             </Polygon>
                         )
                     })}
-
-                    {/* Drawing Zone */}
                     {polygonPoints.length > 0 && (
                         <>
                             {polygonPoints.length >= 3 && (
@@ -226,8 +172,17 @@ const ZoneMap = ({ zones, polygonPoints, setPolygonPoints }: RiderAddProps) => {
                                 }}
                             />
 
-                            {polygonPoints.map((p, i) => (
-                                <Marker key={i} position={[p.lat, p.lng]} icon={PinIcon} />
+                            {polygonPoints?.map((item, idx) => (
+                                <Marker
+                                    key={idx}
+                                    position={[item.lat, item.lng]}
+                                    icon={PinIcon}
+                                    eventHandlers={{
+                                        click: () => {
+                                            setPolygonPoints((prev) => prev.filter((_, index) => index !== idx))
+                                        },
+                                    }}
+                                />
                             ))}
                         </>
                     )}

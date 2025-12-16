@@ -15,7 +15,7 @@ import { FaMapMarked } from 'react-icons/fa'
 import DialogConfirm from '@/common/DialogConfirm'
 import { Field, Form, Formik } from 'formik'
 import FormButton from '@/components/ui/Button/FormButton'
-import { Point } from '../riderZoneUtils/riderZoneCommon'
+import { AddZoneArray, Point } from '../riderZoneUtils/riderZoneCommon'
 import ZoneMap from '../riderZoneUtils/ZoneMap'
 
 const RiderZoneTable = () => {
@@ -143,24 +143,24 @@ const RiderZoneTable = () => {
                     <Formik initialValues={{}} onSubmit={handleSubmit}>
                         {() => (
                             <Form className="space-y-6">
-                                <FormContainer className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <FormItem label="Name">
-                                        <Field type="text" placeholder="Enter Name" component={Input} name="name" />
-                                    </FormItem>
-
-                                    <FormItem label="Code">
-                                        <Field type="text" placeholder="Enter Code" component={Input} name="code" />
-                                    </FormItem>
-
-                                    <FormItem label="Is Active">
-                                        <Field type="checkbox" component={Switcher} name="is_active" />
-                                    </FormItem>
+                                <FormContainer className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                    {AddZoneArray?.map((item, key) => {
+                                        return (
+                                            <FormItem key={key} label={item?.label}>
+                                                <Field
+                                                    placeholder={'Enter ' + item?.label}
+                                                    type={item?.type}
+                                                    component={item?.type === 'checkbox' ? Switcher : Input}
+                                                    name={item?.name}
+                                                />
+                                            </FormItem>
+                                        )
+                                    })}
+                                    <FormButton value="Submit" className="w-full md:w-auto" />
                                 </FormContainer>
+
                                 <div>
                                     <ZoneMap zones={serviceData} polygonPoints={polygonPoints} setPolygonPoints={setPolygonPoints} />
-                                </div>
-                                <div className="pt-4">
-                                    <FormButton value="Submit" className="w-full md:w-auto" />
                                 </div>
                             </Form>
                         )}
