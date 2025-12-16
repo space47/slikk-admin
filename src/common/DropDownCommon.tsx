@@ -9,9 +9,10 @@ interface Props {
         label: string
         value: string
     }[]
+    handleRemove?: () => void
 }
 
-const DropDownCommon = ({ Options, currentSelectedPage, handleSelect }: Props) => {
+const DropDownCommon = ({ Options, currentSelectedPage, handleSelect, handleRemove }: Props) => {
     return (
         <Button variant="gray" color="gray" size="sm" className="items-center flex justify-center m-1">
             <Dropdown
@@ -45,10 +46,11 @@ const DropDownCommon = ({ Options, currentSelectedPage, handleSelect }: Props) =
                 onSelect={handleSelect}
             >
                 {Options?.map((item, key) => (
-                    <DropdownItem
-                        key={key}
-                        eventKey={item.value}
-                        className="
+                    <>
+                        <DropdownItem
+                            key={key}
+                            eventKey={item.value}
+                            className="
                             px-4 py-2.5
                             text-sm
                             font-medium
@@ -66,15 +68,24 @@ const DropDownCommon = ({ Options, currentSelectedPage, handleSelect }: Props) =
                             last:border-b-0
                             flex items-center
                         "
-                    >
-                        <span className="truncate">{item?.label}</span>
-                        {currentSelectedPage?.value === item.value && (
-                            <svg className="ml-2 h-4 w-4 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                        )}
-                    </DropdownItem>
+                        >
+                            <span className="truncate">{item?.label}</span>
+                            {currentSelectedPage?.value === item.value && (
+                                <svg
+                                    className="ml-2 h-4 w-4 text-blue-500 flex-shrink-0"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                            )}
+                        </DropdownItem>
+                    </>
                 ))}
+                <div className="bg-red-500 text-white flex items-center justify-center p-2 rounded-md" onClick={handleRemove}>
+                    Clear
+                </div>
             </Dropdown>
         </Button>
     )

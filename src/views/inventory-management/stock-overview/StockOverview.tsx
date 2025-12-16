@@ -99,6 +99,7 @@ const StockOverview = () => {
             const filteredObjects = Object.fromEntries(Object.entries(body).filter(([, val]) => val !== ''))
             const response = await axiosInstance.patch(`inventory/${id}`, filteredObjects)
             successMessage(response)
+            refetch()
         } catch (error) {
             if (error instanceof AxiosError) {
                 errorMessage(error || 'Failed to Update')
