@@ -62,9 +62,7 @@ const StockOverview = () => {
     const { data, responseData, totalData, responseStatus, refetch, loading } = useFetchApi<Stock>({ url: query, initialData: [] })
 
     useEffect(() => {
-        if (responseData) {
-            setStockCount(responseData?.stock_count)
-        }
+        if (responseData) setStockCount(responseData?.stock_count)
     }, [responseData])
 
     const handleOpenModal = (img: any) => {
@@ -96,7 +94,6 @@ const StockOverview = () => {
         console.log(originalQuantity, originalLocation)
         const location = updatedLocation[id] || ''
         const quantity = updatedQuantities[id] != null ? Number(updatedQuantities[id]) : ''
-
         try {
             const body = { quantity: quantity, location: location }
             const filteredObjects = Object.fromEntries(Object.entries(body).filter(([, val]) => val !== ''))
@@ -128,17 +125,11 @@ const StockOverview = () => {
 
     const handleDownload = async () => {
         setIsDownloading(true)
-        notification.info({
-            message: 'Download in process',
-        })
+        notification.info({ message: 'Download in process' })
         try {
             let filterValue = ''
-            if (globalFilter) {
-                filterValue = `&${currentSelectedPage?.value}=${encodeURIComponent(globalFilter ?? '')}`
-            }
-            const response = await axiosInstance.get(`inventory?download=true&${typeFetch}${filterValue}`, {
-                responseType: 'blob',
-            })
+            if (globalFilter) filterValue = `&${currentSelectedPage?.value}=${encodeURIComponent(globalFilter ?? '')}`
+            const response = await axiosInstance.get(`inventory?download=true&${typeFetch}${filterValue}`, { responseType: 'blob' })
             commonDownload(response, `All-StockOverview.csv`)
         } catch (error) {
             console.error('Error downloading the file:', error)
@@ -147,7 +138,69 @@ const StockOverview = () => {
         }
     }
 
-    console.log('type fetch is', typeFetch)
+    const renderButtonUI = () => {
+        return (
+            <div className="flex flex-wrap gap-3">
+                <div>
+                    <Button variant="blue" icon={<FiPlusCircle className="text-lg" />} onClick={() => navigate(`/app/updateInventory`)}>
+                        Update Inventory
+                    </Button>
+                </div>
+                <Button variant="gray" icon={<HiFilter className="text-lg" />} onClick={() => setShowDrawer(true)}>
+                    Filters
+                </Button>
+                <Button
+                    disabled={isDownloading}
+                    icon={<IoMdDownload className="text-lg" />}
+                    loading={isDownloading}
+                    onClick={handleDownload}
+                >
+                    Export Data
+                </Button>
+            </div>
+        )
+    }
+
+    const renderSearchUI = () => {
+        return (
+            <div className="flex flex-col lg:flex-row gap-5 mb-3">
+                <div className="flex-1 flex flex-col md:flex-row gap-3">
+                    <div className="flex-1 relative">
+                        <div className="relative">
+                            <input
+                                type="search"
+                                placeholder="Search by SKU, product name..."
+                                value={globalFilter}
+                                className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                                onChange={(e) => setGlobalFilter(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault()
+                                        handleSearch()
+                                    }
+                                }}
+                            />
+                        </div>
+                    </div>
+                    <div className="flex gap-3">
+                        <Button variant="blue" icon={<HiSearch className="text-lg" />} onClick={handleSearch}></Button>
+                        <div className="min-w-[160px]">
+                            <Select
+                                size="sm"
+                                isSearchable={true}
+                                value={FilterArray.find((option) => currentSelectedPage?.value === option?.value)}
+                                options={FilterArray}
+                                className="w-full"
+                                onChange={(option) => {
+                                    if (option) setCurrentSelectedPage(option)
+                                }}
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
 
     if (responseStatus === 403) {
         return <AccessDenied />
@@ -164,45 +217,7 @@ const StockOverview = () => {
                     <p className="text-gray-500 dark:text-gray-400 mt-1">Manage and track Slikk inventory</p>
                 </div>
                 <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-5 md:p-6">
-                    <div className="flex flex-col lg:flex-row gap-5 mb-3">
-                        <div className="flex-1 flex flex-col md:flex-row gap-3">
-                            <div className="flex-1 relative">
-                                <div className="relative">
-                                    <input
-                                        type="search"
-                                        placeholder="Search by SKU, product name..."
-                                        value={globalFilter}
-                                        className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 shadow-sm"
-                                        onChange={(e) => setGlobalFilter(e.target.value)}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                                e.preventDefault()
-                                                handleSearch()
-                                            }
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                            <div className="flex gap-3">
-                                <Button variant="blue" icon={<HiSearch className="text-lg" />} onClick={handleSearch}></Button>
-                                <div className="min-w-[160px]">
-                                    <Select
-                                        size="sm"
-                                        isSearchable={true}
-                                        value={FilterArray.find((option) => currentSelectedPage?.value === option?.value)}
-                                        options={FilterArray}
-                                        className="w-full"
-                                        onChange={(option) => {
-                                            if (option) {
-                                                setCurrentSelectedPage(option)
-                                            }
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
+                    {renderSearchUI()}
                     <div className="mb-4 mt-4 flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
                         <div className="w-full xl:w-1/2 md:w-1/2">
                             <div className="flex items-center gap-2 mb-1">
@@ -220,30 +235,7 @@ const StockOverview = () => {
                                 }}
                             />
                         </div>
-                        <div className="flex flex-wrap gap-3">
-                            <div>
-                                <Button
-                                    variant="blue"
-                                    icon={<FiPlusCircle className="text-lg" />}
-                                    onClick={() => navigate(`/app/updateInventory`)}
-                                >
-                                    Update Inventory
-                                </Button>
-                            </div>
-
-                            <Button variant="gray" icon={<HiFilter className="text-lg" />} onClick={() => setShowDrawer(true)}>
-                                Filters
-                            </Button>
-
-                            <Button
-                                disabled={isDownloading}
-                                icon={<IoMdDownload className="text-lg" />}
-                                loading={isDownloading}
-                                onClick={handleDownload}
-                            >
-                                Export Data
-                            </Button>
-                        </div>
+                        {renderButtonUI()}
                     </div>
 
                     <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-800 border border-blue-100 dark:border-gray-700 rounded-xl p-5 mb-6">

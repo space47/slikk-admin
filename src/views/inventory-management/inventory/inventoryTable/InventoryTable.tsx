@@ -192,7 +192,7 @@ const InventoryTable = () => {
                 </div>
             )}
             {data?.length > 0 && (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 ">
                     <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-800 border border-blue-100 dark:border-gray-700 rounded-xl p-5 mb-6">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
