@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents, Polygon, Polyline, Tooltip } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import * as L from 'leaflet'
@@ -8,6 +8,8 @@ import iconShadow from 'leaflet/dist/images/marker-shadow.png'
 import { Point } from './riderZoneCommon'
 import store, { useAppSelector } from '@/store'
 import { USER_PROFILE_DATA } from '@/store/types/company.types'
+import { BsArrowsFullscreen } from 'react-icons/bs'
+import { Button } from '@/components/ui'
 
 /* ---------------------------------- Icons --------------------------------- */
 
@@ -73,10 +75,7 @@ const ZoneMap = ({ zones, polygonPoints, setPolygonPoints }: RiderAddProps) => {
     const position = useMemo(() => {
         return storeData ? { lat: (storeData as any).latitude, lng: (storeData as any).longitude } : null
     }, [storeData])
-
-    // const [position] = useState<Point | null>(location)
     const [isDrawing, setIsDrawing] = useState(false)
-    const [isFullscreen, setIsFullscreen] = useState(true) // Set to true by default
 
     const mapWrapperRef = useRef<HTMLDivElement | null>(null)
 
@@ -130,34 +129,19 @@ const ZoneMap = ({ zones, polygonPoints, setPolygonPoints }: RiderAddProps) => {
 
         if (!document.fullscreenElement) {
             mapWrapperRef.current.requestFullscreen()
-            setIsFullscreen(true)
         } else {
             document.exitFullscreen()
-            setIsFullscreen(false)
         }
     }
 
-    useEffect(() => {
-        const onExit = () => {
-            if (!document.fullscreenElement) {
-                setIsFullscreen(false)
-            }
-        }
-        document.addEventListener('fullscreenchange', onExit)
-        return () => document.removeEventListener('fullscreenchange', onExit)
-    }, [])
-
     const polygonLatLngs = polygonPoints.map((p) => [p.lat, p.lng] as [number, number])
-
-    /* -------------------------------- Render ------------------------------ */
 
     return (
         <div className="flex flex-col gap-4">
-            {/* ---------------------------- Controls ---------------------------- */}
             <div className="flex gap-3">
-                <button type="button" className="px-4 py-2 bg-blue-600 text-white rounded" onClick={handleSetZone}>
+                <Button type="button" size="sm" variant={isDrawing ? 'gray' : 'blue'} disabled={isDrawing} onClick={handleSetZone}>
                     Set Zone
-                </button>
+                </Button>
 
                 <button
                     type="button"
@@ -181,7 +165,7 @@ const ZoneMap = ({ zones, polygonPoints, setPolygonPoints }: RiderAddProps) => {
                     onClick={toggleFullscreen}
                     className="absolute top-3 right-3 z-[1000] bg-black/70 text-white px-4 py-2 rounded hover:bg-black transition"
                 >
-                    {isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+                    <BsArrowsFullscreen className="text-xl" />
                 </button>
 
                 <MapContainer
