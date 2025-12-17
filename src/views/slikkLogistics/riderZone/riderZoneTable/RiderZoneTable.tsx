@@ -51,12 +51,12 @@ const RiderZoneTable = () => {
 
     useEffect(() => {
         if (addResponse.isSuccess) {
-            notification.success({ message: 'Successfully updates' })
+            notification.success({ message: 'Successfully added new zone' })
             refetch()
             setAddZones(false)
         }
         if (addResponse.isError) {
-            notification.error({ message: (addResponse.error as any)?.data?.message || 'Failed to update' })
+            notification.error({ message: (addResponse.error as any)?.data?.message || 'Failed to add zone' })
         }
     }, [addResponse.isSuccess, addResponse.isError])
 
