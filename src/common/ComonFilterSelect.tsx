@@ -4,13 +4,13 @@ import { useAppDispatch, useAppSelector } from '@/store'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { notification } from 'antd'
+import { notification, Tag } from 'antd'
 import { Field, FieldProps, useFormikContext } from 'formik'
 import React, { useEffect, useMemo, useReducer, useState } from 'react'
 import { IoMdAddCircle } from 'react-icons/io'
 import { MdCancel } from 'react-icons/md'
 import { beforeUpload } from './beforeUpload'
-import { FaSearch } from 'react-icons/fa'
+import { FaDownload, FaSearch } from 'react-icons/fa'
 import EasyTable from './EasyTable'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import TabList from '@/components/ui/Tabs/TabList'
@@ -77,7 +77,8 @@ const CommonFilterSelect = ({ setFilterId, filterId, isOnchange, isExclude, isCs
     const [extraFields, setExtraFields] = useState(false)
     const [skuInput, setSkuInput] = useState('')
     const [nameInput, setNameInput] = useState('')
-    console.log(filtersData)
+    const [storeData, setStoreData] = useState<any>()
+    console.log('inportant logs', filtersData, filterId)
 
     const TabsArray = [
         { label: `SELECT ${isExclude ? 'EXCLUDE' : ''} FILTERS`, value: 'method_1' },
@@ -140,6 +141,7 @@ const CommonFilterSelect = ({ setFilterId, filterId, isOnchange, isExclude, isCs
             try {
                 const res = await axioisInstance.get(`/product/search/criteria?id=${filterId}`)
                 setData && setData(res?.data?.data)
+                setStoreData(res?.data?.data)
                 const searchData = res?.data?.data?.search_data
                 if (!searchData) return
 
@@ -199,6 +201,26 @@ const CommonFilterSelect = ({ setFilterId, filterId, isOnchange, isExclude, isCs
             sendFilterData(lastElement)
             return updatedFilters
         })
+    }
+
+    const convertToCSV = (objArray: string[]) => {
+        const array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray
+        let str = ''
+        for (let i = 0; i < array.length; i++) {
+            str = str + array[i] + '\r\n'
+        }
+        return str
+    }
+
+    const handleDownloadCsv = (data: string[]) => {
+        const csvData = convertToCSV(data)
+        const blob = new Blob([csvData], { type: 'text/csv' })
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `filter_${filterId}_barcodes.csv`
+        a.click()
+        window.URL.revokeObjectURL(url)
     }
 
     const handleRemoveAllFilters = () => {
@@ -263,7 +285,10 @@ const CommonFilterSelect = ({ setFilterId, filterId, isOnchange, isExclude, isCs
 
     return (
         <div className="bg-white rounded-xl shadow-sm p-6">
-            <div className="font-bold text-lg mb-7 text-gray-800 border-b pb-2">{isExclude ? 'Exclude Filters' : 'Filters'}</div>
+            <div className="font-bold text-lg mb-7 flex gap-2 text-gray-800 border-b pb-2">
+                {isExclude ? 'Exclude Filters' : 'Filters'}
+                {filterId ? <Tag className="items-center flex bg-blue-50">(Existing Filter-{filterId})</Tag> : ''}
+            </div>
 
             <Tabs defaultValue="method_1">
                 <TabList className="flex items-center justify-center gap-2 bg-gray-50 rounded-lg p-1 mb-8 sticky z-10 top-16 shadow-sm">
@@ -299,9 +324,21 @@ const CommonFilterSelect = ({ setFilterId, filterId, isOnchange, isExclude, isCs
                             <IoMdAddCircle className="text-xl" />
                             Add Filter
                         </button>
-                        <Button type="button" variant="reject" size="sm" onClick={handleRemoveAllFilters} className="px-3 py-1.5">
-                            Remove All
-                        </Button>
+                        <div className="flex gap-2 items-center">
+                            {filterId && (
+                                <Button
+                                    variant="twoTone"
+                                    size="sm"
+                                    icon={<FaDownload />}
+                                    onClick={() => handleDownloadCsv(storeData?.barcodes)}
+                                >
+                                    Download Barcode
+                                </Button>
+                            )}
+                            <Button type="button" variant="reject" size="sm" onClick={handleRemoveAllFilters} className="px-3 py-1.5">
+                                Remove All
+                            </Button>
+                        </div>
                     </div>
 
                     <div className="space-y-3">
