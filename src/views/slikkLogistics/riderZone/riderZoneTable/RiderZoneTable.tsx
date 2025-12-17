@@ -1,23 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import EasyTable from '@/common/EasyTable'
 import PageCommon from '@/common/PageCommon'
-import { Button, Card, Input, Spinner } from '@/components/ui'
+import { Button, Card, FormContainer, FormItem, Input, Spinner, Switcher } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { riderZoneService } from '@/store/services/riderZoneService'
 import { ZONE_STATE, setCount, setPage, setPageSize, setServiceData } from '@/store/slices/riderZoneSlice/riderZoneSlice'
 import { notification } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { useRiderZoneColumns } from '../riderZoneUtils/useRiderZoneColumns'
-import { useNavigate } from 'react-router-dom'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 import { useDebounceInput } from '@/commonHooks/useDebounceInput'
 import { FiPlus } from 'react-icons/fi'
 import { FaMapMarked } from 'react-icons/fa'
 import DialogConfirm from '@/common/DialogConfirm'
+import { Field, Form, Formik } from 'formik'
+import FormButton from '@/components/ui/Button/FormButton'
+import { AddZoneArray, Point } from '../riderZoneUtils/riderZoneCommon'
+import ZoneMap from '../riderZoneUtils/ZoneMap'
 
 const RiderZoneTable = () => {
     const dispatch = useAppDispatch()
-    const navigate = useNavigate()
+    const [polygonPoints, setPolygonPoints] = useState<Point[]>([])
     const [globalFilter, setGlobalFilter] = useState('')
     const { page, count, pageSize, serviceData } = useAppSelector<ZONE_STATE>((state) => state.riderZone)
     const { debounceFilter } = useDebounceInput({ globalFilter, delay: 500 })
@@ -29,6 +32,8 @@ const RiderZoneTable = () => {
         pageSize,
         name: debounceFilter,
     })
+    const [addZones, setAddZones] = useState(false)
+    const [addZone, addResponse] = riderZoneService.useCreateZoneMutation()
 
     useEffect(() => {
         if (isSuccess) {
@@ -45,10 +50,20 @@ const RiderZoneTable = () => {
     }, [isSuccess, isError, data, dispatch, error])
 
     useEffect(() => {
+        if (addResponse.isSuccess) {
+            notification.success({ message: 'Successfully updates' })
+            refetch()
+            setAddZones(false)
+        }
+        if (addResponse.isError) {
+            notification.error({ message: (addResponse.error as any)?.data?.message || 'Failed to update' })
+        }
+    }, [addResponse.isSuccess, addResponse.isError])
+
+    useEffect(() => {
         if (deleteResponse.isSuccess) {
             notification.success({ message: 'Successfully Deleted Rider Zone' })
             setIsDelete(false)
-            refetch()
         }
         if (deleteResponse.isError) {
             notification.error({ message: (deleteResponse?.error as any)?.data?.message || 'Failed to delete row' })
@@ -68,9 +83,21 @@ const RiderZoneTable = () => {
 
     const isTableEmpty = !isLoading && !isFetching && (serviceData?.length === 0 || !serviceData)
 
+    const handleSubmit = (values: any) => {
+        const geoCoords = polygonPoints?.map((point) => [point.lng, point.lat]) || []
+        addZone({
+            name: values?.name,
+            code: values?.code,
+            is_active: values?.is_active,
+            geojson: {
+                type: 'Polygon',
+                coordinates: [geoCoords],
+            },
+        })
+    }
+
     return (
         <div className="space-y-6">
-            {/* Header Section */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-800 flex gap-3 items-center">
@@ -97,18 +124,49 @@ const RiderZoneTable = () => {
 
                     <div className="flex items-center gap-3">
                         <Button
-                            variant="blue"
+                            variant={addZones ? 'reject' : 'blue'}
+                            type="button"
                             size="sm"
-                            icon={<FiPlus className="w-4 h-4" />}
-                            onClick={() => navigate('/app/riderZone/add')}
+                            icon={<FiPlus className={`${addZones ? 'rotate-45' : ''} w-4 h-4`} />}
+                            onClick={() => setAddZones((prev) => !prev)}
                         >
-                            Add Zone
+                            {addZones ? 'close' : 'Add Zone'}
                         </Button>
                     </div>
                 </div>
             </Card>
 
-            {/* Table Card */}
+            {addZones && (
+                <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+                    <h2 className="text-xl font-semibold mb-6">Add Rider Zone Details</h2>
+
+                    <Formik initialValues={{}} onSubmit={handleSubmit}>
+                        {() => (
+                            <Form className="space-y-6">
+                                <FormContainer className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                    {AddZoneArray?.map((item, key) => {
+                                        return (
+                                            <FormItem key={key} label={item?.label}>
+                                                <Field
+                                                    placeholder={'Enter ' + item?.label}
+                                                    type={item?.type}
+                                                    component={item?.type === 'checkbox' ? Switcher : Input}
+                                                    name={item?.name}
+                                                />
+                                            </FormItem>
+                                        )
+                                    })}
+                                    <FormButton value="Submit" className="w-full md:w-auto" />
+                                </FormContainer>
+
+                                <div>
+                                    <ZoneMap zones={serviceData} polygonPoints={polygonPoints} setPolygonPoints={setPolygonPoints} />
+                                </div>
+                            </Form>
+                        )}
+                    </Formik>
+                </div>
+            )}
             <Card className="border-gray-200 shadow-sm overflow-hidden">
                 <div className="border-b border-gray-100 bg-gray-50/50">
                     <div className="flex items-center justify-between">
@@ -123,7 +181,6 @@ const RiderZoneTable = () => {
                 </div>
 
                 <div className="p-0">
-                    {/* Loading State */}
                     {(isLoading || isFetching) && !serviceData?.length ? (
                         <div className="flex flex-col items-center justify-center py-16 space-y-4">
                             <Spinner size={48} className="text-primary" />
@@ -135,12 +192,10 @@ const RiderZoneTable = () => {
                         </div>
                     ) : (
                         <>
-                            {/* Data Table */}
                             <div className="overflow-hidden">
                                 <EasyTable mainData={serviceData} columns={columns} page={page} pageSize={pageSize} />
                             </div>
 
-                            {/* Pagination */}
                             {count > pageSize && (
                                 <div className="border-t border-gray-100 p-4 bg-gray-50/50">
                                     <PageCommon

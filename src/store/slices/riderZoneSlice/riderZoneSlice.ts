@@ -11,7 +11,7 @@ export interface ZONE_STATE {
 const initialState: ZONE_STATE = {
     count: 0,
     page: 1,
-    pageSize: 10,
+    pageSize: 200,
     serviceData: [],
 }
 
