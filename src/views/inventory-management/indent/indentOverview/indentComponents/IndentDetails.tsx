@@ -21,6 +21,7 @@ import { HiOutlineDocumentText } from 'react-icons/hi'
 import { MdOutlineInventory } from 'react-icons/md'
 import { Select } from 'antd'
 import PageCommon from '@/common/PageCommon'
+import { IoCheckmarkDoneCircle } from 'react-icons/io5'
 
 const IndentDetails = () => {
     const { id } = useParams()
@@ -230,8 +231,12 @@ const IndentDetails = () => {
                                     >
                                         {data?.status === 'created' ? 'Approve' : 'Create'}
                                     </Button>
-                                    <Button variant="reject" size="sm" onClick={() => setIsStatusConformation('reject')}>
-                                        <FaTimesCircle className="mr-1" />
+                                    <Button
+                                        variant="reject"
+                                        size="sm"
+                                        icon={<FaTimesCircle className="mr-1" />}
+                                        onClick={() => setIsStatusConformation('reject')}
+                                    >
                                         Reject
                                     </Button>
                                 </>
@@ -246,6 +251,16 @@ const IndentDetails = () => {
                                 onClick={handleSyncToGDN}
                             >
                                 Sync To GDN
+                            </Button>
+                            <Button
+                                variant="reject"
+                                size="sm"
+                                icon={<IoCheckmarkDoneCircle />}
+                                loading={isSyncing}
+                                disabled={isSyncing}
+                                onClick={() => setIsStatusConformation('fulfilled')}
+                            >
+                                Close Indent
                             </Button>
                         </div>
                         <div className="w-full mb-6">
@@ -369,6 +384,16 @@ const IndentDetails = () => {
             {isStatusConformation === 'reject' && (
                 <DialogConfirm
                     IsDelete
+                    IsOpen={!!isStatusConformation}
+                    closeDialog={() => setIsStatusConformation('')}
+                    onDialogOk={handleStatus}
+                />
+            )}
+            {isStatusConformation === 'fulfilled' && (
+                <DialogConfirm
+                    isProceed
+                    headingName="Close Indent"
+                    label="Once the Indent is Fulfilled you cannot perform any other actions"
                     IsOpen={!!isStatusConformation}
                     closeDialog={() => setIsStatusConformation('')}
                     onDialogOk={handleStatus}

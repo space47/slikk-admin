@@ -12,6 +12,7 @@ interface ConfirmationDialogProps {
     checkBox?: boolean
     label?: string
     closeDialog?: () => void
+    isProceed?: boolean
 }
 
 const DialogConfirm = ({
@@ -24,6 +25,7 @@ const DialogConfirm = ({
     checkBox,
     closeDialog,
     label,
+    isProceed,
 }: ConfirmationDialogProps) => {
     const onDialogClose = () => {
         if (checkBox) {
@@ -55,11 +57,19 @@ const DialogConfirm = ({
                         </div>
                     </>
                 )}
+                {isProceed && (
+                    <>
+                        <div className="flex flex-col gap-4 font-bold">
+                            <h3>{headingName}</h3>
+                            <div className="text-red-700">{label}</div>
+                        </div>
+                    </>
+                )}
                 <div className="text-right mt-6">
                     <Button className="ltr:mr-2 rtl:ml-2" variant="plain" onClick={closeDialog ? closeDialog : onDialogClose}>
                         Cancel
                     </Button>
-                    {IsConfirm && (
+                    {(IsConfirm || isProceed) && (
                         <Button variant="solid" onClick={onDialogOk}>
                             CONFIRM
                         </Button>
