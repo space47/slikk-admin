@@ -49,6 +49,9 @@ export const useIndentFunctions = ({
         if (isStatusConformation === 'reject') {
             action = 'status_rejected'
         }
+        if (isStatusConformation === 'fulfilled') {
+            action = 'status_fulfilled'
+        }
         const body = {
             action,
             indent_number: data?.intent_number,
