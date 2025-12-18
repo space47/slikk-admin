@@ -91,12 +91,14 @@ const EditNewGroups = () => {
 
             const requestBody = {
                 name: values.cohort_name,
-                rules: transformConditionsToRules(values.conditions),
-                ...(values.user
-                    ? { user: values.user }
-                    : csvFile
-                      ? { user: Array.isArray(mobileNumbers) ? mobileNumbers.join(',') : '' }
-                      : {}),
+                rules: {
+                    ...transformConditionsToRules(values.conditions),
+                    ...(values.user
+                        ? { user: values.user?.split(',') }
+                        : csvFile
+                          ? { user: Array.isArray(mobileNumbers) ? mobileNumbers : [] }
+                          : {}),
+                },
             }
 
             const response = await axioisInstance.patch(`/notification/groups/${id}`, requestBody)
