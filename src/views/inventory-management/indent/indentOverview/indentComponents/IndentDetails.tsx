@@ -5,7 +5,7 @@ import { IndentDetailsTypes, IndentItem } from '@/store/types/indent.types'
 import { useItemsColumns, useItemsPickerColumns } from '../../indentUtils/useItemsColumns'
 import EasyTable from '@/common/EasyTable'
 import AccessDenied from '@/views/pages/AccessDenied'
-import { Button, Spinner, Tabs } from '@/components/ui'
+import { Button, Input, Spinner, Tabs } from '@/components/ui'
 import AssignPicker from '@/common/AssignPicker'
 import IndentUpdateModal from './IndentUpdateModal'
 import { indentService } from '@/store/services/indentService'
@@ -15,6 +15,7 @@ import DialogConfirm from '@/common/DialogConfirm'
 import { useIndentFunctions } from '../../indentUtils/useIndentFunctions'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import TabList from '@/components/ui/Tabs/TabList'
+import { useDebounceInput } from '@/commonHooks/useDebounceInput'
 
 const IndentDetails = () => {
     const { id } = useParams()
@@ -28,13 +29,17 @@ const IndentDetails = () => {
     const [selectedUsers, setSelectedUsers] = useState<string[]>([])
     const [isStatusConformation, setIsStatusConformation] = useState('')
     const [tabValue, setTabValue] = useState('false')
+    const [searchInput, setSearchInput] = useState('')
+
+    const { debounceFilter } = useDebounceInput({ globalFilter: searchInput, delay: 500 })
+
     const {
         data: detailResponseData,
         isLoading,
         error,
         isSuccess,
         refetch,
-    } = indentService.useIndentDetailsQuery({ id: id as string, is_picked: tabValue })
+    } = indentService.useIndentDetailsQuery({ id: id as string, is_picked: tabValue, sku: debounceFilter || '' })
 
     useEffect(() => {
         if (isSuccess) {
@@ -219,6 +224,18 @@ const IndentDetails = () => {
                 <div>
                     Quantity Accepted :{' '}
                     <span className="font-semibold">{data?.items?.reduce((acc, item) => acc + item.quantity_accepted, 0)}</span>
+                </div>
+            </div>
+
+            <div className="flex items-start flex-col gap-1">
+                <div className="mt-2 font-semibold">Search By</div>
+                <div className="flex w-1/2 items-center justify-between bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-3 transition-all hover:shadow-md">
+                    <Input
+                        type="search"
+                        value={searchInput}
+                        placeholder="Search by SKU... "
+                        onChange={(e) => setSearchInput(e.target.value)}
+                    />
                 </div>
             </div>
 

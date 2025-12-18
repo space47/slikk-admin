@@ -24,11 +24,12 @@ export const indentService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        indentDetails: builder.query<IndentDetailsResponseTypes, { id: string; is_picked: string }>({
+        indentDetails: builder.query<IndentDetailsResponseTypes, { id: string; is_picked: string; sku?: string }>({
             query: (params) => {
                 const parameters: Record<string, string | string[]> = {}
                 if (params.id) parameters.id = params.id.toString()
                 if (params.is_picked) parameters.is_picked = params.is_picked.toString()
+                if (params.sku) parameters.sku = params.sku.toString()
                 return {
                     url: `/indent`,
                     method: 'GET',
