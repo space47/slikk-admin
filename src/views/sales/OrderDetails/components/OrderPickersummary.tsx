@@ -95,20 +95,11 @@ const OrderPickerSummary = ({ data }: OrderPickerSummaryProps) => {
                             }}
                         />
                         <StoreSelectComponent isSingle label="Select Store" store={storeId} setStore={setStoreId} />
-                    </div>
-
-                    <div className="w-full sm:w-auto">
-                        <Button
-                            variant="accept"
-                            size="sm"
-                            disabled={!pickerChange}
-                            className="w-full sm:w-auto px-6 py-2 rounded-xl shadow-sm font-medium transition-all duration-200 
-                                       disabled:opacity-50 disabled:cursor-not-allowed 
-                                       hover:shadow-md hover:scale-[1.02]"
-                            onClick={handlePickerChange}
-                        >
-                            Change Picker
-                        </Button>
+                        <div>
+                            <Button variant="accept" size="sm" disabled={!pickerChange} onClick={handlePickerChange}>
+                                Change Picker
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>
