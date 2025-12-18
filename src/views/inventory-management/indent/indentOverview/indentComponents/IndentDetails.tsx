@@ -9,7 +9,7 @@ import { Button, Input, Tabs } from '@/components/ui'
 import AssignPicker from '@/common/AssignPicker'
 import IndentUpdateModal from './IndentUpdateModal'
 import { indentService } from '@/store/services/indentService'
-import { DetailsData } from '../../indentUtils/indent.types'
+import { DetailsData, IndentSearchOptions } from '../../indentUtils/indent.types'
 import DialogConfirm from '@/common/DialogConfirm'
 import { useIndentFunctions } from '../../indentUtils/useIndentFunctions'
 import TabNav from '@/components/ui/Tabs/TabNav'
@@ -19,10 +19,16 @@ import { FaStore, FaClipboardList, FaSync, FaCheckCircle, FaExclamationTriangle,
 import { BsFillPatchCheckFill, BsBoxSeam } from 'react-icons/bs'
 import { HiOutlineDocumentText } from 'react-icons/hi'
 import { MdOutlineInventory } from 'react-icons/md'
+import { Select } from 'antd'
+import PageCommon from '@/common/PageCommon'
 
 const IndentDetails = () => {
     const { id } = useParams()
     const [data, setData] = useState<IndentDetailsTypes | null>(null)
+    const [indentItems, setIndentItems] = useState<IndentItem[]>([])
+    const [page, setPage] = useState(1)
+    const [pageSize, setPageSize] = useState(10)
+    const [count, setCount] = useState(10)
     const location = useLocation()
     const { store_type } = location.state || ''
     const [isPickerModal, setIsPickerModal] = useState(false)
@@ -33,7 +39,7 @@ const IndentDetails = () => {
     const [isStatusConformation, setIsStatusConformation] = useState('')
     const [tabValue, setTabValue] = useState('false')
     const [searchInput, setSearchInput] = useState('')
-
+    const [dropdownValue, setDropdownValue] = useState<{ label: string; value: string } | undefined>(IndentSearchOptions[0])
     const { debounceFilter } = useDebounceInput({ globalFilter: searchInput, delay: 500 })
 
     const {
@@ -42,13 +48,32 @@ const IndentDetails = () => {
         error,
         isSuccess,
         refetch,
-    } = indentService.useIndentDetailsQuery({ id: id as string, is_picked: tabValue, sku: debounceFilter || '' })
+    } = indentService.useIndentDetailsQuery({ id: id as string, is_picked: tabValue })
+
+    const indentItemsData = indentService.useIndentItemsQuery({
+        id: id as string,
+        page,
+        pageSize,
+        is_picked: tabValue,
+        paramKey: dropdownValue?.value || '',
+        paramValue: debounceFilter || '',
+    })
 
     useEffect(() => {
         if (isSuccess) {
             setData(detailResponseData?.data || null)
         }
     }, [isSuccess, detailResponseData])
+
+    useEffect(() => {
+        if (indentItemsData.isSuccess) {
+            setIndentItems(indentItemsData?.data?.data?.results)
+            setCount(indentItemsData?.data?.data?.count)
+        }
+        if (indentItemsData.isError) {
+            setIndentItems([])
+        }
+    }, [indentItemsData.isSuccess, indentItemsData.isError, indentItemsData])
 
     const handleUpdate = (row: IndentItem) => {
         setIsEditModal(true)
@@ -77,7 +102,7 @@ const IndentDetails = () => {
         )
     }
 
-    if ((error && 'status' in error && (error.status === 403 || error.status === 401)) || (!isLoading && !data)) {
+    if ((error && 'status' in error && error.status === 403) || (!isLoading && !data)) {
         return <AccessDenied />
     }
 
@@ -253,38 +278,46 @@ const IndentDetails = () => {
                                     <MdOutlineInventory className="text-blue-600" />
                                     <span className="font-medium">Total quantity Required:</span>
                                 </div>
-                                <span className="font-bold text-lg text-gray-800">
-                                    {data?.items?.reduce((acc, item) => acc + item.quantity_required, 0)}
-                                </span>
+                                <span className="font-bold text-lg text-gray-800">{data?.total_items}</span>
                             </div>
                             <div className="bg-green-50 p-4 rounded-lg border border-green-100">
                                 <div className="flex items-center gap-2 mb-2">
                                     <FaCheckCircle className="text-green-600" />
-                                    <span className="font-medium">Quantity Accepted:</span>
+                                    <span className="font-medium">Total Accepted:</span>
                                 </div>
-                                <span className="font-bold text-lg text-gray-800">
-                                    {data?.items?.reduce((acc, item) => acc + item.quantity_accepted, 0)}
-                                </span>
+                                <span className="font-bold text-lg text-gray-800">{data?.items_picked}</span>
                             </div>
                         </div>
                         <div className="mb-6">
                             <div className="flex items-center gap-3 mb-3">
-                                <div className="relative w-full md:w-1/2 shadow-md p-4">
+                                <div className="relative w-full md:w-1/2 shadow-md p-4 flex gap-3 items-center">
                                     <Input
                                         type="search"
                                         value={searchInput}
                                         placeholder="Search by SKU... "
                                         className=" w-full rounded-lg"
-                                        onChange={(e) => setSearchInput(e.target.value)}
+                                        onChange={(e) => setSearchInput(e.target.value?.trim())}
+                                    />
+                                    <Select
+                                        allowClear
+                                        className="w-1/2"
+                                        value={dropdownValue?.label}
+                                        placeholder="Select Search Type"
+                                        options={IndentSearchOptions}
+                                        onChange={(value) => {
+                                            if (value) {
+                                                setDropdownValue(IndentSearchOptions?.find((item) => item?.value === value))
+                                            }
+                                        }}
                                     />
                                 </div>
                             </div>
                         </div>
                         <div>
-                            {data?.items && data.items?.length > 0 ? (
+                            {indentItems.length ? (
                                 <div className="mb-6">
                                     <h4 className="text-lg font-semibold text-gray-800 mb-3">Items Details</h4>
-                                    <EasyTable overflow noPage mainData={data?.items} columns={columns} />
+                                    <EasyTable overflow noPage mainData={indentItems} columns={columns} />
                                 </div>
                             ) : (
                                 <div className="text-center py-8">
@@ -293,17 +326,7 @@ const IndentDetails = () => {
                                 </div>
                             )}
                         </div>
-                        {tabValue === 'true' && data?.items && data?.items?.length > 0 ? (
-                            <div className="mt-6">
-                                <h4 className="text-lg font-semibold text-gray-800 mb-3">Picked Items</h4>
-                                <EasyTable
-                                    overflow
-                                    noPage
-                                    mainData={data?.items?.filter((item) => item?.quantity_accepted < item?.quantity_required)}
-                                    columns={columns}
-                                />
-                            </div>
-                        ) : null}
+                        <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={count} />
                     </div>
                 </div>
             </div>
