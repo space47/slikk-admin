@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useRtvProductsColumn } from '../../rtvUtils/useRtvProductsColumns'
 import PageCommon from '@/common/PageCommon'
-import { Button, Input, Spinner, Tabs } from '@/components/ui'
+import { Button, Input, Spinner, Tabs, Tooltip } from '@/components/ui'
 import RtvAssignPicker from './RtvAssignPickers'
 import { notification } from 'antd'
 import TabList from '@/components/ui/Tabs/TabList'
@@ -14,6 +14,7 @@ import TabNav from '@/components/ui/Tabs/TabNav'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 import { useDebounceInput } from '@/commonHooks/useDebounceInput'
 import RtvEditModal from './RtvEditModal'
+import { FaSync } from 'react-icons/fa'
 
 const RtvDetails = () => {
     const { rtv_number } = useParams()
@@ -227,6 +228,12 @@ const RtvDetails = () => {
                             </div>
                         ))}
 
+                    <div className="flex justify-between mb-4">
+                        <h4 className="text-lg font-semibold text-gray-800 mb-3">RTV Items Details</h4>
+                        <Tooltip title="Refresh table data">
+                            <Button variant="gray" size="sm" icon={<FaSync />} onClick={() => refetch()}></Button>
+                        </Tooltip>
+                    </div>
                     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-md overflow-hidden transition-all hover:shadow-lg">
                         <EasyTable overflow columns={columns} mainData={rtvProductsData} page={page} pageSize={pageSize} />
                     </div>
