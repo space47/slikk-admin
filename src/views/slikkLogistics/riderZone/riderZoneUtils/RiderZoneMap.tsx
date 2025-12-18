@@ -288,7 +288,16 @@ const RiderZoneMap = ({ coOrdinates, polygonPoints, setPolygonPoints }: RiderAdd
                                     }}
                                 />
                                 {polygonPoints.map((point, index) => (
-                                    <Marker key={index} position={[point.lat, point.lng]} icon={PinIcon} />
+                                    <Marker
+                                        key={index}
+                                        position={[point.lat, point.lng]}
+                                        icon={PinIcon}
+                                        eventHandlers={{
+                                            click: () => {
+                                                setPolygonPoints((prev) => prev.filter((_, idx) => idx !== index))
+                                            },
+                                        }}
+                                    />
                                 ))}
                             </>
                         )}
