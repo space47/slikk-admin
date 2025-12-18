@@ -5,7 +5,7 @@ import { IndentDetailsTypes, IndentItem } from '@/store/types/indent.types'
 import { useItemsColumns, useItemsPickerColumns } from '../../indentUtils/useItemsColumns'
 import EasyTable from '@/common/EasyTable'
 import AccessDenied from '@/views/pages/AccessDenied'
-import { Button, Input, Tabs } from '@/components/ui'
+import { Button, Input, Spinner, Tabs, Tooltip } from '@/components/ui'
 import AssignPicker from '@/common/AssignPicker'
 import IndentUpdateModal from './IndentUpdateModal'
 import { indentService } from '@/store/services/indentService'
@@ -263,12 +263,12 @@ const IndentDetails = () => {
                                     >
                                         Completed
                                     </TabNav>
-                                    <TabNav
+                                    {/* <TabNav
                                         value="true"
                                         className="px-4 py-2 text-gray-600 hover:text-blue-600 hover:border-blue-500 border-b-2 border-transparent data-[state=active]:text-blue-600 data-[state=active]:border-blue-600 transition-colors duration-200"
                                     >
                                         Force Completed
-                                    </TabNav>
+                                    </TabNav> */}
                                 </TabList>
                             </Tabs>
                         </div>
@@ -314,9 +314,25 @@ const IndentDetails = () => {
                             </div>
                         </div>
                         <div>
+                            {indentItemsData?.isLoading ||
+                                (indentItemsData?.isFetching && (
+                                    <div className="flex items-center justify-center mb-6 mt-6">
+                                        <Spinner size={20} />
+                                    </div>
+                                ))}
                             {indentItems.length ? (
                                 <div className="mb-6">
-                                    <h4 className="text-lg font-semibold text-gray-800 mb-3">Items Details</h4>
+                                    <div className="flex justify-between mb-4">
+                                        <h4 className="text-lg font-semibold text-gray-800 mb-3">Items Details</h4>
+                                        <Tooltip title="Refresh table data">
+                                            <Button
+                                                variant="gray"
+                                                size="sm"
+                                                icon={<FaSync />}
+                                                onClick={() => indentItemsData.refetch()}
+                                            ></Button>
+                                        </Tooltip>
+                                    </div>
                                     <EasyTable overflow noPage mainData={indentItems} columns={columns} />
                                 </div>
                             ) : (
