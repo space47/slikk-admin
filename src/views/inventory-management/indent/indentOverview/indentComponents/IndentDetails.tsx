@@ -228,7 +228,7 @@ const IndentDetails = () => {
             </div>
 
             <div className="flex items-start flex-col gap-1">
-                <div className="mt-2 font-semibold">Search By</div>
+                <div className="mt-2 font-semibold">Search :</div>
                 <div className="flex w-1/2 items-center justify-between bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-3 transition-all hover:shadow-md">
                     <Input
                         type="search"
