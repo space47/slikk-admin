@@ -187,7 +187,7 @@ const OrderDetails = () => {
     }
 
     return (
-        <Container className="scrollbar-hide w-full ">
+        <div className="scrollbar-hide w-full ">
             <Loading loading={loading}>
                 {!isEmpty(data) && (
                     <>
@@ -318,7 +318,7 @@ const OrderDetails = () => {
                     </>
                 )}
             </Loading>
-        </Container>
+        </div>
     )
 }
 
