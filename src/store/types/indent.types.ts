@@ -50,7 +50,7 @@ export interface IndentDetailsTypes {
     target_store: Store
     status: string
     notes: string
-    items: IndentItem[]
+    // items: IndentItem[]
     picker_items: IndentPickerItem[]
     total_items: number
     items_picked: number
@@ -59,4 +59,12 @@ export interface IndentDetailsTypes {
 export interface IndentDetailsResponseTypes {
     data: IndentDetailsTypes
     success: string
+}
+
+export interface IndentItemsResponseType {
+    status: string
+    data: {
+        count: number
+        results: IndentItem[]
+    }
 }

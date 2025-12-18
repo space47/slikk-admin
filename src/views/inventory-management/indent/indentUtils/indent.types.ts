@@ -31,3 +31,9 @@ export const DetailsData = (data: IndentDetailsTypes) => {
 
     return { detailsArray }
 }
+
+export const IndentSearchOptions = [
+    { label: 'Sku', value: 'sku' },
+    { label: 'Rack', value: 'row' },
+    { label: 'Picker', value: 'mobile' },
+]
