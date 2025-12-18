@@ -20,6 +20,7 @@ type ItemType = {
         mobile?: string
     }
     box_mapping: any
+    locations: string
 }
 
 interface props {
@@ -70,6 +71,11 @@ export const useItemsColumns = ({ handleUpdate, data }: props) => {
                 header: 'Notes',
                 accessorKey: 'notes',
                 cell: ({ row }) => <span className="italic text-gray-500">{row?.original?.notes || 'N/A'}</span>,
+            },
+            {
+                header: 'Location',
+                accessorKey: 'location',
+                cell: ({ row }) => <span className="italic text-gray-500">{row?.original?.locations || 'N/A'}</span>,
             },
             {
                 header: 'Box',
