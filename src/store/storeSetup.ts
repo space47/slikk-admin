@@ -4,12 +4,6 @@ import storage from 'redux-persist/lib/storage'
 import { PERSIST_STORE_NAME } from '@/constants/app.constant'
 import rootReducer, { RootState, AsyncReducers } from './rootReducer'
 import RtkQueryService from '@/services/RtkQueryService'
-import { remitanceApi } from './query/remitance.query'
-import { ridersService } from './services/riderServices'
-import { eventNameService } from './services/eventNameSerices'
-import { couponSeriesService } from './services/couponSeriesService'
-import { returnOrderDataService } from './services/returnOrderService'
-import { couponService } from './services/couponService'
 import OfferQueryService from '@/services/OfferQueryService'
 import { setStoreIds } from './slices/storeSelect/storeSelect.slice'
 
@@ -26,12 +20,12 @@ listenerMiddleware.startListening({
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const middlewares: any[] = [
     RtkQueryService.middleware,
-    remitanceApi.middleware,
-    ridersService.middleware,
-    eventNameService.middleware,
-    couponSeriesService.middleware,
-    returnOrderDataService.middleware,
-    couponService.middleware,
+    // remitanceApi.middleware,
+    // ridersService.middleware,
+    // eventNameService.middleware,
+    // couponSeriesService.middleware,
+    // returnOrderDataService.middleware,
+    // couponService.middleware,
     OfferQueryService.middleware,
     listenerMiddleware.middleware,
 ]

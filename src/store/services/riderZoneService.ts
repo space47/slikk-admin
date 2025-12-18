@@ -4,13 +4,14 @@ import { LiveZoneResponseType, LiveZones } from '../types/riderZone.type'
 
 export const riderZoneService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
-        liveZones: builder.query<LiveZoneResponseType, { page: number; pageSize: number }>({
+        liveZones: builder.query<LiveZoneResponseType, { page: number; pageSize: number; name?: string }>({
             query: (params) => {
                 const parameters: Record<string, string | number> = {}
                 if (params.page) parameters.p = params.page
                 if (params.pageSize) parameters.page_size = params.pageSize
+                if (params.name) parameters.name = params.name
                 return {
-                    url: `/return-order-zones/`,
+                    url: `/logistic-service-zones/`,
                     method: 'GET',
                     params: parameters,
                 }
@@ -19,7 +20,7 @@ export const riderZoneService = RtkQueryService.injectEndpoints({
         singleZones: builder.query<LiveZones, { id?: string | number }>({
             query: ({ id }) => {
                 return {
-                    url: `/return-order-zones/${id ?? ''}/`,
+                    url: `/logistic-service-zones/${id ?? ''}/`,
                     method: 'GET',
                 }
             },
@@ -28,7 +29,7 @@ export const riderZoneService = RtkQueryService.injectEndpoints({
             query: (body) => {
                 console.log('body is', body)
                 return {
-                    url: `/return-order-zones/`,
+                    url: `/logistic-service-zones/`,
                     method: 'POST',
                     body,
                 }
@@ -38,9 +39,17 @@ export const riderZoneService = RtkQueryService.injectEndpoints({
             query: ({ id, ...body }) => {
                 console.log('body is', body)
                 return {
-                    url: `/return-order-zones/${id}/`,
+                    url: `/logistic-service-zones/${id}/`,
                     method: 'PATCH',
                     body,
+                }
+            },
+        }),
+        deleteZone: builder.mutation<LiveZones, { id: number | string }>({
+            query: ({ id }) => {
+                return {
+                    url: `/logistic-service-zones/${id}/`,
+                    method: 'DELETE',
                 }
             },
         }),

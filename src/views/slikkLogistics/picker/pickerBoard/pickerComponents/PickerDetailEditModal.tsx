@@ -36,7 +36,7 @@ const PickerDetailEditModal = ({ dialogIsOpen, setIsOpen, rowDetails, isEdit }: 
         }
     }, [mobile])
 
-    const { data: pickerData } = useFetchSingleData<any>({ url: query })
+    const { data: pickerData } = useFetchSingleData<any>({ url: query || '' })
 
     const initialValueEdit = {
         first_name: isEdit && pickerData ? pickerData[0]?.user?.first_name : '',
@@ -55,7 +55,7 @@ const PickerDetailEditModal = ({ dialogIsOpen, setIsOpen, rowDetails, isEdit }: 
             mobile: values?.mobile,
             shift_start_time: values?.shift_start_time,
             shift_end_time: values?.shift_end_time,
-            store_id: values?.store?.map((item: any) => item.id),
+            store_id: values?.store?.map((item: any) => item.id)?.join(','),
         }
         console.log('body', body)
 
@@ -79,7 +79,7 @@ const PickerDetailEditModal = ({ dialogIsOpen, setIsOpen, rowDetails, isEdit }: 
         <div>
             <Dialog isOpen={dialogIsOpen} onClose={() => setIsOpen(false)} onRequestClose={() => setIsOpen(false)}>
                 <Formik enableReinitialize initialValues={initialValueEdit} onSubmit={handleSubmit}>
-                    {({ values }) => (
+                    {() => (
                         <Form>
                             <FormContainer>
                                 <FormContainer className="grid grid-cols-2 gap-2">

@@ -335,8 +335,8 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
                 </div>
 
                 <div className="flex gap-3 items-center">
-                    <Button variant="reject" disabled={isLoading} onClick={() => setIsOpen(false)} className="min-w-24">
-                        Cancel
+                    <Button variant="gray" disabled={isLoading} onClick={() => setIsOpen(false)} className="min-w-24">
+                        {`Don't Cancel`}
                     </Button>
                     <Button
                         variant="accept"

@@ -4,19 +4,21 @@ import { useParams } from 'react-router-dom'
 import { OrderSummaryTYPE } from '@/store/types/orderUserSummary.types'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { fetchUserSummary } from '@/store/slices/orderUserSummary/UserSummary.slice'
-import CartHome from './componentsHomes/CartHome'
 import { Button } from '@/components/ui'
 import BlockUserModal from './componentsHomes/BlockUserModal'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { notification } from 'antd'
 import CustomerData from './componentsHomes/CustomerData'
 import CartPaymentSummary from './componentsHomes/CartPaymentSummary'
 import CartShipping from './componentsHomes/CartShipping'
 import CartTabs from './componentsHomes/CartTabs'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
+import CartItems from './componentsHomes/CartItems'
+import { AxiosError } from 'axios'
+import { errorMessage, successMessage } from '@/utils/responseMessages'
 
 const CustomerAnalytics = () => {
     const [blockUser, setBlockUser] = useState(false)
+    const [unBlockUser, setUnBlockUser] = useState(false)
     const dispatch = useAppDispatch()
     const { mobile } = useParams<{ mobile: string }>()
 
@@ -28,14 +30,15 @@ const CustomerAnalytics = () => {
         }
     }, [dispatch])
 
-    const handleBlockUser = async () => {
+    const handleBlockUser = async (status: string) => {
         const body = { mobile: mobile }
         try {
-            const response = await axioisInstance.post(`/merchant/user/block`, body)
-            notification.success({ message: response?.data?.message || 'Successfully blacklisted user' })
-        } catch (error: any) {
-            notification.error({ message: error?.response?.data?.message || error?.response?.data?.data.message || 'Failed to block User' })
-            console.log(error)
+            const response = await axioisInstance.post(`/merchant/user/${status}`, body)
+            successMessage(response || 'Successfully blacklisted user')
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                errorMessage(error)
+            }
         } finally {
             setBlockUser(false)
         }
@@ -46,40 +49,38 @@ const CustomerAnalytics = () => {
 
     return (
         <div className="p-4 sm:p-6 bg-gray-50 min-h-screen dark:bg-gray-800 dark:text-white">
-            {/* Header Section */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-800 dark:text-white">Customer Analytics</h1>
-                <Button variant="new" size="sm" onClick={() => setBlockUser(true)}>
-                    Block User
-                </Button>
-            </div>
-            <div className="flex flex-col lg:flex-row w-full gap-6 mt-6 ">
-                <div className="w-full lg:w-1/2 ">
-                    {customerData ? <CustomerData data={customerData} /> : <p className="text-gray-500">Loading data...</p>}
+                <div className="flex items-center gap-2">
+                    <Button variant="accept" size="sm" onClick={() => setUnBlockUser(true)}>
+                        Unblock Block User
+                    </Button>
+                    <Button variant="new" size="sm" onClick={() => setBlockUser(true)}>
+                        Block User
+                    </Button>
                 </div>
-                <div className="w-full lg:w-1/2 flex flex-col ">
-                    <div className="flex gap-2 xl:flex-row xl:justify-between flex-col ">
-                        <div className="w-full xl:w-1/2">
-                            <CartPaymentSummary />
-                        </div>
-                        <div className="w-full xl:w-1/2">
-                            <CartShipping />
-                        </div>
-                    </div>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6 mb-6">
+                <div className="h-full">
+                    <CustomerData data={customerData} />
+                </div>
 
-                    {/* scrollable cart details */}
-                    <div className="flex-1 mt-1 overflow-y-auto pr-2">
-                        {(customerData?.cart?.cartItems ?? []).length > 0 ? (
-                            <div className="bg-white dark:bg-gray-700 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
-                                <CartHome />
-                            </div>
-                        ) : (
-                            <div className="text-lg sm:text-xl font-bold flex items-center justify-center mt-5">No Cart Available 😔</div>
-                        )}
-                    </div>
+                <div className="h-full flex flex-col gap-4">
+                    <CartPaymentSummary />
+                    <CartShipping />
                 </div>
             </div>
 
+            <div className="flex-1 mt-1 overflow-y-auto pr-2">
+                {(customerData?.cart?.cartItems ?? []).length > 0 ? (
+                    <div className="bg-white dark:bg-gray-700 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
+                        <h4 className="mt-2 mb-2">Cart Details</h4>
+                        <CartItems />
+                    </div>
+                ) : (
+                    <div className="text-lg sm:text-xl font-bold flex items-center justify-center mt-5">No Cart Available 😔</div>
+                )}
+            </div>
             <div className="mt-10">
                 <h2 className="font-bold text-2xl mb-4">Activities</h2>
                 <CartTabs customerData={customerData} />
@@ -88,7 +89,16 @@ const CustomerAnalytics = () => {
                 <BlockUserModal
                     dialogIsOpen={blockUser}
                     setIsOpen={setBlockUser}
-                    handleDialogOk={handleBlockUser}
+                    handleDialogOk={() => handleBlockUser('block')}
+                    name={customerData?.profile?.first_name}
+                />
+            )}
+            {unBlockUser && (
+                <BlockUserModal
+                    unBlock
+                    dialogIsOpen={unBlockUser}
+                    setIsOpen={setUnBlockUser}
+                    handleDialogOk={() => handleBlockUser('unblock')}
                     name={customerData?.profile?.first_name}
                 />
             )}

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import moment from 'moment'
 import React, { useMemo } from 'react'
 import { FaMoneyBillWave } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
@@ -33,12 +34,14 @@ export const useDepositColumns = ({ handleDepositClick }: props) => {
                     const link = isReturnOrder ? `/app/returnOrders/${id}` : `/app/orders/${id}`
 
                     return (
-                        <button
-                            onClick={() => navigate(link)}
+                        <a
+                            href={link}
+                            target="_blank"
+                            rel="noreferrer"
                             className="px-3 py-1 text-sm rounded-md bg-indigo-500 text-white hover:bg-indigo-600 transition-colors shadow-sm"
                         >
                             {id ?? 'N/A'}
-                        </button>
+                        </a>
                     )
                 },
             },
@@ -62,6 +65,17 @@ export const useDepositColumns = ({ handleDepositClick }: props) => {
                 accessorKey: 'deposit_amount',
                 cell: ({ row }: any) => <span>{row.original.deposit_amount ?? 'N/A'}</span>,
             },
+            {
+                header: 'Create Date',
+                accessorKey: 'create_date',
+                cell: ({ row }: any) => <span>{moment(row.original.create_date ?? 'N/A').format('YYYY-MM-DD HH:mm:ss a')}</span>,
+            },
+            {
+                header: 'Update Date',
+                accessorKey: 'update_date',
+                cell: ({ row }: any) => <span>{moment(row.original.update_date ?? 'N/A').format('YYYY-MM-DD HH:mm:ss a')}</span>,
+            },
+
             {
                 header: 'Status',
                 accessorKey: 'status',

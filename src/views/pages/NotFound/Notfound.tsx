@@ -1,5 +1,3 @@
-import Container from '@/components/shared/Container'
-import { FaLock } from 'react-icons/fa' // Import a lock icon from react-icons
 import { MdSearchOff } from 'react-icons/md'
 
 const NotFoundData = () => {

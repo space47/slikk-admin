@@ -18,6 +18,7 @@ const onRequest = async (config: InternalAxiosRequestConfig): Promise<InternalAx
         'goods/received/',
         'goods/dispatch',
         'indent',
+        'inventory',
         'inventory-location',
         'merchant/orders?p=1&page_size=100&mobile=',
     ]

@@ -1,7 +1,9 @@
-import { useFetchApi } from '@/commonHooks/useFetchApi'
-import { useMemo, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { InventoryType } from './inventoryCommon'
 import { useDebounceInput } from '@/commonHooks/useDebounceInput'
+import { AxiosError } from 'axios'
+import { errorMessage } from '@/utils/responseMessages'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 interface Props {
     searchType: { value: string; label?: string }
@@ -11,36 +13,63 @@ interface Props {
 }
 
 export const useInventoryApi = ({ searchType, store_code, typeFetch, sortByFilter }: Props) => {
+    const [data, setData] = useState<InventoryType[]>([])
+    const [responseStatus, setResponseStatus] = useState<string | number>()
+    const [totalData, setTotalData] = useState(0)
+    const [totalQuantity, setTotalQuantity] = useState(0)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
+    const [loading, setLoading] = useState(false)
     const [globalFilter, setGlobalFilter] = useState('')
     const { debounceFilter } = useDebounceInput({ globalFilter, delay: 500 })
 
-    const query = useMemo(() => {
-        let params = `p=${page}&page_size=${pageSize}` || ''
-        let sort = ''
+    const query = () => {
+        let params = `p=${page}&page_size=${pageSize}`
 
         if (typeFetch) params += `&${typeFetch}`
         if (store_code) params += `&store_code=${encodeURIComponent(store_code)}`
         if (debounceFilter) params += `&${searchType.value}=${encodeURIComponent(debounceFilter)}`
-        if (sortByFilter) sort = `&sort=${sortByFilter}`
+        if (sortByFilter) params += `&sort=${sortByFilter}`
 
-        return `/inventory-location?${params}${sort}`
+        return `/inventory-location?${params}`
+    }
+
+    const refetch = useCallback(async () => {
+        setLoading(true)
+        try {
+            const res = await axioisInstance.get(query())
+            setTotalData(res?.data?.data?.count || 0)
+            setTotalQuantity(res?.data?.data?.total_quantity || 0)
+            setData(res?.data?.data?.results || [])
+            setResponseStatus(res?.status)
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                errorMessage(error)
+                setData([])
+                setResponseStatus(error.response?.status)
+            }
+        } finally {
+            setLoading(false)
+        }
     }, [page, pageSize, debounceFilter, searchType.value, store_code, typeFetch, sortByFilter])
 
-    const { data, responseStatus, totalData, loading } = useFetchApi<InventoryType>({ url: query })
+    useEffect(() => {
+        refetch()
+    }, [refetch])
 
     return {
         data,
+        totalQuantity,
         responseStatus,
         totalData,
         setPage,
         setPageSize,
         setGlobalFilter,
         page,
+        query,
         pageSize,
         globalFilter,
-        query,
         loading,
+        refetch,
     }
 }

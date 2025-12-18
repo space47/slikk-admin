@@ -413,6 +413,7 @@ const RiderDetails = () => {
             )}
             {isCheckModal && (
                 <RiderCheckinModal
+                    refetch={refetch}
                     dialogIsOpen={isCheckModal}
                     setIsOpen={setIsCheckModal}
                     mobile={mobileForParticularRider}
@@ -422,6 +423,7 @@ const RiderDetails = () => {
             {isCheckOutModal && (
                 <RiderCheckinModal
                     checkOutRider
+                    refetch={refetch}
                     dialogIsOpen={isCheckOutModal}
                     setIsOpen={setIsCheckOutModal}
                     mobile={mobileForParticularRider}

@@ -2,6 +2,7 @@
 import { Item, REMITANCE } from '@/store/types/remitance.types'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
+import moment from 'moment'
 
 interface RemitanceApiProps {
     brandValue: any
@@ -31,7 +32,9 @@ const RemitanceApis = ({
     const fetchRemitanceApi = async () => {
         try {
             const brandData = brandValue ? `&brand=${encodeURIComponent(brandValue?.name)}` : ''
-            const response = await axioisInstance.get(`/merchant/product/sales?from=${from}&to=${ToDate}${brandData}`)
+            const response = await axioisInstance.get(
+                `/merchant/product/sales?from=${moment().startOf('week').format('YYYY-MM-DD')}&to=${moment().endOf('week').format('YYYY-MM-DD')}${brandData}`,
+            )
             const remitanceData = response.data?.data.items
             setFullRemitanceResponse(response.data?.data)
             setRemitance(remitanceData)

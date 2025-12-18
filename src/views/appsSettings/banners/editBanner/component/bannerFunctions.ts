@@ -58,50 +58,52 @@ export const ImageHandlerBanners = async (values: any, webImagview: string[], mo
     const processImageUpload = async (imageArray: any[], currentImage: string) => {
         return imageArray.length > 0 ? await handleimage('product', imageArray) : currentImage || ''
     }
-    const processVideoUpload = async (videoArray: any[], currentvideo: string) => {
-        return videoArray.length > 0 ? await handleVideo(videoArray) : currentvideo || ''
+
+    const processVideoUpload = async (videoArray: any[], currentVideo: string) => {
+        return videoArray.length > 0 ? await handleVideo(videoArray) : currentVideo || ''
     }
-    const webImageUpload = await processImageUpload(values.image_web_array, values.image_web)
-    const webAspectratio =
-        values.image_web_array?.length > 0
-            ? await calculateAspectRatio(values.image_web_array)
-            : values.image_web
-              ? await calculateAspectRatioFromStrings(webImagview)
-              : values?.extra_attributes?.web_aspect_ratio || null
-    const mobileImageUpload = await processImageUpload(values.image_mobile_array, values.image_mobile)
-    const mobileAspectratio =
-        values.image_mobile_array?.length > 0
-            ? await calculateAspectRatio(values.image_mobile_array)
-            : values.image_mobile
-              ? await calculateAspectRatioFromStrings(mobileImagview)
-              : values?.extra_attributes?.mobile_aspect_ratio || null
-    const sectionBgWebUpload = await processImageUpload(values.section_background_web_array, values.section_background_web)
-    const sectionBgMobileUpload = await processImageUpload(values.section_background_mobile_array, values.section_background_mobile)
+    const tasks = {
+        webImageUpload: processImageUpload(values.image_web_array, values.image_web),
+        webAspectratio:
+            values.image_web_array?.length > 0
+                ? calculateAspectRatio(values.image_web_array)
+                : values.image_web
+                  ? calculateAspectRatioFromStrings(webImagview)
+                  : Promise.resolve(values?.extra_attributes?.web_aspect_ratio || null),
 
-    console.log('Aspect ratios', webAspectratio)
-    const webVideoUpload = await processVideoUpload(values?.video_web_array, values?.video_web)
-    const mobileVideoUpload = await processVideoUpload(values?.video_mobile_array, values?.video_mobile)
+        mobileImageUpload: processImageUpload(values.image_mobile_array, values.image_mobile),
+        mobileAspectratio:
+            values.image_mobile_array?.length > 0
+                ? calculateAspectRatio(values.image_mobile_array)
+                : values.image_mobile
+                  ? calculateAspectRatioFromStrings(mobileImagview)
+                  : Promise.resolve(values?.extra_attributes?.mobile_aspect_ratio || null),
 
-    const webLottieUpload =
-        values?.lottie_web_array?.length > 0 ? await processImageUpload(values?.lottie_web_array, values?.lottie_web) : ''
-    const mobileLottieUpload =
-        values?.lottie_mobile_array?.length > 0 ? await processImageUpload(values?.lottie_mobile_array, values?.lottie_mobile) : ''
+        sectionBgWebUpload: processImageUpload(values.section_background_web_array, values.section_background_web),
+        sectionBgMobileUpload: processImageUpload(values.section_background_mobile_array, values.section_background_mobile),
 
-    console.log('Web Lottie Upload:', webLottieUpload)
-    console.log('Mobile Lottie Upload:', mobileLottieUpload)
+        webVideoUpload: processVideoUpload(values?.video_web_array, values?.video_web),
+        mobileVideoUpload: processVideoUpload(values?.video_mobile_array, values?.video_mobile),
 
-    return {
-        webImageUpload,
-        webAspectratio,
-        mobileImageUpload,
-        mobileAspectratio,
-        sectionBgWebUpload,
-        sectionBgMobileUpload,
-        webVideoUpload,
-        mobileVideoUpload,
-        webLottieUpload,
-        mobileLottieUpload,
+        webLottieUpload:
+            values?.lottie_web_array?.length > 0 ? processImageUpload(values?.lottie_web_array, values?.lottie_web) : Promise.resolve(''),
+
+        mobileLottieUpload:
+            values?.lottie_mobile_array?.length > 0
+                ? processImageUpload(values?.lottie_mobile_array, values?.lottie_mobile)
+                : Promise.resolve(''),
     }
+
+    const results = await Promise.allSettled(Object.values(tasks))
+
+    const finalResult = Object.fromEntries(
+        Object.keys(tasks).map((key, index) => {
+            const result = results[index]
+            return [key, result.status === 'fulfilled' ? result.value : null]
+        }),
+    )
+
+    return finalResult
 }
 
 export enum MediaType {
@@ -160,8 +162,8 @@ export const bannerBodyFile = (
         image_mobile: mobileImageUpload || '',
         image_web: webImageUpload || '',
         is_clickable: values?.is_clickable ?? '',
-        max_price: values?.max_price || '',
-        min_price: values?.min_price || '',
+        max_price: values?.max_price ?? '',
+        min_price: values?.min_price ?? '',
         name: values?.name || '',
         offer_id: values?.offer_id || '',
         offers: values?.offers ?? '',

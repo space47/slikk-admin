@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react'
 import moment from 'moment'
 import EasyTable from '@/common/EasyTable'
-import { Button, Input, Spinner } from '@/components/ui'
+import { Button, Dropdown, FormItem, Input, Select, Spinner } from '@/components/ui'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 import PageCommon from '@/common/PageCommon'
 import UpdateDepositModal from '../cashCollectionUtils/UpdateDepositModal'
@@ -12,18 +12,24 @@ import { CashCollection } from '@/store/types/cashCollection.types'
 import { useCashCollectionColumns } from '../cashCollectionUtils/useCashCollectionColumns'
 import { HiSearch } from 'react-icons/hi'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
-import { DATE_FORMAT, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '../cashCollectionCommon'
+import { DATE_FORMAT, DEFAULT_PAGE, DEFAULT_PAGE_SIZE, DownloadOptions } from '../cashCollectionCommon'
 import CreateCollectionModal from '../cashCollectionUtils/CreateCollectionModal'
 import { notification } from 'antd'
 import { commonDownload } from '@/common/commonDownload'
 import { AxiosError } from 'axios'
 import { errorMessage } from '@/utils/responseMessages'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import StoreSelectComponent from '@/common/StoreSelectComponent'
+import { RiderAgency } from '../../riderDetails/RiderDetailsCommon'
+import { StoreDetails } from '@/store/types/companyStore.types'
+import { FaCalendarAlt } from 'react-icons/fa'
 
 export const CashCollectionTable: React.FC = () => {
     const [cashData, setCashData] = useState<CashCollection[]>([])
     const [globalFilter, setGlobalFilter] = useState('')
     const [searchOnEnter, setSearchOnEnter] = useState('')
+    const [selectedOption, setSelectedOption] = useState('')
     const [page, setPage] = useState(DEFAULT_PAGE)
     const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
     const [count, setCount] = useState(0)
@@ -35,6 +41,8 @@ export const CashCollectionTable: React.FC = () => {
     const [isDailyDepositOpen, setIsDailyDepositOpen] = useState(false)
     const [isCreateModal, setIsCreateModal] = useState(false)
     const [downloadSpinning, setDownloadSpinning] = useState(false)
+    const [store, setStore] = useState<StoreDetails[]>([])
+    const [agency, setAgency] = useState('')
 
     const toDate = useMemo(() => moment(to).add(1, 'days').format(DATE_FORMAT), [to])
 
@@ -44,6 +52,8 @@ export const CashCollectionTable: React.FC = () => {
         page,
         pageSize,
         mobile: searchOnEnter || '',
+        agency: agency || '',
+        store_id: store?.map((item) => item?.id).join(',') || '',
     })
 
     useEffect(() => {
@@ -69,17 +79,24 @@ export const CashCollectionTable: React.FC = () => {
         }
     }, [])
 
-    const handleDownload = async () => {
+    const handleSelect = (val: string) => {
+        setSelectedOption(val)
+        handleDownload(val)
+    }
+
+    const handleDownload = async (val: string) => {
         try {
             setDownloadSpinning(true)
             notification.info({ message: 'Download in progress' })
-            const res = await axioisInstance.get(`/rider/cash/collection?from=${from}&to=${to}&download=true`)
+            const reportType = val === 'order_level' ? `&report_type=order_level` : ''
+            const res = await axioisInstance.get(`/rider/cash/collection?from=${from}&to=${toDate}&download=true${reportType}`)
             commonDownload(res, 'CashCollection.csv')
             notification.success({ message: 'Successfully completed' })
         } catch (error) {
             if (error instanceof AxiosError) errorMessage(error)
         } finally {
             setDownloadSpinning(false)
+            setSelectedOption('')
         }
     }
 
@@ -120,20 +137,53 @@ export const CashCollectionTable: React.FC = () => {
                             <HiSearch className="text-white text-xl" />
                         </button>
                     </div>
+                </div>
+                <div className="flex xl:justify-between md:justify-between flex-col xl:flex-row md:flex-row px-6 items-center shadow-md rounded-lg">
+                    <div className="items-center flex gap-2">
+                        <StoreSelectComponent label="Store" setStore={setStore} store={store} customCss="xl:w-[300px]" />
+                        <div>
+                            <FormItem label="Select Agency">
+                                <Select
+                                    isClearable
+                                    isSearchable
+                                    className="xl:w-[200px]"
+                                    options={RiderAgency}
+                                    value={RiderAgency.find((option) => option.value === agency)}
+                                    onChange={(agency) => setAgency(agency?.value as string)}
+                                />
+                            </FormItem>
+                        </div>
+                    </div>
 
-                    <div className="flex items-center flex-col xl:flex-row lg:justify-end gap-3 w-full lg:w-auto">
-                        <Button variant="new" size="sm" onClick={() => setIsCreateModal(true)}>
+                    <div className="flex gap-3 items-center xl:md:flex-row flex-col">
+                        <Button variant="new" size="sm" onClick={() => setIsCreateModal(true)} icon={<FaCalendarAlt />}>
                             Create Daily Collection
                         </Button>
+                        <div className={'border w-auto rounded-md h-auto font-bold bg-black text-white flex justify-center'}>
+                            <Dropdown
+                                className="text-xl text-white bg-white font-bold border-2 border-blue-600"
+                                title={selectedOption || 'Download Report'}
+                                onSelect={(value) => handleSelect(value.toString())}
+                            >
+                                {DownloadOptions.map((item) => (
+                                    <DropdownItem key={item.value} eventKey={item.value}>
+                                        <span className="flex items-center gap-1">
+                                            <span> {downloadSpinning && <Spinner size={30} />}</span>
+                                            <span>{item.label}</span>
+                                        </span>
+                                    </DropdownItem>
+                                ))}
+                            </Dropdown>
+                        </div>
 
-                        <Button variant="new" size="sm" onClick={handleDownload}>
-                            <span className="flex items-center gap-1">
-                                Download
-                                {downloadSpinning && <Spinner size={20} color="white" />}
-                            </span>
-                        </Button>
-
-                        <UltimateDatePicker from={from} to={to} setFrom={setFrom} setTo={setTo} handleDateChange={handleDateChange} />
+                        <UltimateDatePicker
+                            customClass="border w-auto rounded-md h-auto font-bold  bg-black text-white flex justify-center"
+                            from={from}
+                            to={to}
+                            setFrom={setFrom}
+                            setTo={setTo}
+                            handleDateChange={handleDateChange}
+                        />
                     </div>
                 </div>
 
@@ -162,8 +212,6 @@ export const CashCollectionTable: React.FC = () => {
             />
 
             <DailyDepositModal
-                to={toDate}
-                from={from}
                 isOpen={isDailyDepositOpen}
                 setIsOpen={() => setIsDailyDepositOpen(false)}
                 row={dailyRow}

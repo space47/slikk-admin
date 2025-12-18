@@ -2,10 +2,14 @@ import { LiveZones } from '@/store/types/riderZone.type'
 import { ColumnDef } from '@tanstack/react-table'
 import moment from 'moment'
 import React, { useMemo } from 'react'
-import { FaEdit } from 'react-icons/fa'
+import { FaEdit, FaTrash } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 
-export const useRiderZoneColumns = () => {
+interface props {
+    handleDelete: (x: number) => void
+}
+
+export const useRiderZoneColumns = ({ handleDelete }: props) => {
     const navigate = useNavigate()
 
     return useMemo<ColumnDef<LiveZones>[]>(
@@ -53,6 +57,15 @@ export const useRiderZoneColumns = () => {
                 header: 'Updated Date',
                 accessorKey: 'updated_at',
                 cell: ({ row }) => <span>{moment(row.original.updated_at).format('YYYY-MM-DD hh:mm:ss a')}</span>,
+            },
+            {
+                header: 'Delete Zone',
+                accessorKey: 'id',
+                cell: ({ row }) => (
+                    <div onClick={() => handleDelete(row?.original?.id)}>
+                        <FaTrash className="text-xl text-red-400" />
+                    </div>
+                ),
             },
         ],
         [],

@@ -1,38 +1,43 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormItem, FormContainer } from '@/components/ui/Form'
-import Input from '@/components/ui/Input'
-import Button from '@/components/ui/Button'
-import Checkbox from '@/components/ui/Checkbox'
-import Upload from '@/components/ui/Upload'
-import { Field, Form, Formik } from 'formik'
-import type { FieldProps } from 'formik'
+import { Formik } from 'formik'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useEffect, useState } from 'react'
-import axios from 'axios'
-import { notification } from 'antd'
+import axios, { AxiosError } from 'axios'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import moment from 'moment'
-import { Select } from '@/components/ui'
-import { beforeUpload } from '@/common/beforeUpload'
-import { Addresses, DocumentArray, FormModel, receiveAddress } from './inwardEditCommon'
+import { FormModel } from './inwardEditCommon'
+import InwardForm from '../inwardUtils/InwardForm'
+import { errorMessage, successMessage } from '@/utils/responseMessages'
+import { filterEmptyChangedValues, getChangedValues } from '@/utils/apiBodyUtility'
+import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
+import LoadingSpinner from '@/common/LoadingSpinner'
+import { textParser } from '@/common/textParser'
 
 const InwardEdit = () => {
-    const [datas, setDatas] = useState<FormModel>()
+    const [grnData, setGrnData] = useState<FormModel>()
     const [imagview, setImageView] = useState<string[]>([])
     const [showData, setShowData] = useState(false)
-    const [showImage, setShowImage] = useState(false)
-    const [docsView, setDocsView] = useState<string[]>([])
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
     const [companyData, setCompanyData] = useState<number>()
     const { grn } = useParams()
 
     const navigate = useNavigate()
 
+    const { data, loading } = useFetchSingleData<FormModel>({ url: `goods/received?grn_number=${grn}`, initialData: undefined })
+
+    console.log('data is', data)
+
+    useEffect(() => {
+        if (data) {
+            setGrnData(data)
+            setImageView(data?.images?.split(',') || [])
+        }
+    }, [data])
+
     const handleUpload = async (files: File[]) => {
         const formData = new FormData()
-        console.log('fiiiles', files)
         files.forEach((file) => {
             formData.append('file', file)
         })
@@ -46,26 +51,20 @@ const InwardEdit = () => {
             })
             console.log(response)
             const newData = response.data.url
-            setDatas(newData)
+            setGrnData(newData)
             setShowData(true)
-            notification.success({
-                message: 'Success',
-                description: response?.data?.message || 'File uploaded successfully',
-            })
+            successMessage(response)
             return newData
-        } catch (error: any) {
-            console.error('Error uploading files:', error)
-            notification.error({
-                message: 'Failure',
-                description: error?.response?.data?.message || 'File Not uploaded',
-            })
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                errorMessage(error)
+            }
             return 'Error'
         }
     }
 
     const handleimage = async (files: File[]) => {
         const formData = new FormData()
-
         files.forEach((file) => {
             formData.append('file', file)
         })
@@ -80,60 +79,38 @@ const InwardEdit = () => {
             })
             const newData = response.data.images
             setImageView(newData)
-            setShowImage(true)
-            notification.success({
-                message: 'Success',
-                description: response?.data?.message || 'Image uploaded successfully',
-            })
+            successMessage(response)
             return newData
         } catch (error: any) {
-            console.error('Error uploading files:', error)
-            notification.error({
-                message: 'Failure',
-                description: error?.response?.data?.message || 'File Not uploaded',
-            })
+            if (error instanceof AxiosError) {
+                errorMessage(error)
+            }
             return 'Error'
         }
     }
 
-    const fetchData = async () => {
-        try {
-            const response = await axioisInstance.get(`goods/received?grn_number=${grn}`)
-            const inwardData = response.data?.data
-            setDatas(inwardData)
-            setImageView(inwardData?.images ? inwardData.images.split(',') : [])
-            setDocsView(inwardData ? inwardData.document_url.split(',') : [])
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    useEffect(() => {
-        fetchData()
-    }, [])
-
     const initialValue: FormModel = {
-        select: datas?.select || '',
-        create_date: datas?.create_date ? moment(datas.create_date).format('YYYY-MM-DD') : '',
-        singleCheckbox: datas?.singleCheckbox || false,
-        file_type: datas?.file_type || '',
-        document_number: datas?.document_number || '',
-        company: datas?.company,
-        files: datas?.files || [],
+        select: grnData?.select || '',
+        create_date: grnData?.create_date ? moment(grnData.create_date).format('YYYY-MM-DD') : '',
+        singleCheckbox: grnData?.singleCheckbox || false,
+        file_type: grnData?.file_type || '',
+        document_number: grnData?.document_number || '',
+        company: grnData?.company,
+        files: grnData?.files || [],
         received_by: {
-            name: datas?.received_by?.name || '',
-            mobile: datas?.received_by?.mobile || '',
-            email: datas?.received_by?.email || '',
+            name: grnData?.received_by?.name || '',
+            mobile: grnData?.received_by?.mobile || '',
+            email: grnData?.received_by?.email || '',
         },
-        document_date: datas?.document_date ? moment(datas?.document_date).format('YYYY-MM-DD') : '',
-        origin_address: datas?.origin_address || '',
-        received_address: datas?.received_address || '',
-        slikk_owned: datas?.slikk_owned || false,
-        total_sku: datas?.total_sku || null,
-        total_quantity: datas?.total_quantity || null,
-        document: datas?.document || '',
-        images: datas?.images || '',
-        image: datas?.image || [],
+        document_date: grnData?.document_date ? moment(grnData?.document_date).format('YYYY-MM-DD') : '',
+        origin_address: grnData?.origin_address || '',
+        received_address: grnData?.received_address || '',
+        slikk_owned: grnData?.slikk_owned || false,
+        total_sku: grnData?.total_sku || null,
+        total_quantity: grnData?.total_quantity || null,
+        document: grnData?.document || '',
+        images: grnData?.images || '',
+        image: grnData?.image || [],
     }
 
     const processUpload = async (uploadHandler: any, value: any, existingValue: any) => {
@@ -153,210 +130,53 @@ const InwardEdit = () => {
     }
 
     const handleSubmit = async (values: FormModel) => {
-        console.log('values', values)
         const docsShow = await processUpload(handleUpload, values.files, values.document)
         const imageShow = values.image?.length > 0 ? await processUpload(handleimage, values.image, values.images) : ''
-
-        const validDocumentNumber = values?.document_number === datas?.document_number ? '' : values?.document_number
+        const receiverAddress = textParser(values?.received_address) || ''
+        const originAddress = textParser(values?.origin_address) || ''
 
         const formData = {
-            ...values,
-            received_by: values?.received_by?.mobile,
-            document_number: validDocumentNumber,
+            document_date: values?.document_date,
+            total_quantity: values?.total_quantity,
+            total_sku: values?.total_sku,
+            slikk_owned: values?.slikk_owned,
+            received_by: typeof values?.received_by === 'object' ? (values?.received_by as any)?.mobile : values?.received_by,
+            document_number: values?.document_number,
+            received_address: receiverAddress,
+            origin_address: originAddress,
             company: companyData,
             document: docsShow,
             images: imageShow || '',
         }
 
-        console.log('formDaata', formData)
-
-        const filteredBody = Object.fromEntries(Object.entries(formData).filter(([, value]) => value !== ''))
+        const changedValues = getChangedValues(initialValue, formData as any)
+        const filteredBody = filterEmptyChangedValues(initialValue, changedValues)
 
         try {
-            const response = await axioisInstance.patch(`goods/received/${datas?.id}`, filteredBody)
-
-            console.log(response)
-            notification.success({
-                message: 'Success',
-                description: response?.data?.message || 'GRN created Successfully',
-            })
+            const response = await axioisInstance.patch(`goods/received/${grnData?.id}`, filteredBody)
+            successMessage(response)
             navigate('/app/goods/received')
-        } catch (error: any) {
-            console.error('Error submitting form:', error)
-            notification.error({
-                message: 'Failure',
-                description: error?.response?.data?.message || 'GRN not created ',
-            })
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                errorMessage(error)
+            }
         }
     }
     return (
         <div>
+            {loading && <LoadingSpinner />}
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
-                {({ values, touched, errors, resetForm }) => (
-                    <Form className="w-full">
-                        <FormContainer>
-                            <FormContainer className="flex flex-row gap-3 ">
-                                {DocumentArray.map((item, key) => {
-                                    return (
-                                        <FormItem key={key} label={item.label} className="col-span-1 w-1/4">
-                                            <Field
-                                                type={item.type}
-                                                name={item?.name}
-                                                placeholder={`place ${item.label}`}
-                                                component={Input}
-                                            />
-                                        </FormItem>
-                                    )
-                                })}
-                            </FormContainer>
-
-                            <Field name="company">
-                                {({ form }: FieldProps<any>) => {
-                                    const selectedCompany = companyList.find((option) => option.id === form.values.company)
-
-                                    return (
-                                        <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
-                                            <div className="font-semibold">Select Company</div>
-                                            <Select
-                                                className="w-full"
-                                                options={companyList}
-                                                getOptionLabel={(option) => option.name}
-                                                getOptionValue={(option) => option.id}
-                                                value={selectedCompany || null}
-                                                onChange={(newVal) => {
-                                                    form.setFieldValue('company', newVal?.id)
-                                                    setCompanyData(newVal?.id)
-                                                }}
-                                            />
-                                        </div>
-                                    )
-                                }}
-                            </Field>
-                            <br />
-                            {receiveAddress.map((item, key) => {
-                                return (
-                                    <FormItem key={key} label={item.label} className="col-span-1 w-1/2">
-                                        <Field type={item.type} name={item?.name} placeholder={`place ${item.label}`} component={Input} />
-                                    </FormItem>
-                                )
-                            })}
-                            <FormContainer className="flex flex-row gap-3 ">
-                                {Addresses.map((item, key) => {
-                                    return (
-                                        <FormItem key={key} label={item.label} className="col-span-1 w-1/4">
-                                            <Field
-                                                type={item.type}
-                                                name={item?.name}
-                                                placeholder={`place ${item.label}`}
-                                                component={Input}
-                                            />
-                                        </FormItem>
-                                    )
-                                })}
-                            </FormContainer>
-
-                            {/* ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo */}
-
-                            <div className="flex gap-2">
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 w-full">
-                                    <div className="font-bold mb-3">Upload Supporting Document</div>
-                                    <FormContainer className=" mt-5 ">
-                                        <FormItem label="" errorMessage={errors.document as string} className="grid grid-rows-2">
-                                            <Field name="files">
-                                                {({ field, form }: FieldProps<FormModel>) => (
-                                                    <>
-                                                        <Upload
-                                                            beforeUpload={beforeUpload}
-                                                            fileList={values.files}
-                                                            onChange={(files) => {
-                                                                console.log('OnchangeFiles', files, field.name, values.files)
-                                                                form.setFieldValue('files', files)
-                                                            }}
-                                                            onFileRemove={(files) => form.setFieldValue('files', files)}
-                                                        />
-                                                    </>
-                                                )}
-                                            </Field>
-                                        </FormItem>
-                                        {showData && (
-                                            <>
-                                                <p>{datas?.document}</p>
-                                            </>
-                                        )}
-                                        <br />
-                                    </FormContainer>
-
-                                    <FormItem label="" className="col-span-1 w-[80%]">
-                                        <Field
-                                            type="text"
-                                            name="document"
-                                            placeholder="Enter Document Url or Upload docs file"
-                                            component={Input}
-                                        />
-                                    </FormItem>
-                                </FormContainer>
-
-                                {/* ...............................IMAGES.......................................... */}
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 w-full">
-                                    <div className="font-bold mb-3 mt-8">Upload Supporting Image</div>
-                                    <FormContainer className=" mt-5 ">
-                                        <div className=" image w-[50px] h-[50px] mt-5 flex gap-2  ">
-                                            {imagview ? (
-                                                imagview.map((img, index) => <img key={index} src={img} alt="img" className="rounded-xl" />)
-                                            ) : (
-                                                <p>No image</p>
-                                            )}
-                                        </div>
-                                        <FormItem
-                                            label=""
-                                            invalid={Boolean(errors.files && touched.files)}
-                                            errorMessage={errors.files as string}
-                                            className="grid grid-rows-2"
-                                        >
-                                            <Field name="image">
-                                                {({ form }: FieldProps<FormModel>) => (
-                                                    <>
-                                                        <Upload
-                                                            multiple
-                                                            beforeUpload={beforeUpload}
-                                                            fileList={values.image}
-                                                            onChange={(files) => {
-                                                                console.log('File of Image', files)
-                                                                return form.setFieldValue('image', files)
-                                                            }}
-                                                            onFileRemove={(files) => form.setFieldValue('image', files)}
-                                                        />
-                                                    </>
-                                                )}
-                                            </Field>
-                                        </FormItem>
-                                        {showImage && (
-                                            <>
-                                                <p>{imagview}</p>
-                                            </>
-                                        )}
-                                        <br />
-                                        <br />
-                                    </FormContainer>
-                                </FormContainer>
-                            </div>
-
-                            <FormItem label="SLIKK OWNED" invalid={errors.slikk_owned && touched.slikk_owned}>
-                                <Field name="slikk_owned" component={Checkbox}>
-                                    Items purchased by SLIKK
-                                </Field>
-                            </FormItem>
-
-                            <FormItem>
-                                <Button type="reset" className="ltr:mr-2 rtl:ml-2" onClick={() => resetForm()}>
-                                    Reset
-                                </Button>
-                                <Button variant="solid" type="submit">
-                                    Submit
-                                </Button>
-                            </FormItem>
-                        </FormContainer>
-                    </Form>
+                {({ values, resetForm }) => (
+                    <InwardForm
+                        isEdit
+                        companyList={companyList}
+                        datas={grnData}
+                        imagview={imagview}
+                        resetForm={resetForm}
+                        setCompanyData={setCompanyData}
+                        showData={showData}
+                        values={values}
+                    />
                 )}
             </Formik>
         </div>

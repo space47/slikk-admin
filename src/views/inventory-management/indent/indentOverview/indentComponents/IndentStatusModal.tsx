@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Dialog, Spinner } from '@/components/ui'
+import { Button, Dialog, Spinner } from '@/components/ui'
 import { indentService } from '@/store/services/indentService'
 import { IndentDetailsTypes } from '@/store/types/indent.types'
 import React, { useEffect, useState } from 'react'
 import { useItemsPickerColumns } from '../../indentUtils/useItemsColumns'
 import EasyTable from '@/common/EasyTable'
+import { IoMdRefreshCircle } from 'react-icons/io'
 
 interface Props {
     isOpen: boolean
@@ -15,7 +16,13 @@ interface Props {
 const IndentStatusModal = ({ isOpen, onClose, id }: Props) => {
     const [indentDetails, setIndentDetails] = useState<IndentDetailsTypes>()
 
-    const { data: detailResponseData, isLoading, isSuccess } = indentService.useIndentDetailsQuery({ id: id as string, is_picked: 'true' })
+    const {
+        data: detailResponseData,
+        isLoading,
+        isSuccess,
+        isFetching,
+        refetch,
+    } = indentService.useIndentDetailsQuery({ id: id as string, is_picked: 'true' })
 
     useEffect(() => {
         if (isSuccess) {
@@ -27,10 +34,15 @@ const IndentStatusModal = ({ isOpen, onClose, id }: Props) => {
 
     return (
         <Dialog isOpen={isOpen} onClose={onClose} width={800} height={600}>
-            {isLoading ? (
+            {isLoading || isFetching ? (
                 <Spinner size={30} />
             ) : (
                 <div className="p-6 bg-gray-50 rounded-xl flex flex-col h-full">
+                    <div className="flex justify-end mt-2 mb-5 ">
+                        <Button variant="blue" size="sm" icon={<IoMdRefreshCircle />} onClick={() => refetch()}>
+                            Refresh
+                        </Button>
+                    </div>
                     <div className="grid grid-cols-2 gap-4 mb-6">
                         <div className="bg-white shadow-md rounded-lg p-4 text-center">
                             <p className="text-sm text-gray-500">Total Items</p>

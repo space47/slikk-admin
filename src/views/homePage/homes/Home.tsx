@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { SalesData } from './homes.common'
 import Card from '@/components/ui/Card'
 import { RiFileList3Fill } from 'react-icons/ri'
@@ -33,9 +33,12 @@ const Home = () => {
     const [activeTab, setActiveTab] = useState('orders')
     const [viewMap, setViewMap] = useState(false)
     const navigate = useNavigate()
-    const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-    const [analyticsShow, setAnalyticsShow] = useState(false)
-    const [splitOrders, setSplitOrders] = useState(false)
+
+    const [showReportData, setShowReportData] = useState('')
+
+    const To_Date = useMemo(() => {
+        return moment(to).add(1, 'days').format('YYYY-MM-DD')
+    }, [to])
 
     const {
         data: homeData,
@@ -95,12 +98,14 @@ const Home = () => {
     const handleCompleted = (from: string, to: string) => {
         navigate('/app/orders/completed', { state: { var1: from, var2: to } })
     }
-    const handleDateChange = (dates: [Date | null, Date | null] | null) => {
-        if (dates && dates[0]) {
-            setFrom(moment(dates[0]).format('YYYY-MM-DD'))
-            setTo(dates[1] ? moment(dates[1]).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'))
+    const handleDateChange = useCallback(() => {
+        return (dates: [Date | null, Date | null] | null) => {
+            if (dates && dates[0]) {
+                setFrom(moment(dates[0]).format('YYYY-MM-DD'))
+                setTo(dates[1] ? moment(dates[1]).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'))
+            }
         }
-    }
+    }, [])
 
     const CARDDATA = [
         {
@@ -280,23 +285,25 @@ const Home = () => {
             <div className="flex items-center border-b border-gray-300 gap-2 mt-3">
                 <button
                     className={`px-4 py-2  transition-all duration-200 text-xl font-bold ${
-                        analyticsShow ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500 hover:text-green-600'
+                        showReportData === 'sessions' ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500 hover:text-green-600'
                     }`}
-                    onClick={() => setAnalyticsShow((prev) => !prev)}
+                    onClick={() => setShowReportData((prev) => (prev === 'sessions' ? '' : 'sessions'))}
                 >
                     Sessions
                 </button>
                 <button
                     className={`px-4 py-2 text-xl font-bold transition-all duration-200 ${
-                        splitOrders ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500 hover:text-green-600'
+                        showReportData === 'split_orders'
+                            ? 'border-b-2 border-green-500 text-green-600'
+                            : 'text-gray-500 hover:text-green-600'
                     }`}
-                    onClick={() => setSplitOrders((prev) => !prev)}
+                    onClick={() => setShowReportData((prev) => (prev === 'split_orders' ? '' : 'split_orders'))}
                 >
                     Split Orders
                 </button>
             </div>
 
-            {analyticsShow && (
+            {showReportData === 'sessions' && (
                 <div className="mt-4">
                     <ActiveUserTable
                         from={from}
@@ -307,7 +314,7 @@ const Home = () => {
                     />
                 </div>
             )}
-            {splitOrders && (
+            {showReportData === 'split_orders' && (
                 <div className="mt-4">
                     <ActiveUserTable
                         isTable

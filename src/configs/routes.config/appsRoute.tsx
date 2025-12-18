@@ -665,7 +665,7 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
-        key: 'appsInventoryManagement.inventoryLocation',
+        key: 'appsVendorManagement.inventoryLocation',
         path: `${APP_PREFIX_PATH}/inventoryLocation`,
         component: lazy(() => import('@/views/inventory-management/inventory/inventoryTable/InventoryTable')),
         authority: [ADMIN, USER],

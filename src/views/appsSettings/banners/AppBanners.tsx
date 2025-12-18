@@ -1,19 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useMemo, useState } from 'react'
-import Pagination from '@/components/ui/Pagination'
-import Select from '@/components/ui/Select'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { BANNER_MODEL } from './BannerCommon'
-import { notification } from 'antd'
+import { notification, Select } from 'antd'
 import EasyTable from '@/common/EasyTable'
-import { Button, Dropdown, Spinner } from '@/components/ui'
-import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import { Button, Spinner } from '@/components/ui'
 import _ from 'lodash'
 import BulkEditModal from './BulkEditModal'
 import { useBannerColumns } from './bannerUtils/BannerColumns'
-import { Option } from '@/views/org-management/sellers/sellerCommon'
-import { pageSizeOptions } from '@/views/category-management/orderlist/commontypes'
 import { useAppSelector } from '@/store'
 import { DIVISION_STATE } from '@/store/types/division.types'
 import { useFetchApi } from '@/commonHooks/useFetchApi'
@@ -23,6 +18,9 @@ import { pageNameTypes } from '@/store/types/pageSettings.types'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 import ClearCache from '@/common/ClearCache'
 import { useDebounceInput } from '@/commonHooks/useDebounceInput'
+import PageCommon from '@/common/PageCommon'
+import { GiRolledCloth } from 'react-icons/gi'
+import { FaFile, FaCopy, FaLayerGroup, FaSitemap, FaEdit, FaPlus } from 'react-icons/fa'
 
 const AppBanners = () => {
     const navigate = useNavigate()
@@ -40,7 +38,6 @@ const AppBanners = () => {
     const [bannerIdStore, setBannerIdStore] = useState<any[]>([])
     const [showBulkEditModal, setShowBulkEditModal] = useState(false)
     const [updatedPosition, setUpdatedPosition] = useState<{ [key: number]: number }>({})
-    const [sectionFilter, setSectionFilter] = useState<string>('')
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const { debounceFilter } = useDebounceInput({ globalFilter, delay: 500 })
 
@@ -96,8 +93,12 @@ const AppBanners = () => {
         if (currentSelectedSubPage) {
             subPage = `&sub_page=${encodeURIComponent(currentSelectedSubPage?.name)}`
         }
-        const divisionFilter = selectedDivision !== 'Select Division' ? `&division=${encodeURIComponent(selectedDivision)}` : ''
-        return `/banners?p=${page}&page_size=${pageSize}&name=${debounceFilter}&page=${currentSelectedPage?.value}${sectionHeading}${divisionFilter}${subPage}`
+        let division = ''
+        if (selectedDivision && selectedDivision !== 'Select Division') {
+            division = `&division=${encodeURIComponent(selectedDivision)}`
+        }
+
+        return `/banners?p=${page}&page_size=${pageSize}&name=${debounceFilter}&page=${currentSelectedPage?.value}${sectionHeading}${division}${subPage}`
     }, [
         page,
         pageSize,
@@ -111,12 +112,7 @@ const AppBanners = () => {
     ])
 
     const { data, totalData, loading } = useFetchApi<BANNER_MODEL>({ url: queryURL })
-    const filteredSectionHeadings = _.uniq(sectionHeadingArray)?.filter((item) => item.toLowerCase().includes(sectionFilter.toLowerCase()))
-
-    const handleSectionHeading = (selectedKey: string) => {
-        setSelectedHeading(selectedKey)
-        setIsSectionHeading(true)
-    }
+    const filteredSectionHeadings = _.uniq(sectionHeadingArray)
 
     const handleSelectAllBanners = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.checked) {
@@ -156,13 +152,15 @@ const AppBanners = () => {
     }
 
     const handleSelectPage = (value: string) => {
-        const selectedPage = BANNER_PAGE_NAME.find((page) => page.value === value)
+        const selectedPage = BANNER_PAGE_NAME?.find((page) => page.value === value)
         if (selectedPage) setCurrentSelectedPage(selectedPage)
     }
     const handleSelectSubPage = (value: string) => {
         const selectedPage = SUB_PAGE_NAME.find((page: any) => page.value === value)
         if (selectedPage) setCurrentSelectedSubPage(selectedPage)
     }
+
+    console.log('selected division', selectedDivision)
 
     const handleDeleteClick = (id: number) => {
         setShowDeleteModal(true)
@@ -181,158 +179,172 @@ const AppBanners = () => {
     })
 
     return (
-        <div className="shadow-md p-4 bg-gray-50 dark:bg-slate-800 rounded-lg">
-            <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 p-4 bg-white rounded-lg shadow-sm">
-                <div className="flex flex-col xl:flex-row gap-3">
-                    <input
-                        type="text"
-                        placeholder="Search by name"
-                        value={globalFilter}
-                        className="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none w-full xl:w-60"
-                        onChange={(e) => setGlobalFilter(e.target.value)}
-                    />
-                    <div className="bg-gray-200 rounded-xl font-semibold">
-                        <Dropdown
-                            className="border border-gray-300 bg-gray-200 hover:bg-gray-300 text-black font-semibold rounded-lg transition-colors"
-                            title={currentSelectedPage?.name || 'Select Page'}
-                            onSelect={handleSelectPage}
-                        >
-                            <div className="max-h-60 overflow-y-auto">
-                                {BANNER_PAGE_NAME.map((item) => (
-                                    <DropdownItem key={item.value} eventKey={item.value}>
-                                        {item.name}
-                                    </DropdownItem>
-                                ))}
-                            </div>
-                        </Dropdown>
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-900 dark:to-slate-800 p-4 md:p-6">
+            <div className="max-w-[1920px] mx-auto">
+                {/* Header Section */}
+                <div className="mb-8">
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="p-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-lg">
+                            <GiRolledCloth className="text-2xl text-white" />
+                        </div>
+                        <div>
+                            <h2 className="font-bold text-gray-900 dark:text-white">Banner Management</h2>
+                            <p className="text-gray-600 dark:text-gray-400 mt-1 text-md">Manage and organize Slikk banners</p>
+                        </div>
                     </div>
-                    <div className="bg-gray-200 rounded-xl font-semibold">
-                        <Dropdown
-                            className="border border-gray-300 bg-gray-200 hover:bg-gray-300 text-black font-semibold rounded-lg transition-colors"
-                            title={currentSelectedSubPage?.name || 'Select Sub Page'}
-                            onSelect={handleSelectSubPage}
-                        >
-                            <div className="max-h-60 overflow-y-auto">
-                                {SUB_PAGE_NAME?.map((item: any) => (
-                                    <DropdownItem key={item.value} eventKey={item.name}>
-                                        {item.name}
-                                    </DropdownItem>
-                                ))}
+                </div>
+                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-gray-200 dark:border-slate-700 p-6 mb-8">
+                    <div className="mb-6">
+                        <div className="flex justify-between mb-4">
+                            <h2 className="text-xl font-semibold text-gray-800 dark:text-white ">Filter & Search Banners</h2>
+                            <div className="flex flex-wrap items-center justify-between gap-4 border-t border-gray-200 dark:border-slate-700">
+                                <div className="flex items-center gap-3">
+                                    <ClearCache cacheKey="banner" />
+                                    {bannerIdStore.length > 0 && (
+                                        <Button variant="new" size="sm" icon={<FaEdit />} onClick={() => setShowBulkEditModal(true)}>
+                                            Bulk Edit ({bannerIdStore.length})
+                                        </Button>
+                                    )}
+                                </div>
+
+                                <Button
+                                    variant="new"
+                                    size="sm"
+                                    icon={<FaPlus className="group-hover:rotate-90 transition-transform" />}
+                                    onClick={() => navigate('/app/appSettings/banners/addNew')}
+                                >
+                                    Add New Banner
+                                </Button>
                             </div>
-                            <div
-                                className="mt-3 px-3 py-1 rounded-md text-white text-center bg-red-500 hover:bg-red-400 cursor-pointer"
-                                onClick={() => setCurrentSelectedSubPage({ name: '', value: '' })}
-                            >
-                                Clear
-                            </div>
-                        </Dropdown>
-                    </div>
-                    <div className="bg-gray-200 rounded-xl font-semibold">
-                        <Dropdown
-                            className="border border-gray-300 bg-gray-200 hover:bg-gray-300 text-black font-semibold rounded-lg transition-colors"
-                            title={selectedHeading}
-                            onSelect={handleSectionHeading}
-                        >
-                            <div className="px-2 py-1">
-                                <input
-                                    type="search"
-                                    placeholder="Search Section Heading"
-                                    value={sectionFilter}
-                                    className="w-full h-8 px-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-400"
-                                    onChange={(e) => setSectionFilter(e.target.value)}
+                        </div>
+                        <div className="relative mb-6">
+                            <input
+                                type="text"
+                                placeholder="Search banners by name..."
+                                value={globalFilter}
+                                className="pl-10 w-full p-4 border border-gray-300 dark:border-slate-600 rounded-xl bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 focus:ring-3 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition-all"
+                                onChange={(e) => setGlobalFilter(e.target.value)}
+                            />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                            <div className="space-y-2">
+                                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    <FaFile className="text-blue-500" />
+                                    Page
+                                </label>
+                                <Select
+                                    allowClear
+                                    showSearch
+                                    className="w-full"
+                                    value={currentSelectedPage?.name || undefined}
+                                    placeholder="Select Page"
+                                    options={BANNER_PAGE_NAME?.map((item: any) => ({
+                                        label: item.name,
+                                        value: item.value,
+                                    }))}
+                                    onChange={(value) => {
+                                        const item = BANNER_PAGE_NAME?.find((i: any) => i.value === value)
+                                        handleSelectPage(item?.name as string)
+                                        setCurrentSelectedPage(item || { name: '', value: '' })
+                                    }}
                                 />
                             </div>
-                            <div className="max-h-60 overflow-y-auto">
-                                {filteredSectionHeadings?.map((item, key) => (
-                                    <DropdownItem key={key} eventKey={item}>
-                                        {item}
-                                    </DropdownItem>
-                                ))}
+                            <div className="space-y-2">
+                                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    <FaCopy className="text-green-500" />
+                                    Sub-page
+                                </label>
+                                <Select
+                                    allowClear
+                                    showSearch
+                                    className="w-full"
+                                    value={currentSelectedSubPage?.value || undefined}
+                                    placeholder="Select Sub-page"
+                                    options={SUB_PAGE_NAME?.map((item: any) => ({
+                                        label: item.name,
+                                        value: item.value,
+                                    }))}
+                                    onChange={(value) => {
+                                        const item = SUB_PAGE_NAME?.find((i: any) => i.value === value)
+                                        handleSelectSubPage(item?.name)
+                                        setCurrentSelectedSubPage(item || { name: '', value: '' })
+                                    }}
+                                />
                             </div>
-                            <div
-                                className="mt-3 px-3 py-1 rounded-md text-white text-center bg-red-500 hover:bg-red-400 cursor-pointer"
-                                onClick={() => setSelectedHeading('Select Section')}
-                            >
-                                Clear
+
+                            {/* Section Select */}
+                            <div className="space-y-2">
+                                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    <FaLayerGroup className="text-purple-500" />
+                                    Section
+                                </label>
+                                <Select
+                                    allowClear
+                                    showSearch
+                                    className="w-full"
+                                    value={selectedHeading || undefined}
+                                    placeholder="Select Section"
+                                    optionFilterProp="label"
+                                    onChange={(value) => {
+                                        setSelectedHeading(value || 'Select Section')
+                                        setIsSectionHeading(!!value)
+                                    }}
+                                    options={filteredSectionHeadings.map((item) => ({
+                                        label: item,
+                                        value: item,
+                                    }))}
+                                    filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+                                />
                             </div>
-                        </Dropdown>
-                    </div>
-                    <div className="bg-gray-200  rounded-xl font-semibold ">
-                        <Dropdown
-                            className="border border-gray-600 bg-gray-200 hover:bg-gray-300 text-black font-semibold rounded-lg transition-colors"
-                            title={selectedDivision}
-                            onSelect={(e) => setSelectedDivision(e)}
-                        >
-                            <div className="max-h-40 overflow-y-auto">
-                                {DivisionArray?.map((item, key) => (
-                                    <DropdownItem key={key} eventKey={item.value}>
-                                        {item.name}
-                                    </DropdownItem>
-                                ))}
+                            <div className="space-y-2">
+                                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    <FaSitemap className="text-orange-500" />
+                                    Division
+                                </label>
+                                <Select
+                                    allowClear
+                                    showSearch
+                                    className="w-full"
+                                    value={selectedDivision || 'Select Division'}
+                                    placeholder="Select Division"
+                                    options={DivisionArray?.map((item: any) => ({
+                                        label: item.name,
+                                        value: item.value,
+                                    }))}
+                                    onChange={(value) => {
+                                        setSelectedDivision(value)
+                                    }}
+                                />
                             </div>
-                            <div
-                                className="mt-3 px-3 py-1 rounded-md text-white text-center bg-red-500 hover:bg-red-400 cursor-pointer"
-                                onClick={() => setSelectedDivision('Select Division')}
-                            >
-                                Clear
-                            </div>
-                        </Dropdown>
+                        </div>
                     </div>
                 </div>
-                <div className="flex items-center gap-3 flex-wrap">
-                    {bannerIdStore.length > 0 && (
-                        <Button
-                            variant="new"
-                            size="sm"
-                            className="bg-blue-600 hover:bg-blue-500 text-white rounded-lg px-4 py-2"
-                            onClick={() => setShowBulkEditModal(true)}
-                        >
-                            Bulk Edit
-                        </Button>
+                <div>
+                    {loading && (
+                        <div className="flex items-center justify-center mt-2 mb-2 py-8">
+                            <div className="flex items-center gap-3">
+                                <Spinner size={30} />
+                                <span className="text-gray-600 dark:text-gray-400 font-medium">Loading banners...</span>
+                            </div>
+                        </div>
                     )}
-                    <ClearCache cacheKey="banner" />
-                    <button
-                        className="bg-black hover:bg-gray-800 text-white rounded-lg px-5 py-2"
-                        onClick={() => navigate('/app/appSettings/banners/addNew')}
-                    >
-                        Add New Banner
-                    </button>
                 </div>
-            </div>
-            <div>
-                {loading && (
-                    <div className="flex items-center justify-center mt-2 mb-2">
-                        <Spinner size={30} />
-                    </div>
+                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-gray-200 dark:border-slate-700 overflow-hidden">
+                    <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
+                </div>
+                <div className="mt-6">
+                    <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={totalData} />
+                </div>
+                {showDeleteModal && <DeleteBannerModal isOpen={showDeleteModal} setIsOpen={setShowDeleteModal} bannerId={bannerId!} />}
+                {showBulkEditModal && (
+                    <BulkEditModal
+                        pageState={currentSelectedPage?.name}
+                        dialogIsOpen={showBulkEditModal}
+                        setIsOpen={setShowBulkEditModal}
+                        bannerIdStore={bannerIdStore}
+                    />
                 )}
             </div>
-            <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
-            <div className="flex items-center justify-between mt-4">
-                <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={(page) => setPage(page)} />
-                <div style={{ minWidth: 130 }}>
-                    <Select<Option>
-                        size="sm"
-                        isSearchable={false}
-                        value={pageSizeOptions.find((option) => option.value === pageSize)}
-                        options={pageSizeOptions}
-                        onChange={(option) => {
-                            if (option) {
-                                setPage(1)
-                                setPageSize(option?.value)
-                            }
-                        }}
-                    />
-                </div>
-            </div>
-            {showDeleteModal && <DeleteBannerModal isOpen={showDeleteModal} setIsOpen={setShowDeleteModal} bannerId={bannerId!} />}
-            {showBulkEditModal && (
-                <BulkEditModal
-                    pageState={currentSelectedPage?.name}
-                    dialogIsOpen={showBulkEditModal}
-                    setIsOpen={setShowBulkEditModal}
-                    bannerIdStore={bannerIdStore}
-                />
-            )}
         </div>
     )
 }

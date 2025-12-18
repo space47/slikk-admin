@@ -19,7 +19,7 @@ export interface ButtonProps extends CommonProps, Omit<ComponentPropsWithRef<'bu
     onClick?: (e: MouseEvent<HTMLButtonElement>) => void
     shape?: TypeAttributes.Shape
     size?: TypeAttributes.Size
-    variant?: 'solid' | 'twoTone' | 'plain' | 'default' | 'new' | 'accept' | 'reject' | 'pending' | 'yellow' | 'blue'
+    variant?: 'solid' | 'twoTone' | 'plain' | 'default' | 'new' | 'accept' | 'reject' | 'pending' | 'yellow' | 'blue' | 'gray'
 }
 
 type ButtonColor = {
@@ -109,7 +109,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
             textColor: `text-${buttonColor}-${buttonColorLevel} dark:text-${buttonColor}-50`,
             hoverColor: active
                 ? ''
-                : `hover:bg-${buttonColor}-500 hover:text-white dark:hover:bg-${buttonColor}-500 dark:hover:bg-opacity-30`,
+                : `hover:bg-${buttonColor}-300 hover:text-gray-500 dark:hover:bg-${buttonColor}-300 dark:hover:bg-opacity-30`,
             activeColor: `active:bg-${buttonColor}-200 dark:active:bg-${buttonColor}-500 dark:active:bg-opacity-40`,
         }
         return getBtnColor(btn)
@@ -131,6 +131,15 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
             textColor: `text-white dark:text-white`,
             hoverColor: `hover:bg-green-600 dark:hover:bg-green-700`,
             activeColor: `active:bg-green-400 dark:active:bg-green-500 dark:active:border-green-700`,
+        }
+        return getBtnColor(btn)
+    }
+    const gray = () => {
+        const btn = {
+            bgColor: `bg-gray-500 border border-gray-700 dark:bg-gray-600 dark:border-gray-800`,
+            textColor: `text-white dark:text-white`,
+            hoverColor: `hover:bg-gray-600 dark:hover:bg-gray-700`,
+            activeColor: `active:bg-gray-500 dark:active:bg-gray-500 dark:active:border-gray-700`,
         }
         return getBtnColor(btn)
     }
@@ -221,6 +230,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
                 return pendingColor()
             case 'blue':
                 return blueColor()
+            case 'gray':
+                return gray()
             default:
                 return defaultColor()
         }

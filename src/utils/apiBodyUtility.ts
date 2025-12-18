@@ -101,3 +101,23 @@ export const buildFormData = (values: Record<string, any>): FormData => {
 
     return formData
 }
+
+export const filterEmptyChangedValues = (initial: any, changed: any) => {
+    const result: any = {}
+
+    Object.keys(changed).forEach((key) => {
+        const newValue = changed[key]
+        const oldValue = initial[key]
+
+        if (newValue === '' || newValue === null || newValue === undefined) {
+            if (oldValue !== '' && oldValue !== null && oldValue !== undefined) {
+                result[key] = newValue
+            }
+            return
+        }
+
+        result[key] = newValue
+    })
+
+    return result
+}

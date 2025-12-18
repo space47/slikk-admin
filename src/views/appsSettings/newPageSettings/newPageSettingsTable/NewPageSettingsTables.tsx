@@ -2,7 +2,7 @@
 import { Button, Dropdown, Pagination, Select, Tabs } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { pageSettingsService } from '@/store/services/pageSettingService'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usePageSettingsColumns } from '../newPageSettingsUtils/usePageSettingsColumns'
 import { Option, pageSizeOptions } from '@/constants/pageUtils.constants'
@@ -32,7 +32,6 @@ import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import PageDraggavleTable from '../../pageSettings/PageDraggavleTable'
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
-import { GenericCommonTypes } from '@/common/allTypesCommon'
 import ClearCache from '@/common/ClearCache'
 
 const NewPageSettingsTables = () => {

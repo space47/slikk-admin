@@ -177,6 +177,16 @@ const GDNPaginationTable = () => {
                 cell: (info) => info.getValue(),
             },
             {
+                header: 'Updated By',
+                accessorKey: 'user',
+                cell: ({ row }) => <span>{row?.original?.user?.name}</span>,
+            },
+            {
+                header: 'Updated By Number',
+                accessorKey: 'user',
+                cell: ({ row }) => <span>{row?.original?.user?.mobile}</span>,
+            },
+            {
                 header: 'Error File',
                 accessorKey: 'error_file',
                 cell: (info) => extractErrorName(info.getValue()),

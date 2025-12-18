@@ -33,14 +33,14 @@ const GetPropertiesFromEvent = ({ label, name, customClassName, eventId, eventNa
     }, [isSuccess, eventNameList, eventName])
 
     const merged = eventNameList?.results
-        ?.map((item: any) => item.attributes)
+        ?.map((item: any) => item.attributes?.properties)
         ?.flatMap((i: any) => i)
         .reduce<Record<string, FieldType>>((acc, obj) => {
             Object.assign(acc, obj)
             return acc
         }, {})
 
-    const properties = eventName ? eventNamesData?.attributes : merged
+    const properties = eventName ? eventNamesData?.attributes?.properties : merged
 
     console.log('properties', properties)
 
