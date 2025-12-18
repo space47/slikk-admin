@@ -21,6 +21,7 @@ const onRequest = async (config: InternalAxiosRequestConfig): Promise<InternalAx
         'inventory',
         'inventory-location',
         'merchant/orders?p=1&page_size=100&mobile=',
+        'query/execute',
     ]
 
     if (storeCodes && storeCodes.length > 0 && ifGetCall) {
