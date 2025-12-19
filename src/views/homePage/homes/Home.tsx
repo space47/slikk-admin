@@ -36,9 +36,7 @@ const Home = () => {
 
     const [showReportData, setShowReportData] = useState('')
 
-    const To_Date = useMemo(() => {
-        return moment(to).add(1, 'days').format('YYYY-MM-DD')
-    }, [to])
+    const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
 
     const shouldFetch = Boolean(from && To_Date)
 
@@ -82,7 +80,11 @@ const Home = () => {
         }
     }, [isPageActive, from, to])
 
-    const { netSales, averageOrderValue, basketSize, netReturn, netReturnSales, receiverOrderValue } = HomeCalculations(homeData || null)
+    const calculations = useMemo(() => {
+        return HomeCalculations(homeData || null)
+    }, [homeData])
+
+    const { netSales, netReturn, netReturnSales, averageOrderValue, basketSize, receiverOrderValue } = calculations
 
     const handleCustomerFunction = (inputName: string) => {
         navigate(`/app/customerAnalytics/${inputName}`)
@@ -110,50 +112,54 @@ const Home = () => {
         }
     }, [])
 
-    const CARDDATA = [
-        {
-            handleClick: () => handleReceived(from, To_Date),
-            img: <RiFileList3Fill className="text-4xl mx-4 text-blue-700" />,
-            label: 'Received Orders',
-            p1Data: receiverOrderValue ?? 0,
-            p2Data: homeData?.received.total_amount?.toFixed(2),
-        },
-        {
-            handleClick: () => handleCompleted(from, To_Date),
-            img: <IoBagCheck className="text-4xl mx-4 text-green-600" />,
-            label: 'Completed Orders',
-            p1Data: homeData?.completed.count,
-            p2Data: homeData?.completed.total_amount?.toFixed(2),
-        },
-        {
-            handleClick: () => handleReturned(from, To_Date),
-            img: <IoMdReturnLeft className="text-4xl mx-4 text-red-500" />,
-            label: 'Returned Orders',
-            p1Data: netReturn,
-            p2Data: netReturnSales?.toFixed(2),
-        },
-    ]
+    const CARDDATA = useMemo(() => {
+        return [
+            {
+                handleClick: () => handleReceived(from, To_Date),
+                img: <RiFileList3Fill className="text-4xl mx-4 text-blue-700" />,
+                label: 'Received Orders',
+                p1Data: receiverOrderValue ?? 0,
+                p2Data: homeData?.received.total_amount?.toFixed(2),
+            },
+            {
+                handleClick: () => handleCompleted(from, To_Date),
+                img: <IoBagCheck className="text-4xl mx-4 text-green-600" />,
+                label: 'Completed Orders',
+                p1Data: homeData?.completed.count,
+                p2Data: homeData?.completed.total_amount?.toFixed(2),
+            },
+            {
+                handleClick: () => handleReturned(from, To_Date),
+                img: <IoMdReturnLeft className="text-4xl mx-4 text-red-500" />,
+                label: 'Returned Orders',
+                p1Data: netReturn,
+                p2Data: netReturnSales?.toFixed(2),
+            },
+        ]
+    }, [from, To_Date, receiverOrderValue, homeData, netReturn, netReturnSales])
 
-    const CARDDATA2nd = [
-        {
-            label: 'Net Sales',
-            img: <HiCurrencyRupee className="text-5xl mx-4 text-green-500 " />,
-            p1Tag: 'Amount: Rs.',
-            p1Data: netSales?.toFixed(2),
-        },
-        {
-            label: 'Average Order Value',
-            img: <FaMoneyBillTrendUp className="text-4xl mx-4 text-yellow-400 " />,
-            p1Tag: 'Value:',
-            p1Data: averageOrderValue ? averageOrderValue?.toFixed(2) : 0,
-        },
-        {
-            label: 'Average Basket Size',
-            img: <FaShoppingCart className="text-4xl mx-4 text-amber-500 " />,
-            p1Tag: 'Value:',
-            p1Data: basketSize ? basketSize.toFixed(2) : 0,
-        },
-    ]
+    const CARDDATA2nd = useMemo(() => {
+        return [
+            {
+                label: 'Net Sales',
+                img: <HiCurrencyRupee className="text-5xl mx-4 text-green-500 " />,
+                p1Tag: 'Amount: Rs.',
+                p1Data: netSales?.toFixed(2),
+            },
+            {
+                label: 'Average Order Value',
+                img: <FaMoneyBillTrendUp className="text-4xl mx-4 text-yellow-400 " />,
+                p1Tag: 'Value:',
+                p1Data: averageOrderValue ? averageOrderValue?.toFixed(2) : 0,
+            },
+            {
+                label: 'Average Basket Size',
+                img: <FaShoppingCart className="text-4xl mx-4 text-amber-500 " />,
+                p1Tag: 'Value:',
+                p1Data: basketSize ? basketSize.toFixed(2) : 0,
+            },
+        ]
+    }, [netSales, averageOrderValue, basketSize])
 
     if (accessDenied) {
         return <AccessDenied />
