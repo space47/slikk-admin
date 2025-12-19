@@ -1,59 +1,40 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import classNames from 'classnames'
 import withHeaderItem from '@/utils/hoc/withHeaderItem'
-import Button from '@/components/ui/Button'
 import Dialog from '@/components/ui/Dialog'
-import { apiGetSearchResult } from '@/services/CommonService'
 import useThemeClass from '@/utils/hooks/useThemeClass'
 import navigationIcon from '@/configs/navigation-icon.config'
 import debounce from 'lodash/debounce'
 import { HiOutlineSearch, HiChevronRight } from 'react-icons/hi'
 import { Link } from 'react-router-dom'
 import Highlighter from 'react-highlight-words'
+import appsNavigationConfig from '@/configs/navigation.config/apps.navigation.config'
+import { Input, Tooltip } from '../ui'
 
-type SearchData = {
-    title: string
-    url: string
-    icon: string
-    category: string
-    categoryTitle: string
+type MenuItem = {
+    key: string
+    path?: string
+    title?: string
+    subMenu?: MenuItem[]
 }
 
-type SearchResult = {
+type FormattedItem = {
+    key: string
     title: string
-    data: SearchData[]
+    path: string
 }
 
-const recommendedSearch: SearchResult[] = [
-    {
-        title: 'Recommended',
-        data: [
-            {
-                title: 'Documentation',
-                url: '/docs/documentation/introduction',
-                icon: 'documentation',
-                category: 'Docs',
-                categoryTitle: 'Docs',
-            },
-            {
-                title: 'Changelog',
-                url: '/docs/changelog',
-                icon: 'changeLog',
-                category: 'Docs',
-                categoryTitle: 'Docs',
-            },
-            {
-                title: 'Button',
-                url: '/ui-components/button',
-                icon: 'common',
-                category: 'Common',
-                categoryTitle: 'UI Components',
-            },
-        ],
-    },
-]
+const getLastSubMenus = (menuList: MenuItem[]): MenuItem[] =>
+    menuList.flatMap((item) => (item.subMenu?.length ? getLastSubMenus(item.subMenu) : [item]))
 
-const ListItem = (props: {
+const ListItem = ({
+    icon,
+    label,
+    url,
+    isLast,
+    keyWord,
+    onNavigate,
+}: {
     icon: string
     label: string
     url: string
@@ -61,8 +42,6 @@ const ListItem = (props: {
     keyWord: string
     onNavigate: () => void
 }) => {
-    const { icon, label, url = '', isLast, keyWord, onNavigate } = props
-
     const { textTheme } = useThemeClass()
 
     return (
@@ -77,25 +56,24 @@ const ListItem = (props: {
                 <div className="flex items-center">
                     <div
                         className={classNames(
-                            'mr-4 rounded-md ring-1 ring-slate-900/5 shadow-sm text-xl group-hover:shadow h-6 w-6 flex items-center justify-center bg-white dark:bg-gray-700',
+                            'mr-4 rounded-md ring-1 ring-slate-900/5 shadow-sm text-xl h-6 w-6 flex items-center justify-center bg-white dark:bg-gray-700',
                             textTheme,
                             'dark:text-gray-100',
                         )}
                     >
                         {icon && navigationIcon[icon]}
                     </div>
+
                     <div className="text-gray-900 dark:text-gray-300">
                         <Highlighter
                             autoEscape
-                            highlightClassName={classNames(
-                                textTheme,
-                                'underline bg-transparent font-semibold dark:text-white',
-                            )}
+                            highlightClassName={classNames(textTheme, 'underline bg-transparent font-semibold dark:text-white')}
                             searchWords={[keyWord]}
                             textToHighlight={label}
                         />
                     </div>
                 </div>
+
                 <HiChevronRight className="text-lg" />
             </div>
         </Link>
@@ -104,128 +82,119 @@ const ListItem = (props: {
 
 const _Search = ({ className }: { className?: string }) => {
     const [searchDialogOpen, setSearchDialogOpen] = useState(false)
-    const [searchResult, setSearchResult] =
-        useState<SearchResult[]>(recommendedSearch)
+    const [filteredData, setFilteredData] = useState<FormattedItem[]>([])
     const [noResult, setNoResult] = useState(false)
-
     const inputRef = useRef<HTMLInputElement>(null)
 
-    const handleReset = () => {
-        setNoResult(false)
-        setSearchResult(recommendedSearch)
-    }
+    const formattedData = useMemo(() => {
+        const lastSubMenus = getLastSubMenus(appsNavigationConfig)
+        return lastSubMenus
+            .filter((item) => item.title && item.path)
+            .map((item) => ({
+                key: item.key,
+                title: item.title!,
+                path: item.path!,
+            }))
+    }, [appsNavigationConfig])
 
     const handleSearchOpen = () => {
         setSearchDialogOpen(true)
+        setFilteredData(formattedData)
+        setNoResult(false)
     }
 
     const handleSearchClose = () => {
         setSearchDialogOpen(false)
-        if (noResult) {
-            setTimeout(() => {
-                handleReset()
-            }, 300)
-        }
+        setNoResult(false)
+        setFilteredData(formattedData)
     }
-
-    const debounceFn = debounce(handleDebounceFn, 200)
-
-    async function handleDebounceFn(query: string) {
-        console.log('Debounced search query:', query)
-        if (!query) {
-            setSearchResult(recommendedSearch)
-            return
-        }
-
-        if (noResult) {
-            setNoResult(false)
-        }
-
-        try {
-            const respond = await apiGetSearchResult<SearchResult[]>({ query })
-            console.log('API response:', respond)
-
-            if (respond.data) {
-                if (respond.data.length === 0) {
-                    setNoResult(true)
-                }
-                setSearchResult(respond.data)
-            }
-        } catch (error) {
-            console.error('Error fetching search results:', error)
-            setNoResult(true)
-        }
-    }
-
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        console.log('Search input:', e.target.value)
-        debounceFn(e.target.value)
-    }
-
-    useEffect(() => {
-        if (searchDialogOpen) {
-            const timeout = setTimeout(() => inputRef.current?.focus(), 100)
-            return () => {
-                clearTimeout(timeout)
-            }
-        }
-    }, [searchDialogOpen])
 
     const handleNavigate = () => {
         handleSearchClose()
     }
 
+    const debouncedSearch = useMemo(
+        () =>
+            debounce((value: string) => {
+                if (!value.trim()) {
+                    setFilteredData(formattedData)
+                    setNoResult(false)
+                    return
+                }
+
+                const result = formattedData.filter((item) => item.title.toLowerCase().includes(value.toLowerCase()))
+
+                setFilteredData(result)
+                setNoResult(result.length === 0)
+            }, 300),
+        [formattedData],
+    )
+
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        debouncedSearch(e.target.value)
+    }
+
+    useEffect(() => {
+        return () => {
+            debouncedSearch.cancel()
+        }
+    }, [debouncedSearch])
+
     return (
         <>
-            <div
-                className={classNames(className, 'text-2xl')}
-                onClick={handleSearchOpen}
-            >
-                <HiOutlineSearch />
+            <Tooltip title="Search for navigation">
+                <div className={classNames(className, 'text-2xl cursor-pointer md:hidden xl:hidden block')} onClick={handleSearchOpen}>
+                    <HiOutlineSearch />
+                </div>
+            </Tooltip>
+            <div className="xl:block md:block hidden" onClick={handleSearchOpen}>
+                <Input
+                    type="search"
+                    placeholder="Search Menu Items...."
+                    className=" pr-10  w-full rounded-lg border border-gray-300 dark:border-gray-700 
+                                bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                                transition-all duration-200"
+                />
             </div>
             <Dialog
-                contentClassName="p-0"
+                contentClassName="p-2"
                 isOpen={searchDialogOpen}
-                closable={false}
+                width={800}
                 onRequestClose={handleSearchClose}
+                onClose={handleSearchClose}
             >
-                <div>
+                <div className="p-5">
                     <div className="px-4 flex items-center justify-between border-b border-gray-200 dark:border-gray-600">
-                        <div className="flex items-center">
-                            <HiOutlineSearch className="text-xl" />
-                            <input
+                        <div className="flex items-center w-full">
+                            <Input
                                 ref={inputRef}
-                                className="ring-0 outline-none block w-full p-4 text-base bg-transparent text-gray-900 dark:text-gray-100"
+                                autoFocus
+                                type="search"
                                 placeholder="Search..."
+                                className=" pr-10 py-3 w-full rounded-lg border border-gray-300 dark:border-gray-700 
+                                bg-gray-50 dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                                transition-all duration-200"
                                 onChange={handleSearch}
                             />
                         </div>
-                        <Button size="xs" onClick={handleSearchClose}>
-                            Esc
-                        </Button>
                     </div>
+
                     <div className="py-6 px-5 max-h-[550px] overflow-y-auto">
-                        {searchResult.map((result) => (
-                            <div key={result.title} className="mb-6">
-                                <h6 className="mb-3">{result.title}</h6>
-                                {result.data.map((data, index) => (
-                                    <ListItem
-                                        key={data.title + index}
-                                        icon={data.icon}
-                                        label={data.title}
-                                        url={data.url}
-                                        keyWord={inputRef.current?.value || ''}
-                                        onNavigate={handleNavigate}
-                                    />
-                                ))}
-                            </div>
+                        {filteredData.map((item, index) => (
+                            <ListItem
+                                key={item.key}
+                                icon={'docsIcon'}
+                                label={item.title}
+                                url={item.path}
+                                isLast={index === filteredData.length - 1}
+                                keyWord={inputRef.current?.value || ''}
+                                onNavigate={handleNavigate}
+                            />
                         ))}
-                        {searchResult.length === 0 && noResult && (
-                            <div className="my-10 text-center text-lg">
-                                <span>No results for </span>
-                                <span className="heading-text">
-                                    a{inputRef.current?.value}b
-                                </span>
+
+                        {noResult && (
+                            <div className="my-10 text-center text-lg text-gray-500">
+                                No results for <span className="font-semibold">{inputRef.current?.value}</span>
                             </div>
                         )}
                     </div>
@@ -236,5 +205,4 @@ const _Search = ({ className }: { className?: string }) => {
 }
 
 const Search = withHeaderItem(_Search)
-
 export default Search

@@ -9,6 +9,7 @@ import Infor from '../template/VerticalMenuContent/Infor'
 import store, { useAppSelector } from '@/store'
 import { USER_PROFILE_DATA } from '@/store/types/company.types'
 import { useMemo } from 'react'
+import Search from '../template/Search'
 
 const HeaderActionsStart = () => {
     const storeCodes = store.getState().storeSelect.store_ids
@@ -75,6 +76,7 @@ const HeaderActionsEnd = () => {
     return (
         <div className="flex items-center  sm:gap-4 ">
             <div className="hidden lg:block">{/* <StoreSelect /> */}</div>
+            <Search />
             <SidePanel />
             <UserDropdown hoverable={false} />
         </div>
