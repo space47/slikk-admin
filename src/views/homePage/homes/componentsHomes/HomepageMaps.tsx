@@ -64,4 +64,4 @@ const HomepageMaps = ({ from, to, activeTab, setAccessDenied }: props) => {
     )
 }
 
-export default HomepageMaps
+export default React.memo(HomepageMaps)

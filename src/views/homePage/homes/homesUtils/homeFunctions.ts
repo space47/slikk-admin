@@ -1,49 +1,30 @@
-import { useMemo } from 'react'
 import { SalesData } from '../homes.common'
 
 export const HomeCalculations = (homeData: SalesData | null) => {
-    const netSales = useMemo(() => {
-        return (
-            (homeData?.received?.total_amount || 0) -
-            (homeData?.returned?.total_amount || 0) -
-            (homeData?.cancelled?.total_amount || 0) -
-            (homeData?.declined?.total_amount || 0)
-        )
-    }, [homeData])
+    const netSales =
+        (homeData?.received?.total_amount || 0) -
+        (homeData?.returned?.total_amount || 0) -
+        (homeData?.cancelled?.total_amount || 0) -
+        (homeData?.declined?.total_amount || 0)
 
-    const netReturn = useMemo(() => {
-        return (homeData?.returned?.count || 0) + (homeData?.cancelled?.count || 0) + (homeData?.declined?.count || 0)
-    }, [homeData])
+    const netReturn = (homeData?.returned?.count || 0) + (homeData?.cancelled?.count || 0) + (homeData?.declined?.count || 0)
 
-    const netReturnSales = useMemo(() => {
-        return (homeData?.returned?.total_amount || 0) + (homeData?.cancelled?.total_amount || 0) + (homeData?.declined?.total_amount || 0)
-    }, [homeData])
+    const netReturnSales =
+        (homeData?.returned?.total_amount || 0) + (homeData?.cancelled?.total_amount || 0) + (homeData?.declined?.total_amount || 0)
 
-    const averageOrderValue = useMemo(() => {
-        if (!homeData) return 0
-        const exchange = homeData?.delivery_type?.EXCHANGE || 0
-        return homeData.received?.total_amount / (homeData.received?.count - exchange)
-    }, [homeData])
+    const exchange = homeData?.delivery_type?.EXCHANGE || 0
+    const receivedCount = homeData?.received?.count || 0
 
-    const dataValues = useMemo(() => {
-        return Object.values(homeData?.brand_wise_sale ?? {})
-    }, [homeData])
+    const averageOrderValue =
+        homeData && receivedCount - exchange > 0 ? (homeData.received?.total_amount || 0) / (receivedCount - exchange) : 0
 
-    const sum = useMemo(() => {
-        return dataValues.reduce((acc: number, value) => acc + value, 0)
-    }, [dataValues])
+    const dataValues = Object.values(homeData?.brand_wise_sale ?? {})
 
-    const basketSize = useMemo(() => {
-        if (!homeData) return 0
-        const exchange = homeData?.delivery_type?.EXCHANGE || 0
-        return sum / (homeData.received?.count - exchange)
-    }, [homeData, sum])
+    const sum = dataValues.reduce((acc: number, value) => acc + value, 0)
 
-    const receiverOrderValue = useMemo(() => {
-        if (!homeData) return 0
-        const exchange = homeData?.delivery_type?.EXCHANGE || 0
-        return homeData.received?.count - exchange
-    }, [homeData])
+    const basketSize = homeData && receivedCount - exchange > 0 ? sum / (receivedCount - exchange) : 0
+
+    const receiverOrderValue = receivedCount - exchange
 
     return { netSales, netReturn, netReturnSales, averageOrderValue, basketSize, receiverOrderValue }
 }
