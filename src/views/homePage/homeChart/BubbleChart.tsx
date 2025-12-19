@@ -2,6 +2,7 @@
 import Chart from 'react-apexcharts'
 import { COLOR_6 } from '@/constants/chart.constant'
 import { useNavigate } from 'react-router-dom'
+import React from 'react'
 
 interface BRANDWISEDATA {
     brandData: Record<string, number>
@@ -106,4 +107,4 @@ const BrandDataChart = ({ brandData, from, to }: BRANDWISEDATA) => {
     )
 }
 
-export default BrandDataChart
+export default React.memo(BrandDataChart)

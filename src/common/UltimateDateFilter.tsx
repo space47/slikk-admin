@@ -183,4 +183,4 @@ const UltimateDatePicker = ({ setFrom, setTo, handleDateChange, dispatch, custom
     )
 }
 
-export default UltimateDatePicker
+export default React.memo(UltimateDatePicker)

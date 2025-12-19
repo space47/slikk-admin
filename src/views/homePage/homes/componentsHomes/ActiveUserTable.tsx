@@ -78,7 +78,7 @@ const ActiveUserFlow = ({ from, to, queryName, reportName, label, isTable }: Act
 
     if (showSpinner) {
         return (
-            <div className="flex justify-center items-center h-screen">
+            <div className="flex justify-center items-center ">
                 <Spinner size={40} />
             </div>
         )
@@ -128,4 +128,4 @@ const ActiveUserFlow = ({ from, to, queryName, reportName, label, isTable }: Act
     )
 }
 
-export default ActiveUserFlow
+export default React.memo(ActiveUserFlow)
