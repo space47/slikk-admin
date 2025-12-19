@@ -72,7 +72,7 @@ const ProductColumn = ({ row, status }: productProps) => {
                     Product Name:
                     <h4 className="font-light text-[14px] flex-wrap">
                         <a
-                            href={`${headerLink}${segregatedNames(row.category || '')}/${segregatedNames(row.sub_category || '')}/${segregatedNames(row.brand || '')}/${segregatedNames(row.name || '')}/${row.barcode}`}
+                            href={`${headerLink}/${segregatedNames(row.category || '')}/${segregatedNames(row.sub_category || '')}/${segregatedNames(row.brand || '')}/${segregatedNames(row.name || '')}/${row.barcode}`}
                             className="hover:text-blue-500 hover:underline"
                             target="_blank"
                             rel="noopener noreferrer"
