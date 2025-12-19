@@ -280,21 +280,24 @@ const Home = () => {
                             <MdDeliveryDining />
                         </div>
 
-                        <div className="text-sm text-gray-600 space-y-1 ">
+                        <div className="text-sm text-gray-600 space-y-1  ">
                             <h2 className="text-base font-semibold text-gray-800">Delivery Type</h2>
 
-                            <p>
-                                Express: <span className="font-medium">{homeData?.delivery_type.EXPRESS ?? 0}</span>
-                            </p>
-                            <p>
-                                Standard: <span className="font-medium">{homeData?.delivery_type.STANDARD ?? 0}</span>
-                            </p>
-                            <p>
-                                Try & Buy: <span className="font-medium">{homeData?.delivery_type.TRY_AND_BUY ?? 0}</span>
-                            </p>
-                            <p>
-                                Exchange: <span className="font-medium">{homeData?.delivery_type.EXCHANGE ?? 0}</span>
-                            </p>
+                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-2">
+                                <p>
+                                    Express: <span className="font-medium text-green-600">{homeData?.delivery_type.EXPRESS ?? 0}</span>
+                                </p>
+                                <p>
+                                    Standard: <span className="font-medium text-green-600">{homeData?.delivery_type.STANDARD ?? 0}</span>
+                                </p>
+                                <p>
+                                    Try & Buy:{' '}
+                                    <span className="font-medium text-green-600">{homeData?.delivery_type.TRY_AND_BUY ?? 0}</span>
+                                </p>
+                                <p>
+                                    Exchange: <span className="font-medium text-green-600">{homeData?.delivery_type.EXCHANGE ?? 0}</span>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </Card>
@@ -308,15 +311,17 @@ const Home = () => {
 
                         <div className="text-sm text-gray-600 space-y-1">
                             <h2 className="text-base font-semibold text-gray-800">Device Type</h2>
-                            <p>
-                                Android: <span className="font-medium">{homeData?.device_type.ANDROID ?? 0}</span>
-                            </p>
-                            <p>
-                                Web: <span className="font-medium">{homeData?.device_type.WEB ?? 0}</span>
-                            </p>
-                            <p>
-                                iOS: <span className="font-medium">{homeData?.device_type.IOS ?? 0}</span>
-                            </p>
+                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-2">
+                                <p>
+                                    Android: <span className="font-medium text-green-600">{homeData?.device_type.ANDROID ?? 0}</span>
+                                </p>
+                                <p>
+                                    Web: <span className="font-medium text-green-600">{homeData?.device_type.WEB ?? 0}</span>
+                                </p>
+                                <p>
+                                    iOS: <span className="font-medium text-green-600">{homeData?.device_type.IOS ?? 0}</span>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </Card>
