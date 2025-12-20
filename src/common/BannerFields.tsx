@@ -46,7 +46,7 @@ const BannerFields = ({ bannerData, setFieldValues, values }: Props) => {
                     className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                 />
             </div>
-            <div className="p-6 space-y-5">
+            <div className="p-6 space-y-5 grid grid-cols-2 gap-3">
                 {filteredBanners.length > 0 ? (
                     filteredBanners.map((banner) => (
                         <div
