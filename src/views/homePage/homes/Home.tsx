@@ -36,9 +36,9 @@ const Home = () => {
 
     const [showReportData, setShowReportData] = useState('')
 
-    const To_Date = useMemo(() => {
-        return moment(to).add(1, 'days').format('YYYY-MM-DD')
-    }, [to])
+    const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
+
+    const shouldFetch = Boolean(from && To_Date)
 
     const {
         data: homeData,
@@ -51,6 +51,7 @@ const Home = () => {
                 setAccessDenied(true)
             }
         },
+        skip: !shouldFetch,
     })
 
     useEffect(() => {
@@ -79,7 +80,11 @@ const Home = () => {
         }
     }, [isPageActive, from, to])
 
-    const { netSales, averageOrderValue, basketSize, netReturn, netReturnSales, receiverOrderValue } = HomeCalculations(homeData || null)
+    const calculations = useMemo(() => {
+        return HomeCalculations(homeData || null)
+    }, [homeData])
+
+    const { netSales, netReturn, netReturnSales, averageOrderValue, basketSize, receiverOrderValue } = calculations
 
     const handleCustomerFunction = (inputName: string) => {
         navigate(`/app/customerAnalytics/${inputName}`)
@@ -107,50 +112,54 @@ const Home = () => {
         }
     }, [])
 
-    const CARDDATA = [
-        {
-            handleClick: () => handleReceived(from, To_Date),
-            img: <RiFileList3Fill className="text-4xl mx-4 text-blue-700" />,
-            label: 'Received Orders',
-            p1Data: receiverOrderValue ?? 0,
-            p2Data: homeData?.received.total_amount?.toFixed(2),
-        },
-        {
-            handleClick: () => handleCompleted(from, To_Date),
-            img: <IoBagCheck className="text-4xl mx-4 text-green-600" />,
-            label: 'Completed Orders',
-            p1Data: homeData?.completed.count,
-            p2Data: homeData?.completed.total_amount?.toFixed(2),
-        },
-        {
-            handleClick: () => handleReturned(from, To_Date),
-            img: <IoMdReturnLeft className="text-4xl mx-4 text-red-500" />,
-            label: 'Returned Orders',
-            p1Data: netReturn,
-            p2Data: netReturnSales?.toFixed(2),
-        },
-    ]
+    const CARDDATA = useMemo(() => {
+        return [
+            {
+                handleClick: () => handleReceived(from, To_Date),
+                img: <RiFileList3Fill className="text-4xl mx-4 text-blue-700" />,
+                label: 'Received Orders',
+                p1Data: receiverOrderValue ?? 0,
+                p2Data: homeData?.received.total_amount?.toFixed(2),
+            },
+            {
+                handleClick: () => handleCompleted(from, To_Date),
+                img: <IoBagCheck className="text-4xl mx-4 text-green-600" />,
+                label: 'Completed Orders',
+                p1Data: homeData?.completed.count,
+                p2Data: homeData?.completed.total_amount?.toFixed(2),
+            },
+            {
+                handleClick: () => handleReturned(from, To_Date),
+                img: <IoMdReturnLeft className="text-4xl mx-4 text-red-500" />,
+                label: 'Returned Orders',
+                p1Data: netReturn,
+                p2Data: netReturnSales?.toFixed(2),
+            },
+        ]
+    }, [from, To_Date, receiverOrderValue, homeData, netReturn, netReturnSales])
 
-    const CARDDATA2nd = [
-        {
-            label: 'Net Sales',
-            img: <HiCurrencyRupee className="text-5xl mx-4 text-green-500 " />,
-            p1Tag: 'Amount: Rs.',
-            p1Data: netSales?.toFixed(2),
-        },
-        {
-            label: 'Average Order Value',
-            img: <FaMoneyBillTrendUp className="text-4xl mx-4 text-yellow-400 " />,
-            p1Tag: 'Value:',
-            p1Data: averageOrderValue ? averageOrderValue?.toFixed(2) : 0,
-        },
-        {
-            label: 'Average Basket Size',
-            img: <FaShoppingCart className="text-4xl mx-4 text-amber-500 " />,
-            p1Tag: 'Value:',
-            p1Data: basketSize ? basketSize.toFixed(2) : 0,
-        },
-    ]
+    const CARDDATA2nd = useMemo(() => {
+        return [
+            {
+                label: 'Net Sales',
+                img: <HiCurrencyRupee className="text-5xl mx-4 text-green-500 " />,
+                p1Tag: 'Amount: Rs.',
+                p1Data: netSales?.toFixed(2),
+            },
+            {
+                label: 'Average Order Value',
+                img: <FaMoneyBillTrendUp className="text-4xl mx-4 text-yellow-400 " />,
+                p1Tag: 'Value:',
+                p1Data: averageOrderValue ? averageOrderValue?.toFixed(2) : 0,
+            },
+            {
+                label: 'Average Basket Size',
+                img: <FaShoppingCart className="text-4xl mx-4 text-amber-500 " />,
+                p1Tag: 'Value:',
+                p1Data: basketSize ? basketSize.toFixed(2) : 0,
+            },
+        ]
+    }, [netSales, averageOrderValue, basketSize])
 
     if (accessDenied) {
         return <AccessDenied />
@@ -217,71 +226,109 @@ const Home = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 xl:mx-10">
-                {CARDDATA.map((item, key) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 xl:mx-10">
+                {CARDDATA.map((item, index) => (
                     <Card
-                        key={key}
-                        className="shadow-lg cursor-pointer hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl"
-                        onClick={() => item.handleClick()}
+                        key={index}
+                        onClick={item.handleClick}
+                        className="group cursor-pointer rounded-2xl bg-white shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
                     >
-                        <div className="flex gap-10 items-center">
-                            <div>{item.img}</div>
-                            <div>
-                                <h2 className="text-xl font-semibold">{item.label}</h2>
-                                <p>Count: {item.p1Data}</p>
-                                <p>
-                                    Total Amount: Rs.
-                                    {item.p2Data}
+                        <div className="flex items-start gap-4 ">
+                            {/* Icon */}
+                            <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-blue-50 text-blue-600 text-3xl">
+                                {item.img}
+                            </div>
+
+                            {/* Content */}
+                            <div className="flex flex-col gap-1">
+                                <h2 className="text-base font-semibold text-gray-800">{item.label}</h2>
+
+                                <p className="text-sm text-gray-500">
+                                    Count: <span className="font-medium text-gray-700">{item.p1Data}</span>
+                                </p>
+
+                                <p className="text-sm text-gray-500">
+                                    Total Amount: <span className="font-semibold text-gray-800">₹{item.p2Data}</span>
                                 </p>
                             </div>
                         </div>
                     </Card>
                 ))}
 
-                {CARDDATA2nd.map((item, key) => (
+                {CARDDATA2nd.map((item, index) => (
                     <Card
-                        key={key}
-                        className="shadow-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl cursor-pointer"
+                        key={index}
+                        className="group cursor-pointer rounded-2xl bg-white shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
                     >
-                        <div className="flex gap-10 items-center">
-                            <div className="mt-2">{item.img}</div>
+                        <div className="flex items-start gap-4 ">
+                            <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-purple-50 text-purple-600 text-3xl">
+                                {item.img}
+                            </div>
+
                             <div>
-                                <h2 className="text-xl font-semibold">{item.label}</h2>
-                                <p>
-                                    {item.p1Tag} {item.p1Data}
+                                <h2 className="text-base font-semibold text-gray-800">{item.label}</h2>
+                                <p className="text-sm text-gray-500">
+                                    {item.p1Tag} <span className="font-medium text-gray-700">{item.p1Data}</span>
                                 </p>
                             </div>
                         </div>
                     </Card>
                 ))}
-                <Card className="shadow-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl cursor-pointer">
-                    <div className="flex gap-10 items-center">
-                        <div>
-                            <MdDeliveryDining className="text-5xl mx-4 text-blue-500 " />
+
+                {/* Delivery Type */}
+                <Card className="rounded-2xl bg-white shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
+                    <div className="flex items-start gap-4 ">
+                        <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-green-50 text-green-600 text-3xl">
+                            <MdDeliveryDining />
                         </div>
-                        <div>
-                            <h2 className="text-xl font-semibold">Delivery Type</h2>
-                            <p>Express: {homeData?.delivery_type.EXPRESS ? homeData?.delivery_type.EXPRESS : 0}</p>
-                            <p>Standard: {homeData?.delivery_type.STANDARD ? homeData?.delivery_type.STANDARD : 0}</p>
-                            <p>Try&Buy: {homeData?.delivery_type.TRY_AND_BUY ? homeData?.delivery_type.TRY_AND_BUY : 0}</p>
-                            <p>Exchange: {homeData?.delivery_type.EXCHANGE ? homeData?.delivery_type.EXCHANGE : 0}</p>
+
+                        <div className="text-sm text-gray-600 space-y-1  ">
+                            <h2 className="text-base font-semibold text-gray-800">Delivery Type</h2>
+
+                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-2">
+                                <p>
+                                    Express: <span className="font-medium text-green-600">{homeData?.delivery_type.EXPRESS ?? 0}</span>
+                                </p>
+                                <p>
+                                    Standard: <span className="font-medium text-green-600">{homeData?.delivery_type.STANDARD ?? 0}</span>
+                                </p>
+                                <p>
+                                    Try & Buy:{' '}
+                                    <span className="font-medium text-green-600">{homeData?.delivery_type.TRY_AND_BUY ?? 0}</span>
+                                </p>
+                                <p>
+                                    Exchange: <span className="font-medium text-green-600">{homeData?.delivery_type.EXCHANGE ?? 0}</span>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </Card>
-                <Card className="shadow-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl cursor-pointer">
-                    <div className="flex gap-10 items-center">
-                        <div>
-                            <PiDevicesFill className="text-5xl mx-4 " />
+
+                {/* Device Type */}
+                <Card className="rounded-2xl bg-white shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
+                    <div className="flex items-start gap-4 ">
+                        <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-orange-50 text-orange-600 text-3xl">
+                            <PiDevicesFill />
                         </div>
-                        <div>
-                            <h2 className="text-xl font-semibold">Device Type</h2>
-                            <p>Android: {homeData?.device_type.ANDROID ? homeData?.device_type.ANDROID : 0}</p>
-                            <p>Web: {homeData?.device_type.WEB ? homeData?.device_type.WEB : 0}</p>
-                            <p>IOS: {homeData?.device_type.IOS ? homeData?.device_type.IOS : 0}</p>
+
+                        <div className="text-sm text-gray-600 space-y-1">
+                            <h2 className="text-base font-semibold text-gray-800">Device Type</h2>
+                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-2">
+                                <p>
+                                    Android: <span className="font-medium text-green-600">{homeData?.device_type.ANDROID ?? 0}</span>
+                                </p>
+                                <p>
+                                    Web: <span className="font-medium text-green-600">{homeData?.device_type.WEB ?? 0}</span>
+                                </p>
+                                <p>
+                                    iOS: <span className="font-medium text-green-600">{homeData?.device_type.IOS ?? 0}</span>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </Card>
             </div>
+
             <div className="flex items-center border-b border-gray-300 gap-2 mt-3">
                 <button
                     className={`px-4 py-2  transition-all duration-200 text-xl font-bold ${

@@ -1,17 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Card, Input } from '@/components/ui'
+import { Button, Card, Input } from '@/components/ui'
 import React, { useEffect, useState } from 'react'
 import { ConfigInterface } from './componentsConfigg/commonConfigTypes'
 import moment from 'moment'
-import { FaEdit, FaSearch, FaCheckCircle, FaTimesCircle, FaCalendarAlt, FaUserEdit, FaIdCard, FaSortAmountDown } from 'react-icons/fa'
-import { MdRefresh } from 'react-icons/md'
+import {
+    FaEdit,
+    FaSearch,
+    FaCheckCircle,
+    FaTimesCircle,
+    FaCalendarAlt,
+    FaUserEdit,
+    FaIdCard,
+    FaSortAmountDown,
+    FaPlus,
+} from 'react-icons/fa'
 import { RiSettings5Fill } from 'react-icons/ri'
 import AccessDenied from '@/views/pages/AccessDenied'
 import LoadingSpinner from '@/common/LoadingSpinner'
 import { useFetchApi } from '@/commonHooks/useFetchApi'
 import { renderValue } from './componentsConfigg/ConfigurationRender'
+import { useNavigate } from 'react-router-dom'
 
 const ConfigurationPage = () => {
+    const navigate = useNavigate()
     const [searchConfig, setSearchConfig] = useState('')
     const [filteredData, setFilteredData] = useState<ConfigInterface[]>([])
     const [sortBy, setSortBy] = useState<'id' | 'name' | 'date'>('id')
@@ -20,7 +31,6 @@ const ConfigurationPage = () => {
         data: configurationData,
         loading: showSpinner,
         responseStatus,
-        refetch,
     } = useFetchApi<ConfigInterface>({
         url: '/app/configuration?p=1&page_size=100',
         initialData: [],
@@ -48,10 +58,6 @@ const ConfigurationPage = () => {
         setFilteredData(data)
     }, [searchConfig, configurationData, sortBy])
 
-    const handleRefresh = () => {
-        refetch()
-    }
-
     if (showSpinner) {
         return (
             <div className="flex items-center justify-center min-h-screen">
@@ -77,13 +83,9 @@ const ConfigurationPage = () => {
                         <p className="text-gray-600 dark:text-gray-300 mt-2">Manage and monitor configurations</p>
                     </div>
 
-                    <button
-                        onClick={handleRefresh}
-                        className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-300"
-                    >
-                        <MdRefresh className={`${showSpinner ? 'animate-spin' : ''}`} />
-                        Refresh
-                    </button>
+                    <Button variant="new" size="sm" icon={<FaPlus />} onClick={() => navigate(`/app/configurations/add`)}>
+                        Add New
+                    </Button>
                 </div>
 
                 {/* Search and Filter Bar */}

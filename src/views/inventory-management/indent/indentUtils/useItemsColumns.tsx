@@ -20,6 +20,7 @@ type ItemType = {
         mobile?: string
     }
     box_mapping: any
+    locations: string
 }
 
 interface props {
@@ -67,9 +68,19 @@ export const useItemsColumns = ({ handleUpdate, data }: props) => {
                 ),
             },
             {
+                header: 'Picker Phone',
+                accessorKey: 'picker',
+                cell: ({ row }) => <span className="text-gray-600 font-semibold flex gap-2">{row?.original?.picker?.mobile}</span>,
+            },
+            {
                 header: 'Notes',
                 accessorKey: 'notes',
                 cell: ({ row }) => <span className="italic text-gray-500">{row?.original?.notes || 'N/A'}</span>,
+            },
+            {
+                header: 'Location',
+                accessorKey: 'location',
+                cell: ({ row }) => <span className="italic text-gray-500">{row?.original?.locations || 'N/A'}</span>,
             },
             {
                 header: 'Box',

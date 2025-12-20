@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import RtkQueryService from '@/services/RtkQueryService'
-import { IndentDetailsResponseTypes, IndentParamsTypes, IndentResponseTypes } from '../types/indent.types'
+import { IndentDetailsResponseTypes, IndentItemsResponseType, IndentParamsTypes, IndentResponseTypes } from '../types/indent.types'
 
 export const indentService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
@@ -31,6 +31,25 @@ export const indentService = RtkQueryService.injectEndpoints({
                 if (params.is_picked) parameters.is_picked = params.is_picked.toString()
                 return {
                     url: `/indent`,
+                    method: 'GET',
+                    params: parameters,
+                }
+            },
+        }),
+        indentItems: builder.query<
+            IndentItemsResponseType,
+            { id: string; is_picked: string; paramKey: string; paramValue?: string; page: number; pageSize: number }
+        >({
+            query: (params) => {
+                const parameters: Record<string, string | string[] | number> = {}
+                if (params.id) parameters.id = params.id.toString()
+                if (params.is_picked) parameters.is_picked = params.is_picked.toString()
+                if (params.paramValue) parameters[params.paramKey] = params.paramValue
+                if (params.page) parameters.p = params.page
+                if (params.pageSize) parameters.page_size = params.pageSize
+
+                return {
+                    url: `/indent-note-item`,
                     method: 'GET',
                     params: parameters,
                 }

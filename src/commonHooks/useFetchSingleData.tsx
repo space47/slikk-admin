@@ -8,14 +8,16 @@ interface useFetchSingleDataProps<T> {
     initialData?: T
     onErrorStatus?: (status: number) => void
     pollingInterval?: number
+    skip?: boolean
 }
 
-export const useFetchSingleData = <T,>({ url, initialData, onErrorStatus, pollingInterval }: useFetchSingleDataProps<T>) => {
+export const useFetchSingleData = <T,>({ url, initialData, onErrorStatus, pollingInterval, skip }: useFetchSingleDataProps<T>) => {
     const [data, setData] = useState<T | undefined>(initialData)
     const [loading, setLoading] = useState(false)
     const [responseStatus, setResponseStatus] = useState<number | string>()
 
     const fetchData = useCallback(async () => {
+        if (skip) return
         try {
             setLoading(true)
             const response = await axiosInstance.get<{ data: T }>(url)
@@ -33,6 +35,7 @@ export const useFetchSingleData = <T,>({ url, initialData, onErrorStatus, pollin
     }, [url, onErrorStatus])
 
     useEffect(() => {
+        if (skip) return
         if (!url) return
         fetchData()
         if (pollingInterval) {

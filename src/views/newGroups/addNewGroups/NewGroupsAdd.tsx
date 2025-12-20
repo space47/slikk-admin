@@ -68,12 +68,14 @@ const NewGroupsAdd = () => {
             setSpinner(true)
             const requestBody = {
                 name: values.cohort_name,
-                rules: transformConditionsToRules(values.conditions),
-                ...(values.user
-                    ? { user: values.user }
-                    : csvFile
-                      ? { user: Array.isArray(mobileNumbers) ? mobileNumbers.join(',') : '' }
-                      : {}),
+                rules: {
+                    ...transformConditionsToRules(values.conditions),
+                    ...(values.user
+                        ? { user: values.user?.split(',') }
+                        : csvFile
+                          ? { user: Array.isArray(mobileNumbers) ? mobileNumbers : [] }
+                          : {}),
+                },
             }
             const response = await axioisInstance.post('/notification/groups', requestBody)
             successMessage(response)
