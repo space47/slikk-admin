@@ -79,6 +79,8 @@ const CouponSeriesAdd = () => {
                     min_filters_products_amount: values?.extra_attributes?.min_filters_products_amount,
                     free_delivery: values?.extra_attributes?.free_delivery || false,
                     terms_and_conditions: values?.extra_attributes?.terms_and_conditions,
+                    max_order_count: values?.extra_attributes?.max_order_count ?? '',
+                    min_order_count: values?.extra_attributes?.min_order_count ?? '',
                 },
             }).unwrap()
         } catch (error: any) {
