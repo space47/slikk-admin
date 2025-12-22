@@ -37,3 +37,11 @@ export const IndentSearchOptions = [
     { label: 'Rack', value: 'row' },
     { label: 'Picker', value: 'mobile' },
 ]
+
+export const IndentStatusArray = [
+    { name: 'DRAFT', value: 'draft' },
+    { name: 'CREATED', value: 'created' },
+    { name: 'APPROVED', value: 'approved' },
+    { name: 'FULFILLED', value: 'fulfilled' },
+    { name: 'REJECTED', value: 'rejected' },
+]
