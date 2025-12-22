@@ -24,6 +24,7 @@ import { notification } from 'antd'
 import IndentStatusModal from './indentComponents/IndentStatusModal'
 import UltimateReduxDatePicker from '@/common/UltimateReduxDatePicker'
 import moment from 'moment'
+import { IndentStatusArray } from '../indentUtils/indent.types'
 
 const IndentTable = () => {
     const dispatch = useAppDispatch()
@@ -39,14 +40,6 @@ const IndentTable = () => {
         setSelectedIndentId(id)
         setShowStatusModal(true)
     }
-
-    const IndentStatusArray = [
-        { name: 'DRAFT', value: 'DRAFT' },
-        { name: 'CREATED', value: 'CREATED' },
-        { name: 'APPROVED', value: 'APPROVED' },
-        { name: 'FULFILLED', value: 'FULFILLED' },
-        { name: 'REJECTED', value: 'REJECTED' },
-    ]
 
     useEffect(() => {
         if (storeCode?.length <= 0) {
