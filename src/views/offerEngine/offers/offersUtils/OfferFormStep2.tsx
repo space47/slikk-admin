@@ -26,6 +26,15 @@ const OfferFormStep2 = ({ buyFilterId, getFilterId, setBuyFilterId, setGetFilter
         <div>
             <FormContainer>
                 <FormContainer className="grid grid-cols-2 gap-6">
+                    <FormItem label="Max Product Discount">
+                        <Field
+                            name="product_max_discount_amount"
+                            placeholder="Enter Max Product Discount"
+                            type="number"
+                            component={Input}
+                            className="w-full"
+                        />
+                    </FormItem>
                     <CommonSelect
                         needClassName
                         className={values?.discount_type === 'BXGY' ? 'w-full' : 'w-1/2'}
