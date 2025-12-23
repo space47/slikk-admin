@@ -12,11 +12,15 @@ import CatalogDeleteModal from '@/common/CatalogDeleteModal'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { DIVISION_STATE } from '@/store/types/division.types'
 import { getAllDivisionAPI } from '@/store/action/division.action'
+import { Button } from '@/components/ui'
+import { FaPlus } from 'react-icons/fa'
+import { useNavigate } from 'react-router-dom'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
 const DivisionTable = () => {
     const dispatch = useAppDispatch()
+    const navigate = useNavigate()
     const [globalFilter, setGlobalFilter] = useState<string>('')
     const [deleteModal, setDeleteModal] = useState(false)
     const [idStoreForDelete, setIdStoreForDelete] = useState<string | number | undefined>()
@@ -51,8 +55,13 @@ const DivisionTable = () => {
                         onChange={(e) => setGlobalFilter(e.target.value)}
                     />
                 </div>
-                <div>
+                <div className="flex items-center gap-3">
                     <ClearCache cacheKey="tree" />
+                    <div>
+                        <Button size="sm" variant="new" icon={<FaPlus />} onClick={() => navigate(`/app/category/division-new`)}>
+                            Add New
+                        </Button>
+                    </div>
                 </div>
             </div>
             <Table overflow className="scrollbar-hide">
