@@ -2,9 +2,8 @@
 import React from 'react'
 import { Field, FormikErrors } from 'formik'
 import { FormContainer, FormItem, Input, Switcher } from '@/components/ui'
-import NestedCategorySelection from '@/common/NestedCategorySelection'
 import RichTextCommon from '@/common/RichTextCommon'
-import { HiOutlineInformationCircle, HiOutlineCollection, HiOutlineDocumentText } from 'react-icons/hi'
+import { HiOutlineInformationCircle, HiOutlineDocumentText } from 'react-icons/hi'
 import BannerFilterTags from '@/views/appsSettings/banners/editBanner/component/BannerFilterTags'
 import PageEditVideo from '@/views/appsSettings/pageSettings/PageEditVideo'
 import PageAddVideo from '@/views/appsSettings/pageSettings/PageAddVideo'
@@ -24,7 +23,7 @@ const GenderArray = [
     { label: 'Female', value: 'female' },
 ]
 
-const SubCategoryForm = ({ setFieldValue, values, editMode, initialValue, setInitialValue }: Props) => {
+const DivisionCommonForm = ({ setFieldValue, values, editMode, initialValue, setInitialValue }: Props) => {
     return (
         <div className="space-y-6">
             <FormContainer className="bg-white rounded-2xl shadow-sm border border-l-4 border-l-blue-600 p-5">
@@ -34,7 +33,7 @@ const SubCategoryForm = ({ setFieldValue, values, editMode, initialValue, setIni
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormItem label="Name">
-                        <Field name="name" component={Input} placeholder="Enter Sub category name" type="text" />
+                        <Field name="name" component={Input} placeholder="Enter Division name" type="text" />
                     </FormItem>
                     <FormItem label="Title">
                         <Field name="title" component={Input} placeholder="Enter display title" type="text" />
@@ -52,13 +51,6 @@ const SubCategoryForm = ({ setFieldValue, values, editMode, initialValue, setIni
                         <Field name="is_try_and_buy" component={Switcher} type="checkbox" />
                     </FormItem>
                 </div>
-            </FormContainer>
-            <FormContainer className="bg-white rounded-2xl shadow-sm border border-l-4 border-l-purple-600 p-5">
-                <div className="flex items-center gap-2 mb-4 text-purple-700 font-semibold">
-                    <HiOutlineCollection className="text-lg" />
-                    <span>Category Mapping</span>
-                </div>
-                <NestedCategorySelection values={values} setFieldValue={setFieldValue} />
             </FormContainer>
             <FormContainer className="bg-white rounded-2xl shadow-sm border border-l-4 border-l-green-600 p-5">
                 {editMode ? (
@@ -105,4 +97,4 @@ const SubCategoryForm = ({ setFieldValue, values, editMode, initialValue, setIni
     )
 }
 
-export default SubCategoryForm
+export default DivisionCommonForm

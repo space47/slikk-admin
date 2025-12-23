@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
-import { Field, FormikErrors } from 'formik'
-import { FormContainer, FormItem, Input, Switcher } from '@/components/ui'
-import NestedCategorySelection from '@/common/NestedCategorySelection'
+import { Field, FieldProps, FormikErrors } from 'formik'
+import { FormContainer, FormItem, Input, Select, Switcher } from '@/components/ui'
 import RichTextCommon from '@/common/RichTextCommon'
 import { HiOutlineInformationCircle, HiOutlineCollection, HiOutlineDocumentText } from 'react-icons/hi'
 import BannerFilterTags from '@/views/appsSettings/banners/editBanner/component/BannerFilterTags'
@@ -10,6 +9,8 @@ import PageEditVideo from '@/views/appsSettings/pageSettings/PageEditVideo'
 import PageAddVideo from '@/views/appsSettings/pageSettings/PageAddVideo'
 import { beforeUpload } from '@/common/beforeUpload'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
+import { useAppSelector } from '@/store'
+import { DIVISION_STATE } from '@/store/types/division.types'
 
 interface Props {
     editMode?: boolean
@@ -24,7 +25,22 @@ const GenderArray = [
     { label: 'Female', value: 'female' },
 ]
 
-const SubCategoryForm = ({ setFieldValue, values, editMode, initialValue, setInitialValue }: Props) => {
+const normalizeToIdArray = (value: any): number[] => {
+    if (!value) return []
+    if (Array.isArray(value)) {
+        return value.map((v) => (typeof v === 'object' ? v.id : v))
+    }
+
+    if (typeof value === 'object') {
+        return [value.id]
+    }
+
+    return [value]
+}
+
+const CategoryForm = ({ setFieldValue, values, editMode, initialValue, setInitialValue }: Props) => {
+    const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
+
     return (
         <div className="space-y-6">
             <FormContainer className="bg-white rounded-2xl shadow-sm border border-l-4 border-l-blue-600 p-5">
@@ -34,7 +50,7 @@ const SubCategoryForm = ({ setFieldValue, values, editMode, initialValue, setIni
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormItem label="Name">
-                        <Field name="name" component={Input} placeholder="Enter Sub category name" type="text" />
+                        <Field name="name" component={Input} placeholder="Enter category name" type="text" />
                     </FormItem>
                     <FormItem label="Title">
                         <Field name="title" component={Input} placeholder="Enter display title" type="text" />
@@ -58,7 +74,26 @@ const SubCategoryForm = ({ setFieldValue, values, editMode, initialValue, setIni
                     <HiOutlineCollection className="text-lg" />
                     <span>Category Mapping</span>
                 </div>
-                <NestedCategorySelection values={values} setFieldValue={setFieldValue} />
+                <FormItem label="Division" className="w-full">
+                    <Field name="division">
+                        {({ field }: FieldProps) => {
+                            const selectedIds = normalizeToIdArray(field.value)
+
+                            const selectedOption = divisions.divisions?.find((item) => selectedIds.includes(item.id)) || null
+
+                            return (
+                                <Select
+                                    isClearable
+                                    value={selectedOption}
+                                    options={divisions.divisions}
+                                    getOptionLabel={(option) => option?.name}
+                                    getOptionValue={(option) => option?.id?.toString()}
+                                    onChange={(val) => setFieldValue('division', val ? [val] : [])}
+                                />
+                            )
+                        }}
+                    </Field>
+                </FormItem>
             </FormContainer>
             <FormContainer className="bg-white rounded-2xl shadow-sm border border-l-4 border-l-green-600 p-5">
                 {editMode ? (
@@ -105,4 +140,4 @@ const SubCategoryForm = ({ setFieldValue, values, editMode, initialValue, setIni
     )
 }
 
-export default SubCategoryForm
+export default CategoryForm

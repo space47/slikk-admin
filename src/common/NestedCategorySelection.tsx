@@ -17,7 +17,6 @@ interface PROPS {
 
 const normalizeToIdArray = (value: any): number[] => {
     if (!value) return []
-
     if (Array.isArray(value)) {
         return value.map((v) => (typeof v === 'object' ? v.id : v))
     }
@@ -29,7 +28,7 @@ const normalizeToIdArray = (value: any): number[] => {
     return [value]
 }
 
-const NestedCategorySelection = ({ setFieldValue, isProductType, isSub, values }: PROPS) => {
+const NestedCategorySelection = ({ setFieldValue, isProductType, isSub }: PROPS) => {
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const productType = useAppSelector<PRODUCTTYPE_STATE>((state) => state.product_type)
     const categories = useAppSelector<CATEGORY_STATE>((state) => state.category)

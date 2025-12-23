@@ -34,7 +34,7 @@ const ProductTypeForm = ({ setFieldValue, values, editMode, initialValue, setIni
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormItem label="Name">
-                        <Field name="name" component={Input} placeholder="Enter category name" type="text" />
+                        <Field name="name" component={Input} placeholder="Enter Product Type name" type="text" />
                     </FormItem>
                     <FormItem label="Title">
                         <Field name="title" component={Input} placeholder="Enter display title" type="text" />
