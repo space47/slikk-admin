@@ -39,7 +39,7 @@ const appsRoute: Routes = [
     {
         key: 'appsCategory.productNew',
         path: `${APP_PREFIX_PATH}/category/division-new`,
-        component: lazy(() => import('@/views/category-management/division/DivisionNew')),
+        component: lazy(() => import('@/views/category-management/division/divisiontable/DivisionNew')),
         authority: [ADMIN, USER],
     },
     {

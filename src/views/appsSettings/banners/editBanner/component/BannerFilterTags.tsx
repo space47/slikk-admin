@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FormItem, Select } from '@/components/ui'
-import { useAppSelector } from '@/store'
+import { useAppDispatch, useAppSelector } from '@/store'
+import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { Field, FieldProps } from 'formik'
-import React from 'react'
+import React, { useEffect } from 'react'
 
 interface props {
     value?: string
@@ -12,7 +13,12 @@ interface props {
 }
 
 const BannerFilterTags = ({ label, name }: props) => {
+    const dispatch = useAppDispatch()
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
+
+    useEffect(() => {
+        dispatch(getAllFiltersAPI())
+    }, [dispatch])
 
     return (
         <div>
