@@ -8,9 +8,9 @@ import { Button } from '@/components/ui'
 import { useNavigate } from 'react-router'
 import AccessDenied from '@/views/pages/AccessDenied'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
-import TablePagination from '@/common/TablePagination'
 import { useDispatch } from 'react-redux'
 import BulkOfferUpdateModal from '../offersUtils/BulkOfferUpdateModal'
+import PageCommon from '@/common/PageCommon'
 
 const OffersTable = () => {
     const navigate = useNavigate()
@@ -40,15 +40,6 @@ const OffersTable = () => {
     }
 
     const columns = useOfferColumns({ offerData: offers, handleSelectAllOfferId, handleSelectIds, offerIdStore })
-
-    const onPageChange = (page: number) => {
-        dispatch(setPage(page))
-    }
-
-    const onSelectChange = (pageSize: number) => {
-        dispatch(setPage(1))
-        dispatch(setPageSize(pageSize))
-    }
 
     if (isError && error && 'status' in error) {
         if (error.status === 401 || error.status === 403) {
@@ -96,12 +87,13 @@ const OffersTable = () => {
                 <EasyTable overflow noPage mainData={offers} columns={columns} filterValue={globalFilter} />
             </div>
             <div>
-                <TablePagination
+                <PageCommon
+                    dispatch={dispatch}
                     page={page}
                     pageSize={pageSize}
-                    count={count}
-                    onPageChange={onPageChange}
-                    onSelectChange={onSelectChange}
+                    totalData={count}
+                    setPage={setPage}
+                    setPageSize={setPageSize}
                 />
             </div>
             {isBulkEditModal && (
