@@ -332,11 +332,23 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                                         className="w-28 xl:w-44 h-52 object-cover rounded-lg cursor-pointer"
                                         onClick={() => handleImageView(pdts?.image || '')}
                                     />
+
                                     {qrCode && (
                                         <div className="bg-gray-100 mt-5 flex items-center justify-center dark:bg-gray-800 p-4 rounded-xl shadow-sm">
                                             <QRCode value={qrCode ?? ''} size={80} />
                                         </div>
                                     )}
+                                    <Button
+                                        variant="blue"
+                                        size="sm"
+                                        className="mt-3"
+                                        onClick={() => {
+                                            setPackageImage(pdts?.packing_images || '')
+                                            setShowPackageImage(true)
+                                        }}
+                                    >
+                                        packing Image
+                                    </Button>
                                 </div>
 
                                 <div className="ml-6 w-full ">
