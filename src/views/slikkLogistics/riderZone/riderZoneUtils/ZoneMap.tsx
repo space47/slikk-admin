@@ -1,16 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useMemo, useRef, useState } from 'react'
-import { MapContainer, Marker, TileLayer, useMapEvents, Polygon, Polyline, Tooltip } from 'react-leaflet'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { MapContainer, Marker, TileLayer, Polygon, Polyline, Tooltip, useMap, useMapEvents } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import * as L from 'leaflet'
 import icon from 'leaflet/dist/images/marker-icon.png'
 import iconShadow from 'leaflet/dist/images/marker-shadow.png'
-import { Point } from './riderZoneCommon'
+import { BsArrowsFullscreen } from 'react-icons/bs'
+import { Button, Card, Input } from '@/components/ui'
 import store, { useAppSelector } from '@/store'
 import { USER_PROFILE_DATA } from '@/store/types/company.types'
-import { BsArrowsFullscreen } from 'react-icons/bs'
-import { Button } from '@/components/ui'
 import { LiveZones } from '@/store/types/riderZone.type'
+import { Point } from './riderZoneCommon'
+import { usePolygonDrawing } from '@/commonHooks/usePolygonDrawing'
 
 const PinIcon = L.divIcon({
     html: `<div style="width:14px;height:14px;background:#dc2626;border:2px solid white;border-radius:50%"></div>`,
@@ -26,61 +27,77 @@ const DefaultIcon = L.icon({
 L.Marker.prototype.options.icon = DefaultIcon
 
 interface RiderAddProps {
+    isAdd?: boolean
     zones: LiveZones[]
     polygonPoints: Point[]
     setPolygonPoints: React.Dispatch<React.SetStateAction<Point[]>>
 }
 
-const geoJsonToLatLngs = (coordinates: number[][][]) => coordinates[0].map(([lng, lat]) => [lat, lng] as [number, number])
+const geoJsonToLatLngs = (coords: any) => coords?.[0]?.map(([lng, lat]: number[]) => [lat, lng] as [number, number])
 
-const ZoneMap = ({ zones, polygonPoints, setPolygonPoints }: RiderAddProps) => {
+const ChangeView = ({ center, zoom }: { center: [number, number]; zoom: number }) => {
+    const map = useMap()
+
+    useEffect(() => {
+        map.setView(center, zoom)
+    }, [center, zoom, map])
+
+    return null
+}
+
+const MapClickHandler = ({ onAddPoint }: any) => {
+    useMapEvents({
+        click(e) {
+            onAddPoint(e.latlng)
+        },
+    })
+    return null
+}
+
+const ZoneMap = ({ zones, polygonPoints, setPolygonPoints, isAdd }: RiderAddProps) => {
     const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
     const storeCodes = store.getState().storeSelect.store_ids
-    const storeData = useMemo(() => {
-        return storeList?.find((item) => item?.id === storeCodes[0])
-    }, [storeList, storeCodes])
-
-    const position = useMemo(() => {
-        return storeData ? { lat: (storeData as any).latitude, lng: (storeData as any).longitude } : null
-    }, [storeData])
-    const [isDrawing, setIsDrawing] = useState(false)
+    const storeData = useMemo(() => storeList?.find((s) => s.id === storeCodes[0]), [storeList, storeCodes])
+    const [centerPosition, setCenterPosition] = useState<[number, number] | null>(null)
+    const [mapZoom, setMapZoom] = useState(13)
+    const [latAndLong, setLatAndLong] = useState('')
+    const [manualMarker, setManualMarker] = useState<[number, number] | null>(null)
 
     const fullScreenRef = useRef<HTMLDivElement | null>(null)
-    const defaultCenter: [number, number] = [12.9182266, 77.6202128]
 
-    const MapEvents = () => {
-        useMapEvents({
-            click: (e) => {
-                if (!isDrawing) return
-                setPolygonPoints((prev) => [...prev, e.latlng])
-            },
-        })
-        return null
-    }
+    const { isDrawing, startDrawing, completeDrawing, clearDrawing, addPoint, removePoint } = usePolygonDrawing(
+        polygonPoints,
+        setPolygonPoints,
+    )
 
-    const handleSetZone = () => {
-        setPolygonPoints([])
-        setIsDrawing(true)
-    }
-
-    const handleCompletePolygon = () => {
-        if (polygonPoints.length < 3) return
-        const first = polygonPoints[0]
-        const last = polygonPoints[polygonPoints.length - 1]
-
-        if (first.lat !== last.lat || first.lng !== last.lng) {
-            setPolygonPoints((prev) => [...prev, first])
+    useEffect(() => {
+        if (storeData && !centerPosition) {
+            setCenterPosition([(storeData as any).latitude, (storeData as any).longitude])
         }
-        setIsDrawing(false)
-    }
+    }, [storeData, centerPosition])
 
-    const handleClearPolygon = () => {
-        setPolygonPoints([])
-        setIsDrawing(false)
+    const handleGenerateMarker = () => {
+        if (!latAndLong) {
+            setManualMarker(null)
+            return
+        }
+
+        const parts = latAndLong.split(',')
+        if (parts.length !== 2) return
+
+        const lat = parseFloat(parts[0].trim())
+        const lng = parseFloat(parts[1].trim())
+
+        if (isNaN(lat) || isNaN(lng)) return
+
+        setManualMarker([lat, lng])
+        setCenterPosition([lat, lng])
+        setMapZoom(15)
     }
 
     const toggleFullscreen = () => {
         if (!fullScreenRef.current) return
+
         if (!document.fullscreenElement) {
             fullScreenRef.current.requestFullscreen()
         } else {
@@ -92,46 +109,54 @@ const ZoneMap = ({ zones, polygonPoints, setPolygonPoints }: RiderAddProps) => {
 
     return (
         <div className="flex flex-col gap-4">
-            <div className="flex gap-3">
-                <Button type="button" size="sm" variant={isDrawing ? 'gray' : 'blue'} disabled={isDrawing} onClick={handleSetZone}>
-                    Set Zone
-                </Button>
+            {isAdd && (
+                <div className="flex gap-3">
+                    <Button size="sm" disabled={isDrawing} onClick={startDrawing}>
+                        Set Zone
+                    </Button>
 
-                <Button
-                    type="button"
-                    size="sm"
-                    disabled={!isDrawing || polygonPoints.length < 3}
-                    variant="accept"
-                    onClick={handleCompletePolygon}
-                >
-                    Complete
-                </Button>
+                    <Button size="sm" variant="accept" disabled={!isDrawing || polygonPoints.length < 3} onClick={completeDrawing}>
+                        Complete
+                    </Button>
 
-                <Button type="button" variant="reject" size="sm" onClick={handleClearPolygon}>
-                    Clear
-                </Button>
-            </div>
+                    <Button size="sm" variant="reject" onClick={clearDrawing}>
+                        Clear
+                    </Button>
+                </div>
+            )}
+            {!isAdd && (
+                <Card>
+                    <div className="flex gap-2 items-center mt-3 mb-6">
+                        <Input
+                            placeholder="Enter Lat, Long (e.g. 12.9716, 77.5946)"
+                            value={latAndLong}
+                            onChange={(e) => setLatAndLong(e.target.value)}
+                        />
+                        <Button variant="new" onClick={handleGenerateMarker}>
+                            Generate
+                        </Button>
+                    </div>
+                </Card>
+            )}
             <div ref={fullScreenRef} className="relative w-full h-screen">
                 <Button
-                    type="button"
-                    variant="new"
                     size="sm"
+                    variant="new"
                     className="absolute top-3 right-3 z-[1000]"
                     icon={<BsArrowsFullscreen className="text-xl" />}
                     onClick={toggleFullscreen}
-                ></Button>
+                />
 
                 <MapContainer
-                    center={position ? [position.lat, position.lng] : defaultCenter}
-                    zoom={13}
-                    style={{
-                        height: '100%',
-                        width: '100%',
-                    }}
+                    center={centerPosition || [12.9182266, 77.6202128]}
+                    zoom={mapZoom}
                     className="rounded-lg"
+                    style={{ height: '100%', width: '100%' }}
                 >
-                    <MapEvents />
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                    <MapClickHandler onAddPoint={addPoint} />
+                    {centerPosition && <ChangeView center={centerPosition} zoom={mapZoom} />}
+                    {manualMarker && <Marker position={manualMarker} />}
                     {zones.map((zone) => {
                         if (!zone.geojson?.coordinates?.length) return null
 
@@ -146,7 +171,7 @@ const ZoneMap = ({ zones, polygonPoints, setPolygonPoints }: RiderAddProps) => {
                                     weight: 2,
                                 }}
                             >
-                                <Tooltip sticky>Zone: {zone.name}</Tooltip>
+                                <Tooltip sticky>{zone.name}</Tooltip>
                             </Polygon>
                         )
                     })}
@@ -172,15 +197,13 @@ const ZoneMap = ({ zones, polygonPoints, setPolygonPoints }: RiderAddProps) => {
                                 }}
                             />
 
-                            {polygonPoints?.map((item, idx) => (
+                            {polygonPoints.map((p, idx) => (
                                 <Marker
                                     key={idx}
-                                    position={[item.lat, item.lng]}
+                                    position={[p.lat, p.lng]}
                                     icon={PinIcon}
                                     eventHandlers={{
-                                        click: () => {
-                                            setPolygonPoints((prev) => prev.filter((_, index) => index !== idx))
-                                        },
+                                        click: () => removePoint(idx),
                                     }}
                                 />
                             ))}
