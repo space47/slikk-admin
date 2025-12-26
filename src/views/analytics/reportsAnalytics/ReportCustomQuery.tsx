@@ -212,7 +212,7 @@ const ReportCustomQuery = () => {
 
     return (
         <div className="mt-5">
-            <div className="flex gap-4">
+            <div className="flex gap-4 flex-col xl:flex-row md:flex-row">
                 <FormItem label="" labelClass="!justify-start" className="col-span-1 w-full">
                     <RichTextEditor value={value} onChange={(e) => setValue(e)} placeholder="Enter Custom Query" />
                 </FormItem>
