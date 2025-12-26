@@ -245,7 +245,7 @@ const ReportAnalytics = () => {
             <Formik enableReinitialize initialValues={reportData} onSubmit={handleSubmit}>
                 {({ values, resetForm, setFieldValue }) => (
                     <Form className="w-full  ">
-                        <div className="bg-white p-2 dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-700">
+                        <div className="bg-white p-2 dark:bg-gray-800 rounded-2xl shadow-2xl  border border-gray-200 dark:border-gray-700">
                             <div className="">
                                 <div className="flex items-center gap-3 mb-2">
                                     <FaChartBar className=" text-2xl text-purple-500" />
@@ -332,7 +332,7 @@ const ReportAnalytics = () => {
                                                 <div className="p-2 bg-emerald-100 dark:bg-emerald-800 rounded-lg">
                                                     <FaChartBar className="text-emerald-600 dark:text-emerald-400" />
                                                 </div>
-                                                <div>
+                                                <div className="flex-wrap break-words overflow-auto">
                                                     <p className="font-semibold text-emerald-800 dark:text-emerald-300">
                                                         Selected: <span className="font-bold">{storeName}</span>
                                                     </p>
