@@ -6,9 +6,9 @@ import EasyTable from '@/common/EasyTable'
 import { grn_quality_check } from './QCTableCommon'
 import { useParams } from 'react-router-dom'
 import { useFetchApi } from '@/commonHooks/useFetchApi'
-import NotFoundData from '@/views/pages/NotFound/Notfound'
 import { useDebounceInput } from '@/commonHooks/useDebounceInput'
 import PageCommon from '@/common/PageCommon'
+import { Spinner } from '@/components/ui'
 
 const QCtable = () => {
     const { document_number } = useParams()
@@ -26,7 +26,7 @@ const QCtable = () => {
         return `goods/qualitycheck?grn_number=${document_number}&p=${page}&page_size=${pageSize}${filterData}`
     }, [document_number, page, pageSize, debounceFilter])
 
-    const { data, totalData } = useFetchApi<grn_quality_check>({ url: query, initialData: [] })
+    const { data, totalData, loading } = useFetchApi<grn_quality_check>({ url: query, initialData: [] })
 
     const columns = useMemo<ColumnDef<grn_quality_check>[]>(
         () => [
@@ -127,26 +127,24 @@ const QCtable = () => {
         <>
             <div className="w-1/2 p-2">
                 <Input
-                    value={globalFilter ?? ''}
+                    value={globalFilter}
                     type="search"
                     className="p-2 font-lg rounded-md shadow border border-block"
                     placeholder="Search all columns..."
-                    onChange={(value) => setGlobalFilter(String(value))}
+                    onChange={(e) => setGlobalFilter(e.target.value)}
                 />
             </div>
 
-            {data?.length ? (
-                <>
-                    <div className="mb-3">
-                        <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
-                    </div>
-                    <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={totalData} />
-                </>
-            ) : (
-                <>
-                    <NotFoundData />
-                </>
+            {loading && (
+                <div className="flex items-center justify-center mb-4">
+                    <Spinner size={30} />
+                </div>
             )}
+
+            <div className="mb-3">
+                <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
+            </div>
+            <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={totalData} />
         </>
     )
 }
