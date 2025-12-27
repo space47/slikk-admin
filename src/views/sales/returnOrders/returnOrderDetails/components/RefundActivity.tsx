@@ -15,6 +15,7 @@ import { getButtonAndModalContent } from './returnOrderCommon'
 import ReturnActionActivity from './ReturnActionActivity'
 import CompleteReturnModal from './CompleteReturnModal'
 import { useReturnOrderFunctions } from '../../returnOrderUtils/useReturnOrderFunctions'
+import DialogConfirm from '@/common/DialogConfirm'
 
 const RefundActivity = () => {
     const returnOrder = useAppSelector<ReturnOrderState>((state) => state.returnOrders)
@@ -59,7 +60,7 @@ const RefundActivity = () => {
         setTriggerPickedUpGenerate(true)
     }
 
-    const { sendApiRequest, triggerApiCall, handleForceCod, handleCompleteReturn } = useReturnOrderFunctions({
+    const { sendApiRequest, triggerApiCall, handleForceCod, handleCompleteReturn, handleReturnReject } = useReturnOrderFunctions({
         action,
         returnDetails,
         setForceCOD,
@@ -214,6 +215,19 @@ const RefundActivity = () => {
                         handleInputChange={handleInputChange}
                     />
                 )}
+
+            {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'QC_FAILED' ||
+                returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'PICKUP_ATTEMPT_FAILED') && (
+                <DialogConfirm
+                    isProceed
+                    IsOpen={isModalOpen}
+                    setIsOpen={setIsModalOpen}
+                    headingName="Return Reject"
+                    label="Are you sure you want to reject this return order"
+                    closeDialog={() => setIsModalOpen(false)}
+                    onDialogOk={handleReturnReject}
+                />
+            )}
 
             {/* {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'DELIVERED' &&
                 !returnDetails?.log?.some((item) => item?.status?.includes('COMPLETED')) &&
