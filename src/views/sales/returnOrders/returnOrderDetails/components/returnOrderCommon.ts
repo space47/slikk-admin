@@ -14,6 +14,10 @@ export const getButtonAndModalContent = (
         return { buttonText: 'ASSIGN TO RUNNER' }
     }
 
+    if (lastLogStatus === 'QC_FAILED' || lastLogStatus === 'PICKUP_ATTEMPT_FAILED') {
+        return { buttonText: 'RETURN REJECT' }
+    }
+
     if (status === 'PICKUP_CREATED' || (status === 'REVERSE_PICKUP_CREATED' && !isSlikkOrEmpty)) {
         return { buttonText: 'OUT FOR PICKUP' }
     }
