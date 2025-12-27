@@ -12,11 +12,12 @@ import { useAppDispatch, useAppSelector } from '@/store'
 import { RiderDetailType, setRiderProfile } from '@/store/slices/riderDetails/riderDetails.slice'
 import { HiSearch } from 'react-icons/hi'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-import { RiderAgency } from '../RiderDetailsCommon'
+import { RIDER_TYPES, RiderAgency } from '../RiderDetailsCommon'
 import AddBulk from '../RiderComponents/AddBulk'
 import StoreSelectForm from '@/common/StoreSelectForm'
 import { riderZoneService } from '@/store/services/riderZoneService'
 import CommonAccordion from '@/common/CommonAccordion'
+import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 
 const AddRider = () => {
     const dispatch = useAppDispatch()
@@ -309,6 +310,7 @@ const AddRider = () => {
                                             )}
                                         </Field>
                                     </FormItem>
+                                    <CommonSelect name="delivery_type" options={RIDER_TYPES} label="Delivery Type" />
                                 </div>
                             </div>
 

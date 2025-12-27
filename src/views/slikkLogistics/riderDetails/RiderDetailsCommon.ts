@@ -42,8 +42,8 @@ export const RiderAgency = [
 
 export const DEBOUNCE_DELAY = 600
 export const RIDER_TYPES = [
-    { label: 'FORWARD', value: 'FORWARD' },
-    { label: 'RETURN', value: 'RETURN' },
+    { label: 'INSTANT RETURN', value: 'instant_return_rider' },
+    { label: 'BACKLOG RETURN', value: 'backlog_return_rider' },
 ]
 export const SEARCH_TYPES = ['mobile', 'name'] as const
 export const STATUS_TABS = ['checkin', 'checkout'] as const
