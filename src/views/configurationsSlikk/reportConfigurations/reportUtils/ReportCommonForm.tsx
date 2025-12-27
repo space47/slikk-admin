@@ -7,6 +7,7 @@ import { ExtraAttributes } from '../editQueryReport/ExtraAttributes'
 import { RichTextEditor } from '@/components/shared'
 import { IoIosAddCircle } from 'react-icons/io'
 import { FaKey } from 'react-icons/fa'
+import RichTextCommon from '@/common/RichTextCommon'
 
 const reportQueryNames = [
     { label: 'Date', value: 'Date' },
@@ -123,16 +124,11 @@ const ReportCommonForm = ({ resetForm, values }: Props) => {
                                                         />
                                                     </FormItem>
                                                 </div>
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    <FormItem label="Logic behind this query">
-                                                        <Field
-                                                            name={`value[${index}].extra_attributes.logic`}
-                                                            type="text"
-                                                            placeholder="Describe the logic"
-                                                            component={Input}
-                                                            className="bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
-                                                        />
-                                                    </FormItem>
+                                                <div className="grid grid-cols-1  gap-4">
+                                                    <RichTextCommon
+                                                        label="Logic behind this query"
+                                                        name={`value[${index}].extra_attributes.logic`}
+                                                    />
                                                     <FormItem label="Use Case for this query">
                                                         <Field
                                                             name={`value[${index}].extra_attributes.use_case`}

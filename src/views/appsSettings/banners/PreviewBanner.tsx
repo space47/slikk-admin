@@ -229,9 +229,9 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                 extra_attributes: {
                     video_web: webVideoUpload ?? '',
                     video_mobile: mobileVideoUpload ?? '',
-                    web_aspect_ratio: banner?.web_aspect_ratio ?? (webAspectratio?.[0] ? Number(webAspectratio[0]?.toFixed(2)) : null),
+                    web_aspect_ratio: banner?.web_aspect_ratio ?? (webAspectratio?.[0] ? Number(webAspectratio[0]?.toFixed(6)) : null),
                     mobile_aspect_ratio:
-                        banner?.mobile_aspect_ratio ?? (mobileAspectratio?.[0] ? Number(mobileAspectratio[0]?.toFixed(2)) : null),
+                        banner?.mobile_aspect_ratio ?? (mobileAspectratio?.[0] ? Number(mobileAspectratio[0]?.toFixed(6)) : null),
                     web_redirection_url:
                         banner.is_custom === true
                             ? `s/${banner.pageName}${banner.subPageName ? `/${banner.subPageName}` : ''}`
