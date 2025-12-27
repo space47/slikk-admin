@@ -147,6 +147,13 @@ export const useOrderListColumns = ({
                     )
                 },
             },
+            {
+                header: 'Delay Status',
+                accessorKey: 'logistic.is_delayed',
+                cell: ({ row }: any) => {
+                    return <>{row?.logistic?.is_delayed ? 'delayed' : 'On Time'}</>
+                },
+            },
             { header: 'Total Items', accessorKey: 'order_items_count' },
             { header: 'Order Count', accessorKey: 'user_order_count' },
             { header: 'Device Type', accessorKey: 'device_type' },

@@ -128,6 +128,34 @@ export const ForwardDeliveryColumns = (
                 accessorKey: 'logistic.runner_phone_number',
             },
             {
+                header: 'Estimate Delivery Time',
+                accessorKey: 'logistic.estimate_delivery_time',
+                cell: ({ row }: any) => (
+                    <div>
+                        {row?.logistic?.eta_dropoff_time ? moment(row?.logistic?.eta_dropoff_time).format('YYYY-MM-DD hh:mm:ss a') : 'N/A'}
+                    </div>
+                ),
+            },
+
+            {
+                header: 'ETA DropOff Time',
+                accessorKey: 'logistic.estimate_delivery_time',
+                cell: ({ row }: any) => (
+                    <div>
+                        {row?.logistic?.estimate_delivery_time
+                            ? moment(row?.logistic?.estimate_delivery_time).format('YYYY-MM-DD hh:mm:ss a')
+                            : 'N/A'}
+                    </div>
+                ),
+            },
+            {
+                header: 'Delay Status',
+                accessorKey: 'logistic.is_delayed',
+                cell: ({ row }: any) => {
+                    return <>{row?.logistic?.is_delayed ? 'delayed' : 'On Time'}</>
+                },
+            },
+            {
                 header: 'Payment Mode',
                 accessorKey: 'payment.mode',
             },
