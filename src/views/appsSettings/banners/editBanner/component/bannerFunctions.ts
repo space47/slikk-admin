@@ -145,9 +145,9 @@ export const bannerBodyFile = (
         extra_attributes: {
             video_web: webVideoUpload ? webVideoUpload : values?.extra_attributes?.video_web || '',
             video_mobile: mobileVideoUpload ? mobileVideoUpload : values?.extra_attributes?.video_mobile || '',
-            web_aspect_ratio: webAspectratio?.[0] ? Number(webAspectratio[0].toFixed(2)) : values?.extra_attributes?.web_aspect_ratio || '',
+            web_aspect_ratio: webAspectratio?.[0] ? Number(webAspectratio[0].toFixed(6)) : values?.extra_attributes?.web_aspect_ratio || '',
             mobile_aspect_ratio: mobileAspectratio?.[0]
-                ? Number(mobileAspectratio[0].toFixed(2))
+                ? Number(mobileAspectratio[0].toFixed(6))
                 : values?.extra_attributes?.mobile_aspect_ratio || '',
             mobile_redirection_url: values?.extra_attributes?.mobile_redirection_url || '',
             web_redirection_url: values?.extra_attributes?.web_redirection_url || '',

@@ -6,6 +6,7 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useEffect, useState } from 'react'
 import { notification } from 'antd'
 import ReportCommonForm from '../reportUtils/ReportCommonForm'
+import { textParser } from '@/common/textParser'
 
 const EditReportQuery = () => {
     const navigate = useNavigate()
@@ -114,7 +115,7 @@ const EditReportQuery = () => {
                     y_axis: item?.extra_attributes?.y_axis,
                     secondary_y_axis: item?.extra_attributes?.secondary_y_axis,
                     graph_type: item?.extra_attributes?.graph_type ? item?.extra_attributes?.graph_type : 'line',
-                    logic: item.extra_attributes?.logic || null,
+                    logic: textParser(item.extra_attributes?.logic) || null,
                     use_case: item.extra_attributes?.use_case || null,
                 },
             }
