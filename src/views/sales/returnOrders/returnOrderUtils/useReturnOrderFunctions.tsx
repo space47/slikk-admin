@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { errorMessage, successMessage } from '@/utils/responseMessages'
 import { notification } from 'antd'
 import { AxiosError } from 'axios'
 import React from 'react'
@@ -179,5 +180,20 @@ export const useReturnOrderFunctions = ({
         }
     }
 
-    return { sendApiRequest, triggerApiCall, handleForceCod, handleCompleteReturn }
+    const handleReturnReject = async () => {
+        try {
+            const response = await axioisInstance.patch(`merchant/return_order/${returnDetails?.return_order_id}`, {
+                action: 'reject_return_order',
+            })
+            successMessage(response)
+            setIsModalOpen(false)
+            navigate(0)
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                errorMessage(error)
+            }
+        }
+    }
+
+    return { sendApiRequest, triggerApiCall, handleForceCod, handleCompleteReturn, handleReturnReject }
 }
