@@ -171,7 +171,7 @@ const OrderList = () => {
             const interval = setInterval(() => {
                 fetchOrders()
                 checkingNewOrders()
-            }, 10000)
+            }, 60000)
 
             return () => clearInterval(interval)
         }
