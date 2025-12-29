@@ -19,7 +19,7 @@ interface TABLEPROPS {
     mainData: any
     noPage?: boolean
     overflow?: boolean
-    isDelayedStatus: Record<string, string>
+    isDelayedStatus: Record<string, boolean>
 }
 
 const RedMarkTable = ({ columns, page, pageSize, mainData, noPage, overflow, isDelayedStatus }: TABLEPROPS) => {

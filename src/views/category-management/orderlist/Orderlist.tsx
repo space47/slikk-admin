@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { SetStateAction, useEffect, useRef, useState } from 'react'
+import { SetStateAction, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import Pagination from '@/components/ui/Pagination'
@@ -57,7 +57,6 @@ const OrderList = () => {
     const [numberClick, setNumberClick] = useState(false)
     const [deliveryChangeType, setDeliveryChangeType] = useState<{ [key: string]: { value: string; label: string } }>({})
     const previousOrders = useRef<any[]>([])
-    const [isDelayedStatus, setIsDelayedStatus] = useState<Record<string, string>>({})
     const [showNoData, setShowNoData] = useState(false)
     const [searchOnEnter, setSearchOnEnter] = useState('')
     const [tabSelect, setTabSelect] = useState('all')
@@ -172,7 +171,7 @@ const OrderList = () => {
             const interval = setInterval(() => {
                 fetchOrders()
                 checkingNewOrders()
-            }, 60000)
+            }, 10000)
 
             return () => clearInterval(interval)
         }
@@ -224,12 +223,12 @@ const OrderList = () => {
         }
     }
 
-    useEffect(() => {
-        const initialDeliveryTypes: any = {}
-        orders.forEach((row: any) => {
-            initialDeliveryTypes[row.invoice_id] = row.logistic?.is_delayed ?? false
+    const isDelayedStatus = useMemo(() => {
+        const map: Record<string, boolean> = {}
+        orders.forEach((row) => {
+            map[row.invoice_id] = row.logistic?.is_delayed ?? false
         })
-        setIsDelayedStatus(initialDeliveryTypes)
+        return map
     }, [orders])
 
     const handleDeliveryChange = (selectedValue: any, row: any) => {
