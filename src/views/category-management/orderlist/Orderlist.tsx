@@ -34,6 +34,7 @@ import {
 } from './orderListUtils/OrderListFunctions'
 import { getStatusFilter } from './orderListUtils/OrderListUtils'
 import OrderReAssignModal from './orderListUtils/OrderReAssignModal'
+import { ordersData } from '@/mock/data/salesData'
 
 const OrderList = () => {
     const location = useLocation()
@@ -56,8 +57,7 @@ const OrderList = () => {
     const [pendingSound, setPendingSound] = useState(false)
     const [numberClick, setNumberClick] = useState(false)
     const [deliveryChangeType, setDeliveryChangeType] = useState<{ [key: string]: { value: string; label: string } }>({})
-    const previousOrders = useRef<any[]>([])
-    const [showNoData, setShowNoData] = useState(false)
+
     const [searchOnEnter, setSearchOnEnter] = useState('')
     const [tabSelect, setTabSelect] = useState('all')
     const [isDownloading, setIsDownloading] = useState(false)
@@ -65,6 +65,7 @@ const OrderList = () => {
     const [isReAssign, setIsReAssign] = useState(false)
     const [loadingTable, setLoadingTable] = useState(false)
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
+    const storePrevCount = useRef<number>(0)
 
     const handleSelectTab = (value: string) => {
         setShowNumberLoading(true)
@@ -75,10 +76,8 @@ const OrderList = () => {
         const status = dropdownStatus?.value?.length > 0 ? `&status=${dropdownStatus.value}` : getStatusFilter(tabSelect)
         const deliveryStatus =
             tabSelect === 'exchange' ? `&delivery_type=EXCHANGE` : deliveryType?.value?.length ? `&delivery_type=${deliveryType.value}` : ''
-
         const paymentMode = paymentType?.value?.length ? `&payment_mode=${paymentType.value}` : ''
         const paymentStatusData = paymentStatus?.value?.length ? `&payment_status=${paymentStatus.value}` : ''
-
         const filterParams = searchInput
             ? currentSelectedPage.value === 'invoice'
                 ? `&invoice_id=${searchInput}`
@@ -105,47 +104,27 @@ const OrderList = () => {
         }
     }
 
+    console.log('store prev ', storePrevCount.current)
+    console.log('order count', orderCount)
+
     const fetchOrders = async () => {
         try {
             setOrders([])
             setLoadingTable(true)
+            // current count 17
             const { ordersData, orderCount } = await fetchApiCall()
-            setOrders(ordersData)
-            setOrderCount(orderCount)
-            if (ordersData?.length === 0) {
-                setShowNoData(true)
-            } else {
-                setShowNoData(false)
+            if (orderCount > storePrevCount.current) {
+                setSoundEnabled(true)
             }
+
+            storePrevCount.current = orderCount //18
+            setOrders(ordersData)
+            setOrderCount(orderCount) //18
         } catch (error) {
             console.error(error)
         } finally {
             setShowNumberLoading(false)
             setLoadingTable(false)
-        }
-    }
-
-    const checkingNewOrders = async () => {
-        try {
-            const { ordersData, orderCount } = await fetchApiCall()
-            if (previousOrders.current.length > 0) {
-                const latestPreviousOrderDate = new Date(
-                    Math.max(...previousOrders.current.map((order) => new Date(order.create_date)?.getTime())),
-                )
-
-                const newOrderExists = ordersData.some((newOrder: any) => new Date(newOrder.create_date) > latestPreviousOrderDate)
-
-                if (newOrderExists) {
-                    setSoundEnabled(true)
-                }
-            }
-            previousOrders.current = ordersData
-            setOrders(ordersData)
-            setOrderCount(orderCount)
-        } catch (error) {
-            console.error(error)
-        } finally {
-            setShowNumberLoading(false)
         }
     }
 
@@ -170,37 +149,11 @@ const OrderList = () => {
         if (noFilters && (tabSelect === 'all' || tabSelect === 'pending')) {
             const interval = setInterval(() => {
                 fetchOrders()
-                checkingNewOrders()
-            }, 10000)
+            }, 100000)
 
             return () => clearInterval(interval)
         }
-    }, [
-        page,
-        pageSize,
-        from,
-        to,
-        dropdownStatus,
-        searchOnEnter,
-        deliveryType,
-        paymentType,
-        numberClick,
-        previousOrders,
-        tabSelect,
-        paymentStatus,
-    ])
-
-    useEffect(() => {
-        checkingNewOrders()
-        const noFilters = noFilterFunc(true)
-        if (noFilters && (tabSelect === 'all' || tabSelect === 'pending')) {
-            const interval = setInterval(() => {
-                checkingNewOrders()
-            }, 30000)
-
-            return () => clearInterval(interval)
-        }
-    }, [previousOrders])
+    }, [page, pageSize, from, to, dropdownStatus, searchOnEnter, deliveryType, paymentType, numberClick, tabSelect, paymentStatus])
 
     useEffect(() => {
         if (soundEnabled) {
@@ -380,7 +333,7 @@ const OrderList = () => {
                         tabSelect={tabSelect}
                         orderCount={showNumberLoading ? `...` : `${orderCount}`}
                     />
-                    {showNoData ? (
+                    {!ordersData.length ? (
                         <NotFoundData />
                     ) : (
                         <div className="border border-gray-300 p-2 rounded-xl hidden xl:block mt-6">
