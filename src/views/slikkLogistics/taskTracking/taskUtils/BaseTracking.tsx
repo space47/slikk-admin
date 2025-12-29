@@ -19,6 +19,7 @@ import { TaskTrackingColumns } from './TaskTrakingColumns'
 import TrackModal from '../TrackModal'
 import FilterByRunner from '../FilterByRunner'
 import { GoTasklist } from 'react-icons/go'
+import ZoneSelectComponent from '@/common/ZoneSelectCommon'
 
 interface Props {
     label: string
@@ -40,6 +41,7 @@ const BaseTracking = ({ download_name, type, label }: Props) => {
     const [showFilterByRunner, SetShowFilterByRunner] = useState(false)
     const [particularMobileOfRunner, SetParticularMobileOfRunner] = useState<string>('')
     const [statusName, setStatusName] = useState('')
+    const [zoneId, setZoneId] = useState<number[]>([])
 
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
 
@@ -47,6 +49,10 @@ const BaseTracking = ({ download_name, type, label }: Props) => {
         let searchData = ''
         let deliveryType = ''
         const runnerFilter = particularMobileOfRunner ? `&runner_mobile=${particularMobileOfRunner}` : ''
+        let zones = ''
+        if (zoneId?.length) {
+            zones = `&zone_id=${zoneId?.join(',')}`
+        }
 
         if (currentSelectedPage.value === 'client_order_id' && globalFilter) {
             searchData = `&client_order_id=${globalFilter}`
@@ -65,8 +71,8 @@ const BaseTracking = ({ download_name, type, label }: Props) => {
         }
         if (!globalFilter) deliveryType = `task_type=${type}`
 
-        return `logistic/slikk/task?${deliveryType}&p=${page}&page_size=${pageSize}${searchData}${runnerFilter}${statusFilter}&from=${from}&to=${To_Date}`
-    }, [from, particularMobileOfRunner, globalFilter, currentStatus, page, pageSize, currentSelectedPage, To_Date, statusName])
+        return `logistic/slikk/task?${deliveryType}&p=${page}&page_size=${pageSize}${searchData}${runnerFilter}${statusFilter}&from=${from}&to=${To_Date}${zones}`
+    }, [from, particularMobileOfRunner, globalFilter, currentStatus, page, pageSize, currentSelectedPage, To_Date, statusName, zoneId])
 
     const { data, totalData, responseStatus } = useFetchApi<TaskDetails>({ url: queryUrl, initialData: [] })
 
@@ -133,6 +139,11 @@ const BaseTracking = ({ download_name, type, label }: Props) => {
                         <p className="text-gray-500 dark:text-gray-400 mt-2">Track, and analyze Logistic Tasks</p>
                     </div>
                 </div>
+            </div>
+            <div className="xl:w-1/2 w-full mb-10">
+                {type?.toLowerCase() === 'reverse' && (
+                    <ZoneSelectComponent label="Select Zone" customCss="xl:w-1/2 w-full" setZone={setZoneId} zone={zoneId} />
+                )}
             </div>
             <div className="flex flex-col lg:flex-row justify-between items-start gap-6 mb-6">
                 <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">

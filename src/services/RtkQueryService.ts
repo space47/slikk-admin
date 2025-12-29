@@ -16,7 +16,15 @@ const customBaseQuery: typeof baseQuery = async (args, api, extraOptions) => {
     let modifiedArgs = typeof args === 'string' ? { url: args, method: 'GET' } : { ...args }
     const state = api.getState() as RootState
     const storeIds = state.storeSelect.store_ids
-    const excludeUrls = ['indent', 'logistic/riders', 'rider/profile', 'rider/cash/collection', 'rtv', 'picker/profile']
+    const excludeUrls = [
+        'indent',
+        'logistic/riders',
+        'rider/profile',
+        'rider/cash/collection',
+        'rtv',
+        'picker/profile',
+        'logistic-service-zones',
+    ]
     const method = (modifiedArgs.method || 'GET').toUpperCase()
 
     if (method === 'GET' && Array.isArray(storeIds) && storeIds.length > 0 && !excludeUrls.some((url) => modifiedArgs.url.includes(url))) {

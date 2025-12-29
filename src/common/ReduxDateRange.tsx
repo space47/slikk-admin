@@ -105,8 +105,8 @@ const ReduxDateRange = ({ id, setFrom, setTo, handleDateChange }: DATEPROPS) => 
     }
 
     return (
-        <div className="flex gap-1 items-center xl:mr-14">
-            <div className="border w-auto rounded-md h-auto font-bold mt-8 bg-black text-white flex justify-center">
+        <div className="flex gap-1 items-center">
+            <div className="border w-auto rounded-md h-auto font-bold  bg-black text-white flex justify-center">
                 <Dropdown
                     className="text-xl text-white bg-white font-bold border-2 border-blue-600"
                     title={selectedOption}
