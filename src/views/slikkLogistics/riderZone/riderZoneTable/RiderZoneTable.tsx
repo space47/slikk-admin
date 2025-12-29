@@ -129,7 +129,17 @@ const RiderZoneTable = () => {
                             variant={seeZoneMap ? 'reject' : 'accept'}
                             size="sm"
                             type="button"
-                            onClick={() => setSeeZoneMap((prev) => !prev)}
+                            onClick={() => {
+                                setSeeZoneMap((prev) => !prev)
+                                if (!seeZoneMap) {
+                                    setTimeout(() => {
+                                        window.scrollTo({
+                                            top: document.documentElement.scrollHeight,
+                                            behavior: 'smooth',
+                                        })
+                                    }, 0)
+                                }
+                            }}
                         >
                             {seeZoneMap ? 'Close' : 'Check Return Zone'}
                         </Button>
