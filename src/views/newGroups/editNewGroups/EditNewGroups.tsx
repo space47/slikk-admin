@@ -103,7 +103,7 @@ const EditNewGroups = () => {
 
             const response = await axioisInstance.patch(`/notification/groups/${id}`, requestBody)
             successMessage(response)
-            navigate(0)
+            navigate(-1)
         } catch (error) {
             if (error instanceof AxiosError) {
                 errorMessage(error)
