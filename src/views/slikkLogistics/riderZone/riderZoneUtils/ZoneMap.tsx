@@ -111,15 +111,21 @@ const ZoneMap = ({ zones, polygonPoints, setPolygonPoints, isAdd }: RiderAddProp
         <div className="flex flex-col gap-4">
             {isAdd && (
                 <div className="flex gap-3">
-                    <Button size="sm" disabled={isDrawing} onClick={startDrawing}>
+                    <Button size="sm" type="button" disabled={isDrawing} onClick={startDrawing}>
                         Set Zone
                     </Button>
 
-                    <Button size="sm" variant="accept" disabled={!isDrawing || polygonPoints.length < 3} onClick={completeDrawing}>
+                    <Button
+                        size="sm"
+                        type="button"
+                        variant="accept"
+                        disabled={!isDrawing || polygonPoints.length < 3}
+                        onClick={completeDrawing}
+                    >
                         Complete
                     </Button>
 
-                    <Button size="sm" variant="reject" onClick={clearDrawing}>
+                    <Button size="sm" type="button" variant="reject" onClick={clearDrawing}>
                         Clear
                     </Button>
                 </div>
@@ -132,7 +138,7 @@ const ZoneMap = ({ zones, polygonPoints, setPolygonPoints, isAdd }: RiderAddProp
                             value={latAndLong}
                             onChange={(e) => setLatAndLong(e.target.value)}
                         />
-                        <Button variant="new" onClick={handleGenerateMarker}>
+                        <Button variant="new" type="button" onClick={handleGenerateMarker}>
                             Generate
                         </Button>
                     </div>
@@ -142,6 +148,7 @@ const ZoneMap = ({ zones, polygonPoints, setPolygonPoints, isAdd }: RiderAddProp
                 <Button
                     size="sm"
                     variant="new"
+                    type="button"
                     className="absolute top-3 right-3 z-[1000]"
                     icon={<BsArrowsFullscreen className="text-xl" />}
                     onClick={toggleFullscreen}
