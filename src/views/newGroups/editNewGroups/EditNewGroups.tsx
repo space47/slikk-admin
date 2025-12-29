@@ -54,7 +54,7 @@ const EditNewGroups = () => {
     const urlReq = useMemo(() => {
         return `/notification/groups/${id}`
     }, [id])
-    const { data: apiData } = useFetchSingleData<any>({ url: urlReq })
+    const { data: apiData, loading } = useFetchSingleData<any>({ url: urlReq })
     const initialGroupData = useMemo(() => {
         const d: any = apiData as any
         if (!d) return undefined
@@ -103,7 +103,7 @@ const EditNewGroups = () => {
 
             const response = await axioisInstance.patch(`/notification/groups/${id}`, requestBody)
             successMessage(response)
-            navigate(-1)
+            navigate(`/app/appsCommuncication/cohorts`)
         } catch (error) {
             if (error instanceof AxiosError) {
                 errorMessage(error)
@@ -113,8 +113,26 @@ const EditNewGroups = () => {
         }
     }
 
+    const initialValues = useMemo(
+        () => ({
+            cohort_name: initialGroupData?.name ?? '',
+            user: initialGroupData?.rules?.user?.join(',') ?? '',
+            conditions: initialGroupData?.rules ? transformRulesToConditions(initialGroupData.rules) : [ConditionsForEvent],
+        }),
+        [initialGroupData],
+    )
+
     const handleAddCondition = (push: any, relation: string) => {
         push({ ...ConditionsForEvent, relation: relation })
+    }
+
+    if (loading || !initialGroupData) {
+        return (
+            <div className="flex flex-col items-center justify-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+                <p className="text-gray-600 text-lg">Loading cohort details...</p>
+            </div>
+        )
     }
 
     return (
@@ -126,15 +144,7 @@ const EditNewGroups = () => {
                     mandatory
                 </p>
             </div>
-            <Formik
-                enableReinitialize
-                initialValues={{
-                    cohort_name: initialGroupData?.name || '',
-                    user: '',
-                    conditions: initialGroupData?.rules ? transformRulesToConditions(initialGroupData.rules) : [ConditionsForEvent],
-                }}
-                onSubmit={handleSubmit}
-            >
+            <Formik enableReinitialize initialValues={initialValues} onSubmit={handleSubmit}>
                 {({ values }) => (
                     <Form className="w-full">
                         <FormItem label="" className="flex flex-col gap-2">
