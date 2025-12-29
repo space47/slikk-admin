@@ -151,8 +151,25 @@ export const useOrderListColumns = ({
                 header: 'Delay Status',
                 accessorKey: 'logistic.is_delayed',
                 cell: ({ row }: any) => {
-                    return <>{row?.logistic?.is_delayed ? 'delayed' : 'On Time'}</>
+                    return <>{row?.original?.logistic?.is_delayed ? 'delayed' : 'On Time'}</>
                 },
+            },
+            {
+                header: 'ETA DropOff Time',
+                accessorKey: 'logistic.eta_dropoff_time',
+                cell: ({ row }: any) => (
+                    <div>
+                        {row?.original?.logistic?.eta_dropoff_time
+                            ? moment(row?.original?.logistic?.eta_dropoff_time).format('YYYY-MM-DD hh:mm:ss a')
+                            : 'N/A'}
+                    </div>
+                ),
+            },
+
+            {
+                header: 'Estimate Delivery Time',
+                accessorKey: 'eta_duration',
+                cell: ({ row }: any) => <div>{row?.original?.eta_duration ? `${row?.original?.eta_duration} mins` : 'N/A'}</div>,
             },
             { header: 'Total Items', accessorKey: 'order_items_count' },
             { header: 'Order Count', accessorKey: 'user_order_count' },

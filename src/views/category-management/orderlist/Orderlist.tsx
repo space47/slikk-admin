@@ -57,7 +57,7 @@ const OrderList = () => {
     const [numberClick, setNumberClick] = useState(false)
     const [deliveryChangeType, setDeliveryChangeType] = useState<{ [key: string]: { value: string; label: string } }>({})
     const previousOrders = useRef<any[]>([])
-    const [deliveryTypes, setDeliveryTypes] = useState<Record<string, string>>({})
+    const [isDelayedStatus, setIsDelayedStatus] = useState<Record<string, string>>({})
     const [showNoData, setShowNoData] = useState(false)
     const [searchOnEnter, setSearchOnEnter] = useState('')
     const [tabSelect, setTabSelect] = useState('all')
@@ -194,7 +194,6 @@ const OrderList = () => {
     useEffect(() => {
         checkingNewOrders()
         const noFilters = noFilterFunc(true)
-
         if (noFilters && (tabSelect === 'all' || tabSelect === 'pending')) {
             const interval = setInterval(() => {
                 checkingNewOrders()
@@ -228,9 +227,9 @@ const OrderList = () => {
     useEffect(() => {
         const initialDeliveryTypes: any = {}
         orders.forEach((row: any) => {
-            initialDeliveryTypes[row.invoice_id] = row.delivery_type || 'SELECT'
+            initialDeliveryTypes[row.invoice_id] = row.logistic?.is_delayed ?? false
         })
-        setDeliveryTypes(initialDeliveryTypes)
+        setIsDelayedStatus(initialDeliveryTypes)
     }, [orders])
 
     const handleDeliveryChange = (selectedValue: any, row: any) => {
@@ -264,15 +263,9 @@ const OrderList = () => {
         selectedValue: string,
     ) => {
         if (values.value.includes(selectedValue)) {
-            setValues((prevState) => ({
-                ...prevState,
-                value: prevState.value.filter((item) => item !== selectedValue),
-            }))
+            setValues((prevState) => ({ ...prevState, value: prevState.value.filter((item) => item !== selectedValue) }))
         } else {
-            setValues((prevState) => ({
-                ...prevState,
-                value: [...prevState.value, selectedValue],
-            }))
+            setValues((prevState) => ({ ...prevState, value: [...prevState.value, selectedValue] }))
         }
     }
 
@@ -303,7 +296,6 @@ const OrderList = () => {
             <div className="p-4 shadow-lg dark:bg-slate-800 rounded-xl">
                 <div className="overflow-x-auto scrollbar-hide">
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mb-10">
-                        {/* Search + Dropdown */}
                         <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center order-2 lg:order-1 w-full lg:w-auto">
                             <div className="flex items-center gap-2 bg-white dark:bg-gray-900 px-3 py-2 rounded-lg shadow-md w-full sm:w-auto">
                                 <Input
@@ -341,10 +333,7 @@ const OrderList = () => {
                                 </div>
                             </div>
                         </div>
-
-                        {/* Right side controls */}
                         <div className="flex flex-col gap-4 lg:flex-row items-center w-full lg:justify-end order-1 lg:order-2">
-                            {/* Date picker */}
                             <UltimateDatePicker
                                 from={from}
                                 setFrom={setFrom}
@@ -352,8 +341,6 @@ const OrderList = () => {
                                 setTo={setTo}
                                 handleDateChange={(e: [Date | null, Date | null] | null) => handleDateChange(e, setFrom, setTo)}
                             />
-
-                            {/* Buttons */}
                             <div className="flex flex-row xl:mt-7   gap-3 items-center">
                                 <Button variant="new" size="sm" onClick={() => setIsReAssign(true)}>
                                     Reassign
@@ -403,7 +390,7 @@ const OrderList = () => {
                                 page={page}
                                 pageSize={pageSize}
                                 columns={columns}
-                                selectedDeliveryType={deliveryTypes ?? ''}
+                                isDelayedStatus={isDelayedStatus}
                             />
                         </div>
                     )}
