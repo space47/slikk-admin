@@ -9,21 +9,20 @@ import {
 } from '@tanstack/react-table'
 import React from 'react'
 import Table from '@/components/ui/Table'
-import moment from 'moment'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
 interface TABLEPROPS {
     columns: any
-    page?: number
-    pageSize?: number
+    page: number
+    pageSize: number
     mainData: any
     noPage?: boolean
     overflow?: boolean
-    selectedDeliveryType?: any
+    isDelayedStatus: Record<string, boolean>
 }
 
-const RedMarkTable = ({ columns, page, pageSize, mainData, noPage, overflow, selectedDeliveryType }: TABLEPROPS) => {
+const RedMarkTable = ({ columns, page, pageSize, mainData, noPage, overflow, isDelayedStatus }: TABLEPROPS) => {
     const table = useReactTable({
         data: mainData,
         columns,
@@ -31,7 +30,7 @@ const RedMarkTable = ({ columns, page, pageSize, mainData, noPage, overflow, sel
             ? {}
             : {
                   pagination: {
-                      pageIndex: page - 1,
+                      pageIndex: (page as number) - 1,
                       pageSize: pageSize,
                   },
               },
@@ -41,28 +40,14 @@ const RedMarkTable = ({ columns, page, pageSize, mainData, noPage, overflow, sel
         getPaginationRowModel: getPaginationRowModel(),
         manualPagination: !noPage,
     })
-    console.log('DeliveryType in red Tablw', selectedDeliveryType)
 
     const getRowClassName = (row: any) => {
-        const createDate = moment(row.original.create_date)
-        const currentDate = moment()
-        const diffInMinutes = currentDate.diff(createDate, 'minutes')
-
-        const rowId = row.original.invoice_id
-        const deliveryType = selectedDeliveryType[rowId] || ''
-
-        if (deliveryType === 'EXCHANGE' || deliveryType === 'STANDARD') {
-            return ''
-        }
-
-        if (
-            row.original.status !== 'COMPLETED' &&
-            row.original.status !== 'CANCELLED' &&
-            row.original.status !== 'DECLINED' &&
-            diffInMinutes > 60
-        ) {
+        const rowId = row?.original?.invoice_id
+        const isDelayed = isDelayedStatus[rowId] ?? false
+        if (isDelayed) {
             return 'bg-red-200 font-bold'
         }
+
         return ''
     }
 

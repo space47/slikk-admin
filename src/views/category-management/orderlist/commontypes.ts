@@ -108,6 +108,12 @@ export interface Order {
 
     area: string
     pincode: string
+    logistic: {
+        is_delayed: boolean
+
+        estimate_delivery_time: string
+        eta_dropoff_time: string
+    }
 }
 
 export const ORDER_STATUS = [
