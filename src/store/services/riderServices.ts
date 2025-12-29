@@ -246,12 +246,13 @@ export const ridersService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        riderPerformanceDownload: builder.query<{ status: string; message: string }, { from?: string; to?: string }>({
+        riderPerformanceDownload: builder.query<{ status: string; message: string }, { from?: string; to?: string; report_type?: string }>({
             query: (params) => {
                 const parameters: Record<string, string | string[]> = {}
 
                 if (params.from) parameters.from = params.from
                 if (params.to) parameters.to = params.to
+                if (params.report_type) parameters.report_type = params.report_type
 
                 return {
                     url: `rider/performance/report`,
