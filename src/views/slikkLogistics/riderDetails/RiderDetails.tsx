@@ -64,6 +64,7 @@ const RiderDetails = () => {
     const { debounceFilter } = useDebounceInput({ globalFilter: globalFilter as string, delay: DEBOUNCE_DELAY })
     const [deleteRider, deleteResponse] = ridersService.useRiderDeleteMutation()
     const [performanceDownload, performanceResponse] = ridersService.useLazyRiderPerformanceDownloadQuery()
+    const [zoneId, setZoneId] = useState<number[]>([])
     const {
         data: riders,
         isSuccess,
@@ -86,6 +87,7 @@ const RiderDetails = () => {
             rider_agency: currentAgency || '',
             shift_end_time: shiftEnd || '',
             shift_start_time: shiftStart || '',
+            zone_id: zoneId?.join(','),
         },
         { refetchOnMountOrArgChange: true },
     )
@@ -442,6 +444,8 @@ const RiderDetails = () => {
                     shiftStart={shiftStart}
                     riderType={riderType}
                     setRiderType={setRiderType}
+                    setZoneId={setZoneId}
+                    zoneId={zoneId}
                 />
             )}
 
