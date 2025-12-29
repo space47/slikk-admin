@@ -61,3 +61,8 @@ export interface StoreOption {
         id: number
     }
 }
+
+export const RiderDownloadOptions = [
+    { label: 'Summary Report', value: 'summary' },
+    { label: 'Order Level Report', value: 'order_level' },
+]
