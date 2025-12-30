@@ -158,7 +158,7 @@ export const useOrderListColumns = ({
                 header: 'Total Time Taken',
                 accessorKey: 'logistic.total_time',
                 cell: ({ row }: any) => {
-                    return <>{row?.original?.logistic?.total_time ? `${row?.original?.logistic?.total_time} mins` : 'N/A'}</>
+                    return <>{row?.original?.logistic?.total_time ? `${row?.original?.logistic?.total_time?.toFixed(2)} mins` : 'N/A'}</>
                 },
             },
             {
@@ -176,7 +176,7 @@ export const useOrderListColumns = ({
 
                     const difference = timeTaken - timeEstimate
 
-                    return <>{difference >= 0 ? `${difference} mins` : '0 mins'}</>
+                    return <>{difference >= 0 ? `${difference.toFixed(2)} mins` : '0 mins'}</>
                 },
             },
             {
@@ -194,7 +194,9 @@ export const useOrderListColumns = ({
             {
                 header: 'Estimate Delivery Time',
                 accessorKey: 'eta_duration',
-                cell: ({ row }: any) => <div>{row?.original?.eta_duration ? `${row?.original?.eta_duration} mins` : 'N/A'}</div>,
+                cell: ({ row }: any) => (
+                    <div>{row?.original?.eta_duration ? `${row?.original?.eta_duration?.toFixed(2)} mins` : 'N/A'}</div>
+                ),
             },
             { header: 'Total Items', accessorKey: 'order_items_count' },
             { header: 'Order Count', accessorKey: 'user_order_count' },
