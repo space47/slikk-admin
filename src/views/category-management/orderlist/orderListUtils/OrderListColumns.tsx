@@ -155,6 +155,31 @@ export const useOrderListColumns = ({
                 },
             },
             {
+                header: 'Total Time Taken',
+                accessorKey: 'logistic.total_time',
+                cell: ({ row }: any) => {
+                    return <>{row?.original?.logistic?.total_time ? `${row?.original?.logistic?.total_time} mins` : 'N/A'}</>
+                },
+            },
+            {
+                header: 'Delay Time',
+                accessorKey: 'logistic.is_delayed',
+                cell: ({ row }: any) => {
+                    const timeTaken =
+                        typeof row?.original?.logistic?.total_time === 'string'
+                            ? Number(row?.original?.logistic?.total_time)
+                            : row?.original?.logistic?.total_time || 0
+                    const timeEstimate =
+                        typeof row?.original?.eta_duration === 'string'
+                            ? Number(row?.original?.eta_duration)
+                            : row?.original?.eta_duration || 0
+
+                    const difference = timeTaken - timeEstimate
+
+                    return <>{difference >= 0 ? `${difference} mins` : '0 mins'}</>
+                },
+            },
+            {
                 header: 'ETA DropOff Time',
                 accessorKey: 'logistic.eta_dropoff_time',
                 cell: ({ row }: any) => (

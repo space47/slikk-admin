@@ -1,5 +1,5 @@
 import { Drawer, FormItem, Select } from '@/components/ui'
-import { RIDER_TYPES, RiderAgency } from '../RiderDetailsCommon'
+import { RIDER_TYPES_FILTER, RiderAgency } from '../RiderDetailsCommon'
 import { TimePicker } from 'antd'
 import dayjs from 'dayjs'
 import ZoneSelectComponent from '@/common/ZoneSelectCommon'
@@ -47,9 +47,9 @@ const FilterRiderTableDrawer = ({
                     <Select
                         isClearable
                         isSearchable
-                        options={RIDER_TYPES}
+                        options={RIDER_TYPES_FILTER}
                         className="mt-5"
-                        defaultValue={RIDER_TYPES.find((option) => option.value === riderType)}
+                        defaultValue={RIDER_TYPES_FILTER.find((option) => option.value === riderType)}
                         onChange={(val) => {
                             if (val) {
                                 setRiderType(val?.value)
