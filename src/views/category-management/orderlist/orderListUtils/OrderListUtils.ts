@@ -10,6 +10,8 @@ export const getStatusFilter = (tabSelect: string) => {
             return 'PICKING'
         case 'delivery_created':
             return 'DELIVERY_CREATED'
+        case 'reached_at_location':
+            return 'REACHED_AT_LOCATION'
         case 'delivery_assigned':
             return 'DELIVERY_ASSIGNED'
         case 'rto_delivered':
