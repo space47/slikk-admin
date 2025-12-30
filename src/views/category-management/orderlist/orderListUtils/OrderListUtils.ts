@@ -1,29 +1,27 @@
 export const getStatusFilter = (tabSelect: string) => {
     switch (tabSelect) {
         case 'pending':
-            return '&status=PENDING'
+            return 'PENDING'
         case 'accepted':
-            return '&status=ACCEPTED'
+            return 'ACCEPTED'
         case 'packed':
-            return '&status=PACKED'
+            return 'PACKED'
         case 'picking':
-            return '&status=PICKING'
+            return 'PICKING'
         case 'delivery_created':
-            return '&status=DELIVERY_CREATED'
-        case 'reached_at_location':
-            return '&status=REACHED_AT_LOCATION'
+            return 'DELIVERY_CREATED'
         case 'delivery_assigned':
-            return '&status=DELIVERY_ASSIGNED'
+            return 'DELIVERY_ASSIGNED'
         case 'rto_delivered':
-            return '&status=RTO_DELIVERED'
+            return 'RTO_DELIVERED'
         case 'delivery_cancelled':
-            return '&status=DELIVERY_CANCELLED'
+            return 'DELIVERY_CANCELLED'
         case 'out_for_delivery':
-            return '&status=OUT_FOR_DELIVERY,SHIPPED'
+            return 'OUT_FOR_DELIVERY,SHIPPED'
         case 'delivered':
-            return '&status=COMPLETED'
+            return 'COMPLETED'
         case 'cancelled':
-            return '&status=CANCELLED'
+            return 'CANCELLED'
         case 'all':
         default:
             return ''
