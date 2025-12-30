@@ -12,9 +12,9 @@ const tabs = [
     { label: 'PACKED', key: 'packed' },
     { label: 'DEL. CREATED', key: 'delivery_created' },
     { label: 'OUT FOR DELIVERY', key: 'out_for_delivery' },
+    { label: 'REACHED_AT_LOCATION', key: 'reached_at_location' },
     { label: 'DELIVERED', key: 'delivered' },
     { label: 'RTO_DELIVERED', key: 'rto_delivered' },
-    { label: 'REACHED_AT_LOCATION', key: 'reached_at_location' },
     { label: 'EXCHANGE', key: 'exchange' },
     { label: 'CANCELLED', key: 'cancelled' },
 ]
