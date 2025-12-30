@@ -38,6 +38,7 @@ export const RiderAgency = [
     { label: 'CareBazaar', value: 'careBazaar' },
     { label: 'WD', value: 'WD' },
     { label: 'Shadow Fax', value: 'shadowfax' },
+    { label: 'SCOO', value: 'scoo' },
 ]
 
 export const DEBOUNCE_DELAY = 600
