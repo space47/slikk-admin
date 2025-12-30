@@ -60,7 +60,7 @@ const GDNdetailTable = () => {
             filterData = `&sku=${globalFilter}`
         }
 
-        return `/goods/dispatchproduct?document_number=${document_number}&p=${page}&page_size=${pageSize}${filterData}`
+        return `/goods/dispatchproduct?gdn_number=${document_number}&p=${page}&page_size=${pageSize}${filterData}`
     }, [document_number, page, pageSize, globalFilter])
 
     const { data, totalData } = useFetchApi<any>({ url: query, initialData: [] })

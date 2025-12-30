@@ -42,7 +42,7 @@ const GdnDetails = () => {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await axioisInstance.get(`/goods/dispatch/${id}/detail?document_number=${document_number}`)
+                const response = await axioisInstance.get(`/goods/dispatch/${id}/detail?gdn_number=${document_number}`)
 
                 const ordersData = response.data?.data || []
                 setLoading(false)
