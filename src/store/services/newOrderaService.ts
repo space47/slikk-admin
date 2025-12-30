@@ -12,6 +12,7 @@ export const newOrderService = RtkQueryService.injectEndpoints({
                 method: 'GET',
                 params,
             }),
+            keepUnusedDataFor: 0,
         }),
     }),
 })

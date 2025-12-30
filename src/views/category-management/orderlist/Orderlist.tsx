@@ -5,7 +5,7 @@ import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import moment from 'moment'
-import { CHANGE_DELIVERY_OPTIONS, pageSizeOptions, SEARCHOPTIONS, type DropdownStatus, type Order } from './commontypes'
+import { CHANGE_DELIVERY_OPTIONS, pageSizeOptions, SEARCHOPTIONS, type DropdownStatus } from './commontypes'
 import { Button, Dropdown, Input, Spinner } from '@/components/ui'
 import { IoMdDownload } from 'react-icons/io'
 import FilterDialogOrder from './filterDialog/FilterDialog'
@@ -35,6 +35,8 @@ import {
 import { getStatusFilter } from './orderListUtils/OrderListUtils'
 import OrderReAssignModal from './orderListUtils/OrderReAssignModal'
 import { ordersData } from '@/mock/data/salesData'
+import { newOrderService } from '@/store/services/newOrderaService'
+import { Order } from '@/store/types/newOrderTypes'
 
 const OrderList = () => {
     const location = useLocation()
@@ -50,82 +52,23 @@ const OrderList = () => {
     const navigate = useNavigate()
     const [from, setFrom] = useState(var1 ? var1 : moment().format('YYYY-MM-DD'))
     const [to, setTo] = useState(var2 ? var2 : moment().format('YYYY-MM-DD'))
-    const [orderCount, setOrderCount] = useState(0)
+    const [totalData, setTotalData] = useState(0)
     const [dropdownStatus, setDropdownStatus] = useState<DropdownStatus>({ value: [], name: [] })
     const [showFilter, setShowFilter] = useState(false)
     const [soundEnabled, setSoundEnabled] = useState(false)
     const [pendingSound, setPendingSound] = useState(false)
     const [numberClick, setNumberClick] = useState(false)
     const [deliveryChangeType, setDeliveryChangeType] = useState<{ [key: string]: { value: string; label: string } }>({})
-
     const [searchOnEnter, setSearchOnEnter] = useState('')
     const [tabSelect, setTabSelect] = useState('all')
     const [isDownloading, setIsDownloading] = useState(false)
-    const [showNumberLoading, setShowNumberLoading] = useState(false)
+    const [numberStore, setNumberStore] = useState('')
     const [isReAssign, setIsReAssign] = useState(false)
-    const [loadingTable, setLoadingTable] = useState(false)
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-    const storePrevCount = useRef<number>(0)
+    const prevCountRef = useRef<number | null>(null)
 
     const handleSelectTab = (value: string) => {
-        setShowNumberLoading(true)
         setTabSelect(value)
-    }
-
-    const extraFilters = () => {
-        const status = dropdownStatus?.value?.length > 0 ? `&status=${dropdownStatus.value}` : getStatusFilter(tabSelect)
-        const deliveryStatus =
-            tabSelect === 'exchange' ? `&delivery_type=EXCHANGE` : deliveryType?.value?.length ? `&delivery_type=${deliveryType.value}` : ''
-        const paymentMode = paymentType?.value?.length ? `&payment_mode=${paymentType.value}` : ''
-        const paymentStatusData = paymentStatus?.value?.length ? `&payment_status=${paymentStatus.value}` : ''
-        const filterParams = searchInput
-            ? currentSelectedPage.value === 'invoice'
-                ? `&invoice_id=${searchInput}`
-                : currentSelectedPage.value === 'mobile'
-                  ? `&mobile=${searchInput}`
-                  : ''
-            : `p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}`
-
-        return { status, deliveryStatus, paymentMode, filterParams, paymentStatus: paymentStatusData }
-    }
-
-    const fetchApiCall = async (): Promise<{ ordersData: any[]; orderCount: number }> => {
-        try {
-            const { status, deliveryStatus, paymentStatus, filterParams, paymentMode } = extraFilters()
-            const response = await axiosInstance.get(
-                `/merchant/orders?${filterParams}${status}${deliveryStatus}${paymentStatus}${paymentMode}`,
-            )
-            const ordersData = response.data?.data.results
-            const orderCount = response.data?.data.count
-            return { ordersData, orderCount }
-        } catch (error) {
-            console.error(error)
-            return { ordersData: [], orderCount: 0 }
-        }
-    }
-
-    console.log('store prev ', storePrevCount.current)
-    console.log('order count', orderCount)
-
-    const fetchOrders = async () => {
-        try {
-            setOrders([])
-            setLoadingTable(true)
-            // current count 17
-            const { ordersData, orderCount } = await fetchApiCall()
-            if (orderCount > storePrevCount.current) {
-                setSoundEnabled(true)
-            }
-
-            storePrevCount.current = orderCount //18
-            setOrders(ordersData)
-            setOrderCount(orderCount) //18
-        } catch (error) {
-            console.error(error)
-        } finally {
-            setShowNumberLoading(false)
-            setLoadingTable(false)
-        }
     }
 
     const noFilterFunc = (isCheck: boolean) => {
@@ -139,21 +82,89 @@ const OrderList = () => {
               numberClick === false
         return noFilters
     }
+    const buildFilterParams = () => {
+        const params: Record<string, string | number | string[]> = { p: page, page_size: numberStore ? 100 : pageSize }
+        const resolvedStatus =
+            dropdownStatus?.value?.length > 0 ? dropdownStatus.value : tabSelect !== 'all' ? getStatusFilter(tabSelect) : undefined
+        if (resolvedStatus) params.status = resolvedStatus
+        if (tabSelect === 'exchange') {
+            params.delivery_type = 'EXCHANGE'
+        } else if (deliveryType?.value?.length) {
+            params.delivery_type = deliveryType.value
+        }
+        if (paymentType?.value?.length) {
+            params.payment_mode = paymentType.value
+        }
+        if (paymentStatus?.value?.length) {
+            params.payment_status = paymentStatus.value
+        }
+        if (searchOnEnter) {
+            if (currentSelectedPage.value === 'invoice') {
+                params.invoice_id = searchOnEnter
+            } else if (currentSelectedPage.value === 'mobile') {
+                params.mobile = searchOnEnter
+            } else if (numberStore) {
+                params.mobile = numberStore
+            }
+        } else {
+            params.from = from
+            params.to = To_Date
+        }
+        return params
+    }
+
+    const ordersApiResponse = newOrderService.useGetNewOrdersQuery(buildFilterParams(), {
+        pollingInterval: noFilterFunc(false) && (tabSelect === 'all' || tabSelect === 'pending') ? 60000 : undefined,
+    })
 
     useEffect(() => {
-        if (!numberClick) {
-            fetchOrders()
+        if (ordersApiResponse.isSuccess) {
+            setOrders(ordersApiResponse.data?.data?.results || [])
+            setTotalData(ordersApiResponse.data?.data?.count ?? 0)
         }
-        const noFilters = noFilterFunc(false)
-
-        if (noFilters && (tabSelect === 'all' || tabSelect === 'pending')) {
-            const interval = setInterval(() => {
-                fetchOrders()
-            }, 100000)
-
-            return () => clearInterval(interval)
+        if (ordersApiResponse.isError) {
+            console.log('error is', ordersApiResponse.error)
         }
-    }, [page, pageSize, from, to, dropdownStatus, searchOnEnter, deliveryType, paymentType, numberClick, tabSelect, paymentStatus])
+    }, [ordersApiResponse.data, ordersApiResponse.isSuccess, ordersApiResponse.isError])
+
+    // sound ka logic idhar
+    useEffect(() => {
+        if (!ordersApiResponse.isSuccess) return
+
+        const newCount = ordersApiResponse.data?.data?.count ?? 0
+        const isRelevantTab = tabSelect === 'all' || tabSelect === 'pending'
+
+        const noFilters =
+            !dropdownStatus.value.length &&
+            !searchOnEnter &&
+            !deliveryType.value.length &&
+            !paymentType.value.length &&
+            !paymentStatus.value.length
+
+        if (!isRelevantTab || !noFilters) {
+            return
+        }
+
+        //  jab me date change krta hu to ek awaj bajta he...id
+
+        if (prevCountRef.current === null) {
+            prevCountRef.current = newCount
+            return
+        }
+        if (newCount > prevCountRef.current) {
+            setSoundEnabled(true)
+        }
+        prevCountRef.current = newCount
+    }, [
+        ordersApiResponse.data,
+        ordersApiResponse.isSuccess,
+        tabSelect,
+        dropdownStatus.value.length,
+        deliveryType.value.length,
+        paymentType.value.length,
+        paymentStatus.value.length,
+        searchOnEnter,
+    ])
 
     useEffect(() => {
         if (soundEnabled) {
@@ -165,15 +176,8 @@ const OrderList = () => {
     }, [soundEnabled, pendingSound])
 
     const handleNumberClick = async (number: number) => {
-        try {
-            const response = await axiosInstance.get(`/merchant/orders?mobile=${number}&page_size=100`)
-            const data = response.data.data
-            setOrders(data.results)
-            setOrderCount(data.count)
-            setNumberClick(true)
-        } catch (error) {
-            console.error(error)
-        }
+        setNumberClick(true)
+        setNumberStore(number?.toString())
     }
 
     const isDelayedStatus = useMemo(() => {
@@ -186,10 +190,7 @@ const OrderList = () => {
 
     const handleDeliveryChange = (selectedValue: any, row: any) => {
         const selectedLabel = CHANGE_DELIVERY_OPTIONS.find((item) => item.value === selectedValue)?.label || ''
-        setDeliveryChangeType((prev) => ({
-            ...prev,
-            [row]: { value: selectedValue, label: selectedLabel },
-        }))
+        setDeliveryChangeType((prev) => ({ ...prev, [row]: { value: selectedValue, label: selectedLabel } }))
         deliveryChangeAPI(selectedValue, row)
     }
 
@@ -243,8 +244,10 @@ const OrderList = () => {
         handleSyncDistance,
     })
 
+    console.log('sound enabled', soundEnabled)
+
     return (
-        <Spin spinning={loadingTable}>
+        <Spin spinning={ordersApiResponse.isLoading || ordersApiResponse.isFetching}>
             <div className="p-4 shadow-lg dark:bg-slate-800 rounded-xl">
                 <div className="overflow-x-auto scrollbar-hide">
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mb-10">
@@ -331,7 +334,7 @@ const OrderList = () => {
                     <TabSelectOrder
                         handleSelectTab={handleSelectTab}
                         tabSelect={tabSelect}
-                        orderCount={showNumberLoading ? `...` : `${orderCount}`}
+                        orderCount={ordersApiResponse.isLoading || ordersApiResponse.isFetching ? `...` : `${totalData}`}
                     />
                     {!ordersData.length ? (
                         <NotFoundData />
@@ -356,7 +359,7 @@ const OrderList = () => {
                         <Pagination
                             pageSize={pageSize}
                             currentPage={page}
-                            total={orderCount}
+                            total={totalData}
                             className="mb-4 md:mb-0"
                             onChange={(e) => onPaginationChange(e, setPage)}
                         />
