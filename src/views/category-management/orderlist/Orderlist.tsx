@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { SetStateAction, useEffect, useMemo, useRef, useState } from 'react'
+import { SetStateAction, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import Pagination from '@/components/ui/Pagination'
@@ -11,7 +11,6 @@ import { IoMdDownload } from 'react-icons/io'
 import FilterDialogOrder from './filterDialog/FilterDialog'
 import { CiFilter } from 'react-icons/ci'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-import NotificationSound from '@/common/orderNotification'
 import PendingNotification from '@/common/pendingNotification'
 import { notification, Spin } from 'antd'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
@@ -34,7 +33,6 @@ import {
 } from './orderListUtils/OrderListFunctions'
 import { getStatusFilter } from './orderListUtils/OrderListUtils'
 import OrderReAssignModal from './orderListUtils/OrderReAssignModal'
-import { ordersData } from '@/mock/data/salesData'
 import { newOrderService } from '@/store/services/newOrderaService'
 import { Order } from '@/store/types/newOrderTypes'
 
@@ -55,7 +53,6 @@ const OrderList = () => {
     const [totalData, setTotalData] = useState(0)
     const [dropdownStatus, setDropdownStatus] = useState<DropdownStatus>({ value: [], name: [] })
     const [showFilter, setShowFilter] = useState(false)
-    const [soundEnabled, setSoundEnabled] = useState(false)
     const [pendingSound, setPendingSound] = useState(false)
     const [numberClick, setNumberClick] = useState(false)
     const [deliveryChangeType, setDeliveryChangeType] = useState<{ [key: string]: { value: string; label: string } }>({})
@@ -65,21 +62,19 @@ const OrderList = () => {
     const [numberStore, setNumberStore] = useState('')
     const [isReAssign, setIsReAssign] = useState(false)
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-    const prevCountRef = useRef<number | null>(null)
 
     const handleSelectTab = (value: string) => {
         setTabSelect(value)
     }
 
-    const noFilterFunc = (isCheck: boolean) => {
-        const noFilters = isCheck
-            ? page !== 1
-            : page === 1 &&
-              !dropdownStatus.value.length &&
-              !searchInput &&
-              !deliveryType.value.length &&
-              !paymentType.value.length &&
-              numberClick === false
+    const noFilterFunc = () => {
+        const noFilters =
+            page === 1 &&
+            !dropdownStatus.value.length &&
+            !searchInput &&
+            !deliveryType.value.length &&
+            !paymentType.value.length &&
+            numberClick === false
         return noFilters
     }
     const buildFilterParams = () => {
@@ -114,7 +109,7 @@ const OrderList = () => {
     }
 
     const ordersApiResponse = newOrderService.useGetNewOrdersQuery(buildFilterParams(), {
-        pollingInterval: noFilterFunc(false) && (tabSelect === 'all' || tabSelect === 'pending') ? 10000 : undefined,
+        pollingInterval: noFilterFunc() && (tabSelect === 'all' || tabSelect === 'pending') ? 60000 : undefined,
     })
 
     useEffect(() => {
@@ -123,59 +118,15 @@ const OrderList = () => {
             setTotalData(ordersApiResponse.data?.data?.count ?? 0)
         }
         if (ordersApiResponse.isError) {
-            console.log('error is', ordersApiResponse.error)
+            notification.error({ message: 'Failed to load orders Data' })
         }
     }, [ordersApiResponse.data, ordersApiResponse.isSuccess, ordersApiResponse.isError])
 
-    // sound ka logic idhar
     useEffect(() => {
-        if (!ordersApiResponse.isSuccess) return
-
-        const newCount = ordersApiResponse.data?.data?.count ?? 0
-        const isRelevantTab = tabSelect === 'all' || tabSelect === 'pending'
-        const isTodayRange = from === moment().format('YYYY-MM-DD') && To_Date === moment().add(1, 'days').format('YYYY-MM-DD')
-        const noFilters =
-            !dropdownStatus.value.length &&
-            !searchOnEnter &&
-            !deliveryType.value.length &&
-            !paymentType.value.length &&
-            !paymentStatus.value.length
-
-        if (!isRelevantTab || !noFilters || !isTodayRange) {
-            return
-        }
-
-        //  jab me date change krta hu to ek awaj bajta he.
-        // jab date change krta hu to to count change ho jata he...to wo comming back to today sounf krta he even if there is no new orders
-
-        if (prevCountRef.current === null) {
-            return
-        }
-        if (newCount > prevCountRef.current) {
-            setSoundEnabled(true)
-        }
-        prevCountRef.current = newCount
-    }, [
-        ordersApiResponse.data,
-        ordersApiResponse.isSuccess,
-        tabSelect,
-        dropdownStatus.value.length,
-        deliveryType.value.length,
-        paymentType.value.length,
-        paymentStatus.value.length,
-        searchOnEnter,
-        from,
-        To_Date,
-    ])
-
-    useEffect(() => {
-        if (soundEnabled) {
-            setTimeout(() => setSoundEnabled(false), 5000)
-        }
         if (pendingSound) {
             setTimeout(() => setPendingSound(false), 5000)
         }
-    }, [soundEnabled, pendingSound])
+    }, [pendingSound])
 
     const handleNumberClick = async (number: number) => {
         setNumberClick(true)
@@ -245,8 +196,6 @@ const OrderList = () => {
         CHANGE_DELIVERY_OPTIONS,
         handleSyncDistance,
     })
-
-    console.log('sound enabled', soundEnabled)
 
     return (
         <Spin spinning={ordersApiResponse.isLoading || ordersApiResponse.isFetching}>
@@ -338,7 +287,7 @@ const OrderList = () => {
                         tabSelect={tabSelect}
                         orderCount={ordersApiResponse.isLoading || ordersApiResponse.isFetching ? `...` : `${totalData}`}
                     />
-                    {!ordersData.length ? (
+                    {ordersApiResponse.error || !ordersApiResponse.data?.data.results.length ? (
                         <NotFoundData />
                     ) : (
                         <div className="border border-gray-300 p-2 rounded-xl hidden xl:block mt-6">
@@ -393,7 +342,6 @@ const OrderList = () => {
                         handleDateChange={handleDateChange}
                     />
                 )}
-                {soundEnabled && <NotificationSound shouldPlay={soundEnabled} />}
                 {pendingSound && <PendingNotification shouldPlay={pendingSound} />}
                 {isReAssign && <OrderReAssignModal isReAssign={isReAssign} setIsReAssign={setIsReAssign} />}
             </div>
