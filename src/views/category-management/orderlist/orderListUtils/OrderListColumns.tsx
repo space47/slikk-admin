@@ -182,7 +182,7 @@ export const useOrderListColumns = ({
 
                     const difference = timeTaken - timeEstimate
 
-                    return <>{difference >= 0 ? `${difference.toFixed} mins` : '0 mins'}</>
+                    return <>{difference >= 0 ? `${difference?.toFixed(2)} mins` : '0 mins'}</>
                 },
             },
             {
