@@ -114,7 +114,7 @@ const OrderList = () => {
     }
 
     const ordersApiResponse = newOrderService.useGetNewOrdersQuery(buildFilterParams(), {
-        pollingInterval: noFilterFunc(false) && (tabSelect === 'all' || tabSelect === 'pending') ? 60000 : undefined,
+        pollingInterval: noFilterFunc(false) && (tabSelect === 'all' || tabSelect === 'pending') ? 10000 : undefined,
     })
 
     useEffect(() => {
@@ -133,7 +133,7 @@ const OrderList = () => {
 
         const newCount = ordersApiResponse.data?.data?.count ?? 0
         const isRelevantTab = tabSelect === 'all' || tabSelect === 'pending'
-
+        const isTodayRange = from === moment().format('YYYY-MM-DD') && To_Date === moment().add(1, 'days').format('YYYY-MM-DD')
         const noFilters =
             !dropdownStatus.value.length &&
             !searchOnEnter &&
@@ -141,14 +141,14 @@ const OrderList = () => {
             !paymentType.value.length &&
             !paymentStatus.value.length
 
-        if (!isRelevantTab || !noFilters) {
+        if (!isRelevantTab || !noFilters || !isTodayRange) {
             return
         }
 
-        //  jab me date change krta hu to ek awaj bajta he...id
+        //  jab me date change krta hu to ek awaj bajta he.
+        // jab date change krta hu to to count change ho jata he...to wo comming back to today sounf krta he even if there is no new orders
 
         if (prevCountRef.current === null) {
-            prevCountRef.current = newCount
             return
         }
         if (newCount > prevCountRef.current) {
@@ -164,6 +164,8 @@ const OrderList = () => {
         paymentType.value.length,
         paymentStatus.value.length,
         searchOnEnter,
+        from,
+        To_Date,
     ])
 
     useEffect(() => {
