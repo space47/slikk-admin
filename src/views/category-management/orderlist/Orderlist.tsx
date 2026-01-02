@@ -109,7 +109,7 @@ const OrderList = () => {
     }
 
     const ordersApiResponse = newOrderService.useGetNewOrdersQuery(buildFilterParams(), {
-        pollingInterval: noFilterFunc() && (tabSelect === 'all' || tabSelect === 'pending') ? 60000 : undefined,
+        pollingInterval: noFilterFunc() && (tabSelect === 'all' || tabSelect === 'pending') ? 120000 : undefined,
     })
 
     useEffect(() => {
