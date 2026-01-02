@@ -1216,6 +1216,12 @@ const appsRoute: Routes = [
 
     // Tracking
     {
+        key: 'appstryAndBuy.riderAgency',
+        path: `${APP_PREFIX_PATH}/riderAgency`,
+        component: lazy(() => import('@/views/slikkLogistics/RiderAgency/RiderAgencyTable/RiderAgencyTable')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appstryAndBuy.riderZone',
         path: `${APP_PREFIX_PATH}/riderZone`,
         component: lazy(() => import('@/views/slikkLogistics/riderZone/riderZoneTable/RiderZoneTable')),

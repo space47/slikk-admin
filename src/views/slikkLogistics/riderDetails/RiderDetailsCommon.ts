@@ -38,7 +38,7 @@ export const RiderAgency = [
     { label: 'CareBazaar', value: 'careBazaar' },
     { label: 'WD', value: 'WD' },
     { label: 'Shadow Fax', value: 'shadowfax' },
-    { label: 'SCOO', value: 'scoo' },
+    { label: 'SENDIT', value: 'sendit' },
 ]
 
 export const DEBOUNCE_DELAY = 600
@@ -61,6 +61,11 @@ export interface StoreOption {
         long: number
         id: number
     }
+}
+
+export interface DeliveryType {
+    label: string | undefined
+    value: string | undefined
 }
 
 export const RiderDownloadOptions = [

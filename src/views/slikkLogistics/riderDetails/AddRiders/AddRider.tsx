@@ -12,18 +12,20 @@ import { useAppDispatch, useAppSelector } from '@/store'
 import { RiderDetailType, setRiderProfile } from '@/store/slices/riderDetails/riderDetails.slice'
 import { HiSearch } from 'react-icons/hi'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-import { RIDER_TYPES, RiderAgency } from '../RiderDetailsCommon'
+import { DeliveryType, RiderAgency } from '../RiderDetailsCommon'
 import AddBulk from '../RiderComponents/AddBulk'
 import StoreSelectForm from '@/common/StoreSelectForm'
 import { riderZoneService } from '@/store/services/riderZoneService'
 import CommonAccordion from '@/common/CommonAccordion'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
+import { deliveryAgency } from '@/store/services/deliveryAgencyService'
 
 const AddRider = () => {
     const dispatch = useAppDispatch()
     const [selectedRider, setSelectedRider] = useState<string | number>()
     const [ridersAdd, riderAddResponse] = ridersService.useAddRidersMutation()
     const [editRiders, riderEditResponse] = ridersService.useEditRidersMutation()
+    const [deliveryTypeArray, setDeliveryTypeArray] = useState<DeliveryType[]>([])
     const { riderProfile } = useAppSelector<RiderDetailType>((state) => state.riderDetails)
     const [isAddRider, setIsAddRider] = useState(false)
     const [searchInput, setSearchInput] = useState('')
@@ -32,6 +34,22 @@ const AddRider = () => {
     const [isBulkAdd, setIsBulkAdd] = useState(false)
     const [activeTab, setActiveTab] = useState<'edit' | 'add' | 'bulk-add'>('edit')
     const [queryParams, setQueryParams] = useState({ page: 1, pageSize: 10, name: '' })
+
+    const riderAgencyCall = deliveryAgency.useGetDeliveryAgencyQuery({ view_type: 'minimal' })
+
+    useEffect(() => {
+        if (riderAgencyCall.isSuccess) {
+            setDeliveryTypeArray(
+                riderAgencyCall.data?.data?.map((item) => ({
+                    label: item.name || 'Slikk',
+                    value: item.name || 'slikk',
+                })),
+            )
+        }
+        if (riderAgencyCall.isError) {
+            setDeliveryTypeArray(RiderAgency)
+        }
+    }, [riderAgencyCall.isSuccess, riderAgencyCall.isError])
 
     const {
         data: riders,
@@ -310,7 +328,7 @@ const AddRider = () => {
                                             )}
                                         </Field>
                                     </FormItem>
-                                    <CommonSelect name="delivery_type" options={RIDER_TYPES} label="Delivery Type" />
+                                    <CommonSelect name="delivery_type" options={deliveryTypeArray} label="Delivery Type" />
                                 </div>
                             </div>
 
