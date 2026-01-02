@@ -343,6 +343,12 @@ const RiderDetails = () => {
                 >
                     Rider Attendance
                 </button>
+                <button
+                    className="pb-2 border-b-2 border-transparent text-gray-600 hover:text-green-600 hover:border-green-400 text-xl"
+                    onClick={() => navigate('/app/riderAgency')}
+                >
+                    Rider Agency
+                </button>
             </div>
 
             <div className="flex flex-col gap-10">
