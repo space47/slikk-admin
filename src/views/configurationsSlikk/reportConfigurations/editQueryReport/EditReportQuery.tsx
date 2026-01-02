@@ -57,6 +57,8 @@ const EditReportQuery = () => {
                             y_axis: item?.extra_attributes?.y_axis || '',
                             secondary_y_axis: item?.extra_attributes?.secondary_y_axis || '',
                             graph_type: item?.extra_attributes?.graph_type || '',
+                            logic: item?.extra_attributes?.logic || '',
+                            use_case: item?.extra_attributes?.use_case || '',
                         },
                     })) || [],
                 // value: [],
