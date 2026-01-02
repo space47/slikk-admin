@@ -40,9 +40,9 @@ const AddRider = () => {
     useEffect(() => {
         if (riderAgencyCall.isSuccess) {
             setDeliveryTypeArray(
-                riderAgencyCall.data.data.map((item) => ({
-                    label: item.name,
-                    value: item.name,
+                riderAgencyCall.data?.data?.map((item) => ({
+                    label: item.name || 'Slikk',
+                    value: item.name || 'slikk',
                 })),
             )
         }

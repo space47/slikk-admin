@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { FaPlus } from 'react-icons/fa'
 import { TbTruckDelivery } from 'react-icons/tb'
 import { notification } from 'antd'
-import { useDebounceInput } from '@/commonHooks/useDebounceInput'
 import EasyTable from '@/common/EasyTable'
 import { Button, Input, Tabs } from '@/components/ui'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
+import debounce from 'lodash/debounce'
 import { deliveryAgency } from '@/store/services/deliveryAgencyService'
 import { DeliveryAgency } from '@/store/types/deliveryAgencyTypes'
 import { useRiderAgencyColumn } from '../RiderAgencyUtils/useRiderAgencyColumn'
@@ -19,8 +19,22 @@ const RiderAgencyTable = () => {
     const [isActive, setIsActive] = useState<'true' | 'false'>('true')
     const [agencyAction, setAgencyAction] = useState<'add' | 'edit' | null>(null)
     const [agencyId, setAgencyId] = useState<number | null>(null)
-    const { debounceFilter } = useDebounceInput({ globalFilter: search, delay: 500 })
-    const riderAgencyCall = deliveryAgency.useGetDeliveryAgencyQuery({ name: debounceFilter ?? '', is_active: isActive })
+
+    const debouncedResults = useMemo(
+        () =>
+            debounce((value: string) => {
+                setSearch(value)
+            }, 500),
+        [],
+    )
+
+    useEffect(() => {
+        return () => {
+            debouncedResults.cancel()
+        }
+    }, [debouncedResults])
+
+    const riderAgencyCall = deliveryAgency.useGetDeliveryAgencyQuery({ name: search ?? '', is_active: isActive })
 
     useEffect(() => {
         if (riderAgencyCall.isSuccess) setAgencies(riderAgencyCall.data.data)
@@ -45,10 +59,9 @@ const RiderAgencyTable = () => {
             <div className="flex flex-wrap items-center justify-between gap-4">
                 <Input
                     type="search"
-                    value={search}
                     placeholder="Search agency by name..."
                     className="max-w-xs"
-                    onChange={(e) => setSearch(e.target.value)}
+                    onChange={(e) => debouncedResults(e.target.value)}
                 />
 
                 <Button variant="new" size="sm" icon={<FaPlus />} onClick={() => setAgencyAction('add')}>
