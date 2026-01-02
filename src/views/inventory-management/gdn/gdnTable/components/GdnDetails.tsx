@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Loading from '@/components/shared/Loading'
 import Container from '@/components/shared/Container'
 import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
@@ -16,6 +16,7 @@ import CustomerInfo from '@/views/inventory-management/inward/inwardDetails/comp
 import { Select, Spinner } from '@/components/ui'
 import GDNdetailTable from './GDNdetailTable'
 import { AxiosError } from 'axios'
+import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 // import { string } from 'yup'
 
 const options = [
@@ -26,8 +27,7 @@ const options = [
 const GdnDetails = () => {
     // const location = useLocation()
 
-    const [loading, setLoading] = useState(true)
-    const [data, setData] = useState<any>([])
+    const [gndData, setGdnData] = useState<any>([])
     const { document_number, id } = useParams()
     const [showSyncModal, setShowSyncModal] = useState(false)
     const [isSyncing, setIsSyncing] = useState(false)
@@ -37,24 +37,18 @@ const GdnDetails = () => {
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const [selectValue, setSelectValue] = useState<string | undefined>('')
 
-    console.log(grnNumber)
+    const query = useMemo(() => {
+        return `/goods/dispatch/${id}/detail?gdn_number=${document_number}`
+    }, [document_number, id])
+
+    const { data, loading, refetch } = useFetchSingleData<any>({ url: query })
+    // to do
 
     useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                const response = await axioisInstance.get(`/goods/dispatch/${id}/detail?gdn_number=${document_number}`)
-
-                const ordersData = response.data?.data || []
-                setLoading(false)
-
-                setData(ordersData)
-            } catch (error) {
-                console.log(error)
-            }
+        if (data) {
+            setGdnData(data)
         }
-
-        fetchOrders()
-    }, [document_number, selectedCompany])
+    }, [data])
 
     const handleSyncClick = (grn_number: string) => {
         setShowSyncModal(true)
@@ -94,7 +88,7 @@ const GdnDetails = () => {
     const handleCreateShipment = async () => {
         setIsRegenerating(true)
         try {
-            const res = await axioisInstance.get(`/goods/dispatch/shipment/create/${data?.id}`)
+            const res = await axioisInstance.get(`/goods/dispatch/shipment/create/${gndData?.id}`)
             notification.success({ message: res?.data?.message || 'Shipment created successfully from GDN' })
         } catch (error) {
             if (error instanceof AxiosError) {
@@ -124,7 +118,7 @@ const GdnDetails = () => {
 
                 const link = document.createElement('a')
                 link.href = URL.createObjectURL(blob)
-                link.download = `${data.gdn_number}-${moment().format('YYYY-MM-DD_HH-mm-ss')}.csv`
+                link.download = `${gndData.gdn_number}-${moment().format('YYYY-MM-DD_HH-mm-ss')}.csv`
 
                 document.body.appendChild(link)
                 link.click()
@@ -146,7 +140,7 @@ const GdnDetails = () => {
                 const blob = await fileResponse.blob()
                 const link = document.createElement('a')
                 link.href = URL.createObjectURL(blob)
-                link.download = `${data.gdn_number}-${moment().format('YYYY-MM-DD_HH-mm-ss')}.pdf`
+                link.download = `${gndData.gdn_number}-${moment().format('YYYY-MM-DD_HH-mm-ss')}.pdf`
 
                 document.body.appendChild(link)
                 link.click()
@@ -167,7 +161,7 @@ const GdnDetails = () => {
     return (
         <Container className="h-full">
             <Loading loading={loading}>
-                {!isEmpty(data) && (
+                {!isEmpty(gndData) && (
                     <>
                         <div className="mb-6">
                             <div className="flex flex-col  mb-2">
@@ -175,12 +169,12 @@ const GdnDetails = () => {
                                     <div>
                                         <h3>
                                             <span>GDN:</span>
-                                            <span className="ltr:ml-2 rtl:mr-2">#{data.gdn_number}</span>
+                                            <span className="ltr:ml-2 rtl:mr-2">#{gndData.gdn_number}</span>
                                         </h3>
                                         <div className="docs flex flex-col">
                                             <div className="flex gap-2">
                                                 {' '}
-                                                Document Number : <span className="font-bold">{data.document_number}</span>
+                                                Document Number : <span className="font-bold">{gndData.document_number}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -188,7 +182,7 @@ const GdnDetails = () => {
                                     {/*  */}
                                     <div>
                                         <button
-                                            onClick={() => handleRegenerateGrn(data.document_number)}
+                                            onClick={() => handleRegenerateGrn(gndData.document_number)}
                                             className="flex gap-2 bg-gray-200 p-2 rounded-xl text-black hover:bg-gray-300 font-bold items-center justify-center"
                                         >
                                             <span className="font-bold">Export</span> <FaDownload className="" />
@@ -206,7 +200,7 @@ const GdnDetails = () => {
                             </div>
                             <span className="flex items-center">
                                 <HiOutlineCalendar className="text-lg" />
-                                <span className="ltr:ml-1 rtl:mr-1">{moment(data.document_date).format('MM/DD/YYYY hh:mm:ss a')}</span>
+                                <span className="ltr:ml-1 rtl:mr-1">{moment(gndData.document_date).format('MM/DD/YYYY hh:mm:ss a')}</span>
                             </span>
                         </div>
                         <div className="xl:flex gap-6 p-6 bg-gray-50 rounded-lg shadow-lg">
@@ -215,11 +209,12 @@ const GdnDetails = () => {
                                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Address Information</h3>
                                 <div className="text-gray-600">
                                     <p className="mb-2">
-                                        <span className="font-medium text-gray-800">Original Address:</span> {data?.origin_address || 'N/A'}
+                                        <span className="font-medium text-gray-800">Original Address:</span>{' '}
+                                        {gndData?.origin_address || 'N/A'}
                                     </p>
                                     <p>
                                         <span className="font-medium text-gray-800">Delivery Address:</span>{' '}
-                                        {data?.delivery_address || 'N/A'}
+                                        {gndData?.delivery_address || 'N/A'}
                                     </p>
                                 </div>
                             </div>
@@ -228,9 +223,9 @@ const GdnDetails = () => {
                             <div className="xl:max-w-[360px] w-full bg-white rounded-lg shadow-md p-4">
                                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Customer Information</h3>
                                 <CustomerInfo
-                                    last_updated_by={data?.last_updated_by || 'Unknown'}
-                                    total_sku={data?.total_sku || 0}
-                                    total_quantity={data?.total_quantity || 0}
+                                    last_updated_by={gndData?.last_updated_by || 'Unknown'}
+                                    total_sku={gndData?.total_sku || 0}
+                                    total_quantity={gndData?.total_quantity || 0}
                                 />
                             </div>
                         </div>
@@ -252,7 +247,7 @@ const GdnDetails = () => {
 
                                     <div className="p-2 rounded-lg bg-gray-200">
                                         <button
-                                            onClick={() => handleRegenerateGrn(data.document_number)}
+                                            onClick={() => handleRegenerateGrn(gndData.document_number)}
                                             className="border-none bg-none flex gap-5"
                                         >
                                             {' '}
@@ -270,7 +265,7 @@ const GdnDetails = () => {
                                     <>
                                         <div>
                                             <button
-                                                onClick={() => handleSyncClick(data.grn_number)}
+                                                onClick={() => handleSyncClick(gndData.grn_number)}
                                                 className="border-none bg-none flex gap-5"
                                             >
                                                 {' '}
@@ -284,7 +279,7 @@ const GdnDetails = () => {
                             </div>
                             <br />
                             {/* <QCtable data={data.grn_quality_check} totalData={data.grn_quality_check.length} /> */}
-                            {data?.gdn_products?.length === 0 ? (
+                            {gndData?.gdn_products?.length === 0 ? (
                                 <>
                                     <div className="flex justify-center items-center text-xl font-bold text-red-700">NO GDN PRODUCTS</div>
                                 </>
@@ -314,7 +309,7 @@ const GdnDetails = () => {
                     </>
                 )}
             </Loading>
-            {!loading && isEmpty(data) && (
+            {!loading && isEmpty(gndData) && (
                 <div className="h-full flex flex-col items-center justify-center">
                     <DoubleSidedImage src="/img/others/img-2.png" darkModeSrc="/img/others/img-2-dark.png" alt="No GRN found!" />
                     <h3 className="mt-8">No GRN found!</h3>
