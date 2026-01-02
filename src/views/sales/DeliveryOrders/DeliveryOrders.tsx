@@ -67,7 +67,7 @@ const DeliveryOrders = () => {
         if (noFilters) {
             const interval = setInterval(() => {
                 dispatch(fetchOrders())
-            }, 30000)
+            }, 120000)
 
             return () => clearInterval(interval)
         }
