@@ -45,7 +45,7 @@ const GdnDetails = () => {
             notification.success({ message: 'GDN synced successfully' })
         }
         if (syncResponse.isError) {
-            notification.error({ message: (createShipmentResponse.error as any)?.data?.message })
+            notification.error({ message: (syncResponse.error as any)?.data?.message })
         }
     }, [syncResponse.isError, syncResponse.isSuccess])
 

@@ -20,10 +20,10 @@ export const inwardService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        inwardSingleDetails: builder.query<{ data: GRNDetails }, { id?: string; gdn_number?: string }>({
+        inwardSingleDetails: builder.query<{ data: GRNDetails }, { id?: string; grn_number?: string }>({
             query: (params) => {
                 const parameters: Record<string, string | string[]> = {}
-                if (params.gdn_number) parameters.gdn_number = params.gdn_number.toString()
+                if (params.grn_number) parameters.grn_number = params.grn_number.toString()
                 return {
                     url: `goods/received`,
                     method: 'GET',
@@ -54,6 +54,15 @@ export const inwardService = RtkQueryService.injectEndpoints({
         //         }
         //     },
         // }),
+        preSignUrl: builder.query<{ status: string; data: string }, { file_url: string }>({
+            query: (params) => {
+                return {
+                    url: `/file/presign`,
+                    method: 'GET',
+                    params,
+                }
+            },
+        }),
         // regenerateGrn: builder.query<any, { id: string; document_number?: string }>({
         //     query: (params) => {
         //         return {
@@ -67,15 +76,15 @@ export const inwardService = RtkQueryService.injectEndpoints({
         //         }
         //     },
         // }),
-        // syncGdn: builder.mutation<{ status: string }, Record<string, any>>({
-        //     query: (body) => {
-        //         return {
-        //             url: `/goods/dispatch-synctoinventory`,
-        //             method: 'POST',
-        //             body,
-        //         }
-        //     },
-        // }),
+        syncGrn: builder.mutation<{ status: string }, Record<string, any>>({
+            query: (body) => {
+                return {
+                    url: `/goods/synctoinventory`,
+                    method: 'POST',
+                    body,
+                }
+            },
+        }),
         // updateGdn: builder.mutation<{ status: string; message: string }, UpdateGdnArgs>({
         //     query: ({ id, data }) => {
         //         return {

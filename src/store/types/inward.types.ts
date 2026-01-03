@@ -22,8 +22,16 @@ export type GRNDetails = {
     grn_qc_document: string | null
     gtn: string | null
     shipment: number | null
-    received_by: number | null
-    last_updated_by: number | null
+    received_by: {
+        name: string
+        mobile: string
+        email: string
+    }
+    last_updated_by: {
+        name: string
+        mobile: string
+        email: string
+    }
 }
 
 export type InwardParamType = {

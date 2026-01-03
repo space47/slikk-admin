@@ -9,88 +9,57 @@ import CustomerInfo from './components/CustomerInfo'
 import { HiOutlineCalendar } from 'react-icons/hi'
 import isEmpty from 'lodash/isEmpty'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import moment from 'moment'
 import { notification } from 'antd'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { FaDownload } from 'react-icons/fa'
-import { inwardDetailsResponse } from './inwardCommon'
 import QcTabs from './components/QcTabs'
 import { Button } from '@/components/ui'
+import { inwardService } from '@/store/services/inwardService'
+import { GRNDetails } from '@/store/types/inward.types'
 
 const InwardDetails = () => {
-    const [loading, setLoading] = useState(true)
-    const [data, setData] = useState<inwardDetailsResponse>()
+    const [data, setData] = useState<GRNDetails>()
     const { document_number } = useParams()
     const [showSyncModal, setShowSyncModal] = useState(false)
-    const [isSyncing, setIsSyncing] = useState(false)
-    const [grnNumber, setGrnNumber] = useState('')
     const [companyId, setCompanyId] = useState<number>()
-    const navigate = useNavigate()
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const [selectValue, setSelectValue] = useState<string>('')
+    const inwardSingleApiCall = inwardService.useInwardSingleDetailsQuery({ grn_number: document_number })
+    const [syncGrn, syncResponse] = inwardService.useSyncGrnMutation()
+    const [presignUrl, presignResponse] = inwardService.useLazyPreSignUrlQuery()
 
     useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                const response = await axioisInstance.get(`goods/received?grn_number=${document_number}`)
-                const ordersData = response.data?.data || []
-                setLoading(false)
-                setData(ordersData)
-                setCompanyId(ordersData?.company)
-            } catch (error) {
-                console.log(error)
-            }
+        if (inwardSingleApiCall.isSuccess) {
+            setData(inwardSingleApiCall?.data?.data)
+            setCompanyId(inwardSingleApiCall?.data?.data?.company)
         }
+        if (inwardSingleApiCall.isError) {
+            notification.error({ message: (inwardSingleApiCall.error as any).data.message })
+        }
+    }, [inwardSingleApiCall.isSuccess, inwardSingleApiCall.isError, inwardSingleApiCall?.data?.data, inwardSingleApiCall.error])
 
-        fetchOrders()
-    }, [document_number])
-
-    const handleSyncClick = (grn_number: string) => {
+    const handleSyncClick = () => {
         setShowSyncModal(true)
-        setGrnNumber(grn_number)
     }
 
-    const syncGRN = async () => {
-        const body = {
-            company: selectedCompany.id,
-            grn_number: grnNumber,
+    useEffect(() => {
+        if (syncResponse.isSuccess) {
+            notification.success({ message: 'GRN synced successfully' })
+            setShowSyncModal(false)
         }
-        setShowSyncModal(false)
-        setIsSyncing(true)
+        if (syncResponse.isError) notification.error({ message: (syncResponse.error as any)?.data?.message || 'Failed to Sync Grn' })
+    }, [syncResponse.isError, syncResponse.isSuccess])
 
-        try {
-            await axioisInstance.post(`goods/synctoinventory`, body)
-            notification.success({
-                message: 'Success',
-                description: 'GRN synced successfully',
-            })
-        } catch (error) {
-            console.error(error)
-            notification.error({
-                message: 'FAILURE',
-                description: 'GRN sync Failed',
-            })
-        } finally {
-            setIsSyncing(false)
-            navigate(-1)
-        }
-    }
-
-    const handleCloseModal = () => {
-        setShowSyncModal(false)
-    }
-
-    const handleUrl = async (document_url: string) => {
-        try {
-            const response = await axioisInstance.get(`file/presign?file_url=${document_url}`)
-            const val = response.data?.data
-
+    useEffect(() => {
+        if (presignResponse.isSuccess) {
+            const val = presignResponse.data?.data
             if (val) {
                 const link = document.createElement('a')
                 link.href = val
-                link.download = `${document_url}`
+                link.download = `${presignResponse.originalArgs?.file_url}`
                 link.target = '_blank'
                 document.body.appendChild(link)
                 link.click()
@@ -98,9 +67,21 @@ const InwardDetails = () => {
             } else {
                 console.error('No file URL returned from API')
             }
-        } catch (error) {
-            console.error('Error fetching presigned URL:', error)
         }
+        if (presignResponse.isError) notification.error({ message: (presignResponse.error as any)?.data?.message || 'Failed to Sync Grn' })
+    }, [presignResponse.isError, presignResponse.isSuccess])
+
+    const syncGRN = async () => {
+        const body = { company: selectedCompany.id, grn_number: document_number }
+        syncGrn(body)
+    }
+
+    const handleCloseModal = () => {
+        setShowSyncModal(false)
+    }
+
+    const handleUrl = async (document_url: string) => {
+        presignUrl({ file_url: document_url })
     }
 
     const handleRegenerateGrn = async (doc_number: string) => {
@@ -160,7 +141,7 @@ const InwardDetails = () => {
 
     return (
         <Container className="">
-            <Loading loading={loading}>
+            <Loading loading={inwardSingleApiCall.isLoading}>
                 {!isEmpty(data) && (
                     <>
                         <div className="mb-8 p-6 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-200 shadow-sm">
@@ -232,7 +213,7 @@ const InwardDetails = () => {
                                 showSyncModal={showSyncModal}
                                 syncGRN={syncGRN}
                                 handleCloseModal={handleCloseModal}
-                                isSyncing={isSyncing}
+                                isSyncing={syncResponse.isLoading}
                                 setSelectValue={setSelectValue}
                                 handleRegenerateGrn={handleRegenerateGrn}
                             />
@@ -241,7 +222,7 @@ const InwardDetails = () => {
                 )}
             </Loading>
 
-            {!loading && isEmpty(data) && (
+            {!inwardSingleApiCall.isLoading && isEmpty(data) && (
                 <div className=" flex flex-col items-center justify-center p-8">
                     <div className="mb-6">
                         <DoubleSidedImage
