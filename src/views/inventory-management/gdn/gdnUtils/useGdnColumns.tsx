@@ -16,7 +16,7 @@ export const useGdnColumns = ({ handleDeleteClick }: props) => {
                 accessorKey: '',
                 cell: ({ row }) => (
                     <button className="border-none bg-none">
-                        <a href={`/app/goods/gdn/${encodeURIComponent(row.original.gdn_number)}`} target="_blank" rel="noreferrer">
+                        <a href={`/app/goods/gdn/${encodeURIComponent(row.original.document_number)}`} target="_blank" rel="noreferrer">
                             {' '}
                             <FaEdit className="text-xl text-blue-500" />
                         </a>
@@ -29,7 +29,7 @@ export const useGdnColumns = ({ handleDeleteClick }: props) => {
                 cell: ({ row }) => (
                     <div className="cursor-pointer bg-gray-200 px-2 py-2 items-center flex justify-center rounded-md text-black font-semibold">
                         <a
-                            href={`/app/goods/gdnDetails/${encodeURIComponent(row.original.id)}/${row?.original?.company}`}
+                            href={`/app/goods/gdnDetails/${encodeURIComponent(row.original.gdn_number)}/${row?.original?.company}`}
                             target="_blank"
                             rel="noreferrer"
                         >
