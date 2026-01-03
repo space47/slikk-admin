@@ -27,7 +27,7 @@ const GdnDetails = () => {
     const [selectValue, setSelectValue] = useState<string | undefined>('')
     const gdnApiData = gdnService.useGdnSingleDetailsQuery(
         { gdn_number: gdn_number as string, id: id },
-        { refetchOnMountOrArgChange: true },
+        { refetchOnMountOrArgChange: true, skip: !gdn_number },
     )
     const [syncGdn, syncResponse] = gdnService.useSyncGdnMutation()
     const [createShipment, createShipmentResponse] = gdnService.useLazyCreateShipmentQuery()
@@ -76,7 +76,6 @@ const GdnDetails = () => {
 
     const handleRegenerateGdn = async (doc_number: string) => {
         notification.info({ message: 'Downloading, please wait...' })
-
         try {
             const response = await regenerate({
                 id: id as string,
@@ -87,31 +86,22 @@ const GdnDetails = () => {
             if (selectValue === 'csv') {
                 const csvText = response
                 const blob = new Blob([csvText], { type: 'text/csv' })
-
                 const link = document.createElement('a')
                 link.href = URL.createObjectURL(blob)
                 link.download = `${gdnData?.gdn_number}-${moment().format('YYYY-MM-DD_HH-mm-ss')}.csv`
-
                 document.body.appendChild(link)
                 link.click()
                 document.body.removeChild(link)
                 URL.revokeObjectURL(link.href)
             } else {
                 const preSignedUrl = response?.data
-                if (!preSignedUrl) {
-                    throw new Error('Failed to retrieve the pre-signed URL')
-                }
-
+                if (!preSignedUrl) throw new Error('Failed to retrieve the pre-signed URL')
                 const fileResponse = await fetch(preSignedUrl)
-                if (!fileResponse.ok) {
-                    throw new Error(`Failed to fetch the file`)
-                }
-
+                if (!fileResponse.ok) throw new Error(`Failed to fetch the file`)
                 const blob = await fileResponse.blob()
                 const link = document.createElement('a')
                 link.href = URL.createObjectURL(blob)
                 link.download = `${gdnData?.gdn_number}-${moment().format('YYYY-MM-DD_HH-mm-ss')}.pdf`
-
                 document.body.appendChild(link)
                 link.click()
                 document.body.removeChild(link)

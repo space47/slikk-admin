@@ -115,5 +115,13 @@ export const gdnService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
+        deleteGdn: builder.mutation<{ status: string; message: string }, { id: string | number }>({
+            query: (body) => {
+                return {
+                    url: `/goods/dispatch/${body.id}`,
+                    method: 'DELETE',
+                }
+            },
+        }),
     }),
 })

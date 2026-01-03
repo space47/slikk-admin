@@ -26,7 +26,7 @@ const InwardDetails = () => {
     const [companyId, setCompanyId] = useState<number>()
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const [selectValue, setSelectValue] = useState<string>('')
-    const inwardSingleApiCall = inwardService.useInwardSingleDetailsQuery({ grn_number: document_number })
+    const inwardSingleApiCall = inwardService.useInwardSingleDetailsQuery({ grn_number: document_number }, { skip: !document_number })
     const [syncGrn, syncResponse] = inwardService.useSyncGrnMutation()
     const [presignUrl, presignResponse] = inwardService.useLazyPreSignUrlQuery()
     const [triggerRegenerateGrn, regenerateResponse] = inwardService.useLazyRegenerateGrnQuery()
@@ -36,14 +36,8 @@ const InwardDetails = () => {
             setData(inwardSingleApiCall?.data?.data)
             setCompanyId(inwardSingleApiCall?.data?.data?.company)
         }
-        if (inwardSingleApiCall.isError) {
-            notification.error({ message: (inwardSingleApiCall.error as any).data.message })
-        }
+        if (inwardSingleApiCall.isError) notification.error({ message: (inwardSingleApiCall.error as any).data.message })
     }, [inwardSingleApiCall.isSuccess, inwardSingleApiCall.isError, inwardSingleApiCall?.data?.data, inwardSingleApiCall.error])
-
-    const handleSyncClick = () => {
-        setShowSyncModal(true)
-    }
 
     useEffect(() => {
         if (syncResponse.isSuccess) {
@@ -76,10 +70,6 @@ const InwardDetails = () => {
         syncGrn(body)
     }
 
-    const handleCloseModal = () => {
-        setShowSyncModal(false)
-    }
-
     const handleUrl = async (document_url: string) => {
         presignUrl({ file_url: document_url })
     }
@@ -95,33 +85,23 @@ const InwardDetails = () => {
             if (selectValue === 'csv') {
                 const csvText = response
                 const blob = new Blob([csvText], { type: 'text/csv' })
-
                 const link = document.createElement('a')
                 link.href = URL.createObjectURL(blob)
                 link.download = `${data?.document_number}-${moment().format('YYYY-MM-DD_HH-mm-ss')}.csv`
-
                 document.body.appendChild(link)
                 link.click()
                 document.body.removeChild(link)
                 URL.revokeObjectURL(link.href)
             } else {
                 const preSignedUrl = response?.data
-                if (!preSignedUrl) {
-                    throw new Error('Failed to retrieve pre-signed URL')
-                }
-
+                if (!preSignedUrl) throw new Error('Failed to retrieve pre-signed URL')
                 const fileResponse = await fetch(preSignedUrl)
-                if (!fileResponse.ok) {
-                    throw new Error(`Failed to fetch file`)
-                }
-
+                if (!fileResponse.ok) throw new Error(`Failed to fetch file`)
                 const blob = await fileResponse.blob()
                 const blobUrl = window.URL.createObjectURL(blob)
-
                 const link = document.createElement('a')
                 link.href = blobUrl
                 link.download = `${data?.document_number}-${moment().format('YYYY-MM-DD_HH-mm-ss')}.pdf`
-
                 document.body.appendChild(link)
                 link.click()
                 document.body.removeChild(link)
@@ -205,11 +185,11 @@ const InwardDetails = () => {
                         <div className="bg-white rounded-xl border border-gray-200 shadow-sm ">
                             <QcTabs
                                 data={data}
-                                handleSyncClick={handleSyncClick}
+                                handleSyncClick={() => setShowSyncModal(true)}
                                 showSyncModal={showSyncModal}
                                 syncGRN={syncGRN}
                                 regenerateLoading={regenerateResponse.isLoading}
-                                handleCloseModal={handleCloseModal}
+                                handleCloseModal={() => setShowSyncModal(false)}
                                 isSyncing={syncResponse.isLoading}
                                 setSelectValue={setSelectValue}
                                 handleRegenerateGrn={handleRegenerateGrn}

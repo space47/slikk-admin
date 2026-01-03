@@ -38,7 +38,7 @@ const GdnTable = () => {
             setCount(gdnTableData?.data?.data?.count)
         }
         if (gdnTableData.isError) {
-            notification.error({ message: (gdnTableData.error as any).data.message })
+            notification.error({ message: (gdnTableData.error as any).data.message || 'Data failed to load' })
         }
     }, [gdnTableData.isSuccess, gdnTableData?.data?.data, gdnTableData.isError, gdnTableData.error])
 
@@ -99,7 +99,12 @@ const GdnTable = () => {
             </div>
             <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={count} />
             {showDeleteModal && (
-                <GdnDeleteModal setShowDeleteModal={setShowDeleteModal} showDeleteModal={showDeleteModal} storeGdnId={storeGdnId} />
+                <GdnDeleteModal
+                    setShowDeleteModal={setShowDeleteModal}
+                    showDeleteModal={showDeleteModal}
+                    storeGdnId={storeGdnId}
+                    refetch={gdnTableData.refetch}
+                />
             )}
         </div>
     )
