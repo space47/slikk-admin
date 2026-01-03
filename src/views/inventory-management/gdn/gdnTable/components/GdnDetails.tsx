@@ -5,14 +5,12 @@ import Container from '@/components/shared/Container'
 import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
 import { HiOutlineCalendar } from 'react-icons/hi'
 import isEmpty from 'lodash/isEmpty'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useParams } from 'react-router-dom'
 import moment from 'moment'
 import { Modal, notification } from 'antd'
 import { FaDownload, FaSync } from 'react-icons/fa'
-import { Button, Select, Spinner } from '@/components/ui'
+import { Button, Select } from '@/components/ui'
 import GDNdetailTable from './GDNdetailTable'
-import { AxiosError } from 'axios'
 import { GDNDetails } from '@/store/types/gdn.types'
 import { gdnService } from '@/store/services/gdnService'
 import GdnInfo from './GdnInfo'
@@ -33,7 +31,7 @@ const GdnDetails = () => {
     )
     const [syncGdn, syncResponse] = gdnService.useSyncGdnMutation()
     const [createShipment, createShipmentResponse] = gdnService.useLazyCreateShipmentQuery()
-    // const [regenerate, regenerateResponse] = gdnService.useLazyRegenerateGrnQuery()
+    const [regenerate, regenerateResponse] = gdnService.useLazyRegenerateGdnQuery()
 
     useEffect(() => {
         if (gdnApiData.isSuccess) setGdnData(gdnApiData?.data?.data)
@@ -76,18 +74,18 @@ const GdnDetails = () => {
         createShipment({ id: gdnData?.id as number })
     }
 
-    const handleRegenerateGrn = async (doc_number: string) => {
+    const handleRegenerateGdn = async (doc_number: string) => {
         notification.info({ message: 'Downloading, please wait...' })
+
         try {
-            let responseData = `/goods/dispatch/${id}/detail?download=true&regenerate=true&document_number=${doc_number}`
-            if (selectValue === 'csv') {
-                responseData += `&download_type=csv`
-            }
+            const response = await regenerate({
+                id: id as string,
+                document_number: doc_number,
+                download_type: selectValue === 'csv' ? 'csv' : undefined,
+            }).unwrap()
 
-            const response = await axioisInstance.get(responseData)
-
             if (selectValue === 'csv') {
-                const csvText = response?.data
+                const csvText = response
                 const blob = new Blob([csvText], { type: 'text/csv' })
 
                 const link = document.createElement('a')
@@ -98,17 +96,15 @@ const GdnDetails = () => {
                 link.click()
                 document.body.removeChild(link)
                 URL.revokeObjectURL(link.href)
-                console.log('CSV file downloaded.')
             } else {
-                const preSignedUrl = response?.data?.data
+                const preSignedUrl = response?.data
                 if (!preSignedUrl) {
-                    console.error('Failed to retrieve the pre-signed URL from the response.')
-                    return
+                    throw new Error('Failed to retrieve the pre-signed URL')
                 }
 
                 const fileResponse = await fetch(preSignedUrl)
                 if (!fileResponse.ok) {
-                    throw new Error(`Failed to fetch the file: ${fileResponse.statusText}`)
+                    throw new Error(`Failed to fetch the file`)
                 }
 
                 const blob = await fileResponse.blob()
@@ -120,15 +116,11 @@ const GdnDetails = () => {
                 link.click()
                 document.body.removeChild(link)
                 URL.revokeObjectURL(link.href)
-                console.log('PDF file downloaded.')
             }
-        } catch (error) {
-            console.error('Error while regenerating the GDN:', error)
-            if (error instanceof AxiosError) {
-                notification.error({
-                    message: error?.response?.data?.message || error?.response?.data?.data?.message || 'Failed to Regenerate',
-                })
-            }
+        } catch (error: any) {
+            notification.error({
+                message: error?.data?.message || error?.data?.data?.message || 'Failed to Regenerate',
+            })
         }
     }
 
@@ -152,21 +144,25 @@ const GdnDetails = () => {
                                         </div>
                                     </div>
                                     <div>
-                                        <button
-                                            onClick={() => handleRegenerateGrn(gdnData.document_number)}
-                                            className="flex gap-2 bg-gray-200 p-2 rounded-xl text-black hover:bg-gray-300 font-bold items-center justify-center"
+                                        <Button
+                                            variant="gray"
+                                            size="sm"
+                                            icon={<FaDownload />}
+                                            loading={regenerateResponse.isLoading}
+                                            onClick={() => handleRegenerateGdn(gdnData.document_number)}
                                         >
-                                            <span className="font-bold">Export</span> <FaDownload className="" />
-                                        </button>
+                                            Export
+                                        </Button>
                                     </div>
                                     <div>
-                                        <button
-                                            className="flex gap-2 bg-gray-200 p-2 rounded-xl text-black hover:bg-gray-300 font-bold items-center justify-center"
+                                        <Button
+                                            variant="twoTone"
+                                            color="gray"
+                                            loading={createShipmentResponse.isLoading}
                                             onClick={handleCreateShipment}
                                         >
-                                            Create Shipment from GDN{' '}
-                                            {createShipmentResponse.isLoading && <Spinner size={20} color={'yellow'} />}
-                                        </button>
+                                            Create Shipment from GDN
+                                        </Button>
                                     </div>
                                 </div>
                             </div>
@@ -206,7 +202,9 @@ const GdnDetails = () => {
                                         variant="gray"
                                         size="sm"
                                         icon={<FaDownload />}
-                                        onClick={() => handleRegenerateGrn(gdnData.document_number)}
+                                        loading={regenerateResponse.isLoading}
+                                        disabled={regenerateResponse.isLoading}
+                                        onClick={() => handleRegenerateGdn(gdnData.document_number)}
                                     >
                                         Export
                                     </Button>

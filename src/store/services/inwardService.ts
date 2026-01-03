@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import RtkQueryService from '@/services/RtkQueryService'
 import { GRNDetails, GrnItemsResponseType, GrnResponseType, InwardParamType } from '../types/inward.types'
+import { UpdateGdnArgs } from '../types/gdn.types'
 
 export const inwardService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
@@ -63,19 +64,33 @@ export const inwardService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        // regenerateGrn: builder.query<any, { id: string; document_number?: string }>({
-        //     query: (params) => {
-        //         return {
-        //             url: `/goods/dispatch/${params.id}/detail`,
-        //             method: 'GET',
-        //             params: {
-        //                 download: true,
-        //                 regenerate: true,
-        //                 document_number: params.document_number,
-        //             },
-        //         }
-        //     },
-        // }),
+        regenerateGrn: builder.query<
+            any,
+            {
+                companyId: number
+                document_number: string
+                download_type?: 'csv'
+            }
+        >({
+            query: ({ companyId, document_number, download_type }) => {
+                const params: Record<string, string | boolean> = {
+                    download: true,
+                    regenerate: true,
+                    document_number,
+                }
+
+                if (download_type) {
+                    params.download_type = download_type
+                }
+
+                return {
+                    url: `/goods/received/${companyId}/detail`,
+                    method: 'GET',
+                    params,
+                }
+            },
+        }),
+
         syncGrn: builder.mutation<{ status: string }, Record<string, any>>({
             query: (body) => {
                 return {
@@ -85,23 +100,26 @@ export const inwardService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        // updateGdn: builder.mutation<{ status: string; message: string }, UpdateGdnArgs>({
-        //     query: ({ id, data }) => {
-        //         return {
-        //             url: `/goods/dispatch/${id}`,
-        //             method: 'PATCH',
-        //             body: data,
-        //         }
-        //     },
-        // }),
-        // addNewGdn: builder.mutation<{ status: string; message: string }, Record<string, string | number>>({
-        //     query: (body) => {
-        //         return {
-        //             url: `/goods/dispatch/`,
-        //             method: 'POST',
-        //             body,
-        //         }
-        //     },
-        // }),
+        updateGrn: builder.mutation<{ status: string; message: string }, UpdateGdnArgs>({
+            query: ({ id, data }) => {
+                return {
+                    url: `/goods/received/${id}`,
+                    method: 'PATCH',
+                    body: data,
+                }
+            },
+        }),
+        addNewGrn: builder.mutation<
+            { status: string; message: string },
+            Record<string, string | number | Date | null | boolean | undefined>
+        >({
+            query: (body) => {
+                return {
+                    url: `/goods/received`,
+                    method: 'POST',
+                    body,
+                }
+            },
+        }),
     }),
 })

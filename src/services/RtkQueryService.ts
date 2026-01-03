@@ -25,7 +25,8 @@ const customBaseQuery: typeof baseQuery = async (args, api, extraOptions) => {
         'picker/profile',
         'logistic-service-zones',
         'gdn_number',
-        '/goods/dispatch',
+        'goods/dispatch',
+        'goods/received',
     ]
     const method = (modifiedArgs.method || 'GET').toUpperCase()
 

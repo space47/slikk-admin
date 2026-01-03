@@ -61,19 +61,33 @@ export const gdnService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        regenerateGrn: builder.query<any, { id: string; document_number?: string }>({
-            query: (params) => {
+        regenerateGdn: builder.query<
+            any,
+            {
+                id: string
+                document_number: string
+                download_type?: 'csv'
+            }
+        >({
+            query: ({ id, document_number, download_type }) => {
+                const params: Record<string, string | boolean> = {
+                    download: true,
+                    regenerate: true,
+                    document_number,
+                }
+
+                if (download_type) {
+                    params.download_type = download_type
+                }
+
                 return {
-                    url: `/goods/dispatch/${params.id}/detail`,
+                    url: `/goods/dispatch/${id}/detail`,
                     method: 'GET',
-                    params: {
-                        download: true,
-                        regenerate: true,
-                        document_number: params.document_number,
-                    },
+                    params,
                 }
             },
         }),
+
         syncGdn: builder.mutation<{ status: string }, Record<string, any>>({
             query: (body) => {
                 return {
