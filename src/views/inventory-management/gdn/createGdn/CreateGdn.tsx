@@ -14,7 +14,7 @@ const CreateGdn = () => {
 
     useEffect(() => {
         if (createResponse.isSuccess) {
-            notification.success({ message: createResponse.data.message })
+            notification.success({ message: createResponse.data.message || 'Successfully Added the GDN' })
             navigate('/app/goods/gdn')
         }
         if (createResponse.isError) {

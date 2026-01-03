@@ -28,7 +28,7 @@ const EditGdn = () => {
 
     useEffect(() => {
         if (updateResponse.isSuccess) {
-            notification.success({ message: updateResponse.data.message })
+            notification.success({ message: updateResponse.data.message || 'Successfully Edited the GDN' })
             navigate('/app/goods/gdn')
         }
         if (updateResponse.isError) {
