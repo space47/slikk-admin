@@ -4,6 +4,7 @@ import React, { useMemo } from 'react'
 import { USER_PROFILE_DATA } from '@/store/types/company.types'
 import { FcViewDetails } from 'react-icons/fc'
 import moment from 'moment'
+import { IndentResultType } from '@/store/types/indent.types'
 
 interface IndentColumnsProps {
     storeList: USER_PROFILE_DATA['store']
@@ -17,7 +18,7 @@ export const useIndentColumns = ({ storeList, handleStatusClick }: IndentColumns
         return store ? store.name : 'Unknown Store'
     }
 
-    return useMemo<ColumnDef<any>[]>(
+    return useMemo<ColumnDef<IndentResultType>[]>(
         () => [
             {
                 header: 'Indent No.',
@@ -32,6 +33,60 @@ export const useIndentColumns = ({ storeList, handleStatusClick }: IndentColumns
                         {row.original.intent_number}
                     </a>
                 ),
+            },
+            {
+                header: 'GDN Number',
+                accessorKey: 'gdn_number',
+                cell: ({ row }) => {
+                    return row?.original?.gdn_number ? (
+                        <a
+                            className="w-[230px] p-2 rounded-xl items-center bg-gray-600 text-white flex justify-center cursor-pointer hover:bg-gray-700"
+                            href={`/app/goods/gdnDetails/${encodeURIComponent(row.original.gdn_number)}/${row?.original?.source_company}`} // change this
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            {row.original.gdn_number}
+                        </a>
+                    ) : (
+                        <span className="text-red-500">No GDN Found</span>
+                    )
+                },
+            },
+            {
+                header: 'Shipment Id',
+                accessorKey: 'shipment_id',
+                cell: ({ row }) => {
+                    return row?.original?.shipment_id ? (
+                        <a
+                            className="w-[230px] p-2 rounded-xl items-center bg-gray-600 text-white flex justify-center cursor-pointer hover:bg-gray-700"
+                            href={`/app/vendor/shipments/details/${row?.original?.id}`} // change this
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            SHIPMENT-{row.original.shipment_id}
+                        </a>
+                    ) : (
+                        <span className="text-red-500">No Shipment Found</span>
+                    )
+                },
+            },
+            {
+                header: 'GRN Number',
+                accessorKey: 'grn_number',
+                cell: ({ row }) => {
+                    return row?.original?.grn_number ? (
+                        <a
+                            className="w-[230px] p-2 rounded-xl items-center bg-gray-600 text-white flex justify-center cursor-pointer hover:bg-gray-700"
+                            href={`/app/goods/received/${row.original.source_company}/${row.original.grn_number}`} // change this
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            {row.original.grn_number}
+                        </a>
+                    ) : (
+                        <span className="text-red-500">No GRN Found</span>
+                    )
+                },
             },
             {
                 header: 'Source Store',

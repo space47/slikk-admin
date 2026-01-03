@@ -3,16 +3,7 @@ import EasyTable from '@/common/EasyTable'
 import { Pagination, Select, Tabs } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { indentService } from '@/store/services/indentService'
-import {
-    IndentStateType,
-    setCount,
-    setIndentData,
-    setPage,
-    setPageSize,
-    setFrom,
-    setTo,
-    setDateField,
-} from '@/store/slices/indentSlice/indentSlice'
+import { IndentStateType, setCount, setIndentData, setPage, setPageSize, setFrom, setTo } from '@/store/slices/indentSlice/indentSlice'
 import React, { useEffect, useState } from 'react'
 import { useIndentColumns } from '../indentUtils/useIndentColumns'
 import { Option, pageSizeOptions } from '@/constants/pageUtils.constants'
@@ -22,13 +13,13 @@ import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import { notification } from 'antd'
 import IndentStatusModal from './indentComponents/IndentStatusModal'
-import UltimateReduxDatePicker from '@/common/UltimateReduxDatePicker'
 import moment from 'moment'
 import { IndentStatusArray } from '../indentUtils/indent.types'
+import ReduxDateRange from '@/common/ReduxDateRange'
 
 const IndentTable = () => {
     const dispatch = useAppDispatch()
-    const { indent, count, page, pageSize, from, to, dateField } = useAppSelector<IndentStateType>((state) => state.indent)
+    const { indent, count, page, pageSize, from, to } = useAppSelector<IndentStateType>((state) => state.indent)
     const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
     const [storeCode, setStoreCode] = useState<any[]>([1])
     const [activeTab, setActiveTab] = useState('target')
@@ -120,17 +111,9 @@ const IndentTable = () => {
                         />
                     </div>
                 </div>
-                <div>
-                    <UltimateReduxDatePicker
-                        customChange={dateField}
-                        setCustomChange={setDateField}
-                        dispatch={dispatch}
-                        from={from}
-                        to={to}
-                        setFrom={setFrom}
-                        setTo={setTo}
-                        handleDateChange={handleDateChange}
-                    />
+
+                <div className="mr-8">
+                    <ReduxDateRange handleDateChange={handleDateChange} id="indent" setFrom={setFrom} setTo={setTo} />
                 </div>
             </div>
 
