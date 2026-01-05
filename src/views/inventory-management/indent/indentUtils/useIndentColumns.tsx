@@ -61,7 +61,7 @@ export const useIndentColumns = ({ storeList, handleStatusClick }: IndentColumns
                     return row?.original?.shipment_id ? (
                         <a
                             className="w-[180px] p-2 rounded-xl items-center bg-gray-600 text-white flex justify-center cursor-pointer hover:bg-gray-700"
-                            href={`/app/vendor/shipments/details/${row?.original?.id}`}
+                            href={`/app/vendor/shipments/details/${row?.original?.shipment_id}`}
                             target="_blank"
                             rel="noopener noreferrer"
                         >
