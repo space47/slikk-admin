@@ -21,10 +21,11 @@ export const inwardService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        inwardSingleDetails: builder.query<{ data: GRNDetails }, { id?: string; grn_number?: string }>({
+        inwardSingleDetails: builder.query<{ data: GRNDetails }, { id?: string; grn_number?: string; grn_id?: number | string }>({
             query: (params) => {
-                const parameters: Record<string, string | string[]> = {}
+                const parameters: Record<string, string | string[] | number> = {}
                 if (params.grn_number) parameters.grn_number = params.grn_number.toString()
+                if (params.grn_id) parameters.grn_id = params.grn_id
                 return {
                     url: `goods/received`,
                     method: 'GET',

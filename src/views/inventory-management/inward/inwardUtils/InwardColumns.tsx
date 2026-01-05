@@ -47,7 +47,7 @@ export const InwardColumns = ({ companyList, storeList }: props) => {
                 header: 'GRN Number',
                 accessorKey: 'grn_number',
                 cell: ({ row }: any) => (
-                    <a href={`/app/goods/received/${row.original.company}/${row.original.grn_number}`} target="_blank" rel="noreferrer">
+                    <a href={`/app/goods/received/${row.original.company}/${row.original.id}`} target="_blank" rel="noreferrer">
                         <span className="cursor-pointer  bg-gray-200  rounded-md text-black font-semibold">{row.original.grn_number}</span>
                     </a>
                 ),
