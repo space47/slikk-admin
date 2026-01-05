@@ -42,7 +42,6 @@ const InwardDetails = () => {
     useEffect(() => {
         if (syncResponse.isSuccess) {
             notification.success({ message: 'GRN synced successfully' })
-            setShowSyncModal(false)
         }
         if (syncResponse.isError) notification.error({ message: (syncResponse.error as any)?.data?.message || 'Failed to Sync Grn' })
     }, [syncResponse.isError, syncResponse.isSuccess])
@@ -68,6 +67,7 @@ const InwardDetails = () => {
     const syncGRN = async () => {
         const body = { company: selectedCompany.id, grn_number: document_number }
         syncGrn(body)
+        setShowSyncModal(false)
     }
 
     const handleUrl = async (document_url: string) => {

@@ -42,7 +42,7 @@ export const useIndentColumns = ({ storeList, handleStatusClick }: IndentColumns
                 cell: ({ row }) => {
                     return row?.original?.gdn_number ? (
                         <a
-                            className="w-[230px] p-2 rounded-xl items-center bg-gray-600 text-white flex justify-center cursor-pointer hover:bg-gray-700"
+                            className="w-[180px] p-2 rounded-xl items-center bg-gray-600 text-white flex justify-center cursor-pointer hover:bg-gray-700"
                             href={`/app/goods/gdnDetails/${encodeURIComponent(row.original.gdn_number)}/${selectedCompany?.id}`}
                             target="_blank"
                             rel="noopener noreferrer"
@@ -60,7 +60,7 @@ export const useIndentColumns = ({ storeList, handleStatusClick }: IndentColumns
                 cell: ({ row }) => {
                     return row?.original?.shipment_id ? (
                         <a
-                            className="w-[230px] p-2 rounded-xl items-center bg-gray-600 text-white flex justify-center cursor-pointer hover:bg-gray-700"
+                            className="w-[180px] p-2 rounded-xl items-center bg-gray-600 text-white flex justify-center cursor-pointer hover:bg-gray-700"
                             href={`/app/vendor/shipments/details/${row?.original?.id}`}
                             target="_blank"
                             rel="noopener noreferrer"
@@ -78,7 +78,7 @@ export const useIndentColumns = ({ storeList, handleStatusClick }: IndentColumns
                 cell: ({ row }) => {
                     return row?.original?.grn_number ? (
                         <a
-                            className="w-[230px] p-2 rounded-xl items-center bg-gray-600 text-white flex justify-center cursor-pointer hover:bg-gray-700"
+                            className="w-[150px] p-2 rounded-xl items-center bg-gray-600 text-white flex justify-center cursor-pointer hover:bg-gray-700"
                             href={`/app/goods/received/${selectedCompany?.id}/${row.original.grn_number}`}
                             target="_blank"
                             rel="noopener noreferrer"
@@ -89,6 +89,11 @@ export const useIndentColumns = ({ storeList, handleStatusClick }: IndentColumns
                         <span className="text-red-500">No GRN Found</span>
                     )
                 },
+            },
+            {
+                header: 'Document Id',
+                accessorKey: 'document_id',
+                cell: ({ row }) => <span>{row.original.document_id}</span>,
             },
             {
                 header: 'Source Store',

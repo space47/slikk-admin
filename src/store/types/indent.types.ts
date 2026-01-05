@@ -10,6 +10,7 @@ export interface IndentParamsTypes {
     store_id?: string | number
     source_type?: string
     status: string
+    document_id?: string
 }
 
 export interface IndentResultType {
