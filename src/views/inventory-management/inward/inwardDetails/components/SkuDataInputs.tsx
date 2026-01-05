@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { errorMessage } from '@/utils/responseMessages'
 import { notification } from 'antd'
+import { AxiosError } from 'axios'
 import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -38,14 +40,14 @@ const SkuDataInputs = ({
     setQcFailedData,
 }: props) => {
     const [qcFailed, setQcFailed] = useState(false)
-    const { document_number } = useParams()
+    const { grn_id } = useParams()
 
     const handleAddSku = async () => {
         try {
-            let response = await axioisInstance.get(`/goods/qualitycheck?grn_number=${document_number}&sku=${formData?.sku}`)
+            let response = await axioisInstance.get(`/goods/qualitycheck?grn_id=${grn_id}&sku=${formData?.sku}`)
             let results = response?.data?.data?.results ?? response?.data?.results ?? []
             if (!results || results.length === 0) {
-                response = await axioisInstance.get(`/goods/qualitycheck?grn_number=${document_number}&barcode=${formData?.sku}`)
+                response = await axioisInstance.get(`/goods/qualitycheck?grn_id=${grn_id}&barcode=${formData?.sku}`)
                 results = response?.data?.data?.results ?? response?.data?.results ?? []
             }
 
@@ -81,7 +83,7 @@ const SkuDataInputs = ({
                     }
 
                     localStorage.setItem(
-                        `failed_${document_number}`,
+                        `failed_${grn_id}`,
                         JSON.stringify([...arr, { sku: formData?.sku || '', location: formData?.location || '', quantity_sent: 1 }]),
                     )
 
@@ -94,16 +96,12 @@ const SkuDataInputs = ({
                         },
                     ]
                 })
-                notification.error({
-                    message: error?.response?.data?.message || 'Item not found by SKU or Barcode in this GRN',
-                })
+                notification.error({ message: 'Item not found by SKU or Barcode in this GRN' })
             }
         } catch (error) {
-            console.log('here lalaalal')
             setFailedQc((prev: any) => {
                 const arr = Array.isArray(prev) ? prev : []
                 const idx = arr.findIndex((item) => item.sku === formData?.sku && item.location === (formData?.location ?? ''))
-
                 if (idx !== -1) {
                     const updated = [...arr]
                     const currentQty = Number(updated[idx]?.quantity_sent) || 0
@@ -115,7 +113,7 @@ const SkuDataInputs = ({
                 }
 
                 localStorage.setItem(
-                    `failed_${document_number}`,
+                    `failed_${grn_id}`,
                     JSON.stringify([...arr, { sku: formData?.sku || '', location: formData?.location || '', quantity_sent: 1 }]),
                 )
 
@@ -131,7 +129,6 @@ const SkuDataInputs = ({
             notification.error({
                 message: 'No SKU or Barcode found',
             })
-            console.error('Error during API call:', error)
         }
     }
 
@@ -144,9 +141,6 @@ const SkuDataInputs = ({
             qc_Set = 1
             qc_passed = 0
         }
-
-        console.log('here')
-
         const body = {
             sku: skuData?.sku || '',
             location: skuData?.location || '',
@@ -155,40 +149,28 @@ const SkuDataInputs = ({
             qc_failed: qc_failed,
             action: 'add',
         }
-
         setQcFailedData({
             failed: qc_failed,
             set: qc_Set,
             passed: qc_passed,
         })
 
-        console.log('body')
-
         try {
-            console.log('body')
             const response = await axioisInstance.patch(`/goods/qualitycheck/${skuData?.id}`, body)
-            notification.success({
-                message: response?.data?.message || 'Successfully Added',
-            })
+            notification.success({ message: response?.data?.message || 'Successfully Added' })
             setCounter((prev: number) => prev + 1)
         } catch (error: any) {
-            console.log('error in here 2')
             setFailedQc((prev: any) => {
                 const arr = Array.isArray(prev) ? prev : []
                 const idx = arr.findIndex((item) => item.sku === formData?.sku && item.location === (formData?.location ?? ''))
-
                 if (idx !== -1) {
                     const updated = [...arr]
                     const currentQty = Number(updated[idx]?.quantity_sent) || 0
-                    updated[idx] = {
-                        ...updated[idx],
-                        quantity_sent: currentQty + 1,
-                    }
+                    updated[idx] = { ...updated[idx], quantity_sent: currentQty + 1 }
                     return updated
                 }
-
                 localStorage.setItem(
-                    `failed_${document_number}`,
+                    `failed_${grn_id}`,
                     JSON.stringify([...arr, { sku: formData?.sku || '', location: formData?.location || '', quantity_sent: 1 }]),
                 )
 
@@ -201,12 +183,9 @@ const SkuDataInputs = ({
                     },
                 ]
             })
-            notification.error({
-                message: 'Error',
-                description: error?.response?.data?.message || error?.data?.message || error?.data?.data?.message || 'Something went wrong',
-            })
-
-            console.error('Error during API call:', error)
+            if (error instanceof AxiosError) {
+                errorMessage(error)
+            }
         }
 
         setFormData((prev: any) => ({
@@ -229,7 +208,6 @@ const SkuDataInputs = ({
 
     return (
         <div className="space-y-6 p-6 bg-white dark:bg-gray-900 rounded-2xl shadow-md">
-            {/* Location */}
             <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Location</label>
                 <input
@@ -241,8 +219,6 @@ const SkuDataInputs = ({
                     onChange={handleInputChange}
                 />
             </div>
-
-            {/* QC Failed */}
             <div className="flex items-center space-x-3">
                 <input
                     name="qc_failed"
@@ -253,11 +229,8 @@ const SkuDataInputs = ({
                 />
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Is QC Failed</label>
             </div>
-
-            {/* Dynamic Search + Dropdown */}
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Sku/Barcode</label>
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-4 items-center">
-                {/* Search */}
                 <div className="space-y-2 col-span-3">
                     <input
                         name="sku"
