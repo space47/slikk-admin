@@ -27,6 +27,8 @@ export interface IndentResultType {
     grn_number: string | null
     shipment_id: string | null
     source_company: number | null
+    gdn_id: number
+    grn_id: number
 }
 
 export type IndentResponseTypes = ApiResponse<IndentResultType>

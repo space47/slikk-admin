@@ -40,10 +40,10 @@ export const useIndentColumns = ({ storeList, handleStatusClick }: IndentColumns
                 header: 'GDN Number',
                 accessorKey: 'gdn_number',
                 cell: ({ row }) => {
-                    return row?.original?.gdn_number ? (
+                    return row?.original?.gdn_id ? (
                         <a
                             className="w-[180px] p-2 rounded-xl items-center bg-gray-600 text-white flex justify-center cursor-pointer hover:bg-gray-700"
-                            href={`/app/goods/gdnDetails/${encodeURIComponent(row.original.gdn_number)}/${selectedCompany?.id}`}
+                            href={`/app/goods/gdnDetails/${encodeURIComponent(row.original.gdn_id)}/${selectedCompany?.id}`}
                             target="_blank"
                             rel="noopener noreferrer"
                         >

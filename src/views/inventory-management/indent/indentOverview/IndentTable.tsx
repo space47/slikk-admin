@@ -23,7 +23,7 @@ const IndentTable = () => {
     const dispatch = useAppDispatch()
     const { indent, count, page, pageSize, from, to } = useAppSelector<IndentStateType>((state) => state.indent)
     const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
-    const [storeCode, setStoreCode] = useState<any[]>([1])
+    const [storeCode, setStoreCode] = useState<any>(1)
     const [searchFilter, setSearchFilter] = useState('')
     const [activeTab, setActiveTab] = useState('target')
     const [showStatusModal, setShowStatusModal] = useState(false)
@@ -61,7 +61,7 @@ const IndentTable = () => {
         mobile: '',
         page,
         pageSize,
-        store_id: storeCode.join(','),
+        store_id: storeCode,
         source_type: activeTab === 'target' ? 'target' : 'source',
         from,
         to: moment(to).add(1, 'days').format('YYYY-MM-DD'),
@@ -109,12 +109,11 @@ const IndentTable = () => {
                         <label className="block text-sm font-medium text-gray-700 mb-2">Select Store</label>
                         <Select
                             isClearable
-                            isMulti
                             options={storeList}
                             getOptionLabel={(option) => option.name}
                             getOptionValue={(option) => option.id?.toString()}
-                            value={storeList.filter((opt) => storeCode.includes(opt.id))}
-                            onChange={(selectedOptions) => setStoreCode(selectedOptions?.map((opt) => opt.id) || [])}
+                            value={storeList.filter((opt) => opt?.id === storeCode)}
+                            onChange={(selectedOptions) => setStoreCode(selectedOptions?.id)}
                         />
                     </div>
 
