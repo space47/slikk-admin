@@ -32,6 +32,9 @@ export type GDNDetails = {
     rtv: unknown | null
     create_date: string
     update_date: string
+    shipment_id: string | number
+    indent_number: string
+    indent_id: number
 }
 
 export type GdnParamType = {
