@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Tooltip } from '@/components/ui'
+import { useAppSelector } from '@/store'
+import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+import { GRNDetails } from '@/store/types/inward.types'
+import { ColumnDef } from '@tanstack/react-table'
 import moment from 'moment'
 import { useMemo } from 'react'
 import { FaEdit, FaSave, FaTimes, FaTrash } from 'react-icons/fa'
@@ -20,16 +24,21 @@ const getowner = (own: any) => {
 }
 
 export const InwardColumns = ({ companyList, storeList }: props) => {
-    function GetCompanyNameFromId(id: number) {
-        const company = companyList.find((company) => company.id === id)
-        return company ? company.name : ''
-    }
+    const comp = useAppSelector<SINGLE_COMPANY_DATA>((state) => state.company.currCompany)
 
-    function GetStoreNameFromId(id: number) {
-        const store = storeList.find((store) => store.id === id)
-        return store ? store.name : ''
-    }
-    return useMemo(
+    const companyMap = useMemo(() => {
+        const map = new Map<number, string>()
+        companyList?.forEach((c) => map.set(c.id, c.name))
+        return map
+    }, [companyList])
+
+    const storeMap = useMemo(() => {
+        const map = new Map<number, string>()
+        storeList?.forEach((s) => map.set(s.id, s.name))
+        return map
+    }, [storeList])
+
+    return useMemo<ColumnDef<GRNDetails>[]>(
         () => [
             {
                 header: 'Edit',
@@ -47,8 +56,13 @@ export const InwardColumns = ({ companyList, storeList }: props) => {
                 header: 'GRN Number',
                 accessorKey: 'grn_number',
                 cell: ({ row }: any) => (
-                    <a href={`/app/goods/received/${row.original.company}/${row.original.id}`} target="_blank" rel="noreferrer">
-                        <span className="cursor-pointer  bg-gray-200  rounded-md text-black font-semibold">{row.original.grn_number}</span>
+                    <a
+                        className="w-[200px] p-2 rounded-xl items-center bg-gray-600 text-white flex justify-center cursor-pointer hover:bg-gray-700"
+                        href={`/app/goods/received/${row.original.company}/${row.original.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        {row.original.grn_number}
                     </a>
                 ),
             },
@@ -58,14 +72,68 @@ export const InwardColumns = ({ companyList, storeList }: props) => {
                 cell: (info) => info.getValue(),
             },
             {
+                header: 'Indent No.',
+                accessorKey: 'indent_number',
+                cell: ({ row }) => {
+                    return row?.original?.indent_number ? (
+                        <a
+                            className="w-[230px] p-2 rounded-xl items-center bg-gray-600 text-white flex justify-center cursor-pointer hover:bg-gray-700"
+                            href={`/app/goods/indentDetails/${row.original.indent_id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            {row.original.indent_number}
+                        </a>
+                    ) : (
+                        <span className="text-red-500">No Indent Found</span>
+                    )
+                },
+            },
+            {
+                header: 'GDN Number',
+                accessorKey: 'gdn_number',
+                cell: ({ row }) => {
+                    return row?.original?.gdn_id ? (
+                        <a
+                            className="w-[180px] p-2 rounded-xl items-center bg-gray-600 text-white flex justify-center cursor-pointer hover:bg-gray-700"
+                            href={`/app/goods/gdnDetails/${encodeURIComponent(row.original.gdn_id)}/${comp?.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            {row.original.gdn_number}
+                        </a>
+                    ) : (
+                        <span className="text-red-500">No GDN Found</span>
+                    )
+                },
+            },
+            {
+                header: 'Shipment Id',
+                accessorKey: 'shipment_id',
+                cell: ({ row }) => {
+                    return row?.original?.shipment ? (
+                        <a
+                            className="w-[180px] p-2 rounded-xl items-center bg-gray-600 text-white flex justify-center cursor-pointer hover:bg-gray-700"
+                            href={`/app/vendor/shipments/details/${row?.original?.shipment}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            SHIPMENT-{row.original.shipment}
+                        </a>
+                    ) : (
+                        <span className="text-red-500">No Shipment Found</span>
+                    )
+                },
+            },
+            {
                 header: 'Company',
                 accessorKey: 'company',
-                cell: ({ row }) => GetCompanyNameFromId(row.original.company),
+                cell: ({ row }) => <div>{companyMap.get(Number(row.original.company)) ?? '-'}</div>,
             },
             {
                 header: 'Store',
                 accessorKey: 'store',
-                cell: ({ row }) => GetStoreNameFromId(row.original.store),
+                cell: ({ row }) => <div>{storeMap.get(Number(row.original.store)) ?? '-'}</div>,
             },
             {
                 header: 'Create Date',
@@ -85,8 +153,10 @@ export const InwardColumns = ({ companyList, storeList }: props) => {
             {
                 header: 'Received At',
                 accessorKey: 'received_address',
-                cell: (info) => (
-                    <div className="w-[100px] line-clamp-3 overflow-hidden text-ellipsis">{info.getValue() || 'Not Available'}</div>
+                cell: ({ row }) => (
+                    <div className="w-[100px] line-clamp-3 overflow-hidden text-ellipsis">
+                        {row?.original?.received_address || 'Not Available'}
+                    </div>
                 ),
             },
             {
@@ -134,7 +204,7 @@ export const InwardColumns = ({ companyList, storeList }: props) => {
                 cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
             },
         ],
-        [],
+        [companyMap, storeMap, comp],
     )
 }
 

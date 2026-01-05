@@ -15,7 +15,7 @@ import { LiaShippingFastSolid } from 'react-icons/lia'
 import { InwardColumns } from './inwardUtils/InwardColumns'
 import { GRNDetails } from '@/store/types/inward.types'
 import { inwardService } from '@/store/services/inwardService'
-import { notification } from 'antd'
+import { notification, Spin } from 'antd'
 import PageCommon from '@/common/PageCommon'
 import { FaPlus } from 'react-icons/fa'
 
@@ -41,7 +41,7 @@ const PaginationTable = () => {
             page,
             pageSize,
         },
-        { refetchOnMountOrArgChange: true },
+        { refetchOnMountOrArgChange: true, skip: !selectedCompany.id },
     )
 
     useEffect(() => {
@@ -66,78 +66,80 @@ const PaginationTable = () => {
     }
 
     return (
-        <div className="p-2 shadow-xl rounded-xl ">
-            <div>
-                <Tabs defaultValue="tab2" onChange={handleChange}>
-                    <TabList>
-                        <TabNav value="tab2" icon={<MdInventory className="text-green-500 text-3xl" />}>
-                            <span className="text-xl font-bold">GRN</span>
-                        </TabNav>
-                        <TabNav value="tab1" icon={<LiaShippingFastSolid className="text-blue-600 text-3xl" />}>
-                            <span className="text-xl font-bold">New Shipments</span>
-                        </TabNav>
-                    </TabList>
-                </Tabs>
-            </div>
-
-            {activeTab === 'tab1' && (
-                <div className="mt-10">
-                    <BrandShipmentsTable />
+        <Spin spinning={inwardApiCall.isLoading || inwardApiCall.isFetching}>
+            <div className="p-2 shadow-xl rounded-xl ">
+                <div>
+                    <Tabs defaultValue="tab2" onChange={handleChange}>
+                        <TabList>
+                            <TabNav value="tab2" icon={<MdInventory className="text-green-500 text-3xl" />}>
+                                <span className="text-xl font-bold">GRN</span>
+                            </TabNav>
+                            <TabNav value="tab1" icon={<LiaShippingFastSolid className="text-blue-600 text-3xl" />}>
+                                <span className="text-xl font-bold">New Shipments</span>
+                            </TabNav>
+                        </TabList>
+                    </Tabs>
                 </div>
-            )}
 
-            {activeTab === 'tab2' && (
-                <>
-                    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-10 mt-10">
-                        <div className="flex flex-col lg:flex-row gap-6 w-full">
-                            <div className="flex flex-col w-full max-w-xs">
-                                <label className="font-semibold text-gray-700 mb-1">Search</label>
-                                <input
-                                    type="search"
-                                    value={globalFilter}
-                                    placeholder="Search by document No."
-                                    className="rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setGlobalFilter(e.target.value)}
-                                />
-                            </div>
-                            <div className="flex flex-col w-full max-w-xs">
-                                <label className="font-semibold text-gray-700 mb-1">Select Company</label>
-                                <Select
-                                    isClearable
-                                    className="react-select-container"
-                                    classNamePrefix="react-select"
-                                    options={companyList}
-                                    getOptionLabel={(option) => option.name}
-                                    getOptionValue={(option) => option.id?.toString()}
-                                    onChange={(newVal) => setCompanyCode(newVal?.code)}
-                                />
-                            </div>
-                            <div className="flex flex-col w-full max-w-[400px]">
-                                <label className="font-semibold text-gray-700 mb-1">Select Store</label>
-                                <Select
-                                    isClearable
-                                    isMulti
-                                    options={storeList}
-                                    getOptionLabel={(option) => option.name}
-                                    getOptionValue={(option) => option.id?.toString()}
-                                    onChange={(selectedOptions) => {
-                                        setStoreCode(selectedOptions?.map((opt) => opt.id) || [])
-                                    }}
-                                />
-                            </div>
-                        </div>
-                        <div>
-                            <Button variant="new" size="sm" icon={<FaPlus />} onClick={() => navigate('/app/goods/received/form')}>
-                                ADD GRN
-                            </Button>
-                        </div>
+                {activeTab === 'tab1' && (
+                    <div className="mt-10">
+                        <BrandShipmentsTable />
                     </div>
+                )}
 
-                    <EasyTable mainData={inwardData} columns={columns} page={page} pageSize={pageSize} />
-                    <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={count} />
-                </>
-            )}
-        </div>
+                {activeTab === 'tab2' && (
+                    <>
+                        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-10 mt-10">
+                            <div className="flex flex-col lg:flex-row gap-6 w-full">
+                                <div className="flex flex-col w-full max-w-xs">
+                                    <label className="font-semibold text-gray-700 mb-1">Search</label>
+                                    <input
+                                        type="search"
+                                        value={globalFilter}
+                                        placeholder="Search by document No."
+                                        className="rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setGlobalFilter(e.target.value)}
+                                    />
+                                </div>
+                                <div className="flex flex-col w-full max-w-xs">
+                                    <label className="font-semibold text-gray-700 mb-1">Select Company</label>
+                                    <Select
+                                        isClearable
+                                        className="react-select-container"
+                                        classNamePrefix="react-select"
+                                        options={companyList}
+                                        getOptionLabel={(option) => option.name}
+                                        getOptionValue={(option) => option.id?.toString()}
+                                        onChange={(newVal) => setCompanyCode(newVal?.code)}
+                                    />
+                                </div>
+                                <div className="flex flex-col w-full max-w-[400px]">
+                                    <label className="font-semibold text-gray-700 mb-1">Select Store</label>
+                                    <Select
+                                        isClearable
+                                        isMulti
+                                        options={storeList}
+                                        getOptionLabel={(option) => option.name}
+                                        getOptionValue={(option) => option.id?.toString()}
+                                        onChange={(selectedOptions) => {
+                                            setStoreCode(selectedOptions?.map((opt) => opt.id) || [])
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <Button variant="new" size="sm" icon={<FaPlus />} onClick={() => navigate('/app/goods/received/form')}>
+                                    ADD GRN
+                                </Button>
+                            </div>
+                        </div>
+
+                        <EasyTable mainData={inwardData} columns={columns} page={page} pageSize={pageSize} />
+                        <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={count} />
+                    </>
+                )}
+            </div>
+        </Spin>
     )
 }
 

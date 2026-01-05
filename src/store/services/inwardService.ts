@@ -33,13 +33,17 @@ export const inwardService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        gdnItemsDetails: builder.query<GrnItemsResponseType, { grn_number?: string; page: number; pageSize: number; sku?: string }>({
+        gdnItemsDetails: builder.query<
+            GrnItemsResponseType,
+            { grn_number?: string; page: number; pageSize: number; sku?: string; grn_id?: number | string }
+        >({
             query: (params) => {
                 const parameters: Record<string, string | string[] | number> = {}
                 if (params.grn_number) parameters.grn_number = params.grn_number
                 if (params.page) parameters.p = params.page
                 if (params.pageSize) parameters.page_size = params.pageSize
                 if (params.sku) parameters.sku = params.sku
+                if (params.grn_id) parameters.grn_id = params.grn_id
 
                 return {
                     url: `/goods/qualitycheck`,
