@@ -160,10 +160,15 @@ const GetReportConfiguratiions = () => {
     async function fetchReportApi() {
         try {
             let searchFilter = ''
+            let genericFilters = ''
             if (debounceFilter) {
                 searchFilter = `&name=${debounceFilter}`
             }
-            const response = await axioisInstance.get(`/query/config?p=${page}&page_size=${pageSize}${searchFilter}`)
+            if (!debounceFilter) {
+                genericFilters = `&p=${page}&page_size=${pageSize}`
+            }
+
+            const response = await axioisInstance.get(`/query/config?${genericFilters}${searchFilter}`)
             const data = response?.data?.data
             setReportQueryData(data?.results)
             setTotalCount(data?.count)

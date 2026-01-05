@@ -239,7 +239,7 @@ const GdnDetails = () => {
             {!gdnApiData.isLoading && isEmpty(gdnData) && (
                 <div className="h-full flex flex-col items-center justify-center">
                     <DoubleSidedImage src="/img/others/img-2.png" darkModeSrc="/img/others/img-2-dark.png" alt="No GRN found!" />
-                    <h3 className="mt-8">No GRN found!</h3>
+                    <h3 className="mt-8">No GDN found!</h3>
                 </div>
             )}
         </Container>
