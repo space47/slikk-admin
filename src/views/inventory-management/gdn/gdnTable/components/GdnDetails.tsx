@@ -22,12 +22,12 @@ const options = [
 
 const GdnDetails = () => {
     const [gdnData, setGdnData] = useState<GDNDetails | null>()
-    const { gdn_number, id } = useParams()
+    const { gdn_id, id } = useParams()
     const [showSyncModal, setShowSyncModal] = useState(false)
     const [selectValue, setSelectValue] = useState<string | undefined>('')
     const gdnApiData = gdnService.useGdnSingleDetailsQuery(
-        { gdn_number: gdn_number as string, id: id },
-        { refetchOnMountOrArgChange: true, skip: !gdn_number },
+        { gdn_id: gdn_id as string, id: id },
+        { refetchOnMountOrArgChange: true, skip: !gdn_id },
     )
     const [syncGdn, syncResponse] = gdnService.useSyncGdnMutation()
     const [createShipment, createShipmentResponse] = gdnService.useLazyCreateShipmentQuery()
@@ -41,6 +41,7 @@ const GdnDetails = () => {
     useEffect(() => {
         if (syncResponse.isSuccess) {
             notification.success({ message: 'GDN synced successfully' })
+            setShowSyncModal(false)
         }
         if (syncResponse.isError) {
             notification.error({ message: (syncResponse.error as any)?.data?.message })
@@ -175,12 +176,14 @@ const GdnDetails = () => {
                         </div>
                         <GdnInfo data={gdnData} />
 
-                        <div className="mt-5 flex flex-col">
-                            <div className="flex gap-10 items-center justify-end mt-5 text-xl mr-7">
+                        <div className="flex flex-col mt-6 shadow-lg rounded-xl p-2">
+                            <h3>GDN Product Items</h3>
+                            <div className="flex gap-10 items-center justify-end  text-xl mr-7">
                                 <div className="flex gap-2 items-center">
                                     <div>
                                         <Select
                                             size="sm"
+                                            className="xl:w-[223px] w-auto"
                                             isClearable
                                             isSearchable={false}
                                             options={options}
@@ -217,20 +220,40 @@ const GdnDetails = () => {
                         </div>
                         {showSyncModal && (
                             <Modal
-                                title=""
-                                okText="SYNC"
-                                okButtonProps={{
-                                    style: {
-                                        backgroundColor: 'green',
-                                        borderColor: 'green',
-                                        fontWeight: 'bold',
-                                    },
-                                }}
                                 open={showSyncModal}
                                 onOk={syncGRN}
                                 onCancel={handleCloseModal}
+                                confirmLoading={syncResponse.isLoading}
+                                okText="Sync GDN"
+                                okButtonProps={{
+                                    className: 'bg-green-600 hover:bg-green-700 border-green-600 font-semibold',
+                                }}
+                                cancelButtonProps={{
+                                    className: 'font-medium',
+                                }}
+                                centered
+                                width={420}
+                                footer={null}
                             >
-                                <div className="italic text-lg font-semibold">Are you sure you want to sync this GDN?</div>
+                                <div className="flex flex-col items-center text-center space-y-4 py-6">
+                                    <h3 className="text-xl font-semibold text-gray-800">Sync GDN</h3>
+                                    <p className="text-gray-600 text-sm">
+                                        Are you sure you want to sync this GDN? This action will update the latest inventory and shipment
+                                        details.
+                                    </p>
+                                    {syncResponse.isLoading && (
+                                        <p className="text-green-600 text-sm font-medium animate-pulse">Syncing GDN… please wait</p>
+                                    )}
+                                    <div className="flex justify-center items-center gap-10">
+                                        <Button variant="reject" size="sm" disabled={syncResponse.isLoading} onClick={handleCloseModal}>
+                                            Cancel
+                                        </Button>
+
+                                        <Button variant="accept" size="sm" disabled={syncResponse.isLoading} onClick={syncGRN}>
+                                            {syncResponse.isLoading ? 'Syncing...' : 'Sync'}
+                                        </Button>
+                                    </div>
+                                </div>
                             </Modal>
                         )}
                     </>
