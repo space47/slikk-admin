@@ -82,7 +82,7 @@ const AddNewConfig = () => {
 
         try {
             setShowSpinner(true)
-            const response = await axiosInstance.post('/store/configuration', body)
+            const response = await axiosInstance.post('/app/configuration', body)
             notification.success({ message: response.data?.message || 'Successfully Configured' })
             navigate(-1)
         } catch (error) {
