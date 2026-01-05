@@ -5,18 +5,15 @@ import Container from '@/components/shared/Container'
 import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
 import { HiOutlineCalendar } from 'react-icons/hi'
 import isEmpty from 'lodash/isEmpty'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import moment from 'moment'
 import { Modal, notification } from 'antd'
-import { useAppSelector } from '@/store'
-import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { FaDownload, FaSync } from 'react-icons/fa'
-import CustomerInfo from '@/views/inventory-management/inward/inwardDetails/components/CustomerInfo'
-import { Select, Spinner } from '@/components/ui'
+import { Button, Select } from '@/components/ui'
 import GDNdetailTable from './GDNdetailTable'
-import { AxiosError } from 'axios'
-// import { string } from 'yup'
+import { GDNDetails } from '@/store/types/gdn.types'
+import { gdnService } from '@/store/services/gdnService'
+import GdnInfo from './GdnInfo'
 
 const options = [
     { label: 'PDF', value: 'pdf' },
@@ -24,67 +21,49 @@ const options = [
 ]
 
 const GdnDetails = () => {
-    // const location = useLocation()
-
-    const [loading, setLoading] = useState(true)
-    const [data, setData] = useState<any>([])
-    const { document_number, id } = useParams()
+    const [gdnData, setGdnData] = useState<GDNDetails | null>()
+    const { gdn_number, id } = useParams()
     const [showSyncModal, setShowSyncModal] = useState(false)
-    const [isSyncing, setIsSyncing] = useState(false)
-    const [isRegenerating, setIsRegenerating] = useState(false)
-    const [grnNumber, setGrnNumber] = useState('')
-    const navigate = useNavigate()
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const [selectValue, setSelectValue] = useState<string | undefined>('')
-
-    console.log(grnNumber)
+    const gdnApiData = gdnService.useGdnSingleDetailsQuery(
+        { gdn_number: gdn_number as string, id: id },
+        { refetchOnMountOrArgChange: true, skip: !gdn_number },
+    )
+    const [syncGdn, syncResponse] = gdnService.useSyncGdnMutation()
+    const [createShipment, createShipmentResponse] = gdnService.useLazyCreateShipmentQuery()
+    const [regenerate, regenerateResponse] = gdnService.useLazyRegenerateGdnQuery()
 
     useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                const response = await axioisInstance.get(`/goods/dispatch/${id}/detail?document_number=${document_number}`)
+        if (gdnApiData.isSuccess) setGdnData(gdnApiData?.data?.data)
+        if (gdnApiData.isError) setGdnData(null)
+    }, [gdnApiData.isSuccess, gdnApiData.isError, gdnApiData.data])
 
-                const ordersData = response.data?.data || []
-                setLoading(false)
-
-                setData(ordersData)
-            } catch (error) {
-                console.log(error)
-            }
+    useEffect(() => {
+        if (syncResponse.isSuccess) {
+            notification.success({ message: 'GDN synced successfully' })
         }
+        if (syncResponse.isError) {
+            notification.error({ message: (syncResponse.error as any)?.data?.message })
+        }
+    }, [syncResponse.isError, syncResponse.isSuccess])
 
-        fetchOrders()
-    }, [document_number, selectedCompany])
+    useEffect(() => {
+        if (createShipmentResponse.isSuccess) {
+            notification.success({ message: 'Shipment created successfully from GDN' })
+        }
+        if (createShipmentResponse.isError) {
+            notification.error({ message: 'Failed to sync GDN' })
+        }
+        setShowSyncModal(false)
+    }, [createShipmentResponse.isError, createShipmentResponse.isSuccess])
 
-    const handleSyncClick = (grn_number: string) => {
+    const handleSyncClick = () => {
         setShowSyncModal(true)
-        setGrnNumber(grn_number)
     }
 
     const syncGRN = async () => {
-        const body = {
-            company: id,
-            document_number: document_number,
-        }
-        setShowSyncModal(false)
-        setIsSyncing(true)
-
-        try {
-            await axioisInstance.post(`/goods/dispatch-synctoinventory`, body)
-            notification.success({
-                message: 'Success',
-                description: 'GDN synced successfully',
-            })
-        } catch (error) {
-            console.error(error)
-            notification.error({
-                message: 'FAILURE',
-                description: 'GDN sync Failed',
-            })
-        } finally {
-            setIsSyncing(false)
-            navigate(-1)
-        }
+        const body = { company: id, document_number: gdnData?.document_number }
+        syncGdn(body)
     }
 
     const handleCloseModal = () => {
@@ -92,82 +71,53 @@ const GdnDetails = () => {
     }
 
     const handleCreateShipment = async () => {
-        setIsRegenerating(true)
-        try {
-            const res = await axioisInstance.get(`/goods/dispatch/shipment/create/${data?.id}`)
-            notification.success({ message: res?.data?.message || 'Shipment created successfully from GDN' })
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                notification.error({
-                    message: error?.response?.data?.message || error?.response?.data?.data?.message || 'Failed to create shipment from GDN',
-                })
-            }
-        } finally {
-            setIsRegenerating(false)
-        }
+        createShipment({ id: gdnData?.id as number })
     }
 
-    const handleRegenerateGrn = async (doc_number: string) => {
+    const handleRegenerateGdn = async (doc_number: string) => {
         notification.info({ message: 'Downloading, please wait...' })
         try {
-            let responseData = `/goods/dispatch/${id}/detail?download=true&regenerate=true&document_number=${doc_number}`
-            if (selectValue === 'csv') {
-                responseData += `&download_type=csv`
-            }
+            const response = await regenerate({
+                id: id as string,
+                document_number: doc_number,
+                download_type: selectValue === 'csv' ? 'csv' : undefined,
+            }).unwrap()
 
-            const response = await axioisInstance.get(responseData)
-
             if (selectValue === 'csv') {
-                // Handle CSV response directly as raw text data
-                const csvText = response?.data // Assuming the response contains raw CSV data
+                const csvText = response
                 const blob = new Blob([csvText], { type: 'text/csv' })
-
                 const link = document.createElement('a')
                 link.href = URL.createObjectURL(blob)
-                link.download = `${data.gdn_number}-${moment().format('YYYY-MM-DD_HH-mm-ss')}.csv`
-
+                link.download = `${gdnData?.gdn_number}-${moment().format('YYYY-MM-DD_HH-mm-ss')}.csv`
                 document.body.appendChild(link)
                 link.click()
                 document.body.removeChild(link)
                 URL.revokeObjectURL(link.href)
-                console.log('CSV file downloaded.')
             } else {
-                const preSignedUrl = response?.data?.data
-                if (!preSignedUrl) {
-                    console.error('Failed to retrieve the pre-signed URL from the response.')
-                    return
-                }
-
+                const preSignedUrl = response?.data
+                if (!preSignedUrl) throw new Error('Failed to retrieve the pre-signed URL')
                 const fileResponse = await fetch(preSignedUrl)
-                if (!fileResponse.ok) {
-                    throw new Error(`Failed to fetch the file: ${fileResponse.statusText}`)
-                }
-
+                if (!fileResponse.ok) throw new Error(`Failed to fetch the file`)
                 const blob = await fileResponse.blob()
                 const link = document.createElement('a')
                 link.href = URL.createObjectURL(blob)
-                link.download = `${data.gdn_number}-${moment().format('YYYY-MM-DD_HH-mm-ss')}.pdf`
-
+                link.download = `${gdnData?.gdn_number}-${moment().format('YYYY-MM-DD_HH-mm-ss')}.pdf`
                 document.body.appendChild(link)
                 link.click()
                 document.body.removeChild(link)
                 URL.revokeObjectURL(link.href)
-                console.log('PDF file downloaded.')
             }
-        } catch (error) {
-            console.error('Error while regenerating the GDN:', error)
-            if (error instanceof AxiosError) {
-                notification.error({
-                    message: error?.response?.data?.message || error?.response?.data?.data?.message || 'Failed to Regenerate',
-                })
-            }
+        } catch (error: any) {
+            notification.error({
+                message: error?.data?.message || error?.data?.data?.message || 'Failed to Regenerate',
+            })
         }
     }
 
     return (
         <Container className="h-full">
-            <Loading loading={loading}>
-                {!isEmpty(data) && (
+            <Loading loading={gdnApiData.isLoading}>
+                {!isEmpty(gdnData) && (
                     <>
                         <div className="mb-6">
                             <div className="flex flex-col  mb-2">
@@ -175,69 +125,57 @@ const GdnDetails = () => {
                                     <div>
                                         <h3>
                                             <span>GDN:</span>
-                                            <span className="ltr:ml-2 rtl:mr-2">#{data.gdn_number}</span>
+                                            <span className="ltr:ml-2 rtl:mr-2">#{gdnData.gdn_number}</span>
                                         </h3>
                                         <div className="docs flex flex-col">
                                             <div className="flex gap-2">
-                                                {' '}
-                                                Document Number : <span className="font-bold">{data.document_number}</span>
+                                                Document Number : <span className="font-bold">{gdnData.document_number}</span>
                                             </div>
                                         </div>
                                     </div>
-
-                                    {/*  */}
                                     <div>
-                                        <button
-                                            onClick={() => handleRegenerateGrn(data.document_number)}
-                                            className="flex gap-2 bg-gray-200 p-2 rounded-xl text-black hover:bg-gray-300 font-bold items-center justify-center"
+                                        <Button
+                                            variant="gray"
+                                            size="sm"
+                                            icon={<FaDownload />}
+                                            loading={regenerateResponse.isLoading}
+                                            onClick={() => handleRegenerateGdn(gdnData.document_number)}
                                         >
-                                            <span className="font-bold">Export</span> <FaDownload className="" />
-                                        </button>
+                                            Export
+                                        </Button>
                                     </div>
                                     <div>
-                                        <button
+                                        <Button
+                                            variant="twoTone"
+                                            color="gray"
+                                            loading={createShipmentResponse.isLoading}
                                             onClick={handleCreateShipment}
-                                            className="flex gap-2 bg-gray-200 p-2 rounded-xl text-black hover:bg-gray-300 font-bold items-center justify-center"
                                         >
-                                            Create Shipment from GDN {isRegenerating && <Spinner size={20} color={'yellow'} />}
-                                        </button>
+                                            Create Shipment from GDN
+                                        </Button>
                                     </div>
                                 </div>
                             </div>
                             <span className="flex items-center">
                                 <HiOutlineCalendar className="text-lg" />
-                                <span className="ltr:ml-1 rtl:mr-1">{moment(data.document_date).format('MM/DD/YYYY hh:mm:ss a')}</span>
+                                <span className="ltr:ml-1 rtl:mr-1">{moment(gdnData.document_date).format('MM/DD/YYYY hh:mm:ss a')}</span>
                             </span>
                         </div>
-                        <div className="xl:flex gap-6 p-6 bg-gray-50 rounded-lg shadow-lg">
-                            {/* Address Card Section */}
-                            <div className="flex-1 bg-white rounded-lg shadow-md p-4">
-                                <h3 className="text-lg font-semibold text-gray-800 mb-4">Address Information</h3>
-                                <div className="text-gray-600">
-                                    <p className="mb-2">
-                                        <span className="font-medium text-gray-800">Original Address:</span> {data?.origin_address || 'N/A'}
-                                    </p>
-                                    <p>
-                                        <span className="font-medium text-gray-800">Delivery Address:</span>{' '}
-                                        {data?.delivery_address || 'N/A'}
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* Customer Info Section */}
-                            <div className="xl:max-w-[360px] w-full bg-white rounded-lg shadow-md p-4">
-                                <h3 className="text-lg font-semibold text-gray-800 mb-4">Customer Information</h3>
-                                <CustomerInfo
-                                    last_updated_by={data?.last_updated_by || 'Unknown'}
-                                    total_sku={data?.total_sku || 0}
-                                    total_quantity={data?.total_quantity || 0}
-                                />
+                        <div className="flex-1 bg-white rounded-lg shadow-md p-4 mb-6">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-4">Address Information</h3>
+                            <div className="text-gray-600">
+                                <p className="mb-2">
+                                    <span className="font-medium text-gray-800">Original Address:</span> {gdnData?.origin_address || 'N/A'}
+                                </p>
+                                <p>
+                                    <span className="font-medium text-gray-800">Delivery Address:</span>{' '}
+                                    {gdnData?.delivery_address || 'N/A'}
+                                </p>
                             </div>
                         </div>
+                        <GdnInfo data={gdnData} />
 
                         <div className="mt-5 flex flex-col">
-                            {/* TABLE..................................................... */}
-
                             <div className="flex gap-10 items-center justify-end mt-5 text-xl mr-7">
                                 <div className="flex gap-2 items-center">
                                     <div>
@@ -250,47 +188,32 @@ const GdnDetails = () => {
                                         />
                                     </div>
 
-                                    <div className="p-2 rounded-lg bg-gray-200">
-                                        <button
-                                            onClick={() => handleRegenerateGrn(data.document_number)}
-                                            className="border-none bg-none flex gap-5"
-                                        >
-                                            {' '}
-                                            <div className="flex gap-2 font-bold text-gray-600">
-                                                Export <FaDownload className="text-2xl" />
-                                            </div>{' '}
-                                        </button>
-                                    </div>
+                                    <Button
+                                        variant="gray"
+                                        size="sm"
+                                        icon={<FaDownload />}
+                                        loading={regenerateResponse.isLoading}
+                                        disabled={regenerateResponse.isLoading}
+                                        onClick={() => handleRegenerateGdn(gdnData.document_number)}
+                                    >
+                                        Export
+                                    </Button>
                                 </div>
-                                {isSyncing ? (
-                                    <>
-                                        <Spinner size={30} />
-                                    </>
-                                ) : (
-                                    <>
-                                        <div>
-                                            <button
-                                                onClick={() => handleSyncClick(data.grn_number)}
-                                                className="border-none bg-none flex gap-5"
-                                            >
-                                                {' '}
-                                                <div className="flex gap-2 font-bold text-green-600">
-                                                    SYNC GDN <FaSync className="text-2xl" />
-                                                </div>{' '}
-                                            </button>
-                                        </div>
-                                    </>
-                                )}
+
+                                <Button
+                                    icon={<FaSync />}
+                                    variant="accept"
+                                    size="sm"
+                                    loading={syncResponse.isLoading}
+                                    disabled={syncResponse.isLoading}
+                                    onClick={() => handleSyncClick()}
+                                >
+                                    SYNC GDN
+                                </Button>
                             </div>
                             <br />
-                            {/* <QCtable data={data.grn_quality_check} totalData={data.grn_quality_check.length} /> */}
-                            {data?.gdn_products?.length === 0 ? (
-                                <>
-                                    <div className="flex justify-center items-center text-xl font-bold text-red-700">NO GDN PRODUCTS</div>
-                                </>
-                            ) : (
-                                <GDNdetailTable />
-                            )}
+
+                            <GDNdetailTable />
                         </div>
                         {showSyncModal && (
                             <Modal
@@ -310,11 +233,10 @@ const GdnDetails = () => {
                                 <div className="italic text-lg font-semibold">Are you sure you want to sync this GDN?</div>
                             </Modal>
                         )}
-                        {isSyncing && <Loading loading={isSyncing} />}
                     </>
                 )}
             </Loading>
-            {!loading && isEmpty(data) && (
+            {!gdnApiData.isLoading && isEmpty(gdnData) && (
                 <div className="h-full flex flex-col items-center justify-center">
                     <DoubleSidedImage src="/img/others/img-2.png" darkModeSrc="/img/others/img-2-dark.png" alt="No GRN found!" />
                     <h3 className="mt-8">No GRN found!</h3>

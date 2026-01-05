@@ -47,14 +47,9 @@ export const InwardColumns = ({ companyList, storeList }: props) => {
                 header: 'GRN Number',
                 accessorKey: 'grn_number',
                 cell: ({ row }: any) => (
-                    <div
-                        // onClick={() => handleGRNClick(row.original.grn_number, row.original.company)}
-                        className="cursor-pointer bg-gray-200 px-3 py-3 rounded-md text-black font-semibold"
-                    >
-                        <a href={`/app/goods/received/${row.original.company}/${row.original.grn_number}`} target="_blank" rel="noreferrer">
-                            {row.original.grn_number}
-                        </a>
-                    </div>
+                    <a href={`/app/goods/received/${row.original.company}/${row.original.grn_number}`} target="_blank" rel="noreferrer">
+                        <span className="cursor-pointer  bg-gray-200  rounded-md text-black font-semibold">{row.original.grn_number}</span>
+                    </a>
                 ),
             },
             {

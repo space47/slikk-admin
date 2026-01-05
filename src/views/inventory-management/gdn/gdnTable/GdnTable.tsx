@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useMemo, useState } from 'react'
-import { GDN_TYPES } from '../commonGdn'
+import React, { useEffect, useState } from 'react'
 import { Button, Select, Spinner } from '@/components/ui'
 import EasyTable from '@/common/EasyTable'
 import { useNavigate } from 'react-router-dom'
@@ -10,9 +9,13 @@ import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA, USER_PROFILE_DATA } from '@/store/types/company.types'
 import PageCommon from '@/common/PageCommon'
 import { useGdnColumns } from '../gdnUtils/useGdnColumns'
-import { useFetchApi } from '@/commonHooks/useFetchApi'
+import { gdnService } from '@/store/services/gdnService'
+import { GDNDetails } from '@/store/types/gdn.types'
+import { notification } from 'antd'
 
 const GdnTable = () => {
+    const [gdnData, setGdnData] = useState<GDNDetails[]>([])
+    const [count, setCount] = useState(0)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -22,16 +25,22 @@ const GdnTable = () => {
     const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
     const [companyCode, setCompanyCode] = useState<any>()
     const [storeCode, setStoreCode] = useState<any[]>([])
+    const gdnTableData = gdnService.useGdnDataGetQuery({
+        page: page,
+        pageSize: pageSize,
+        company: companyCode || '',
+        store_id: storeCode?.join(',') || '',
+    })
 
-    const query = useMemo(() => {
-        let code = ''
-        let store = ''
-        if (companyCode) code = `&company_code=${encodeURIComponent(companyCode)}`
-        if (storeCode && storeCode.length > 0) store = `&store_id=${encodeURIComponent(storeCode?.join(','))}`
-        return `/goods/dispatch?p=${page}&page_size=${pageSize}${code}${store}`
-    }, [page, pageSize, storeCode, companyCode])
-
-    const { data: gdnData, totalData, loading, responseStatus } = useFetchApi<GDN_TYPES>({ url: query })
+    useEffect(() => {
+        if (gdnTableData.isSuccess) {
+            setGdnData(gdnTableData?.data?.data?.results)
+            setCount(gdnTableData?.data?.data?.count)
+        }
+        if (gdnTableData.isError) {
+            notification.error({ message: (gdnTableData.error as any).data.message || 'Data failed to load' })
+        }
+    }, [gdnTableData.isSuccess, gdnTableData?.data?.data, gdnTableData.isError, gdnTableData.error])
 
     const handleDeleteClick = (id: number) => {
         setShowDeleteModal(true)
@@ -40,7 +49,7 @@ const GdnTable = () => {
 
     const columns = useGdnColumns({ handleDeleteClick })
 
-    if (responseStatus === 403) {
+    if (gdnTableData.isError && (gdnTableData.error as any).status === 403) {
         return <AccessDenied />
     }
 
@@ -80,7 +89,7 @@ const GdnTable = () => {
                     </Button>
                 </div>
             </div>
-            {loading && (
+            {(gdnTableData.isLoading || gdnTableData.isFetching) && (
                 <div className="flex items-center justify-center mt-2 mb-5">
                     <Spinner size={20} />
                 </div>
@@ -88,9 +97,14 @@ const GdnTable = () => {
             <div>
                 <EasyTable overflow mainData={gdnData} columns={columns} page={page} pageSize={pageSize} />
             </div>
-            <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={totalData} />
+            <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={count} />
             {showDeleteModal && (
-                <GdnDeleteModal setShowDeleteModal={setShowDeleteModal} showDeleteModal={showDeleteModal} storeGdnId={storeGdnId} />
+                <GdnDeleteModal
+                    setShowDeleteModal={setShowDeleteModal}
+                    showDeleteModal={showDeleteModal}
+                    storeGdnId={storeGdnId}
+                    refetch={gdnTableData.refetch}
+                />
             )}
         </div>
     )

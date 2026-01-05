@@ -1,36 +1,38 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { gdnService } from '@/store/services/gdnService'
 import { Modal, notification } from 'antd'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { IoWarningOutline } from 'react-icons/io5'
-import { useNavigate } from 'react-router-dom'
 
 interface props {
     showDeleteModal: boolean
     setShowDeleteModal: (x: boolean) => void
     storeGdnId: number | undefined
+    refetch: any
 }
 
-const GdnDeleteModal = ({ setShowDeleteModal, showDeleteModal, storeGdnId }: props) => {
-    const navigate = useNavigate()
+const GdnDeleteModal = ({ setShowDeleteModal, showDeleteModal, storeGdnId, refetch }: props) => {
+    const [deleteGdn, deleteResponse] = gdnService.useDeleteGdnMutation()
 
-    const deleteGDN = async () => {
-        try {
-            const response = await axioisInstance.delete(`/goods/dispatch/${storeGdnId}`)
+    useEffect(() => {
+        if (deleteResponse.isSuccess) {
             notification.success({
                 message: 'Success',
-                description: response?.data?.message || 'GDN Successfully deleted',
+                description: deleteResponse?.data?.message || 'GDN Successfully deleted',
             })
-            navigate(0)
-        } catch (error: any) {
-            console.log(error)
+            setShowDeleteModal(false)
+            refetch()
+        }
+        if (deleteResponse.isError) {
             notification.error({
-                message: error?.response?.data?.message,
+                message: (deleteResponse.error as any).data?.message,
                 description: 'Unable to delete GDN',
             })
-        } finally {
-            setShowDeleteModal(false)
         }
+    }, [deleteResponse.isSuccess, deleteResponse.isError])
+
+    const deleteGDN = async () => {
+        deleteGdn({ id: storeGdnId as number })
     }
     return (
         <div>

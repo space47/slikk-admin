@@ -13,7 +13,19 @@ export interface IndentParamsTypes {
 }
 
 export interface IndentResultType {
-    id: string
+    id: number
+    intent_number: string
+    status: string
+    source_store: number
+    target_store: number
+    create_date: string
+    update_date: string
+    notes: string | null
+    document_id: number | null
+    gdn_number: string | null
+    grn_number: string | null
+    shipment_id: string | null
+    source_company: number | null
 }
 
 export type IndentResponseTypes = ApiResponse<IndentResultType>

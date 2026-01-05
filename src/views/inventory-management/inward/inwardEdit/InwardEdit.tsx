@@ -14,6 +14,8 @@ import { filterEmptyChangedValues, getChangedValues } from '@/utils/apiBodyUtili
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 import LoadingSpinner from '@/common/LoadingSpinner'
 import { textParser } from '@/common/textParser'
+import { inwardService } from '@/store/services/inwardService'
+import { notification } from 'antd'
 
 const InwardEdit = () => {
     const [grnData, setGrnData] = useState<FormModel>()
@@ -21,13 +23,22 @@ const InwardEdit = () => {
     const [showData, setShowData] = useState(false)
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
     const [companyData, setCompanyData] = useState<number>()
+    const [updateGrn, updateResponse] = inwardService.useUpdateGrnMutation()
     const { grn } = useParams()
 
     const navigate = useNavigate()
 
     const { data, loading } = useFetchSingleData<FormModel>({ url: `goods/received?grn_number=${grn}`, initialData: undefined })
 
-    console.log('data is', data)
+    useEffect(() => {
+        if (updateResponse?.isSuccess) {
+            notification.success({ message: 'Successfully updated' })
+            navigate('/app/goods/received')
+        }
+        if (updateResponse?.isError) {
+            notification.error({ message: (updateResponse.error as any).data?.message || 'Failed to update' })
+        }
+    }, [updateResponse.isError, updateResponse.isSuccess])
 
     useEffect(() => {
         if (data) {
@@ -151,16 +162,7 @@ const InwardEdit = () => {
 
         const changedValues = getChangedValues(initialValue, formData as any)
         const filteredBody = filterEmptyChangedValues(initialValue, changedValues)
-
-        try {
-            const response = await axioisInstance.patch(`goods/received/${grnData?.id}`, filteredBody)
-            successMessage(response)
-            navigate('/app/goods/received')
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                errorMessage(error)
-            }
-        }
+        updateGrn({ id: grnData?.id as number, data: filteredBody })
     }
     return (
         <div>
