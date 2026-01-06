@@ -2,10 +2,10 @@
 import { ColumnDef } from '@tanstack/react-table'
 import React, { useMemo } from 'react'
 import { SINGLE_COMPANY_DATA, USER_PROFILE_DATA } from '@/store/types/company.types'
-import { FcViewDetails } from 'react-icons/fc'
 import moment from 'moment'
 import { IndentResultType } from '@/store/types/indent.types'
 import { useAppSelector } from '@/store'
+import { MdViewList } from 'react-icons/md'
 
 interface IndentColumnsProps {
     storeList: USER_PROFILE_DATA['store']
@@ -79,7 +79,7 @@ export const useIndentColumns = ({ storeList, handleStatusClick }: IndentColumns
                     return row?.original?.grn_number ? (
                         <a
                             className="w-[150px] p-2 rounded-xl items-center bg-gray-600 text-white flex justify-center cursor-pointer hover:bg-gray-700"
-                            href={`/app/goods/received/${selectedCompany?.id}/${row.original.grn_number}`}
+                            href={`/app/goods/received/${selectedCompany?.id}/${row.original.grn_id}`}
                             target="_blank"
                             rel="noopener noreferrer"
                         >
@@ -138,15 +138,15 @@ export const useIndentColumns = ({ storeList, handleStatusClick }: IndentColumns
                 cell: ({ getValue }: any) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
             },
             {
-                header: 'Status',
+                header: 'Overview',
                 accessorKey: 'intent_number',
                 cell: ({ row }) => (
                     <button onClick={() => handleStatusClick(row.original.id)}>
-                        <FcViewDetails className="text-2xl" />
+                        <MdViewList className="text-2xl text-blue-500" />
                     </button>
                 ),
             },
         ],
-        [storeList],
+        [storeList, selectedCompany?.id],
     )
 }
