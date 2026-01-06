@@ -11,7 +11,7 @@ import { useParams } from 'react-router-dom'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 
 const GDNdetailTable = () => {
-    const { gdn_number } = useParams()
+    const { gdn_id } = useParams()
     const [gdnItemsData, setGdnItemsData] = useState<GdnProducts[]>([])
     const [count, setCount] = useState(0)
     const [globalFilter, setGlobalFilter] = useState('')
@@ -32,7 +32,7 @@ const GDNdetailTable = () => {
         }
     }, [debouncedResults])
 
-    const gdnItems = gdnService.useGdnItemsDetailsQuery({ page, pageSize, gdn_number, sku: globalFilter ?? '' })
+    const gdnItems = gdnService.useGdnItemsDetailsQuery({ page, pageSize, gdn_id, sku: globalFilter ?? '' })
 
     useEffect(() => {
         if (gdnItems.isSuccess) {
@@ -112,8 +112,8 @@ const GDNdetailTable = () => {
                     <div className="mb-8">
                         <Input
                             type="search"
-                            placeholder="Search agency by name..."
-                            className="max-w-xs"
+                            placeholder="Search By SKU.."
+                            className="max-w-xs rounded-lg"
                             onChange={(e) => debouncedResults(e.target.value)}
                         />
                     </div>

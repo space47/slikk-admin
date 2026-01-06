@@ -21,12 +21,12 @@ import { GRNDetails } from '@/store/types/inward.types'
 
 const InwardDetails = () => {
     const [data, setData] = useState<GRNDetails>()
-    const { document_number } = useParams()
+    const { grn_id } = useParams()
     const [showSyncModal, setShowSyncModal] = useState(false)
     const [companyId, setCompanyId] = useState<number>()
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const [selectValue, setSelectValue] = useState<string>('')
-    const inwardSingleApiCall = inwardService.useInwardSingleDetailsQuery({ grn_number: document_number }, { skip: !document_number })
+    const inwardSingleApiCall = inwardService.useInwardSingleDetailsQuery({ grn_id: grn_id }, { skip: !grn_id })
     const [syncGrn, syncResponse] = inwardService.useSyncGrnMutation()
     const [presignUrl, presignResponse] = inwardService.useLazyPreSignUrlQuery()
     const [triggerRegenerateGrn, regenerateResponse] = inwardService.useLazyRegenerateGrnQuery()
@@ -65,7 +65,7 @@ const InwardDetails = () => {
     }, [presignResponse.isError, presignResponse.isSuccess])
 
     const syncGRN = async () => {
-        const body = { company: selectedCompany.id, grn_number: document_number }
+        const body = { company: selectedCompany.id, grn_number: data?.grn_number }
         syncGrn(body)
         setShowSyncModal(false)
     }
@@ -108,6 +108,7 @@ const InwardDetails = () => {
                 window.URL.revokeObjectURL(blobUrl)
             }
         } catch (error: any) {
+            console.log('error is', error)
             notification.error({
                 message: error?.data?.message || error?.message || 'Failed to Regenerate',
             })

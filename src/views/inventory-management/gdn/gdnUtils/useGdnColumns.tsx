@@ -1,15 +1,15 @@
 import { ColumnDef } from '@tanstack/react-table'
 import React, { useMemo } from 'react'
 import { FaEdit, FaTrash } from 'react-icons/fa'
-import { GDN_TYPES } from '../commonGdn'
 import moment from 'moment'
+import { GDNDetails } from '@/store/types/gdn.types'
 
 interface props {
     handleDeleteClick: (x: number) => void
 }
 
 export const useGdnColumns = ({ handleDeleteClick }: props) => {
-    return useMemo<ColumnDef<GDN_TYPES>[]>(
+    return useMemo<ColumnDef<GDNDetails>[]>(
         () => [
             {
                 header: 'Edit',
@@ -29,7 +29,7 @@ export const useGdnColumns = ({ handleDeleteClick }: props) => {
                 cell: ({ row }) => (
                     <div className="cursor-pointer bg-gray-200 px-2 py-2 items-center flex justify-center rounded-md text-black font-semibold">
                         <a
-                            href={`/app/goods/gdnDetails/${encodeURIComponent(row.original.gdn_number)}/${row?.original?.company}`}
+                            href={`/app/goods/gdnDetails/${encodeURIComponent(row.original.id)}/${row?.original?.company}`}
                             target="_blank"
                             rel="noreferrer"
                         >
@@ -42,6 +42,43 @@ export const useGdnColumns = ({ handleDeleteClick }: props) => {
                 header: 'GDN Number',
                 accessorKey: 'gdn_number',
                 cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Indent No.',
+                accessorKey: 'intent_number',
+                cell: ({ row }) =>
+                    row?.original?.indent_id ? (
+                        <>
+                            <a
+                                className="w-[230px] p-2 rounded-xl items-center bg-gray-600 text-white flex justify-center cursor-pointer hover:bg-gray-700"
+                                href={`/app/goods/indentDetails/${row.original.indent_id}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                {row.original.indent_number}
+                            </a>
+                        </>
+                    ) : (
+                        <span className="text-red-500">No Indent Found</span>
+                    ),
+            },
+            {
+                header: 'Shipment Id',
+                accessorKey: 'shipment_id',
+                cell: ({ row }) => {
+                    return row?.original?.shipment_id ? (
+                        <a
+                            className="w-[180px] p-2 rounded-xl items-center bg-gray-600 text-white flex justify-center cursor-pointer hover:bg-gray-700"
+                            href={`/app/vendor/shipments/details/${row?.original?.shipment_id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            SHIPMENT-{row.original.shipment_id}
+                        </a>
+                    ) : (
+                        <span className="text-red-500">No Shipment Found</span>
+                    )
+                },
             },
             {
                 header: 'Create Date',

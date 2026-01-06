@@ -71,9 +71,6 @@ const InwardMaterialModule = () => {
         url: shipmentsItemsQuery,
         initialData: [],
     })
-    const [shipmentData, setShipmentData] = useState<ShipmentItem[]>(shipmentItems ?? [])
-
-    console.log('shipmentItems', shipmentItems)
 
     const handleEdit = useCallback(async (row: ShipmentItem) => {
         setEditingRow(row.id)
@@ -84,7 +81,6 @@ const InwardMaterialModule = () => {
     const handleSave = useCallback(async (id: string) => {
         try {
             const updatedData = { ...editFormDataRef.current }
-            setShipmentData((prev) => prev.map((item) => (item.id === id ? { ...item, ...updatedData } : item)))
             setSkuWiseData((prev) => prev.map((item) => (item.id === id ? { ...item, ...updatedData } : item)))
             setEditingRow(null)
             setShowEditModal(true)
@@ -95,7 +91,6 @@ const InwardMaterialModule = () => {
     const handleSaveAdd = useCallback(async (id: string) => {
         try {
             const updatedData = { ...editFormDataRef.current }
-            setShipmentData((prev) => prev.map((item) => (item.id === id ? { ...item, ...updatedData } : item)))
             setSkuWiseData((prev) => prev.map((item) => (item.id === id ? { ...item, ...updatedData } : item)))
             setEditingRow(null)
         } catch (error) {
@@ -136,13 +131,11 @@ const InwardMaterialModule = () => {
             quantity: dataTobeAdded?.quantity_sent,
             box_number: formData?.boxCount,
         }
-        console.log('body', body)
         try {
             const response = await axioisInstance.post(`/shipment/item`, body)
             notification.success({ message: response?.data?.message || 'Item added successfully' })
             refetch()
         } catch (error) {
-            console.error(error)
             notification.error({ message: 'Failed to add item' })
         } finally {
             setShowAddModal(false)
@@ -162,7 +155,6 @@ const InwardMaterialModule = () => {
             notification.success({ message: response?.data?.message || 'Item Edited successfully' })
             refetch()
         } catch (error) {
-            console.error(error)
             notification.error({ message: 'Failed to Edit item' })
         }
     }
@@ -273,7 +265,6 @@ const InwardMaterialModule = () => {
                 header: 'Barcode',
                 accessorKey: 'barcode',
                 cell: ({ row }: any) => {
-                    console.log('row id is', row?.original?.id)
                     if (editingRow === row.original.id) {
                         return renderEditableCell(
                             editFormDataRef.current.barcode,
@@ -394,7 +385,6 @@ const InwardMaterialModule = () => {
             notification.success({ message: response?.data?.message || 'Synced successfully' })
             setIsGenerateGrn(false)
         } catch (error) {
-            console.error(error)
             if (error instanceof AxiosError) {
                 notification.error({ message: error?.response?.data?.message || 'Failed to sync' })
             }

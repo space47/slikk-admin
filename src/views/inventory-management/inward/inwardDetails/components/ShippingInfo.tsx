@@ -43,48 +43,73 @@ const ShippingInfo = ({ origin_address, company }: ShippingInfoProps) => {
 
             {/* Sender Information Grid */}
             <div className="space-y-6">
-                <div className="flex items-center gap-2">
-                    <div className="h-px flex-1 bg-gradient-to-r from-gray-200 to-transparent"></div>
-                    <h4 className="text-sm font-semibold text-gray-700 px-3 bg-gray-100 rounded-full py-1">DISPATCHED BY</h4>
-                    <div className="h-px flex-1 bg-gradient-to-l from-gray-200 to-transparent"></div>
+                {/* Section Header */}
+                <div className="flex items-center gap-3">
+                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 to-transparent" />
+                    <h4 className="text-xs tracking-widest font-bold text-gray-700 px-4 py-1.5 rounded-full bg-gray-100 shadow-sm">
+                        DISPATCHED BY
+                    </h4>
+                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 to-transparent" />
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    {/* Name Card */}
-                    <div className="group p-4 bg-white rounded-xl border border-gray-200 hover:border-orange-300 hover:shadow-md transition-all duration-300">
+                {/* Cards */}
+                <div className="grid grid-cols-1 gap-5">
+                    {/* Name */}
+                    <div
+                        className="group relative p-5 rounded-2xl border border-gray-200 bg-white/70 backdrop-blur-sm
+                        hover:border-orange-300 hover:shadow-lg transition-all duration-300"
+                    >
                         <div className="flex items-center gap-4">
-                            <div className="p-3 bg-orange-50 rounded-lg group-hover:bg-orange-100 transition-colors">
-                                <MdPerson className="h-5 w-5 text-orange-600" />
+                            <div
+                                className="p-3 rounded-xl bg-orange-100 text-orange-600
+                                group-hover:bg-orange-200 transition-colors"
+                            >
+                                <MdPerson className="h-5 w-5" />
                             </div>
+
                             <div className="flex-1">
-                                <p className="text-xs text-gray-500 mb-1">Sender Name</p>
-                                <p className="font-semibold text-gray-900 text-lg">{senderInfo.name}</p>
+                                <p className="text-[11px] uppercase tracking-wide text-gray-500 mb-1">Sender Name</p>
+                                <p className="text-lg font-semibold text-gray-900">{senderInfo.name}</p>
                             </div>
                         </div>
                     </div>
 
-                    {/* Mobile Card */}
-                    <div className="group p-4 bg-white rounded-xl border border-gray-200 hover:border-green-300 hover:shadow-md transition-all duration-300">
+                    {/* Mobile */}
+                    <div
+                        className="group relative p-5 rounded-2xl border border-gray-200 bg-white/70 backdrop-blur-sm
+                        hover:border-green-300 hover:shadow-lg transition-all duration-300"
+                    >
                         <div className="flex items-center gap-4">
-                            <div className="p-3 bg-green-50 rounded-lg group-hover:bg-green-100 transition-colors">
-                                <MdPhone className="h-5 w-5 text-green-600" />
+                            <div
+                                className="p-3 rounded-xl bg-green-100 text-green-600
+                                group-hover:bg-green-200 transition-colors"
+                            >
+                                <MdPhone className="h-5 w-5" />
                             </div>
+
                             <div className="flex-1">
-                                <p className="text-xs text-gray-500 mb-1">Contact Number</p>
-                                <p className="font-semibold text-gray-900 text-lg">{senderInfo.mobile}</p>
+                                <p className="text-[11px] uppercase tracking-wide text-gray-500 mb-1">Contact Number</p>
+                                <p className="text-lg font-semibold text-gray-900">{senderInfo.mobile}</p>
                             </div>
                         </div>
                     </div>
 
-                    {/* Email Card - Full Width */}
-                    <div className="lg:col-span-2 group p-4 bg-white rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-300">
+                    {/* Email */}
+                    <div
+                        className="group relative p-5 rounded-2xl border border-gray-200 bg-white/70 backdrop-blur-sm
+                        hover:border-blue-300 hover:shadow-lg transition-all duration-300"
+                    >
                         <div className="flex items-center gap-4">
-                            <div className="p-3 bg-blue-50 rounded-lg group-hover:bg-blue-100 transition-colors">
-                                <MdEmail className="h-5 w-5 text-blue-600" />
+                            <div
+                                className="p-3 rounded-xl bg-blue-100 text-blue-600
+                                group-hover:bg-blue-200 transition-colors"
+                            >
+                                <MdEmail className="h-5 w-5" />
                             </div>
+
                             <div className="flex-1">
-                                <p className="text-xs text-gray-500 mb-1">Email Address</p>
-                                <p className="font-semibold text-gray-900 text-lg break-all">{senderInfo.email}</p>
+                                <p className="text-[11px] uppercase tracking-wide text-gray-500 mb-1">Email Address</p>
+                                <p className="text-lg font-semibold text-gray-900 break-all">{senderInfo.email}</p>
                             </div>
                         </div>
                     </div>

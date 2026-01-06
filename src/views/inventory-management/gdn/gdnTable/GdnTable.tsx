@@ -38,7 +38,7 @@ const GdnTable = () => {
             setCount(gdnTableData?.data?.data?.count)
         }
         if (gdnTableData.isError) {
-            notification.error({ message: (gdnTableData.error as any).data.message || 'Data failed to load' })
+            notification.error({ message: (gdnTableData?.error as any).data.message || 'Data failed to load' })
         }
     }, [gdnTableData.isSuccess, gdnTableData?.data?.data, gdnTableData.isError, gdnTableData.error])
 

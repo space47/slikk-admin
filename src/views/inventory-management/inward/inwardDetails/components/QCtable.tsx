@@ -13,7 +13,7 @@ import { inwardService } from '@/store/services/inwardService'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 
 const QCtable = () => {
-    const { document_number } = useParams()
+    const { grn_id } = useParams()
     const [grnItems, setGrnItems] = useState<GRNItemDetails[]>([])
     const [count, setCount] = useState(0)
     const [globalFilter, setGlobalFilter] = useState('')
@@ -21,7 +21,7 @@ const QCtable = () => {
     const [pageSize, setPageSize] = useState(10)
     const { debounceFilter } = useDebounceInput({ globalFilter, delay: 500 })
 
-    const grnItemsApiCall = inwardService.useGdnItemsDetailsQuery({ page, pageSize, grn_number: document_number, sku: debounceFilter })
+    const grnItemsApiCall = inwardService.useGdnItemsDetailsQuery({ page, pageSize, grn_id: grn_id, sku: debounceFilter })
 
     useEffect(() => {
         if (grnItemsApiCall.isSuccess) {
@@ -148,7 +148,7 @@ const QCtable = () => {
             )}
 
             <div className="mb-3">
-                <EasyTable mainData={grnItems} columns={columns} page={page} pageSize={pageSize} />
+                <EasyTable overflow mainData={grnItems} columns={columns} page={page} pageSize={pageSize} />
             </div>
             <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={count} />
         </>

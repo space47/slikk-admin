@@ -27,10 +27,11 @@ export const gdnService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        gdnSingleDetails: builder.query<{ data: GDNDetails }, { id?: string; gdn_number?: string }>({
+        gdnSingleDetails: builder.query<{ data: GDNDetails }, { id?: string; gdn_number?: string; gdn_id?: string | number }>({
             query: (params) => {
-                const parameters: Record<string, string | string[]> = {}
+                const parameters: Record<string, string | string[] | number> = {}
                 if (params.gdn_number) parameters.gdn_number = params.gdn_number.toString()
+                if (params.gdn_id) parameters.gdn_id = params.gdn_id
                 return {
                     url: `/goods/dispatch/${params.id}/detail`,
                     method: 'GET',
@@ -38,10 +39,14 @@ export const gdnService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        gdnItemsDetails: builder.query<GdnProductsResponseType, { gdn_number?: string; page: number; pageSize: number; sku?: string }>({
+        gdnItemsDetails: builder.query<
+            GdnProductsResponseType,
+            { gdn_number?: string; page: number; pageSize: number; sku?: string; gdn_id?: string | number }
+        >({
             query: (params) => {
                 const parameters: Record<string, string | string[] | number> = {}
                 if (params.gdn_number) parameters.gdn_number = params.gdn_number
+                if (params.gdn_id) parameters.gdn_id = params.gdn_id
                 if (params.page) parameters.p = params.page
                 if (params.pageSize) parameters.page_size = params.pageSize
                 if (params.sku) parameters.sku = params.sku

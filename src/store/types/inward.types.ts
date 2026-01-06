@@ -32,6 +32,10 @@ export type GRNDetails = {
         mobile: string
         email: string
     }
+    gdn_number: string
+    gdn_id: number
+    indent_id: number
+    indent_number: string
 }
 
 export type InwardParamType = {

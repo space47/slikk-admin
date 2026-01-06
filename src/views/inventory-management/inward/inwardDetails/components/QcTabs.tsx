@@ -52,9 +52,11 @@ const QcTabs = ({
                 data: { confirm_delete: isForce },
             })
             successMessage(res)
+            setIsDeleteGrn(false)
             return res?.data?.data
         } catch (error) {
             if (error instanceof AxiosError) {
+                errorMessage(error)
                 const errMsg = error?.response?.data?.message || error?.message
                 return { error: errMsg }
             }
@@ -142,6 +144,7 @@ const QcTabs = ({
                                             size="sm"
                                             icon={<FaDownload className="w-4 h-4" />}
                                             loading={regenerateLoading}
+                                            disabled={regenerateLoading}
                                             onClick={() => handleRegenerateGrn(data.document_number)}
                                         >
                                             Export
