@@ -1,22 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, useMemo } from 'react'
-import Table from '@/components/ui/Table'
-import Pagination from '@/components/ui/Pagination'
-import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
-import {
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    flexRender,
-} from '@tanstack/react-table'
-import type { ColumnDef, FilterFn } from '@tanstack/react-table'
-
+import type { ColumnDef } from '@tanstack/react-table'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import axios from 'axios'
 import { FaDownload } from 'react-icons/fa'
-import { rankItem } from '@tanstack/match-sorter-utils'
+import EasyTable from '@/common/EasyTable'
+import PageCommon from '@/common/PageCommon'
 
 type User = {
     name: string
@@ -36,20 +25,6 @@ type TableData = {
     uploaded_file: string
     user: User
 }
-
-type Option = {
-    value: number
-    label: string
-}
-
-const { Tr, Th, Td, THead, TBody } = Table
-
-const pageSizeOptions = [
-    { value: 10, label: '10 / page' },
-    { value: 25, label: '25 / page' },
-    { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
-]
 
 const PaginationTable = () => {
     const [data, setData] = useState<TableData[]>([])
@@ -96,7 +71,7 @@ const PaginationTable = () => {
             const response = await axioisInstance.get(`file/presign?file_url=${encodeURIComponent(requiredFile)}`)
             console.log('sss', response)
             const preSignedUrl = response.data.data
-            const data = await fetch(preSignedUrl)
+            await fetch(preSignedUrl)
                 .then((res) => res.blob())
                 .then((blob) => {
                     const url = URL.createObjectURL(blob)
@@ -125,7 +100,7 @@ const PaginationTable = () => {
             const response = await axioisInstance.get(`file/presign?file_url=${encodeURIComponent(requiredFile)}`)
             console.log('sss', response)
             const preSignedUrl = response.data.data
-            const data = await fetch(preSignedUrl)
+            await fetch(preSignedUrl)
                 .then((res) => res.blob())
                 .then((blob) => {
                     const url = URL.createObjectURL(blob)
@@ -242,87 +217,21 @@ const PaginationTable = () => {
         [],
     )
 
-    const table = useReactTable({
-        data,
-        columns,
-        filterFns: {
-            fuzzy: fuzzyFilter,
-        },
-        state: {
-            globalFilter,
-            pagination: { pageIndex: page - 1, pageSize },
-        },
-        onGlobalFilterChange: setGlobalFilter,
-        globalFilterFn: fuzzyFilter,
-        getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        manualPagination: true,
-        pageCount: Math.ceil(totalData / pageSize),
-    })
-
-    const onPaginationChange = (page: number) => {
-        setPage(page)
-    }
-
-    const onSelectChange = (value = 0) => {
-        setPageSize(Number(value))
-        setPage(1)
-    }
-
     return (
         <div>
             <div className="mb-8">
                 <input
                     placeholder="Search here..."
                     value={globalFilter || ''}
-                    onChange={(e) => setGlobalFilter(e.target.value)}
                     className="p-2 border rounded-md"
+                    onChange={(e) => setGlobalFilter(e.target.value)}
                 />
             </div>
-            <Table>
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(header.column.columnDef.header, header.getContext())}
-                                </Th>
-                            ))}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <Tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
-                            ))}
-                        </Tr>
-                    ))}
-                </TBody>
-            </Table>
-            <div className="flex items-center justify-between mt-4">
-                <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
-                <div style={{ minWidth: 130 }}>
-                    <Select<Option>
-                        size="sm"
-                        isSearchable={false}
-                        value={pageSizeOptions.find((option) => option.value === pageSize)}
-                        options={pageSizeOptions}
-                        onChange={(option) => onSelectChange(option?.value)}
-                    />
-                </div>
-            </div>
+
+            <EasyTable overflow columns={columns} mainData={data} page={page} pageSize={pageSize} />
+            <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={totalData} />
         </div>
     )
 }
 
 export default PaginationTable
-
-const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-    const itemRank = rankItem(row.getValue(columnId), value)
-    addMeta(itemRank)
-    return itemRank.passed
-}
