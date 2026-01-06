@@ -4,18 +4,14 @@ import ProductUploader from './productUploader'
 import UploadHistory from './UploadHistory'
 
 const BulkProductUpload = () => {
-    const handleFileUpload = (file: File) => {
-        // Handle the file upload logic here
-        console.log('File uploaded:', file)
-    }
-
     return (
-        <div>
+        <div className="flex flex-col gap-4">
             <h2>Bulk Product File Upload</h2> <br />
             <ProductUploader />
-            <br />
-            <br />
-            <UploadHistory />
+            <div className="flex flex-col gap-5">
+                <h4>Uploaded Files</h4>
+                <UploadHistory />
+            </div>
         </div>
     )
 }
