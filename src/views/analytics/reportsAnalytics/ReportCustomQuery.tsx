@@ -1,12 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// Types for API responses
-
 import EasyTable from '@/common/EasyTable'
 import { textParser } from '@/common/textParser'
 import { RichTextEditor } from '@/components/shared'
 import { Card, FormItem, Input, Button, Spinner } from '@/components/ui'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { notification } from 'antd'
+import { Modal, notification } from 'antd'
 import moment from 'moment'
 import React, { useEffect, useMemo, useState } from 'react'
 import { customQueryService } from '@/store/services/customQueryService'
@@ -27,24 +24,23 @@ interface TableDataObject {
 
 const ReportCustomQuery = () => {
     const [value, setValue] = useState('')
-    const [generatingQuery, setGeneratingQuery] = useState(false)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [customReportData, setCustomReportData] = useState<any[]>([])
-    const [errorData, setErrorData] = useState<string>('')
     const [tablesData, setTablesData] = useState<string[]>([])
     const [search, setSearch] = useState('')
     const [selectedTable, setSelectedTable] = useState<string | null>(null)
     const [columnNames, setColumnNames] = useState<string[]>([])
     const [downloadingQuery, setDownloadingQuery] = useState(false)
+    const [askForDownloadName, setAskForDownloadName] = useState(false)
+    const [queryDownloadName, setQueryDownloadName] = useState('')
 
     useEffect(() => {
         setColumnNames([])
     }, [selectedTable])
 
-    console.log('customReportData', errorData)
-
     const { data: queryData, isLoading, isError, isSuccess } = customQueryService.useExecuteQueryQuery({})
+    const [generateQuery, generateResponse] = customQueryService.useGenerateCustomQueryMutation()
     const {
         data: columnData,
         isLoading: columnLoading,
@@ -61,7 +57,6 @@ const ReportCustomQuery = () => {
                 tables = data.map((item: TableItem) => item.table_name)
             } else if (data && typeof data === 'object') {
                 const first = Object.values(data)[0]
-                console.log('first', first)
                 if (first && Array.isArray((first as TableDataObject).data)) {
                     tables = ((first as TableDataObject).data as TableItem[]).map((item) => item.table_name)
                 } else if (Array.isArray(first)) {
@@ -79,14 +74,12 @@ const ReportCustomQuery = () => {
                 columns = columnDataList.map((item: TableItem) => item.column_name)
             } else if (columnDataList && typeof columnDataList === 'object') {
                 const second = Object.values(columnDataList)[1]
-                console.log('second', second)
                 if (second && Array.isArray((second as TableDataObject).data)) {
                     columns = ((second as TableDataObject).data as TableItem[]).map((item) => item.column_name)
                 } else if (Array.isArray(second)) {
                     columns = (second as TableItem[]).map((item) => item.column_name)
                 }
             }
-            console.log('columns', columns)
             setColumnNames(columns)
         }
     }, [selectedTable, columnSuccess, columnDataList])
@@ -96,6 +89,17 @@ const ReportCustomQuery = () => {
             notification.error({ message: 'Failed to fetch tables' })
         }
     }, [isError])
+
+    useEffect(() => {
+        if (generateResponse.isSuccess) {
+            setCustomReportData(generateResponse.data.data)
+            notification.success({ message: 'Custom Query Generated Successfully' })
+        }
+        if (generateResponse.isError) {
+            notification.error({ message: (generateResponse.error as any).data.message || 'Failed to generate custom query' })
+            setCustomReportData([])
+        }
+    }, [generateResponse.isSuccess, generateResponse.isError, generateResponse.data, generateResponse.error])
 
     const handleInsertVariable = (field: any, form: any, variable: string) => {
         const editor = document.querySelector('[contenteditable="true"]')
@@ -132,35 +136,21 @@ const ReportCustomQuery = () => {
 
     const handleGenerateCustomQuery = async () => {
         notification.info({ message: 'Generating Custom Query' })
+        setCustomReportData([])
         const parsedValue = textParser(value)
-        console.log(parsedValue)
         const body = {
             query_string: parsedValue,
         }
-        setGeneratingQuery(true)
-        try {
-            const res = await axioisInstance.post(`/query/execute/custom_report`, body)
-            const data = res?.data?.data
-            setCustomReportData(data)
-            notification.success({ message: 'Custom Query Generated Successfully' })
-        } catch (error: any) {
-            console.log(error)
-            notification.error({ message: error?.response?.data?.message || 'Failed to generate custom query' })
-            setErrorData(error?.response?.data?.message || 'Failed to generate custom query')
-        } finally {
-            setGeneratingQuery(false)
-        }
+        generateQuery(body)
     }
 
     const columns = useMemo(() => {
         if (!customReportData || customReportData.length === 0) return []
-
         return Object.keys(customReportData[0]).map((key) => ({
             header: key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
             accessorKey: key,
             cell: ({ getValue }: any) => {
                 const value = getValue()
-
                 if (value === null || value === undefined) return <span>-</span>
                 if (key.toLowerCase().includes('date')) {
                     return (
@@ -169,11 +159,9 @@ const ReportCustomQuery = () => {
                         </span>
                     )
                 }
-
                 if (key.toLowerCase().includes('image') && typeof value === 'string') {
                     return <img src={value?.split(',')[0] || value} alt="Image" className="w-24 h-20 object-cover cursor-pointer" />
                 }
-
                 if (typeof value === 'object') {
                     return <pre className="whitespace-pre-wrap">{JSON.stringify(value, null, 2)}</pre>
                 }
@@ -190,7 +178,15 @@ const ReportCustomQuery = () => {
         const header = filteredColumns.map((col) => escapeCsvValue(col.header)).join(',')
         const rows = data
             .map((row: any) => {
-                return filteredColumns.map((col: any) => escapeCsvValue(row[col.accessorKey])).join(',')
+                return filteredColumns
+                    .map((col: any) => {
+                        let val = row[col.accessorKey]
+                        if (col.header.toLowerCase().includes('date')) {
+                            val = moment(Number(val)).isValid() ? moment(Number(val)).utcOffset(330).format('YYYY-MM-DD hh:mm:ss a') : val
+                        }
+                        return escapeCsvValue(val)
+                    })
+                    .join(',')
             })
             .join('\n')
 
@@ -201,11 +197,12 @@ const ReportCustomQuery = () => {
         notification.info({ message: 'Download in process' })
         setDownloadingQuery(true)
         try {
-            await handleDownloadCsv(customReportData, columns, convertToCSV, 'Sellers.csv')
+            await handleDownloadCsv(customReportData, columns, convertToCSV, `${queryDownloadName}.csv`)
         } catch (error) {
             console.error(error)
         } finally {
             setDownloadingQuery(false)
+            setAskForDownloadName(false)
         }
         notification.success({ message: 'Download complete' })
     }
@@ -284,7 +281,7 @@ const ReportCustomQuery = () => {
                 <Button
                     type="button"
                     variant="blue"
-                    loading={generatingQuery}
+                    loading={generateResponse.isLoading}
                     disabled={!value || value === '<p><br></p>'}
                     onClick={handleGenerateCustomQuery}
                     icon={<FaLocationArrow />}
@@ -298,7 +295,7 @@ const ReportCustomQuery = () => {
                         <Button
                             type="button"
                             variant="new"
-                            onClick={handleDownloadCsvData}
+                            onClick={() => setAskForDownloadName(true)}
                             icon={<FaDownload />}
                             loading={downloadingQuery}
                             disabled={downloadingQuery}
@@ -311,7 +308,37 @@ const ReportCustomQuery = () => {
                     <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={totalPages} />
                 </>
             )}
-            {errorData && <div className="mt-10 mb-8 font-bold text-xl text-red-500">Error: {errorData}</div>}
+            {generateResponse.isError && (
+                <div className="mt-10 mb-8 font-bold text-xl text-red-500">
+                    Error: {(generateResponse.error as any).data.message || 'Failed to generate custom query'}
+                </div>
+            )}
+            {askForDownloadName && (
+                <Modal
+                    title="Set A Name for the File you Want to Download"
+                    open={askForDownloadName}
+                    okText="Download File"
+                    okButtonProps={{
+                        style: { backgroundColor: 'blue', borderColor: 'blue' },
+                    }}
+                    confirmLoading={downloadingQuery}
+                    onCancel={() => setAskForDownloadName(false)}
+                    onOk={handleDownloadCsvData}
+                >
+                    <div className="flex flex-col gap-3">
+                        <p className="bg-yellow-100 rounded-xl border-l-4 px-2 text-sm text-yellow-600 border-yellow-600">
+                            * No Need to add a file type like .csv, .pdf etc.
+                        </p>
+                        <div className="italic text-lg flex flex-row items-center justify-start gap-5">
+                            <Input
+                                value={queryDownloadName}
+                                placeholder="Enter File Name"
+                                onChange={(e) => setQueryDownloadName(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                </Modal>
+            )}
         </div>
     )
 }
