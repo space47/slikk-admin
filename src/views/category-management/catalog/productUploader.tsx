@@ -1,112 +1,53 @@
 import Upload from '@/components/ui/Upload'
 import Button from '@/components/ui/Button'
-// import { HiOutlineCloudUpload } from 'react-icons/hi';
 import { FcImageFile } from 'react-icons/fc'
 import { useState } from 'react'
-// import axios from 'axios';
-import FormData from 'form-data'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+import { errorMessage, successMessage } from '@/utils/responseMessages'
+import { AxiosError } from 'axios'
+
+type UploadAction = 'create' | 'update'
 
 const ProductUploader = () => {
-    const [file, setFile] = useState(null)
+    const [file, setFile] = useState<File | null>(null)
+    const [loadingAction, setLoadingAction] = useState<UploadAction | null>(null)
 
-    const onFileUpload = (fileList: any) => {
-        console.log('File uploaded:', fileList[0])
-        setFile(fileList[0])
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
+
+    const onFileUpload = (fileList: File[]) => {
+        setFile(fileList[0] ?? null)
     }
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
-        (store) => store.company.currCompany,
-    )
 
-    const handleSave = async () => {
+    const uploadProductFile = async (action: UploadAction) => {
         if (!file) {
-            console.log('No file uploaded')
+            notification.error({ message: 'File is required' })
             return
         }
 
-        console.log('File to be uploaded:', file)
+        const formData = new FormData()
+        formData.append('catalogue_file', file)
+        formData.append('company', String(selectedCompany.id))
 
-        const data = new FormData()
-        data.append('catalogue_file', file)
-        data.append('company', selectedCompany.id)
-
-        const config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: 'products/bulkupload',
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-            data: data,
+        if (action === 'update') {
+            formData.append('action', 'bulk_update')
         }
 
         try {
-            const response = await axioisInstance(config)
-            console.log(
-                'File uploaded successfully:',
-                JSON.stringify(response.data),
-            )
+            setLoadingAction(action)
 
-            notification.success({
-                message: 'Success',
-                description:
-                    response?.data?.message || 'File uploaded successfully',
-            })
+            const response = await axioisInstance.post('products/bulkupload', formData)
+
+            successMessage(response)
             setFile(null)
         } catch (error) {
-            console.error('File upload error:', error)
-            notification.success({
-                message: 'failure',
-                description: 'File upload failed',
-            })
-        }
-    }
-
-    const handleUpdate = async () => {
-        if (!file) {
-            console.log('No file uploaded')
-            return
-        }
-
-        console.log('File to be uploaded:', file)
-
-        const data = new FormData()
-        data.append('catalogue_file', file)
-        data.append('company', selectedCompany.id)
-        data.append('action', 'bulk_update')
-
-        const config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: 'products/bulkupload',
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-            data: data,
-        }
-
-        try {
-            const response = await axioisInstance(config)
-            console.log(
-                'File uploaded successfully:',
-                JSON.stringify(response.data),
-            )
-
-            notification.success({
-                message: 'Success',
-                description:
-                    response?.data?.message || 'File uploaded successfully',
-            })
-            setFile(null)
-        } catch (error) {
-            console.error('File upload error:', error)
-            notification.success({
-                message: 'failure',
-                description: 'File upload failed',
-            })
+            if (error instanceof AxiosError) {
+                errorMessage(error)
+            }
+        } finally {
+            setLoadingAction(null)
         }
     }
 
@@ -118,20 +59,33 @@ const ProductUploader = () => {
                         <FcImageFile />
                     </div>
                     <p className="font-semibold">
-                        <span className="text-gray-800 dark:text-white">
-                            Drop your file here, or{' '}
-                        </span>
+                        <span className="text-gray-800 dark:text-white">Drop your file here, or </span>
                         <span className="text-blue-500">browse</span>
                     </p>
-                    <p className="mt-1 opacity-60 dark:text-white">
-                        Support: jpeg, png, gif, csv
-                    </p>
+                    <p className="mt-1 opacity-60 dark:text-white">Support: csv/xlsx</p>
                 </div>
             </Upload>
-            <div className="flex flex-row w-full space-x-[2%] items-center justify-center">
-                <Button onClick={handleSave}>Save</Button>
-                <Button>Download</Button>
-                <Button onClick={handleUpdate}>Update</Button>
+
+            <div className="flex justify-center gap-4">
+                <Button
+                    variant="twoTone"
+                    color="green"
+                    loading={loadingAction === 'create'}
+                    disabled={!!loadingAction}
+                    onClick={() => uploadProductFile('create')}
+                >
+                    Save
+                </Button>
+
+                <Button
+                    variant="twoTone"
+                    color="blue"
+                    loading={loadingAction === 'update'}
+                    disabled={!!loadingAction}
+                    onClick={() => uploadProductFile('update')}
+                >
+                    Update
+                </Button>
             </div>
         </div>
     )
