@@ -53,7 +53,8 @@ const GdnDetails = () => {
             notification.success({ message: 'Shipment created successfully from GDN' })
         }
         if (createShipmentResponse.isError) {
-            notification.error({ message: 'Failed to sync GDN' })
+            console.log(createShipmentResponse)
+            notification.error({ message: (createShipmentResponse.error as any).data.data || 'Failed to Create Shipment from GDN' })
         }
         setShowSyncModal(false)
     }, [createShipmentResponse.isError, createShipmentResponse.isSuccess])
