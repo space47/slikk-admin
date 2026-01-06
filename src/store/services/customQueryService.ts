@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import RtkQueryService from '@/services/RtkQueryService'
 import { CustomQueryResponseTypes } from '../types/customQuery.types'
 
@@ -28,6 +29,15 @@ export const customQueryService = RtkQueryService.injectEndpoints({
                     url: `/query/execute/List of tables`,
                     method: 'GET',
                     params: parameters,
+                }
+            },
+        }),
+        generateCustomQuery: builder.mutation<{ status: string; data: any[] }, Record<string, string>>({
+            query: (body) => {
+                return {
+                    url: `/query/execute/custom_report`,
+                    method: 'POST',
+                    body,
                 }
             },
         }),
