@@ -11,7 +11,6 @@ import { ridersService } from '@/store/services/riderServices'
 import { RiMotorbikeFill } from 'react-icons/ri'
 import { TaskDetails } from './TaskCommonType'
 import { calculateDistance } from '../riderDetails/RiderUtils/RiderDetailsColumns'
-import StoreSelectComponent from '@/common/StoreSelectComponent'
 
 type ModalProps = {
     showTaskModal: boolean
@@ -38,12 +37,10 @@ const TrackModal = ({
 }: ModalProps) => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
-    // const [ridersData, setRidersData] = useState<RiderProfile[]>([])
     const [selectedRiderMobile, setSelectedRiderMobile] = useState<string>('')
     const [globalFilter, setGlobalFilter] = useState<string | undefined>('')
     const [mobileFilter, setMobileFilter] = useState<string | undefined>('')
     const { riderDetails } = useAppSelector<RiderDetailType>((state) => state.riderDetails)
-    const [storeId, setStoreId] = useState<any>(null)
 
     console.log('task id is', taskId)
 
@@ -77,7 +74,6 @@ const TrackModal = ({
             const riderBody = {
                 action: 'assign_rider',
                 rider_mobile: selectedRiderMobile,
-                store_id: storeId?.id,
             }
 
             const field = isOrder ? taskId : storeData?.task_id
@@ -123,7 +119,7 @@ const TrackModal = ({
                 onOk={assignTask}
                 onCancel={handleCloseModal}
             >
-                <div className="flex flex-col h-full">
+                <div className="flex flex-col h-[60vh]">
                     <div className="text-xl font-bold text-red-700 mb-6 text-center">ASSIGN RIDER</div>
 
                     <div className="flex flex-col gap-4 mb-4">
@@ -147,7 +143,6 @@ const TrackModal = ({
                                 onChange={(e) => setMobileFilter(e.target.value)}
                             />
                         </div>
-                        <StoreSelectComponent isSingle label="Select Store" store={storeId} setStore={setStoreId} />
                     </div>
 
                     {riderDetails && (
