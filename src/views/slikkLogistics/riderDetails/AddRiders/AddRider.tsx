@@ -103,6 +103,7 @@ const AddRider = () => {
                 rider_delivery_type: riderProfile[0]?.rider_delivery_type,
                 store: riderProfile[0]?.store?.map((item: any) => item?.id)?.join(','),
                 rider_zone: riderProfile[0]?.zone,
+                delivery_type: riderProfile[0]?.delivery_type,
             }
         }
         return {
@@ -155,6 +156,7 @@ const AddRider = () => {
                 store_id: (values?.store as any)?.id || '',
                 rider_delivery_type: values?.rider_delivery_type || 'standard',
                 zone: values?.rider_zone || '',
+                delivery_type: values?.delivery_type,
             }
             if (isAddRider) {
                 ridersAdd(payload)
@@ -378,8 +380,8 @@ const AddRider = () => {
                                     <AddRiderMap
                                         setMarkLat={(lat) => setFieldValue('lat', lat)}
                                         setMarkLong={(lng) => setFieldValue('long', lng)}
-                                        markLat={values.lat}
-                                        markLong={values.long}
+                                        markLat={values.lat as number}
+                                        markLong={values.long as number}
                                     />
                                 </CommonAccordion>
                             </div>
