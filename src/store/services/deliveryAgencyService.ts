@@ -14,6 +14,7 @@ export const deliveryAgency = RtkQueryService.injectEndpoints({
                 if (params.is_active) parameters.is_active = params.is_active
                 if (params.delivery_type) parameters.delivery_type = params.delivery_type
                 if (params.id) parameters.id = params.id
+                if (params.view_type) parameters.view_type = params.view_type
                 return {
                     url: `/delivery_partner`,
                     method: 'GET',
