@@ -9,7 +9,6 @@ export const ProductTagFromFields = [
     { name: 'filter_position', label: 'Filter Position', type: 'number', section: 'filter' },
 
     // Flags
-    { name: 'is_update_field', label: 'Is Update Field', type: 'checkbox', section: 'flags' },
     { name: 'is_tag', label: 'Is Tag', type: 'checkbox', section: 'flags' },
     { name: 'is_filter', label: 'Is Filter', type: 'checkbox', section: 'flags' },
 ]

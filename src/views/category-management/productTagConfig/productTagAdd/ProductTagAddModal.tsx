@@ -23,7 +23,6 @@ const ProductTagAddModal = ({ isOpen, setIsOpen, setTagData }: props) => {
         filter_name: '',
         display_name: '',
         filter_position: '',
-        is_update_field: false,
         is_tag: false,
         is_filter: false,
         domains: [],
@@ -34,7 +33,6 @@ const ProductTagAddModal = ({ isOpen, setIsOpen, setTagData }: props) => {
             ...values,
             is_tag: Boolean(values.is_tag),
             is_filter: Boolean(values.is_filter),
-            is_update_field: Boolean(values.is_update_field),
         }
         setTagData((prev: any) => [...prev, updated])
         setIsOpen(false)
