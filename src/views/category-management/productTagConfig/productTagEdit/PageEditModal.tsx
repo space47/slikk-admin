@@ -24,7 +24,6 @@ const ProductTagEditModal = ({ isOpen, setIsOpen, particularRow, setParticularRo
         filter_name: particularRow?.filter_name,
         display_name: particularRow?.display_name,
         filter_position: particularRow?.filter_position,
-        is_update_field: particularRow?.is_update_field,
         product_field_name: particularRow?.product_field_name,
         domains: particularRow?.domains,
     }
@@ -34,7 +33,6 @@ const ProductTagEditModal = ({ isOpen, setIsOpen, particularRow, setParticularRo
             ...values,
             is_tag: values?.is_tag || false,
             is_filter: values?.is_filter || false,
-            is_update_field: values?.is_update_field || false,
         }
         const updatedRow = { ...particularRow, ...updatedValues }
         setParticularRow(updatedRow)
