@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, Checkbox, Dropdown, FormContainer, FormItem, Input, Select } from '@/components/ui'
+import { Checkbox, Dropdown, FormContainer, FormItem, Input, Select } from '@/components/ui'
 import { Field, FieldProps, Form, Formik } from 'formik'
 import React, { useEffect, useState, useMemo } from 'react'
 import { RiderFieldArray, RiderTypeArray, SearchRider } from './riderUtils'
@@ -12,20 +12,21 @@ import { useAppDispatch, useAppSelector } from '@/store'
 import { RiderDetailType, setRiderProfile } from '@/store/slices/riderDetails/riderDetails.slice'
 import { HiSearch } from 'react-icons/hi'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-import { DeliveryType, RiderAgency } from '../RiderDetailsCommon'
+import { DeliveryType, RIDER_TYPES, RiderAgency } from '../RiderDetailsCommon'
 import AddBulk from '../RiderComponents/AddBulk'
 import StoreSelectForm from '@/common/StoreSelectForm'
 import { riderZoneService } from '@/store/services/riderZoneService'
 import CommonAccordion from '@/common/CommonAccordion'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 import { deliveryAgency } from '@/store/services/deliveryAgencyService'
+import FormButton from '@/components/ui/Button/FormButton'
 
 const AddRider = () => {
     const dispatch = useAppDispatch()
     const [selectedRider, setSelectedRider] = useState<string | number>()
     const [ridersAdd, riderAddResponse] = ridersService.useAddRidersMutation()
     const [editRiders, riderEditResponse] = ridersService.useEditRidersMutation()
-    const [deliveryTypeArray, setDeliveryTypeArray] = useState<DeliveryType[]>([])
+    const [riderAgencyArray, setRiderAgencyArray] = useState<DeliveryType[]>([])
     const { riderProfile } = useAppSelector<RiderDetailType>((state) => state.riderDetails)
     const [isAddRider, setIsAddRider] = useState(false)
     const [searchInput, setSearchInput] = useState('')
@@ -39,15 +40,15 @@ const AddRider = () => {
 
     useEffect(() => {
         if (riderAgencyCall.isSuccess) {
-            setDeliveryTypeArray(
-                riderAgencyCall.data?.data?.map((item) => ({
-                    label: item.name || 'Slikk',
-                    value: item.name || 'slikk',
+            setRiderAgencyArray(
+                (riderAgencyCall.data as any)?.data?.map((item: any) => ({
+                    label: item || 'Slikk',
+                    value: item || 'slikk',
                 })),
             )
         }
         if (riderAgencyCall.isError) {
-            setDeliveryTypeArray(RiderAgency)
+            setRiderAgencyArray(RiderAgency)
         }
     }, [riderAgencyCall.isSuccess, riderAgencyCall.isError])
 
@@ -321,14 +322,16 @@ const AddRider = () => {
                                                 <Select
                                                     isClearable
                                                     isSearchable
-                                                    options={RiderAgency}
-                                                    value={RiderAgency.find((o) => o.value?.toLowerCase() === field.value?.toLowerCase())}
+                                                    options={riderAgencyArray}
+                                                    value={riderAgencyArray.find(
+                                                        (o) => o.value?.toLowerCase() === field.value?.toLowerCase(),
+                                                    )}
                                                     onChange={(opt) => form.setFieldValue(field.name, opt?.value || '')}
                                                 />
                                             )}
                                         </Field>
                                     </FormItem>
-                                    <CommonSelect name="delivery_type" options={deliveryTypeArray} label="Delivery Type" />
+                                    <CommonSelect name="delivery_type" options={RIDER_TYPES} label="Delivery Type" />
                                 </div>
                             </div>
 
@@ -383,11 +386,7 @@ const AddRider = () => {
                         </FormContainer>
 
                         {/* ================= Submit ================= */}
-                        <FormContainer className="mt-10 flex justify-end bg-white p-4 rounded-xl shadow-lg">
-                            <Button variant="accept" type="submit" className="px-8 py-3 text-lg">
-                                Submit
-                            </Button>
-                        </FormContainer>
+                        <FormButton value="Submit" isSpinning={riderAddResponse.isLoading || riderEditResponse.isLoading} />
                     </Form>
                 )}
             </Formik>

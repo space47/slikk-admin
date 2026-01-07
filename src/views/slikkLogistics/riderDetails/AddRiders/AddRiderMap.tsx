@@ -143,7 +143,11 @@ const AddRiderMap = ({ setMarkLat, setMarkLong, markLat, markLong }: RiderAddPro
 
             <div className="flex mb-2 mt-2">{locationName}</div>
             <div className="flex flex-col gap-10 xl:flex-row">
-                <MapContainer center={[markLat, markLong]} zoom={13} style={{ height: '70vh', width: '100%', cursor: 'pointer' }}>
+                <MapContainer
+                    center={[markLat, markLong]}
+                    zoom={13}
+                    style={{ height: '70vh', width: '100%', cursor: 'pointer', zIndex: 1 }}
+                >
                     <SetView center={[markLat, markLong]} />
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                     <LocationMarker />
