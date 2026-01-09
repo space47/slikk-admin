@@ -14,7 +14,9 @@ import TabNav from '@/components/ui/Tabs/TabNav'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 import { useDebounceInput } from '@/commonHooks/useDebounceInput'
 import RtvEditModal from './RtvEditModal'
-import { FaSync } from 'react-icons/fa'
+import { FaSync, FaTimesCircle } from 'react-icons/fa'
+import DialogConfirm from '@/common/DialogConfirm'
+import { textParser } from '@/common/textParser'
 
 const RtvDetails = () => {
     const { rtv_number } = useParams()
@@ -27,6 +29,7 @@ const RtvDetails = () => {
     const [pageSize, setPageSize] = useState(10)
     const [tabValue, setTabValue] = useState('false')
     const [searchInput, setSearchInput] = useState('')
+    const [isStatusConformation, setIsStatusConformation] = useState('')
 
     const { debounceFilter } = useDebounceInput({ globalFilter: searchInput, delay: 500 })
 
@@ -79,10 +82,10 @@ const RtvDetails = () => {
 
     useEffect(() => {
         if (updateResponse?.isSuccess) {
-            notification.success({ message: updateResponse?.data?.message || 'Successfully Added Rtv Number' })
+            notification.success({ message: updateResponse?.data?.message || 'Successfully Updated Rtv Number' })
         }
         if (updateResponse?.isError) {
-            notification.error({ message: (updateResponse?.error as any)?.data?.message || 'Failed to Add Rtv Number' })
+            notification.error({ message: (updateResponse?.error as any)?.data?.message || 'Failed to Update Rtv Number' })
         }
     }, [updateResponse.isSuccess, updateResponse.isError])
 
@@ -117,6 +120,20 @@ const RtvDetails = () => {
         })
     }
 
+    const DetailsData = [
+        { label: 'Company Name', value: rtvData?.company?.name || '-' },
+        { label: 'Store Name', value: rtvData?.store?.name || '-' },
+        { label: 'Document Number', value: rtvData?.document_number || '-' },
+        { label: 'Document Date', value: rtvData?.document_date ? new Date(rtvData.document_date).toLocaleDateString() : '-' },
+        { label: 'Origin Address', value: rtvData?.origin_address || '-' },
+        { label: 'Destination Address', value: textParser(rtvData?.destination_address || '') || '-' },
+        { label: 'Total SKUs', value: rtvData?.total_sku ?? 0 },
+        { label: 'Total Quantity', value: rtvData?.total_quantity ?? 0 },
+        { label: 'Quantity Picked', value: rtvData?.quantity_picked ?? 0 },
+    ]
+
+    const handleStatus = () => {}
+
     return (
         <div className="flex flex-col gap-8 p-6 bg-gray-50 dark:bg-gray-900 rounded-2xl shadow-lg">
             {rtvSuccess ? (
@@ -131,45 +148,14 @@ const RtvDetails = () => {
                             </Button>
                         </div>
                     </div>
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-3 gap-x-6 text-sm">
-                        <div>
-                            <span className="font-medium text-gray-500 dark:text-gray-400">Company Name:</span>
-                            <p className="text-gray-800 dark:text-gray-100">{rtvData?.company?.name || '-'}</p>
-                        </div>
-                        <div>
-                            <span className="font-medium text-gray-500 dark:text-gray-400">Store Name:</span>
-                            <p className="text-gray-800 dark:text-gray-100">{rtvData?.store?.name || '-'}</p>
-                        </div>
-                        <div>
-                            <span className="font-medium text-gray-500 dark:text-gray-400">Document Number:</span>
-                            <p className="text-gray-800 dark:text-gray-100">{rtvData?.document_number || '-'}</p>
-                        </div>
-                        <div>
-                            <span className="font-medium text-gray-500 dark:text-gray-400">Document Date:</span>
-                            <p className="text-gray-800 dark:text-gray-100">
-                                {rtvData?.document_date ? new Date(rtvData.document_date).toLocaleDateString() : '-'}
-                            </p>
-                        </div>
-                        <div>
-                            <span className="font-medium text-gray-500 dark:text-gray-400">Origin Address:</span>
-                            <p className="text-gray-800 dark:text-gray-100">{rtvData?.origin_address || '-'}</p>
-                        </div>
-                        <div>
-                            <span className="font-medium text-gray-500 dark:text-gray-400">Destination Address:</span>
-                            <p className="text-gray-800 dark:text-gray-100">{rtvData?.destination_address || '-'}</p>
-                        </div>
-                        <div>
-                            <span className="font-medium text-gray-500 dark:text-gray-400">Total SKUs:</span>
-                            <p className="text-gray-800 dark:text-gray-100">{rtvData?.total_sku ?? 0}</p>
-                        </div>
-                        <div>
-                            <span className="font-medium text-gray-500 dark:text-gray-400">Total Quantity:</span>
-                            <p className="text-gray-800 dark:text-gray-100">{rtvData?.total_quantity ?? 0}</p>
-                        </div>
-                        <div>
-                            <span className="font-medium text-gray-500 dark:text-gray-400">Quantity Picked:</span>
-                            <p className="text-gray-800 dark:text-gray-100">{rtvData?.quantity_picked ?? 0}</p>
-                        </div>
+                        {DetailsData?.map((item, idx) => (
+                            <div key={idx}>
+                                <span className="font-medium text-gray-500 dark:text-gray-400">{item?.label}:</span>
+                                <p className="text-gray-800 dark:text-gray-100">{item?.value || '-'}</p>
+                            </div>
+                        ))}
                     </div>
                 </div>
             ) : (
@@ -205,6 +191,25 @@ const RtvDetails = () => {
                     >
                         Add Picker
                     </Button>
+                    {data?.status !== 'approved' && (
+                        <>
+                            <Button
+                                variant={data?.status === 'created' ? 'accept' : 'pending'}
+                                size="sm"
+                                onClick={() => setIsStatusConformation('forward')}
+                            >
+                                {data?.status === 'created' ? 'Approve' : 'Create'}
+                            </Button>
+                            <Button
+                                variant="reject"
+                                size="sm"
+                                icon={<FaTimesCircle className="mr-1" />}
+                                onClick={() => setIsStatusConformation('reject')}
+                            >
+                                Reject
+                            </Button>
+                        </>
+                    )}
                     <Button size="sm" variant="twoTone" onClick={handleCreateGDN}>
                         {gdnResponse?.isLoading ? <Spinner size={20} color="blue" /> : 'Create GDN from RTV'}
                     </Button>
@@ -258,6 +263,24 @@ const RtvDetails = () => {
                     rtvData={currentRtvData as Rtv_Products}
                     setIsOpen={setShowEditModal}
                     refetch={refetch}
+                />
+            )}
+            {isStatusConformation === 'reject' && (
+                <DialogConfirm
+                    IsDelete
+                    IsOpen={!!isStatusConformation}
+                    closeDialog={() => setIsStatusConformation('')}
+                    onDialogOk={handleStatus}
+                />
+            )}
+            {isStatusConformation === 'forward' && (
+                <DialogConfirm
+                    label="Are you sure you want to change the status of this RTV"
+                    headingName="Change Status"
+                    isProceed
+                    IsOpen={!!isStatusConformation}
+                    closeDialog={() => setIsStatusConformation('')}
+                    onDialogOk={handleStatus}
                 />
             )}
         </div>
