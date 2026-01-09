@@ -137,6 +137,19 @@ export const COUPON_SERIES_FORM = [
         component: { Input },
     },
     {
+        label: 'Customer Registered Start',
+        classname: 'col-span-1 w-full',
+        type: 'date',
+        name: 'extra_attributes.user_filters.registration_date.from_date',
+    },
+    {
+        label: 'Customer Registered End',
+        classname: 'col-span-1 w-full',
+        type: 'date',
+        name: 'extra_attributes.user_filters.registration_date.to_date',
+    },
+
+    {
         label: 'Max Groups',
         classname: 'col-span-1 w-full',
         type: 'number',

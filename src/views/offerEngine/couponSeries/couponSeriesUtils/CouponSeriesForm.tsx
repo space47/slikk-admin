@@ -10,6 +10,7 @@ import { CiCircleQuestion } from 'react-icons/ci'
 import dayjs from 'dayjs'
 import GetEvenNames from '@/common/GetEvenNames'
 import StoreSelectForm from '@/common/StoreSelectForm'
+import FullDateForm from '@/common/FullDateForm'
 
 interface CouponProps {
     values: any
@@ -211,26 +212,32 @@ const CouponSeriesForm = ({ values, setFieldValue, setFilterId, filterValue, set
                 </div>
 
                 {/* Remaining Fields */}
-                {COUPON_SERIES_FORM.slice(5).map((item, key) => (
-                    <FormItem key={key} label="" className={item.classname}>
-                        <div className="flex items-center gap-2 mb-2">
-                            <span className="font-medium text-gray-700">{item.label}</span>
-                            {item?.tooltip && (
-                                <Tooltip title={item.tooltip}>
-                                    <CiCircleQuestion className="text-yellow-600 text-lg" />
-                                </Tooltip>
-                            )}
-                        </div>
-                        <Field
-                            type={item.type}
-                            name={item.name}
-                            placeholder={item.placeholder}
-                            component={item?.type === 'checkbox' ? Checkbox : Input}
-                            min={item?.min || 0}
-                            className="w-full"
-                        />
-                    </FormItem>
-                ))}
+                {COUPON_SERIES_FORM.slice(5).map((item, key) => {
+                    return item.type === 'date' ? (
+                        <>
+                            <FullDateForm customCss="w-full" fieldname={item.name} label={item.label} name={item.name} />
+                        </>
+                    ) : (
+                        <FormItem key={key} label="" className={item.classname}>
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="font-medium text-gray-700">{item.label}</span>
+                                {item?.tooltip && (
+                                    <Tooltip title={item.tooltip}>
+                                        <CiCircleQuestion className="text-yellow-600 text-lg" />
+                                    </Tooltip>
+                                )}
+                            </div>
+                            <Field
+                                type={item.type}
+                                name={item.name}
+                                placeholder={item.placeholder}
+                                component={item?.type === 'checkbox' ? Checkbox : Input}
+                                min={item?.min || 0}
+                                className="w-full"
+                            />
+                        </FormItem>
+                    )
+                })}
             </FormContainer>
         </Form>
     )
