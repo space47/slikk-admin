@@ -103,6 +103,7 @@ export type SalesOrderDetailsResponse = {
     utm_params: any
     other_charges_data?: any
     reference_return?: string | number | undefined
+    tnb_return_otp?: string
 }
 
 export type ShippingInfoProps = {
@@ -123,6 +124,7 @@ export type ShippingInfoProps = {
     rider: Record<string, string | number | any>
     logistic_partner: any
     delivery_type: string
+    tnb_return_otp?: string
     setShowRiderModal: (x: boolean) => void
 }
 
