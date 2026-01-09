@@ -21,37 +21,43 @@ const WhatsAppForm = ({ values, messageParticular }: props) => {
                         name="config_data.body_config"
                         render={(arrayHelpers) => (
                             <div>
-                                {values?.config_data?.body_config?.map((config: any, index: any) => (
-                                    <div key={index} className="flex items-center space-x-4 mb-2">
-                                        <div className="">{`{${config.textParam}}`}</div>
-                                        <Field
-                                            name={`config_data.body_config[${index}].text`}
-                                            as="select"
-                                            className="flex-1 border rounded px-2 py-1"
-                                        >
-                                            <option disabled selected value="">
-                                                Examples
-                                            </option>
-                                            {ParametersArray.map((item, key) => (
-                                                <option key={key} value={`{${item}}`}>
-                                                    {item}
+                                {values?.config_data?.body_config ? (
+                                    values?.config_data?.body_config?.map((config: any, index: any) => (
+                                        <div key={index} className="flex items-center space-x-4 mb-2">
+                                            <div className="">{`{${config.textParam}}`}</div>
+                                            <Field
+                                                name={`config_data.body_config[${index}].text`}
+                                                as="select"
+                                                className="flex-1 border rounded px-2 py-1"
+                                            >
+                                                <option disabled selected value="">
+                                                    Examples
                                                 </option>
-                                            ))}
-                                        </Field>
-                                        <Field
-                                            name={`config_data.body_config[${index}].type`}
-                                            as="select"
-                                            className="flex-1 border rounded px-2 py-1"
-                                        >
-                                            <option value="text">Text</option>
-                                            <option value="image">Image</option>
-                                            <option value="video">Video</option>
-                                        </Field>
-                                        <Button type="button" variant="reject" onClick={() => arrayHelpers.remove(index)}>
-                                            Remove
-                                        </Button>
-                                    </div>
-                                ))}
+                                                {ParametersArray.map((item, key) => (
+                                                    <option key={key} value={`{${item}}`}>
+                                                        {item}
+                                                    </option>
+                                                ))}
+                                            </Field>
+                                            <Field
+                                                name={`config_data.body_config[${index}].type`}
+                                                as="select"
+                                                className="flex-1 border rounded px-2 py-1"
+                                            >
+                                                <option value="text">Text</option>
+                                                <option value="image">Image</option>
+                                                <option value="video">Video</option>
+                                            </Field>
+                                            <Button type="button" variant="reject" onClick={() => arrayHelpers.remove(index)}>
+                                                Remove
+                                            </Button>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <>
+                                        <p className="flex items-start mb-4 mt-6 text-green-500">No Body Found for this template</p>
+                                    </>
+                                )}
                             </div>
                         )}
                     />
@@ -104,7 +110,9 @@ const WhatsAppForm = ({ values, messageParticular }: props) => {
                                             </Button>
                                         </div>
                                     ))
-                                ) : null}
+                                ) : (
+                                    <p className="flex items-start mb-4 mt-6 text-green-500">No Headers Found for this template</p>
+                                )}
                             </div>
                         )}
                     />
@@ -158,7 +166,9 @@ const WhatsAppForm = ({ values, messageParticular }: props) => {
                             )}
                         />
                     </FormItem>
-                ) : null}
+                ) : (
+                    <p className="flex items-start mb-4 mt-6 text-green-500">No Button Found for this template</p>
+                )}
             </>
         </div>
     )
