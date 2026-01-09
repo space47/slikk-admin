@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, FormContainer } from '@/components/ui'
+import { FormContainer } from '@/components/ui'
 import { Form, Formik } from 'formik'
 import React, { useEffect, useState } from 'react'
 import CouponSeriesForm from '../couponSeriesUtils/CouponSeriesForm'
@@ -7,6 +7,7 @@ import { couponSeriesService } from '@/store/services/couponSeriesService'
 import { handleimage } from '@/common/handleImage'
 import { notification } from 'antd'
 import { useNavigate } from 'react-router-dom'
+import FormButton from '@/components/ui/Button/FormButton'
 
 const CouponSeriesAdd = () => {
     const navigate = useNavigate()
@@ -81,6 +82,12 @@ const CouponSeriesAdd = () => {
                     terms_and_conditions: values?.extra_attributes?.terms_and_conditions,
                     max_order_count: values?.extra_attributes?.max_order_count ?? '',
                     min_order_count: values?.extra_attributes?.min_order_count ?? '',
+                    user_filters: {
+                        registration_date: {
+                            from_date: values?.extra_attributes?.user_filters?.registration_date?.from_date,
+                            to_date: values?.extra_attributes?.user_filters?.registration_date?.to_date,
+                        },
+                    },
                 },
             }).unwrap()
         } catch (error: any) {
@@ -120,11 +127,7 @@ const CouponSeriesAdd = () => {
                                 setExcludeFilterId={setExcludeFilterId}
                             />
                         </FormContainer>
-                        <FormContainer>
-                            <Button variant="solid" type="submit" className="bg-blue-500 text-white">
-                                Submit
-                            </Button>
-                        </FormContainer>
+                        <FormButton value="Add" isSpinning={addCouponseriesresponse.isLoading} />
                     </Form>
                 )}
             </Formik>
