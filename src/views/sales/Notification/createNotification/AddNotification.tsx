@@ -15,11 +15,12 @@ import { notificationTypeArray } from './createNotification.common'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { eventNameService } from '@/store/services/eventNameSerices'
 import { EventNamesSliceType, setEventNamesData } from '@/store/slices/eventNameSlice/eventName.slice'
-import { FaEdit, FaPlusCircle } from 'react-icons/fa'
+import { FaEdit, FaPaperPlane, FaPlusCircle, FaRedo } from 'react-icons/fa'
 import EventNamesModal from '../EventNamesModal'
 import EditEventNamesModal from '../EditEventNameModal'
 import { Checkbox } from '@/components/ui'
 import { NotificationTypeNamed } from '../editNotification/notification'
+import { FaMessage } from 'react-icons/fa6'
 
 const AddNotification = () => {
     const dispatch = useAppDispatch()
@@ -28,13 +29,8 @@ const AddNotification = () => {
     const [selectedTemplateName, setSelectedTemplateName] = useState<string>()
     const { eventNamesData } = useAppSelector<EventNamesSliceType>((state) => state.eventNames)
     const [isModalOpen, setIsModalOpen] = useState({ add: false, edit: false })
+    const [loadingSelectedMessage, setLoadingSelectedMessage] = useState(false)
     const { data: eventNameList, isSuccess, refetch: refetchingData } = eventNameService.useEventNamesDataQuery({})
-
-    // useEffect(() => {
-    //     if (isModalOpen.add === false && isModalOpen.edit === false) {
-    //         refetch()
-    //     }
-    // }, [refetch, isModalOpen])
 
     useEffect(() => {
         if (isSuccess) {
@@ -71,11 +67,14 @@ const AddNotification = () => {
         if (selectedTemplateName) {
             params.name = selectedTemplateName
             try {
+                setLoadingSelectedMessage(true)
                 const response = await axios.post(`https://sw507e3znc.execute-api.ap-south-1.amazonaws.com/api/get_message_templates`, body)
                 const data = response?.data?.data?.data
                 setMessageParticular(data?.find((item: any) => item?.name === selectedTemplateName))
             } catch (error) {
                 console.log(error)
+            } finally {
+                setLoadingSelectedMessage(false)
             }
         }
     }
@@ -168,8 +167,6 @@ const AddNotification = () => {
             message: plainTextMessage,
             notification_type: Object.keys(messageParticular).length > 0 ? 'WHATSAPP' : values.notification_type,
         }
-        console.log('FORMDATA', formData)
-
         try {
             const response = await axioisInstance.post(`/notifications/config`, formData)
             notification.success({
@@ -200,13 +197,22 @@ const AddNotification = () => {
     }
 
     return (
-        <div>
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden relative">
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 to-blue-700"></div>
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                 {({ values, resetForm }) => (
-                    <Form className="w-2/3">
+                    <Form className="p-8">
+                        <div className="mb-8">
+                            <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2 mb-6">
+                                <FaMessage className="text-blue-600" />
+                                Edit Notification Configuration
+                            </h2>
+                        </div>
+
                         <FormContainer>
-                            <FormContainer className="grid grid-cols-1 gap-10">
-                                <FormItem label="Notification Type" className="col-span-1 w-1/2">
+                            {/* Header Section */}
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 p-6 bg-gray-50 rounded-xl border border-gray-100">
+                                <FormItem label="Notification Type" className="col-span-1">
                                     <Field name="notification_type">
                                         {({ field, form }: FieldProps<any>) => (
                                             <Select
@@ -215,83 +221,105 @@ const AddNotification = () => {
                                                 options={notificationTypeArray}
                                                 value={notificationTypeArray.find((option) => option.value === field.value)}
                                                 onChange={(option) => form.setFieldValue(field.name, option?.value)}
+                                                placeholder="Select type..."
+                                                className="w-full"
                                             />
                                         )}
                                     </Field>
                                 </FormItem>
+
                                 {values.notification_type === 'WHATSAPP' || Object.keys(messageParticular).length > 0 ? (
                                     <>
-                                        <FormItem label="Template Name/Id">
-                                            <div>
+                                        <FormItem label="Template Name/ID" className="col-span-1">
+                                            <div className="relative">
                                                 <select
-                                                    defaultValue={'SELECT'}
                                                     value={selectedTemplateName}
-                                                    className="flex-1 border rounded px-2 py-1"
+                                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white shadow-sm"
                                                     onChange={(e) => setSelectedTemplateName(e.target.value)}
                                                 >
-                                                    <option key={'SELECT'} value={'SELECT'} disabled={true}>
-                                                        SELECT ID
+                                                    <option key={'SELECT'} value={'SELECT'} disabled className="text-gray-400">
+                                                        SELECT TEMPLATE
                                                     </option>
                                                     {messageTemplateData.map((item: any, index: number) => (
-                                                        <option key={index} value={item.name}>
+                                                        <option key={index} value={item.name} className="py-2 hover:bg-blue-50">
                                                             {item.name}
                                                         </option>
                                                     ))}
                                                 </select>
+                                                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+                                                    <span className="text-sm">▼</span>
+                                                </div>
                                             </div>
                                         </FormItem>
                                     </>
                                 ) : (
-                                    <>
-                                        <FormItem label="Template Name/Id" className="">
-                                            <Field
-                                                type="text"
-                                                name="template_id"
-                                                placeholder="Enter template name or id"
-                                                component={Input}
-                                            />
-                                        </FormItem>
-                                    </>
-                                )}
-
-                                {Object.keys(messageParticular).length > 0 && (
-                                    <FormItem label="Language" className="">
-                                        <Field type="text" name="language" placeholder="Enter Language" component={Input} />
+                                    <FormItem label="Template Name/ID" className="col-span-1">
+                                        <Field
+                                            type="text"
+                                            name="template_id"
+                                            placeholder="Enter template name or id"
+                                            component={Input}
+                                            className="w-full"
+                                        />
                                     </FormItem>
                                 )}
-                            </FormContainer>
-                            {Object.keys(messageParticular).length > 0 && (
-                                <WhatsAppForm values={values} messageParticular={messageParticular} />
+                            </div>
+                            {loadingSelectedMessage && (
+                                <div className="mt-4 mb-7 flex justify-center items-center">
+                                    <div className="text-blue-500 animate-ping">Loading Data...</div>
+                                </div>
                             )}
+                            {Object.keys(messageParticular).length > 0 && (
+                                <div className="mb-8 p-6 bg-blue-50 rounded-xl border border-blue-200">
+                                    <FormItem label="Language" className="w-1/2">
+                                        <Field
+                                            type="text"
+                                            name="language"
+                                            placeholder="Enter Language"
+                                            component={Input}
+                                            className="w-full"
+                                        />
+                                    </FormItem>
+                                </div>
+                            )}
+                            {Object.keys(messageParticular).length > 0 && (
+                                <div className="mb-8">
+                                    <WhatsAppForm values={values} messageParticular={messageParticular} />
+                                </div>
+                            )}
+                            <div className="mb-8 p-6 bg-white rounded-xl border border-gray-200 shadow-sm">
+                                <FormItem label="Message Content" labelClass="!justify-start" className="w-full">
+                                    <Field name="message">
+                                        {({ field, form }: FieldProps) => (
+                                            <div className="space-y-4">
+                                                <div className="border border-gray-300 rounded-lg overflow-hidden">
+                                                    <RichTextEditor
+                                                        value={field.value}
+                                                        onChange={(val) => form.setFieldValue(field.name, val)}
+                                                    />
+                                                </div>
 
-                            <FormItem label="Message" labelClass="!justify-start" className="col-span-1 w-full">
-                                <Field name="message">
-                                    {({ field, form }: FieldProps) => (
-                                        <>
-                                            <RichTextEditor
-                                                value={field.value}
-                                                onChange={(val) => {
-                                                    form.setFieldValue(field.name, val)
-                                                }}
-                                            />
-                                            <div className="flex gap-2 mt-3 flex-wrap">
-                                                {NotificationTypeNamed.map((item, index) => (
-                                                    <button
-                                                        key={index}
-                                                        type="button"
-                                                        className="flex items-center gap-2 mb-5 bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded-xl cursor-pointer"
-                                                        onClick={() => handleInsertVariable(field, form, item)}
-                                                    >
-                                                        {item}
-                                                    </button>
-                                                ))}
+                                                <div className="mt-4">
+                                                    <p className="text-sm text-gray-600 mb-3">Available Variables:</p>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {NotificationTypeNamed.map((item, index) => (
+                                                            <button
+                                                                key={index}
+                                                                type="button"
+                                                                className="px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-50 hover:from-gray-200 hover:to-gray-100 text-gray-700 rounded-lg text-sm font-medium border border-gray-300 hover:border-gray-400 transition-all duration-200 flex items-center gap-2 shadow-sm hover:shadow"
+                                                                onClick={() => handleInsertVariable(field, form, item)}
+                                                            >
+                                                                <span className="text-blue-600 font-mono">{`{${item}}`}</span>
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </>
-                                    )}
-                                </Field>
-                            </FormItem>
-
-                            <FormItem>
+                                        )}
+                                    </Field>
+                                </FormItem>
+                            </div>
+                            <div className="mb-8 p-6 bg-gray-50 rounded-xl border border-gray-100">
                                 <FormItem asterisk label="EVENT NAMES" className="col-span-1 w-1/2">
                                     <div className="flex items-center gap-2 mb-5">
                                         <span onClick={() => setIsModalOpen({ ...isModalOpen, add: true })}>
@@ -302,43 +330,43 @@ const AddNotification = () => {
                                         </span>
                                     </div>
                                     <Field name="event_name">
-                                        {({ field, form }: FieldProps<any>) => {
-                                            return (
-                                                <Select
-                                                    isClearable
-                                                    field={field}
-                                                    form={form}
-                                                    options={EventNamesArray || []}
-                                                    value={EventNamesArray?.find((option) => option.value === field.value)}
-                                                    onChange={(newVal) => {
-                                                        console.log(newVal?.value)
-                                                        form.setFieldValue(field.name, newVal?.value)
-                                                    }}
-                                                />
-                                            )
-                                        }}
+                                        {({ field, form }: FieldProps<any>) => (
+                                            <Select
+                                                isClearable
+                                                field={field}
+                                                form={form}
+                                                options={EventNamesArray || []}
+                                                value={EventNamesArray?.find((option) => option.value === field.value)}
+                                                onChange={(newVal) => form.setFieldValue(field.name, newVal?.value)}
+                                                placeholder="Select event name..."
+                                                className="w-full"
+                                            />
+                                        )}
                                     </Field>
                                 </FormItem>
-                                {NotificationARRAY.map((item, key) => (
-                                    <FormItem key={key} label={item.label} className={item.classname}>
-                                        <Field
-                                            type={item.type}
-                                            name={item.name}
-                                            placeholder={item.placeholder}
-                                            component={item?.type === 'checkbox' ? Checkbox : Input}
-                                        />
-                                    </FormItem>
-                                ))}
-                            </FormItem>
-                        </FormContainer>
-                        <FormContainer className="flex justify-end mt-5">
-                            <Button type="reset" className="mr-2 bg-gray-600" onClick={() => resetForm()}>
-                                Reset
-                            </Button>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {NotificationARRAY.map((item, key) => (
+                                        <FormItem key={key} label={item.label} className={item.classname}>
+                                            <Field
+                                                type={item.type}
+                                                name={item.name}
+                                                placeholder={item.placeholder}
+                                                component={item?.type === 'checkbox' ? Checkbox : Input}
+                                                className="w-full"
+                                            />
+                                        </FormItem>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="flex flex-col sm:flex-row justify-end gap-4 pt-8 border-t border-gray-200">
+                                <Button type="button" variant="default" onClick={() => resetForm()} icon={<FaRedo />}>
+                                    Reset Form
+                                </Button>
 
-                            <Button variant="solid" type="submit" className=" text-white">
-                                Submit
-                            </Button>
+                                <Button type="submit" variant="solid" icon={<FaPaperPlane />}>
+                                    Update Notification
+                                </Button>
+                            </div>
                         </FormContainer>
                     </Form>
                 )}
