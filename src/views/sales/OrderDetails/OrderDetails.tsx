@@ -212,6 +212,7 @@ const OrderDetails = () => {
                                                 data={data.logistic}
                                                 logistic_partner={data.logistic?.partner}
                                                 delivery_type={data.delivery_type}
+                                                tnb_return_otp={data?.tnb_return_otp}
                                                 setShowRiderModal={setShowRiderData}
                                                 rider={data.rider}
                                             />
