@@ -14,7 +14,7 @@ import { setUser, signInSuccess } from '../slices/auth'
 import { access } from 'fs'
 import { notification } from 'antd'
 
-export const validatePhoneNumber = (mobileNumber: string) => async (dispatch: any) => {
+export const validatePhoneNumber = (mobileNumber: string, channel?: string) => async (dispatch: any) => {
     try {
         console.log(loginRequest)
         dispatch({
@@ -26,6 +26,7 @@ export const validatePhoneNumber = (mobileNumber: string) => async (dispatch: an
         const { data }: any = await axioisInstance.post('dashboard/login', {
             type: 'login',
             mobile: mobileNumber,
+            channel,
         })
 
         dispatch({
@@ -33,6 +34,7 @@ export const validatePhoneNumber = (mobileNumber: string) => async (dispatch: an
             payload: {
                 mobile: mobileNumber,
                 message: data.message,
+                channel: channel,
                 signup_done: data.show_profile_page,
             },
         })
