@@ -76,6 +76,7 @@ const ReturnProductsDetails = ({ task_id }: { task_id: any }) => {
     const [isReschedule, setIsReschedule] = useState(false)
     const [isQcDetails, setIsQcDetails] = useState(false)
     const [particularSkuForQc, setParticularSkuForQc] = useState('')
+    const hasOutForPickup = returnOrder?.returnOrders?.log?.some((item) => item.status?.toLowerCase() === 'out_for_pickup')
     const navigate = useNavigate()
 
     const columns = [
@@ -157,21 +158,23 @@ const ReturnProductsDetails = ({ task_id }: { task_id: any }) => {
                 <div className="flex xl:justify-end justify-center mr-7 ">
                     <div className="flex gap-3 xl:flex-row flex-col ">
                         <div>
-                            <button
-                                className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-lg transition duration-300 transform hover:scale-105  w-full"
-                                onClick={handleCancelOrder}
-                            >
-                                CANCEL
-                            </button>
+                            {!hasOutForPickup && (
+                                <button
+                                    className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-lg transition duration-300 transform hover:scale-105  w-full"
+                                    onClick={handleCancelOrder}
+                                >
+                                    CANCEL
+                                </button>
+                            )}
                         </div>
-                        <div>
+                        {/* <div>
                             <button
                                 className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-lg transition duration-300 transform hover:scale-105  w-full"
                                 onClick={() => setIsReschedule(true)}
                             >
                                 Reschedule
                             </button>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             ) : (
