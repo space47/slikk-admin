@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useMemo } from 'react'
 import Loading from '@/components/shared/Loading'
-import Container from '@/components/shared/Container'
 import OrderProducts from './components/OrderProducts'
 import PaymentSummary from './components/PaymentSummary'
 import ShippingInfo from './components/ShippingInfo'
@@ -212,6 +211,7 @@ const OrderDetails = () => {
                                     <div className="bg-white shadow-lg p-6 rounded-lg dark:bg-gray-900">
                                         <ShippingInfo
                                             data={data.logistic}
+                                            tnb_return_otp={data?.tnb_return_otp}
                                             logistic_partner={data.logistic?.partner}
                                             delivery_type={data.delivery_type}
                                             setShowRiderModal={setShowRiderData}
