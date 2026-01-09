@@ -10,6 +10,8 @@ interface props {
 }
 
 const WhatsAppForm = ({ values, messageParticular }: props) => {
+    console.log('message paticulkar', values)
+
     return (
         <div>
             <>
@@ -109,9 +111,7 @@ const WhatsAppForm = ({ values, messageParticular }: props) => {
                 </FormItem>
 
                 {/* Button Config */}
-                {messageParticular?.components
-                    ?.filter((comp: any) => comp.type === 'BUTTONS')
-                    ?.some((comp: any) => comp.buttons?.some((btn: any) => btn.example)) ? (
+                {values?.config_data?.button_config ? (
                     <FormItem label="Button Config" className="w-full mt-5">
                         <FieldArray
                             name="config_data.button_config"

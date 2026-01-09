@@ -259,14 +259,6 @@ const EditNotification = () => {
 
                                 <FormItem>
                                     <FormItem asterisk label="EVENT NAMES" className="col-span-1 w-1/2">
-                                        {/* <div className="flex items-center gap-2 mb-5">
-                                            <span onClick={() => setIsModalOpen({ ...isModalOpen, add: true })}>
-                                                <FaPlusCircle className="text-xl text-green-500 cursor-pointer" />
-                                            </span>
-                                            <span onClick={() => setIsModalOpen({ ...isModalOpen, edit: true })}>
-                                                <FaEdit className="text-xl text-blue-600 cursor-pointer" />
-                                            </span>
-                                        </div> */}
                                         <Field name="event_name">
                                             {({ field, form }: FieldProps<any>) => {
                                                 return (
