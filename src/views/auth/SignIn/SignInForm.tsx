@@ -61,6 +61,8 @@ const SignInForm = (props: SignInFormProps) => {
         })
     }
 
+    console.log('props is', props)
+
     return (
         <div className={className}>
             {message && (

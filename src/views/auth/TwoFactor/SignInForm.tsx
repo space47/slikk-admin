@@ -1,16 +1,15 @@
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import { FormItem, FormContainer } from '@/components/ui/Form'
-import Alert from '@/components/ui/Alert'
-import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
 import useAuth from '@/utils/hooks/useAuth'
 import { Field, Form, Formik } from 'formik'
 import * as Yup from 'yup'
 import type { CommonProps } from '@/@types/common'
 import { SignInTwoFactor } from '@/@types/auth'
-import { useState } from 'react'
 import SignIn from '../SignIn/SignIn'
 import { useAppSelector } from '@/store'
+import { FaWhatsapp } from 'react-icons/fa'
+import { MdOutlineSms } from 'react-icons/md'
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
@@ -30,15 +29,13 @@ const validationSchema = Yup.object().shape({
 
 const SignInForm = (props: SignInFormProps) => {
     const { className } = props
-    const [message, setMessage] = useTimeOutMessage()
-    const [isAuth, setAuth] = useState(false)
+
     const selector = useAppSelector((state) => state.authorization)
     const { signInTwoFactor } = useAuth()
-    const [goBack, setGoBack] = useState(false)
 
     const onSignIn = async (values: SignInTwoFactor) => {
-        const { mobileNumber } = values
-        signInTwoFactor({ mobileNumber })
+        const { mobileNumber, channel } = values
+        signInTwoFactor({ mobileNumber, channel })
     }
 
     return (
@@ -47,26 +44,22 @@ const SignInForm = (props: SignInFormProps) => {
                 <SignIn />
             ) : (
                 <div className={className}>
-                    {message && (
-                        <Alert showIcon className="mb-4" type="danger">
-                            <>{message}</>
-                        </Alert>
-                    )}
                     <Formik
                         initialValues={{
                             mobileNumber: '',
+                            channel: '',
                         }}
                         validationSchema={validationSchema}
                         onSubmit={(values) => {
                             onSignIn(values)
                         }}
                     >
-                        {({ touched, errors }) => (
+                        {({ touched, errors, setFieldValue, submitForm, values }) => (
                             <Form>
                                 <FormContainer>
                                     <FormItem
                                         label="Mobile Number"
-                                        invalid={(errors.mobileNumber && touched.mobileNumber) as boolean}
+                                        invalid={!!(errors.mobileNumber && touched.mobileNumber)}
                                         errorMessage={errors.mobileNumber}
                                     >
                                         <Field
@@ -78,17 +71,39 @@ const SignInForm = (props: SignInFormProps) => {
                                             className="rounded-xl"
                                         />
                                     </FormItem>
-                                    <Button
-                                        block
-                                        loading={selector.loading}
-                                        variant="new"
-                                        type="submit"
-                                        className="bg-black"
-                                        //disabled={isValidating}
-                                        disabled={Array.isArray(errors) || Object.values(errors).toString() != ''}
-                                    >
-                                        {selector.loading ? 'Signing in...' : 'Send OTP'}
-                                    </Button>
+
+                                    <FormContainer className="flex gap-2 items-center">
+                                        <Button
+                                            block
+                                            loading={selector.loading && values.channel === 'SMS'}
+                                            variant="blue"
+                                            type="button"
+                                            className="bg-black"
+                                            disabled={!!errors.mobileNumber}
+                                            icon={<MdOutlineSms />}
+                                            onClick={() => {
+                                                setFieldValue('channel', 'SMS')
+                                                submitForm()
+                                            }}
+                                        >
+                                            {selector.loading && values.channel === 'SMS' ? 'Signing in...' : 'Send SMS'}
+                                        </Button>
+                                        <Button
+                                            block
+                                            loading={selector.loading && values.channel === 'WHATSAPP'}
+                                            variant="accept"
+                                            type="button"
+                                            className="bg-black"
+                                            disabled={!!errors.mobileNumber}
+                                            icon={<FaWhatsapp />}
+                                            onClick={() => {
+                                                setFieldValue('channel', 'WHATSAPP')
+                                                submitForm()
+                                            }}
+                                        >
+                                            {selector.loading && values.channel === 'WHATSAPP' ? 'Signing in...' : 'WhatsApp'}
+                                        </Button>
+                                    </FormContainer>
                                 </FormContainer>
                             </Form>
                         )}

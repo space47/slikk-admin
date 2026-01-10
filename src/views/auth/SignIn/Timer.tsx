@@ -15,13 +15,16 @@ const Timer = (props: any) => {
     const { signInTwoFactor } = useAuth()
     const selector = useAppSelector((state) => state.authorization)
 
+    console.log('selector in timer', selector)
+
     const resendOTP = async () => {
         setSeconds(initialSeconds)
-        console.log('data inside resend', userName)
         const curatedData = {
             mobileNumber: selector?.mobile,
+            channel: selector.channel,
             type: 'MOBILE',
         }
+        console.log('current data is', curatedData)
         try {
             await signInTwoFactor(curatedData)
             notification.success({ message: 'Otp has been resent' })
@@ -54,6 +57,7 @@ const Timer = (props: any) => {
             clearInterval(interval)
         }
     }, [seconds])
+
     return (
         <div className="flex flex-col items-center text-center mt-6">
             {seconds > 0 || minutes > 0 ? (
