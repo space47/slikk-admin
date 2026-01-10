@@ -15,9 +15,7 @@ const Theme = (props: CommonProps) => {
         ...{ locale },
     }
 
-    return (
-        <ConfigProvider value={currentTheme}>{props.children}</ConfigProvider>
-    )
+    return <ConfigProvider value={currentTheme}>{props.children}</ConfigProvider>
 }
 
 export default Theme
