@@ -1,22 +1,23 @@
 export type SignInTwoFactor = {
-    mobileNumber:string,
-    type?:string
+    mobileNumber: string
+    type?: string
+    channel?: string
 }
 
-export type SignInTwoFactorResponse = { 
-    message: string,
+export type SignInTwoFactorResponse = {
+    message: string
     signup_done: boolean
 }
 
 export type SignInCredential = {
-    data: string | undefined,
-    type?:string,
-    otp:string
+    data: string | undefined
+    type?: string
+    otp: string
 }
 
 export type SignInResponse = {
-    token: string,
-    access:string,
+    token: string
+    access: string
     user: {
         userName: string
         authority: string[]
