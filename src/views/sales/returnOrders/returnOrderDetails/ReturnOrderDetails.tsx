@@ -33,11 +33,17 @@ const ReturnOrderDetails = () => {
         return `/logistic/slikk/task?task_id=${returnDetails?.return_order_delivery[0]?.task_id}`
     }, [returnDetails?.return_order_delivery])
 
-    const { data: taskData } = useFetchSingleData<any>({
+    const { data: taskData, refetch: refetchTask } = useFetchSingleData<any>({
         url: query || '',
         pollingInterval: query ? 60000 : undefined,
         skip: !returnDetails?.return_order_delivery[0]?.task_id,
     })
+
+    useEffect(() => {
+        if (returnApi.currentData) {
+            refetchTask()
+        }
+    }, [returnApi.currentData])
 
     if (returnApi.isLoading) {
         return <LoadingSpinner />
@@ -121,7 +127,6 @@ const ReturnOrderDetails = () => {
                 )}
             </div>
 
-            {/* Components */}
             <div className="flex flex-col xl:flex-row gap-8 mt-10 ">
                 <div className="w-full bg-gray-100 p-4 rounded-lg shadow-md dark:bg-gray-900">
                     <ReturnProductsDetails
