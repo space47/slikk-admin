@@ -118,6 +118,7 @@ const ReturnOrderDetails = () => {
                         <RefundActivity
                             returnDetails={returnDetails as ReturnOrder}
                             returnOrderItems={returnDetails?.return_order_items || []}
+                            refetch={returnApi.refetch}
                         />
 
                         <div>

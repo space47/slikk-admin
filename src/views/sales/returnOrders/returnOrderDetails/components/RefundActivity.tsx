@@ -19,9 +19,10 @@ import { ReturnOrder } from '@/store/types/returnOrderData.types'
 interface Props {
     returnOrderItems: ReturnOrder['return_order_items']
     returnDetails: ReturnOrder
+    refetch: any
 }
 
-const RefundActivity = ({ returnDetails, returnOrderItems }: Props) => {
+const RefundActivity = ({ returnDetails, returnOrderItems, refetch }: Props) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isCompleting, setIsCompleting] = useState(false)
     const [action, setAction] = useState('')
@@ -65,6 +66,7 @@ const RefundActivity = ({ returnDetails, returnOrderItems }: Props) => {
         setTriggerPickedUpGenerate,
         locationWiseArray,
         setIsCompleting,
+        refetch,
     })
 
     useEffect(() => {
