@@ -43,7 +43,6 @@ const CompleteReturnModal: React.FC<Props> = ({
 
     useEffect(() => {
         returnOrderItems.map((item) => {
-            console.log('item', item)
             setLocationStore((prev) => ({ ...prev, [item.order_item]: item.location || '' }))
         })
     }, [isModalOpen])
@@ -100,9 +99,9 @@ const CompleteReturnModal: React.FC<Props> = ({
                 disabled: isCompleting,
                 loading: isCompleting,
             }}
-            onOk={() => handleAction('return_completed', locationWiseDetails)}
-            onCancel={() => setIsModalOpen(false)}
             height={400}
+            onCancel={() => setIsModalOpen(false)}
+            onOk={() => handleAction('return_completed', locationWiseDetails)}
         >
             <div>Locations</div>
 
@@ -113,8 +112,6 @@ const CompleteReturnModal: React.FC<Props> = ({
                     ).reduce((sum, l) => sum + (Number(l.quantity) || 0), 0)
 
                     const findLocation = locationStore[item.order_item] || ''
-
-                    console.log('findLocation', findLocation)
 
                     return (
                         <div key={item.order_item} className="mb-4 border p-3 rounded">

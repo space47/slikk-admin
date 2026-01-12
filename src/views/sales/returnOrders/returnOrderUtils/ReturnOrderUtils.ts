@@ -42,3 +42,26 @@ export const getStatusFilterReturn = (tabSelect: string) => {
             return ''
     }
 }
+
+export enum EReturnOrderStatus {
+    pending = 'PENDING',
+    accepted = 'ACCEPTED',
+    pickup_created = 'PICKUP_CREATED',
+    reverse_pickup_created = 'REVERSE_PICKUP_CREATED',
+    return_rescheduled = 'RETURN_RESCHEDULED',
+    qc_failed = 'QC_FAILED',
+    pickup_attempt_failed = 'PICKUP_ATTEMPT_FAILED',
+    attempt_failed = 'ATTEMPT_FAILED',
+    return_rejected = 'RETURN_REJECTED',
+    out_for_pickup = 'OUT_FOR_PICKUP',
+    picked_up = 'PICKED_UP',
+    rider_assigned = 'RIDER_ASSIGNED',
+    delivered = 'DELIVERED',
+    refunded = 'REFUNDED',
+    completed = 'COMPLETED',
+    cancelled = 'CANCELLED',
+    partially_accepted = 'PARTIALLY_ACCEPTED',
+    pickup_generate = 'PICKUP_GENERATE',
+    in_transit = 'IN_TRANSIT',
+    shipped = 'SHIPPED',
+}

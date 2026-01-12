@@ -2,6 +2,7 @@
 import React from 'react'
 import { DeliveredModal, OutForDeliveryModal, OutforDeliveryModal, PickedUpModal } from './RefundModal'
 import TrackModal from '@/views/slikkLogistics/taskTracking/TrackModal'
+import { EReturnOrderStatus } from '../../returnOrderUtils/ReturnOrderUtils'
 
 interface ReturnActionProps {
     returnDetails: any
@@ -13,7 +14,7 @@ interface ReturnActionProps {
     buttonText?: any
 }
 
-const ReturnActionActivity = ({
+const ReturnActionActivity: React.FC<ReturnActionProps> = ({
     returnDetails,
     handleAction,
     setIsModalOpen,
@@ -21,19 +22,11 @@ const ReturnActionActivity = ({
     isModalOpen,
     currentButton,
     buttonText,
-}: ReturnActionProps) => {
-    const latestStatus = returnDetails?.log?.[returnDetails.log.length - 1]?.status
-    const deliveryPartner = returnDetails?.return_order_delivery?.[0]?.partner
-
-    const isPartnerNotSlikk = deliveryPartner && deliveryPartner !== 'Slikk'
-    console.log('button text', buttonText)
-    const showPickupModal =
-        latestStatus === 'RIDER_ASSIGNED' ||
-        ((latestStatus === 'REVERSE_PICKUP_CREATED' || latestStatus === 'PICKUP_CREATED') && isPartnerNotSlikk)
+}) => {
     return (
         <div>
-            {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'REVERSE_PICKUP_CREATED' ||
-                returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'PICKUP_CREATED') &&
+            {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === EReturnOrderStatus.reverse_pickup_created ||
+                returnDetails?.log?.[returnDetails.log.length - 1]?.status === EReturnOrderStatus.pickup_created) &&
                 (returnDetails?.return_order_delivery[0]?.partner === 'Slikk' ||
                     returnDetails?.return_order_delivery[0]?.partner === '' ||
                     undefined ||
@@ -71,8 +64,8 @@ const ReturnActionActivity = ({
                 />
             )}
 
-            {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'IN_TRANSIT' ||
-                returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'SHIPPED') && (
+            {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === EReturnOrderStatus.in_transit ||
+                returnDetails?.log?.[returnDetails.log.length - 1]?.status === EReturnOrderStatus.shipped) && (
                 <OutForDeliveryModal
                     isModalOpen={isModalOpen}
                     handleOutForDelivery={() => handleAction('out_for_delivery')}
@@ -82,7 +75,7 @@ const ReturnActionActivity = ({
                     currentButton={currentButton}
                 />
             )}
-            {buttonText === 'DELIVERED' && (
+            {buttonText === EReturnOrderStatus.delivered && (
                 <DeliveredModal
                     isModalOpen={isModalOpen}
                     handleDelivered={() => handleAction('delivered')}
