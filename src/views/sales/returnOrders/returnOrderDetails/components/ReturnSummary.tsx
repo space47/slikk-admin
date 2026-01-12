@@ -19,7 +19,7 @@ interface Props {
     returnOrder: ReturnOrder
 }
 
-const ReturnSummary = ({ returnOrder }: Props) => {
+const ReturnSummary: React.FC<Props> = ({ returnOrder }) => {
     const navigate = useNavigate()
 
     const [bankDetails, setBankDetails] = useState<BankDetails>({

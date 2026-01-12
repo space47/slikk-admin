@@ -10,7 +10,7 @@ interface Props {
     returnOrder: ReturnOrder
 }
 
-const ReturnRunnerDetails = ({ returnOrder }: Props) => {
+const ReturnRunnerDetails: React.FC<Props> = ({ returnOrder }) => {
     const [showRiderModal, setShowRiderModal] = useState(false)
     const returnProducts = returnOrder?.return_order_delivery?.find((item) => item?.state !== 'CANCELLED')
 

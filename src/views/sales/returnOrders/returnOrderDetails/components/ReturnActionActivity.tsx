@@ -13,7 +13,7 @@ interface ReturnActionProps {
     buttonText?: any
 }
 
-const ReturnActionActivity = ({
+const ReturnActionActivity: React.FC<ReturnActionProps> = ({
     returnDetails,
     handleAction,
     setIsModalOpen,
@@ -21,15 +21,7 @@ const ReturnActionActivity = ({
     isModalOpen,
     currentButton,
     buttonText,
-}: ReturnActionProps) => {
-    const latestStatus = returnDetails?.log?.[returnDetails.log.length - 1]?.status
-    const deliveryPartner = returnDetails?.return_order_delivery?.[0]?.partner
-
-    const isPartnerNotSlikk = deliveryPartner && deliveryPartner !== 'Slikk'
-    console.log('button text', buttonText)
-    const showPickupModal =
-        latestStatus === 'RIDER_ASSIGNED' ||
-        ((latestStatus === 'REVERSE_PICKUP_CREATED' || latestStatus === 'PICKUP_CREATED') && isPartnerNotSlikk)
+}) => {
     return (
         <div>
             {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'REVERSE_PICKUP_CREATED' ||

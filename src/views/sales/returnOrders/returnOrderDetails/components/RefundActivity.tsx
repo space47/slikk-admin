@@ -7,7 +7,6 @@ import moment from 'moment'
 import Button from '@/components/ui/Button'
 import React, { useState, useEffect, useMemo } from 'react'
 import { Modal } from 'antd'
-import { useNavigate } from 'react-router-dom'
 import { PickedUpModal } from './RefundModal'
 import { getButtonAndModalContent } from './returnOrderCommon'
 import ReturnActionActivity from './ReturnActionActivity'
@@ -22,7 +21,7 @@ interface Props {
     refetch: any
 }
 
-const RefundActivity = ({ returnDetails, returnOrderItems, refetch }: Props) => {
+const RefundActivity: React.FC<Props> = ({ returnDetails, returnOrderItems, refetch }) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isCompleting, setIsCompleting] = useState(false)
     const [action, setAction] = useState('')
@@ -30,7 +29,8 @@ const RefundActivity = ({ returnDetails, returnOrderItems, refetch }: Props) => 
     const [valueInsideModal, setValueInsideModal] = useState({ refundAmount: '', refundId: '' })
     const [triggerAction, setTriggerAction] = useState(false)
     const [modalContent, setModalContent] = useState<string>()
-    const navigate = useNavigate()
+    const [isLoading, setIsLoading] = useState(false)
+    const [forceCOD, setForceCOD] = useState(false)
     const showModal = (content: string | undefined) => {
         setModalContent(content)
         setIsModalOpen(true)
@@ -49,9 +49,6 @@ const RefundActivity = ({ returnDetails, returnOrderItems, refetch }: Props) => 
         return returnOrderItems?.map((item) => ({ order_id: item.order_item, quantity: item.quantity }))
     }, [returnOrderItems])
 
-    const [currentButton, setCurrentButton] = useState(false)
-    const [forceCOD, setForceCOD] = useState(false)
-
     const handlePICKUPGenerate = () => {
         setAction('create_reverse_pickup')
         setTriggerPickedUpGenerate(true)
@@ -67,18 +64,19 @@ const RefundActivity = ({ returnDetails, returnOrderItems, refetch }: Props) => 
         locationWiseArray,
         setIsCompleting,
         refetch,
+        setIsLoading,
+        setTriggerAction,
     })
 
     useEffect(() => {
         if (triggerPickedUpGenerate) {
             sendApiRequest()
         }
-    }, [triggerPickedUpGenerate, navigate])
+    }, [triggerPickedUpGenerate])
 
     const handleAction = (value: string) => {
         setAction(value)
         setTriggerAction(true)
-        setCurrentButton(true)
     }
 
     useEffect(() => {
@@ -130,7 +128,7 @@ const RefundActivity = ({ returnDetails, returnOrderItems, refetch }: Props) => 
                     handleClose={() => setIsModalOpen(false)}
                     modalContent={modalContent}
                     status={returnDetails?.status || ''}
-                    currentButton={currentButton}
+                    currentButton={isLoading}
                 />
             )}
 
@@ -140,7 +138,7 @@ const RefundActivity = ({ returnDetails, returnOrderItems, refetch }: Props) => 
                 handleAction={handleAction}
                 setIsModalOpen={setIsModalOpen}
                 modalContent={modalContent}
-                currentButton={currentButton}
+                currentButton={isLoading}
                 buttonText={buttonText}
             />
 

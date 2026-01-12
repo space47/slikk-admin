@@ -8,7 +8,7 @@ interface ReturnCancelProps {
     handleCancelReturn: any
 }
 
-const ReturnCancelOrder = ({ showCancelModal, handleCancelReturn, handleCloseModal }: ReturnCancelProps) => {
+const ReturnCancelOrder: React.FC<ReturnCancelProps> = ({ showCancelModal, handleCancelReturn, handleCloseModal }) => {
     return (
         <div>
             <Dialog

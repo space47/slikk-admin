@@ -67,15 +67,13 @@ const PriceAmount = ({ amount }: { amount: number }) => {
     return <NumericFormat displayType="text" value={(Math.round(amount * 100) / 100).toFixed(2)} prefix={'Rs.'} thousandSeparator={true} />
 }
 
-const ReturnProductsDetails = ({
-    task_id,
-    returnOrderId,
-    returnDetails,
-}: {
+interface ReturnProductsProps {
     task_id: any
     returnDetails: ReturnOrder
     returnOrderId: number
-}) => {
+}
+
+const ReturnProductsDetails: React.FC<ReturnProductsProps> = ({ task_id, returnOrderId, returnDetails }) => {
     const navigate = useNavigate()
     const [showCancelModal, setShowCancelModal] = useState(false)
     const [isReschedule, setIsReschedule] = useState(false)

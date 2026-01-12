@@ -14,6 +14,9 @@ import OrdersRiderActivity from '../../OrderDetails/components/OrdersRiderActivi
 import { Card } from '@/components/ui'
 import { returnOrderDataService } from '@/store/services/returnOrderService'
 import { ReturnOrder } from '@/store/types/returnOrderData.types'
+import LoadingSpinner from '@/common/LoadingSpinner'
+import AccessDenied from '@/views/pages/AccessDenied'
+import NotFoundData from '@/views/pages/NotFound/Notfound'
 
 const ReturnOrderDetails = () => {
     const { return_order_id } = useParams()
@@ -35,6 +38,18 @@ const ReturnOrderDetails = () => {
         pollingInterval: query ? 60000 : undefined,
         skip: !returnDetails?.return_order_delivery[0]?.task_id,
     })
+
+    if (returnApi.isLoading) {
+        return <LoadingSpinner />
+    }
+
+    if (returnApi.isError) {
+        if (returnApi.error && 'status' in returnApi.error && returnApi.error.status === 403) {
+            return <AccessDenied />
+        } else {
+            return <NotFoundData />
+        }
+    }
 
     return (
         <div>

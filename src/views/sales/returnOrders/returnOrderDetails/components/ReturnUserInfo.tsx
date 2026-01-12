@@ -8,7 +8,7 @@ interface Props {
     returnOrder: ReturnOrder
 }
 
-const ReturnUserInfo = ({ returnOrder }: Props) => {
+const ReturnUserInfo: React.FC<Props> = ({ returnOrder }) => {
     return (
         <div className="flex flex-col gap-4">
             <Card>

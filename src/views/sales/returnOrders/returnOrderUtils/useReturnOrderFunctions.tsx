@@ -6,7 +6,7 @@ import { notification } from 'antd'
 import { AxiosError } from 'axios'
 import React from 'react'
 
-interface ReturnOrderState {
+interface ReturnOrderFunctionProps {
     action: string
     returnDetails: ReturnOrder
     setForceCOD: React.Dispatch<React.SetStateAction<boolean>>
@@ -15,7 +15,9 @@ interface ReturnOrderState {
     setTriggerPickedUpGenerate: React.Dispatch<React.SetStateAction<boolean>>
     locationWiseArray: any[]
     setIsCompleting: (x: boolean) => void
+    setIsLoading: (x: boolean) => void
     refetch: any
+    setTriggerAction: (x: boolean) => void
 }
 
 export const useReturnOrderFunctions = ({
@@ -28,9 +30,26 @@ export const useReturnOrderFunctions = ({
     locationWiseArray,
     setIsCompleting,
     refetch,
-}: ReturnOrderState) => {
+    setIsLoading,
+    setTriggerAction,
+}: ReturnOrderFunctionProps) => {
+    const reCreationCall = async () => {
+        try {
+            const bodyWithReCreate = { action, re_create: 'yes' }
+            const retryResponse = await axioisInstance.patch(`merchant/return_order/${returnDetails?.return_order_id}`, bodyWithReCreate)
+
+            successMessage(retryResponse || 'updated successfully')
+            refetch()
+        } catch (retryError) {
+            if (retryError instanceof AxiosError) {
+                errorMessage(retryError || 'Failed to update rider status with re_create.')
+            }
+        }
+    }
+
     const triggerApiCall = async () => {
         try {
+            setIsLoading(true)
             const body = { action: action }
             const response = await axioisInstance.patch(`merchant/return_order/${returnDetails?.return_order_id}`, body)
             successMessage(response)
@@ -41,6 +60,8 @@ export const useReturnOrderFunctions = ({
             setForceCOD(true)
         } finally {
             setIsModalOpen(false)
+            setIsLoading(false)
+            setTriggerAction(false)
         }
     }
 
@@ -79,20 +100,7 @@ export const useReturnOrderFunctions = ({
         } catch (error) {
             if (error instanceof AxiosError) {
                 if (error.response?.status === 400) {
-                    try {
-                        const bodyWithReCreate = { action, re_create: 'yes' }
-                        const retryResponse = await axioisInstance.patch(
-                            `merchant/return_order/${returnDetails?.return_order_id}`,
-                            bodyWithReCreate,
-                        )
-
-                        successMessage(retryResponse || 'updated successfully')
-                        refetch()
-                    } catch (retryError) {
-                        if (retryError instanceof AxiosError) {
-                            errorMessage(retryError || 'Failed to update rider status with re_create.')
-                        }
-                    }
+                    reCreationCall()
                 } else {
                     errorMessage(error)
                 }

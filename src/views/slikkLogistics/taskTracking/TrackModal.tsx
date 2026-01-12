@@ -22,6 +22,7 @@ type ModalProps = {
     taskId?: number | string
     storeLat?: number
     storeLong?: number
+    refetch?: any
 }
 
 const TrackModal = ({
@@ -34,6 +35,7 @@ const TrackModal = ({
     taskId,
     storeLat,
     storeLong,
+    refetch,
 }: ModalProps) => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
@@ -86,7 +88,7 @@ const TrackModal = ({
                 description: `Rider with moblie ${selectedRiderMobile} is assigned`,
             })
             setShowAssignModal(false)
-            navigate(0)
+            refetch ? refetch() : navigate(0)
             return response
         } catch (error) {
             console.log(error)
