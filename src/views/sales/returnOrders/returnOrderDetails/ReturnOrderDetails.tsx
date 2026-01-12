@@ -1,9 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useMemo } from 'react'
-import { fetchReturnOrders } from '@/store/slices/returnOrderDetails/returnOrderDetails'
-import { useAppDispatch, useAppSelector } from '@/store'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { ReturnOrderState } from '@/store/types/returnDetails.types'
 import { HiOutlineCalendar } from 'react-icons/hi'
 import moment from 'moment'
 import ReturnProductsDetails from './components/ReturnProductsDetails'
@@ -15,22 +12,29 @@ import OrderMap from '../../OrderDetails/OrderMap'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 import OrdersRiderActivity from '../../OrderDetails/components/OrdersRiderActivity'
 import { Card } from '@/components/ui'
+import { returnOrderDataService } from '@/store/services/returnOrderService'
+import { ReturnOrder } from '@/store/types/returnOrderData.types'
 
 const ReturnOrderDetails = () => {
     const { return_order_id } = useParams()
-    const dispatch = useAppDispatch()
-    const returnOrder = useAppSelector<ReturnOrderState>((state) => state.returnOrders)
-    const returnDetails = returnOrder?.returnOrders
+    const [returnDetails, setReturnDetails] = useState<ReturnOrder>()
+    const returnApi = returnOrderDataService.useReturnDetailsQuery({ return_id: return_order_id as string }, { skip: !return_order_id })
+
+    useEffect(() => {
+        if (returnApi.isSuccess) {
+            setReturnDetails(returnApi?.data?.data)
+        }
+    }, [returnApi.isSuccess, returnApi?.data?.data])
 
     const query = useMemo(() => {
         return `/logistic/slikk/task?task_id=${returnDetails?.return_order_delivery[0]?.task_id}`
     }, [returnDetails?.return_order_delivery])
 
-    const { data: taskData } = useFetchSingleData<any>({ url: query || '', pollingInterval: query ? 60000 : undefined })
-
-    useEffect(() => {
-        dispatch(fetchReturnOrders(return_order_id))
-    }, [return_order_id, dispatch])
+    const { data: taskData } = useFetchSingleData<any>({
+        url: query || '',
+        pollingInterval: query ? 60000 : undefined,
+        skip: !returnDetails?.return_order_delivery[0]?.task_id,
+    })
 
     return (
         <div>
@@ -105,9 +109,16 @@ const ReturnOrderDetails = () => {
             {/* Components */}
             <div className="flex flex-col xl:flex-row gap-8 mt-10 ">
                 <div className="w-full bg-gray-100 p-4 rounded-lg shadow-md dark:bg-gray-900">
-                    <ReturnProductsDetails task_id={returnDetails?.return_order_delivery[0]?.task_id} />
+                    <ReturnProductsDetails
+                        task_id={returnDetails?.return_order_delivery[0]?.task_id}
+                        returnDetails={returnDetails as ReturnOrder}
+                        returnOrderId={return_order_id as any}
+                    />
                     <div className="flex xl:flex-row xl:gap-10 flex-col gap-5">
-                        <RefundActivity />
+                        <RefundActivity
+                            returnDetails={returnDetails as ReturnOrder}
+                            returnOrderItems={returnDetails?.return_order_items || []}
+                        />
 
                         <div>
                             {returnDetails?.return_order_delivery.length !== 0 && (
@@ -144,9 +155,9 @@ const ReturnOrderDetails = () => {
                     )}
                 </div>
                 <div className="flex flex-col bg-gray-100 p-4 rounded-lg shadow-md gap-5 w-full xl:w-1/3 dark:bg-gray-900">
-                    <ReturnUserInfo />
-                    <ReturnRunnerDetails />
-                    <ReturnSummary />
+                    <ReturnUserInfo returnOrder={returnDetails as ReturnOrder} />
+                    <ReturnRunnerDetails returnOrder={returnDetails as ReturnOrder} />
+                    <ReturnSummary returnOrder={returnDetails as ReturnOrder} />
                 </div>
             </div>
         </div>

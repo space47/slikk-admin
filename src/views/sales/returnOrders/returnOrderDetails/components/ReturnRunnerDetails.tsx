@@ -1,22 +1,18 @@
 import Card from '@/components/ui/Card'
-// import Avatar from '@/components/ui/Avatar'
-import { useAppSelector } from '@/store'
-import { ReturnOrderState } from '@/store/types/returnDetails.types'
 import { Avatar, Button } from '@/components/ui'
 import { useState } from 'react'
 import { FaUserAlt } from 'react-icons/fa'
 import { HiLocationMarker, HiPhone } from 'react-icons/hi'
 import TrackModal from '@/views/slikkLogistics/taskTracking/TrackModal'
+import { ReturnOrder } from '@/store/types/returnOrderData.types'
 
-const ReturnRunnerDetails = () => {
-    const returnOrder = useAppSelector<ReturnOrderState>((state) => state.returnOrders)
-    const returnProducts = returnOrder?.returnOrders?.return_order_delivery?.find((item) => item?.state !== 'CANCELLED')
+interface Props {
+    returnOrder: ReturnOrder
+}
+
+const ReturnRunnerDetails = ({ returnOrder }: Props) => {
     const [showRiderModal, setShowRiderModal] = useState(false)
-    const returnDetails = returnOrder?.returnOrders
-
-    const isOutForPickup = returnOrder?.returnOrders?.log?.some((item) => item?.status === 'OUT_FOR_PICKUP')
-
-    console.log('OF{P', isOutForPickup)
+    const returnProducts = returnOrder?.return_order_delivery?.find((item) => item?.state !== 'CANCELLED')
 
     return (
         <Card className="card">
@@ -72,7 +68,7 @@ const ReturnRunnerDetails = () => {
                         handleCloseModal={() => setShowRiderModal(false)}
                         showTaskModal={showRiderModal}
                         setShowAssignModal={setShowRiderModal}
-                        taskId={returnDetails?.return_order_delivery[0]?.task_id}
+                        taskId={returnOrder?.return_order_delivery[0]?.task_id}
                     />
                 )}
             </div>

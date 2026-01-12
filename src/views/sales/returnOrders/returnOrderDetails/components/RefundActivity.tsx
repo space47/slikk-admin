@@ -5,22 +5,23 @@ import Badge from '@/components/ui/Badge'
 import Card from '@/components/ui/Card'
 import moment from 'moment'
 import Button from '@/components/ui/Button'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { Modal } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { PickedUpModal } from './RefundModal'
-import { useAppSelector } from '@/store'
-import { ReturnOrderState } from '@/store/types/returnDetails.types'
 import { getButtonAndModalContent } from './returnOrderCommon'
 import ReturnActionActivity from './ReturnActionActivity'
 import CompleteReturnModal from './CompleteReturnModal'
 import { useReturnOrderFunctions } from '../../returnOrderUtils/useReturnOrderFunctions'
 import DialogConfirm from '@/common/DialogConfirm'
+import { ReturnOrder } from '@/store/types/returnOrderData.types'
 
-const RefundActivity = () => {
-    const returnOrder = useAppSelector<ReturnOrderState>((state) => state.returnOrders)
-    const returnDetails = returnOrder?.returnOrders
-    const returnOrderItems = returnOrder?.returnOrders?.return_order_items || []
+interface Props {
+    returnOrderItems: ReturnOrder['return_order_items']
+    returnDetails: ReturnOrder
+}
+
+const RefundActivity = ({ returnDetails, returnOrderItems }: Props) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isCompleting, setIsCompleting] = useState(false)
     const [action, setAction] = useState('')
@@ -35,7 +36,7 @@ const RefundActivity = () => {
     }
     const { buttonText, modalContent: content } = getButtonAndModalContent(
         returnDetails?.log?.[returnDetails.log.length - 1]?.status || '',
-        returnDetails?.return_order_delivery.find((item) => item?.state !== 'CANCELLED')?.partner,
+        returnDetails?.return_order_delivery?.find((item) => item?.state !== 'CANCELLED')?.partner as string,
         returnDetails?.log as any[],
     )
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,17 +44,12 @@ const RefundActivity = () => {
         setValueInsideModal((prev) => ({ ...prev, [name]: value }))
     }
 
-    const locationWiseArray = returnOrderItems.map((item) => ({
-        order_id: item.order_item,
-        quantity: item.quantity,
-    }))
+    const locationWiseArray = useMemo(() => {
+        return returnOrderItems?.map((item) => ({ order_id: item.order_item, quantity: item.quantity }))
+    }, [returnOrderItems])
 
     const [currentButton, setCurrentButton] = useState(false)
     const [forceCOD, setForceCOD] = useState(false)
-    // const [packetsValue, setPacketsValue] = useState('')
-    // const [packetsContainer, setPacketsContainer] = useState<string[]>([])
-    // const packetIdArray = returnOrder?.returnOrders?.packet_ids || ['r1456', 'r1234', 'r4444']
-    // const packetIdArray = ['1', '2', '3', '4', '5']
 
     const handlePICKUPGenerate = () => {
         setAction('create_reverse_pickup')
@@ -89,22 +85,6 @@ const RefundActivity = () => {
         }
     }, [triggerAction])
 
-    // const handlePacketsCount = (e: any) => {
-    //     if (e.key === 'Enter') {
-    //         if (packetsContainer.includes(e.target.value)) {
-    //             notification.warning({ message: 'Packet Already scanned' })
-    //         } else if (packetIdArray.includes(e.target.value)) {
-    //             setPacketsContainer((prev) => [...prev, e.target.value])
-    //             setPacketsValue('')
-    //         } else {
-    //             notification.error({ message: 'No packet Id' })
-    //         }
-    //     }
-    // }
-
-    // const isPickedUp = returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'PICKED_UP'
-    // const equalNumber = packetsContainer?.length === packetIdArray.length
-
     return (
         <Card className="mb-10 flex flex-col">
             <h5 className="mb-4">Activity</h5>
@@ -135,36 +115,8 @@ const RefundActivity = () => {
                     ))
                 )}
             </Timeline>
-            {/* buttons........................................................................................................ */}
-
-            {/* <div className="mt-5 mb-5">
-                {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'PICKED_UP' && (
-                    <>
-                        <div className="grid grid-cols-3 mb-3 gap-3">
-                            {
-                                <div>
-                                    Packed: ({packetsContainer?.length} / {packetIdArray?.length})
-                                </div>
-                            }
-                        </div>
-                        <div>
-                            <Input
-                                placeholder="Scan Packet Ids"
-                                value={packetsValue}
-                                onChange={(e) => setPacketsValue(e.target.value)}
-                                onKeyDown={handlePacketsCount}
-                            />
-                        </div>
-                    </>
-                )}
-            </div> */}
-
             {buttonText && returnDetails?.status && returnDetails.status !== 'CANCELLED' && returnDetails.status !== 'ACCEPTED' && (
-                <Button
-                    variant="solid"
-                    onClick={() => showModal(content)}
-                    //  disabled={isPickedUp && !equalNumber}
-                >
+                <Button variant="solid" onClick={() => showModal(content)}>
                     {buttonText}
                 </Button>
             )}
@@ -229,18 +181,6 @@ const RefundActivity = () => {
                 />
             )}
 
-            {/* {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'DELIVERED' &&
-                !returnDetails?.log?.some((item) => item?.status?.includes('COMPLETED')) &&
-                !returnDetails?.log?.some((item) => item?.status?.includes('REFUNDED')) && (
-                    <Modal
-                        open={isModalOpen}
-                        okText={currentButton ? 'Returning' : 'Return Orders'}
-                        onOk={() => handleAction('return_completed')}
-                        onCancel={() => setIsModalOpen(false)}
-                    >
-                        <p className="text-xl">Complete Return Order</p>
-                    </Modal>
-                )} */}
             {forceCOD && (
                 <Modal open={forceCOD} okText={'Proceed'} onOk={handleForceCod} onCancel={() => setForceCOD(false)}>
                     <p className="text-xl">Do You Want To Proceed With Manual Refund</p>

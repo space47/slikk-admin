@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import RtkQueryService from '@/services/RtkQueryService'
-import { LocationReturnType } from '../types/returnOrderData.types'
+import { LocationReturnType, ReturnOrderResponse } from '../types/returnOrderData.types'
 
 export const returnOrderDataService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
@@ -22,6 +22,13 @@ export const returnOrderDataService = RtkQueryService.injectEndpoints({
                     params: parameters,
                 }
             },
+        }),
+        returnDetails: builder.query<ReturnOrderResponse, { return_id: string }>({
+            query: ({ return_id }) => ({
+                url: `/merchant/return_order/${return_id}`,
+                method: 'GET',
+            }),
+            keepUnusedDataFor: 0,
         }),
     }),
 })

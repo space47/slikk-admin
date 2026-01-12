@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, Dialog, Dropdown, Select } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-import { useAppSelector } from '@/store'
-import { ReturnOrderState } from '@/store/types/returnDetails.types'
+import { ReturnOrder } from '@/store/types/returnOrderData.types'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { DatePicker, notification } from 'antd'
-import moment, { Moment } from 'moment'
+import moment from 'moment'
 import React, { useState } from 'react'
 
 interface ReturnCancelProps {
     isReschedule: boolean
     setIsReschedule: (x: boolean) => void
+    returnDetails?: ReturnOrder
 }
 
 const RescheduleType = [
@@ -30,13 +30,11 @@ const RescheduleReasons = [
     },
 ]
 
-const RescheduleModal: React.FC<ReturnCancelProps> = ({ isReschedule, setIsReschedule }) => {
+const RescheduleModal: React.FC<ReturnCancelProps> = ({ isReschedule, setIsReschedule, returnDetails }) => {
     const [rescheduleReason, setRescheduleReason] = useState<string | undefined>(undefined)
     const [rescheduleTypeValue, setRescheduleTypeValue] = useState<string | null>(null)
     const [dateStore, setDateStore] = useState<any>(null)
 
-    const returnOrder = useAppSelector<ReturnOrderState>((state) => state.returnOrders)
-    const returnDetails = returnOrder?.returnOrders
     const taskId = returnDetails?.return_order_delivery.find((item) => item?.state !== 'CANCELLED')?.task_id
 
     console.log('task id is', taskId)
