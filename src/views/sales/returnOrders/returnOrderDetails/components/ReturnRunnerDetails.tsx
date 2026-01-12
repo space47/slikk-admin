@@ -5,6 +5,7 @@ import { FaUserAlt } from 'react-icons/fa'
 import { HiLocationMarker, HiPhone } from 'react-icons/hi'
 import TrackModal from '@/views/slikkLogistics/taskTracking/TrackModal'
 import { ReturnOrder } from '@/store/types/returnOrderData.types'
+import { EReturnOrderStatus } from '../../returnOrderUtils/ReturnOrderUtils'
 
 interface Props {
     returnOrder: ReturnOrder
@@ -12,7 +13,7 @@ interface Props {
 
 const ReturnRunnerDetails: React.FC<Props> = ({ returnOrder }) => {
     const [showRiderModal, setShowRiderModal] = useState(false)
-    const returnProducts = returnOrder?.return_order_delivery?.find((item) => item?.state !== 'CANCELLED')
+    const returnProducts = returnOrder?.return_order_delivery?.find((item) => item?.state !== EReturnOrderStatus.cancelled)
 
     return (
         <Card className="card">

@@ -14,6 +14,7 @@ import CompleteReturnModal from './CompleteReturnModal'
 import { useReturnOrderFunctions } from '../../returnOrderUtils/useReturnOrderFunctions'
 import DialogConfirm from '@/common/DialogConfirm'
 import { ReturnOrder } from '@/store/types/returnOrderData.types'
+import { EReturnOrderStatus } from '../../returnOrderUtils/ReturnOrderUtils'
 
 interface Props {
     returnOrderItems: ReturnOrder['return_order_items']
@@ -37,7 +38,7 @@ const RefundActivity: React.FC<Props> = ({ returnDetails, returnOrderItems, refe
     }
     const { buttonText, modalContent: content } = getButtonAndModalContent(
         returnDetails?.log?.[returnDetails.log.length - 1]?.status || '',
-        returnDetails?.return_order_delivery?.find((item) => item?.state !== 'CANCELLED')?.partner as string,
+        returnDetails?.return_order_delivery?.find((item) => item?.state !== EReturnOrderStatus.cancelled)?.partner as string,
         returnDetails?.log as any[],
     )
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,9 +96,9 @@ const RefundActivity: React.FC<Props> = ({ returnDetails, returnOrderItems, refe
             )}
             <Timeline className="mb-5">
                 {returnDetails?.log?.[returnDetails.log.length - 1]?.status === '' &&
-                returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'PARTIALLY_ACCEPTED' ? (
+                returnDetails?.log?.[returnDetails.log.length - 1]?.status === EReturnOrderStatus.partially_accepted ? (
                     ''
-                ) : returnDetails?.log.length === 0 && returnDetails?.status === 'CANCELLED' ? (
+                ) : returnDetails?.log.length === 0 && returnDetails?.status === EReturnOrderStatus.cancelled ? (
                     <div>Order cancelled</div>
                 ) : (
                     returnDetails?.log.map((activity, i) => (
@@ -115,11 +116,14 @@ const RefundActivity: React.FC<Props> = ({ returnDetails, returnOrderItems, refe
                     ))
                 )}
             </Timeline>
-            {buttonText && returnDetails?.status && returnDetails.status !== 'CANCELLED' && returnDetails.status !== 'ACCEPTED' && (
-                <Button variant="solid" onClick={() => showModal(content)}>
-                    {buttonText}
-                </Button>
-            )}
+            {buttonText &&
+                returnDetails?.status &&
+                returnDetails.status !== EReturnOrderStatus.cancelled &&
+                returnDetails.status !== EReturnOrderStatus.accepted && (
+                    <Button variant="solid" onClick={() => showModal(content)}>
+                        {buttonText}
+                    </Button>
+                )}
 
             {returnDetails?.log.length === 0 && (
                 <PickedUpModal
@@ -142,8 +146,8 @@ const RefundActivity: React.FC<Props> = ({ returnDetails, returnOrderItems, refe
                 buttonText={buttonText}
             />
 
-            {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'DELIVERED' &&
-                !returnDetails?.log?.some((item) => item?.status === 'REFUNDED') && (
+            {returnDetails?.log?.[returnDetails.log.length - 1]?.status === EReturnOrderStatus.delivered &&
+                !returnDetails?.log?.some((item) => item?.status === EReturnOrderStatus.delivered) && (
                     <CompleteReturnModal
                         isCompleting={isCompleting}
                         handleAction={handleCompleteReturn}
@@ -154,9 +158,9 @@ const RefundActivity: React.FC<Props> = ({ returnDetails, returnOrderItems, refe
                         handleInputChange={handleInputChange}
                     />
                 )}
-            {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'REFUNDED' ||
-                returnDetails?.log?.some((item) => item?.status?.includes('REFUNDED'))) &&
-                !returnDetails?.log?.some((item) => item?.status?.includes('COMPLETED')) && (
+            {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === EReturnOrderStatus.delivered ||
+                returnDetails?.log?.some((item) => item?.status?.includes(EReturnOrderStatus.delivered))) &&
+                !returnDetails?.log?.some((item) => item?.status?.includes(EReturnOrderStatus.completed)) && (
                     <CompleteReturnModal
                         isCompleting={isCompleting}
                         handleAction={handleCompleteReturn}
@@ -168,8 +172,8 @@ const RefundActivity: React.FC<Props> = ({ returnDetails, returnOrderItems, refe
                     />
                 )}
 
-            {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'QC_FAILED' ||
-                returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'PICKUP_ATTEMPT_FAILED') && (
+            {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === EReturnOrderStatus.qc_failed ||
+                returnDetails?.log?.[returnDetails.log.length - 1]?.status === EReturnOrderStatus.pickup_attempt_failed) && (
                 <DialogConfirm
                     isProceed
                     IsOpen={isModalOpen}

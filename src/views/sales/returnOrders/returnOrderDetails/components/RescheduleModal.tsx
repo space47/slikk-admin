@@ -6,6 +6,7 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { DatePicker, notification } from 'antd'
 import moment from 'moment'
 import React, { useState } from 'react'
+import { EReturnOrderStatus } from '../../returnOrderUtils/ReturnOrderUtils'
 
 interface ReturnCancelProps {
     isReschedule: boolean
@@ -35,7 +36,7 @@ const RescheduleModal: React.FC<ReturnCancelProps> = ({ isReschedule, setIsResch
     const [rescheduleTypeValue, setRescheduleTypeValue] = useState<string | null>(null)
     const [dateStore, setDateStore] = useState<any>(null)
 
-    const taskId = returnDetails?.return_order_delivery.find((item) => item?.state !== 'CANCELLED')?.task_id
+    const taskId = returnDetails?.return_order_delivery.find((item) => item?.state !== EReturnOrderStatus.cancelled)?.task_id
 
     console.log('task id is', taskId)
     const handleReschedule = async () => {
