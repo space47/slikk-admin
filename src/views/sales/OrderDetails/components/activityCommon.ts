@@ -68,4 +68,5 @@ export type ActivityProps = {
     status: string
     invoice_id?: string
     delivery_type: string
+    refetch: any
 }

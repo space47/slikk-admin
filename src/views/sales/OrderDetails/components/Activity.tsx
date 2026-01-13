@@ -5,41 +5,30 @@ import Badge from '@/components/ui/Badge'
 import Card from '@/components/ui/Card'
 import moment from 'moment'
 import Button from '@/components/ui/Button'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { Modal, notification } from 'antd'
-import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import { CustomModal, CustomModal2, CustomModal3, CustomModal4, CustomModal5, ExchangeModal, RejectModal } from './Modal'
 import { ActivityProps, LOGISTIC_PARTNER } from './activityCommon'
-import { getButtonAndModalContent, particularApiCall } from './activityFunctions'
-import { AxiosError } from 'axios'
+import { getButtonAndModalContent } from './activityFunctions'
 import RtoCancelModal from '../orderDetailsUtils/RtoCancelModal'
 import OrderCameraModal from './OrderCameraModal'
-import { errorMessage, successMessage } from '@/utils/responseMessages'
+import { newOrderService } from '@/store/services/newOrderaService'
 
-const Activity = ({ data = [], status, invoice_id, mainData, delivery_type }: ActivityProps) => {
+const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refetch }: ActivityProps) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [modalContent, setModalContent] = useState<string>()
     const [fulfilledQuantities, setFulfilledQuantities] = useState<{ [key: number]: number }>({})
     const [errorText, setErrorText] = useState<string | null>(null)
     const [action, setAction] = useState('')
     const [triggerApiCall, setTriggerApiCall] = useState(false)
-    const [triggerAcceptedCall, setTriggerAcceptedCall] = useState(false)
     const [triggerPackCall, setTriggerPackCall] = useState(false)
-    const [triggerShipCall, setTriggerShipCall] = useState(false)
-    const [triggerOutDeliveryCall, setTriggerOutDeliveryCall] = useState(false)
-    const [triggerDeliveryCall, setTriggerDeliveryCall] = useState(false)
-    const [triggerExchangeCall, setTriggerExchangeCall] = useState(false)
     const [cancelCall, setCancelCall] = useState(false)
-    const [buttonAfterClick, setButtonAfterClick] = useState(false)
     const navigate = useNavigate()
     const [partner, setPartner] = useState<{ value: string; label: string } | null>(null)
     const fulfilledIDs = Object.keys(fulfilledQuantities)
     const [rejectModal, setRejectModal] = useState(false)
     const hasStatus = (status: string) => data.some((log) => log.status === status)
-    const isPacked = data.some((log) => log?.status === 'PACKED')
-    const isDeliveryCreated = data.some((log) => log?.status === 'DELIVERY_CREATED')
-    const isOrderDone = data.some((log) => log.status === 'DELIVERED' || log.status === 'COMPLETED')
     const isExchangeComplete = hasStatus('EXCHANGE_DELIVERED')
     const [rtoCancel, setRtoCancel] = useState(false)
     const [bagsCount, setBagsCount] = useState('1')
@@ -48,38 +37,67 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type }: Ac
     const [isPhotoCamera, setIsPhotoCamera] = useState(false)
     const [currentId, setCurrentId] = useState<number | null>(null)
     const [storePhoto, setStorePhoto] = useState<{ [key: number]: string[] }>({})
-
+    const [updateOrder, updateResponse] = newOrderService.useUpdateOrderMutation()
+    const [packOrder, packResponse] = newOrderService.useUpdateOrderMutation()
     const rejectData = mainData.order_items?.filter((item) => !fulfilledIDs.includes(item.id.toString()))?.map((item) => item.id)
+
+    const isPacked = useMemo(() => {
+        return data.some((log) => log?.status === 'PACKED')
+    }, [data])
+
+    const isDeliveryCreated = useMemo(() => {
+        return data.some((log) => log?.status === 'DELIVERY_CREATED')
+    }, [data])
+    const isOrderDone = useMemo(() => {
+        return data.some((log) => log.status === 'DELIVERED' || log.status === 'COMPLETED')
+    }, [data])
 
     const showModal = (content: string | undefined) => {
         setModalContent(content)
         setIsModalOpen(true)
     }
 
+    useEffect(() => {
+        if (updateResponse.isSuccess) {
+            notification.success({ message: 'Successfully Updated' })
+            setTriggerApiCall(false)
+            setIsModalOpen(false)
+            refetch()
+        }
+        if (updateResponse.isError) {
+            notification.error({ message: (updateResponse.error as any).data.message })
+            setTriggerApiCall(false)
+        }
+    }, [updateResponse.isSuccess, updateResponse.isError])
+
+    useEffect(() => {
+        if (packResponse.isSuccess) {
+            notification.success({ message: 'Successfully Packed the order' })
+            setTriggerPackCall(false)
+            setIsModalOpen(false)
+            refetch()
+        }
+        if (packResponse.isError) {
+            notification.error({ message: (packResponse.error as any).data.message })
+            setTriggerApiCall(false)
+        }
+    }, [packResponse.isSuccess, packResponse.isError])
+
     const handleLocationClick = (productId: number, location: string, locationQuantity: number, totalQuantity: number) => {
         setSelectedLocations((prev) => {
             const productLocations = prev[productId] || {}
             const currentCount = productLocations[location] || 0
             const totalSelected = Object.values(productLocations).reduce((sum, count) => sum + count, 0)
-
             if (currentCount === locationQuantity) {
                 notification.error({ message: 'Inventory exceeded' })
                 return prev
             }
-
             if (totalSelected === Number(totalQuantity)) {
                 notification.error({ message: 'item has already been fulfilled' })
                 return prev
             }
-
             if (currentCount < locationQuantity && totalSelected < totalQuantity) {
-                return {
-                    ...prev,
-                    [productId]: {
-                        ...productLocations,
-                        [location]: currentCount + 1,
-                    },
-                }
+                return { ...prev, [productId]: { ...productLocations, [location]: currentCount + 1 } }
             }
             return prev
         })
@@ -111,13 +129,11 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type }: Ac
             data: { item_id: id, packing_image: images?.join(',') },
         }
         try {
-            const res = await axiosInstance.patch(`/merchant/order/${invoice_id}`, bodyData)
-            successMessage(res)
+            const res = await updateOrder({ id: invoice_id as string, data: bodyData }).unwrap()
+            notification.success({ message: res?.message || 'photo has been set' })
             setStorePhoto([])
         } catch (error) {
-            if (error instanceof AxiosError) {
-                errorMessage(error)
-            }
+            notification.error({ message: 'Failed to set the photo' })
         }
     }
 
@@ -126,7 +142,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type }: Ac
     }
 
     useEffect(() => {
-        if (triggerApiCall) {
+        if (triggerPackCall) {
             const sendApiRequest = async () => {
                 try {
                     if (status === 'ACCEPTED' && !bagsCount) {
@@ -173,9 +189,8 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type }: Ac
                         Object.assign(data, quantityData)
                     }
                     if (Object.keys(data).length === 0) {
-                        setButtonAfterClick(false)
                         notification.warning({ message: 'Please select at least one item with a valid quantity to proceed.' })
-                        setTriggerApiCall(false)
+                        setTriggerPackCall(false)
                         return
                     }
                     const hasZeroQuantity =
@@ -183,7 +198,6 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type }: Ac
                         Object.values(fulfilledQuantities).some((quantity) => quantity === 0)
 
                     if (hasZeroQuantity) {
-                        setButtonAfterClick(false)
                         Modal.confirm({
                             title: 'Confirm Zero Quantity',
                             content: 'One or more items have a quantity of 0. Do you still want to proceed?',
@@ -193,7 +207,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type }: Ac
                                 await makeApiCall(data)
                             },
                             onCancel: () => {
-                                setTriggerApiCall(false)
+                                setTriggerPackCall(false)
                             },
                         })
                         return
@@ -206,27 +220,23 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type }: Ac
 
                     const hasLessQuantity = totalRequiredQuantity && totalRequiredQuantity > totalFulfilledQuantity
                     if (hasLessQuantity && !hasZeroQuantity) {
-                        setButtonAfterClick(false)
                         Modal.confirm({
                             title: 'Confirm Quantity for Packing',
                             content: 'The number of fulfilled quantity is less than actual quantity!',
                             okText: 'Yes',
                             cancelText: 'No',
                             onOk: async () => {
-                                console.log('data is', data)
                                 await makeApiCall(data)
                             },
                             onCancel: () => {
-                                setTriggerApiCall(false)
+                                setTriggerPackCall(false)
                             },
                         })
                         return
                     }
                     await makeApiCall(data)
                 } catch (error) {
-                    setTriggerApiCall(false)
-                } finally {
-                    setButtonAfterClick(false)
+                    setTriggerPackCall(false)
                 }
             }
             const makeApiCall = async (data: { [key: number]: number }) => {
@@ -236,24 +246,11 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type }: Ac
                     ...(bagsCount ? { packets_count: Number(bagsCount) } : {}),
                     ...(binNumber ? { bin_id: binNumber } : {}),
                 }
-                try {
-                    const response = await axiosInstance.patch(`merchant/order/${invoice_id}`, body)
-                    notification.success({ message: response?.data?.message })
-                    setIsModalOpen(false)
-                    setTriggerApiCall(false)
-                } catch (error) {
-                    if (error instanceof AxiosError) {
-                        notification.error({ message: error?.response?.data?.message })
-                    }
-                } finally {
-                    setInterval(() => {
-                        navigate(0)
-                    }, 2000)
-                }
+                packOrder({ id: invoice_id as string, data: body })
             }
             sendApiRequest()
         }
-    }, [triggerApiCall, navigate])
+    }, [triggerPackCall])
 
     const handleReject = () => {
         const hasFulfilledQty = Object.values(fulfilledQuantities).some((item) => item > 0)
@@ -275,12 +272,8 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type }: Ac
                         acc[id] = 0
                         return acc
                     }, {})
-                    const body = {
-                        action,
-                        data: cancelData,
-                    }
-                    const response = await axiosInstance.patch(`merchant/order/${invoice_id}`, body)
-                    console.log(response)
+                    const body = { action, data: cancelData }
+                    await updateOrder({ id: invoice_id as string, data: body }).unwrap()
                     setIsModalOpen(false)
                     setCancelCall(false)
                     navigate(0)
@@ -293,28 +286,34 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type }: Ac
         }
     }, [cancelCall, navigate])
 
-    const handleApiCall = (trigger: boolean, setTrigger: React.Dispatch<React.SetStateAction<boolean>>, isPacking: boolean) => {
-        if (trigger) {
-            particularApiCall(action, invoice_id, partner?.value, navigate, isPacking, binNumber)
-            setTrigger(false)
-        }
-    }
-
-    useEffect(() => {
-        handleApiCall(triggerAcceptedCall, setTriggerAcceptedCall, false)
-        handleApiCall(triggerOutDeliveryCall, setTriggerOutDeliveryCall, false)
-        handleApiCall(triggerPackCall, setTriggerPackCall, true)
-        handleApiCall(triggerShipCall, setTriggerShipCall, false)
-        handleApiCall(triggerDeliveryCall, setTriggerDeliveryCall, false)
-        handleApiCall(triggerExchangeCall, setTriggerExchangeCall, false)
-    }, [triggerPackCall, triggerShipCall, triggerDeliveryCall, action, invoice_id, partner, navigate])
-
     const handlePartnerSelect = (selectedValue: any) => {
         const selectedLabel = LOGISTIC_PARTNER.find((item) => item.value === selectedValue)?.label || ''
         setPartner({ value: selectedValue, label: selectedLabel })
     }
 
     const { buttonText, modalContent: content } = getButtonAndModalContent(data, mainData, delivery_type)
+
+    const handleAction = (value: string) => {
+        setAction(value)
+        setTriggerApiCall(true)
+    }
+
+    useEffect(() => {
+        if (triggerApiCall && action !== 'PACKED') {
+            let body: any = { action }
+            if (action === 'CREATE_DELIVERY') {
+                body = { action, delivery_partner: partner?.value, bin_number: binNumber }
+                if (!partner?.value) {
+                    notification.error({
+                        message: 'Select Partner to continue',
+                    })
+                    return
+                }
+            }
+
+            updateOrder({ id: invoice_id as string, data: body })
+        }
+    }, [triggerApiCall, action, partner?.value, binNumber])
 
     return (
         <Card className="mb-10 flex flex-col">
@@ -380,33 +379,25 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type }: Ac
             {data.length === 0 && (
                 <CustomModal5
                     isModalOpen={isModalOpen}
-                    handlePack={() => {
-                        setAction('ACCEPTED')
-                        setTriggerAcceptedCall(true)
-                        setButtonAfterClick(true)
-                    }}
+                    handlePack={() => handleAction('ACCEPTED')}
                     handleClose={() => setIsModalOpen(false)}
                     modalContent={modalContent}
                     status={status}
                     invoice={invoice_id}
-                    isButtonClick={buttonAfterClick}
+                    isButtonClick={updateResponse.isLoading}
                 />
             )}
 
             {data[data.length - 1]?.status === 'PACKED' && (
                 <CustomModal2
                     isModalOpen={isModalOpen}
-                    handlePack={() => {
-                        setAction('CREATE_DELIVERY')
-                        setTriggerPackCall(true)
-                        setButtonAfterClick(true)
-                    }}
+                    handlePack={() => handleAction('CREATE_DELIVERY')}
                     handleClose={() => setIsModalOpen(false)}
                     modalContent={modalContent}
                     status={status}
                     handlePartnerSelect={handlePartnerSelect}
                     partner={partner?.label}
-                    isButtonClick={buttonAfterClick}
+                    isButtonClick={updateResponse.isLoading}
                     binNumber={binNumber}
                     setBinNumber={setBinNumber}
                 />
@@ -416,8 +407,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type }: Ac
                     isModalOpen={isModalOpen}
                     handleOk={() => {
                         setAction('PACKED')
-                        setTriggerApiCall(true)
-                        setButtonAfterClick(true)
+                        setTriggerPackCall(true)
                     }}
                     handleCancel={() => setIsModalOpen(false)}
                     modalContent={modalContent}
@@ -429,7 +419,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type }: Ac
                     fulfilledQuantities={fulfilledQuantities}
                     handleSelectChange={handleSelectChange}
                     errorMessage={errorText || undefined}
-                    isButtonClick={buttonAfterClick}
+                    isButtonClick={packResponse.isLoading}
                     bagsCount={bagsCount}
                     setBagsCount={setBagsCount}
                     handleLocationClick={handleLocationClick}
@@ -446,11 +436,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type }: Ac
             {buttonText === 'OUT FOR DELIVERY' && mainData?.delivery_type === 'STANDARD' && (
                 <CustomModal3
                     isModalOpen={isModalOpen}
-                    handlePack={() => {
-                        setAction('SHIPPED')
-                        setTriggerShipCall(true)
-                        setButtonAfterClick(true)
-                    }}
+                    handlePack={() => handleAction('SHIPPED')}
                     handleClose={() => setIsModalOpen(false)}
                     modalContent={modalContent}
                     status={status}
@@ -459,11 +445,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type }: Ac
             {buttonText === 'OUT FOR DELIVERY' && mainData?.delivery_type !== 'STANDARD' && (
                 <CustomModal3
                     isModalOpen={isModalOpen}
-                    handlePack={() => {
-                        setAction('SHIPPED')
-                        setTriggerShipCall(true)
-                        setButtonAfterClick(true)
-                    }}
+                    handlePack={() => handleAction('SHIPPED')}
                     handleClose={() => setIsModalOpen(false)}
                     modalContent={modalContent}
                     status={status}
@@ -473,31 +455,23 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type }: Ac
             {buttonText === 'MARK AS DELIVERED' && (
                 <CustomModal4
                     isModalOpen={isModalOpen}
-                    handlePack={() => {
-                        setAction('DELIVERED')
-                        setTriggerDeliveryCall(true)
-                        setButtonAfterClick(true)
-                    }}
+                    handlePack={() => handleAction('DELIVERED')}
                     handleClose={() => setIsModalOpen(false)}
                     modalContent={modalContent}
                     status={status}
-                    isButtonClick={buttonAfterClick}
+                    isButtonClick={updateResponse.isLoading}
                 />
             )}
 
             {buttonText === 'EXCHANGE DELIVERED' && !isExchangeComplete && (
                 <ExchangeModal
                     isModalOpen={isModalOpen}
-                    handlePack={() => {
-                        setAction('EXCHANGE_DELIVERED')
-                        setTriggerExchangeCall(true)
-                        setButtonAfterClick(true)
-                    }}
+                    handlePack={() => handleAction('EXCHANGE_DELIVERED')}
                     handleClose={() => setIsModalOpen(false)}
                     modalContent={modalContent}
                     status={status}
                     invoice={invoice_id}
-                    isButtonClick={buttonAfterClick}
+                    isButtonClick={updateResponse.isLoading}
                 />
             )}
 
@@ -516,4 +490,4 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type }: Ac
     )
 }
 
-export default Activity
+export default React.memo(Activity)

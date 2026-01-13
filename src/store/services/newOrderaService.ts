@@ -4,6 +4,11 @@ import { NewOrderResponseType, Order } from '../types/newOrderTypes'
 
 type QueryParams = Record<string, string | number | boolean | undefined | any>
 
+type OrderPatchRequest = {
+    id: string
+    data: Record<string, string | number | any>
+}
+
 export const newOrderService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
         getNewOrders: builder.query<NewOrderResponseType, QueryParams>({
@@ -20,6 +25,15 @@ export const newOrderService = RtkQueryService.injectEndpoints({
                 method: 'GET',
             }),
             keepUnusedDataFor: 0,
+        }),
+        updateOrder: builder.mutation<{ status: string; message: string }, OrderPatchRequest>({
+            query: ({ id, data }) => {
+                return {
+                    url: `/merchant/order/${id}`,
+                    method: 'PATCH',
+                    body: data,
+                }
+            },
         }),
     }),
 })

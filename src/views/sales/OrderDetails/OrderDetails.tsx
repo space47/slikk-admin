@@ -45,16 +45,20 @@ const OrderDetails = () => {
 
     useEffect(() => {
         if (orderDetailsApi.isSuccess) {
+            console
             setData(orderDetailsApi.data.data)
         }
-    }, [orderDetailsApi.isSuccess])
+    }, [orderDetailsApi.isSuccess, orderDetailsApi?.data?.data])
 
     const query = useMemo(() => {
         if (!data?.logistic?.task_id) return null
         return `/logistic/slikk/task?task_id=${data.logistic.task_id}`
     }, [data?.logistic?.task_id])
 
-    const { data: taskData } = useFetchSingleData<TaskData>({ url: query || '', pollingInterval: query ? 60000 : undefined })
+    const { data: taskData, refetch: refetchTask } = useFetchSingleData<TaskData>({
+        url: query || '',
+        pollingInterval: query ? 60000 : undefined,
+    })
 
     const { handlemarkAsPaid, handlePODAction, handleDownload, handleConvert, handleMarketingOrder, OrderLink, OrderList } =
         useOrderDetailFunctions({ data, setShowCancelExchangeModal })
@@ -66,6 +70,12 @@ const OrderDetails = () => {
             setShowRiderData(false)
         }
     }, [data?.logistic, data?.status])
+
+    useEffect(() => {
+        if (orderDetailsApi.currentData) {
+            refetchTask()
+        }
+    }, [orderDetailsApi.currentData])
 
     const OrderDetailUI = (data: Order) => {
         return (
@@ -266,6 +276,7 @@ const OrderDetails = () => {
                                                 status={data.status}
                                                 invoice_id={data.invoice_id}
                                                 delivery_type={data.delivery_type}
+                                                refetch={orderDetailsApi.refetch}
                                             />
                                         </div>
 
