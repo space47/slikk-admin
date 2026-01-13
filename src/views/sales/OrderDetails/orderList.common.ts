@@ -98,7 +98,7 @@ export enum EOrderStatus {
     shipped = 'SHIPPED',
     exchange_delivered = 'EXCHANGE_DELIVERED',
     add_item_packing = 'ADD_ITEM_PACKING_IMAGES',
-    created_delivery = 'CREATED_DELIVERY',
+    created_delivery = 'CREATE_DELIVERY',
     rto_delivered = 'RTO_DELIVERED',
     rto_initiated = 'RTO_INITIATED',
     picking = 'PICKING',
