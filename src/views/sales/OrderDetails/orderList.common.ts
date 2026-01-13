@@ -83,4 +83,27 @@ export interface IOrderPack {
     setTriggerPackCall: (x: boolean) => void
 }
 
-//Todo: enums
+export enum EOrderStatus {
+    pending = 'PENDING',
+    accepted = 'ACCEPTED',
+    out_for_delivery = 'OUT_FOR_DELIVERY',
+    picked_up = 'PICKED_UP',
+    delivery_created = 'DELIVERY_CREATED',
+    delivered = 'DELIVERED',
+    completed = 'COMPLETED',
+    cancelled = 'CANCELLED',
+    declined = 'DECLINED',
+    in_transit = 'IN_TRANSIT',
+    shipped = 'SHIPPED',
+    exchange_delivered = 'EXCHANGE_DELIVERED',
+    add_item_packing = 'ADD_ITEM_PACKING_IMAGES',
+    created_delivery = 'CREATED_DELIVERY',
+    rto_delivered = 'RTO_DELIVERED',
+    rto_initiated = 'RTO_INITIATED',
+    picking = 'PICKING',
+    paid = 'PAID',
+    pod = 'POD',
+    pod_paid = 'POD_PAID',
+    pod_created = 'POD_CREATED',
+    failed = 'FAILED',
+}
