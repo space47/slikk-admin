@@ -23,6 +23,15 @@ export const useIndentColumns = ({ storeList, handleStatusClick }: IndentColumns
     return useMemo<ColumnDef<IndentResultType>[]>(
         () => [
             {
+                header: 'Overview',
+                accessorKey: 'intent_number',
+                cell: ({ row }) => (
+                    <button onClick={() => handleStatusClick(row.original.id)}>
+                        <MdViewList className="text-2xl text-blue-500" />
+                    </button>
+                ),
+            },
+            {
                 header: 'Indent No.',
                 accessorKey: 'intent_number',
                 cell: ({ row }) => (
@@ -136,15 +145,6 @@ export const useIndentColumns = ({ storeList, handleStatusClick }: IndentColumns
                 header: 'Last Update',
                 accessorKey: 'update_date',
                 cell: ({ getValue }: any) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
-            },
-            {
-                header: 'Overview',
-                accessorKey: 'intent_number',
-                cell: ({ row }) => (
-                    <button onClick={() => handleStatusClick(row.original.id)}>
-                        <MdViewList className="text-2xl text-blue-500" />
-                    </button>
-                ),
             },
         ],
         [storeList, selectedCompany?.id],
