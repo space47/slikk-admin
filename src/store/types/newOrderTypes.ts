@@ -4,6 +4,13 @@ export interface StatusLog {
     timestamp: string
 }
 
+export type QueryParams = Record<string, string | number | boolean | undefined | any>
+
+export type OrderPatchRequest = {
+    id: string
+    data: Record<string, string | number | any>
+}
+
 export type OrderItem = {
     id: number
 

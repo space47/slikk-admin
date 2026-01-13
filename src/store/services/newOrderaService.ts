@@ -1,13 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import RtkQueryService from '@/services/RtkQueryService'
-import { NewOrderResponseType, Order } from '../types/newOrderTypes'
-
-type QueryParams = Record<string, string | number | boolean | undefined | any>
-
-type OrderPatchRequest = {
-    id: string
-    data: Record<string, string | number | any>
-}
+import { NewOrderResponseType, Order, OrderPatchRequest, QueryParams } from '../types/newOrderTypes'
 
 export const newOrderService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({

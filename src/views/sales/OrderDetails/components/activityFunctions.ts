@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { notification } from 'antd'
 import { Event } from './activityCommon'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { Order } from '@/store/types/newOrderTypes'
 import { IOrderPack } from '../orderList.common'
 
@@ -74,41 +73,6 @@ export const getButtonAndModalContent = (data: Event[], mainData?: { delivery_ty
 
     return { buttonText: '', modalContent: '', secondaryButtonText: '', secondaryButtonContent: '' }
 }
-
-export const particularApiCall = async (
-    action: string,
-    invoice_id: string | undefined,
-    partnerValue: string | undefined,
-    navigate: any,
-    isDelivery: boolean = true,
-    binNumber?: string,
-) => {
-    try {
-        const body = isDelivery ? { action, delivery_partner: partnerValue, bin_number: binNumber } : { action }
-        if (isDelivery && !partnerValue) {
-            notification.error({
-                message: 'Select Partner to continue',
-            })
-            return
-        }
-        const response = await axioisInstance.patch(`merchant/order/${invoice_id}`, body)
-
-        notification.success({
-            message: 'Success',
-            description: response?.data?.message || 'Order status updated successfully.',
-        })
-        navigate(0)
-    } catch (error: any) {
-        console.error(error)
-        const errorMessage = error.response?.data?.message || 'There was an error updating the order status. Please try again.'
-        notification.error({
-            message: 'Error',
-            description: errorMessage,
-        })
-    }
-}
-
-// utils/packOrder.helpers.ts
 
 export const getItemsWithAndWithoutLocation = (orderItems: Order['order_items']) => {
     const withLocation = orderItems?.filter(
@@ -224,12 +188,7 @@ export const usePackOrder = ({ mainData, selectedLocations, fulfilledQuantities,
 
         const { required, fulfilled } = getTotalQuantities(mainData?.order_items, selectedLocations, fulfilledQuantities)
 
-        return {
-            zeroQty,
-            required,
-            fulfilled,
-            data,
-        }
+        return { zeroQty, required, fulfilled, data }
     }
 
     return { handlePack }

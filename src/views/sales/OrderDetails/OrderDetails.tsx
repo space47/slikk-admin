@@ -38,11 +38,6 @@ const OrderDetails = () => {
     const [showRiderData, setShowRiderData] = useState(false)
     const orderDetailsApi = newOrderService.useGetOrderDetailsQuery({ order_id: invoice_id }, { skip: !invoice_id })
 
-    // const queryOrders = useMemo(() => {
-    //     return `merchant/order/${invoice_id}`
-    // }, [invoice_id])
-    // const { data: data, loading } = useFetchSingleData<SalesOrderDetailsResponse>({ url: queryOrders })
-
     useEffect(() => {
         if (orderDetailsApi.isSuccess) {
             console
@@ -151,7 +146,7 @@ const OrderDetails = () => {
                         )}
                     </div>
 
-                    {data?.return_order?.length && (
+                    {!!data?.return_order?.length && (
                         <>
                             <OrderList
                                 title="Return Orders"
@@ -180,7 +175,7 @@ const OrderDetails = () => {
 
                     <OrderLink label="Split Order" value={data?.split_order_id as string} href={`/app/orders/${data?.split_order_id}`} />
 
-                    {data?.exchange_order_id?.length && (
+                    {!!data?.exchange_order_id?.length && (
                         <OrderList
                             title="Exchange Orders"
                             items={data.exchange_order_id.map((id) => ({ id, exchange_order_id: id }))}
