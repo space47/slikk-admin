@@ -14,7 +14,7 @@ import { buildPackOrderPayload, getButtonAndModalContent, usePackOrder } from '.
 import RtoCancelModal from '../orderDetailsUtils/RtoCancelModal'
 import OrderCameraModal from './OrderCameraModal'
 import { newOrderService } from '@/store/services/newOrderaService'
-import { EOrderStatus } from '../orderList.common'
+import { EOrderButton, EOrderStatus } from '../orderList.common'
 
 const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refetch }: ActivityProps) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -364,7 +364,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
                 />
             )}
 
-            {buttonText === 'OUT FOR DELIVERY' && mainData?.delivery_type === 'STANDARD' && (
+            {buttonText === EOrderButton.out_for_delivery && mainData?.delivery_type === EOrderButton.standard && (
                 <CustomModal3
                     isModalOpen={isModalOpen}
                     handlePack={() => handleAction(EOrderStatus.shipped)}
@@ -373,7 +373,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
                     status={status}
                 />
             )}
-            {buttonText === 'OUT FOR DELIVERY' && mainData?.delivery_type !== 'STANDARD' && (
+            {buttonText === EOrderButton.out_for_delivery && mainData?.delivery_type !== EOrderButton.standard && (
                 <CustomModal3
                     isModalOpen={isModalOpen}
                     handlePack={() => handleAction(EOrderStatus.shipped)}
@@ -383,7 +383,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
                 />
             )}
 
-            {buttonText === 'MARK AS DELIVERED' && (
+            {buttonText === EOrderButton.mark_as_delivered && (
                 <CustomModal4
                     isModalOpen={isModalOpen}
                     handlePack={() => handleAction(EOrderStatus.delivered)}
@@ -394,7 +394,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
                 />
             )}
 
-            {buttonText === 'EXCHANGE DELIVERED' && !isExchangeComplete && (
+            {buttonText === EOrderButton.exchange_delivered && !isExchangeComplete && (
                 <ExchangeModal
                     isModalOpen={isModalOpen}
                     handlePack={() => handleAction(EOrderStatus.exchange_delivered)}
