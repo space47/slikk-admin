@@ -84,6 +84,7 @@ export interface IOrderPack {
 }
 
 export enum EOrderStatus {
+    packed = 'PACKED',
     pending = 'PENDING',
     accepted = 'ACCEPTED',
     out_for_delivery = 'OUT_FOR_DELIVERY',
@@ -106,4 +107,18 @@ export enum EOrderStatus {
     pod_paid = 'POD_PAID',
     pod_created = 'POD_CREATED',
     failed = 'FAILED',
+    exchange = 'EXCHANGE',
+    driver_assigned = 'DRIVER_ASSIGNED',
+    out_for_pickup = 'OUT_FOR_PICKUP',
+}
+
+export enum EOrderButton {
+    accept = 'ACCEPT',
+    out_for_delivery = 'OUT FOR DELIVERY',
+    standard = 'STANDARD',
+    mark_as_shipped = 'MARK AS SHIPPED',
+    mark_as_delivered = 'MARK AS DELIVERED',
+    exchange_delivered = 'EXCHANGE DELIVERED',
+    created_delivery = 'CREATE DELIVERY',
+    pick_reject = 'PICK/REJECT',
 }

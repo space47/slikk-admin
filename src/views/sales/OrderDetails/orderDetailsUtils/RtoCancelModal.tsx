@@ -9,7 +9,7 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { OrderCancelReasons } from '@/constants/commonArray.constant'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { errorMessage, successMessage } from '@/utils/responseMessages'
-import { LocationDetail, QuantityValidation } from '../orderList.common'
+import { EOrderStatus, LocationDetail, QuantityValidation } from '../orderList.common'
 import { FaTrash } from 'react-icons/fa'
 import { Order, OrderItem } from '@/store/types/newOrderTypes'
 
@@ -140,7 +140,7 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
     }, [cancelReason, customReason, isCancel])
 
     const handleCancelOrder = useCallback(async () => {
-        const isAccepted = status === 'ACCEPTED'
+        const isAccepted = status === EOrderStatus.accepted
         if (!isAccepted) {
             const validation = validateQuantities()
             if (!validation.isValid) {
@@ -365,7 +365,7 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
         <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)} width={1000} height={'85vh'} preventScroll>
             <div className="p-0 h-[80vh] overflow-scroll">
                 {cancelHeaderSection()}
-                {status !== 'ACCEPTED' && (
+                {status !== EOrderStatus.accepted && (
                     <div className="mb-6">
                         <div className="flex items-center gap-2 mb-3">
                             <IoIosListBox className="text-blue-600 text-xl" />

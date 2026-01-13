@@ -2,72 +2,60 @@
 import { notification } from 'antd'
 import { Event } from './activityCommon'
 import { Order } from '@/store/types/newOrderTypes'
-import { IOrderPack } from '../orderList.common'
+import { EOrderButton, EOrderStatus, IOrderPack } from '../orderList.common'
 
 export const getButtonAndModalContent = (data: Event[], mainData?: { delivery_type?: string }, delivery_type?: string) => {
     if (data.length === 0) {
-        return { buttonText: 'ACCEPT' }
+        return { buttonText: EOrderButton.accept }
     }
 
     const lastLogStatus = data[data.length - 1]?.status || null
     const hasStatus = (status: string) => data.some((log) => log.status === status)
-    const isPacked = hasStatus('PACKED')
-    const isDeliveryCreated = hasStatus('DELIVERY_CREATED')
-    const isOutForDelivery = hasStatus('OUT_FOR_DELIVERY') || hasStatus('SHIPPED')
-    const isDriverAssigned = lastLogStatus === 'DRIVER_ASSIGNED'
-    const isOrderDone = hasStatus('DELIVERED') || hasStatus('COMPLETED')
-    const isOrderCancelled = hasStatus('DECLINED') || hasStatus('CANCELLED')
-    const isShipped = hasStatus('SHIPPED') || hasStatus('OUT_FOR_DELIVERY')
-    const isExchangeComplete = hasStatus('EXCHANGE_DELIVERED')
+    const isPacked = hasStatus(EOrderStatus.packed)
+    const isDeliveryCreated = hasStatus(EOrderStatus.delivery_created)
+    const isOutForDelivery = hasStatus(EOrderStatus.out_for_delivery) || hasStatus(EOrderStatus.shipped)
+    const isDriverAssigned = lastLogStatus === EOrderStatus.driver_assigned
+    const isOrderDone = hasStatus(EOrderStatus.delivered) || hasStatus(EOrderStatus.completed)
+    const isOrderCancelled = hasStatus(EOrderStatus.declined) || hasStatus(EOrderStatus.cancelled)
+    const isShipped = hasStatus(EOrderStatus.shipped) || hasStatus(EOrderStatus.out_for_delivery)
+    const isExchangeComplete = hasStatus(EOrderStatus.exchange_delivered)
 
-    console.log('mainData?.delivery_type', delivery_type)
-
-    if (isDriverAssigned && isPacked && mainData?.delivery_type === 'STANDARD' && !isOrderDone && !isOrderCancelled) {
-        return { buttonText: 'MARK AS SHIPPED', modalContent: 'Mark as Shipped' }
+    if (isDriverAssigned && isPacked && mainData?.delivery_type === EOrderButton.standard && !isOrderDone && !isOrderCancelled) {
+        return { buttonText: EOrderButton.mark_as_shipped, modalContent: 'Mark as Shipped' }
     }
-    if (lastLogStatus === 'RTO_INITIATED' && !isOrderDone && !isOrderCancelled) {
-        return {
-            buttonText: 'OUT FOR DELIVERY',
-            // secondaryButtonText: 'CANCEL',
-            modalContent: 'Out for Delivery',
-            // secondaryButtonContent: 'Cancel',
-        }
+    if (lastLogStatus === EOrderStatus.rto_initiated && !isOrderDone && !isOrderCancelled) {
+        return { buttonText: EOrderButton.out_for_delivery, modalContent: 'Out for Delivery' }
     }
-    if (lastLogStatus === 'RTO_DELIVERED' && !isOrderDone && !isOrderCancelled) {
-        return {
-            buttonText: '',
-            // secondaryButtonText: 'CANCEL',
-            modalContent: '',
-            // secondaryButtonContent: 'Cancel',
-        }
+    if (lastLogStatus === EOrderStatus.rto_delivered && !isOrderDone && !isOrderCancelled) {
+        return { buttonText: '', modalContent: '' }
     }
-    if (isDriverAssigned && isPacked && mainData?.delivery_type !== 'STANDARD' && !isOrderDone && !isOrderCancelled) {
-        return { buttonText: 'OUT FOR DELIVERY', modalContent: 'Out for Delivery' }
+    if (isDriverAssigned && isPacked && mainData?.delivery_type !== EOrderButton.standard && !isOrderDone && !isOrderCancelled) {
+        return { buttonText: EOrderButton.out_for_delivery, modalContent: 'Out for Delivery' }
     }
     if (isDeliveryCreated && !isPacked && !isOrderDone && !isOrderCancelled) {
-        return { buttonText: 'PACK/REJECT', modalContent: 'Pick and Pack' }
+        return { buttonText: EOrderButton.pick_reject, modalContent: 'Pick and Pack' }
     }
     if (isDeliveryCreated && isPacked && !isOutForDelivery && !isOrderDone && !isOrderCancelled) {
-        const buttonText = mainData?.delivery_type === 'STANDARD' ? 'MARK AS SHIPPED' : 'OUT FOR DELIVERY'
+        const buttonText = mainData?.delivery_type === EOrderButton.standard ? EOrderButton.mark_as_shipped : EOrderButton.out_for_delivery
         return { buttonText, modalContent: buttonText.replace('MARK AS ', '') }
     }
-    if (lastLogStatus === 'DELIVERY_CREATED' || lastLogStatus === 'OUT_FOR_PICKUP') {
-        const buttonText = mainData?.delivery_type === 'STANDARD' ? 'MARK AS SHIPPED' : 'OUT FOR DELIVERY'
+    if (lastLogStatus === EOrderStatus.delivery_created || lastLogStatus === EOrderStatus.out_for_pickup) {
+        const buttonText = mainData?.delivery_type === EOrderButton.standard ? EOrderButton.mark_as_shipped : EOrderButton.out_for_delivery
         return { buttonText, modalContent: buttonText.replace('MARK AS ', '') }
     }
-    if (isOrderDone && delivery_type === 'EXCHANGE' && !isExchangeComplete) {
-        return { buttonText: 'EXCHANGE DELIVERED', modalContent: 'Exchange Delivered' }
+    if (isOrderDone && delivery_type === EOrderStatus.exchange && !isExchangeComplete) {
+        return { buttonText: EOrderButton.exchange_delivered, modalContent: 'Exchange Delivered' }
     }
-    if (lastLogStatus === 'PACKED') {
-        return { buttonText: 'CREATE DELIVERY' }
+    if (lastLogStatus === EOrderStatus.packed) {
+        return { buttonText: EOrderButton.created_delivery }
     }
-    if (lastLogStatus === 'ACCEPTED' || lastLogStatus === 'PICKING') {
-        return { buttonText: 'PACK/REJECT', modalContent: 'Pick and Pack' }
+    if (lastLogStatus === EOrderStatus.accepted || lastLogStatus === EOrderStatus.picking) {
+        return { buttonText: EOrderButton.pick_reject, modalContent: 'Pick and Pack' }
     }
     if (isShipped && !isOrderDone && !isOrderCancelled) {
-        return { buttonText: 'MARK AS DELIVERED' }
+        return { buttonText: EOrderButton.mark_as_delivered }
     }
-    if (lastLogStatus === 'CANCELLED') {
+    if (lastLogStatus === EOrderStatus.cancelled) {
         return { buttonText: '' }
     }
 

@@ -14,6 +14,7 @@ import { buildPackOrderPayload, getButtonAndModalContent, usePackOrder } from '.
 import RtoCancelModal from '../orderDetailsUtils/RtoCancelModal'
 import OrderCameraModal from './OrderCameraModal'
 import { newOrderService } from '@/store/services/newOrderaService'
+import { EOrderStatus } from '../orderList.common'
 
 const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refetch }: ActivityProps) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -29,7 +30,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
     const fulfilledIDs = Object.keys(fulfilledQuantities)
     const [rejectModal, setRejectModal] = useState(false)
     const hasStatus = (status: string) => data.some((log) => log.status === status)
-    const isExchangeComplete = hasStatus('EXCHANGE_DELIVERED')
+    const isExchangeComplete = hasStatus(EOrderStatus.exchange_delivered)
     const [rtoCancel, setRtoCancel] = useState(false)
     const [bagsCount, setBagsCount] = useState('1')
     const [binNumber, setBinNumber] = useState('1')
@@ -42,14 +43,14 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
     const rejectData = mainData.order_items?.filter((item) => !fulfilledIDs.includes(item.id.toString()))?.map((item) => item.id)
 
     const isPacked = useMemo(() => {
-        return data.some((log) => log?.status === 'PACKED')
+        return data.some((log) => log?.status === EOrderStatus.packed)
     }, [data])
 
     const isDeliveryCreated = useMemo(() => {
-        return data.some((log) => log?.status === 'DELIVERY_CREATED')
+        return data.some((log) => log?.status === EOrderStatus.delivery_created)
     }, [data])
     const isOrderDone = useMemo(() => {
-        return data.some((log) => log.status === 'DELIVERED' || log.status === 'COMPLETED')
+        return data.some((log) => log.status === EOrderStatus.delivered || log.status === EOrderStatus.completed)
     }, [data])
 
     const showModal = (content: string | undefined) => {
@@ -59,7 +60,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
 
     useEffect(() => {
         if (updateResponse.isSuccess) {
-            if (updateResponse.originalArgs?.data.action === 'ADD_ITEM_PACKING_IMAGES') {
+            if (updateResponse.originalArgs?.data.action === EOrderStatus.add_item_packing) {
                 notification.success({ message: updateResponse.data.message || 'photo has been set' })
                 setStorePhoto([])
             } else {
@@ -129,7 +130,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
 
     const handleSetPhoto = async (id: number, images: string[]) => {
         const bodyData = {
-            action: 'ADD_ITEM_PACKING_IMAGES',
+            action: EOrderStatus.add_item_packing,
             dashboard: false,
             data: { item_id: id, packing_image: images?.join(',') },
         }
@@ -229,9 +230,9 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
     }
 
     useEffect(() => {
-        if (triggerApiCall && action !== 'PACKED') {
+        if (triggerApiCall && action !== EOrderStatus.packed) {
             let body: any = { action }
-            if (action === 'CREATE_DELIVERY') {
+            if (action === EOrderStatus.created_delivery) {
                 body = { action, delivery_partner: partner?.value, bin_number: binNumber }
                 if (!partner?.value) {
                     notification.error({
@@ -283,7 +284,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
                 )
             )}
             <div className="flex items-center justify-center mt-3">
-                {data[data.length - 1]?.status === 'RTO_DELIVERED' && (
+                {data[data.length - 1]?.status === EOrderStatus.rto_delivered && (
                     <Button className="ml-2" variant="reject" onClick={() => setRtoCancel(true)}>
                         Cancel
                     </Button>
@@ -298,7 +299,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
                         isOpen={rejectModal}
                         text="REJECT"
                         handleOk={() => {
-                            setAction('PACKED')
+                            setAction(EOrderStatus.packed)
                             setCancelCall(true)
                         }}
                         onClose={() => setRejectModal(false)}
@@ -309,7 +310,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
             {data.length === 0 && (
                 <CustomModal5
                     isModalOpen={isModalOpen}
-                    handlePack={() => handleAction('ACCEPTED')}
+                    handlePack={() => handleAction(EOrderStatus.accepted)}
                     handleClose={() => setIsModalOpen(false)}
                     modalContent={modalContent}
                     status={status}
@@ -318,10 +319,10 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
                 />
             )}
 
-            {data[data.length - 1]?.status === 'PACKED' && (
+            {data[data.length - 1]?.status === EOrderStatus.packed && (
                 <CustomModal2
                     isModalOpen={isModalOpen}
-                    handlePack={() => handleAction('CREATE_DELIVERY')}
+                    handlePack={() => handleAction(EOrderStatus.created_delivery)}
                     handleClose={() => setIsModalOpen(false)}
                     modalContent={modalContent}
                     status={status}
@@ -332,11 +333,11 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
                     setBinNumber={setBinNumber}
                 />
             )}
-            {(data[data.length - 1]?.status === 'ACCEPTED' || data[data.length - 1]?.status === 'PICKING') && (
+            {(data[data.length - 1]?.status === EOrderStatus.accepted || data[data.length - 1]?.status === EOrderStatus.picking) && (
                 <CustomModal
                     isModalOpen={isModalOpen}
                     handleOk={() => {
-                        setAction('PACKED')
+                        setAction(EOrderStatus.packed)
                         setTriggerPackCall(true)
                     }}
                     handleCancel={() => setIsModalOpen(false)}
@@ -366,7 +367,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
             {buttonText === 'OUT FOR DELIVERY' && mainData?.delivery_type === 'STANDARD' && (
                 <CustomModal3
                     isModalOpen={isModalOpen}
-                    handlePack={() => handleAction('SHIPPED')}
+                    handlePack={() => handleAction(EOrderStatus.shipped)}
                     handleClose={() => setIsModalOpen(false)}
                     modalContent={modalContent}
                     status={status}
@@ -375,7 +376,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
             {buttonText === 'OUT FOR DELIVERY' && mainData?.delivery_type !== 'STANDARD' && (
                 <CustomModal3
                     isModalOpen={isModalOpen}
-                    handlePack={() => handleAction('SHIPPED')}
+                    handlePack={() => handleAction(EOrderStatus.shipped)}
                     handleClose={() => setIsModalOpen(false)}
                     modalContent={modalContent}
                     status={status}
@@ -385,7 +386,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
             {buttonText === 'MARK AS DELIVERED' && (
                 <CustomModal4
                     isModalOpen={isModalOpen}
-                    handlePack={() => handleAction('DELIVERED')}
+                    handlePack={() => handleAction(EOrderStatus.delivered)}
                     handleClose={() => setIsModalOpen(false)}
                     modalContent={modalContent}
                     status={status}
@@ -396,7 +397,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
             {buttonText === 'EXCHANGE DELIVERED' && !isExchangeComplete && (
                 <ExchangeModal
                     isModalOpen={isModalOpen}
-                    handlePack={() => handleAction('EXCHANGE_DELIVERED')}
+                    handlePack={() => handleAction(EOrderStatus.exchange_delivered)}
                     handleClose={() => setIsModalOpen(false)}
                     modalContent={modalContent}
                     status={status}

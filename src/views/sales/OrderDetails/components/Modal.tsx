@@ -9,6 +9,7 @@ import { IoBagOutline } from 'react-icons/io5'
 import { MdPhotoCamera, MdInventory, MdLocalShipping, MdInfoOutline } from 'react-icons/md'
 import { BsBoxSeam } from 'react-icons/bs'
 import { Order } from '@/store/types/newOrderTypes'
+import { EOrderStatus } from '../orderList.common'
 
 const { Option } = Select
 
@@ -82,9 +83,9 @@ export const CustomModal: React.FC<Props> = ({
                     <div className="flex xl:flex-row gap-3 p-5 flex-col">
                         <button
                             className="flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold transition-all duration-200 bg-gray-600 hover:bg-gray-700 active:bg-gray-800 text-white shadow-sm hover:shadow"
-                            onClick={status === 'ACCEPTED' || status === 'PICKING' ? handleReject : handleCancel}
+                            onClick={status === EOrderStatus.accepted || status === EOrderStatus.picking ? handleReject : handleCancel}
                         >
-                            {status === 'ACCEPTED' || status === 'PICKING' ? (
+                            {status === EOrderStatus.accepted || status === EOrderStatus.picking ? (
                                 <>
                                     <FaTimes className="text-sm" />
                                     REJECT ORDERS
@@ -429,7 +430,7 @@ export const CustomModal2: React.FC<props2> = ({
                 </div>
             }
             okText={isButtonClick ? 'SELECT PARTNER' : 'SELECT PARTNER'}
-            cancelText={status === 'PENDING' ? 'REJECT ORDERS' : 'CANCEL'}
+            cancelText={status === EOrderStatus.pending ? 'REJECT ORDERS' : 'CANCEL'}
             width={800}
             className="custom-modal"
             centered
@@ -555,8 +556,8 @@ export const CustomModal3: React.FC<props3> = ({ isModalOpen, handlePack, handle
     return (
         <Modal
             title=""
-            okText={status === 'PENDING' ? 'ACCEPT & PACK' : 'SELECT'}
-            cancelText={status === 'PENDING' ? 'REJECT ORDERS' : 'CANCEL'}
+            okText={status === EOrderStatus.pending ? 'ACCEPT & PACK' : 'SELECT'}
+            cancelText={status === EOrderStatus.pending ? 'REJECT ORDERS' : 'CANCEL'}
             width={800}
             className="custom-modal"
             okButtonProps={{
@@ -599,7 +600,7 @@ export const CustomModal4: React.FC<props4> = ({ isModalOpen, handlePack, handle
         <Modal
             title=""
             okText={isButtonClick ? 'Delivering....' : 'DELIVER'}
-            cancelText={status === 'PENDING' ? 'REJECT ORDERS' : 'CANCEL'}
+            cancelText={status === EOrderStatus.pending ? 'REJECT ORDERS' : 'CANCEL'}
             width={800}
             className="custom-modal"
             okButtonProps={{
@@ -643,7 +644,7 @@ export const CustomModal5: React.FC<props5> = ({ isModalOpen, handlePack, handle
         <Modal
             title=""
             okText={isButtonClick ? 'ACCEPTING...' : 'ACCEPT'}
-            cancelText={status === 'PENDING' ? 'CANCEL' : 'CANCEL'}
+            cancelText={status === EOrderStatus.pending ? 'CANCEL' : 'CANCEL'}
             width={800}
             className="custom-modal"
             okButtonProps={{
@@ -691,7 +692,7 @@ export const ExchangeModal: React.FC<prop6> = ({ isModalOpen, handlePack, handle
         <Modal
             title=""
             okText={isButtonClick ? 'COMPLETING...' : 'COMPLETE'}
-            cancelText={status === 'PENDING' ? 'CANCEL' : 'CANCEL'}
+            cancelText={status === EOrderStatus.pending ? 'CANCEL' : 'CANCEL'}
             width={800}
             className="custom-modal"
             okButtonProps={{

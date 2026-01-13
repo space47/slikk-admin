@@ -12,7 +12,7 @@ import { useParams } from 'react-router-dom'
 import moment from 'moment'
 import ReturnOrderDrawer from './components/ReturnOrderDrawer'
 import { FaDownload } from 'react-icons/fa'
-import { scheduleSlots } from './orderList.common'
+import { EOrderStatus, scheduleSlots } from './orderList.common'
 import { Button } from '@/components/ui'
 import TrackModal from '@/views/slikkLogistics/taskTracking/TrackModal'
 import OrderPickerSummary from './components/OrderPickersummary'
@@ -59,7 +59,11 @@ const OrderDetails = () => {
         useOrderDetailFunctions({ data, setShowCancelExchangeModal })
 
     useEffect(() => {
-        if (data?.status === 'DELIVERY_CREATED' && data?.logistic?.partner === 'Slikk' && data?.logistic?.runner_phone_number === '') {
+        if (
+            data?.status === EOrderStatus.delivery_created &&
+            data?.logistic?.partner === 'Slikk' &&
+            data?.logistic?.runner_phone_number === ''
+        ) {
             setShowRiderData(true)
         } else {
             setShowRiderData(false)
@@ -86,7 +90,8 @@ const OrderDetails = () => {
                                         <FaDownload className="bg-none text-gray-700" />
                                     </button>
                                 </div>
-                                {data?.log?.some((item) => item?.status?.includes('PACKED')) && data?.utm_params?.ticket === true ? (
+                                {data?.log?.some((item) => item?.status?.includes(EOrderStatus.packed)) &&
+                                data?.utm_params?.ticket === true ? (
                                     <div>
                                         <Button variant="reject" size="sm" onClick={() => setShowUTMModal(true)}>
                                             REMOVE TICKET
@@ -129,17 +134,18 @@ const OrderDetails = () => {
                 </div>
                 <div className="mt-4 md:mt-0 flex flex-col items-center xl:items-end gap-5 justify-center w-full xl:w-1/2">
                     <div className="flex gap-4">
-                        {data.status === 'COMPLETED' && (data?.payment?.status === 'PAID' || data?.payment?.status === 'POD_PAID') && (
-                            <Button variant="reject" size="sm" onClick={() => setReturnOrderDrawer(true)}>
-                                Return/Exchange ORDER
-                            </Button>
-                        )}
-                        {data.status !== 'DECLINED' && data.status !== 'CANCELLED' && (
+                        {data.status === EOrderStatus.completed &&
+                            (data?.payment?.status === EOrderStatus.paid || data?.payment?.status === EOrderStatus.pod_paid) && (
+                                <Button variant="reject" size="sm" onClick={() => setReturnOrderDrawer(true)}>
+                                    Return/Exchange ORDER
+                                </Button>
+                            )}
+                        {data.status !== EOrderStatus.declined && data.status !== EOrderStatus.cancelled && (
                             <Button variant="reject" size="sm" onClick={() => setShowCancelModal(true)}>
                                 Cancel Order
                             </Button>
                         )}
-                        {data?.delivery_type === 'EXCHANGE' && (
+                        {data?.delivery_type === EOrderStatus.exchange && (
                             <Button variant="reject" size="sm" onClick={() => setShowCancelExchangeModal(true)}>
                                 CONVERT
                             </Button>
@@ -150,7 +156,7 @@ const OrderDetails = () => {
                         <>
                             <OrderList
                                 title="Return Orders"
-                                items={data.return_order.filter((item) => item?.status !== 'ACCEPTED')}
+                                items={data.return_order.filter((item) => item?.status !== EOrderStatus.accepted)}
                                 itemKey="return_order_id"
                                 itemDisplayKey="return_order_id"
                                 baseUrl="/app/returnOrders"
@@ -158,7 +164,7 @@ const OrderDetails = () => {
                             />
                             <OrderList
                                 title="Unfulfilled Orders"
-                                items={data.return_order.filter((item) => item?.status === 'ACCEPTED')}
+                                items={data.return_order.filter((item) => item?.status === EOrderStatus.accepted)}
                                 itemKey="return_order_id"
                                 itemDisplayKey="return_order_id"
                                 baseUrl="/app/returnOrders"
