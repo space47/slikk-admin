@@ -340,7 +340,8 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                             }
                         >
                             <div className="font-bold text-md">{activity.status}</div>
-                            <div>{moment(activity.timestamp).format('DD:MM:YYYY hh:mm a')}</div>
+                            <div>{moment(activity.timestamp).format('DD-MM-YYYY hh:mm a')}</div>
+                            <div className="font-semibold text-md">{activity.event_note && activity.event_note}</div>
                         </Timeline.Item>
                     ))
                 )}

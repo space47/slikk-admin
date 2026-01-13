@@ -83,6 +83,7 @@ export type SalesOrderDetailsResponse = {
     log: {
         timestamp: string
         status: string
+        event_log?: string
     }[]
     user: {
         name: string

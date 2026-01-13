@@ -19,6 +19,7 @@ interface props {
     data: any
     setSelectValue: any
     handleRegenerateGrn: (doc_number: string) => Promise<void>
+    regenerateLoading: boolean
 }
 const options = [
     { label: 'PDF', value: 'pdf' },
@@ -34,6 +35,7 @@ const QcTabs = ({
     isSyncing,
     setSelectValue,
     handleRegenerateGrn,
+    regenerateLoading,
 }: props) => {
     const [tabSelect, setTabSelect] = useState('quality_checklist')
     const [deleteSpinner, setDeleteSpinner] = useState(false)
@@ -50,9 +52,11 @@ const QcTabs = ({
                 data: { confirm_delete: isForce },
             })
             successMessage(res)
+            setIsDeleteGrn(false)
             return res?.data?.data
         } catch (error) {
             if (error instanceof AxiosError) {
+                errorMessage(error)
                 const errMsg = error?.response?.data?.message || error?.message
                 return { error: errMsg }
             }
@@ -139,6 +143,8 @@ const QcTabs = ({
                                             variant="new"
                                             size="sm"
                                             icon={<FaDownload className="w-4 h-4" />}
+                                            loading={regenerateLoading}
+                                            disabled={regenerateLoading}
                                             onClick={() => handleRegenerateGrn(data.document_number)}
                                         >
                                             Export

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Formik } from 'formik'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import axios, { AxiosError } from 'axios'
 import { useNavigate } from 'react-router-dom'
 import { useAppSelector } from '@/store'
@@ -12,14 +12,27 @@ import { FormModel, initialValue } from '../inwardCommon'
 import InwardForm from '../inwardUtils/InwardForm'
 import { errorMessage, successMessage } from '@/utils/responseMessages'
 import { textParser } from '@/common/textParser'
+import { inwardService } from '@/store/services/inwardService'
+import { notification } from 'antd'
 
 const MixedFormControl = () => {
     const [datas, setDatas] = useState()
     const [showData, setShowData] = useState(false)
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
     const [companyData, setCompanyData] = useState<number>()
+    const [addGrn, addResponse] = inwardService.useAddNewGrnMutation()
 
     const navigate = useNavigate()
+
+    useEffect(() => {
+        if (addResponse?.isSuccess) {
+            notification.success({ message: 'Successfully Added' })
+            navigate('/app/goods/received')
+        }
+        if (addResponse?.isError) {
+            notification.error({ message: (addResponse.error as any).data?.message || 'Failed to add' })
+        }
+    }, [addResponse.isError, addResponse.isSuccess])
 
     const handleUpload = async (files: File[]) => {
         const formData = new FormData()
@@ -115,15 +128,7 @@ const MixedFormControl = () => {
             images: imageShow,
         }
 
-        try {
-            const response = await axioisInstance.post('goods/received', formData)
-            successMessage(response)
-            navigate('/app/goods/received')
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                errorMessage(error)
-            }
-        }
+        addGrn(formData)
     }
 
     return (

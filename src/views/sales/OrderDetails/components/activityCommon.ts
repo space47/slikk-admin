@@ -59,6 +59,7 @@ export type LOGISTIC = {
 export type Event = {
     timestamp: string
     status: string
+    event_note?: string
 }
 
 export type ActivityProps = {

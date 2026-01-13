@@ -1,36 +1,30 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import EasyTable from '@/common/EasyTable'
-import { Pagination, Select, Tabs } from '@/components/ui'
+import { Input, Pagination, Select, Tabs } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { indentService } from '@/store/services/indentService'
-import {
-    IndentStateType,
-    setCount,
-    setIndentData,
-    setPage,
-    setPageSize,
-    setFrom,
-    setTo,
-    setDateField,
-} from '@/store/slices/indentSlice/indentSlice'
-import React, { useEffect, useState } from 'react'
+import { IndentStateType, setCount, setIndentData, setPage, setPageSize, setFrom, setTo } from '@/store/slices/indentSlice/indentSlice'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useIndentColumns } from '../indentUtils/useIndentColumns'
 import { Option, pageSizeOptions } from '@/constants/pageUtils.constants'
 import AccessDenied from '@/views/pages/AccessDenied'
 import { USER_PROFILE_DATA } from '@/store/types/company.types'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
-import { notification } from 'antd'
+import { notification, Spin } from 'antd'
 import IndentStatusModal from './indentComponents/IndentStatusModal'
-import UltimateReduxDatePicker from '@/common/UltimateReduxDatePicker'
 import moment from 'moment'
 import { IndentStatusArray } from '../indentUtils/indent.types'
+import ReduxDateRange from '@/common/ReduxDateRange'
+import debounce from 'lodash/debounce'
+import NotFoundData from '@/views/pages/NotFound/Notfound'
 
 const IndentTable = () => {
     const dispatch = useAppDispatch()
-    const { indent, count, page, pageSize, from, to, dateField } = useAppSelector<IndentStateType>((state) => state.indent)
+    const { indent, count, page, pageSize, from, to } = useAppSelector<IndentStateType>((state) => state.indent)
     const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
-    const [storeCode, setStoreCode] = useState<any[]>([1])
+    const [storeCode, setStoreCode] = useState<any>(1)
+    const [searchFilter, setSearchFilter] = useState('')
     const [activeTab, setActiveTab] = useState('target')
     const [showStatusModal, setShowStatusModal] = useState(false)
     const [selectedStatus, setSelectedStatus] = useState<string[]>([])
@@ -49,21 +43,40 @@ const IndentTable = () => {
         }
     }, [storeCode])
 
-    const { data, error, isSuccess } = indentService.useIndentDataQuery({
+    const debouncedResults = useMemo(
+        () =>
+            debounce((value: string) => {
+                setSearchFilter(value)
+            }, 500),
+        [],
+    )
+
+    useEffect(() => {
+        return () => {
+            debouncedResults.cancel()
+        }
+    }, [debouncedResults])
+
+    const { data, error, isSuccess, isError, isLoading, isFetching } = indentService.useIndentDataQuery({
         mobile: '',
         page,
         pageSize,
-        store_id: storeCode.join(','),
+        store_id: storeCode,
         source_type: activeTab === 'target' ? 'target' : 'source',
         from,
         to: moment(to).add(1, 'days').format('YYYY-MM-DD'),
         status: selectedStatus?.join(',') || '',
+        document_id: searchFilter || '',
     })
 
     useEffect(() => {
         if (isSuccess) {
-            dispatch(setIndentData(data?.data?.results))
-            dispatch(setCount(data?.data?.count))
+            if (searchFilter) {
+                dispatch(setIndentData([data?.data as any]))
+            } else {
+                dispatch(setIndentData(data?.data?.results))
+                dispatch(setCount(data?.data?.count))
+            }
         }
     }, [isSuccess, data, dispatch])
 
@@ -87,106 +100,127 @@ const IndentTable = () => {
     }
 
     return (
-        <div className="bg-white shadow-md rounded-2xl p-6 space-y-6">
-            <div className="flex flex-col xl:flex-row md:flex-row md:justify-between xl:justify-between items-center">
-                <div className="flex gap-2 flex-col xl:flex-row">
-                    <div className="w-[300px] xl:w-[600px] md:w-[400px]">
+        <Spin spinning={isLoading || isFetching}>
+            <div className="bg-white rounded-2xl shadow-sm border p-6 space-y-6">
+                {/* Filters */}
+                <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-end">
+                    {/* Store */}
+                    <div className="xl:col-span-4">
                         <label className="block text-sm font-medium text-gray-700 mb-2">Select Store</label>
                         <Select
                             isClearable
-                            isMulti
                             options={storeList}
                             getOptionLabel={(option) => option.name}
                             getOptionValue={(option) => option.id?.toString()}
-                            value={storeList.filter((opt) => storeCode.includes(opt.id))}
-                            onChange={(selectedOptions) => {
-                                setStoreCode(selectedOptions?.map((opt) => opt.id) || [])
-                            }}
+                            value={storeList.filter((opt) => opt?.id === storeCode)}
+                            onChange={(selectedOptions) => setStoreCode(selectedOptions?.id)}
                         />
                     </div>
-                    <div className="w-full">
+
+                    {/* Status */}
+                    <div className="xl:col-span-4">
                         <label className="block text-sm font-medium text-gray-700 mb-2">Select Status</label>
                         <Select
                             isClearable
                             isMulti
                             options={IndentStatusArray}
-                            placeholder="Select Status to Filter"
+                            placeholder="Select Status"
                             getOptionLabel={(option) => option.name}
                             getOptionValue={(option) => option.value}
                             value={IndentStatusArray.filter((opt) => selectedStatus.includes(opt.value))}
-                            onChange={(selectedOptions) => {
-                                setSelectedStatus(selectedOptions?.map((opt) => opt.value) || [])
-                            }}
+                            onChange={(selectedOptions) => setSelectedStatus(selectedOptions?.map((opt) => opt.value) || [])}
+                        />
+                    </div>
+
+                    {/* Date Range */}
+                    <div className="xl:col-span-4 xl:mr-8 flex justify-start xl:justify-end">
+                        <ReduxDateRange handleDateChange={handleDateChange} id="indent" setFrom={setFrom} setTo={setTo} />
+                    </div>
+                </div>
+
+                {/* Search */}
+                <div className="flex justify-between items-center">
+                    <div className="w-full md:w-1/2">
+                        <Input
+                            type="search"
+                            className="rounded-xl"
+                            placeholder="Search by Document Number..."
+                            onChange={(e) => debouncedResults(e.target.value)}
                         />
                     </div>
                 </div>
-                <div>
-                    <UltimateReduxDatePicker
-                        customChange={dateField}
-                        setCustomChange={setDateField}
-                        dispatch={dispatch}
-                        from={from}
-                        to={to}
-                        setFrom={setFrom}
-                        setTo={setTo}
-                        handleDateChange={handleDateChange}
-                    />
-                </div>
-            </div>
 
-            <div className="border-b pb-2">
-                <Tabs value={activeTab} onChange={handleChange}>
-                    <TabList>
-                        <TabNav value="target">
-                            <span
-                                className={`text-base md:text-lg font-semibold ${
-                                    activeTab === 'target' ? 'text-blue-600' : 'text-gray-700'
-                                }`}
-                            >
-                                Target
-                            </span>
-                        </TabNav>
-                        <TabNav value="source">
-                            <span
-                                className={`text-base md:text-lg font-semibold ${
-                                    activeTab === 'source' ? 'text-blue-600' : 'text-gray-700'
-                                }`}
-                            >
-                                Source
-                            </span>
-                        </TabNav>
-                    </TabList>
-                </Tabs>
-            </div>
+                {/* Tabs */}
+                <div className="border-b">
+                    <Tabs value={activeTab} onChange={handleChange}>
+                        <TabList className="flex gap-6">
+                            <TabNav value="target">
+                                <span
+                                    className={`pb-3 text-sm md:text-base font-semibold border-b-2 transition-all ${
+                                        activeTab === 'target'
+                                            ? 'border-blue-600 text-blue-600'
+                                            : 'border-transparent text-gray-600 hover:text-gray-900'
+                                    }`}
+                                >
+                                    Target
+                                </span>
+                            </TabNav>
 
-            {/* Table */}
-            <div className="border rounded-xl overflow-hidden">
-                <EasyTable overflow mainData={indent} columns={columns} page={page} pageSize={pageSize} />
-            </div>
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <Pagination pageSize={pageSize} currentPage={page} total={count} onChange={(page) => dispatch(setPage(page))} />
-                <div className="w-full sm:w-auto min-w-[150px]">
-                    <Select<Option>
-                        size="sm"
-                        isSearchable={false}
-                        value={pageSizeOptions.find((option) => option.value === pageSize)}
-                        options={pageSizeOptions}
-                        onChange={(option) => {
-                            dispatch(setPage(1))
-                            dispatch(setPageSize(Number(option?.value)))
-                        }}
-                    />
+                            <TabNav value="source">
+                                <span
+                                    className={`pb-3 text-sm md:text-base font-semibold border-b-2 transition-all ${
+                                        activeTab === 'source'
+                                            ? 'border-blue-600 text-blue-600'
+                                            : 'border-transparent text-gray-600 hover:text-gray-900'
+                                    }`}
+                                >
+                                    Source
+                                </span>
+                            </TabNav>
+                        </TabList>
+                    </Tabs>
                 </div>
+
+                {/* Table */}
+
+                {isSuccess && (
+                    <>
+                        <div className="border rounded-xl overflow-hidden">
+                            <EasyTable overflow mainData={indent} columns={columns} page={page} pageSize={pageSize} />
+                        </div>
+
+                        {/* Pagination */}
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <Pagination pageSize={pageSize} currentPage={page} total={count} onChange={(page) => dispatch(setPage(page))} />
+
+                            <div className="min-w-[160px]">
+                                <Select<Option>
+                                    size="sm"
+                                    isSearchable={false}
+                                    value={pageSizeOptions.find((option) => option.value === pageSize)}
+                                    options={pageSizeOptions}
+                                    onChange={(option) => {
+                                        dispatch(setPage(1))
+                                        dispatch(setPageSize(Number(option?.value)))
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    </>
+                )}
+                {isError && <NotFoundData />}
+
+                {/* Status Modal */}
+                {showStatusModal && (
+                    <IndentStatusModal
+                        key={selectedIndentId}
+                        isOpen={showStatusModal}
+                        id={selectedIndentId}
+                        onClose={() => setShowStatusModal(false)}
+                    />
+                )}
             </div>
-            {showStatusModal && (
-                <IndentStatusModal
-                    key={selectedIndentId}
-                    isOpen={showStatusModal}
-                    id={selectedIndentId}
-                    onClose={() => setShowStatusModal(false)}
-                />
-            )}
-        </div>
+        </Spin>
     )
 }
 

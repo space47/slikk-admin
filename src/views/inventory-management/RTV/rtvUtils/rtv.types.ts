@@ -1,5 +1,7 @@
 // import { IndentDetailsTypes } from '@/store/types/indent.types'
 
+import { IndentDetailsTypes } from '@/store/types/indent.types'
+
 export type RtvHistoryData = {
     comments: string
     company: number
@@ -30,4 +32,12 @@ export const DetailsData = (data: IndentDetailsTypes) => {
     ]
 
     return { detailsArray }
+}
+
+export enum ERtvDetail {
+    approved = 'approved',
+    created = 'created',
+    rejected = 'rejected',
+    assign_picker = 'assign_picker',
+    add_rtv_number = 'add_rtv_number',
 }

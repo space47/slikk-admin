@@ -2,12 +2,12 @@ import Card from '@/components/ui/Card'
 import IconText from '@/components/shared/IconText'
 import { HiPhone, HiExternalLink, HiMail, HiCube, HiCheckCircle, HiExclamationCircle } from 'react-icons/hi'
 import { Link } from 'react-router-dom'
-import { inwardDetailsResponse } from '../inwardCommon'
 import { useMemo } from 'react'
 import { FaSync } from 'react-icons/fa'
+import { GRNDetails } from '@/store/types/inward.types'
 
 type CustomerInfoProps = {
-    data: inwardDetailsResponse
+    data: GRNDetails
 }
 
 const CustomerInfo = ({ data }: CustomerInfoProps) => {
@@ -32,7 +32,6 @@ const CustomerInfo = ({ data }: CustomerInfoProps) => {
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">Item Details</h3>
                     <div className="h-1 w-16 bg-blue-500 rounded-full"></div>
                 </div>
-                {/* User Info Section */}
                 <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-6">
                     <Link className="group flex items-center justify-between hover:no-underline" to="/app/crm/customer-details?id=11">
                         <div className="flex items-center space-x-3">

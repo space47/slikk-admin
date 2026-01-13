@@ -52,7 +52,6 @@ export const rtvService = RtkQueryService.injectEndpoints({
         }),
         updateRtv: builder.mutation<{ status: string; message: string }, Record<string, any> & { id: number | string }>({
             query: ({ id, ...body }) => {
-                console.log('body is', body)
                 return {
                     url: `/rtv/${id}`,
                     method: 'PATCH',
@@ -84,7 +83,16 @@ export const rtvService = RtkQueryService.injectEndpoints({
         updateRtvProducts: builder.mutation<{ status: string; message: string }, Record<string, any>>({
             query: (body) => {
                 return {
-                    url: `/rtv-products`,
+                    url: `/rtv`,
+                    method: 'PATCH',
+                    body,
+                }
+            },
+        }),
+        updateRtvStatus: builder.mutation<{ status: string; message: string }, Record<string, any>>({
+            query: (body) => {
+                return {
+                    url: `/rtv`,
                     method: 'PATCH',
                     body,
                 }

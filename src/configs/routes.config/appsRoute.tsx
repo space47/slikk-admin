@@ -475,7 +475,7 @@ const appsRoute: Routes = [
     },
     {
         key: 'appsInventoryManagement.inwardsDetails',
-        path: `${APP_PREFIX_PATH}/goods/received/:company/:document_number`,
+        path: `${APP_PREFIX_PATH}/goods/received/:company/:grn_id`,
         component: lazy(() => import('@/views/inventory-management/inward/inwardDetails')),
         authority: [ADMIN, USER],
     },
@@ -494,7 +494,7 @@ const appsRoute: Routes = [
     },
     {
         key: 'appsInventoryManagement.gdn',
-        path: `${APP_PREFIX_PATH}/goods/gdnDetails/:document_number/:id`,
+        path: `${APP_PREFIX_PATH}/goods/gdnDetails/:gdn_id/:id`,
         component: lazy(() => import('@/views/inventory-management/gdn/gdnTable/components/GdnDetails')),
         authority: [ADMIN, USER],
     },

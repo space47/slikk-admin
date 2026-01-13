@@ -44,16 +44,10 @@ const OrderDetails = () => {
         return `/logistic/slikk/task?task_id=${data.logistic.task_id}`
     }, [data?.logistic?.task_id])
 
-    const { data: taskData } = useFetchSingleData<TaskData>({
-        url: query || '',
-        pollingInterval: query ? 60000 : undefined,
-    })
+    const { data: taskData } = useFetchSingleData<TaskData>({ url: query || '', pollingInterval: query ? 60000 : undefined })
 
     const { handlemarkAsPaid, handlePODAction, handleDownload, handleConvert, handleMarketingOrder, OrderLink, OrderList } =
-        useOrderDetailFunctions({
-            data,
-            setShowCancelExchangeModal,
-        })
+        useOrderDetailFunctions({ data, setShowCancelExchangeModal })
 
     useEffect(() => {
         if (data?.status === 'DELIVERY_CREATED' && data?.logistic?.partner === 'Slikk' && data?.logistic?.runner_phone_number === '') {
@@ -68,7 +62,7 @@ const OrderDetails = () => {
             <div className="mb-8 flex flex-col justify-center xl:flex-row xl:justify-between">
                 <div className="w-full xl:w-1/2">
                     <div className="flex flex-col md:flex-row items-center mb-4 xl:justify-between justify-center w-full">
-                        <div className="text-3xl font-bold text-gray-800 text-center md:text-left flex flex-col gap-2">
+                        <div className="text-3xl xl:flex-row font-bold text-gray-800 text-center md:text-left flex flex-col gap-2">
                             <span>Order</span>
                             <span className="ml-2 text-red-600 flex gap-3">
                                 #{data.invoice_id}
@@ -186,100 +180,113 @@ const OrderDetails = () => {
     }
 
     return (
-        <div className="scrollbar-hide w-full ">
+        <div className="w-full bg-gray-50 dark:bg-gray-950 px-4 xl:px-6 py-6 scrollbar-hide">
             <Loading loading={loading}>
                 {!isEmpty(data) && (
                     <>
-                        {OrderDetailUI(data)}
-                        <div className="xl:flex gap-6 overflow-scroll scrollbar-hide">
-                            <div className="xl:flex-1">
-                                <div className="bg-white shadow-lg p-4 rounded-lg mb-6 dark:bg-gray-90">
-                                    <OrderProducts data={data.order_items || []} invoice_id={data.invoice_id} status={data.status} />
+                        <div className="mb-6">{OrderDetailUI(data)}</div>
+                        <div className="flex gap-6 overflow-x-auto scrollbar-hide">
+                            <div className="flex-1 space-y-6 min-w-[900px]">
+                                <div className="bg-white dark:bg-gray-900 shadow-sm border border-gray-100 dark:border-gray-800 rounded-2xl">
+                                    <div className="p-5">
+                                        <OrderProducts data={data.order_items || []} invoice_id={data.invoice_id} status={data.status} />
+                                    </div>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="bg-white shadow-lg p-6 rounded-lg  dark:bg-gray-900">
-                                        <CustomerInfo
-                                            user={data.user}
-                                            billing_address={data.billing_address}
-                                            store={data.store}
-                                            location_url={data.location_url}
-                                            delivery_type={data.delivery_type}
-                                            distance={data?.distance}
-                                            alternate_number={taskData?.drop_details?.contact_number}
-                                        />
+                                    <div className="bg-white dark:bg-gray-900 shadow-sm border border-gray-100 dark:border-gray-800 rounded-2xl">
+                                        <div className="p-6">
+                                            <CustomerInfo
+                                                user={data.user}
+                                                billing_address={data.billing_address}
+                                                store={data.store}
+                                                location_url={data.location_url}
+                                                delivery_type={data.delivery_type}
+                                                distance={data?.distance}
+                                                alternate_number={taskData?.drop_details?.contact_number}
+                                            />
+                                        </div>
                                     </div>
-                                    <div className="bg-white shadow-lg p-6 rounded-lg dark:bg-gray-900">
-                                        <ShippingInfo
-                                            data={data.logistic}
-                                            tnb_return_otp={data?.tnb_return_otp}
-                                            logistic_partner={data.logistic?.partner}
-                                            delivery_type={data.delivery_type}
-                                            setShowRiderModal={setShowRiderData}
-                                            rider={data.rider}
-                                        />
+                                    <div className="bg-white dark:bg-gray-900 shadow-sm border border-gray-100 dark:border-gray-800 rounded-2xl">
+                                        <div className="p-6">
+                                            <ShippingInfo
+                                                data={data.logistic}
+                                                logistic_partner={data.logistic?.partner}
+                                                delivery_type={data.delivery_type}
+                                                tnb_return_otp={data?.tnb_return_otp}
+                                                setShowRiderModal={setShowRiderData}
+                                                rider={data.rider}
+                                            />
+                                        </div>
                                     </div>
-                                    <div className="bg-white shadow-lg p-6 rounded-lg dark:bg-gray-900">
-                                        <PaymentSummary
-                                            data={data.payment}
-                                            tax={data.tax}
-                                            delivery={data.delivery}
-                                            amount={data.amount}
-                                            coupon_discount={data.coupon_discount}
-                                            loyalty_discount={data.loyalty_discount}
-                                            points_discount={data.points_discount}
-                                            handleMarkAsPaid={handlemarkAsPaid}
-                                            status={data.status}
-                                            mainData={data}
-                                            handlePODAction={handlePODAction}
-                                            order_id={data.order_id}
-                                            gateway_transaction_id={data?.payment?.gateway_transaction_id || 'N/A'}
-                                        />
+                                    <div className="bg-white dark:bg-gray-900 shadow-sm border border-gray-100 dark:border-gray-800 rounded-2xl">
+                                        <div className="p-6">
+                                            <PaymentSummary
+                                                data={data.payment}
+                                                tax={data.tax}
+                                                delivery={data.delivery}
+                                                amount={data.amount}
+                                                coupon_discount={data.coupon_discount}
+                                                loyalty_discount={data.loyalty_discount}
+                                                points_discount={data.points_discount}
+                                                handleMarkAsPaid={handlemarkAsPaid}
+                                                status={data.status}
+                                                mainData={data}
+                                                handlePODAction={handlePODAction}
+                                                order_id={data.order_id}
+                                                gateway_transaction_id={data?.payment?.gateway_transaction_id || 'N/A'}
+                                            />
+                                        </div>
                                     </div>
-
-                                    <div className="bg-white shadow-lg p-6 rounded-lg dark:bg-gray-900">
-                                        <OrderPickerSummary data={data} />
+                                    <div className="bg-white dark:bg-gray-900 shadow-sm border border-gray-100 dark:border-gray-800 rounded-2xl">
+                                        <div className="p-6">
+                                            <OrderPickerSummary data={data} />
+                                        </div>
                                     </div>
                                 </div>
-                                <div className={'flex xl:justify-between gap-3 flex-col xl:flex-row '}>
-                                    <div className="mt-6">
-                                        <Activity
-                                            mainData={data}
-                                            data={data.log}
-                                            status={data.status}
-                                            product={data.order_items}
-                                            payment={data.payment}
-                                            invoice_id={data.invoice_id}
-                                            delivery_type={data.delivery_type}
-                                        />
-                                    </div>
-                                    {data?.logistic && (
-                                        <div className="mt-6 xl:w-[200px] md:w-[250px] flex-wrap break-words">
-                                            <OrdersRiderActivity eventLogs={taskData} />
-                                        </div>
-                                    )}
-
-                                    <div className="xl:w-[1000px] mt-10">
-                                        {data?.logistic === null && (
-                                            <TwoPointMap
-                                                lat={data?.latitude}
-                                                long={data?.longitude}
-                                                storeLat={data?.store.latitude}
-                                                storeLong={data?.store.longitude}
+                                <div className="flex flex-col xl:flex-row gap-6">
+                                    <div className="flex gap-4">
+                                        <div className="bg-white dark:bg-gray-900 shadow-sm border border-gray-100 dark:border-gray-800 rounded-2xl p-4">
+                                            <Activity
+                                                mainData={data}
+                                                data={data.log}
+                                                status={data.status}
+                                                product={data.order_items}
+                                                payment={data.payment}
+                                                invoice_id={data.invoice_id}
+                                                delivery_type={data.delivery_type}
                                             />
+                                        </div>
+
+                                        {data?.logistic && (
+                                            <div className="bg-white dark:bg-gray-900 shadow-sm border border-gray-100 dark:border-gray-800 rounded-2xl p-4 w-[240px]">
+                                                <OrdersRiderActivity eventLogs={taskData} />
+                                            </div>
                                         )}
-                                        {data?.logistic?.partner === 'Slikk' && (
-                                            <OrderMap task_id={data?.logistic?.task_id} taskData={taskData} />
-                                        )}
-                                        {data?.logistic?.partner !== 'Slikk' && (
-                                            <div style={{ width: '100%', height: '600px' }}>
+                                    </div>
+                                    <div className="flex-1 bg-white dark:bg-gray-900 shadow-sm border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden">
+                                        <div className="h-[600px]">
+                                            {data?.logistic === null && (
+                                                <TwoPointMap
+                                                    lat={data?.latitude}
+                                                    long={data?.longitude}
+                                                    storeLat={data?.store.latitude}
+                                                    storeLong={data?.store.longitude}
+                                                />
+                                            )}
+
+                                            {data?.logistic?.partner === 'Slikk' && (
+                                                <OrderMap task_id={data?.logistic?.task_id} taskData={taskData} />
+                                            )}
+
+                                            {data?.logistic?.partner !== 'Slikk' && (
                                                 <iframe
                                                     allowFullScreen
                                                     src={data?.logistic?.tracking_url}
-                                                    style={{ width: '100%', height: '100%', border: 'none' }}
+                                                    className="w-full h-full border-none"
                                                     title="Live Order Tracking"
                                                 />
-                                            </div>
-                                        )}
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -290,6 +297,7 @@ const OrderDetails = () => {
                                 invoice_id={invoice_id}
                                 delivery_type={data?.delivery_type}
                             />
+
                             <RtoCancelModal
                                 isCancel
                                 isOpen={showCancelModal}
@@ -298,11 +306,13 @@ const OrderDetails = () => {
                                 setIsOpen={setShowCancelModal}
                                 status={data?.status}
                             />
+
                             <ItemConvertModal
                                 isOpen={showCancelExchangeModal}
                                 setIsOpen={setShowCancelExchangeModal}
                                 handleConvert={handleConvert}
                             />
+
                             <TrackModal
                                 isOrder
                                 showTaskModal={showRiderData}

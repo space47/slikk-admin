@@ -1,21 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { Formik } from 'formik'
 import moment from 'moment'
-import React, { useState } from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import GdnForm from '../GdnForm'
 import { handleimage } from '@/common/handleImage'
-import { errorMessage, successMessage } from '@/utils/responseMessages'
+import { gdnService } from '@/store/services/gdnService'
+import { notification } from 'antd'
 
 const CreateGdn = () => {
-    const [spinner, setSpinner] = useState(false)
+    const [createGdn, createResponse] = gdnService.useAddNewGdnMutation()
     const navigate = useNavigate()
 
-    const initialValue: any = {}
+    useEffect(() => {
+        if (createResponse.isSuccess) {
+            notification.success({ message: createResponse.data.message || 'Successfully Added the GDN' })
+            navigate('/app/goods/gdn')
+        }
+        if (createResponse.isError) {
+            notification.error({ message: (createResponse.error as any).data.message })
+        }
+    }, [createResponse.isSuccess, createResponse.isError])
 
     const handleSubmit = async (values: any) => {
-        setSpinner(true)
         let docsUpload = null
         if (values.files && values.files.length > 0) {
             docsUpload = await handleimage('grn', values.files)
@@ -57,24 +64,15 @@ const CreateGdn = () => {
             ...(imageShow && { images: imageShow }),
             ...(values?.store?.id && { store: values.store.id }),
         }
-
-        try {
-            const response = await axioisInstance.post('/goods/dispatch', formData)
-            successMessage(response)
-            navigate('/app/goods/gdn')
-        } catch (error: any) {
-            errorMessage(error)
-        } finally {
-            setSpinner(false)
-        }
+        createGdn(formData)
     }
 
     return (
         <div>
-            <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
+            <Formik enableReinitialize initialValues={{}} onSubmit={handleSubmit}>
                 {({ values }) => (
                     <div>
-                        <GdnForm values={values} imagview={[]} spinner={spinner} />
+                        <GdnForm values={values} imagview={[]} spinner={createResponse.isLoading} />
                     </div>
                 )}
             </Formik>

@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import moment from 'moment'
-import { Button, Dropdown, Input } from '@/components/ui'
+import { Button, Dropdown, Input, Tooltip } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { IoMdDownload } from 'react-icons/io'
 import FilterReturnOrder from './filter/FilterReturnOrder'
@@ -19,11 +19,10 @@ import { ReturnDropdownStatus, ReturnOrder, SEARCHOPTIONS } from './returnOrderC
 import { pageSizeOptions } from '../groupNotification/getGroup/groupComnmon'
 import { getStatusFilterReturn } from './returnOrderUtils/ReturnOrderUtils'
 import { handleSearch, handleSearchWithIcon, handleSelect, onSelectChange, handleDownload } from './returnOrderUtils/ReturnOrderFunctions'
-import { LocationReturnType } from '@/store/types/returnOrderData.types'
-import ReturnOrderMap from './returnOrderUtils/ReturnOrderMap'
 import { FaMapMarkedAlt } from 'react-icons/fa'
 import { AxiosError } from 'axios'
 import { errorMessage, successMessage } from '@/utils/responseMessages'
+import ReturnOrderZoneMap from './returnOrderUtils/ReturnOrderZoneMap'
 
 const ReturnOrders = () => {
     const location = useLocation()
@@ -43,7 +42,6 @@ const ReturnOrders = () => {
     const [searchOnEnter, setSearchOnEnter] = useState('')
     const [showMap, setShowMap] = useState(false)
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-    const [locationDetails, setLocationDetails] = useState<LocationReturnType[]>([])
     const [isDownloading, setIsDownloading] = useState(false)
     const [showNumberLoading, setShowNumberLoading] = useState(false)
     const [taskProcess, setTaskProcess] = useState(false)
@@ -77,20 +75,6 @@ const ReturnOrders = () => {
     useEffect(() => {
         fetchOrders()
     }, [page, pageSize, from, to, dropdownStatus, searchOnEnter, deliveryType, tabSelect])
-
-    const fetchLocationData = async () => {
-        try {
-            const response = await axioisInstance.get(`/merchant/return_orders?location_data=true&from=${from}&to=${To_Date}`)
-            const data = response.data?.data
-            setLocationDetails(data)
-        } catch (error) {
-            console.error
-        }
-    }
-
-    useEffect(() => {
-        fetchLocationData()
-    }, [from, To_Date])
 
     const columns = useReturnOrderColumns()
 
@@ -198,13 +182,15 @@ const ReturnOrders = () => {
                 <div className="flex gap-4">
                     <div className="flex flex-col md:flex-row items-center  xl:gap-6 justify-center  ">
                         <div>
-                            <button onClick={handleShowMap}>
-                                {showMap ? (
-                                    <FaMapMarkedAlt className="text-4xl text-red-700 " />
-                                ) : (
-                                    <FaMapMarkedAlt className="text-4xl text-green-600 " />
-                                )}
-                            </button>
+                            <Tooltip title="Zone Map">
+                                <button onClick={handleShowMap}>
+                                    {showMap ? (
+                                        <FaMapMarkedAlt className="text-4xl text-red-700 " />
+                                    ) : (
+                                        <FaMapMarkedAlt className="text-4xl text-green-600 " />
+                                    )}
+                                </button>
+                            </Tooltip>
                         </div>
                         <div>
                             <Button
@@ -280,12 +266,9 @@ const ReturnOrders = () => {
             </div>
             <br />
             {showMap && (
-                <>
-                    <div className="mt-10 flex flex-col gap-4">
-                        <span className="text-xl font-bold">Return Orders Map:</span>
-                        <ReturnOrderMap locationDetails={locationDetails} />
-                    </div>
-                </>
+                <div className="p-6">
+                    <ReturnOrderZoneMap />
+                </div>
             )}
 
             {showFilter && (
