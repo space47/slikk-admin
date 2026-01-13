@@ -2,11 +2,9 @@
 import AdaptableCard from '@/components/shared/AdaptableCard'
 import { createColumnHelper } from '@tanstack/react-table'
 import { NumericFormat } from 'react-number-format'
-import { useAppSelector } from '@/store'
-import { ReturnOrderState } from '@/store/types/returnDetails.types'
 import EasyTable from '@/common/EasyTable'
 import ReturnCancelOrder from './ReturnCancelOrder'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
@@ -14,6 +12,7 @@ import RescheduleModal from './RescheduleModal'
 import { Button } from '@/components/ui'
 import QcDetailsModal from './QcDetailsModal'
 import ImageMODAL from '@/common/ImageModal'
+import { ReturnOrder } from '@/store/types/returnOrderData.types'
 
 const columnHelper = createColumnHelper<any>()
 
@@ -68,16 +67,25 @@ const PriceAmount = ({ amount }: { amount: number }) => {
     return <NumericFormat displayType="text" value={(Math.round(amount * 100) / 100).toFixed(2)} prefix={'Rs.'} thousandSeparator={true} />
 }
 
-const ReturnProductsDetails = ({ task_id }: { task_id: any }) => {
-    const returnOrder = useAppSelector<ReturnOrderState>((state) => state.returnOrders)
+interface ReturnProductsProps {
+    task_id: any
+    returnDetails: ReturnOrder
+    returnOrderId: number
+}
+
+const ReturnProductsDetails: React.FC<ReturnProductsProps> = ({ task_id, returnOrderId, returnDetails }) => {
+    const navigate = useNavigate()
     const [showCancelModal, setShowCancelModal] = useState(false)
-    const returnOrderId = returnOrder?.returnOrders?.return_order_id
-    const returnProducts = returnOrder?.returnOrders?.return_order_items.map((item) => item) || []
     const [isReschedule, setIsReschedule] = useState(false)
     const [isQcDetails, setIsQcDetails] = useState(false)
     const [particularSkuForQc, setParticularSkuForQc] = useState('')
-    const hasOutForPickup = returnOrder?.returnOrders?.log?.some((item) => item.status?.toLowerCase() === 'out_for_pickup')
-    const navigate = useNavigate()
+
+    const returnProducts = useMemo(() => {
+        return returnDetails?.return_order_items?.map((item) => item) || []
+    }, [returnDetails])
+    const hasOutForPickup = useMemo(() => {
+        return returnDetails?.log?.some((item) => item.status?.toLowerCase() === 'out_for_pickup')
+    }, [returnDetails])
 
     const columns = [
         columnHelper.accessor('order_item', {
@@ -128,20 +136,13 @@ const ReturnProductsDetails = ({ task_id }: { task_id: any }) => {
     }
 
     const handleCancelReturn = async () => {
-        const body = {
-            action: 'cancel_return_order',
-        }
+        const body = { action: 'cancel_return_order' }
         try {
             const response = await axioisInstance.patch(`/merchant/return_order/${returnOrderId}`, body)
-            notification.success({
-                message: response?.data?.data?.message || 'Successfully Cancelled',
-            })
+            notification.success({ message: response?.data?.data?.message || 'Successfully Cancelled' })
             navigate(0)
         } catch (error) {
-            console.log(error)
-            notification.error({
-                message: 'Failed to cancel Return Order',
-            })
+            notification.error({ message: 'Failed to cancel Return Order' })
         } finally {
             setShowCancelModal(false)
         }
@@ -190,7 +191,9 @@ const ReturnProductsDetails = ({ task_id }: { task_id: any }) => {
                     />
                 </>
             )}
-            {isReschedule && <RescheduleModal isReschedule={isReschedule} setIsReschedule={setIsReschedule} />}
+            {isReschedule && (
+                <RescheduleModal isReschedule={isReschedule} setIsReschedule={setIsReschedule} returnDetails={returnDetails} />
+            )}
             {isQcDetails && (
                 <QcDetailsModal dialogIsOpen={isQcDetails} setIsOpen={setIsQcDetails} task_id={task_id} sku={particularSkuForQc} />
             )}

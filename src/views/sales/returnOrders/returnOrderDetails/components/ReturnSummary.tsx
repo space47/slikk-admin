@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react'
 import Card from '@/components/ui/Card'
-import { useAppSelector } from '@/store'
-import { ReturnOrderState } from '@/store/types/returnDetails.types'
 import { FaEdit } from 'react-icons/fa'
 import { Button } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import { AxiosError } from 'axios'
 import { useNavigate } from 'react-router-dom'
+import { ReturnOrder } from '@/store/types/returnOrderData.types'
 
 interface BankDetails {
     account_number: string
@@ -16,10 +15,13 @@ interface BankDetails {
     upi: string
 }
 
-const ReturnSummary = () => {
+interface Props {
+    returnOrder: ReturnOrder
+}
+
+const ReturnSummary: React.FC<Props> = ({ returnOrder }) => {
     const navigate = useNavigate()
-    const returnOrder = useAppSelector<ReturnOrderState>((state) => state.returnOrders)
-    const returnDetails = returnOrder.returnOrders
+
     const [bankDetails, setBankDetails] = useState<BankDetails>({
         account_number: '',
         beneficiary_name: '',
@@ -28,17 +30,17 @@ const ReturnSummary = () => {
     })
 
     const initialBankDetails = {
-        account_number: returnDetails?.user_account_details?.account_details?.account_number || '',
-        beneficiary_name: returnDetails?.user_account_details?.account_details?.beneficiary_name || '',
-        ifsc_code: returnDetails?.user_account_details?.account_details?.ifsc_code || '',
-        upi: returnDetails?.user_account_details?.upi || '',
+        account_number: returnOrder?.user_account_details?.account_details?.account_number || '',
+        beneficiary_name: returnOrder?.user_account_details?.account_details?.beneficiary_name || '',
+        ifsc_code: returnOrder?.user_account_details?.account_details?.ifsc_code || '',
+        upi: returnOrder?.user_account_details?.upi || '',
     }
 
     const [isEditing, setIsEditing] = useState(false)
 
     useEffect(() => {
         setBankDetails(initialBankDetails)
-    }, [returnDetails])
+    }, [returnOrder])
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
@@ -51,9 +53,9 @@ const ReturnSummary = () => {
             ifsc_code: bankDetails?.ifsc_code,
         }).filter(([, value]) => value !== '')
         const body = {
-            first_name: returnDetails?.user?.first_name || '',
-            last_name: returnDetails?.user?.last_name || '',
-            email: returnDetails?.user?.email || '',
+            first_name: returnOrder?.user?.first_name || '',
+            last_name: returnOrder?.user?.last_name || '',
+            email: returnOrder?.user?.email || '',
             bank_details: {
                 upi: bankDetails?.upi,
                 account_details: Object.fromEntries(filteredDetails),
@@ -61,7 +63,7 @@ const ReturnSummary = () => {
         }
 
         try {
-            const response = await axioisInstance.patch(`/dashboard/user/profile/${returnDetails?.user?.mobile}`, body)
+            const response = await axioisInstance.patch(`/dashboard/user/profile/${returnOrder?.user?.mobile}`, body)
             notification.success({ message: response?.data?.message || 'Successfully Updated' })
             navigate(0)
         } catch (error) {
@@ -79,10 +81,10 @@ const ReturnSummary = () => {
             <h5 className="text-lg font-bold flex items-center gap-2 mb-4">Payment Summary</h5>
             <ul className="space-y-2">
                 <div className="flex justify-between text-gray-700">
-                    Amount <span className="font-semibold text-black">Rs.{returnDetails?.amount}</span>
+                    Amount <span className="font-semibold text-black">Rs.{returnOrder?.amount}</span>
                 </div>
                 <div className="flex justify-between text-gray-700">
-                    Delivery <span className="font-semibold text-black">Rs.{returnDetails?.delivery}</span>
+                    Delivery <span className="font-semibold text-black">Rs.{returnOrder?.delivery}</span>
                 </div>
             </ul>
 

@@ -1,69 +1,45 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import EasyTable from '@/common/EasyTable'
-import { useFetchApi } from '@/commonHooks/useFetchApi'
-import { Input, Pagination, Select } from '@/components/ui'
-import { pageSizeOptions } from '@/constants/pageUtils.constants'
+import PageCommon from '@/common/PageCommon'
+import { Input } from '@/components/ui'
+import { gdnService } from '@/store/services/gdnService'
+import { GdnProducts } from '@/store/types/gdn.types'
 import moment from 'moment'
-import React, { InputHTMLAttributes, useEffect, useMemo, useState } from 'react'
+import debounce from 'lodash/debounce'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
-
-interface DebouncedInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size' | 'prefix'> {
-    value: string | number
-    onChange: (value: string | number) => void
-    debounce?: number
-}
-
-function DebouncedInput({ value: initialValue, onChange, debounce = 500, ...props }: DebouncedInputProps) {
-    const [value, setValue] = useState(initialValue)
-
-    useEffect(() => {
-        setValue(initialValue)
-    }, [initialValue])
-
-    useEffect(() => {
-        const timeout = setTimeout(() => {
-            onChange(value)
-        }, debounce)
-
-        return () => clearTimeout(timeout)
-    }, [value])
-
-    return (
-        <div className="main">
-            <div className="text-xl font-bold mb-4"></div>
-            <div className="flex justify-start mb-6">
-                <div className="flex items-center mb-4">
-                    <span className="mr-2"></span>
-                    <Input {...props} value={value} onChange={(e) => setValue(e.target.value)} />
-                </div>
-            </div>
-        </div>
-    )
-}
+import NotFoundData from '@/views/pages/NotFound/Notfound'
 
 const GDNdetailTable = () => {
-    const { document_number } = useParams()
+    const { gdn_id } = useParams()
+    const [gdnItemsData, setGdnItemsData] = useState<GdnProducts[]>([])
+    const [count, setCount] = useState(0)
     const [globalFilter, setGlobalFilter] = useState('')
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
 
-    console.log('document_number', document_number)
+    const debouncedResults = useMemo(
+        () =>
+            debounce((value: string) => {
+                setGlobalFilter(value)
+            }, 500),
+        [],
+    )
 
-    const onSelectChange = (value = 0) => {
-        setPage(1)
-        setPageSize(Number(value))
-    }
-
-    const query = useMemo(() => {
-        let filterData = ''
-        if (globalFilter) {
-            filterData = `&sku=${globalFilter}`
+    useEffect(() => {
+        return () => {
+            debouncedResults.cancel()
         }
+    }, [debouncedResults])
 
-        return `/goods/dispatchproduct?document_number=${document_number}&p=${page}&page_size=${pageSize}${filterData}`
-    }, [document_number, page, pageSize, globalFilter])
+    const gdnItems = gdnService.useGdnItemsDetailsQuery({ page, pageSize, gdn_id, sku: globalFilter ?? '' })
 
-    const { data, totalData } = useFetchApi<any>({ url: query, initialData: [] })
+    useEffect(() => {
+        if (gdnItems.isSuccess) {
+            setGdnItemsData(gdnItems?.data?.data?.results)
+            setCount(gdnItems?.data?.data?.count)
+        }
+    }, [gdnItems.isSuccess, gdnItems?.data?.data])
 
     const columns = [
         {
@@ -127,26 +103,24 @@ const GDNdetailTable = () => {
 
     return (
         <div>
-            <DebouncedInput
-                value={globalFilter ?? ''}
-                type="search"
-                className="p-2 font-lg shadow border border-block"
-                placeholder="Search all columns..."
-                onChange={(value) => setGlobalFilter(String(value))}
-            />
-            <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} overflow />
-            <div className="flex xl:justify-between xl:flex-row flex-col gap-3 justify-center items-center mt-3 ">
-                <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={(page) => setPage(page)} />
-
-                <Select
-                    size="sm"
-                    isSearchable={true}
-                    value={pageSizeOptions.find((option) => option.value === pageSize)}
-                    options={pageSizeOptions}
-                    className="xl:w-[10%] w-[50%]"
-                    onChange={(option) => onSelectChange(option?.value)}
-                />
-            </div>
+            {gdnItems.isError ? (
+                <>
+                    <NotFoundData />
+                </>
+            ) : (
+                <>
+                    <div className="mb-8">
+                        <Input
+                            type="search"
+                            placeholder="Search By SKU.."
+                            className="max-w-xs rounded-lg"
+                            onChange={(e) => debouncedResults(e.target.value)}
+                        />
+                    </div>
+                    <EasyTable overflow mainData={gdnItemsData} columns={columns} page={page} pageSize={pageSize} />
+                    <PageCommon pageSize={pageSize} page={page} totalData={count} setPage={setPage} setPageSize={setPageSize} />
+                </>
+            )}
         </div>
     )
 }

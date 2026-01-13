@@ -2,50 +2,59 @@
 import { useMemo } from 'react'
 import moment from 'moment'
 import { ReturnOrder } from '../returnOrderCommon'
-
-const scheduleSlots: any = {
-    '1': { start: '10:00 AM', end: '01:00 PM' },
-    '2': { start: '01:00 PM', end: '04:00 PM' },
-    '3': { start: '04:00 PM', end: '07:00 PM' },
-    '4': { start: '07:00 PM', end: '10:00 PM' },
-}
+import { EReturnOrderStatus } from './ReturnOrderUtils'
+import { ColumnDef } from '@tanstack/react-table'
 
 export const useReturnOrderColumns = () => {
-    return useMemo(
+    const STATUS_FLAGS: {
+        status: EReturnOrderStatus
+        label: string
+    }[] = [
+        {
+            status: EReturnOrderStatus.qc_failed,
+            label: 'QC_Failed',
+        },
+        {
+            status: EReturnOrderStatus.attempt_failed,
+            label: 'Attempt_Failed',
+        },
+    ]
+
+    return useMemo<ColumnDef<ReturnOrder>[]>(
         () => [
             {
                 header: 'Order Id',
                 accessorKey: 'order',
-                cell: ({ getValue }: { getValue: () => string }) => (
+                cell: ({ row }) => (
                     <a
-                        href={`/app/orders/${getValue()}`}
+                        href={`/app/orders/${row?.original?.order}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-white bg-red-600 flex items-center justify-center py-1 px-4 rounded-[7px] font-semibold cursor-pointer"
                     >
-                        {getValue()}
+                        {row?.original?.order}
                     </a>
                 ),
             },
             {
                 header: 'Return_Order Id',
                 accessorKey: 'return_order_id',
-                cell: ({ getValue }: { getValue: () => string }) => (
+                cell: ({ row }) => (
                     <a
-                        href={`/app/returnOrders/${getValue()}`}
+                        href={`/app/returnOrders/${row?.original?.return_order_id}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-white w-[70%] bg-red-600 flex items-center justify-center py-1 rounded-[7px] font-semibold cursor-pointer"
                     >
-                        {getValue()}
+                        {row?.original?.return_order_id}
                     </a>
                 ),
             },
             {
                 header: 'Exchange Order',
                 accessorKey: 'exchange_order',
-                cell: ({ getValue }: { getValue: () => string }) => {
-                    const value = getValue()
+                cell: ({ row }) => {
+                    const value = row?.original?.exchange_order
                     return value ? (
                         <a
                             href={`/app/orders/${value}`}
@@ -63,12 +72,12 @@ export const useReturnOrderColumns = () => {
             {
                 header: 'Order Date',
                 accessorKey: 'create_date',
-                cell: ({ getValue }: { getValue: () => string }) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
+                cell: ({ row }) => <span>{moment(row?.original?.create_date).format('YYYY-MM-DD hh:mm:ss a')}</span>,
             },
             {
                 header: 'Return Type',
                 accessorKey: 'return_type',
-                cell: ({ getValue }: { getValue: () => string }) => <span>{getValue()}</span>,
+                cell: ({ row }) => <span>{row?.original?.return_type}</span>,
             },
             {
                 header: 'Runner Name',
@@ -84,24 +93,22 @@ export const useReturnOrderColumns = () => {
             {
                 header: 'Status',
                 accessorKey: 'status',
-                cell: ({ getValue }: { getValue: () => string }) => <span>{getValue()}</span>,
-            },
-            {
-                header: 'Scheduled Date',
-                accessorKey: 'pickup_schedule_date',
-                cell: ({ row }: { row: { original: ReturnOrder } }) => {
-                    const log = row?.original?.pickup_schedule_date
+                cell: ({ row }) => {
+                    const { status, log = [] } = row.original
 
-                    return <div>{log}</div>
-                },
-            },
-            {
-                header: 'Scheduled Slot',
-                accessorKey: 'pickup_schedule_slot',
-                cell: ({ row }: { row: { original: ReturnOrder } }) => {
-                    const slot = row?.original?.pickup_schedule_slot
+                    const failedStatuses = STATUS_FLAGS.filter(({ status }) => log.some((item) => item?.status === status))
 
-                    return <div>{slot}:00:00</div>
+                    return (
+                        <div className="flex gap-1 flex-col items-center">
+                            <span>{status}</span>
+
+                            {failedStatuses.map(({ label }) => (
+                                <span key={label} className="text-red-500 font-semibold">
+                                    ({label})
+                                </span>
+                            ))}
+                        </div>
+                    )
                 },
             },
 

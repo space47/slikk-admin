@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import { Formik } from 'formik'
 import moment from 'moment'
@@ -10,23 +9,32 @@ import { handleimage } from '@/common/handleImage'
 import { useFetchApi } from '@/commonHooks/useFetchApi'
 import AccessDenied from '@/views/pages/AccessDenied'
 import LoadingSpinner from '@/common/LoadingSpinner'
-import { errorMessage } from '@/utils/responseMessages'
 import { filterEmptyValues } from '@/utils/apiBodyUtility'
 import { getChangedValues } from '@/common/objectDiff'
+import { gdnService } from '@/store/services/gdnService'
 
 const EditGdn = () => {
     const navigate = useNavigate()
     const [imagview, setImageView] = useState<string[]>([])
-    const [spinner, setSpinner] = useState(false)
     const { document_number } = useParams()
-
     const { data, loading, responseStatus } = useFetchApi<any>({ url: `/goods/dispatch?document_number=${document_number}` })
+    const [updateGdn, updateResponse] = gdnService.useUpdateGdnMutation()
 
     useEffect(() => {
         if (document_number) {
             setImageView(data[0]?.images.split(',') || [])
         }
     }, [document_number, data])
+
+    useEffect(() => {
+        if (updateResponse.isSuccess) {
+            notification.success({ message: updateResponse.data.message || 'Successfully Edited the GDN' })
+            navigate('/app/goods/gdn')
+        }
+        if (updateResponse.isError) {
+            notification.error({ message: (updateResponse.error as any).data.message })
+        }
+    }, [updateResponse.isSuccess, updateResponse.isError])
 
     const initialValue = {
         document_number: data[0]?.document_number || '',
@@ -55,7 +63,6 @@ const EditGdn = () => {
     }
 
     const handleSubmit = async (values: any) => {
-        setSpinner(true)
         const docsShow = await processUpload(values.files, values.document)
         const imageShow = await processUpload(values.image, values.images)
         const body = {
@@ -73,17 +80,7 @@ const EditGdn = () => {
 
         const filteredBody = filterEmptyValues(body)
         const changedValues = getChangedValues(filteredBody as any, initialValue)
-
-        try {
-            const response = await axioisInstance.patch(`/goods/dispatch/${data[0]?.id}`, changedValues)
-            console.log(response)
-            notification.success({ message: response?.data?.message || 'GDN created Successfully' })
-            navigate('/app/goods/gdn')
-        } catch (error: any) {
-            errorMessage(error)
-        } finally {
-            setSpinner(false)
-        }
+        updateGdn({ id: data[0]?.id, data: changedValues })
     }
 
     if (responseStatus === 403) {
@@ -98,7 +95,7 @@ const EditGdn = () => {
                 <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                     {({ values }) => (
                         <div>
-                            <GdnForm values={values} imagview={imagview} spinner={spinner} />
+                            <GdnForm values={values} imagview={imagview} spinner={updateResponse.isLoading} />
                         </div>
                     )}
                 </Formik>
