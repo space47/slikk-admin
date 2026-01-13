@@ -7,8 +7,6 @@ import EasyTable from '@/common/EasyTable'
 import LoadingSpinner from '@/common/LoadingSpinner'
 import ReduxDateRange from '@/common/ReduxDateRange'
 import PageCommon from '@/common/PageCommon'
-import NotFoundData from '@/views/pages/NotFound/Notfound'
-
 import { Button, Select } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { rtvService } from '@/store/services/rtvService'
@@ -71,8 +69,6 @@ const RtvTable = () => {
                 </div>
             )
         }
-
-        return <NotFoundData />
     }
 
     if (isLoading) return <LoadingSpinner />
