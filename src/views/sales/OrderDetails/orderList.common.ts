@@ -74,4 +74,13 @@ export interface LocationDetail {
     }
 }
 
+export interface IOrderPack {
+    mainData: Order
+    selectedLocations: Record<number, Record<string, number>>
+    fulfilledQuantities: Record<number, number>
+    status: string
+    bagsCount: string
+    setTriggerPackCall: (x: boolean) => void
+}
+
 //Todo: enums

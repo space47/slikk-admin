@@ -10,7 +10,7 @@ import { Modal, notification } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { CustomModal, CustomModal2, CustomModal3, CustomModal4, CustomModal5, ExchangeModal, RejectModal } from './Modal'
 import { ActivityProps, LOGISTIC_PARTNER } from './activityCommon'
-import { getButtonAndModalContent } from './activityFunctions'
+import { buildPackOrderPayload, getButtonAndModalContent, usePackOrder } from './activityFunctions'
 import RtoCancelModal from '../orderDetailsUtils/RtoCancelModal'
 import OrderCameraModal from './OrderCameraModal'
 import { newOrderService } from '@/store/services/newOrderaService'
@@ -59,9 +59,14 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
 
     useEffect(() => {
         if (updateResponse.isSuccess) {
-            notification.success({ message: 'Successfully Updated' })
-            setTriggerApiCall(false)
-            setIsModalOpen(false)
+            if (updateResponse.originalArgs?.data.action === 'ADD_ITEM_PACKING_IMAGES') {
+                notification.success({ message: updateResponse.data.message || 'photo has been set' })
+                setStorePhoto([])
+            } else {
+                notification.success({ message: 'Successfully Updated' })
+                setTriggerApiCall(false)
+                setIsModalOpen(false)
+            }
             refetch()
         }
         if (updateResponse.isError) {
@@ -128,128 +133,55 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
             dashboard: false,
             data: { item_id: id, packing_image: images?.join(',') },
         }
-        try {
-            const res = await updateOrder({ id: invoice_id as string, data: bodyData }).unwrap()
-            notification.success({ message: res?.message || 'photo has been set' })
-            setStorePhoto([])
-        } catch (error) {
-            notification.error({ message: 'Failed to set the photo' })
-        }
+        updateOrder({ id: invoice_id as string, data: bodyData }).unwrap()
     }
 
     const handleSelectChange = (id: number, value: string) => {
         setFulfilledQuantities((prevQuantities) => ({ ...prevQuantities, [id]: parseInt(value, 10) }))
     }
 
+    const { handlePack } = usePackOrder({
+        mainData,
+        selectedLocations,
+        fulfilledQuantities,
+        status,
+        bagsCount,
+        setTriggerPackCall,
+    })
+
     useEffect(() => {
-        if (triggerPackCall) {
-            const sendApiRequest = async () => {
-                try {
-                    if (status === 'ACCEPTED' && !bagsCount) {
-                        notification.error({ message: 'Number of bags Required' })
-                        setInterval(() => {
-                            navigate(0)
-                        }, 3000)
-                        return
-                    }
-                    const itemsWithLocationDetails = mainData?.order_items?.filter(
-                        (item) =>
-                            item.location_details &&
-                            Object.values(item.location_details).reduce((sum, qty) => sum + qty, 0) >= parseInt(item.quantity),
-                    )
-                    const itemsWithoutLocationDetails = mainData?.order_items?.filter(
-                        (item) =>
-                            !item.location_details ||
-                            Object.values(item.location_details).reduce((sum, qty) => sum + qty, 0) < parseInt(item.quantity),
-                    )
-                    const data: Record<number, any> = {}
-                    if (itemsWithLocationDetails?.length) {
-                        const locationData = Object.entries(selectedLocations).reduce(
-                            (acc, [productId, locations]) => {
-                                Object.entries(locations).forEach(([location, count]) => {
-                                    acc[productId as any] = acc[productId as any] || {}
-                                    acc[productId as any][location] = count
-                                })
-                                return acc
-                            },
-                            {} as { [key: number]: { [location: string]: number } },
-                        )
-                        Object.assign(data, locationData)
-                    }
-                    if (itemsWithoutLocationDetails?.length) {
-                        const quantityData = Object.entries(fulfilledQuantities).reduce(
-                            (acc, [id, quantity]: any) => {
-                                if (quantity > 0) {
-                                    acc[id] = quantity
-                                }
-                                return acc
-                            },
-                            {} as { [key: number]: number },
-                        )
-                        Object.assign(data, quantityData)
-                    }
-                    if (Object.keys(data).length === 0) {
-                        notification.warning({ message: 'Please select at least one item with a valid quantity to proceed.' })
-                        setTriggerPackCall(false)
-                        return
-                    }
-                    const hasZeroQuantity =
-                        Object.values(selectedLocations).some((locations) => Object.values(locations).some((count) => count === 0)) ||
-                        Object.values(fulfilledQuantities).some((quantity) => quantity === 0)
-
-                    if (hasZeroQuantity) {
-                        Modal.confirm({
-                            title: 'Confirm Zero Quantity',
-                            content: 'One or more items have a quantity of 0. Do you still want to proceed?',
-                            okText: 'Yes',
-                            cancelText: 'No',
-                            onOk: async () => {
-                                await makeApiCall(data)
-                            },
-                            onCancel: () => {
-                                setTriggerPackCall(false)
-                            },
-                        })
-                        return
-                    }
-                    const totalRequiredQuantity = mainData?.order_items?.reduce((sum, item) => sum + Number(item?.quantity || 0), 0)
-                    const totalFulfilledQuantity =
-                        Object.values(selectedLocations)
-                            .flatMap((locs) => Object.values(locs))
-                            .reduce((sum, curr) => sum + curr, 0) + Object.values(fulfilledQuantities).reduce((sum, q) => sum + (q || 0), 0)
-
-                    const hasLessQuantity = totalRequiredQuantity && totalRequiredQuantity > totalFulfilledQuantity
-                    if (hasLessQuantity && !hasZeroQuantity) {
-                        Modal.confirm({
-                            title: 'Confirm Quantity for Packing',
-                            content: 'The number of fulfilled quantity is less than actual quantity!',
-                            okText: 'Yes',
-                            cancelText: 'No',
-                            onOk: async () => {
-                                await makeApiCall(data)
-                            },
-                            onCancel: () => {
-                                setTriggerPackCall(false)
-                            },
-                        })
-                        return
-                    }
-                    await makeApiCall(data)
-                } catch (error) {
-                    setTriggerPackCall(false)
-                }
-            }
-            const makeApiCall = async (data: { [key: number]: number }) => {
-                const body = {
-                    action,
-                    data,
-                    ...(bagsCount ? { packets_count: Number(bagsCount) } : {}),
-                    ...(binNumber ? { bin_id: binNumber } : {}),
-                }
-                packOrder({ id: invoice_id as string, data: body })
-            }
-            sendApiRequest()
+        if (!triggerPackCall) return
+        const result = handlePack()
+        if (!result) return
+        const { zeroQty, required, fulfilled, data } = result
+        const executeApi = async () => {
+            const body = buildPackOrderPayload({
+                action,
+                data,
+                bagsCount,
+                binNumber,
+            })
+            packOrder({ id: invoice_id as string, data: body })
         }
+        if (zeroQty) {
+            Modal.confirm({
+                title: 'Confirm Zero Quantity',
+                content: 'One or more items have a quantity of 0. Do you still want to proceed?',
+                onOk: executeApi,
+                onCancel: () => setTriggerPackCall(false),
+            })
+            return
+        }
+        if (required > fulfilled) {
+            Modal.confirm({
+                title: 'Confirm Quantity for Packing',
+                content: 'The number of fulfilled quantity is less than actual quantity!',
+                onOk: executeApi,
+                onCancel: () => setTriggerPackCall(false),
+            })
+            return
+        }
+        executeApi()
     }, [triggerPackCall])
 
     const handleReject = () => {
@@ -265,25 +197,23 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
     }
 
     useEffect(() => {
-        if (cancelCall) {
-            const sendApiRequest = async () => {
-                try {
-                    const cancelData = rejectData?.reduce((acc: any, id: any) => {
-                        acc[id] = 0
-                        return acc
-                    }, {})
-                    const body = { action, data: cancelData }
-                    await updateOrder({ id: invoice_id as string, data: body }).unwrap()
-                    setIsModalOpen(false)
-                    setCancelCall(false)
-                    navigate(0)
-                } catch (error) {
-                    console.error(error)
-                    setCancelCall(false)
-                }
+        if (!cancelCall) return
+        ;(async () => {
+            try {
+                const cancelData = rejectData?.reduce((acc: any, id: any) => {
+                    acc[id] = 0
+                    return acc
+                }, {})
+
+                const body = { action, data: cancelData }
+                await updateOrder({ id: invoice_id as string, data: body }).unwrap()
+                setIsModalOpen(false)
+                setCancelCall(false)
+                refetch()
+            } catch (error) {
+                setCancelCall(false)
             }
-            sendApiRequest()
-        }
+        })()
     }, [cancelCall, navigate])
 
     const handlePartnerSelect = (selectedValue: any) => {
@@ -478,14 +408,12 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
             <div style={{ zIndex: 1000 }}>
                 <RtoCancelModal isOpen={rtoCancel} setIsOpen={setRtoCancel} orderItems={mainData.order_items} invoice_id={invoice_id} />
             </div>
-            {
-                <OrderCameraModal
-                    isOpen={isPhotoCamera}
-                    currentId={currentId as number}
-                    setIsOpen={setIsPhotoCamera}
-                    setStorePhoto={setStorePhoto}
-                />
-            }
+            <OrderCameraModal
+                isOpen={isPhotoCamera}
+                currentId={currentId as number}
+                setIsOpen={setIsPhotoCamera}
+                setStorePhoto={setStorePhoto}
+            />
         </Card>
     )
 }

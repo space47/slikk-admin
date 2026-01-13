@@ -2,6 +2,8 @@
 import { notification } from 'antd'
 import { Event } from './activityCommon'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { Order } from '@/store/types/newOrderTypes'
+import { IOrderPack } from '../orderList.common'
 
 export const getButtonAndModalContent = (data: Event[], mainData?: { delivery_type?: string }, delivery_type?: string) => {
     if (data.length === 0) {
@@ -104,4 +106,131 @@ export const particularApiCall = async (
             description: errorMessage,
         })
     }
+}
+
+// utils/packOrder.helpers.ts
+
+export const getItemsWithAndWithoutLocation = (orderItems: Order['order_items']) => {
+    const withLocation = orderItems?.filter(
+        (item) =>
+            item.location_details && Object.values(item.location_details).reduce((sum, qty) => sum + qty, 0) >= parseInt(item.quantity),
+    )
+
+    const withoutLocation = orderItems?.filter(
+        (item) =>
+            !item.location_details || Object.values(item.location_details).reduce((sum, qty) => sum + qty, 0) < parseInt(item.quantity),
+    )
+
+    return { withLocation, withoutLocation }
+}
+
+export const buildLocationData = (selectedLocations: Record<number | any, Record<string, number | string>>) => {
+    return Object.entries(selectedLocations).reduce(
+        (acc, [productId, locations]: any) => {
+            Object.entries(locations).forEach(([location, count]) => {
+                acc[productId] = acc[productId] || {}
+                acc[productId][location as any] = count as number
+            })
+            return acc
+        },
+        {} as Record<number, Record<string, number>>,
+    )
+}
+
+export const buildQuantityData = (fulfilledQuantities: any) => {
+    return Object.entries(fulfilledQuantities).reduce(
+        (acc, [id, quantity]: any) => {
+            if (quantity > 0) acc[id as any] = quantity
+            return acc
+        },
+        {} as Record<number, number>,
+    )
+}
+
+export const hasZeroQuantity = (
+    selectedLocations: { [productId: number]: { [location: string]: number } },
+    fulfilledQuantities: { [key: number]: number },
+) => {
+    return (
+        Object.values(selectedLocations).some((locations: any) => Object.values(locations)?.some((count: any) => count === 0)) ||
+        Object.values(fulfilledQuantities).some((qty: any) => qty === 0)
+    )
+}
+
+export const getTotalQuantities = (
+    orderItems: Order['order_items'],
+    selectedLocations: Record<number, Record<string, number>>,
+    fulfilledQuantities: Record<number, number>,
+) => {
+    const required = orderItems?.reduce((sum, item) => sum + Number(item?.quantity || 0), 0) ?? 0
+
+    const selectedLocationsTotal = Object.values(selectedLocations)
+        .flatMap((locs) => Object.values(locs))
+        .reduce((sum, curr) => sum + curr, 0)
+
+    const fulfilledQuantitiesTotal = Object.values(fulfilledQuantities).reduce((sum, q) => sum + q, 0)
+
+    const fulfilled = selectedLocationsTotal + fulfilledQuantitiesTotal
+
+    return { required, fulfilled }
+}
+
+export const buildPackOrderPayload = ({
+    action,
+    data,
+    bagsCount,
+    binNumber,
+}: {
+    action: string
+    data: any
+    bagsCount?: string
+    binNumber?: string
+}) => ({
+    action,
+    data,
+    ...(bagsCount ? { packets_count: Number(bagsCount) } : {}),
+    ...(binNumber ? { bin_id: binNumber } : {}),
+})
+
+export const usePackOrder = ({ mainData, selectedLocations, fulfilledQuantities, status, bagsCount, setTriggerPackCall }: IOrderPack) => {
+    const handlePack = () => {
+        if (status === 'ACCEPTED' && !bagsCount) {
+            notification.error({ message: 'Number of bags Required' })
+            setTriggerPackCall(false)
+            return null
+        }
+
+        const { withLocation, withoutLocation } = getItemsWithAndWithoutLocation(mainData?.order_items)
+
+        const data: any = {}
+
+        if (withLocation?.length) {
+            Object.assign(data, buildLocationData(selectedLocations))
+        }
+
+        if (withoutLocation?.length) {
+            Object.assign(data, buildQuantityData(fulfilledQuantities))
+        }
+
+        if (!Object.keys(data).length) {
+            notification.warning({
+                message: 'Please select at least one item with a valid quantity to proceed.',
+            })
+            setTriggerPackCall(false)
+            return null
+        }
+
+        const zeroQty = hasZeroQuantity(selectedLocations, fulfilledQuantities)
+
+        const { required, fulfilled } = getTotalQuantities(mainData?.order_items, selectedLocations, fulfilledQuantities)
+
+        return {
+            zeroQty,
+            required,
+            fulfilled,
+            data,
+        }
+    }
+
+    return { handlePack }
 }
