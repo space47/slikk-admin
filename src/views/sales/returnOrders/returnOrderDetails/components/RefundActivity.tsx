@@ -147,7 +147,7 @@ const RefundActivity: React.FC<Props> = ({ returnDetails, returnOrderItems, refe
             />
 
             {returnDetails?.log?.[returnDetails.log.length - 1]?.status === EReturnOrderStatus.delivered &&
-                !returnDetails?.log?.some((item) => item?.status === EReturnOrderStatus.delivered) && (
+                !returnDetails?.log?.some((item) => item?.status === EReturnOrderStatus.refunded) && (
                     <CompleteReturnModal
                         isCompleting={isCompleting}
                         handleAction={handleCompleteReturn}
@@ -158,8 +158,8 @@ const RefundActivity: React.FC<Props> = ({ returnDetails, returnOrderItems, refe
                         handleInputChange={handleInputChange}
                     />
                 )}
-            {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === EReturnOrderStatus.delivered ||
-                returnDetails?.log?.some((item) => item?.status?.includes(EReturnOrderStatus.delivered))) &&
+            {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === EReturnOrderStatus.refunded ||
+                returnDetails?.log?.some((item) => item?.status?.includes(EReturnOrderStatus.refunded))) &&
                 !returnDetails?.log?.some((item) => item?.status?.includes(EReturnOrderStatus.completed)) && (
                     <CompleteReturnModal
                         isCompleting={isCompleting}
