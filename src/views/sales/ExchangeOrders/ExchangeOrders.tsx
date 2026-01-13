@@ -12,7 +12,6 @@ import FilterDialogOrder from '@/views/category-management/orderlist/filterDialo
 import { CiFilter } from 'react-icons/ci'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
-import RedMarkTable from '@/common/RedMarkTable'
 import { HiSearch } from 'react-icons/hi'
 import LoadingSpinner from '@/common/LoadingSpinner'
 import { Option } from '@/views/org-management/sellers/sellerCommon'
@@ -21,6 +20,7 @@ import { Exchange_Columns } from './exchangeOrderUtils/ExchangeColumns'
 import { pageSizeOptions } from '../groupNotification/getGroup/groupComnmon'
 import { handleDownload, handleNumberClick } from './exchangeOrderUtils/ExchangeApiCalls'
 import { handleDateChange, handleDropDownSelect, handleSelect } from './exchangeOrderUtils/ExchangeFunctions'
+import EasyTable from '@/common/EasyTable'
 
 const Exchangeorders = () => {
     const location = useLocation()
@@ -41,7 +41,6 @@ const Exchangeorders = () => {
     const [showSpinner, setShowSpinner] = useState<boolean>(false)
     const [searchOnEnter, setSearchOnEnter] = useState('')
     const previousOrders = useRef<any[]>([])
-    const [deliveryTypes, setDeliveryTypes] = useState<Record<string, string>>({})
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
 
     const fetchOrders = async () => {
@@ -89,14 +88,6 @@ const Exchangeorders = () => {
             return () => clearInterval(interval)
         }
     }, [page, pageSize, from, to, dropdownStatus, searchOnEnter, paymentType, numberClick, previousOrders])
-
-    useEffect(() => {
-        const initialDeliveryTypes: any = {}
-        orders.forEach((row: any) => {
-            initialDeliveryTypes[row.invoice_id] = row.delivery_type || 'SELECT'
-        })
-        setDeliveryTypes(initialDeliveryTypes)
-    }, [orders])
 
     const handleSearchWithIcon = () => {
         setSearchOnEnter(searchInput)
@@ -196,12 +187,12 @@ const Exchangeorders = () => {
                 <br />
 
                 <div className="border border-gray-300 p-2 rounded-xl">
-                    <RedMarkTable
+                    <EasyTable
+                        overflow
                         mainData={orders}
                         page={page}
                         pageSize={pageSize}
                         columns={Exchange_Columns((number) => handleNumberClick(number, setOrders, setOrderCount, setNumberClick))}
-                        selectedDeliveryType={deliveryTypes ?? ''}
                     />
                 </div>
             </div>
