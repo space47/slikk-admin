@@ -271,7 +271,7 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
     }
 
     const table = useReactTable({
-        data,
+        data: data as any,
         columns,
         getCoreRowModel: getCoreRowModel(),
     })

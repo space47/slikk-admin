@@ -108,10 +108,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type }: Ac
         const bodyData = {
             action: 'ADD_ITEM_PACKING_IMAGES',
             dashboard: false,
-            data: {
-                item_id: id,
-                packing_image: images?.join(','),
-            },
+            data: { item_id: id, packing_image: images?.join(',') },
         }
         try {
             const res = await axiosInstance.patch(`/merchant/order/${invoice_id}`, bodyData)
@@ -125,10 +122,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type }: Ac
     }
 
     const handleSelectChange = (id: number, value: string) => {
-        setFulfilledQuantities((prevQuantities) => ({
-            ...prevQuantities,
-            [id]: parseInt(value, 10),
-        }))
+        setFulfilledQuantities((prevQuantities) => ({ ...prevQuantities, [id]: parseInt(value, 10) }))
     }
 
     useEffect(() => {
@@ -228,7 +222,6 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type }: Ac
                         })
                         return
                     }
-                    console.log('yyyuyruyuryer', data)
                     await makeApiCall(data)
                 } catch (error) {
                     setTriggerApiCall(false)
