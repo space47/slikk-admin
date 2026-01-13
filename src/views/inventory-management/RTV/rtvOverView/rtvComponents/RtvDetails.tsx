@@ -17,6 +17,7 @@ import RtvEditModal from './RtvEditModal'
 import { FaSync, FaTimesCircle } from 'react-icons/fa'
 import DialogConfirm from '@/common/DialogConfirm'
 import { textParser } from '@/common/textParser'
+import { ERtvDetail } from '../../rtvUtils/rtv.types'
 
 const RtvDetails = () => {
     const { rtv_number } = useParams()
@@ -30,9 +31,7 @@ const RtvDetails = () => {
     const [tabValue, setTabValue] = useState('false')
     const [searchInput, setSearchInput] = useState('')
     const [isStatusConformation, setIsStatusConformation] = useState('')
-
     const { debounceFilter } = useDebounceInput({ globalFilter: searchInput, delay: 500 })
-
     const { data, isSuccess, isLoading, isFetching, refetch, isError } = rtvService.useRtvProductsQuery({
         rtv_id: rtv_number,
         page,
@@ -46,6 +45,7 @@ const RtvDetails = () => {
     const [currentRtvData, setCurrentRtvData] = useState<Rtv_Products>()
     const [showEditModal, setShowEditModal] = useState(false)
     const [updateRtv, updateResponse] = rtvService.useUpdateRtvMutation()
+    const [updateStatus, statusUpdateResponse] = rtvService.useUpdateRtvStatusMutation()
 
     useEffect(() => {
         if (isSuccess) {
@@ -89,16 +89,24 @@ const RtvDetails = () => {
         }
     }, [updateResponse.isSuccess, updateResponse.isError])
 
+    useEffect(() => {
+        if (statusUpdateResponse?.isSuccess) {
+            notification.success({ message: statusUpdateResponse?.data?.message || 'Successfully Updated Rtv Number Status' })
+            setIsStatusConformation('')
+            refetch()
+        }
+        if (statusUpdateResponse?.isError) {
+            notification.error({ message: (statusUpdateResponse?.error as any)?.data?.message || 'Failed to Update Rtv Number Status' })
+        }
+    }, [statusUpdateResponse.isSuccess, statusUpdateResponse.isError])
+
     const handleAssign = async (actionType: string) => {
         const body = {
-            action: 'assign_picker',
+            action: ERtvDetail.assign_picker,
             pickers: selectedUsers?.filter((item) => item !== undefined),
             assign_action: actionType,
         }
-        assignPicker({
-            id: rtv_number as any,
-            ...body,
-        })
+        assignPicker({ id: rtv_number as any, ...body })
     }
 
     const handleCreateGDN = () => {
@@ -114,10 +122,7 @@ const RtvDetails = () => {
     const columns = useRtvProductsColumn({ handleEditProducts })
 
     const handleRtvGeneration = () => {
-        updateRtv({
-            id: rtv_number as string,
-            action: 'add_rtv_number',
-        })
+        updateRtv({ id: rtv_number as string, action: ERtvDetail.add_rtv_number })
     }
 
     const DetailsData = [
@@ -132,7 +137,10 @@ const RtvDetails = () => {
         { label: 'Quantity Picked', value: rtvData?.quantity_picked ?? 0 },
     ]
 
-    const handleStatus = () => {}
+    const handleStatus = async () => {
+        const body = { action: isStatusConformation, rtv_number: rtvData?.rtv_number }
+        updateStatus(body)
+    }
 
     return (
         <div className="flex flex-col gap-8 p-6 bg-gray-50 dark:bg-gray-900 rounded-2xl shadow-lg">
@@ -191,20 +199,20 @@ const RtvDetails = () => {
                     >
                         Add Picker
                     </Button>
-                    {data?.status !== 'approved' && (
+                    {data?.status !== ERtvDetail.approved && (
                         <>
                             <Button
-                                variant={data?.status === 'created' ? 'accept' : 'pending'}
+                                variant={data?.status === ERtvDetail.created ? 'accept' : 'pending'}
                                 size="sm"
-                                onClick={() => setIsStatusConformation('forward')}
+                                onClick={() => setIsStatusConformation(ERtvDetail.created)}
                             >
-                                {data?.status === 'created' ? 'Approve' : 'Create'}
+                                Create
                             </Button>
                             <Button
                                 variant="reject"
                                 size="sm"
                                 icon={<FaTimesCircle className="mr-1" />}
-                                onClick={() => setIsStatusConformation('reject')}
+                                onClick={() => setIsStatusConformation(ERtvDetail.rejected)}
                             >
                                 Reject
                             </Button>
@@ -265,7 +273,7 @@ const RtvDetails = () => {
                     refetch={refetch}
                 />
             )}
-            {isStatusConformation === 'reject' && (
+            {isStatusConformation === ERtvDetail.rejected && (
                 <DialogConfirm
                     IsDelete
                     IsOpen={!!isStatusConformation}
@@ -273,11 +281,11 @@ const RtvDetails = () => {
                     onDialogOk={handleStatus}
                 />
             )}
-            {isStatusConformation === 'forward' && (
+            {isStatusConformation === ERtvDetail.created && (
                 <DialogConfirm
+                    isProceed
                     label="Are you sure you want to change the status of this RTV"
                     headingName="Change Status"
-                    isProceed
                     IsOpen={!!isStatusConformation}
                     closeDialog={() => setIsStatusConformation('')}
                     onDialogOk={handleStatus}
