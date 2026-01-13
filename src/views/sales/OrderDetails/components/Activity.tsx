@@ -17,7 +17,7 @@ import RtoCancelModal from '../orderDetailsUtils/RtoCancelModal'
 import OrderCameraModal from './OrderCameraModal'
 import { errorMessage, successMessage } from '@/utils/responseMessages'
 
-const Activity = ({ data = [], status, product = [], payment, invoice_id, mainData, delivery_type }: ActivityProps) => {
+const Activity = ({ data = [], status, invoice_id, mainData, delivery_type }: ActivityProps) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [modalContent, setModalContent] = useState<string>()
     const [fulfilledQuantities, setFulfilledQuantities] = useState<{ [key: number]: number }>({})
@@ -142,18 +142,18 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                         }, 3000)
                         return
                     }
-                    const itemsWithLocationDetails = product?.filter(
+                    const itemsWithLocationDetails = mainData?.order_items?.filter(
                         (item) =>
                             item.location_details &&
                             Object.values(item.location_details).reduce((sum, qty) => sum + qty, 0) >= parseInt(item.quantity),
                     )
-                    const itemsWithoutLocationDetails = product?.filter(
+                    const itemsWithoutLocationDetails = mainData?.order_items?.filter(
                         (item) =>
                             !item.location_details ||
                             Object.values(item.location_details).reduce((sum, qty) => sum + qty, 0) < parseInt(item.quantity),
                     )
                     const data: Record<number, any> = {}
-                    if (itemsWithLocationDetails?.length > 0) {
+                    if (itemsWithLocationDetails?.length) {
                         const locationData = Object.entries(selectedLocations).reduce(
                             (acc, [productId, locations]) => {
                                 Object.entries(locations).forEach(([location, count]) => {
@@ -166,7 +166,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                         )
                         Object.assign(data, locationData)
                     }
-                    if (itemsWithoutLocationDetails?.length > 0) {
+                    if (itemsWithoutLocationDetails?.length) {
                         const quantityData = Object.entries(fulfilledQuantities).reduce(
                             (acc, [id, quantity]: any) => {
                                 if (quantity > 0) {
@@ -204,13 +204,13 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                         })
                         return
                     }
-                    const totalRequiredQuantity = product?.reduce((sum, item) => sum + Number(item?.quantity || 0), 0)
+                    const totalRequiredQuantity = mainData?.order_items?.reduce((sum, item) => sum + Number(item?.quantity || 0), 0)
                     const totalFulfilledQuantity =
                         Object.values(selectedLocations)
                             .flatMap((locs) => Object.values(locs))
                             .reduce((sum, curr) => sum + curr, 0) + Object.values(fulfilledQuantities).reduce((sum, q) => sum + (q || 0), 0)
 
-                    const hasLessQuantity = totalRequiredQuantity > totalFulfilledQuantity
+                    const hasLessQuantity = totalRequiredQuantity && totalRequiredQuantity > totalFulfilledQuantity
                     if (hasLessQuantity && !hasZeroQuantity) {
                         setButtonAfterClick(false)
                         Modal.confirm({
@@ -431,8 +431,8 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                     handleReject={handleReject}
                     status={status}
                     invoice_id={invoice_id}
-                    payment={payment}
-                    product={product}
+                    payment={mainData.payment}
+                    product={mainData.order_items}
                     fulfilledQuantities={fulfilledQuantities}
                     handleSelectChange={handleSelectChange}
                     errorMessage={errorText || undefined}
@@ -509,7 +509,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
             )}
 
             <div style={{ zIndex: 1000 }}>
-                <RtoCancelModal isOpen={rtoCancel} setIsOpen={setRtoCancel} orderItems={product} invoice_id={invoice_id} />
+                <RtoCancelModal isOpen={rtoCancel} setIsOpen={setRtoCancel} orderItems={mainData.order_items} invoice_id={invoice_id} />
             </div>
             {
                 <OrderCameraModal

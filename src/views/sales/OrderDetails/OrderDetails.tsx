@@ -12,7 +12,7 @@ import { useParams } from 'react-router-dom'
 import moment from 'moment'
 import ReturnOrderDrawer from './components/ReturnOrderDrawer'
 import { FaDownload } from 'react-icons/fa'
-import { SalesOrderDetailsResponse, scheduleSlots } from './orderList.common'
+import { scheduleSlots } from './orderList.common'
 import { Button } from '@/components/ui'
 import TrackModal from '@/views/slikkLogistics/taskTracking/TrackModal'
 import OrderPickerSummary from './components/OrderPickersummary'
@@ -25,19 +25,29 @@ import { useOrderDetailFunctions } from './orderDetailsUtils/useOrderDetailFunct
 import RtoCancelModal from './orderDetailsUtils/RtoCancelModal'
 import { TaskData } from '@/store/types/tasks.type'
 import ItemConvertModal from './components/ItemConvertModal'
+import { Order } from '@/store/types/newOrderTypes'
+import { newOrderService } from '@/store/services/newOrderaService'
 
 const OrderDetails = () => {
     const { invoice_id } = useParams()
+    const [data, setData] = useState<Order>()
     const [returnOrderDrawer, setReturnOrderDrawer] = useState(false)
     const [showCancelModal, setShowCancelModal] = useState(false)
     const [showUTMModal, setShowUTMModal] = useState(false)
     const [showCancelExchangeModal, setShowCancelExchangeModal] = useState(false)
     const [showRiderData, setShowRiderData] = useState(false)
+    const orderDetailsApi = newOrderService.useGetOrderDetailsQuery({ order_id: invoice_id }, { skip: !invoice_id })
 
-    const queryOrders = useMemo(() => {
-        return `merchant/order/${invoice_id}`
-    }, [invoice_id])
-    const { data: data, loading } = useFetchSingleData<SalesOrderDetailsResponse>({ url: queryOrders })
+    // const queryOrders = useMemo(() => {
+    //     return `merchant/order/${invoice_id}`
+    // }, [invoice_id])
+    // const { data: data, loading } = useFetchSingleData<SalesOrderDetailsResponse>({ url: queryOrders })
+
+    useEffect(() => {
+        if (orderDetailsApi.isSuccess) {
+            setData(orderDetailsApi.data.data)
+        }
+    }, [orderDetailsApi.isSuccess])
 
     const query = useMemo(() => {
         if (!data?.logistic?.task_id) return null
@@ -57,7 +67,7 @@ const OrderDetails = () => {
         }
     }, [data?.logistic, data?.status])
 
-    const OrderDetailUI = (data: SalesOrderDetailsResponse) => {
+    const OrderDetailUI = (data: Order) => {
         return (
             <div className="mb-8 flex flex-col justify-center xl:flex-row xl:justify-between">
                 <div className="w-full xl:w-1/2">
@@ -131,7 +141,7 @@ const OrderDetails = () => {
                         )}
                     </div>
 
-                    {data.return_order.length > 0 && (
+                    {data?.return_order?.length && (
                         <>
                             <OrderList
                                 title="Return Orders"
@@ -158,9 +168,9 @@ const OrderDetails = () => {
                         href={`/app/returnOrders/${data?.reference_return}`}
                     />
 
-                    <OrderLink label="Split Order" value={data?.split_order_id} href={`/app/orders/${data?.split_order_id}`} />
+                    <OrderLink label="Split Order" value={data?.split_order_id as string} href={`/app/orders/${data?.split_order_id}`} />
 
-                    {data?.exchange_order_id?.length > 0 && (
+                    {data?.exchange_order_id?.length && (
                         <OrderList
                             title="Exchange Orders"
                             items={data.exchange_order_id.map((id) => ({ id, exchange_order_id: id }))}
@@ -172,7 +182,11 @@ const OrderDetails = () => {
                     )}
 
                     {data?.delivery_type === 'EXCHANGE' && (
-                        <OrderLink label="Original Order" value={data?.original_order} href={`/app/orders/${data?.original_order}`} />
+                        <OrderLink
+                            label="Original Order"
+                            value={data?.original_order as string}
+                            href={`/app/orders/${data?.original_order}`}
+                        />
                     )}
                 </div>
             </div>
@@ -181,7 +195,7 @@ const OrderDetails = () => {
 
     return (
         <div className="w-full bg-gray-50 dark:bg-gray-950 px-4 xl:px-6 py-6 scrollbar-hide">
-            <Loading loading={loading}>
+            <Loading loading={orderDetailsApi.isLoading}>
                 {!isEmpty(data) && (
                     <>
                         <div className="mb-6">{OrderDetailUI(data)}</div>
@@ -201,7 +215,7 @@ const OrderDetails = () => {
                                                 store={data.store}
                                                 location_url={data.location_url}
                                                 delivery_type={data.delivery_type}
-                                                distance={data?.distance}
+                                                distance={data?.distance as number}
                                                 alternate_number={taskData?.drop_details?.contact_number}
                                             />
                                         </div>
@@ -250,8 +264,6 @@ const OrderDetails = () => {
                                                 mainData={data}
                                                 data={data.log}
                                                 status={data.status}
-                                                product={data.order_items}
-                                                payment={data.payment}
                                                 invoice_id={data.invoice_id}
                                                 delivery_type={data.delivery_type}
                                             />

@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom'
 import Spinner from '@/components/ui/Spinner'
 import { OrderReturnReasons } from '@/constants/commonArray.constant'
 import Exchange from './Exchange'
+import { Order } from '@/store/types/newOrderTypes'
 
 const { Option } = Select
 
@@ -27,7 +28,7 @@ export type Product = {
 type ReturnOrderProps = {
     isOpen: boolean
     setIsOpen: (x: boolean) => void
-    product: Product[]
+    product: Order['order_items']
     invoice_id: string | undefined
     delivery_type: string
 }

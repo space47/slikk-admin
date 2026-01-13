@@ -2,6 +2,7 @@
 import Card from '@/components/ui/Card'
 import { NumericFormat } from 'react-number-format'
 import moment from 'moment'
+import { Order } from '@/store/types/newOrderTypes'
 
 type PaymentInfoProps = {
     label?: string
@@ -13,12 +14,7 @@ type PaymentSummaryProps = {
     tax: string | number
     delivery: string
     amount: string
-    data?: {
-        amount: number
-        mode: string
-        transaction_time: string
-        status: string
-    }
+    data?: Order['payment']
     coupon_discount: string
     loyalty_discount: string
     points_discount: string

@@ -14,11 +14,10 @@ export const newOrderService = RtkQueryService.injectEndpoints({
             }),
             keepUnusedDataFor: 0,
         }),
-        getOrderDetails: builder.query<Order, QueryParams>({
-            query: (params) => ({
-                url: '/merchant/orders',
+        getOrderDetails: builder.query<{ data: Order; status: string }, { order_id?: string }>({
+            query: ({ order_id }) => ({
+                url: `/merchant/order/${order_id}`,
                 method: 'GET',
-                params,
             }),
             keepUnusedDataFor: 0,
         }),

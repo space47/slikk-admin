@@ -1,6 +1,51 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface StatusLog {
     status: string
     timestamp: string
+}
+
+export type OrderItem = {
+    id: number
+
+    name: string
+    brand: string
+    category: string
+    sub_category: string
+    product_type: string
+
+    division: 'men' | 'women' | string
+    size: string
+    color: string
+
+    sku: string
+    skid: string | null
+    barcode: string
+
+    image: string // comma-separated URLs
+    packing_images: string
+
+    mrp: string
+    sp: string
+    final_price: string
+
+    quantity: string
+    fulfilled_quantity: string
+    exchangeable_quantity: number
+    returnable_quantity: number
+
+    is_exchangeable: boolean
+    is_returnable: boolean
+    is_try_and_buy: boolean
+    is_gift_wrap: boolean
+
+    location: string
+    location_details: Record<string, number>
+
+    order_item_rating: number | null
+    llinfo: unknown | null
+
+    create_date: string // ISO date string
+    update_date: string // ISO date string
 }
 
 export interface Rider {
@@ -136,6 +181,14 @@ export interface Order {
     }
 
     log: StatusLog[]
+    utm_params?: Record<string, string | undefined | boolean>
+    order_items?: OrderItem[]
+    delivery_schedule_date?: string | null
+    delivery_schedule_slot?: string | null
+    return_order?: any[]
+    reference_return?: string
+    exchange_order_id?: any[]
+    tnb_return_otp?: string
 }
 
 export type NewOrderResponseType = {

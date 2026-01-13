@@ -3,11 +3,12 @@ import React from 'react'
 import { Modal, Select } from 'antd'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { Dropdown, Input } from '@/components/ui'
-import { LOGISTIC_PARTNER, Product } from './activityCommon'
+import { LOGISTIC_PARTNER } from './activityCommon'
 import { FaRupeeSign, FaCamera, FaTimes, FaTrashAlt, FaBoxOpen, FaReceipt, FaWallet, FaTag } from 'react-icons/fa'
 import { IoBagOutline } from 'react-icons/io5'
 import { MdPhotoCamera, MdInventory, MdLocalShipping, MdInfoOutline } from 'react-icons/md'
 import { BsBoxSeam } from 'react-icons/bs'
+import { Order } from '@/store/types/newOrderTypes'
 
 const { Option } = Select
 
@@ -18,10 +19,8 @@ type Props = {
     modalContent?: string
     status: string
     invoice_id?: string
-    payment?: {
-        amount: number
-    }
-    product?: Product[]
+    payment?: Order['payment']
+    product?: Order['order_items']
     fulfilledQuantities: { [key: number]: number }
     handleSelectChange: (id: number, value: string) => void
     errorMessage?: string

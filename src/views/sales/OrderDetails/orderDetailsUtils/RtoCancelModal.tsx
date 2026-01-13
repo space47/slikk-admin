@@ -6,17 +6,17 @@ import { IoIosAddCircle, IoIosCheckmarkCircle, IoIosCube, IoIosInformationCircle
 import { AxiosError } from 'axios'
 import { Button, Dialog, Dropdown, Spinner } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-import { Product } from '../components/activityCommon'
 import { OrderCancelReasons } from '@/constants/commonArray.constant'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { errorMessage, successMessage } from '@/utils/responseMessages'
 import { LocationDetail, QuantityValidation } from '../orderList.common'
 import { FaTrash } from 'react-icons/fa'
+import { Order, OrderItem } from '@/store/types/newOrderTypes'
 
 interface RtoCancelModalProps {
     isOpen: boolean
     setIsOpen: (isOpen: boolean) => void
-    orderItems: Product[]
+    orderItems: Order['order_items']
     invoice_id: string | undefined
     isCancel?: boolean
     status?: string
@@ -198,7 +198,7 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
         navigate,
     ])
 
-    const renderLocationInputs = (item: Product) => {
+    const renderLocationInputs = (item: OrderItem) => {
         const locations = locationWiseDetails[item.id] || []
         const assignedQuantity = locations.reduce((sum, loc) => sum + (Number(loc.quantity) || 0), 0)
         const remainingQuantity = Number(item.quantity) - assignedQuantity

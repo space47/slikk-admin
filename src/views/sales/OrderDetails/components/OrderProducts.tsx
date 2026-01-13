@@ -11,9 +11,10 @@ import { Button, Dialog } from '@/components/ui'
 import QRCode from 'react-qr-code'
 import { MdImageNotSupported, MdQrCodeScanner } from 'react-icons/md'
 import { CommonOrderProduct } from '../orderList.common'
+import { Order } from '@/store/types/newOrderTypes'
 
 type OrderProductsProps = {
-    data: CommonOrderProduct[]
+    data: Order['order_items']
     invoice_id: string | undefined
     status: string
 }
