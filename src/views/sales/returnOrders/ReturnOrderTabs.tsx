@@ -9,9 +9,9 @@ interface Props {
 const tabs = [
     { label: 'ALL', key: 'all' },
     { label: 'PICKUP_CREATED', key: 'pickup_created' },
-    { label: 'PICKUP_RESCHEDULED', key: 'pickup_rescheduled' },
     { label: 'RIDER_ASSIGNED', key: 'rider_assigned' },
     { label: 'OUT_FOR_PICKUP', key: 'out_for_pickup' },
+    { label: 'REACHED_AT_LOCATION', key: 'reached_at_location' },
     { label: 'PICKED_UP', key: 'picked_up' },
     { label: 'QC_FAILED', key: 'qc_failed' },
     { label: 'RETURN_REJECTED', key: 'return_rejected' },
