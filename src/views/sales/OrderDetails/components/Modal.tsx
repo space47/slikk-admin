@@ -429,7 +429,7 @@ export const CustomModal2: React.FC<props2> = ({
                     Assign Delivery Partner
                 </div>
             }
-            okText={isButtonClick ? 'SELECT PARTNER' : 'SELECT PARTNER'}
+            okText={isButtonClick ? 'SETTING PARTNER...' : 'SELECT PARTNER'}
             cancelText={status === EOrderStatus.pending ? 'REJECT ORDERS' : 'CANCEL'}
             width={800}
             className="custom-modal"
