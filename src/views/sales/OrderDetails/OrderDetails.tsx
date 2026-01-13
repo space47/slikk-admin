@@ -40,7 +40,6 @@ const OrderDetails = () => {
 
     useEffect(() => {
         if (orderDetailsApi.isSuccess) {
-            console
             setData(orderDetailsApi.data.data)
         }
     }, [orderDetailsApi.isSuccess, orderDetailsApi?.data?.data])
@@ -61,7 +60,7 @@ const OrderDetails = () => {
     useEffect(() => {
         if (
             data?.status === EOrderStatus.delivery_created &&
-            data?.logistic?.partner === 'Slikk' &&
+            data?.logistic?.partner?.toLowerCase() === 'slikk' &&
             data?.logistic?.runner_phone_number === ''
         ) {
             setShowRiderData(true)

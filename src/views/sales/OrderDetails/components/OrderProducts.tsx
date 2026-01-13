@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import AdaptableCard from '@/components/shared/AdaptableCard'
 import Table from '@/components/ui/Table'
-
 import { useReactTable, getCoreRowModel, flexRender, createColumnHelper } from '@tanstack/react-table'
 import { NumericFormat } from 'react-number-format'
 import { useState } from 'react'
@@ -270,7 +269,7 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
     }
 
     const table = useReactTable({
-        data: data as any,
+        data,
         columns,
         getCoreRowModel: getCoreRowModel(),
     })
