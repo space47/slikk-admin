@@ -12,7 +12,7 @@ import { useParams } from 'react-router-dom'
 import moment from 'moment'
 import ReturnOrderDrawer from './components/ReturnOrderDrawer'
 import { FaDownload } from 'react-icons/fa'
-import { SalesOrderDetailsResponse, scheduleSlots } from './orderList.common'
+import { EOrderStatus, scheduleSlots } from './orderList.common'
 import { Button } from '@/components/ui'
 import TrackModal from '@/views/slikkLogistics/taskTracking/TrackModal'
 import OrderPickerSummary from './components/OrderPickersummary'
@@ -25,39 +25,69 @@ import { useOrderDetailFunctions } from './orderDetailsUtils/useOrderDetailFunct
 import RtoCancelModal from './orderDetailsUtils/RtoCancelModal'
 import { TaskData } from '@/store/types/tasks.type'
 import ItemConvertModal from './components/ItemConvertModal'
+import { Order } from '@/store/types/newOrderTypes'
+import { newOrderService } from '@/store/services/newOrderaService'
 
 const OrderDetails = () => {
     const { invoice_id } = useParams()
+    const [data, setData] = useState<Order>()
     const [returnOrderDrawer, setReturnOrderDrawer] = useState(false)
     const [showCancelModal, setShowCancelModal] = useState(false)
     const [showUTMModal, setShowUTMModal] = useState(false)
     const [showCancelExchangeModal, setShowCancelExchangeModal] = useState(false)
     const [showRiderData, setShowRiderData] = useState(false)
+    const orderDetailsApi = newOrderService.useGetOrderDetailsQuery({ order_id: invoice_id }, { skip: !invoice_id })
 
-    const queryOrders = useMemo(() => {
-        return `merchant/order/${invoice_id}`
-    }, [invoice_id])
-    const { data: data, loading } = useFetchSingleData<SalesOrderDetailsResponse>({ url: queryOrders })
+    const showRider = useMemo(() => {
+        return (
+            data?.status === EOrderStatus.delivery_created &&
+            data?.logistic?.partner?.toLowerCase() === 'slikk' &&
+            data?.logistic?.runner_phone_number === ''
+        )
+    }, [data?.logistic, data?.status])
+
+    const showTicket = useMemo(() => {
+        return data?.log?.some((item) => item?.status?.includes(EOrderStatus.packed)) && data?.utm_params?.ticket === true
+    }, [data?.log, data?.utm_params])
+
+    const showReturnOrder = useMemo(() => {
+        return (
+            data?.status === EOrderStatus.completed &&
+            (data?.payment?.status === EOrderStatus.paid || data?.payment?.status === EOrderStatus.pod_paid)
+        )
+    }, [data?.status, data?.payment?.status])
+
+    useEffect(() => {
+        if (orderDetailsApi.isSuccess) {
+            setData(orderDetailsApi.data.data)
+        }
+        if (showRider) {
+            setShowRiderData(true)
+        } else {
+            setShowRiderData(false)
+        }
+    }, [orderDetailsApi.isSuccess, orderDetailsApi?.data?.data, showRider])
 
     const query = useMemo(() => {
         if (!data?.logistic?.task_id) return null
         return `/logistic/slikk/task?task_id=${data.logistic.task_id}`
     }, [data?.logistic?.task_id])
 
-    const { data: taskData } = useFetchSingleData<TaskData>({ url: query || '', pollingInterval: query ? 60000 : undefined })
+    const { data: taskData, refetch: refetchTask } = useFetchSingleData<TaskData>({
+        url: query || '',
+        pollingInterval: query ? 60000 : undefined,
+    })
 
     const { handlemarkAsPaid, handlePODAction, handleDownload, handleConvert, handleMarketingOrder, OrderLink, OrderList } =
         useOrderDetailFunctions({ data, setShowCancelExchangeModal })
 
     useEffect(() => {
-        if (data?.status === 'DELIVERY_CREATED' && data?.logistic?.partner === 'Slikk' && data?.logistic?.runner_phone_number === '') {
-            setShowRiderData(true)
-        } else {
-            setShowRiderData(false)
+        if (orderDetailsApi.currentData) {
+            refetchTask()
         }
-    }, [data?.logistic, data?.status])
+    }, [orderDetailsApi.currentData])
 
-    const OrderDetailUI = (data: SalesOrderDetailsResponse) => {
+    const OrderDetailUI = (data: Order) => {
         return (
             <div className="mb-8 flex flex-col justify-center xl:flex-row xl:justify-between">
                 <div className="w-full xl:w-1/2">
@@ -71,7 +101,7 @@ const OrderDetails = () => {
                                         <FaDownload className="bg-none text-gray-700" />
                                     </button>
                                 </div>
-                                {data?.log?.some((item) => item?.status?.includes('PACKED')) && data?.utm_params?.ticket === true ? (
+                                {showTicket ? (
                                     <div>
                                         <Button variant="reject" size="sm" onClick={() => setShowUTMModal(true)}>
                                             REMOVE TICKET
@@ -114,28 +144,28 @@ const OrderDetails = () => {
                 </div>
                 <div className="mt-4 md:mt-0 flex flex-col items-center xl:items-end gap-5 justify-center w-full xl:w-1/2">
                     <div className="flex gap-4">
-                        {data.status === 'COMPLETED' && (data?.payment?.status === 'PAID' || data?.payment?.status === 'POD_PAID') && (
+                        {showReturnOrder && (
                             <Button variant="reject" size="sm" onClick={() => setReturnOrderDrawer(true)}>
                                 Return/Exchange ORDER
                             </Button>
                         )}
-                        {data.status !== 'DECLINED' && data.status !== 'CANCELLED' && (
+                        {data.status !== EOrderStatus.declined && data.status !== EOrderStatus.cancelled && (
                             <Button variant="reject" size="sm" onClick={() => setShowCancelModal(true)}>
                                 Cancel Order
                             </Button>
                         )}
-                        {data?.delivery_type === 'EXCHANGE' && (
+                        {data?.delivery_type === EOrderStatus.exchange && (
                             <Button variant="reject" size="sm" onClick={() => setShowCancelExchangeModal(true)}>
                                 CONVERT
                             </Button>
                         )}
                     </div>
 
-                    {data.return_order.length > 0 && (
+                    {!!data?.return_order?.length && (
                         <>
                             <OrderList
                                 title="Return Orders"
-                                items={data.return_order.filter((item) => item?.status !== 'ACCEPTED')}
+                                items={data.return_order.filter((item) => item?.status !== EOrderStatus.accepted)}
                                 itemKey="return_order_id"
                                 itemDisplayKey="return_order_id"
                                 baseUrl="/app/returnOrders"
@@ -143,7 +173,7 @@ const OrderDetails = () => {
                             />
                             <OrderList
                                 title="Unfulfilled Orders"
-                                items={data.return_order.filter((item) => item?.status === 'ACCEPTED')}
+                                items={data.return_order.filter((item) => item?.status === EOrderStatus.accepted)}
                                 itemKey="return_order_id"
                                 itemDisplayKey="return_order_id"
                                 baseUrl="/app/returnOrders"
@@ -158,9 +188,9 @@ const OrderDetails = () => {
                         href={`/app/returnOrders/${data?.reference_return}`}
                     />
 
-                    <OrderLink label="Split Order" value={data?.split_order_id} href={`/app/orders/${data?.split_order_id}`} />
+                    <OrderLink label="Split Order" value={data?.split_order_id as string} href={`/app/orders/${data?.split_order_id}`} />
 
-                    {data?.exchange_order_id?.length > 0 && (
+                    {!!data?.exchange_order_id?.length && (
                         <OrderList
                             title="Exchange Orders"
                             items={data.exchange_order_id.map((id) => ({ id, exchange_order_id: id }))}
@@ -172,7 +202,11 @@ const OrderDetails = () => {
                     )}
 
                     {data?.delivery_type === 'EXCHANGE' && (
-                        <OrderLink label="Original Order" value={data?.original_order} href={`/app/orders/${data?.original_order}`} />
+                        <OrderLink
+                            label="Original Order"
+                            value={data?.original_order as string}
+                            href={`/app/orders/${data?.original_order}`}
+                        />
                     )}
                 </div>
             </div>
@@ -181,7 +215,7 @@ const OrderDetails = () => {
 
     return (
         <div className="w-full bg-gray-50 dark:bg-gray-950 px-4 xl:px-6 py-6 scrollbar-hide">
-            <Loading loading={loading}>
+            <Loading loading={orderDetailsApi.isLoading}>
                 {!isEmpty(data) && (
                     <>
                         <div className="mb-6">{OrderDetailUI(data)}</div>
@@ -201,7 +235,7 @@ const OrderDetails = () => {
                                                 store={data.store}
                                                 location_url={data.location_url}
                                                 delivery_type={data.delivery_type}
-                                                distance={data?.distance}
+                                                distance={data?.distance as number}
                                                 alternate_number={taskData?.drop_details?.contact_number}
                                             />
                                         </div>
@@ -250,10 +284,9 @@ const OrderDetails = () => {
                                                 mainData={data}
                                                 data={data.log}
                                                 status={data.status}
-                                                product={data.order_items}
-                                                payment={data.payment}
                                                 invoice_id={data.invoice_id}
                                                 delivery_type={data.delivery_type}
+                                                refetch={orderDetailsApi.refetch}
                                             />
                                         </div>
 
