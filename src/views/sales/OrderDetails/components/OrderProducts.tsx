@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import AdaptableCard from '@/components/shared/AdaptableCard'
 import Table from '@/components/ui/Table'
-
 import { useReactTable, getCoreRowModel, flexRender, createColumnHelper } from '@tanstack/react-table'
 import { NumericFormat } from 'react-number-format'
 import { useState } from 'react'
@@ -10,10 +9,11 @@ import ReplaceDrawer from './ReplaceDrawer'
 import { Button, Dialog } from '@/components/ui'
 import QRCode from 'react-qr-code'
 import { MdImageNotSupported, MdQrCodeScanner } from 'react-icons/md'
-import { CommonOrderProduct } from '../orderList.common'
+import { CommonOrderProduct, EOrderStatus } from '../orderList.common'
+import { Order } from '@/store/types/newOrderTypes'
 
 type OrderProductsProps = {
-    data: CommonOrderProduct[]
+    data: Order['order_items']
     invoice_id: string | undefined
     status: string
 }
@@ -41,7 +41,6 @@ const ProductColumn = ({ row, status }: productProps) => {
         setParticularROwImage(img)
         setShowImageModal(true)
     }
-    console.log('row data is', status)
     return (
         <div className="flex gap-8 justify-center flex-col xl:flex-row">
             <div className="relative">
@@ -51,10 +50,10 @@ const ProductColumn = ({ row, status }: productProps) => {
                     onClick={() => handleImageView(row.image || '')}
                 />
                 {Number(row?.fulfilled_quantity) <= 0 &&
-                    status !== 'PENDING' &&
-                    status !== 'ACCEPTED' &&
-                    status !== 'CANCELLED' &&
-                    status !== 'PICKING' && (
+                    status !== EOrderStatus.pending &&
+                    status !== EOrderStatus.accepted &&
+                    status !== EOrderStatus.cancelled &&
+                    status !== EOrderStatus.picking && (
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none bottom-8">
                             <div className="mt-10 font-bold border-2 border-red-500 rounded-xl inline-flex py-3 px-3 bg-red-50 text-red-700 whitespace-nowrap -rotate-45 opacity-70">
                                 Out of stock
@@ -248,12 +247,12 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
         }),
 
         columnHelper.accessor('name', {
-            header: `${status !== 'CANCELLED' ? 'Replace' : ''}`,
+            header: `${status !== EOrderStatus.cancelled ? 'Replace' : ''}`,
             cell: (props) => {
                 const rowID = props.row.original.id
                 return (
                     <>
-                        {status !== 'CANCELLED' && (
+                        {status !== EOrderStatus.cancelled && (
                             <button className="text-white bg-red-500 px-3 py-2 rounded-[10px]" onClick={() => handleReplace(rowID)}>
                                 Replace
                             </button>
@@ -288,9 +287,9 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
 
     return (
         <AdaptableCard className="mb-4">
-            <div className="mb-2 text-red-500 font-bold ">{status?.toLowerCase() === 'cancelled' && 'ORDER CANCELLED'}</div>
+            <div className="mb-2 text-red-500 font-bold ">{status === EOrderStatus.cancelled && 'ORDER CANCELLED'}</div>
             <div className="xl:block hidden">
-                <Table overflow className={status?.toLowerCase() === 'cancelled' ? 'bg-red-200' : ''}>
+                <Table overflow className={status === EOrderStatus.cancelled ? 'bg-red-200' : ''}>
                     <THead>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <Tr key={headerGroup.id}>
@@ -323,7 +322,7 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                         {data?.map((pdts) => (
                             <div
                                 key={pdts.id}
-                                className={`flex  p-3 shadow-lg rounded-lg hover:shadow-2xl transition-shadow xl:gap-12 dark:bg-gray-800 dark:text-white ${Number(pdts?.fulfilled_quantity) <= 0 && status !== 'PENDING' && status !== 'ACCEPTED' ? 'bg-red-200' : 'bg-white'}`}
+                                className={`flex  p-3 shadow-lg rounded-lg hover:shadow-2xl transition-shadow xl:gap-12 dark:bg-gray-800 dark:text-white ${Number(pdts?.fulfilled_quantity) <= 0 && status !== EOrderStatus.pending && status !== EOrderStatus.accepted ? 'bg-red-200' : 'bg-white'}`}
                             >
                                 <div className="flex-shrink-0">
                                     <img
