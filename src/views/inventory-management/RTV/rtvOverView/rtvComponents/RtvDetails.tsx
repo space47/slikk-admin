@@ -14,10 +14,11 @@ import TabNav from '@/components/ui/Tabs/TabNav'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 import { useDebounceInput } from '@/commonHooks/useDebounceInput'
 import RtvEditModal from './RtvEditModal'
-import { FaSync, FaTimesCircle } from 'react-icons/fa'
+import { FaCheckCircle, FaExclamationTriangle, FaSync, FaTimesCircle } from 'react-icons/fa'
 import DialogConfirm from '@/common/DialogConfirm'
 import { textParser } from '@/common/textParser'
 import { ERtvDetail } from '../../rtvUtils/rtv.types'
+import { BsFillPatchCheckFill } from 'react-icons/bs'
 
 const RtvDetails = () => {
     const { rtv_number } = useParams()
@@ -138,8 +139,8 @@ const RtvDetails = () => {
     ]
 
     const handleStatus = async () => {
-        const body = { action: isStatusConformation, rtv_number: rtvData?.rtv_number }
-        updateStatus(body)
+        const body = { action: isStatusConformation }
+        updateStatus({ rtv_id: rtvData?.id as number, data: body })
     }
 
     return (
@@ -147,9 +148,33 @@ const RtvDetails = () => {
             {rtvSuccess ? (
                 <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
                     <div className="flex justify-between">
-                        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
-                            RTV Details
-                        </h2>
+                        <div className="mb-4 border-b border-gray-200 dark:border-gray-700 ">
+                            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 pb-2">RTV Details</h2>
+                            <div className="flex flex-wrap items-center gap-4">
+                                <div className="flex items-center gap-2">
+                                    <p className="text-gray-600 text-sm">
+                                        <span className="font-medium">Rtv Number:</span>
+                                        <span className="ml-2 font-semibold text-gray-800">{rtvData?.rtv_number}</span>
+                                    </p>
+                                </div>
+                                <div>
+                                    <span
+                                        className={`px-3 py-1 text-sm rounded-full font-medium flex items-center gap-2 ${
+                                            rtvData?.status === 'approved'
+                                                ? 'bg-green-100 text-green-800 border border-green-200'
+                                                : rtvData?.status === 'pending'
+                                                  ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+                                                  : 'bg-gray-100 text-gray-700 border border-gray-200'
+                                        }`}
+                                    >
+                                        {rtvData?.status === 'approved' && <FaCheckCircle className="text-green-600" />}
+                                        {rtvData?.status === 'pending' && <FaExclamationTriangle className="text-yellow-600" />}
+                                        {rtvData?.status === 'created' && <BsFillPatchCheckFill className="text-gray-500" />}
+                                        {rtvData?.status}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                         <div>
                             <Button variant="new" size="sm" onClick={handleRtvGeneration}>
                                 RTV Number Generation

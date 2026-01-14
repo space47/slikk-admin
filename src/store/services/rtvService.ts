@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import RtkQueryService from '@/services/RtkQueryService'
-import { Rtv_Data_Response, Rtv_Get_Params, Rtv_Product_Params, Rtv_Products_Response } from '../types/rtv.types'
+import { Rtv_Data_Response, Rtv_Get_Params, Rtv_Product_Params, Rtv_Products_Response, Rtv_status_request } from '../types/rtv.types'
 
 export const rtvService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
@@ -89,12 +89,12 @@ export const rtvService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        updateRtvStatus: builder.mutation<{ status: string; message: string }, Record<string, any>>({
-            query: (body) => {
+        updateRtvStatus: builder.mutation<{ status: string; message: string }, Rtv_status_request>({
+            query: ({ rtv_id, data }) => {
                 return {
-                    url: `/rtv`,
+                    url: `/rtv/${rtv_id}`,
                     method: 'PATCH',
-                    body,
+                    body: data,
                 }
             },
         }),
