@@ -5,7 +5,7 @@ import Badge from '@/components/ui/Badge'
 import Card from '@/components/ui/Card'
 import moment from 'moment'
 import Button from '@/components/ui/Button'
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { Modal, notification } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { CustomModal, CustomModal2, CustomModal3, CustomModal4, CustomModal5, ExchangeModal, RejectModal } from './Modal'
@@ -29,8 +29,6 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
     const [partner, setPartner] = useState<{ value: string; label: string } | null>(null)
     const fulfilledIDs = Object.keys(fulfilledQuantities)
     const [rejectModal, setRejectModal] = useState(false)
-    const hasStatus = (status: string) => data.some((log) => log.status === status)
-    const isExchangeComplete = hasStatus(EOrderStatus.exchange_delivered)
     const [rtoCancel, setRtoCancel] = useState(false)
     const [bagsCount, setBagsCount] = useState('1')
     const [binNumber, setBinNumber] = useState('1')
@@ -42,15 +40,14 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
     const [packOrder, packResponse] = newOrderService.useUpdateOrderMutation()
     const rejectData = mainData.order_items?.filter((item) => !fulfilledIDs.includes(item.id.toString()))?.map((item) => item.id)
 
-    const isPacked = useMemo(() => {
-        return data.some((log) => log?.status === EOrderStatus.packed)
-    }, [data])
+    const hasStatus = useCallback((status: string) => data.some((log) => log.status === status), [data])
+    const isExchangeComplete = hasStatus(EOrderStatus.exchange_delivered)
+    const isPacked = hasStatus(EOrderStatus.packed)
+    const isDeliveryCreated = hasStatus(EOrderStatus.delivery_created)
+    const isOrderDone = hasStatus(EOrderStatus.delivered) || hasStatus(EOrderStatus.completed)
 
-    const isDeliveryCreated = useMemo(() => {
-        return data.some((log) => log?.status === EOrderStatus.delivery_created)
-    }, [data])
-    const isOrderDone = useMemo(() => {
-        return data.some((log) => log.status === EOrderStatus.delivered || log.status === EOrderStatus.completed)
+    const lastLogStatus = useMemo(() => {
+        return data[data.length - 1]?.status
     }, [data])
 
     const showModal = (content: string | undefined) => {
@@ -319,7 +316,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
                 />
             )}
 
-            {data[data.length - 1]?.status === EOrderStatus.packed && (
+            {lastLogStatus === EOrderStatus.packed && (
                 <CustomModal2
                     isModalOpen={isModalOpen}
                     handlePack={() => handleAction(EOrderStatus.created_delivery)}
@@ -333,7 +330,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
                     setBinNumber={setBinNumber}
                 />
             )}
-            {(data[data.length - 1]?.status === EOrderStatus.accepted || data[data.length - 1]?.status === EOrderStatus.picking) && (
+            {(lastLogStatus === EOrderStatus.accepted || lastLogStatus === EOrderStatus.picking) && (
                 <CustomModal
                     isModalOpen={isModalOpen}
                     handleOk={() => {

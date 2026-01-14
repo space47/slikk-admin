@@ -38,11 +38,35 @@ const OrderDetails = () => {
     const [showRiderData, setShowRiderData] = useState(false)
     const orderDetailsApi = newOrderService.useGetOrderDetailsQuery({ order_id: invoice_id }, { skip: !invoice_id })
 
+    const showRider = useMemo(() => {
+        return (
+            data?.status === EOrderStatus.delivery_created &&
+            data?.logistic?.partner?.toLowerCase() === 'slikk' &&
+            data?.logistic?.runner_phone_number === ''
+        )
+    }, [data?.logistic, data?.status])
+
+    const showTicket = useMemo(() => {
+        return data?.log?.some((item) => item?.status?.includes(EOrderStatus.packed)) && data?.utm_params?.ticket === true
+    }, [data?.log, data?.utm_params])
+
+    const showReturnOrder = useMemo(() => {
+        return (
+            data?.status === EOrderStatus.completed &&
+            (data?.payment?.status === EOrderStatus.paid || data?.payment?.status === EOrderStatus.pod_paid)
+        )
+    }, [data?.status, data?.payment?.status])
+
     useEffect(() => {
         if (orderDetailsApi.isSuccess) {
             setData(orderDetailsApi.data.data)
         }
-    }, [orderDetailsApi.isSuccess, orderDetailsApi?.data?.data])
+        if (showRider) {
+            setShowRiderData(true)
+        } else {
+            setShowRiderData(false)
+        }
+    }, [orderDetailsApi.isSuccess, orderDetailsApi?.data?.data, showRider])
 
     const query = useMemo(() => {
         if (!data?.logistic?.task_id) return null
@@ -56,18 +80,6 @@ const OrderDetails = () => {
 
     const { handlemarkAsPaid, handlePODAction, handleDownload, handleConvert, handleMarketingOrder, OrderLink, OrderList } =
         useOrderDetailFunctions({ data, setShowCancelExchangeModal })
-
-    useEffect(() => {
-        if (
-            data?.status === EOrderStatus.delivery_created &&
-            data?.logistic?.partner?.toLowerCase() === 'slikk' &&
-            data?.logistic?.runner_phone_number === ''
-        ) {
-            setShowRiderData(true)
-        } else {
-            setShowRiderData(false)
-        }
-    }, [data?.logistic, data?.status])
 
     useEffect(() => {
         if (orderDetailsApi.currentData) {
@@ -89,8 +101,7 @@ const OrderDetails = () => {
                                         <FaDownload className="bg-none text-gray-700" />
                                     </button>
                                 </div>
-                                {data?.log?.some((item) => item?.status?.includes(EOrderStatus.packed)) &&
-                                data?.utm_params?.ticket === true ? (
+                                {showTicket ? (
                                     <div>
                                         <Button variant="reject" size="sm" onClick={() => setShowUTMModal(true)}>
                                             REMOVE TICKET
@@ -133,12 +144,11 @@ const OrderDetails = () => {
                 </div>
                 <div className="mt-4 md:mt-0 flex flex-col items-center xl:items-end gap-5 justify-center w-full xl:w-1/2">
                     <div className="flex gap-4">
-                        {data.status === EOrderStatus.completed &&
-                            (data?.payment?.status === EOrderStatus.paid || data?.payment?.status === EOrderStatus.pod_paid) && (
-                                <Button variant="reject" size="sm" onClick={() => setReturnOrderDrawer(true)}>
-                                    Return/Exchange ORDER
-                                </Button>
-                            )}
+                        {showReturnOrder && (
+                            <Button variant="reject" size="sm" onClick={() => setReturnOrderDrawer(true)}>
+                                Return/Exchange ORDER
+                            </Button>
+                        )}
                         {data.status !== EOrderStatus.declined && data.status !== EOrderStatus.cancelled && (
                             <Button variant="reject" size="sm" onClick={() => setShowCancelModal(true)}>
                                 Cancel Order
