@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from '@/components/ui'
 import React, { useState, useEffect } from 'react'
-import { FaCheckCircle, FaTimesCircle, FaTools, FaTrash } from 'react-icons/fa'
+import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'
 import CommonAccordion from './CommonAccordion'
+import { notification } from 'antd'
+import { MdIron } from 'react-icons/md'
 
 interface OrderItems {
     product: {
@@ -66,11 +68,9 @@ const CancelItemSelect: React.FC<Props> = ({ orderItems, payload, setPayload }) 
     }
 
     const handleSetData = () => {
-        const newPayload: Record<string, Record<string, number>> = { ...payload }
+        const newPayload: Record<string, Record<string, number>> = {}
+
         Object.entries(itemStatuses).forEach(([orderItemId, statusArray]) => {
-            if (!statusArray || !Array.isArray(statusArray)) {
-                return
-            }
             const counts = {
                 qc_passed: 0,
                 qc_failed: 0,
@@ -78,48 +78,20 @@ const CancelItemSelect: React.FC<Props> = ({ orderItems, payload, setPayload }) 
             }
 
             statusArray.forEach((status) => {
-                if (status?.qc_passed) counts.qc_passed++
-                if (status?.qc_failed) counts.qc_failed++
-                if (status?.refurbished) counts.refurbished++
+                if (status.qc_passed) counts.qc_passed++
+                else if (status.qc_failed) counts.qc_failed++
+                else if (status.refurbished) counts.refurbished++
             })
 
-            const existingData = payload ? payload[orderItemId] : {}
+            const hasAnySelection = counts.qc_passed > 0 || counts.qc_failed > 0 || counts.refurbished > 0
 
-            if (existingData) {
-                counts.qc_passed += existingData.qc_passed || 0
-                counts.qc_failed += existingData.qc_failed || 0
-                counts.refurbished += existingData.refurbished || 0
+            if (hasAnySelection) {
+                newPayload[orderItemId] = counts
             }
-
-            newPayload[orderItemId] = counts
         })
 
-        setPayload(newPayload)
-    }
-
-    const handleClearItem = (orderItemId: string) => {
-        setItemStatuses((prev) => {
-            const updated = { ...prev }
-
-            if (!updated[orderItemId]) return prev
-
-            updated[orderItemId] = updated[orderItemId].map(() => ({
-                qc_passed: false,
-                qc_failed: false,
-                refurbished: false,
-            }))
-
-            return updated
-        })
-
-        setPayload((prev: any) => {
-            if (!prev) return prev
-
-            const updatedPayload = { ...prev }
-            delete updatedPayload[orderItemId]
-
-            return updatedPayload
-        })
+        setPayload(Object.keys(newPayload).length ? newPayload : undefined)
+        notification.info({ message: 'Status has been set' })
     }
 
     const handleClearData = () => {
@@ -156,6 +128,8 @@ const CancelItemSelect: React.FC<Props> = ({ orderItems, payload, setPayload }) 
         )
     }
 
+    console.log('payload', Object.keys(payload || {}))
+
     return (
         <div className="space-y-3 max-h-[calc(80vh-200px)] overflow-y-auto p-2">
             <div className="sticky top-0 bg-white z-10 pb-2 border-b">
@@ -178,9 +152,6 @@ const CancelItemSelect: React.FC<Props> = ({ orderItems, payload, setPayload }) 
                                             src={item.product?.image}
                                             alt={item.product?.sku || 'Product image'}
                                             className="w-10 h-10 object-cover rounded border"
-                                            onError={(e) => {
-                                                ;(e.target as HTMLImageElement).src = 'https://via.placeholder.com/40?text=Img'
-                                            }}
                                         />
                                         <div className="min-w-0">
                                             <h3 className="font-semibold text-sm truncate">SKU: {item.product?.sku || 'N/A'}</h3>
@@ -190,9 +161,6 @@ const CancelItemSelect: React.FC<Props> = ({ orderItems, payload, setPayload }) 
                                                 <span>Qty: {item.quantity || '1'}</span>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div className="flex justify-end" onClick={() => handleClearItem(item.order_item)}>
-                                        <FaTrash />
                                     </div>
                                 </div>
                                 {
@@ -227,7 +195,7 @@ const CancelItemSelect: React.FC<Props> = ({ orderItems, payload, setPayload }) 
                                                         )}
                                                         {itemStatus?.refurbished && (
                                                             <div className="flex items-center space-x-1 text-blue-600 text-xs">
-                                                                <FaTools size={12} />
+                                                                <MdIron size={12} />
                                                                 <span>Refurbished</span>
                                                             </div>
                                                         )}
@@ -248,7 +216,7 @@ const CancelItemSelect: React.FC<Props> = ({ orderItems, payload, setPayload }) 
                                                             >
                                                                 <FaCheckCircle size={20} />
                                                             </button>
-                                                            <span>Qc_Passed</span>
+                                                            <span>QC_Passed</span>
                                                         </div>
 
                                                         <div className="flex flex-col items-center space-x-1">
@@ -262,7 +230,7 @@ const CancelItemSelect: React.FC<Props> = ({ orderItems, payload, setPayload }) 
                                                             >
                                                                 <FaTimesCircle size={20} />
                                                             </button>
-                                                            <span>Qc_Failed</span>
+                                                            <span>QC_Failed</span>
                                                         </div>
 
                                                         <div className="flex flex-col items-center space-x-1">
@@ -274,7 +242,7 @@ const CancelItemSelect: React.FC<Props> = ({ orderItems, payload, setPayload }) 
                                                                 className={`p-1.5 rounded ${itemStatus?.refurbished ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:bg-gray-100'}`}
                                                                 title="Refurbished"
                                                             >
-                                                                <FaTools size={20} />
+                                                                <MdIron size={20} />
                                                             </button>
                                                             <span>Refurbished</span>
                                                         </div>
@@ -295,8 +263,8 @@ const CancelItemSelect: React.FC<Props> = ({ orderItems, payload, setPayload }) 
                     <Button variant="blue" size="sm" onClick={handleSetData}>
                         Save Status Data
                     </Button>
-                    <Button variant="reject" size="sm" onClick={handleClearData}>
-                        Clear All Data
+                    <Button variant="reject" size="sm" disabled={!Object.entries(payload || {}).length} onClick={handleClearData}>
+                        Clear Data
                     </Button>
                 </div>
             </div>
