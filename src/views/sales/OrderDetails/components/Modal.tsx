@@ -550,9 +550,10 @@ type props3 = {
     handleClose: () => void
     modalContent?: string
     status: string
+    isButtonClick?: boolean
 }
 
-export const CustomModal3: React.FC<props3> = ({ isModalOpen, handlePack, handleClose, modalContent, status }) => {
+export const CustomModal3: React.FC<props3> = ({ isModalOpen, handlePack, handleClose, modalContent, status, isButtonClick }) => {
     return (
         <Modal
             title=""
@@ -579,6 +580,7 @@ export const CustomModal3: React.FC<props3> = ({ isModalOpen, handlePack, handle
             open={isModalOpen}
             onOk={handlePack}
             onCancel={handleClose}
+            confirmLoading={isButtonClick}
         >
             <p className="text-lg font-semibold mb-4">{modalContent}</p>
             <h1 className="text-center text-lg font-bold text-green-600">{modalContent}</h1>

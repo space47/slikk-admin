@@ -368,6 +368,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
                     handleClose={() => setIsModalOpen(false)}
                     modalContent={modalContent}
                     status={status}
+                    isButtonClick={updateResponse.isLoading}
                 />
             )}
             {buttonText === EOrderButton.out_for_delivery && mainData?.delivery_type !== EOrderButton.standard && (
@@ -377,6 +378,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
                     handleClose={() => setIsModalOpen(false)}
                     modalContent={modalContent}
                     status={status}
+                    isButtonClick={updateResponse.isLoading}
                 />
             )}
 
