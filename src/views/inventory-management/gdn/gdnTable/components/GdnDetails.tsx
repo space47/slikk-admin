@@ -14,6 +14,9 @@ import GDNdetailTable from './GDNdetailTable'
 import { GDNDetails } from '@/store/types/gdn.types'
 import { gdnService } from '@/store/services/gdnService'
 import GdnInfo from './GdnInfo'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { AxiosError } from 'axios'
+import { errorMessage } from '@/utils/responseMessages'
 
 const options = [
     { label: 'PDF', value: 'pdf' },
@@ -30,8 +33,8 @@ const GdnDetails = () => {
         { refetchOnMountOrArgChange: true, skip: !gdn_id },
     )
     const [syncGdn, syncResponse] = gdnService.useSyncGdnMutation()
+    const [isDownloading, setIsDownloading] = useState(false)
     const [createShipment, createShipmentResponse] = gdnService.useLazyCreateShipmentQuery()
-    const [regenerate, regenerateResponse] = gdnService.useLazyRegenerateGdnQuery()
 
     useEffect(() => {
         if (gdnApiData.isSuccess) setGdnData(gdnApiData?.data?.data)
@@ -76,17 +79,17 @@ const GdnDetails = () => {
         createShipment({ id: gdnData?.id as number })
     }
 
-    const handleRegenerateGdn = async (doc_number: string) => {
+    const handleRegenerateGrn = async (doc_number: string) => {
         notification.info({ message: 'Downloading, please wait...' })
         try {
-            const response = await regenerate({
-                id: id as string,
-                document_number: doc_number,
-                download_type: selectValue === 'csv' ? 'csv' : undefined,
-            }).unwrap()
-
+            setIsDownloading(true)
+            let responseData = `/goods/dispatch/${id}/detail?download=true&regenerate=true&document_number=${doc_number}`
             if (selectValue === 'csv') {
-                const csvText = response
+                responseData += `&download_type=csv`
+            }
+            const response = await axioisInstance.get(responseData)
+            if (selectValue === 'csv') {
+                const csvText = response?.data
                 const blob = new Blob([csvText], { type: 'text/csv' })
                 const link = document.createElement('a')
                 link.href = URL.createObjectURL(blob)
@@ -96,10 +99,16 @@ const GdnDetails = () => {
                 document.body.removeChild(link)
                 URL.revokeObjectURL(link.href)
             } else {
-                const preSignedUrl = response?.data
-                if (!preSignedUrl) throw new Error('Failed to retrieve the pre-signed URL')
+                const preSignedUrl = response?.data?.data
+                if (!preSignedUrl) {
+                    return
+                }
+
                 const fileResponse = await fetch(preSignedUrl)
-                if (!fileResponse.ok) throw new Error(`Failed to fetch the file`)
+                if (!fileResponse.ok) {
+                    throw new Error(`Failed to fetch the file: ${fileResponse.statusText}`)
+                }
+
                 const blob = await fileResponse.blob()
                 const link = document.createElement('a')
                 link.href = URL.createObjectURL(blob)
@@ -108,11 +117,15 @@ const GdnDetails = () => {
                 link.click()
                 document.body.removeChild(link)
                 URL.revokeObjectURL(link.href)
+                console.log('PDF file downloaded.')
             }
-        } catch (error: any) {
-            notification.error({
-                message: error?.data?.message || error?.data?.data?.message || 'Failed to Regenerate',
-            })
+        } catch (error) {
+            console.error('Error while regenerating the GDN:', error)
+            if (error instanceof AxiosError) {
+                errorMessage(error)
+            }
+        } finally {
+            setIsDownloading(false)
         }
     }
 
@@ -140,8 +153,8 @@ const GdnDetails = () => {
                                             variant="gray"
                                             size="sm"
                                             icon={<FaDownload />}
-                                            loading={regenerateResponse.isLoading}
-                                            onClick={() => handleRegenerateGdn(gdnData.document_number)}
+                                            loading={isDownloading}
+                                            onClick={() => handleRegenerateGrn(gdnData.document_number)}
                                         >
                                             Export
                                         </Button>
@@ -196,9 +209,9 @@ const GdnDetails = () => {
                                         variant="gray"
                                         size="sm"
                                         icon={<FaDownload />}
-                                        loading={regenerateResponse.isLoading}
-                                        disabled={regenerateResponse.isLoading}
-                                        onClick={() => handleRegenerateGdn(gdnData.document_number)}
+                                        loading={isDownloading}
+                                        disabled={isDownloading}
+                                        onClick={() => handleRegenerateGrn(gdnData.document_number)}
                                     >
                                         Export
                                     </Button>

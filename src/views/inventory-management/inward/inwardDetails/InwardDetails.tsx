@@ -18,6 +18,9 @@ import QcTabs from './components/QcTabs'
 import { Button } from '@/components/ui'
 import { inwardService } from '@/store/services/inwardService'
 import { GRNDetails } from '@/store/types/inward.types'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { AxiosError } from 'axios'
+import { errorMessage } from '@/utils/responseMessages'
 
 const InwardDetails = () => {
     const [data, setData] = useState<GRNDetails>()
@@ -26,10 +29,10 @@ const InwardDetails = () => {
     const [companyId, setCompanyId] = useState<number>()
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const [selectValue, setSelectValue] = useState<string>('')
+    const [downloadLoading, setDownloading] = useState(false)
     const inwardSingleApiCall = inwardService.useInwardSingleDetailsQuery({ grn_id: grn_id }, { skip: !grn_id })
     const [syncGrn, syncResponse] = inwardService.useSyncGrnMutation()
     const [presignUrl, presignResponse] = inwardService.useLazyPreSignUrlQuery()
-    const [triggerRegenerateGrn, regenerateResponse] = inwardService.useLazyRegenerateGrnQuery()
 
     useEffect(() => {
         if (inwardSingleApiCall.isSuccess) {
@@ -76,14 +79,14 @@ const InwardDetails = () => {
 
     const handleRegenerateGrn = async (doc_number: string) => {
         try {
-            const response = await triggerRegenerateGrn({
-                companyId: companyId!,
-                document_number: doc_number,
-                download_type: selectValue === 'csv' ? 'csv' : undefined,
-            }).unwrap()
-
+            setDownloading(true)
+            let responseData = `/goods/received/${companyId}/detail?download=true&regenerate=true&document_number=${encodeURIComponent(doc_number)}`
             if (selectValue === 'csv') {
-                const csvText = response
+                responseData = `/goods/received/${companyId}/detail?download=true&regenerate=true&document_number=${encodeURIComponent(doc_number)}&download_type=csv`
+            }
+            const response = await axioisInstance.get(responseData)
+            if (selectValue === 'csv') {
+                const csvText = response?.data
                 const blob = new Blob([csvText], { type: 'text/csv' })
                 const link = document.createElement('a')
                 link.href = URL.createObjectURL(blob)
@@ -93,10 +96,14 @@ const InwardDetails = () => {
                 document.body.removeChild(link)
                 URL.revokeObjectURL(link.href)
             } else {
-                const preSignedUrl = response?.data
-                if (!preSignedUrl) throw new Error('Failed to retrieve pre-signed URL')
+                const preSignedUrl = response?.data?.data
+                if (!preSignedUrl) {
+                    return
+                }
                 const fileResponse = await fetch(preSignedUrl)
-                if (!fileResponse.ok) throw new Error(`Failed to fetch file`)
+                if (!fileResponse.ok) {
+                    throw new Error(`Failed to fetch the file: ${fileResponse.statusText}`)
+                }
                 const blob = await fileResponse.blob()
                 const blobUrl = window.URL.createObjectURL(blob)
                 const link = document.createElement('a')
@@ -107,11 +114,12 @@ const InwardDetails = () => {
                 document.body.removeChild(link)
                 window.URL.revokeObjectURL(blobUrl)
             }
-        } catch (error: any) {
-            console.log('error is', error)
-            notification.error({
-                message: error?.data?.message || error?.message || 'Failed to Regenerate',
-            })
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                errorMessage(error)
+            }
+        } finally {
+            setDownloading(false)
         }
     }
 
@@ -132,7 +140,7 @@ const InwardDetails = () => {
                                             variant="blue"
                                             size="sm"
                                             icon={<FaDownload />}
-                                            loading={regenerateResponse.isLoading}
+                                            loading={downloadLoading}
                                             onClick={() => handleRegenerateGrn(data.document_number)}
                                         ></Button>
                                     </div>
@@ -189,7 +197,7 @@ const InwardDetails = () => {
                                 handleSyncClick={() => setShowSyncModal(true)}
                                 showSyncModal={showSyncModal}
                                 syncGRN={syncGRN}
-                                regenerateLoading={regenerateResponse.isLoading}
+                                regenerateLoading={downloadLoading}
                                 handleCloseModal={() => setShowSyncModal(false)}
                                 isSyncing={syncResponse.isLoading}
                                 setSelectValue={setSelectValue}
