@@ -14,6 +14,7 @@ import { CommonOrderProduct } from '../orderList.common'
 import { notification } from 'antd'
 import { OrderReturnReasons } from '@/constants/commonArray.constant'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import { Order } from '@/store/types/newOrderTypes'
 
 interface ExchangeItem {
     order_item_id: string | number
@@ -23,7 +24,7 @@ interface ExchangeItem {
 }
 
 interface props {
-    row: CommonOrderProduct[]
+    row: Order['order_items']
     invoice_id: string | undefined
     setIsOpen: (x: boolean) => void
 }
@@ -250,7 +251,7 @@ const Exchange = ({ row, invoice_id, setIsOpen }: props) => {
                 <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
                     <div className="space-y-3">
                         {exchangeItems.map((item, index) => {
-                            const product = row.find((p) => p.id === item.order_item_id)
+                            const product = row?.find((p) => p.id === item.order_item_id)
                             return (
                                 <div
                                     key={index}

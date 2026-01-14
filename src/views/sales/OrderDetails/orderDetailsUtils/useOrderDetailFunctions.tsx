@@ -5,11 +5,11 @@ import { notification } from 'antd'
 import { AxiosError } from 'axios'
 import React from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { SalesOrderDetailsResponse } from '../orderList.common'
 import { BsBoxArrowInUpRight } from 'react-icons/bs'
+import { Order } from '@/store/types/newOrderTypes'
 
 interface Props {
-    data: SalesOrderDetailsResponse | undefined
+    data?: Order
     setShowCancelExchangeModal: React.Dispatch<React.SetStateAction<boolean>>
 }
 

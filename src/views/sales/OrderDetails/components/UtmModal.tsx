@@ -1,16 +1,15 @@
 import { useState } from 'react'
 import Button from '@/components/ui/Button'
 import Dialog from '@/components/ui/Dialog'
-
-import { SalesOrderDetailsResponse } from '../orderList.common'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useParams } from 'react-router-dom'
+import { Order } from '@/store/types/newOrderTypes'
 
 interface UtmModalProps {
     isOpen: boolean
     setIsOpen: (value: boolean) => void
-    orderData: SalesOrderDetailsResponse
+    orderData: Order
 }
 
 const UtmModal = ({ isOpen, setIsOpen, orderData }: UtmModalProps) => {
