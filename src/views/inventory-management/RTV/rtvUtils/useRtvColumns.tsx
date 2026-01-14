@@ -82,6 +82,23 @@ export const useRtvColumns = ({ storeList }: Props) => {
                 cell: ({ row }) => <span>{findStoreName(row.original.store)}</span>,
             },
             {
+                header: 'Status',
+                accessorKey: 'status',
+                cell: ({ row }) => (
+                    <span
+                        className={`px-2 py-1 rounded text-xs font-medium ${
+                            row.original.status === 'approved'
+                                ? 'bg-green-100 text-green-700'
+                                : row.original.status === 'pending'
+                                  ? 'bg-yellow-100 text-yellow-700'
+                                  : 'bg-gray-100 text-gray-700'
+                        }`}
+                    >
+                        {row.original.status}
+                    </span>
+                ),
+            },
+            {
                 header: 'Created On',
                 accessorKey: 'create_date',
                 cell: ({ getValue }: any) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
