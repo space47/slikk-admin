@@ -267,7 +267,7 @@ const ReturnOrders = () => {
             <br />
             {showMap && (
                 <div className="p-6">
-                    <ReturnOrderZoneMap />
+                    <ReturnOrderZoneMap from={from} To_Date={To_Date} />
                 </div>
             )}
 
