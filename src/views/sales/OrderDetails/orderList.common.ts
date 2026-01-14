@@ -83,7 +83,7 @@ export interface IOrderPack {
     setTriggerPackCall: (x: boolean) => void
 }
 
-export enum EOrderStatus {
+export const enum EOrderStatus {
     packed = 'PACKED',
     pending = 'PENDING',
     accepted = 'ACCEPTED',
@@ -112,7 +112,7 @@ export enum EOrderStatus {
     out_for_pickup = 'OUT_FOR_PICKUP',
 }
 
-export enum EOrderButton {
+export const enum EOrderButton {
     accept = 'ACCEPT',
     out_for_delivery = 'OUT FOR DELIVERY',
     standard = 'STANDARD',
