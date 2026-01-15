@@ -42,6 +42,7 @@ export type GdnParamType = {
     pageSize: number
     company: string
     store_id: string | number
+    document_number?: string
 }
 
 export type CreateShipmentDetails = {
