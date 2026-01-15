@@ -17,7 +17,7 @@ interface OrderItems {
 }
 
 interface Props {
-    orderItems: OrderItems[]
+    orderItems: OrderItems[] | undefined
     payload: Record<string, Record<string, number>> | undefined
     setPayload: (x: any) => void
 }
@@ -98,7 +98,7 @@ const CancelItemSelect: React.FC<Props> = ({ orderItems, payload, setPayload }) 
         const clearedStatuses: Record<string, ItemStatus[]> = {}
         const clearedPayload: Record<string, Record<string, number>> = {}
 
-        orderItems.forEach((item) => {
+        orderItems?.forEach((item) => {
             if (!item?.order_item) return
 
             const qty = Math.max(Number(item.quantity) || 1, 1)
@@ -127,8 +127,6 @@ const CancelItemSelect: React.FC<Props> = ({ orderItems, payload, setPayload }) 
             </div>
         )
     }
-
-    console.log('payload', Object.keys(payload || {}))
 
     return (
         <div className="space-y-3 max-h-[calc(80vh-200px)] overflow-y-auto p-2">
