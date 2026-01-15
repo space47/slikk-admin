@@ -19,6 +19,7 @@ export const gdnService = RtkQueryService.injectEndpoints({
                 if (params.page) parameters.p = params.page.toString()
                 if (params.pageSize) parameters.page_size = params.pageSize.toString()
                 if (params.store_id) parameters.store_id = params.store_id
+                if (params.document_number) parameters.document_number = params.document_number
 
                 return {
                     url: `goods/dispatch`,

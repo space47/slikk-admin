@@ -10,7 +10,7 @@ export type QcInitialStateTypes = {
     pageSize: number
     from: string
     to: string
-    customChange?: string
+    summary: Record<string, number>
 }
 
 const initialState: QcInitialStateTypes = {
@@ -20,7 +20,14 @@ const initialState: QcInitialStateTypes = {
     pageSize: 10,
     from: moment().format('YYYY-MM-DD'),
     to: moment().add(1, 'days').format('YYYY-MM-DD'),
-    customChange: 'TODAY',
+    summary: {
+        total_qc_failed: 0,
+        total_qc_passed: 0,
+        total_quantity_received: 0,
+        total_quantity_sent: 0,
+        total_skus: 0,
+        total_synced_quantity: 0,
+    },
 }
 
 const qualityCheck = createSlice({
@@ -33,8 +40,8 @@ const qualityCheck = createSlice({
         setCount: (state, action: PayloadAction<number>) => {
             state.count = action.payload
         },
-        setCustomChange: (state, action: PayloadAction<string>) => {
-            state.customChange = action.payload
+        setSummary: (state, action) => {
+            state.summary = action.payload
         },
         setPage: (state, action: PayloadAction<number>) => {
             state.page = action.payload
@@ -51,5 +58,5 @@ const qualityCheck = createSlice({
     },
 })
 
-export const { setQcDetails, setCount, setPage, setPageSize, setFrom, setTo, setCustomChange } = qualityCheck.actions
+export const { setQcDetails, setCount, setPage, setPageSize, setFrom, setTo, setSummary } = qualityCheck.actions
 export default qualityCheck.reducer
