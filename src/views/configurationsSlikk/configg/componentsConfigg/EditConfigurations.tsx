@@ -133,7 +133,7 @@ const EditConfigurations = () => {
                 onSubmit={handleSubmit}
             >
                 {({ values, setFieldValue }) => (
-                    <Form className="w-4/5">
+                    <Form className="w-full">
                         <FormContainer>
                             <h5 className="mb-5 text-neutral-900">Edit Configurations</h5>
 
@@ -149,16 +149,14 @@ const EditConfigurations = () => {
                                 <Field type="checkbox" name="is_active" placeholder="Enter updated by" component={Checkbox} />
                             </FormItem>
 
-                            <FormContainer className="grid grid-cols-1 gap-10">
-                                <RenderFields
-                                    obj={values.value}
-                                    parentKey="value"
-                                    setFieldValue={setFieldValue}
-                                    editableKeys={editableKeys}
-                                    setEditableKeys={setEditableKeys}
-                                    filters={filters}
-                                />
-                            </FormContainer>
+                            <RenderFields
+                                obj={values.value}
+                                parentKey="value"
+                                setFieldValue={setFieldValue}
+                                editableKeys={editableKeys}
+                                setEditableKeys={setEditableKeys}
+                                filters={filters}
+                            />
 
                             <FormContainer className="flex justify-end mt-5">
                                 <Button type="reset" className="mr-2">
