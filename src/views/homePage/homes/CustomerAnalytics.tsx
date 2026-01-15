@@ -31,9 +31,9 @@ const CustomerAnalytics = () => {
     }, [dispatch])
 
     const handleBlockUser = async (status: string) => {
-        const body = { mobile: mobile }
+        const body = { mobile: mobile, action: status }
         try {
-            const response = await axioisInstance.post(`/merchant/user/${status}`, body)
+            const response = await axioisInstance.post(`/merchant/user/block`, body)
             successMessage(response || 'Successfully blacklisted user')
         } catch (error) {
             if (error instanceof AxiosError) {
