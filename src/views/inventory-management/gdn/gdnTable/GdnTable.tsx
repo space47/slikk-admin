@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
-import { Button, Select, Spinner } from '@/components/ui'
+import { Button, Input, Select, Spinner } from '@/components/ui'
 import EasyTable from '@/common/EasyTable'
 import { useNavigate } from 'react-router-dom'
 import AccessDenied from '@/views/pages/AccessDenied'
@@ -12,9 +12,11 @@ import { useGdnColumns } from '../gdnUtils/useGdnColumns'
 import { gdnService } from '@/store/services/gdnService'
 import { GDNDetails } from '@/store/types/gdn.types'
 import { notification } from 'antd'
+import { useDebounceInput } from '@/commonHooks/useDebounceInput'
 
 const GdnTable = () => {
     const [gdnData, setGdnData] = useState<GDNDetails[]>([])
+    const [globalFilter, setGlobalFilter] = useState('')
     const [count, setCount] = useState(0)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
@@ -25,11 +27,13 @@ const GdnTable = () => {
     const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
     const [companyCode, setCompanyCode] = useState<any>()
     const [storeCode, setStoreCode] = useState<any[]>([])
+    const { debounceFilter } = useDebounceInput({ globalFilter, delay: 500 })
     const gdnTableData = gdnService.useGdnDataGetQuery({
         page: page,
         pageSize: pageSize,
         company: companyCode || '',
         store_id: storeCode?.join(',') || '',
+        document_number: debounceFilter || '',
     })
 
     useEffect(() => {
@@ -57,6 +61,16 @@ const GdnTable = () => {
         <div className="p-2 shadow-xl rounded-xl ">
             <div className="flex justify-between items-center mb-5">
                 <div className="flex gap-2">
+                    <div className="flex flex-col">
+                        <label className="font-semibold text-gray-700 mb-1">Search</label>
+                        <Input
+                            type="search"
+                            value={globalFilter}
+                            placeholder="Search by document number"
+                            className="h-1/2 rounded-lg"
+                            onChange={(e) => setGlobalFilter(e.target.value)}
+                        />
+                    </div>
                     <div className="flex flex-col xl:w-[300px] md:w-[200px] w-full">
                         <label className="font-semibold text-gray-700 mb-1">Select Company</label>
                         <Select
