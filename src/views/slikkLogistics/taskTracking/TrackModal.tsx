@@ -11,6 +11,7 @@ import { ridersService } from '@/store/services/riderServices'
 import { RiMotorbikeFill } from 'react-icons/ri'
 import { TaskDetails } from './TaskCommonType'
 import { calculateDistance } from '../riderDetails/RiderUtils/RiderDetailsColumns'
+import StoreSelectComponent from '@/common/StoreSelectComponent'
 
 type ModalProps = {
     showTaskModal: boolean
@@ -43,8 +44,7 @@ const TrackModal = ({
     const [globalFilter, setGlobalFilter] = useState<string | undefined>('')
     const [mobileFilter, setMobileFilter] = useState<string | undefined>('')
     const { riderDetails } = useAppSelector<RiderDetailType>((state) => state.riderDetails)
-
-    console.log('task id is', taskId)
+    const [store, setStore] = useState<Record<string, string | number>>({})
 
     const { data: riders, isSuccess } = ridersService.useRiderDetailsQuery(
         {
@@ -53,6 +53,7 @@ const TrackModal = ({
             name: globalFilter,
             mobile: mobileFilter,
             isActive: 'true',
+            store_id: store ? (store?.id as any) : '',
         },
         { refetchOnMountOrArgChange: true },
     )
@@ -124,7 +125,8 @@ const TrackModal = ({
                 <div className="flex flex-col h-[60vh]">
                     <div className="text-xl font-bold text-red-700 mb-6 text-center">ASSIGN RIDER</div>
 
-                    <div className="flex flex-col gap-4 mb-4">
+                    <div className="flex flex-col gap-1 mb-4">
+                        <StoreSelectComponent isSingle label="Select Store" customCss="w-full" setStore={setStore} store={store} />
                         <div className="flex gap-2">
                             <input
                                 type="search"
