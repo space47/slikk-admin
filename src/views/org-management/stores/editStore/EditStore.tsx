@@ -7,19 +7,16 @@ import { notification } from 'antd'
 import { StoreTypes } from '../commonStores'
 import { useNavigate, useParams } from 'react-router-dom'
 import AccessDenied from '@/views/pages/AccessDenied'
-import { useAppSelector } from '@/store'
-import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { useStoresFunctions } from '../storeUtil/useStoresFunctions'
 import StoreCommonForm from '../storeUtil/StoreCommonForm'
 import { AxiosError } from 'axios'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
+import { textParser } from '@/common/textParser'
+import { handleimage } from '@/common/handleImage'
 
 const EditCustomerProfile = () => {
     const navigate = useNavigate()
     const [imageView, setImageView] = useState<string[]>([])
-    const [descriptionTextArea, setDescriptionTextArea] = useState()
-    const [instructionTextArea, setInstructionTextArea] = useState()
-    const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
     const [address, setAddress] = useState({
         area: '',
         pincode: '',
@@ -50,14 +47,6 @@ const EditCustomerProfile = () => {
             city: data?.city || '',
         })
     }, [data])
-
-    const handleDescriptionChange = (e: any) => {
-        setDescriptionTextArea(e.target.value)
-    }
-
-    const handleInstructionChange = (e: any) => {
-        setInstructionTextArea(e.target.value)
-    }
 
     const handleCheckbox = () => {
         setIsSameAddress((prev) => !prev)
@@ -94,44 +83,17 @@ const EditCustomerProfile = () => {
         }))
     }
 
-    const handleFileupload = async (files: File[]) => {
-        const formData = new FormData()
-        files.forEach((file) => {
-            formData.append('file', file)
-        })
-        formData.append('file_type', 'category')
-        try {
-            const response = await axioisInstance.post('fileupload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-            const newData = response.data.url
-            setImageView(newData)
-            notification.success({
-                message: 'Success',
-                description: response?.data?.message || 'Image uploaded successfully',
-            })
-            return newData
-        } catch (error: any) {
-            console.error('Error uploading files:', error)
-            notification.error({
-                message: 'Failure',
-                description: error?.response?.data?.message || 'File Not uploaded',
-            })
-            return 'Error'
-        }
-    }
     const { initialValue } = useStoresFunctions({ storeData: isCopy ? undefined : data })
 
     const handleSubmit = async (values: StoreTypes) => {
         let uploadedImage = ''
         if (values?.images_array && values?.images_array?.length > 0) {
-            uploadedImage = await handleFileupload(values?.images_array)
+            uploadedImage = await handleimage('category', values?.images_array)
             setImageView([uploadedImage])
         }
         const formData = {
             ...values,
+            company: 1,
             area: address.area,
             city: address.city,
             pincode: address.pincode,
@@ -140,8 +102,8 @@ const EditCustomerProfile = () => {
             return_city: returnAddress.return_city,
             return_pincode: returnAddress.return_pincode,
             return_state: returnAddress.return_state,
-            description: descriptionTextArea,
-            instruction: instructionTextArea,
+            description: values?.description ? textParser(values.description) : '',
+            instruction: values?.instruction ? textParser(values.instruction) : '',
             image: uploadedImage ?? '',
             is_volumetric_store: values.is_volumetric_store || false,
         }
@@ -182,20 +144,15 @@ const EditCustomerProfile = () => {
                 </Button>
             </div>
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
-                {({ values, resetForm }) => (
+                {({ values, setFieldValue }) => (
                     <Form className="p-4 w-full shadow-xl rounded-xl" onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}>
                         <StoreCommonForm
-                            companyList={companyList}
-                            descriptiontextarea={descriptionTextArea}
+                            setFieldValue={setFieldValue}
                             imagview={imageView}
-                            instructiontextarea={instructionTextArea}
                             values={values}
                             handleAddress={handleAddress}
                             handleCheckbox={handleCheckbox}
-                            handleDescriptionChange={handleDescriptionChange}
-                            handleInstructionChange={handleInstructionChange}
                             handleReturnAddress={handleReturnAddress}
-                            resetForm={resetForm}
                             address={address}
                             returnAddress={returnAddress}
                         />

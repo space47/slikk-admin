@@ -3,15 +3,12 @@ import { Form, Formik } from 'formik'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useState } from 'react'
 import { notification } from 'antd'
-import { useAppSelector } from '@/store'
-import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import StoreCommonForm from '../storeUtil/StoreCommonForm'
+import { textParser } from '@/common/textParser'
+import { handleimage } from '@/common/handleImage'
 
 const AddStore = () => {
     const [imagview, setImageView] = useState<string[]>([])
-    const [descriptiontextarea, setDescriptiontextarea] = useState()
-    const [instructiontextarea, setInstructiontextarea] = useState()
-    const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
     const [address, setAddress] = useState({
         area: '',
         pincode: '',
@@ -25,14 +22,6 @@ const AddStore = () => {
         return_city: '',
     })
     const [isSameAddress, setIsSameAddress] = useState(false)
-
-    const handleDescriptionChange = (e: any) => {
-        setDescriptiontextarea(e.target.value)
-    }
-
-    const handleInstructionChange = (e: any) => {
-        setInstructiontextarea(e.target.value)
-    }
 
     const handleCheckbox = () => {
         setIsSameAddress((prev) => !prev)
@@ -69,46 +58,16 @@ const AddStore = () => {
         }))
     }
 
-    const handleFileupload = async (files: File[]) => {
-        const formData = new FormData()
-        files.forEach((file) => {
-            formData.append('file', file)
-        })
-        formData.append('file_type', 'category')
-
-        try {
-            const response = await axioisInstance.post('fileupload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-            const newData = response.data.url
-            setImageView(newData)
-            notification.success({
-                message: 'Success',
-                description: response?.data?.message || 'Image uploaded successfully',
-            })
-            return newData
-        } catch (error: any) {
-            console.error('Error uploading files:', error)
-            notification.error({
-                message: 'Failure',
-                description: error?.response?.data?.message || 'File Not uploaded',
-            })
-            return 'Error'
-        }
-    }
-
     const handleSubmit = async (values: any) => {
-        console.log('values of store', values)
         let uploadedImage = ''
         if (values?.images_array && values?.images_array?.length > 0) {
-            uploadedImage = await handleFileupload(values?.images_array)
+            uploadedImage = await handleimage('category', values?.images_array)
             setImageView([uploadedImage])
         }
 
         const formData = {
             ...values,
+            company: 1,
             area: address.area,
             city: address.city,
             pincode: address.pincode,
@@ -117,8 +76,8 @@ const AddStore = () => {
             return_city: returnAddress.return_city,
             return_pincode: returnAddress.return_pincode,
             return_state: returnAddress.return_state,
-            description: descriptiontextarea,
-            instruction: instructiontextarea,
+            description: values?.description ? textParser(values.description) : '',
+            instruction: values?.instruction ? textParser(values.instruction) : '',
             image: uploadedImage ?? '',
             is_volumetric_store: values.is_volumetric_store || false,
         }
@@ -141,20 +100,15 @@ const AddStore = () => {
         <div>
             <div className="text-xl mb-10 font-bold">Add New Store</div>
             <Formik enableReinitialize initialValues={{}} onSubmit={handleSubmit}>
-                {({ values, resetForm }) => (
-                    <Form className="w-2/3" onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}>
+                {({ values, setFieldValue }) => (
+                    <Form className="w-full" onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}>
                         <StoreCommonForm
-                            companyList={companyList}
-                            descriptiontextarea={descriptiontextarea}
                             imagview={imagview}
-                            instructiontextarea={instructiontextarea}
+                            setFieldValue={setFieldValue}
                             values={values}
                             handleAddress={handleAddress}
                             handleCheckbox={handleCheckbox}
-                            handleDescriptionChange={handleDescriptionChange}
-                            handleInstructionChange={handleInstructionChange}
                             handleReturnAddress={handleReturnAddress}
-                            resetForm={resetForm}
                             address={address}
                             returnAddress={returnAddress}
                         />

@@ -4,10 +4,11 @@ import { ColumnDef } from '@tanstack/react-table'
 import moment from 'moment'
 import React, { useMemo } from 'react'
 import { FaDownload } from 'react-icons/fa'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { RtvHistoryData } from './rtv.types'
 
-export const useRtvHistoryColumns = () => {
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { IndentHistoryData } from '../indent/indentUtils/indent.types'
+
+export const HistoryColumns = () => {
     const extractFileName = (uploadedFile: any) => {
         const parts = uploadedFile.split('/')
         return parts[parts.length - 1]
@@ -22,13 +23,9 @@ export const useRtvHistoryColumns = () => {
     }
 
     const handleDownloadFailure = async (failure: number, errorFile: string, uploadedFile: string) => {
-        console.log(`Action clicked `, errorFile, 'UPLOAD', uploadedFile, 'FAIL', failure)
-
         try {
             const requiredUrl = failure === 0 ? uploadedFile : errorFile
-
             const response = await axioisInstance.get(`file/presign?file_url=${encodeURIComponent(requiredUrl)}`)
-
             const preSignedUrl = response.data.data
             await fetch(preSignedUrl)
                 .then((res) => res.blob())
@@ -91,7 +88,7 @@ export const useRtvHistoryColumns = () => {
         }
     }
 
-    return useMemo<ColumnDef<RtvHistoryData>[]>(
+    return useMemo<ColumnDef<IndentHistoryData>[]>(
         () => [
             {
                 header: 'Upload Date',
@@ -127,6 +124,11 @@ export const useRtvHistoryColumns = () => {
                 cell: (info) => info.getValue(),
             },
             {
+                header: 'Error File',
+                accessorKey: 'error_file',
+                cell: (info) => extractFileName(info.getValue()),
+            },
+            {
                 header: 'Updated By',
                 accessorKey: 'user',
                 cell: ({ row }) => <span>{row?.original?.user?.name}</span>,
@@ -135,12 +137,6 @@ export const useRtvHistoryColumns = () => {
                 header: 'Updated By Number',
                 accessorKey: 'user',
                 cell: ({ row }) => <span>{row?.original?.user?.mobile}</span>,
-            },
-
-            {
-                header: 'Error File',
-                accessorKey: 'error_file',
-                cell: (info) => extractFileName(info.getValue()),
             },
             {
                 header: 'Error File Download',
