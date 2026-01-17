@@ -83,3 +83,22 @@ export interface IndentItemsResponseType {
         results: IndentItem[]
     }
 }
+
+export type IndentItemType = {
+    intent_note: number
+    sku: string
+    company: number
+    quantity_required: number
+    quantity_accepted: number
+    synced_to_inventory: boolean
+    synced_quantity: number
+    notes: string
+    is_picked: boolean
+    picker: {
+        first_name: string
+        last_name: string
+        mobile?: string
+    }
+    box_mapping: any
+    locations: string
+}

@@ -2,26 +2,9 @@
 import React, { useMemo } from 'react'
 import { ColumnDef } from '@tanstack/react-table'
 import { FaEdit } from 'react-icons/fa'
-import { IndentDetailsTypes } from '@/store/types/indent.types'
+import { IndentDetailsTypes, IndentItemType } from '@/store/types/indent.types'
 import { MdOutlineEditOff } from 'react-icons/md'
 import { Tooltip } from '@/components/ui'
-
-type ItemType = {
-    intent_note: number
-    sku: string
-    company: number
-    quantity_required: number
-    quantity_accepted: number
-    notes: string
-    is_picked: boolean
-    picker: {
-        first_name: string
-        last_name: string
-        mobile?: string
-    }
-    box_mapping: any
-    locations: string
-}
 
 interface props {
     store_type?: string
@@ -31,8 +14,7 @@ interface props {
 
 export const useItemsColumns = ({ handleUpdate, data }: props) => {
     const currentStatus = data?.status
-    console.log('currentStatus', currentStatus, 'and data is', data)
-    return useMemo<ColumnDef<ItemType, any>[]>(
+    return useMemo<ColumnDef<IndentItemType, any>[]>(
         () => [
             {
                 header: 'Indent Note',
@@ -52,6 +34,11 @@ export const useItemsColumns = ({ handleUpdate, data }: props) => {
                 header: 'Qty Required',
                 accessorKey: 'quantity_required',
                 cell: ({ row }) => <span className="text-blue-600 font-semibold">{row?.original?.quantity_required}</span>,
+            },
+            {
+                header: 'Qty Synced',
+                accessorKey: 'synced_quantity',
+                cell: ({ row }) => <span className="text-blue-600 font-semibold">{row?.original?.synced_quantity}</span>,
             },
             {
                 header: 'Qty Accepted',
@@ -86,6 +73,11 @@ export const useItemsColumns = ({ handleUpdate, data }: props) => {
                 header: 'Box',
                 accessorKey: 'box_mapping',
                 cell: ({ row }) => <span className="italic text-gray-500">{JSON.stringify(row?.original?.box_mapping) || 'N/A'}</span>,
+            },
+            {
+                header: 'Synced To Inventory',
+                accessorKey: 'synced_to_inventory',
+                cell: ({ row }) => <span className="italic text-gray-500">{row?.original?.synced_to_inventory ? 'Yes' : 'No'}</span>,
             },
             {
                 header: 'Is Picked',
