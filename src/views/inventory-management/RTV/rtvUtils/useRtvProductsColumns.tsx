@@ -49,6 +49,11 @@ export const useRtvProductsColumn = ({ handleEditProducts }: props) => {
                 cell: ({ row }) => <span className="text-center">{row.original.quantity_required}</span>,
             },
             {
+                header: 'Qty Synced',
+                accessorKey: 'synced_quantity',
+                cell: ({ row }) => <span className="text-blue-600 font-semibold">{row?.original?.synced_quantity}</span>,
+            },
+            {
                 header: 'Qty Accepted',
                 accessorKey: 'quantity_accepted',
                 cell: ({ row }) => (
@@ -78,6 +83,12 @@ export const useRtvProductsColumn = ({ handleEditProducts }: props) => {
                 header: 'Box No.',
                 accessorKey: 'box_number',
                 cell: ({ row }) => <span>{JSON.stringify(row?.original?.box_locations || 'N/A')}</span>,
+            },
+
+            {
+                header: 'Synced To Inventory',
+                accessorKey: 'synced_to_inventory',
+                cell: ({ row }) => <span className="italic text-gray-500">{row?.original?.synced_to_inventory ? 'Yes' : 'No'}</span>,
             },
 
             {
