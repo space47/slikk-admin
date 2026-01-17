@@ -56,6 +56,8 @@ export type Rtv_Products = {
     sku: string
     quantity_required: number
     quantity_accepted: number
+    synced_to_inventory: boolean
+    synced_quantity: number
     images: string
     inventory_locations: string
     is_picked: boolean
