@@ -329,3 +329,9 @@ export const DescriptionFields = [
     { name: 'description.includes', label: 'Includes' },
     { name: 'description.other_info', label: 'Other Info' },
 ]
+
+export const enum EProductQr {
+    SKU = 'sku',
+    BARCODE = 'barcode',
+    SKID = 'skid',
+}
