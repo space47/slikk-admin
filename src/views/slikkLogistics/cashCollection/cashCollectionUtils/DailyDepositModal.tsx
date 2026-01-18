@@ -127,7 +127,7 @@ const DailyDepositModal: React.FC<DailyDepositModalProps> = ({ row, isOpen, setI
     }
 
     const cashCollectionTable = useMemo(() => {
-        return taskData?.filter((item) => item?.status === 'COMPLETED')
+        return taskData?.filter((item) => item?.status === 'COMPLETED' || item?.status === 'DELIVERED')
     }, [taskData])
 
     const columns = useDepositColumns({ handleDepositClick })
