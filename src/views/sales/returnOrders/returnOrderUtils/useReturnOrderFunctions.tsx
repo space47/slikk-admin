@@ -1,19 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { ReturnOrder } from '@/store/types/returnOrderData.types'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { errorMessage, successMessage } from '@/utils/responseMessages'
 import { notification } from 'antd'
 import { AxiosError } from 'axios'
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
 
-interface ReturnOrderState {
+interface ReturnOrderFunctionProps {
     action: string
-    returnDetails: any
+    returnDetails: ReturnOrder
     setForceCOD: React.Dispatch<React.SetStateAction<boolean>>
     setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>
     valueInsideModal: { refundAmount: string; refundId: string }
     setTriggerPickedUpGenerate: React.Dispatch<React.SetStateAction<boolean>>
     locationWiseArray: any[]
     setIsCompleting: (x: boolean) => void
+    setIsLoading: (x: boolean) => void
+    refetch: any
+    setTriggerAction: (x: boolean) => void
 }
 
 export const useReturnOrderFunctions = ({
@@ -25,25 +29,39 @@ export const useReturnOrderFunctions = ({
     setTriggerPickedUpGenerate,
     locationWiseArray,
     setIsCompleting,
-}: ReturnOrderState) => {
-    const navigate = useNavigate()
+    refetch,
+    setIsLoading,
+    setTriggerAction,
+}: ReturnOrderFunctionProps) => {
+    const reCreationCall = async () => {
+        try {
+            const bodyWithReCreate = { action, re_create: 'yes' }
+            const retryResponse = await axioisInstance.patch(`merchant/return_order/${returnDetails?.return_order_id}`, bodyWithReCreate)
+
+            successMessage(retryResponse || 'updated successfully')
+            refetch()
+        } catch (retryError) {
+            if (retryError instanceof AxiosError) {
+                errorMessage(retryError || 'Failed to update rider status with re_create.')
+            }
+        }
+    }
+
     const triggerApiCall = async () => {
         try {
-            const body = {
-                action: action,
-            }
-
+            setIsLoading(true)
+            const body = { action: action }
             const response = await axioisInstance.patch(`merchant/return_order/${returnDetails?.return_order_id}`, body)
-            notification.success({ message: response?.data?.message || 'Rider status updated successfully.' })
+            successMessage(response)
             setForceCOD(false)
-            navigate(0)
-        } catch (error: any) {
-            console.error(error)
-            const errorMessage = error.response?.data?.message || 'There was an error updating the order status. Please try again.'
-            notification.error({ message: 'Error', description: errorMessage })
+            refetch()
+        } catch (error) {
+            if (error instanceof AxiosError) errorMessage(error)
             setForceCOD(true)
         } finally {
             setIsModalOpen(false)
+            setIsLoading(false)
+            setTriggerAction(false)
         }
     }
 
@@ -56,14 +74,11 @@ export const useReturnOrderFunctions = ({
         }
         try {
             const response = await axioisInstance.patch(`merchant/return_order/${returnDetails?.return_order_id}`, body)
-            notification.success({ message: response?.data?.message || 'Rider status updated successfully.' })
+            successMessage(response)
             setForceCOD(false)
-            navigate(0)
+            refetch()
         } catch (error) {
-            if (error instanceof AxiosError) {
-                notification.error({ message: error?.message || 'Failed to Update' })
-            }
-            console.error(error)
+            if (error instanceof AxiosError) errorMessage(error)
         }
     }
 
@@ -80,42 +95,15 @@ export const useReturnOrderFunctions = ({
             }
             setIsModalOpen(false)
             setTriggerPickedUpGenerate(false)
-            notification.success({
-                message: 'Success',
-                description: response?.data?.message || 'Rider status updated successfully.',
-            })
-            navigate(0)
-        } catch (error: any) {
-            console.error(error)
-            const errorMessage = error.response?.data?.message || 'There was an error updating the order status. Please try again.'
-
-            if (error.response?.status === 400) {
-                try {
-                    const bodyWithReCreate = {
-                        action,
-                        re_create: 'yes',
-                    }
-                    const retryResponse = await axioisInstance.patch(
-                        `merchant/return_order/${returnDetails?.return_order_id}`,
-                        bodyWithReCreate,
-                    )
-                    notification.success({
-                        message: 'Success',
-                        description: retryResponse?.data?.message || 'Rider status updated successfully.',
-                    })
-                    navigate(0)
-                } catch (retryError: any) {
-                    console.error(retryError)
-                    notification.error({
-                        message: 'Error',
-                        description: retryError.response?.data?.message || 'Failed to update rider status with re_create.',
-                    })
+            successMessage(response)
+            refetch()
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                if (error.response?.status === 400) {
+                    reCreationCall()
+                } else {
+                    errorMessage(error)
                 }
-            } else {
-                notification.error({
-                    message: 'Error',
-                    description: errorMessage,
-                })
             }
         } finally {
             setTriggerPickedUpGenerate(false)
@@ -123,7 +111,6 @@ export const useReturnOrderFunctions = ({
     }
 
     const handleCompleteReturn = async (action: string, locationWiseDetails: any) => {
-        setIsCompleting(true)
         if (Object.entries(locationWiseDetails)?.length <= 0) {
             notification.error({ message: 'Fill up the items as per the location to proceed further' })
             return
@@ -164,20 +151,33 @@ export const useReturnOrderFunctions = ({
         }
 
         try {
+            setIsCompleting(true)
             const response = await axioisInstance.patch(`merchant/return_order/${returnDetails?.return_order_id}`, body)
-            notification.success({ message: response?.data?.message || 'Return order created successfully.' })
-            navigate(0)
+            successMessage(response || 'Return order created successfully.')
+            refetch()
         } catch (error) {
             if (error instanceof AxiosError) {
-                notification.error({ message: error?.response?.data?.message || error?.message || 'Failed to create return order' })
+                errorMessage(error || 'Failed to create return order')
             }
-            setTimeout(() => {
-                navigate(0)
-            }, 500)
         } finally {
             setIsCompleting(false)
         }
     }
 
-    return { sendApiRequest, triggerApiCall, handleForceCod, handleCompleteReturn }
+    const handleReturnReject = async () => {
+        try {
+            const response = await axioisInstance.patch(`merchant/return_order/${returnDetails?.return_order_id}`, {
+                action: 'reject_return_order',
+            })
+            successMessage(response)
+            setIsModalOpen(false)
+            refetch()
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                errorMessage(error)
+            }
+        }
+    }
+
+    return { sendApiRequest, triggerApiCall, handleForceCod, handleCompleteReturn, handleReturnReject }
 }

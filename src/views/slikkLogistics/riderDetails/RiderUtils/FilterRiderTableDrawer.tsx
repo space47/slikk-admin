@@ -1,7 +1,8 @@
 import { Drawer, FormItem, Select } from '@/components/ui'
-import { RIDER_TYPES, RiderAgency } from '../RiderDetailsCommon'
+import { RIDER_TYPES_FILTER, RiderAgency } from '../RiderDetailsCommon'
 import { TimePicker } from 'antd'
 import dayjs from 'dayjs'
+import ZoneSelectComponent from '@/common/ZoneSelectCommon'
 
 interface props {
     isOpen: boolean
@@ -14,6 +15,8 @@ interface props {
     setShiftEnd: (x: string) => void
     riderType: string
     setRiderType: (x: string) => void
+    zoneId: number[]
+    setZoneId: (x: number[]) => void
 }
 
 const FilterRiderTableDrawer = ({
@@ -27,6 +30,8 @@ const FilterRiderTableDrawer = ({
     shiftStart,
     riderType,
     setRiderType,
+    zoneId,
+    setZoneId,
 }: props) => {
     return (
         <Drawer
@@ -42,9 +47,9 @@ const FilterRiderTableDrawer = ({
                     <Select
                         isClearable
                         isSearchable
-                        options={RIDER_TYPES}
+                        options={RIDER_TYPES_FILTER}
                         className="mt-5"
-                        defaultValue={RIDER_TYPES.find((option) => option.value === riderType)}
+                        defaultValue={RIDER_TYPES_FILTER.find((option) => option.value === riderType)}
                         onChange={(val) => {
                             if (val) {
                                 setRiderType(val?.value)
@@ -104,6 +109,7 @@ const FilterRiderTableDrawer = ({
                         }}
                     />
                 </FormItem>
+                <ZoneSelectComponent label="Select Zone" setZone={setZoneId} zone={zoneId} />
             </div>
         </Drawer>
     )

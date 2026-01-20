@@ -3,11 +3,13 @@ import React from 'react'
 import { Modal, Select } from 'antd'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { Dropdown, Input } from '@/components/ui'
-import { LOGISTIC_PARTNER, Product } from './activityCommon'
+import { LOGISTIC_PARTNER } from './activityCommon'
 import { FaRupeeSign, FaCamera, FaTimes, FaTrashAlt, FaBoxOpen, FaReceipt, FaWallet, FaTag } from 'react-icons/fa'
 import { IoBagOutline } from 'react-icons/io5'
 import { MdPhotoCamera, MdInventory, MdLocalShipping, MdInfoOutline } from 'react-icons/md'
 import { BsBoxSeam } from 'react-icons/bs'
+import { Order } from '@/store/types/newOrderTypes'
+import { EOrderStatus } from '../orderList.common'
 
 const { Option } = Select
 
@@ -18,10 +20,8 @@ type Props = {
     modalContent?: string
     status: string
     invoice_id?: string
-    payment?: {
-        amount: number
-    }
-    product?: Product[]
+    payment?: Order['payment']
+    product?: Order['order_items']
     fulfilledQuantities: { [key: number]: number }
     handleSelectChange: (id: number, value: string) => void
     errorMessage?: string
@@ -83,9 +83,9 @@ export const CustomModal: React.FC<Props> = ({
                     <div className="flex xl:flex-row gap-3 p-5 flex-col">
                         <button
                             className="flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold transition-all duration-200 bg-gray-600 hover:bg-gray-700 active:bg-gray-800 text-white shadow-sm hover:shadow"
-                            onClick={status === 'ACCEPTED' || status === 'PICKING' ? handleReject : handleCancel}
+                            onClick={status === EOrderStatus.accepted || status === EOrderStatus.picking ? handleReject : handleCancel}
                         >
-                            {status === 'ACCEPTED' || status === 'PICKING' ? (
+                            {status === EOrderStatus.accepted || status === EOrderStatus.picking ? (
                                 <>
                                     <FaTimes className="text-sm" />
                                     REJECT ORDERS
@@ -429,8 +429,8 @@ export const CustomModal2: React.FC<props2> = ({
                     Assign Delivery Partner
                 </div>
             }
-            okText={isButtonClick ? 'SELECT PARTNER' : 'SELECT PARTNER'}
-            cancelText={status === 'PENDING' ? 'REJECT ORDERS' : 'CANCEL'}
+            okText={isButtonClick ? 'SETTING PARTNER...' : 'SELECT PARTNER'}
+            cancelText={status === EOrderStatus.pending ? 'REJECT ORDERS' : 'CANCEL'}
             width={800}
             className="custom-modal"
             centered
@@ -457,93 +457,86 @@ export const CustomModal2: React.FC<props2> = ({
             onOk={handlePack}
             onCancel={handleClose}
         >
-            <div className="flex flex-col items-center justify-center px-8 py-8 bg-gradient-to-br from-gray-50 to-white rounded-xl">
-                {/* Header Section */}
-                <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-50 rounded-full mb-4">
-                        <BsBoxSeam className="text-blue-600 text-2xl" />
+            <div className="w-full max-w-4xl mx-auto rounded-2xl border border-gray-200 bg-gradient-to-br from-gray-50 to-white shadow-sm p-8">
+                {/* Header */}
+                <div className="text-center mb-10">
+                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
+                        <BsBoxSeam className="text-2xl text-blue-600" />
                     </div>
-                    <p className="text-xl font-semibold text-gray-900 mb-2">{modalContent}</p>
-                    <div className="inline-flex items-center gap-2 bg-green-50 px-4 py-2 rounded-full border border-green-100">
+
+                    <p className="text-xl font-semibold text-gray-900">{modalContent}</p>
+
+                    <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-green-200 bg-green-50 px-4 py-1.5">
                         <MdInfoOutline className="text-green-600" />
                         <span className="text-sm font-medium text-green-700">Delivery Partner Required</span>
                     </div>
                 </div>
 
-                {/* Content Section */}
-                <div className="w-full space-y-8">
-                    {/* Partner Selection */}
-                    <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                            <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                                Select Delivery Partner{' '}
-                                <span>
-                                    <MdLocalShipping className="text-xl" />
-                                </span>
-                            </label>
-                        </div>
+                {/* Form Section */}
+                <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+                    {/* Delivery Partner */}
+                    <div>
+                        <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-700">
+                            Select Delivery Partner
+                            <MdLocalShipping className="text-lg text-gray-500" />
+                        </label>
 
-                        <div className="relative">
-                            <Dropdown
-                                className="w-[500px]"
-                                title={
-                                    (
-                                        <div className="flex items-center justify-between w-[calc(35vw-40px)] px-4 py-3 text-left bg-white border border-gray-300 rounded-lg shadow-sm hover:border-blue-400 transition-colors">
-                                            <div className="flex items-center gap-3">
-                                                <span className={partner ? 'text-gray-900' : 'text-gray-500'}>
-                                                    {partner || 'Select a delivery partner'}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    ) as any
-                                }
-                                onSelect={handlePartnerSelect}
-                            >
-                                <div className="mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
-                                    {LOGISTIC_PARTNER?.map(({ value, label }) => (
-                                        <DropdownItem
-                                            key={value}
-                                            eventKey={value}
-                                            className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 
-                                        hover:bg-blue-50 hover:text-blue-700 border-b border-gray-100 last:border-b-0
-                                        transition-colors cursor-pointer"
-                                        >
-                                            {label}
-                                        </DropdownItem>
-                                    ))}
-                                </div>
-                            </Dropdown>
-                        </div>
+                        <Dropdown
+                            className="w-full"
+                            title={
+                                (
+                                    <div className="flex items-center justify-between rounded-lg border border-gray-300 bg-white px-4 py-3 shadow-sm transition hover:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100">
+                                        <span className={`text-sm ${partner ? 'text-gray-900' : 'text-gray-400'}`}>
+                                            {partner || 'Select a delivery partner'}
+                                        </span>
+                                    </div>
+                                ) as any
+                            }
+                            onSelect={handlePartnerSelect}
+                        >
+                            <div className="mt-1 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg">
+                                {LOGISTIC_PARTNER?.map(({ value, label }) => (
+                                    <DropdownItem
+                                        key={value}
+                                        eventKey={value}
+                                        className="cursor-pointer px-4 py-3 text-sm font-medium text-gray-700 transition
+                                       hover:bg-blue-50 hover:text-blue-700"
+                                    >
+                                        {label}
+                                    </DropdownItem>
+                                ))}
+                            </div>
+                        </Dropdown>
                     </div>
 
-                    {/* Bin Number Input */}
-                    <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                            <label className="text-sm font-medium text-gray-700">Bin Number</label>
-                        </div>
+                    {/* Bin Number */}
+                    <div>
+                        <label className="mb-2 block text-sm font-semibold text-gray-700">Bin Number</label>
 
                         <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                                <BsBoxSeam />
+                            </span>
+
                             <Input
                                 value={binNumber}
-                                placeholder="Enter bin number (e.g., BIN-12345)"
-                                className="w-full px-4 py-3 pl-11 bg-white border border-gray-300 rounded-lg 
-                            shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 
-                            transition-colors placeholder:text-gray-400"
+                                placeholder="BIN-12345"
+                                className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 pl-11
+                               text-sm shadow-sm transition
+                               focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                                 onChange={(e) => setBinNumber(e.target.value)}
                             />
-                            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                                <BsBoxSeam />
-                            </div>
                         </div>
-                        <p className="text-xs text-gray-500 mt-2">Enter the unique bin number assigned for this delivery</p>
+
+                        <p className="mt-2 text-xs text-gray-500">Enter the unique bin number assigned for this delivery</p>
                     </div>
                 </div>
 
                 {/* Footer Note */}
-                <div className="mt-8 pt-6 border-t border-gray-200 w-full">
+                <div className="mt-10 border-t border-gray-200 pt-6">
                     <div className="flex items-start gap-2 text-xs text-gray-500">
-                        <MdInfoOutline className="text-gray-400 mt-0.5" />
-                        <p>Make sure to verify partner details and bin number before proceeding.</p>
+                        <MdInfoOutline className="mt-0.5 text-gray-400" />
+                        <p>Please verify the delivery partner and bin number carefully before proceeding.</p>
                     </div>
                 </div>
             </div>
@@ -557,14 +550,15 @@ type props3 = {
     handleClose: () => void
     modalContent?: string
     status: string
+    isButtonClick?: boolean
 }
 
-export const CustomModal3: React.FC<props3> = ({ isModalOpen, handlePack, handleClose, modalContent, status }) => {
+export const CustomModal3: React.FC<props3> = ({ isModalOpen, handlePack, handleClose, modalContent, status, isButtonClick }) => {
     return (
         <Modal
             title=""
-            okText={status === 'PENDING' ? 'ACCEPT & PACK' : 'SELECT'}
-            cancelText={status === 'PENDING' ? 'REJECT ORDERS' : 'CANCEL'}
+            okText={status === EOrderStatus.pending ? 'ACCEPT & PACK' : 'SELECT'}
+            cancelText={status === EOrderStatus.pending ? 'REJECT ORDERS' : 'CANCEL'}
             width={800}
             className="custom-modal"
             okButtonProps={{
@@ -586,6 +580,7 @@ export const CustomModal3: React.FC<props3> = ({ isModalOpen, handlePack, handle
             open={isModalOpen}
             onOk={handlePack}
             onCancel={handleClose}
+            confirmLoading={isButtonClick}
         >
             <p className="text-lg font-semibold mb-4">{modalContent}</p>
             <h1 className="text-center text-lg font-bold text-green-600">{modalContent}</h1>
@@ -607,7 +602,7 @@ export const CustomModal4: React.FC<props4> = ({ isModalOpen, handlePack, handle
         <Modal
             title=""
             okText={isButtonClick ? 'Delivering....' : 'DELIVER'}
-            cancelText={status === 'PENDING' ? 'REJECT ORDERS' : 'CANCEL'}
+            cancelText={status === EOrderStatus.pending ? 'REJECT ORDERS' : 'CANCEL'}
             width={800}
             className="custom-modal"
             okButtonProps={{
@@ -651,7 +646,7 @@ export const CustomModal5: React.FC<props5> = ({ isModalOpen, handlePack, handle
         <Modal
             title=""
             okText={isButtonClick ? 'ACCEPTING...' : 'ACCEPT'}
-            cancelText={status === 'PENDING' ? 'CANCEL' : 'CANCEL'}
+            cancelText={status === EOrderStatus.pending ? 'CANCEL' : 'CANCEL'}
             width={800}
             className="custom-modal"
             okButtonProps={{
@@ -699,7 +694,7 @@ export const ExchangeModal: React.FC<prop6> = ({ isModalOpen, handlePack, handle
         <Modal
             title=""
             okText={isButtonClick ? 'COMPLETING...' : 'COMPLETE'}
-            cancelText={status === 'PENDING' ? 'CANCEL' : 'CANCEL'}
+            cancelText={status === EOrderStatus.pending ? 'CANCEL' : 'CANCEL'}
             width={800}
             className="custom-modal"
             okButtonProps={{

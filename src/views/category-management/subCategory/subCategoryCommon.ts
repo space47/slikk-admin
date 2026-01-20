@@ -16,3 +16,41 @@ export type Product = {
     sub_category: number
     last_updated_by: string | null
 }
+
+export type FormModel = {
+    id: number
+    name: string
+    category_name: string
+    title: string
+    description: string
+    image: string
+    footer: string | null
+    quick_filter_tags: string
+    position: number
+    gender: string
+    is_active: boolean
+    create_date: string
+    update_date: string
+    is_try_and_buy: boolean
+    last_updated_by: string | null
+    images: File[]
+}
+
+export type category = {
+    id: number
+    name: string
+    division: number
+    division_name: string
+    title: string
+    description: string
+    image: string
+    footer: string
+    quick_filter_tags: string
+    position: number
+    gender: string
+    is_active: boolean
+    create_date: string
+    update_date: string
+    is_try_and_buy: boolean
+    last_updated_by: string
+}

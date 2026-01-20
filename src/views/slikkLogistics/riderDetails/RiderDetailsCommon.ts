@@ -38,10 +38,15 @@ export const RiderAgency = [
     { label: 'CareBazaar', value: 'careBazaar' },
     { label: 'WD', value: 'WD' },
     { label: 'Shadow Fax', value: 'shadowfax' },
+    { label: 'SENDIT', value: 'sendit' },
 ]
 
 export const DEBOUNCE_DELAY = 600
 export const RIDER_TYPES = [
+    { label: 'INSTANT RETURN', value: 'instant_return_rider' },
+    { label: 'BACKLOG RETURN', value: 'backlog_return_rider' },
+]
+export const RIDER_TYPES_FILTER = [
     { label: 'FORWARD', value: 'FORWARD' },
     { label: 'RETURN', value: 'RETURN' },
 ]
@@ -57,3 +62,13 @@ export interface StoreOption {
         id: number
     }
 }
+
+export interface DeliveryType {
+    label: string | undefined
+    value: string | undefined
+}
+
+export const RiderDownloadOptions = [
+    { label: 'Summary Report', value: 'summary' },
+    { label: 'Order Level Report', value: 'order_level' },
+]

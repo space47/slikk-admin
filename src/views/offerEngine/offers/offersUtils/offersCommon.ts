@@ -74,6 +74,7 @@ export const offerBodyFile = (values: any) => {
         get_reward_value: values?.get_reward_value || null,
         get_reward_limit: values?.get_reward_limit || null,
         terms_and_conditions: values?.terms_and_conditions || null,
+        product_max_discount_amount: values?.product_max_discount_amount || null,
         daily_time_windows: values?.daily_time_windows?.length
             ? values?.daily_time_windows?.map((timeWindow: any) => ({
                   start: timeWindow?.start,

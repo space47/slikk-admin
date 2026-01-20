@@ -69,6 +69,7 @@ const ReportGraphInput = ({
         return (
             <div key={index} className="mt-8 flex flex-col gap-24 ">
                 <ReportTable
+                    extra_attributes={table?.data?.extra_attributes}
                     showSpinner={showSpinner}
                     tableData={table?.data?.data}
                     keyName={table?.data.display_name}

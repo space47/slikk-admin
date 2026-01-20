@@ -59,6 +59,7 @@ export const COMPONENT_CATEGORY_TYPES = [
     { label: 'cart_default_coupon', value: 'cart_default_coupon' },
     { label: 'cart_default_delivery', value: 'cart_default_delivery' },
     { label: 'cart_default_price', value: 'cart_default_price' },
+    { label: 'cart_default_no_return_opt_in', value: 'cart_default_no_return_opt_in' },
     { label: 'Coupon', value: 'Coupon' },
     { label: 'Bell C', value: 'Bell C' },
     { label: 'Marquee', value: 'Marquee' },

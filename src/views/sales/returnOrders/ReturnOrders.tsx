@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import moment from 'moment'
-import { Button, Dropdown, Input, Spinner } from '@/components/ui'
+import { Button, Dropdown, Input, Tooltip } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { IoMdDownload } from 'react-icons/io'
 import FilterReturnOrder from './filter/FilterReturnOrder'
@@ -19,9 +19,10 @@ import { ReturnDropdownStatus, ReturnOrder, SEARCHOPTIONS } from './returnOrderC
 import { pageSizeOptions } from '../groupNotification/getGroup/groupComnmon'
 import { getStatusFilterReturn } from './returnOrderUtils/ReturnOrderUtils'
 import { handleSearch, handleSearchWithIcon, handleSelect, onSelectChange, handleDownload } from './returnOrderUtils/ReturnOrderFunctions'
-import { LocationReturnType } from '@/store/types/returnOrderData.types'
-import ReturnOrderMap from './returnOrderUtils/ReturnOrderMap'
 import { FaMapMarkedAlt } from 'react-icons/fa'
+import { AxiosError } from 'axios'
+import { errorMessage, successMessage } from '@/utils/responseMessages'
+import ReturnOrderZoneMap from './returnOrderUtils/ReturnOrderZoneMap'
 
 const ReturnOrders = () => {
     const location = useLocation()
@@ -41,9 +42,9 @@ const ReturnOrders = () => {
     const [searchOnEnter, setSearchOnEnter] = useState('')
     const [showMap, setShowMap] = useState(false)
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-    const [locationDetails, setLocationDetails] = useState<LocationReturnType[]>([])
     const [isDownloading, setIsDownloading] = useState(false)
     const [showNumberLoading, setShowNumberLoading] = useState(false)
+    const [taskProcess, setTaskProcess] = useState(false)
 
     const handleSelectTab = (value: string) => {
         setShowNumberLoading(true)
@@ -75,20 +76,6 @@ const ReturnOrders = () => {
         fetchOrders()
     }, [page, pageSize, from, to, dropdownStatus, searchOnEnter, deliveryType, tabSelect])
 
-    const fetchLocationData = async () => {
-        try {
-            const response = await axioisInstance.get(`/merchant/return_orders?location_data=true&from=${from}&to=${To_Date}`)
-            const data = response.data?.data
-            setLocationDetails(data)
-        } catch (error) {
-            console.error
-        }
-    }
-
-    useEffect(() => {
-        fetchLocationData()
-    }, [from, To_Date])
-
     const columns = useReturnOrderColumns()
 
     const handleDropdownSelect = (selectedValue: string) => {
@@ -106,6 +93,20 @@ const ReturnOrders = () => {
                 }
             }
         })
+    }
+
+    const activateTask = async () => {
+        try {
+            setTaskProcess(true)
+            const res = await axioisInstance.post(`/backend/task/process`, { task_name: 'assign_return_order_to_rider' })
+            successMessage(res)
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                errorMessage(error)
+            }
+        } finally {
+            setTaskProcess(false)
+        }
     }
 
     const handleDateChange = (dates: [Date | null, Date | null] | null) => {
@@ -179,19 +180,22 @@ const ReturnOrders = () => {
                 </div>
 
                 <div className="flex gap-4">
-                    <div className="flex flex-col md:flex-row items-center xl:mt-9 xl:gap-6 justify-center  ">
+                    <div className="flex flex-col md:flex-row items-center  xl:gap-6 justify-center  ">
                         <div>
-                            <button onClick={handleShowMap}>
-                                {showMap ? (
-                                    <FaMapMarkedAlt className="text-4xl text-red-700 " />
-                                ) : (
-                                    <FaMapMarkedAlt className="text-4xl text-green-600 " />
-                                )}
-                            </button>
+                            <Tooltip title="Zone Map">
+                                <button onClick={handleShowMap}>
+                                    {showMap ? (
+                                        <FaMapMarkedAlt className="text-4xl text-red-700 " />
+                                    ) : (
+                                        <FaMapMarkedAlt className="text-4xl text-green-600 " />
+                                    )}
+                                </button>
+                            </Tooltip>
                         </div>
                         <div>
-                            <button
-                                className="bg-gray-700 text-white px-4 py-2 hover:bg-gray-600 rounded-lg mb-2 md:mb-0 md:mr-2  xl:flex xl:gap-1 dark:bg-gray-500 dark:text-white"
+                            <Button
+                                variant="new"
+                                size="sm"
                                 onClick={() =>
                                     handleDownload(
                                         tabSelect,
@@ -205,28 +209,30 @@ const ReturnOrders = () => {
                                     )
                                 }
                                 disabled={isDownloading}
+                                loading={isDownloading}
+                                icon={<IoMdDownload />}
                             >
-                                <span className="flex gap-2">
-                                    <span>
-                                        <IoMdDownload className="text-xl md:text-xl xl:font-extrabold" />
-                                    </span>
-                                    <span className="flex gap-1 items-center">
-                                        EXPORT {isDownloading && <Spinner size={20} color="white" />}
-                                    </span>
-                                </span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div className="flex gap-2 items-center xl:mt-1">
-                        <div>
-                            <UltimateDatePicker from={from} setFrom={setFrom} to={to} setTo={setTo} handleDateChange={handleDateChange} />
-                        </div>
-                        <div className="xl:mt-7">
-                            <Button variant="new" size="sm" className="mt-8 xl:mt-0 xl:flex gap-2" onClick={() => setShowFilter(true)}>
-                                FILTER
+                                EXPORT
                             </Button>
                         </div>
+                    </div>
+                    <Button variant="new" size="sm" className="mt-1" disabled={taskProcess} loading={taskProcess} onClick={activateTask}>
+                        Activate Task To Rider
+                    </Button>
+
+                    <UltimateDatePicker
+                        customClass="border w-auto rounded-md h-auto font-bold  bg-black text-white flex justify-center"
+                        from={from}
+                        setFrom={setFrom}
+                        to={to}
+                        setTo={setTo}
+                        handleDateChange={handleDateChange}
+                    />
+
+                    <div className="">
+                        <Button variant="new" size="sm" className=" xl:mt-1 xl:flex gap-2" onClick={() => setShowFilter(true)}>
+                            FILTER
+                        </Button>
                     </div>
                 </div>
             </div>
@@ -260,12 +266,9 @@ const ReturnOrders = () => {
             </div>
             <br />
             {showMap && (
-                <>
-                    <div className="mt-10 flex flex-col gap-4">
-                        <span className="text-xl font-bold">Return Orders Map:</span>
-                        <ReturnOrderMap locationDetails={locationDetails} />
-                    </div>
-                </>
+                <div className="p-6">
+                    <ReturnOrderZoneMap from={from} To_Date={To_Date} />
+                </div>
             )}
 
             {showFilter && (

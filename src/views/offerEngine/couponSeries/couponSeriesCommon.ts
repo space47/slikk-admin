@@ -70,7 +70,7 @@ export const COUPON_SERIES_FORM = [
         type: 'number',
         max: 10,
         min: 0,
-        name: 'max_order_count',
+        name: 'extra_attributes.max_order_count',
         placeholder: 'Enter maximum order Count',
         component: { Input },
         tooltip: 'It is the maximum Order count per user',
@@ -81,7 +81,7 @@ export const COUPON_SERIES_FORM = [
         type: 'number',
         max: 10,
         min: 0,
-        name: 'min_order_count',
+        name: 'extra_attributes.min_order_count',
         placeholder: 'Enter miminum order Count',
         component: { Input },
         tooltip: 'It is the minimum Order count per user',
@@ -136,6 +136,19 @@ export const COUPON_SERIES_FORM = [
         placeholder: 'Enter Offer Text',
         component: { Input },
     },
+    {
+        label: 'Customer Registered Start',
+        classname: 'col-span-1 w-full',
+        type: 'date',
+        name: 'extra_attributes.user_filters.registration_date.from_date',
+    },
+    {
+        label: 'Customer Registered End',
+        classname: 'col-span-1 w-full',
+        type: 'date',
+        name: 'extra_attributes.user_filters.registration_date.to_date',
+    },
+
     {
         label: 'Max Groups',
         classname: 'col-span-1 w-full',

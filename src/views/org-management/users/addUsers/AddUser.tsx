@@ -254,11 +254,10 @@ const AddUser = () => {
             setShowSpinner(true)
             const response = await axioisInstance.post(`company/users/add`, bodyData)
             if (storePicker?.length > 0) {
+                notification.info({ message: 'Assigning user to store' })
                 const storeAssignmentSuccess = await hanldePicker()
                 if (!storeAssignmentSuccess) {
-                    notification.warning({
-                        message: 'User created but store assignment failed',
-                    })
+                    notification.warning({ message: 'User created but store assignment failed' })
                 }
             }
 
@@ -267,9 +266,7 @@ const AddUser = () => {
                 navigate(-1)
             }, 1000)
         } catch (error: any) {
-            console.log('error', error)
             notification.error({ message: error?.response?.data?.message || 'User not created' })
-            console.log(error)
         } finally {
             setShowSpinner(false)
         }
@@ -312,65 +309,64 @@ const AddUser = () => {
 
     return (
         <div>
-            <Formik
-                enableReinitialize
-                initialValues={initialValue}
-                // validationSchema={validationSchema}
-                onSubmit={handleSubmit}
-            >
+            <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                 {({ values, touched, errors, resetForm }) => (
-                    <Form className="w-full bg-blue-50 shadow-xl rounded-xl p-6 transition-all duration-200 hover:shadow-2xl">
+                    <Form className="w-full  shadow-xl rounded-xl p-6 transition-all duration-200 hover:shadow-2xl">
                         <div className="text-2xl font-bold text-gray-800 mb-8 pb-2 border-b border-gray-200">ADD USER</div>
-
                         <FormContainer>
-                            {/* User Details Section */}
-                            <div className="mb-8">
-                                <h3 className="text-lg font-semibold text-gray-700 mb-4">Personal Information</h3>
-                                <FormContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    {USERDETAILS.map((item, index) => (
-                                        <FormItem key={index} label={item.label} className="col-span-1">
-                                            <Field
-                                                type={item.type}
-                                                name={item.name}
-                                                component={Input}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                                                onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
+                            <FormContainer className="shadow-xl p-3 border-l-4 border-blue-400 rounded-lg">
+                                <div className="mb-8">
+                                    <h3 className="text-lg font-semibold text-gray-700 mb-4">Personal Information</h3>
+                                    <FormContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        {USERDETAILS.map((item, index) => (
+                                            <FormItem key={index} label={item.label} className="col-span-1">
+                                                <Field
+                                                    type={item.type}
+                                                    name={item.name}
+                                                    component={Input}
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                                                    onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
+                                                />
+                                            </FormItem>
+                                        ))}
+                                    </FormContainer>
+                                    <div className="mb-8">
+                                        <FormContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            {USERCOMMUNICATION.map((item, index) => (
+                                                <FormItem key={index} label={item.label} className="col-span-1">
+                                                    <Field
+                                                        type={item.type}
+                                                        name={item.name}
+                                                        component={Input}
+                                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                                                        onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
+                                                    />
+                                                </FormItem>
+                                            ))}
+                                            <FormItem label="Mobile" className="col-span-1">
+                                                <input
+                                                    type="text"
+                                                    name="mobile"
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                                                    onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
+                                                    onChange={(e: any) => setMobileNumber(e.target.value)}
+                                                />
+                                            </FormItem>
+                                            <StoreAssignComponent
+                                                isAfter
+                                                customClass="mt-0 w-full"
+                                                storePicker={storePicker as any}
+                                                setStorePicker={setStorePicker as any}
+                                                mobile={mobileNumber}
+                                                profile={[]}
                                             />
-                                        </FormItem>
-                                    ))}
-                                </FormContainer>
-                            </div>
+                                        </FormContainer>
+                                    </div>
+                                </div>
+                            </FormContainer>
 
-                            {/* Communication Section */}
-                            <div className="mb-8">
-                                <h3 className="text-lg font-semibold text-gray-700 mb-4">Contact Information</h3>
-                                <FormContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    {USERCOMMUNICATION.map((item, index) => (
-                                        <FormItem key={index} label={item.label} className="col-span-1">
-                                            <Field
-                                                type={item.type}
-                                                name={item.name}
-                                                component={Input}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                                                onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
-                                            />
-                                        </FormItem>
-                                    ))}
-                                    <FormItem label="Mobile" className="col-span-1">
-                                        <input
-                                            type="text"
-                                            name="mobile"
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                                            onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
-                                            onChange={(e: any) => setMobileNumber(e.target.value)}
-                                        />
-                                    </FormItem>
-                                </FormContainer>
-                            </div>
-
-                            {/* Companies Section */}
-                            <div className="mb-10">
-                                <div className="text-xl font-semibold text-gray-800 mb-6 pb-2 border-b border-gray-200">COMPANIES</div>
+                            <div className="mb-10 shadow-xl p-3 border-l-4 border-yellow-400 rounded-lg mt-4">
+                                <div className="text-xl font-semibold text-gray-800 mb-6 pb-2 border-b border-gray-200">Assign Company</div>
 
                                 <FormContainer className="mb-7">
                                     <FormContainer className="flex flex-col lg:flex-row justify-between gap-6">
@@ -461,7 +457,7 @@ const AddUser = () => {
                             </div>
 
                             {/* User Groups Section */}
-                            <div className="mb-10">
+                            <div className="mb-10 shadow-xl p-3 border-l-4 border-green-400 rounded-lg mt-4">
                                 <div className="text-xl font-semibold text-gray-800 mb-6 pb-2 border-b border-gray-200">USER GROUPS</div>
 
                                 {accessDenied?.groups ? (
@@ -543,16 +539,8 @@ const AddUser = () => {
                                 )}
                             </div>
 
-                            <StoreAssignComponent
-                                isAfter
-                                storePicker={storePicker as any}
-                                setStorePicker={setStorePicker as any}
-                                mobile={mobileNumber}
-                                profile={[]}
-                            />
-
                             {/* User Permissions Section */}
-                            <div className="mb-10">
+                            <div className="mb-10 shadow-xl p-3 border-l-4 border-purple-400 rounded-lg mt-4">
                                 <div className="text-xl font-semibold text-gray-800 mb-6 pb-2 border-b border-gray-200">
                                     USER PERMISSIONS
                                 </div>

@@ -21,7 +21,7 @@ function useAuth() {
 
     const signInTwoFactor = async (values: SignInTwoFactor) => {
         console.log('values are', values)
-        dispatch(validatePhoneNumber(values.mobileNumber))
+        dispatch(validatePhoneNumber(values.mobileNumber, values.channel))
     }
 
     const navigateTo = () => {

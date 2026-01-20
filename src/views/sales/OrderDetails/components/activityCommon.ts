@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { SalesOrderDetailsResponse } from '../orderList.common'
+import { Order } from '@/store/types/newOrderTypes'
 
 export const LOGISTIC_PARTNER = [
     { value: 'porter', label: 'PORTER' },
@@ -59,14 +59,14 @@ export type LOGISTIC = {
 export type Event = {
     timestamp: string
     status: string
+    event_note?: string
 }
 
 export type ActivityProps = {
-    mainData: SalesOrderDetailsResponse
+    mainData: Order
     data?: Event[]
     status: string
-    product?: Product[]
-    payment?: Payment
     invoice_id?: string
     delivery_type: string
+    refetch: any
 }

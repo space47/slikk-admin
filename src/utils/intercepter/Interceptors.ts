@@ -1,4 +1,5 @@
-import store from '@/store'
+import appConfig from '@/configs/app.config'
+import store, { signOutSuccess } from '@/store'
 import { notification } from 'antd'
 import { AxiosError, AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'axios'
 
@@ -22,6 +23,7 @@ const onRequest = async (config: InternalAxiosRequestConfig): Promise<InternalAx
         'inventory-location',
         'merchant/orders?p=1&page_size=100&mobile=',
         'query/execute',
+        'merchant/product/sku/sales',
     ]
 
     if (storeCodes && storeCodes.length > 0 && ifGetCall) {
@@ -50,7 +52,9 @@ const onResponseError = (error: AxiosError): Promise<AxiosError> => {
     console.log('Error in response:', method)
 
     const url = error.config?.url || ''
-    console.log('Error URL:', url)
+    const signInPath = appConfig.unAuthenticatedEntryPath
+
+    console.log(signInPath)
 
     const restrictedPaths = ['https://api.olamaps.io/']
     const excludeUrls = !restrictedPaths.some((path) => url.includes(path))
@@ -67,6 +71,14 @@ const onResponseError = (error: AxiosError): Promise<AxiosError> => {
             notification.error({
                 message: 'You have no access to this resource.',
             })
+        } else if (error?.response?.status === 401) {
+            localStorage.clear()
+            sessionStorage.clear()
+            store.dispatch(signOutSuccess())
+            if (!signInPath) {
+                window.location.href = signInPath
+            }
+            notification.error({ message: 'your token has been expired and you have been logged out' })
         }
     }
 

@@ -2,6 +2,8 @@
 import Card from '@/components/ui/Card'
 import { NumericFormat } from 'react-number-format'
 import moment from 'moment'
+import { Order } from '@/store/types/newOrderTypes'
+import { EOrderStatus } from '../orderList.common'
 
 type PaymentInfoProps = {
     label?: string
@@ -13,12 +15,7 @@ type PaymentSummaryProps = {
     tax: string | number
     delivery: string
     amount: string
-    data?: {
-        amount: number
-        mode: string
-        transaction_time: string
-        status: string
-    }
+    data?: Order['payment']
     coupon_discount: string
     loyalty_discount: string
     points_discount: string
@@ -77,11 +74,13 @@ const PaymentSummary = ({
             <div className="flex justify-between items-center xl:items-baseline">
                 <h5 className="mb-4">Payment Summary</h5>
                 <div>
-                    {data?.status === 'PAID' ? (
+                    {data?.status === EOrderStatus.paid ? (
                         <p className="bg-gray-500 px-5 rounded-[22px] flex items-center justify-center text-white text-lg">PAID</p>
-                    ) : data?.status === 'POD_PAID' ? (
+                    ) : data?.status === EOrderStatus.pod_paid ? (
                         <p className="bg-gray-500 px-5 rounded-[22px] flex items-center justify-center text-white text-lg">POD PAID</p>
-                    ) : (data?.status === 'POD_CREATED' || data?.status === 'FAILED') && data?.mode === 'POD' && status === 'COMPLETED' ? (
+                    ) : (data?.status === EOrderStatus.pod_created || data?.status === EOrderStatus.failed) &&
+                      data?.mode === EOrderStatus.pod &&
+                      status === EOrderStatus.completed ? (
                         <button
                             className="bg-green-500 px-5 rounded-[22px] flex items-center justify-center text-white text-lg"
                             onClick={handlePODAction}

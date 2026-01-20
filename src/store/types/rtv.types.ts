@@ -17,6 +17,7 @@ export type Rtv_Data = {
     store: number
     last_updated_by: string
     quantity_picked: number
+    status: string
 }
 
 export type RTV_DATA_DETAILS = {
@@ -45,6 +46,7 @@ export type RTV_DATA_DETAILS = {
     }
     last_updated_by: string
     quantity_picked: number
+    status?: string
 }
 
 export type Rtv_Data_Response = ApiResponse<Rtv_Data>
@@ -54,6 +56,8 @@ export type Rtv_Products = {
     sku: string
     quantity_required: number
     quantity_accepted: number
+    synced_to_inventory: boolean
+    synced_quantity: number
     images: string
     inventory_locations: string
     is_picked: boolean
@@ -96,4 +100,9 @@ export type Rtv_Product_Params = {
     rtv_number?: string
     rtv_id?: string
     sku?: string
+}
+
+export type Rtv_status_request = {
+    rtv_id: string | number
+    data: Record<string, string>
 }

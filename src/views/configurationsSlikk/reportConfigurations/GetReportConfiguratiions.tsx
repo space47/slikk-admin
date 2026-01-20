@@ -7,8 +7,10 @@ import { Button, Pagination, Select } from '@/components/ui'
 import EasyTable from '@/common/EasyTable'
 import { pageSizeOptions } from '@/views/slikkLogistics/taskTracking/TaskCommonType'
 import { useNavigate } from 'react-router-dom'
-import { FaEdit } from 'react-icons/fa'
+import { FaEdit, FaPlus } from 'react-icons/fa'
 import AccessDenied from '@/views/pages/AccessDenied'
+import { MdAnalytics } from 'react-icons/md'
+import { useDebounceInput } from '@/commonHooks/useDebounceInput'
 
 const GetReportConfiguratiions = () => {
     const [reportQueryData, setReportQueryData] = useState<ReportQueryData[]>([])
@@ -17,11 +19,12 @@ const GetReportConfiguratiions = () => {
     const [pageSize, setPageSize] = useState(10)
     const [accessDenied, setAccessDenied] = useState(false)
     const [globalFilter, setGlobalFilter] = useState<string>('')
+    const { debounceFilter } = useDebounceInput({ globalFilter, delay: 500 })
     const navigate = useNavigate()
 
     useEffect(() => {
         fetchReportApi()
-    }, [page, pageSize, globalFilter])
+    }, [page, pageSize, debounceFilter])
 
     const columns = useMemo(
         () => [
@@ -41,7 +44,7 @@ const GetReportConfiguratiions = () => {
                 accessorKey: 'value',
                 cell: ({ getValue }) => {
                     return (
-                        <div className="flex flex-col gap-2">
+                        <div className="flex flex-col gap-2 overflow-scroll  h-[120px]">
                             {getValue().map((item, index) => {
                                 console.log('items', item.name)
                                 return (
@@ -101,17 +104,31 @@ const GetReportConfiguratiions = () => {
 
     return (
         <div className="flex flex-col gap-4">
-            <div className="flex justify-between">
+            <div className="mb-8">
+                <div className="flex items-center gap-3 mb-2">
+                    <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-md">
+                        <MdAnalytics className="text-2xl text-white" />
+                    </div>
+                    <div>
+                        <h3 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                            Report Configurations
+                        </h3>
+                        <p className="text-gray-600 text-sm mt-1">View, Configure and customize your reports</p>
+                    </div>
+                </div>
+            </div>
+            <div className="flex justify-between mb-4">
                 <div>
                     <input
                         type="search"
                         value={globalFilter}
+                        className="w-full"
                         placeholder="Search by name"
                         onChange={(e) => setGlobalFilter(e.target.value)}
                     />
                 </div>
                 <div className="flex ">
-                    <Button variant="new" onClick={handleNewQuery}>
+                    <Button variant="new" size="sm" icon={<FaPlus />} onClick={handleNewQuery}>
                         Add New Query
                     </Button>
                 </div>
@@ -143,10 +160,15 @@ const GetReportConfiguratiions = () => {
     async function fetchReportApi() {
         try {
             let searchFilter = ''
-            if (globalFilter) {
-                searchFilter = `&name=${globalFilter}`
+            let genericFilters = ''
+            if (debounceFilter) {
+                searchFilter = `&name=${debounceFilter}`
             }
-            const response = await axioisInstance.get(`/query/config?p=${page}&page_size=${pageSize}${searchFilter}`)
+            if (!debounceFilter) {
+                genericFilters = `&p=${page}&page_size=${pageSize}`
+            }
+
+            const response = await axioisInstance.get(`/query/config?${genericFilters}${searchFilter}`)
             const data = response?.data?.data
             setReportQueryData(data?.results)
             setTotalCount(data?.count)

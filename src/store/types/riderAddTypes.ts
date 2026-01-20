@@ -18,6 +18,7 @@ export type RiderAddTypes = {
     store?: number[]
     rider_delivery_type?: string
     rider_zone?: number
+    delivery_type?: string
 }
 
 type UserType = {
@@ -172,6 +173,7 @@ export interface RiderProfileData {
     rider_delivery_type?: string
     store: any
     zone?: number
+    delivery_type?: string
 }
 
 export type RiderProfileResponseType = {

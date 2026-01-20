@@ -1,27 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormItem, FormContainer } from '@/components/ui/Form'
-import Input from '@/components/ui/Input'
-import Button from '@/components/ui/Button'
-import { Field, Form, Formik, FieldArray } from 'formik'
+import { Formik } from 'formik'
 import { useNavigate, useParams } from 'react-router-dom'
 import { IoIosAddCircle } from 'react-icons/io'
-import { MdCancel } from 'react-icons/md'
-import { RichTextEditor } from '@/components/shared'
-import Select from '@/components/ui/Select'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useEffect, useState } from 'react'
 import { notification } from 'antd'
-import { Checkbox } from '@/components/ui'
-import { ExtraAttributes } from './ExtraAttributes'
-
-const reportQueryNames = [
-    { label: 'Date', value: 'Date' },
-    { label: 'Number', value: 'Number' },
-    { label: 'String', value: 'String' },
-    { label: 'Boolean', value: 'Boolean' },
-    { label: 'Select', value: 'Select' },
-    { label: 'MulltiSelect', value: 'MultiSelect' },
-]
+import ReportCommonForm from '../reportUtils/ReportCommonForm'
+import { textParser } from '@/common/textParser'
 
 const EditReportQuery = () => {
     const navigate = useNavigate()
@@ -72,6 +57,8 @@ const EditReportQuery = () => {
                             y_axis: item?.extra_attributes?.y_axis || '',
                             secondary_y_axis: item?.extra_attributes?.secondary_y_axis || '',
                             graph_type: item?.extra_attributes?.graph_type || '',
+                            logic: item?.extra_attributes?.logic || '',
+                            use_case: item?.extra_attributes?.use_case || '',
                         },
                     })) || [],
                 // value: [],
@@ -130,6 +117,8 @@ const EditReportQuery = () => {
                     y_axis: item?.extra_attributes?.y_axis,
                     secondary_y_axis: item?.extra_attributes?.secondary_y_axis,
                     graph_type: item?.extra_attributes?.graph_type ? item?.extra_attributes?.graph_type : 'line',
+                    logic: textParser(item.extra_attributes?.logic) || null,
+                    use_case: item.extra_attributes?.use_case || null,
                 },
             }
         })
@@ -156,205 +145,21 @@ const EditReportQuery = () => {
 
     return (
         <div>
-            <h3 className="mb-5 from-neutral-900">Edit Report Query</h3>
+            <div className="mb-8">
+                <div className="flex items-center gap-3 mb-2">
+                    <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-md">
+                        <IoIosAddCircle className="text-2xl text-white" />
+                    </div>
+                    <div>
+                        <h3 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                            Edit Report Query
+                        </h3>
+                        <p className="text-gray-600 text-sm mt-1">Configure and customize your report queries</p>
+                    </div>
+                </div>
+            </div>
             <Formik initialValues={reportData} enableReinitialize onSubmit={handleSubmit}>
-                {({ values, resetForm }) => (
-                    <Form className="w-full">
-                        <FormContainer>
-                            <FormItem label="Unique Report Name" className="col-span-1 w-1/2">
-                                <Field type="text" name="name" placeholder="Enter Name" component={Input} />
-                            </FormItem>
-                            <FormItem label="Report Display Name" className="col-span-1 w-1/2">
-                                <Field type="text" name="display_name" placeholder="Enter Display Name" component={Input} />
-                            </FormItem>
-                            <FormItem label="Query List" labelClass="!justify-start" className="col-span-1 w-full">
-                                <FieldArray name="value">
-                                    {({ push, remove }) => (
-                                        <div>
-                                            {values.value.map((item, index) => (
-                                                <div key={index} className="flex flex-col gap-4 mt-2">
-                                                    <div className="flex space-x-4 items-center">
-                                                        <FormItem label="name">
-                                                            <Field
-                                                                name={`value[${index}].name`}
-                                                                placeholder="Enter Query Name"
-                                                                component={Input}
-                                                                className="w-auto"
-                                                            />
-                                                        </FormItem>
-                                                        <FormItem label="Display Name">
-                                                            <Field
-                                                                name={`value[${index}].display_name`}
-                                                                placeholder="Enter Display Name"
-                                                                component={Input}
-                                                                className="w-auto"
-                                                            />
-                                                        </FormItem>
-                                                        <FormItem label="Position">
-                                                            <Field
-                                                                name={`value[${index}].position`}
-                                                                type="number"
-                                                                placeholder="Position"
-                                                                component={Input}
-                                                                className="w-full"
-                                                            />
-                                                        </FormItem>
-                                                    </div>
-                                                    <FormContainer className="flex gap-5 ">
-                                                        {ExtraAttributes.map((item, key) => (
-                                                            <FormContainer key={key} className="">
-                                                                <FormItem label={item.label}>
-                                                                    <Field
-                                                                        name={`value[${index}].${item.name}`}
-                                                                        type={item.type}
-                                                                        placeholder={`Enter ${item.label}`}
-                                                                        component={item.component}
-                                                                    />
-                                                                </FormItem>
-                                                            </FormContainer>
-                                                        ))}
-                                                    </FormContainer>
-                                                    <FormItem label="Query">
-                                                        <Field name={`value[${index}].query`}>
-                                                            {({ field, form }: any) => (
-                                                                <RichTextEditor
-                                                                    value={field.value}
-                                                                    onChange={(val) => form.setFieldValue(field.name, val)}
-                                                                    className="w-full"
-                                                                />
-                                                            )}
-                                                        </Field>
-                                                        <button
-                                                            type="button"
-                                                            className="text-red-600 hover:text-red-800 transition"
-                                                            onClick={() => remove(index)}
-                                                        >
-                                                            <MdCancel className="text-2xl" />
-                                                        </button>
-                                                    </FormItem>
-                                                </div>
-                                            ))}
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    push({
-                                                        name: '',
-                                                        display_name: '',
-                                                        position: 0,
-                                                        is_graph: false,
-                                                        query: '',
-                                                    })
-                                                }
-                                                className="mt-3 flex items-center text-white bg-black px-2 py-2 rounded-lg hover:text-gray-200 transition"
-                                            >
-                                                <IoIosAddCircle className="text-2xl mr-1" />
-                                                Add Query
-                                            </button>
-                                        </div>
-                                    )}
-                                </FieldArray>
-                            </FormItem>
-
-                            <FormItem asterisk label="Required Fields" className="col-span-1 w-[80%] h-[80%]">
-                                <FieldArray name="required_fields">
-                                    {({ push, remove }) => (
-                                        <div className="space-y-5">
-                                            {values.required_fields?.map((item, index) => (
-                                                <div
-                                                    key={index}
-                                                    className="grid grid-cols-1 md:grid-cols-10 gap-4 items-center bg-gray-50 p-4 rounded-lg shadow-sm "
-                                                >
-                                                    <Field
-                                                        name={`required_fields[${index}].position`}
-                                                        placeholder="Position"
-                                                        component={Input}
-                                                        type="number"
-                                                        className="md:col-span-2 w-full"
-                                                    />
-                                                    <Field
-                                                        name={`required_fields[${index}].key`}
-                                                        placeholder="Key"
-                                                        component={Input}
-                                                        className="md:col-span-3 w-full"
-                                                    />
-                                                    <Field name={`required_fields[${index}].dataType`}>
-                                                        {({ field, form }: any) => (
-                                                            <Select
-                                                                className="md:col-span-2 w-full"
-                                                                placeholder="Select dataType"
-                                                                options={reportQueryNames}
-                                                                value={reportQueryNames.find((option) => option.value === field.value)}
-                                                                onChange={(option) => form.setFieldValue(field.name, option?.value)}
-                                                            />
-                                                        )}
-                                                    </Field>
-                                                    <Field name={`required_fields[${index}].value`}>
-                                                        {({ field }: any) => {
-                                                            const dataType = values.required_fields[index].dataType
-                                                            return (
-                                                                <Input
-                                                                    type={dataType === 'Date' ? 'date' : 'text'}
-                                                                    placeholder={dataType === 'Date' ? 'Select date' : 'Enter value'}
-                                                                    {...field}
-                                                                    className="md:col-span-3 w-full"
-                                                                />
-                                                            )
-                                                        }}
-                                                    </Field>
-                                                    <Field
-                                                        name={`required_fields[${index}].prefix`}
-                                                        placeholder="Prefix"
-                                                        component={Input}
-                                                        className="md:col-span-2 w-full"
-                                                    />
-                                                    <Field
-                                                        name={`required_fields[${index}].suffix`}
-                                                        placeholder="Suffix"
-                                                        component={Input}
-                                                        className="md:col-span-2 w-full"
-                                                    />
-                                                    <div className="md:col-span-1 flex justify-end">
-                                                        <button type="button" onClick={() => remove(index)}>
-                                                            <MdCancel className="text-xl text-red-600 hover:scale-110 transition-transform" />
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                            <div className="flex justify-start">
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        push({
-                                                            position: '',
-                                                            key: '',
-                                                            value: '',
-                                                            dataType: 'String',
-                                                            prefix: '',
-                                                            suffix: '',
-                                                        })
-                                                    }
-                                                    className="flex items-center space-x-2 text-green-600 hover:text-green-800 transition-colors"
-                                                >
-                                                    <IoIosAddCircle className="text-2xl" />
-                                                    <span className="font-medium">Add Field</span>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    )}
-                                </FieldArray>
-                            </FormItem>
-
-                            <FormContainer className="flex justify-end mt-5">
-                                <Button type="reset" className="mr-2 bg-gray-600" onClick={() => resetForm()}>
-                                    Reset
-                                </Button>
-                                <Button variant="solid" type="submit" className=" text-white">
-                                    Submit
-                                </Button>
-                            </FormContainer>
-                        </FormContainer>
-                    </Form>
-                )}
+                {({ values, resetForm }) => <ReportCommonForm resetForm={resetForm} values={values} />}
             </Formik>
         </div>
     )

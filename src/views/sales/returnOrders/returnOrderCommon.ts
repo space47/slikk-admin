@@ -31,6 +31,7 @@ export interface ReturnOrder {
     status: string
     uuid: string
     log: EventArray[]
+    exchange_order?: string
 }
 
 export const SEARCHOPTIONS = [

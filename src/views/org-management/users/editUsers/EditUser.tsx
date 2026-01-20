@@ -440,22 +440,16 @@ const BrandUserEdit = () => {
                     <Spinner size={40} className="items-center flex justify-center h-screen" />
                 </>
             ) : (
-                <Formik
-                    enableReinitialize
-                    initialValues={initialValue}
-                    // validationSchema={validationSchema}
-                    onSubmit={handleSubmit}
-                >
+                <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                     {({ values, touched, errors, resetForm }) => (
                         <Form
-                            className="w-full bg-blue-50 shadow-xl rounded-xl p-6 transition-all duration-200 hover:shadow-2xl"
+                            className="w-full shadow-xl rounded-xl p-6 transition-all duration-200 hover:shadow-2xl"
                             onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
                         >
                             <div className="text-2xl font-bold text-gray-800 mb-8 pb-2 border-b border-gray-200">EDIT USER DETAILS</div>
 
                             <FormContainer>
-                                {/* Form Fields */}
-                                <div className="mb-8">
+                                <div className="mb-8 shadow-xl p-3 border-l-4 border-blue-400 rounded-lg">
                                     <h3 className="text-lg font-semibold text-gray-700 mb-4">User Information</h3>
                                     <FormContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         {USER_EDIT_FROM.map((item, key) => (
@@ -470,77 +464,91 @@ const BrandUserEdit = () => {
                                             </FormItem>
                                         ))}
                                     </FormContainer>
+                                    <StoreAssignComponent
+                                        customClass="mt-0 w-full"
+                                        storePicker={storePicker as any}
+                                        setStorePicker={setStorePicker as any}
+                                        mobile={mobile}
+                                        profile={userData?.store}
+                                    />
                                 </div>
 
-                                <div className="text-xl font-bold text-gray-800 mb-6 pb-2 border-b border-gray-200">USER PERMISSIONS</div>
+                                <div className="shadow-xl p-3 border-l-4 border-yellow-400 rounded-lg mb-10">
+                                    <h4 className="mb-3">Assign Company</h4>
+                                    {accessDenied?.company ? (
+                                        <AccessDenied particularName="Company Details" />
+                                    ) : (
+                                        <FormContainer className="mb-8">
+                                            <CardComponent
+                                                isSelectAll
+                                                label="Company"
+                                                selectedValue={selectedCompany}
+                                                getValue={filteredCompany}
+                                                handleSelect={handleCompanySelect}
+                                                addedValue={addedCompany}
+                                                handleAdd={handleAddCompany}
+                                                handleRemove={handleRemoveCompany}
+                                                handleSelectAll={handleSelectAll}
+                                                searchInput={companySearchInput}
+                                                handleSearch={handleCompanySearch}
+                                                handleSelectAllData={handleSelectAllCompany}
+                                            />
+                                        </FormContainer>
+                                    )}
+                                </div>
 
-                                {accessDenied?.company ? (
-                                    <AccessDenied particularName="Company Details" />
-                                ) : (
-                                    <FormContainer className="mb-8">
-                                        <CardComponent
-                                            isSelectAll
-                                            label="Company"
-                                            selectedValue={selectedCompany}
-                                            getValue={filteredCompany}
-                                            handleSelect={handleCompanySelect}
-                                            addedValue={addedCompany}
-                                            handleAdd={handleAddCompany}
-                                            handleRemove={handleRemoveCompany}
-                                            handleSelectAll={handleSelectAll}
-                                            searchInput={companySearchInput}
-                                            handleSearch={handleCompanySearch}
-                                            handleSelectAllData={handleSelectAllCompany}
-                                        />
-                                    </FormContainer>
-                                )}
+                                <div className="shadow-xl p-3 border-l-4 border-green-400 rounded-lg mb-10">
+                                    <h4 className="mb-3">Assign Groups</h4>
+                                    {accessDenied?.groups ? (
+                                        <AccessDenied particularName="User Groups" />
+                                    ) : (
+                                        <FormContainer className="mb-8">
+                                            <CardComponent
+                                                label="Groups"
+                                                selectedValue={selectedGroups}
+                                                getValue={filteredGroup}
+                                                handleSelect={handleGroupSelect}
+                                                addedValue={addedGroups}
+                                                handleAdd={handleAddGroup}
+                                                handleRemove={handleRemoveGroups}
+                                                searchInput={groupSearchInput}
+                                                handleSearch={handleGroupSearch}
+                                            />
+                                        </FormContainer>
+                                    )}
+                                </div>
 
-                                {accessDenied?.groups ? (
-                                    <AccessDenied particularName="User Groups" />
-                                ) : (
-                                    <FormContainer className="mb-8">
-                                        <CardComponent
-                                            label="Groups"
-                                            selectedValue={selectedGroups}
-                                            getValue={filteredGroup}
-                                            handleSelect={handleGroupSelect}
-                                            addedValue={addedGroups}
-                                            handleAdd={handleAddGroup}
-                                            handleRemove={handleRemoveGroups}
-                                            searchInput={groupSearchInput}
-                                            handleSearch={handleGroupSearch}
-                                        />
-                                    </FormContainer>
-                                )}
-
-                                <StoreAssignComponent
+                                {/* <StoreAssignComponent
                                     storePicker={storePicker}
                                     setStorePicker={setStorePicker}
                                     mobile={mobile}
                                     profile={userData?.store}
-                                />
+                                /> */}
 
-                                {accessDenied?.permission ? (
-                                    <AccessDenied particularName="User Permissions" />
-                                ) : (
-                                    <FormContainer className="mb-8">
-                                        <CardComponent
-                                            isSelectAll
-                                            forPermission
-                                            label="Permissions"
-                                            selectedValue={selectedPermissions}
-                                            getValue={filteredPermission}
-                                            handleSelect={handlePermissionSelect}
-                                            addedValue={addedPermissions}
-                                            handleAdd={handleAddPermissions}
-                                            handleRemove={handleRemovePermissions}
-                                            searchInput={searchInput}
-                                            handleSearch={handleSearch}
-                                            handlePermissionEdit={handlePermissionEdit}
-                                            handleSelectAllData={handleSelectAllPermission}
-                                        />
-                                    </FormContainer>
-                                )}
+                                <div className="shadow-xl p-3 border-l-4 border-purple-400 rounded-lg mb-10">
+                                    <h4 className="mb-3">Assign Permissions</h4>
+                                    {accessDenied?.permission ? (
+                                        <AccessDenied particularName="User Permissions" />
+                                    ) : (
+                                        <FormContainer className="mb-8">
+                                            <CardComponent
+                                                isSelectAll
+                                                forPermission
+                                                label="Permissions"
+                                                selectedValue={selectedPermissions}
+                                                getValue={filteredPermission}
+                                                handleSelect={handlePermissionSelect}
+                                                addedValue={addedPermissions}
+                                                handleAdd={handleAddPermissions}
+                                                handleRemove={handleRemovePermissions}
+                                                searchInput={searchInput}
+                                                handleSearch={handleSearch}
+                                                handlePermissionEdit={handlePermissionEdit}
+                                                handleSelectAllData={handleSelectAllPermission}
+                                            />
+                                        </FormContainer>
+                                    )}
+                                </div>
 
                                 {/* Submit & Reset Buttons */}
                                 <FormItem className="mt-10 flex justify-center gap-4">

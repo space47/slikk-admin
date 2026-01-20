@@ -58,14 +58,13 @@ const StoreAssignComponent = ({ setStorePicker, storePicker, mobile, profile, cu
 
     return (
         <div className={`${customClass ? customClass : 'mb-6 mt-10 xl:ml-20'}`}>
-            <FormItem label="">
-                <div className="text-xl font-bold mb-2">Store Assign</div>
+            <FormItem label="Assign Store">
                 <div>
                     <div className="flex flex-col gap-1 w-full max-w-md">
                         <Select
                             isClearable
                             isMulti
-                            className="w-3/4"
+                            className="w-full"
                             options={storeResults}
                             getOptionLabel={(option) => option.code}
                             getOptionValue={(option) => option.id}

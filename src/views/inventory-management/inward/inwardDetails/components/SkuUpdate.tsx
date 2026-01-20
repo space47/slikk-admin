@@ -15,14 +15,13 @@ import TabsCommon from '@/common/TabsCommon'
 import { InwardTabs } from '../inwardCommon'
 import { useMaterialFailedColumns } from './materialUtils/useMaterialColumns'
 import { handleDownloadCsv } from '@/common/allTypesCommon'
+import { AxiosError } from 'axios'
+import { errorMessage, successMessage } from '@/utils/responseMessages'
 
 const SkuUpdate = () => {
-    const { document_number, company } = useParams()
+    const { grn_id, company } = useParams()
     const [skuWiseData, setSkuWiseData] = useState<skuUpdateType[]>([])
     const [getSkuData, setGetSkuData] = useState<any[]>([])
-    const [qcReceived, setQcReceived] = useState<number>()
-    const [qcPass, setQcPass] = useState<number>()
-    const [locationInput, setLocationInput] = useState<string>('')
     const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
@@ -44,14 +43,12 @@ const SkuUpdate = () => {
         passed: 0,
     }) // not a nice idea but using as my brain is not braining now
 
-    console.log('failedQc', failedQc)
-
     useEffect(() => {
-        if (document_number) {
-            localStorage.getItem(`failed_${document_number}`)
-            setFailedQc(JSON.parse(localStorage.getItem(`failed_${document_number}`) || '[]'))
+        if (grn_id) {
+            localStorage.getItem(`failed_${grn_id}`)
+            setFailedQc(JSON.parse(localStorage.getItem(`failed_${grn_id}`) || '[]'))
         }
-    }, [document_number])
+    }, [grn_id])
 
     const fetchSkuData = async () => {
         try {
@@ -60,9 +57,7 @@ const SkuUpdate = () => {
             if (globalFilter) {
                 searchFilter = `&sku=${globalFilter}`
             }
-            const response = await axioisInstance.get(
-                `/goods/qualitycheck?grn_number=${document_number}${searchFilter}&p=${page}&page_size=${pageSize}`,
-            )
+            const response = await axioisInstance.get(`/goods/qualitycheck?grn_id=${grn_id}${searchFilter}&p=${page}&page_size=${pageSize}`)
             const data = response?.data?.data
             setGetSkuData(data?.results)
             setTotalData(data?.count)
@@ -113,15 +108,14 @@ const SkuUpdate = () => {
             {
                 header: 'QUANTITY RECEIVED',
                 accessorKey: 'quantity_received',
-                cell: ({ row }: any) => {
-                    const value = qcReceived ?? row?.original?.quantity_received
+                cell: () => {
                     return qcFailedData?.set
                 },
             },
             {
                 header: 'QC PASSED',
                 accessorKey: 'qc_passed',
-                cell: ({ row }: any) => {
+                cell: () => {
                     return qcFailedData?.passed
                 },
             },
@@ -129,7 +123,7 @@ const SkuUpdate = () => {
             {
                 header: 'QC FAILED',
                 accessorKey: 'qc_failed',
-                cell: ({ row }: any) => {
+                cell: () => {
                     return <div>{qcFailedData?.failed}</div>
                 },
             },
@@ -139,7 +133,7 @@ const SkuUpdate = () => {
                 cell: ({ row }: any) => {
                     console.log(row?.original?.sku, qualitySentInput)
                     const getSame = getSkuData?.find((item) => item.sku === formData?.sku)
-                    let value = locationInput !== '' ? locationInput : formData?.location
+                    let value = formData?.location
 
                     if (getSame) {
                         value =
@@ -171,7 +165,7 @@ const SkuUpdate = () => {
                 ),
             },
         ],
-        [formData, qcReceived, qcPass, locationInput],
+        [formData],
     )
 
     const columns2 = useMemo(
@@ -282,10 +276,7 @@ const SkuUpdate = () => {
     const failedColumns = useMaterialFailedColumns()
 
     const handleChanges = (id: number, newQuantity: number | string, setValue: any) => {
-        setValue((prevQuantities: any) => ({
-            ...prevQuantities,
-            [id]: newQuantity,
-        }))
+        setValue((prevQuantities: any) => ({ ...prevQuantities, [id]: newQuantity }))
     }
 
     const convertToCSV = (data: any[], columns: any[]) => {
@@ -317,20 +308,19 @@ const SkuUpdate = () => {
     const handleEditSku = async (oLocation: string, oPassed: number, oReceived: number, oFailed: number, oSku: string) => {
         const getSame = getSkuData?.find((item) => item.sku === oSku)
         const body = {
-            location: locationInput ?? oLocation,
-            qc_passed: qcPass ?? oPassed,
-            quantity_received: qcReceived ?? oReceived,
-            qc_failed: (qcReceived ?? oReceived) - (qcPass ?? oPassed),
+            location: oLocation,
+            qc_passed: oPassed,
+            quantity_received: oReceived,
+            qc_failed: oReceived - oPassed,
             sku: oSku,
         }
-
         try {
-            await axioisInstance.patch(`/goods/qualitycheck/${getSame?.id}`, body)
-            notification.success({
-                message: 'Successfully edited',
-            })
+            const res = await axioisInstance.patch(`/goods/qualitycheck/${getSame?.id}`, body)
+            successMessage(res)
         } catch (error) {
-            console.error(error)
+            if (error instanceof AxiosError) {
+                errorMessage(error)
+            }
         }
     }
     const onSelectChange = (value = 0) => {
@@ -351,8 +341,9 @@ const SkuUpdate = () => {
             notification.success({ message: 'Successfully edited' })
             setRefreshTable(true)
         } catch (error) {
-            notification.error({ message: error?.response?.data?.message || 'Failed to edit' })
-            console.error(error)
+            if (error instanceof AxiosError) {
+                notification.error({ message: error?.response?.data?.message || 'Failed to edit' })
+            }
         }
     }
 
@@ -430,7 +421,6 @@ const SkuUpdate = () => {
                 )}
                 {activeTab === 'failed' && (
                     <div className="space-y-4">
-                        {/* Action Bar */}
                         <div className="flex justify-end">
                             <button
                                 className="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg shadow hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
@@ -439,8 +429,6 @@ const SkuUpdate = () => {
                                 Download Failed Files
                             </button>
                         </div>
-
-                        {/* Table */}
                         <div className="rounded-2xl border border-gray-200 shadow-sm bg-white p-4">
                             <EasyTable noPage overflow mainData={failedQc} columns={failedColumns} />
                         </div>

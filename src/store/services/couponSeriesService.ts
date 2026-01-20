@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import RtkQueryService from '@/services/RtkQueryService'
-import { CouponGenerateBodyType, CouponSeriesBodyType, CouponSeriesTypes } from '../types/couponSeries.types'
+import { CouponGenerateBodyType, CouponSeriesTypes } from '../types/couponSeries.types'
+
+type updateBody = {
+    id: string | number
+    data: Record<string, number | any | string>
+}
 
 export const couponSeriesService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
@@ -37,25 +42,21 @@ export const couponSeriesService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        addCouponSeries: builder.mutation<{ success: string }, CouponSeriesBodyType>({
+        addCouponSeries: builder.mutation<{ success: string }, Record<string, string | number | any>>({
             query: (params) => {
                 return {
                     url: `/couponseries`,
                     method: 'POST',
-                    body: {
-                        ...params,
-                    },
+                    body: params,
                 }
             },
         }),
-        editCouponSeries: builder.mutation<{ success: string }, CouponSeriesBodyType & { id?: string }>({
-            query: (params) => {
+        editCouponSeries: builder.mutation<{ success: string }, updateBody>({
+            query: ({ id, data }) => {
                 return {
-                    url: `/couponseries/${params.id}`,
+                    url: `/couponseries/${id}`,
                     method: 'PATCH',
-                    body: {
-                        ...params,
-                    },
+                    body: data,
                 }
             },
         }),

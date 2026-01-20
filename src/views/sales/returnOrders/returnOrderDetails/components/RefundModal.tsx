@@ -1,5 +1,6 @@
 import React from 'react'
 import { Modal } from 'antd'
+import { EReturnOrderStatus } from '../../returnOrderUtils/ReturnOrderUtils'
 
 const modalStyles = {
     title: '',
@@ -42,7 +43,7 @@ export const PickedUpGenerateModal: React.FC<props0> = ({ isModalOpen, handlePic
     return (
         <Modal
             {...modalStyles}
-            okText={status === 'PICKUP_GENERATE' ? 'Pick_up Generate' : 'OK'}
+            okText={status === EReturnOrderStatus.pickup_generate ? 'Pick_up Generate' : 'OK'}
             cancelText={status === 'cancel' ? 'Cancel' : 'Close'}
             okButtonProps={okButtonStyles}
             cancelButtonProps={cancelButtonStyles}
@@ -129,7 +130,7 @@ export const InTransitModal: React.FC<props3> = ({ isModalOpen, handleInTransit,
     return (
         <Modal
             {...modalStyles}
-            okText={status === 'IN_TRANSIT' || status === 'SHIPPED' ? 'Transit' : 'SHIP'}
+            okText={status === EReturnOrderStatus.in_transit || status === 'SHIPPED' ? 'Transit' : 'SHIP'}
             cancelText={status === 'cancel' ? 'Cancel' : 'Close'}
             okButtonProps={okButtonStyles}
             cancelButtonProps={cancelButtonStyles}

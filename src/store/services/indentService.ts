@@ -17,6 +17,7 @@ export const indentService = RtkQueryService.injectEndpoints({
                 if (params.from) parameters.from = params.from
                 if (params.to) parameters.to = params.to
                 if (params.status) parameters.status = params.status
+                if (params.document_id) parameters.document_id = params.document_id
                 return {
                     url: `indent`,
                     method: 'GET',

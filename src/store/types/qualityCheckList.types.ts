@@ -37,4 +37,12 @@ export type GetQualityCheckListResponse = {
         count: number
         results: GetQualityCheckListResultTypes[]
     }
+    summary?: {
+        total_qc_failed: number
+        total_qc_passed: number
+        total_quantity_received: number
+        total_quantity_sent: number
+        total_skus: number
+        total_synced_quantity: number
+    }
 }

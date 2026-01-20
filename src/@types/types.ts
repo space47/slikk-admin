@@ -8,6 +8,7 @@ export type AuthState = {
     mobile: string
     signup_done: boolean
     name: string
+    channel: string
 }
 
 export type ProfileState = {
@@ -66,20 +67,12 @@ const logoutSuccess = createAction<string>('logoutSuccess')
 const logoutFailure = createAction<string>('logoutFailure')
 
 const getAddressListRequest = 'getAddressListRequest'
-const getAddressListSuccess = createAction<AddreesStateList>(
-    'getAddressListSuccess'
-)
-const getAddressListFailure = createAction<AddreesStateList>(
-    'getAddressListFailure'
-)
+const getAddressListSuccess = createAction<AddreesStateList>('getAddressListSuccess')
+const getAddressListFailure = createAction<AddreesStateList>('getAddressListFailure')
 
 const deleteAddressRequest = 'deleteAddressRequest'
-const deleteAddressSuccess = createAction<AddreesStateList>(
-    'deleteAddressSuccess'
-)
-const deleteAddressFailure = createAction<AddreesStateList>(
-    'deleteAddressFailure'
-)
+const deleteAddressSuccess = createAction<AddreesStateList>('deleteAddressSuccess')
+const deleteAddressFailure = createAction<AddreesStateList>('deleteAddressFailure')
 
 const saveWishlistRequest = 'saveWishlistRequest'
 const saveWishlistSuccess = createAction<string>('saveWishlistSuccess')
@@ -113,5 +106,5 @@ export {
     saveProfileFailure,
     saveWishlistRequest,
     saveWishlistSuccess,
-    saveWishlistFailure
+    saveWishlistFailure,
 }

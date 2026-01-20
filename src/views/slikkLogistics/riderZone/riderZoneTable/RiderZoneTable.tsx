@@ -17,6 +17,7 @@ import { Field, Form, Formik } from 'formik'
 import FormButton from '@/components/ui/Button/FormButton'
 import { AddZoneArray, Point } from '../riderZoneUtils/riderZoneCommon'
 import ZoneMap from '../riderZoneUtils/ZoneMap'
+import CommonAccordion from '@/common/CommonAccordion'
 
 const RiderZoneTable = () => {
     const dispatch = useAppDispatch()
@@ -34,6 +35,7 @@ const RiderZoneTable = () => {
     })
     const [addZones, setAddZones] = useState(false)
     const [addZone, addResponse] = riderZoneService.useCreateZoneMutation()
+    const [seeZoneMap, setSeeZoneMap] = useState(false)
 
     useEffect(() => {
         if (isSuccess) {
@@ -124,6 +126,24 @@ const RiderZoneTable = () => {
 
                     <div className="flex items-center gap-3">
                         <Button
+                            variant={seeZoneMap ? 'reject' : 'accept'}
+                            size="sm"
+                            type="button"
+                            onClick={() => {
+                                setSeeZoneMap((prev) => !prev)
+                                if (!seeZoneMap) {
+                                    setTimeout(() => {
+                                        window.scrollTo({
+                                            top: document.documentElement.scrollHeight,
+                                            behavior: 'smooth',
+                                        })
+                                    }, 0)
+                                }
+                            }}
+                        >
+                            {seeZoneMap ? 'Close' : 'Check Return Zone'}
+                        </Button>
+                        <Button
                             variant={addZones ? 'reject' : 'blue'}
                             type="button"
                             size="sm"
@@ -160,7 +180,7 @@ const RiderZoneTable = () => {
                                 </FormContainer>
 
                                 <div>
-                                    <ZoneMap zones={serviceData} polygonPoints={polygonPoints} setPolygonPoints={setPolygonPoints} />
+                                    <ZoneMap isAdd zones={serviceData} polygonPoints={polygonPoints} setPolygonPoints={setPolygonPoints} />
                                 </div>
                             </Form>
                         )}
@@ -193,7 +213,7 @@ const RiderZoneTable = () => {
                     ) : (
                         <>
                             <div className="overflow-hidden">
-                                <EasyTable mainData={serviceData} columns={columns} page={page} pageSize={pageSize} />
+                                <EasyTable overflow mainData={serviceData} columns={columns} page={page} pageSize={pageSize} />
                             </div>
 
                             {count > pageSize && (
@@ -212,8 +232,6 @@ const RiderZoneTable = () => {
                     )}
                 </div>
             </Card>
-
-            {/* Quick Stats Footer */}
             {!isTableEmpty && !isLoading && (
                 <div className="flex flex-wrap items-center justify-between text-sm text-gray-500 pt-4 border-t border-gray-100">
                     <div className="text-xs">
@@ -221,6 +239,16 @@ const RiderZoneTable = () => {
                     </div>
                 </div>
             )}
+
+            <div>
+                {seeZoneMap && (
+                    <>
+                        <CommonAccordion header={<h4>Zone Details</h4>}>
+                            <ZoneMap polygonPoints={polygonPoints} zones={serviceData} setPolygonPoints={setPolygonPoints} />
+                        </CommonAccordion>
+                    </>
+                )}
+            </div>
             {isDelete && (
                 <DialogConfirm
                     IsDelete

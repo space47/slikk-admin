@@ -10,14 +10,20 @@ import { CouponSeriesInitialTypes, setCouponSeriesActive } from '@/store/slices/
 import { useAppDispatch, useAppSelector } from '@/store'
 import { handleimage } from '@/common/handleImage'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { notification } from 'antd'
+import { notification, Spin } from 'antd'
+import LoadingSpinner from '@/common/LoadingSpinner'
+import FormButton from '@/components/ui/Button/FormButton'
 
 const CouponSeriesEdit = () => {
     const { id } = useParams()
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
     const { couponSeriesActive } = useAppSelector<CouponSeriesInitialTypes>((state) => state.couponSeries)
-    const { data: couponSeriesData, isSuccess } = couponSeriesService.useCouponSeriesQuery({ id: id }, { refetchOnMountOrArgChange: true })
+    const {
+        data: couponSeriesData,
+        isSuccess,
+        isLoading,
+    } = couponSeriesService.useCouponSeriesQuery({ id: id }, { refetchOnMountOrArgChange: true })
     const [editSeriesData, editSeriesDataResponse] = couponSeriesService.useEditCouponSeriesMutation()
     const [filterId, setFilterId] = useState<any>()
     const [excludeFilterId, setExcludeFilterId] = useState<any>()
@@ -72,6 +78,7 @@ const CouponSeriesEdit = () => {
     console.log('filters are', excludeFilterId)
 
     const handleSubmit = async (values: any) => {
+        console.log('values are', values)
         let imageUpload = values?.image
         if (values?.imageArray && values?.imageArray?.length > 0) {
             imageUpload = await handleimage('product', values?.imageArray)
@@ -116,14 +123,19 @@ const CouponSeriesEdit = () => {
                     terms_and_conditions: values?.extra_attributes?.terms_and_conditions,
                     free_delivery: values?.extra_attributes?.free_delivery || false,
                     min_filters_products_amount: values?.extra_attributes?.min_filters_products_amount,
+                    max_order_count: values?.extra_attributes?.max_order_count ?? '',
+                    min_order_count: values?.extra_attributes?.min_order_count ?? '',
+                    user_filters: {
+                        registration_date: {
+                            from_date: values?.extra_attributes?.user_filters?.registration_date?.from_date,
+                            to_date: values?.extra_attributes?.user_filters?.registration_date?.to_date,
+                        },
+                    },
                 },
             }).filter(([key, value]) => value !== undefined && value !== null && value !== ''),
         )
         try {
-            editSeriesData({
-                id: id?.toString(),
-                ...body,
-            }).unwrap()
+            editSeriesData({ id: id?.toString() as string, data: body })
         } catch (error: any) {
             notification.error({
                 message: error?.response?.data?.message || 'Failed to update',
@@ -133,39 +145,37 @@ const CouponSeriesEdit = () => {
     }
 
     return (
-        <div>
-            <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
-                {({ values, setFieldValue, resetForm }) => (
-                    <Form className="w-full shadow-xl p-3 rounded-xl ">
-                        <div className="flex gap-6 text-xl font-bold mb-10 items-center ">
-                            <span>Update Coupon Series</span>
-                            <span
-                                className="cursor-pointer bg-red-800 text-white p-2 rounded-xl hover:bg-red-700"
-                                onClick={() => navigate(`/app/appSettings/couponsGenerate/generateCoupons`)}
-                            >
-                                Add Coupons
-                            </span>
-                        </div>
-                        <FormContainer className="">
-                            <CouponSeriesForm
-                                setFilterId={setFilterId}
-                                values={values}
-                                setFieldValue={setFieldValue}
-                                resetForm={resetForm}
-                                excludeFilterValue={initialValue?.extra_attributes?.filters?.filter_id_exclude}
-                                setExcludeFilterId={setExcludeFilterId}
-                                filterValue={initialValue?.extra_attributes?.filters?.filter_id}
-                            />
-                        </FormContainer>
-                        <FormContainer>
-                            <Button variant="solid" type="submit" className="bg-blue-500 text-white">
-                                Submit
-                            </Button>
-                        </FormContainer>
-                    </Form>
-                )}
-            </Formik>
-        </div>
+        <Spin spinning={isLoading}>
+            <div>
+                <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
+                    {({ values, setFieldValue, resetForm }) => (
+                        <Form className="w-full shadow-xl p-3 rounded-xl ">
+                            <div className="flex gap-6 text-xl font-bold mb-10 items-center ">
+                                <span>Update Coupon Series</span>
+                                <span
+                                    className="cursor-pointer bg-red-800 text-white p-2 rounded-xl hover:bg-red-700"
+                                    onClick={() => navigate(`/app/appSettings/couponsGenerate/generateCoupons`)}
+                                >
+                                    Add Coupons
+                                </span>
+                            </div>
+                            <FormContainer className="">
+                                <CouponSeriesForm
+                                    setFilterId={setFilterId}
+                                    values={values}
+                                    setFieldValue={setFieldValue}
+                                    resetForm={resetForm}
+                                    excludeFilterValue={initialValue?.extra_attributes?.filters?.filter_id_exclude}
+                                    setExcludeFilterId={setExcludeFilterId}
+                                    filterValue={initialValue?.extra_attributes?.filters?.filter_id}
+                                />
+                            </FormContainer>
+                            <FormButton value="Update" isSpinning={editSeriesDataResponse.isLoading} />
+                        </Form>
+                    )}
+                </Formik>
+            </div>
+        </Spin>
     )
 }
 

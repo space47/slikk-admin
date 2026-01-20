@@ -87,6 +87,7 @@ export const ridersService = RtkQueryService.injectEndpoints({
                 rider_agency?: string
                 shift_start_time?: string
                 shift_end_time?: string
+                zone_id?: string
             }
         >({
             query: (params) => {
@@ -105,7 +106,7 @@ export const ridersService = RtkQueryService.injectEndpoints({
                 if (params.rider_agency) parameters.rider_agency = params.rider_agency
                 if (params.shift_end_time) parameters.shift_end_time = params.shift_end_time
                 if (params.shift_start_time) parameters.shift_start_time = params.shift_start_time
-
+                if (params.zone_id) parameters.zone_id = params.zone_id
                 return {
                     url: `/logistic/riders`,
                     method: 'GET',
@@ -245,12 +246,13 @@ export const ridersService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        riderPerformanceDownload: builder.query<{ status: string; message: string }, { from?: string; to?: string }>({
+        riderPerformanceDownload: builder.query<{ status: string; message: string }, { from?: string; to?: string; report_type?: string }>({
             query: (params) => {
                 const parameters: Record<string, string | string[]> = {}
 
                 if (params.from) parameters.from = params.from
                 if (params.to) parameters.to = params.to
+                if (params.report_type) parameters.report_type = params.report_type
 
                 return {
                     url: `rider/performance/report`,

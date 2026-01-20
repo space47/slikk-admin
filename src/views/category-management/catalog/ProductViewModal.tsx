@@ -1,9 +1,18 @@
-import React from 'react'
-import { ProductTypes } from './ProductCommon'
-import { Dialog } from '@/components/ui'
+import React, { useMemo, useState } from 'react'
+import { EProductQr, ProductTypes } from './ProductCommon'
+import { Dialog, Select } from '@/components/ui'
 import QRCode from 'react-qr-code'
 // import { BsFillPrinterFill } from 'react-icons/bs'
 
+type QrKey = EProductQr.SKU | EProductQr.BARCODE | EProductQr.SKID
+
+const QrOptions = [
+    { label: 'SKU', value: EProductQr.SKU },
+    { label: 'BARCODE', value: EProductQr.BARCODE },
+    { label: 'SKID', value: EProductQr.SKID },
+]
+
+const getFirstImage = (images?: string): string => images?.split(',')?.[0] || ''
 interface props {
     isOpen: boolean
     setIsOpen: (x: boolean) => void
@@ -11,22 +20,25 @@ interface props {
 }
 
 const ProductViewModal = ({ isOpen, row, setIsOpen }: props) => {
-    const ProductData = [
-        { name: 'Name', value: row?.name },
-        { name: 'Barcode', value: row?.barcode },
-        { name: 'Brand', value: row?.brand },
-        { name: 'Price', value: `₹${row?.mrp}` },
-        { name: 'Stock', value: row?.inventory_count },
-        { name: 'Size', value: row?.size },
-        { name: 'Color', value: row?.color },
-        { name: 'Size', value: row?.size },
-    ]
+    const [qrValues, setQrValues] = useState<QrKey>(EProductQr.SKU)
 
-    const imageUrl = row?.image?.split(',')[0] ?? row.image?.split(',')[0]
-    const thumbnail = row?.thumbnail?.split(',')[0] ?? row.image?.split(',')[0]
+    const ProductData = useMemo(() => {
+        return [
+            { name: 'Name', value: row?.name },
+            { name: 'Barcode', value: row?.barcode },
+            { name: 'Brand', value: row?.brand },
+            { name: 'Price', value: `₹${row?.mrp}` },
+            { name: 'Stock', value: row?.inventory_count },
+            { name: 'Size', value: row?.size },
+            { name: 'Color', value: row?.color },
+        ]
+    }, [row])
+
+    const imageUrl = getFirstImage(row?.image)
+    const thumbnail = getFirstImage(row?.thumbnail)
 
     return (
-        <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)} height={700}>
+        <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)} height={700} width={800}>
             <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-xl max-h-[650px] xl:h-[600px] w-full max-w-2xl mx-auto overflow-scroll scrollbar-hide">
                 <h1 className="text-2xl font-bold text-center text-indigo-600 dark:text-indigo-400 mb-5">Product Overview</h1>
 
@@ -35,13 +47,20 @@ const ProductViewModal = ({ isOpen, row, setIsOpen }: props) => {
                     <div className="flex flex-col items-center gap-4 w-full xl:w-1/2">
                         <img src={thumbnail || imageUrl} alt="Product" className="w-52 h-52 object-cover rounded-xl border shadow-md" />
                         <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-xl shadow-sm">
-                            <QRCode value={row?.sku ?? ''} size={100} />
+                            <QRCode value={row?.[qrValues] ?? ''} size={100} />
                         </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-300 font-medium">sku: {row?.sku}</p>
+                        <div className="">
+                            <Select
+                                options={QrOptions}
+                                defaultValue={QrOptions[0]}
+                                getOptionLabel={(option) => option.label}
+                                getOptionValue={(option) => option.value}
+                                onChange={(val) => setQrValues(val?.value as EProductQr)}
+                            />
+                        </div>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 font-medium">{row?.[qrValues]}</p>
                     </div>
-
-                    {/* Product Details */}
-                    <div className="flex flex-col justify-between w-full xl:w-1/2 gap-3 text-gray-800 dark:text-gray-200">
+                    <div className="flex flex-col justify-between w-full xl:w-1/2 gap-1 text-gray-800 dark:text-gray-200">
                         {ProductData?.map((item, key) => (
                             <div key={key}>
                                 <p>
@@ -49,12 +68,6 @@ const ProductViewModal = ({ isOpen, row, setIsOpen }: props) => {
                                 </p>
                             </div>
                         ))}
-                        {/* <p className="flex gap-2">
-                            <span className="font-semibold">Print:</span>{' '}
-                            <span>
-                                <BsFillPrinterFill className="text-xl text-blue-500 cursor-pointer" />
-                            </span>
-                        </p> */}
                     </div>
                 </div>
             </div>

@@ -1,32 +1,34 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Input from '@/components/ui/Input'
 import type { ColumnDef } from '@tanstack/react-table'
 import EasyTable from '@/common/EasyTable'
 import { grn_quality_check } from './QCTableCommon'
 import { useParams } from 'react-router-dom'
-import { useFetchApi } from '@/commonHooks/useFetchApi'
-import NotFoundData from '@/views/pages/NotFound/Notfound'
 import { useDebounceInput } from '@/commonHooks/useDebounceInput'
 import PageCommon from '@/common/PageCommon'
+import { Spinner } from '@/components/ui'
+import { GRNItemDetails } from '@/store/types/inward.types'
+import { inwardService } from '@/store/services/inwardService'
+import NotFoundData from '@/views/pages/NotFound/Notfound'
 
 const QCtable = () => {
-    const { document_number } = useParams()
+    const { grn_id } = useParams()
+    const [grnItems, setGrnItems] = useState<GRNItemDetails[]>([])
+    const [count, setCount] = useState(0)
     const [globalFilter, setGlobalFilter] = useState('')
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const { debounceFilter } = useDebounceInput({ globalFilter, delay: 500 })
 
-    const query = useMemo(() => {
-        let filterData = ''
-        if (debounceFilter) {
-            filterData = `&sku=${debounceFilter}`
+    const grnItemsApiCall = inwardService.useGdnItemsDetailsQuery({ page, pageSize, grn_id: grn_id, sku: debounceFilter })
+
+    useEffect(() => {
+        if (grnItemsApiCall.isSuccess) {
+            setGrnItems(grnItemsApiCall?.data?.data?.results)
+            setCount(grnItemsApiCall?.data?.data?.count)
         }
-
-        return `goods/qualitycheck?grn_number=${document_number}&p=${page}&page_size=${pageSize}${filterData}`
-    }, [document_number, page, pageSize, debounceFilter])
-
-    const { data, totalData } = useFetchApi<grn_quality_check>({ url: query, initialData: [] })
+    }, [grnItemsApiCall.isSuccess, grnItemsApiCall.data])
 
     const columns = useMemo<ColumnDef<grn_quality_check>[]>(
         () => [
@@ -123,30 +125,32 @@ const QCtable = () => {
         [],
     )
 
+    if (grnItemsApiCall.isError || !grnItemsApiCall.data?.data.results) {
+        return <NotFoundData />
+    }
+
     return (
         <>
             <div className="w-1/2 p-2">
                 <Input
-                    value={globalFilter ?? ''}
+                    value={globalFilter}
                     type="search"
                     className="p-2 font-lg rounded-md shadow border border-block"
                     placeholder="Search all columns..."
-                    onChange={(value) => setGlobalFilter(String(value))}
+                    onChange={(e) => setGlobalFilter(e.target.value)}
                 />
             </div>
 
-            {data?.length ? (
-                <>
-                    <div className="mb-3">
-                        <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
-                    </div>
-                    <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={totalData} />
-                </>
-            ) : (
-                <>
-                    <NotFoundData />
-                </>
+            {(grnItemsApiCall.isLoading || grnItemsApiCall.isFetching) && (
+                <div className="flex items-center justify-center mb-4">
+                    <Spinner size={30} />
+                </div>
             )}
+
+            <div className="mb-3">
+                <EasyTable overflow mainData={grnItems} columns={columns} page={page} pageSize={pageSize} />
+            </div>
+            <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={count} />
         </>
     )
 }

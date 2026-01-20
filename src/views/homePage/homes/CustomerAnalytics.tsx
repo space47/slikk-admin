@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { OrderSummaryTYPE } from '@/store/types/orderUserSummary.types'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { fetchUserSummary } from '@/store/slices/orderUserSummary/UserSummary.slice'
@@ -15,8 +15,10 @@ import NotFoundData from '@/views/pages/NotFound/Notfound'
 import CartItems from './componentsHomes/CartItems'
 import { AxiosError } from 'axios'
 import { errorMessage, successMessage } from '@/utils/responseMessages'
+import appConfig from '@/configs/app.config'
 
 const CustomerAnalytics = () => {
+    const navigate = useNavigate()
     const [blockUser, setBlockUser] = useState(false)
     const [unBlockUser, setUnBlockUser] = useState(false)
     const dispatch = useAppDispatch()
@@ -31,16 +33,17 @@ const CustomerAnalytics = () => {
     }, [dispatch])
 
     const handleBlockUser = async (status: string) => {
-        const body = { mobile: mobile }
+        const body = { mobile: mobile, action: status }
         try {
-            const response = await axioisInstance.post(`/merchant/user/${status}`, body)
+            const response = await axioisInstance.post(`/merchant/user/block`, body)
             successMessage(response || 'Successfully blacklisted user')
+            navigate(appConfig.unAuthenticatedEntryPath)
         } catch (error) {
             if (error instanceof AxiosError) {
                 errorMessage(error)
             }
         } finally {
-            setBlockUser(false)
+            setUnBlockUser(false)
         }
     }
     if (mobile == 'null') {

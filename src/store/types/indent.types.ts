@@ -10,10 +10,25 @@ export interface IndentParamsTypes {
     store_id?: string | number
     source_type?: string
     status: string
+    document_id?: string
 }
 
 export interface IndentResultType {
-    id: string
+    id: number
+    intent_number: string
+    status: string
+    source_store: number
+    target_store: number
+    create_date: string
+    update_date: string
+    notes: string | null
+    document_id: number | null
+    gdn_number: string | null
+    grn_number: string | null
+    shipment_id: string | null
+    source_company: number | null
+    gdn_id: number
+    grn_id: number
 }
 
 export type IndentResponseTypes = ApiResponse<IndentResultType>
@@ -67,4 +82,23 @@ export interface IndentItemsResponseType {
         count: number
         results: IndentItem[]
     }
+}
+
+export type IndentItemType = {
+    intent_note: number
+    sku: string
+    company: number
+    quantity_required: number
+    quantity_accepted: number
+    synced_to_inventory: boolean
+    synced_quantity: number
+    notes: string
+    is_picked: boolean
+    picker: {
+        first_name: string
+        last_name: string
+        mobile?: string
+    }
+    box_mapping: any
+    locations: string
 }

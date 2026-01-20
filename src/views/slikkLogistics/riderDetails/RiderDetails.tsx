@@ -35,6 +35,7 @@ import PageCommon from '@/common/PageCommon'
 import { useDebounceInput } from '@/commonHooks/useDebounceInput'
 import { RiderDetailsType } from '@/store/types/riderAddTypes'
 import DialogConfirm from '@/common/DialogConfirm'
+import { DownloadOptions } from '../cashCollection/cashCollectionCommon'
 
 const RiderDetails = () => {
     const navigate = useNavigate()
@@ -64,6 +65,8 @@ const RiderDetails = () => {
     const { debounceFilter } = useDebounceInput({ globalFilter: globalFilter as string, delay: DEBOUNCE_DELAY })
     const [deleteRider, deleteResponse] = ridersService.useRiderDeleteMutation()
     const [performanceDownload, performanceResponse] = ridersService.useLazyRiderPerformanceDownloadQuery()
+    const [zoneId, setZoneId] = useState<number[]>([])
+    const [selectedOption, setSelectedOption] = useState('')
     const {
         data: riders,
         isSuccess,
@@ -86,6 +89,7 @@ const RiderDetails = () => {
             rider_agency: currentAgency || '',
             shift_end_time: shiftEnd || '',
             shift_start_time: shiftStart || '',
+            zone_id: zoneId?.join(','),
         },
         { refetchOnMountOrArgChange: true },
     )
@@ -137,6 +141,7 @@ const RiderDetails = () => {
             notification.success({
                 message: performanceResponse.data?.message || 'File is sent to your registered mail',
             })
+            setSelectedOption('')
         }
 
         if (performanceResponse.isError) {
@@ -223,9 +228,15 @@ const RiderDetails = () => {
         deleteRider({ mobile: currentRow?.profile?.mobile as number })
     }
 
-    const handlePerformance = () => {
+    const handleSelect = (val: string) => {
+        setSelectedOption(val)
+        handlePerformance(val)
+    }
+
+    const handlePerformance = (val: string) => {
         performanceDownload({
             from,
+            report_type: val === 'order_level' ? `order_level` : '',
             to: moment(to).add(1, 'days').format('YYYY-MM-DD'),
             _forceReset: Date.now(),
         } as any)
@@ -332,6 +343,12 @@ const RiderDetails = () => {
                 >
                     Rider Attendance
                 </button>
+                <button
+                    className="pb-2 border-b-2 border-transparent text-gray-600 hover:text-green-600 hover:border-green-400 text-xl"
+                    onClick={() => navigate('/app/riderAgency')}
+                >
+                    Rider Agency
+                </button>
             </div>
 
             <div className="flex flex-col gap-10">
@@ -365,9 +382,22 @@ const RiderDetails = () => {
                             </a>
                         </div>
 
-                        <Button variant="twoTone" color="gray" icon={<FaDownload />} className="xl:mt-8" onClick={handlePerformance}>
-                            Rider Performance Report
-                        </Button>
+                        <div className={'border w-auto xl:mt-8 rounded-md h-auto font-bold bg-black text-white flex justify-center'}>
+                            <Dropdown
+                                className="text-xl text-white bg-white font-bold border-2 border-blue-600"
+                                title={selectedOption || `Download Performance Report`}
+                                onSelect={(value) => handleSelect(value.toString())}
+                            >
+                                {DownloadOptions.map((item) => (
+                                    <DropdownItem key={item.value} eventKey={item.value}>
+                                        <span className="flex items-center gap-1">
+                                            <span> {performanceResponse?.isLoading && <Spinner size={30} />}</span>
+                                            <span>{item.label}</span>
+                                        </span>
+                                    </DropdownItem>
+                                ))}
+                            </Dropdown>
+                        </div>
                         <UltimateDatePicker
                             dispatch={dispatch}
                             from={from}
@@ -442,6 +472,8 @@ const RiderDetails = () => {
                     shiftStart={shiftStart}
                     riderType={riderType}
                     setRiderType={setRiderType}
+                    setZoneId={setZoneId}
+                    zoneId={zoneId}
                 />
             )}
 

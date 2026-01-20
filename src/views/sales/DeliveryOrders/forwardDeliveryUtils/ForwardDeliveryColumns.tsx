@@ -128,6 +128,62 @@ export const ForwardDeliveryColumns = (
                 accessorKey: 'logistic.runner_phone_number',
             },
             {
+                header: 'ETA DropOff Time',
+                accessorKey: 'logistic.eta_dropoff_time',
+                cell: ({ row }: any) => (
+                    <div>
+                        {row?.original?.logistic?.eta_dropoff_time
+                            ? moment(row?.original?.logistic?.eta_dropoff_time).format('YYYY-MM-DD hh:mm:ss a')
+                            : 'N/A'}
+                    </div>
+                ),
+            },
+
+            {
+                header: 'Total Time Taken',
+                accessorKey: 'logistic.total_time',
+                cell: ({ row }: any) => {
+                    return (
+                        <>
+                            {row?.original?.logistic?.total_time
+                                ? `${Number(row?.original?.logistic?.total_time)?.toFixed(2)} mins`
+                                : 'N/A'}
+                        </>
+                    )
+                },
+            },
+            {
+                header: 'Delay Time',
+                accessorKey: 'logistic.is_delayed',
+                cell: ({ row }: any) => {
+                    const timeTaken =
+                        typeof row?.original?.logistic?.total_time === 'string'
+                            ? Number(row?.original?.logistic?.total_time)
+                            : row?.original?.logistic?.total_time || 0
+                    const timeEstimate =
+                        typeof row?.original?.eta_duration === 'string'
+                            ? Number(row?.original?.eta_duration)
+                            : row?.original?.eta_duration || 0
+
+                    const difference = timeTaken - timeEstimate
+
+                    return <>{difference >= 0 ? `${difference.toFixed(2)} mins` : '0 mins'}</>
+                },
+            },
+
+            {
+                header: 'Estimate Delivery Time',
+                accessorKey: 'eta_duration',
+                cell: ({ row }: any) => <div>{row?.original?.eta_duration ? `${row?.original?.eta_duration} mins` : 'N/A'}</div>,
+            },
+            {
+                header: 'Delay Status',
+                accessorKey: 'logistic.is_delayed',
+                cell: ({ row }: any) => {
+                    return <>{row?.original?.logistic?.is_delayed ? 'delayed' : 'On Time'}</>
+                },
+            },
+            {
                 header: 'Payment Mode',
                 accessorKey: 'payment.mode',
             },

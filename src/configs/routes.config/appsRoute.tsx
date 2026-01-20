@@ -39,7 +39,7 @@ const appsRoute: Routes = [
     {
         key: 'appsCategory.productNew',
         path: `${APP_PREFIX_PATH}/category/division-new`,
-        component: lazy(() => import('@/views/category-management/division/DivisionNew')),
+        component: lazy(() => import('@/views/category-management/division/divisiontable/DivisionNew')),
         authority: [ADMIN, USER],
     },
     {
@@ -522,7 +522,7 @@ const appsRoute: Routes = [
     },
     {
         key: 'appsInventoryManagement.inwardsDetails',
-        path: `${APP_PREFIX_PATH}/goods/received/:company/:document_number`,
+        path: `${APP_PREFIX_PATH}/goods/received/:company/:grn_id`,
         component: lazy(() => import('@/views/inventory-management/inward/inwardDetails')),
         authority: [ADMIN, USER],
     },
@@ -541,7 +541,7 @@ const appsRoute: Routes = [
     },
     {
         key: 'appsInventoryManagement.gdn',
-        path: `${APP_PREFIX_PATH}/goods/gdnDetails/:document_number/:id`,
+        path: `${APP_PREFIX_PATH}/goods/gdnDetails/:gdn_id/:id`,
         component: lazy(() => import('@/views/inventory-management/gdn/gdnTable/components/GdnDetails')),
         authority: [ADMIN, USER],
     },
@@ -782,57 +782,6 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
-        key: 'appsCrm.dashboard',
-        path: `${APP_PREFIX_PATH}/crm/dashboard`,
-        component: lazy(() => import('@/views/crm/CrmDashboard')),
-        authority: [ADMIN, USER],
-    },
-    {
-        key: 'appsCrm.calendar',
-        path: `${APP_PREFIX_PATH}/crm/calendar`,
-        component: lazy(() => import('@/views/crm/Calendar')),
-        authority: [ADMIN, USER],
-    },
-    {
-        key: 'appsCrm.customers',
-        path: `${APP_PREFIX_PATH}/crm/customers`,
-        component: lazy(() => import('@/views/crm/Customers')),
-        authority: [ADMIN, USER],
-        meta: {
-            header: 'Customers',
-        },
-    },
-    {
-        key: 'appsCrm.customerDetails',
-        path: `${APP_PREFIX_PATH}/crm/customer-details`,
-        component: lazy(() => import('@/views/crm/CustomerDetail')),
-        authority: [ADMIN, USER],
-        meta: {
-            header: 'Customer Details',
-            headerContainer: true,
-        },
-    },
-    {
-        key: 'appsCrm.mail',
-        path: `${APP_PREFIX_PATH}/crm/mail`,
-        component: lazy(() => import('@/views/crm/Mail')),
-        authority: [ADMIN, USER],
-        meta: {
-            pageContainerType: 'gutterless',
-            footer: false,
-        },
-    },
-    {
-        key: 'appsCrm.mail',
-        path: `${APP_PREFIX_PATH}/crm/mail/:category`,
-        component: lazy(() => import('@/views/crm/Mail')),
-        authority: [ADMIN, USER],
-        meta: {
-            pageContainerType: 'gutterless',
-            footer: false,
-        },
-    },
-    {
         key: 'appsSales.dashboard',
         path: `${APP_PREFIX_PATH}/sales/dashboard`,
         component: lazy(() => import('@/views/sales/SalesDashboard')),
@@ -869,39 +818,6 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
 
-    {
-        key: 'appsCrypto.dashboard',
-        path: `${APP_PREFIX_PATH}/crypto/dashboard`,
-        component: lazy(() => import('@/views/crypto/CryptoDashboard')),
-        authority: [ADMIN, USER],
-    },
-    {
-        key: 'appsCrypto.portfolio',
-        path: `${APP_PREFIX_PATH}/crypto/portfolio`,
-        component: lazy(() => import('@/views/crypto/Portfolio')),
-        authority: [ADMIN, USER],
-        meta: {
-            header: 'Portfolio',
-        },
-    },
-    {
-        key: 'appsCrypto.market',
-        path: `${APP_PREFIX_PATH}/crypto/market`,
-        component: lazy(() => import('@/views/crypto/Market')),
-        authority: [ADMIN, USER],
-        meta: {
-            header: 'Market',
-        },
-    },
-    {
-        key: 'appsCrypto.wallets',
-        path: `${APP_PREFIX_PATH}/crypto/wallets`,
-        component: lazy(() => import('@/views/crypto/Wallets')),
-        authority: [ADMIN, USER],
-        meta: {
-            header: 'Wallets',
-        },
-    },
     {
         key: 'appsknowledgeBase.helpCenter',
         path: `${APP_PREFIX_PATH}/knowledge-base/help-center`,
@@ -1346,6 +1262,12 @@ const appsRoute: Routes = [
     },
 
     // Tracking
+    {
+        key: 'appstryAndBuy.riderAgency',
+        path: `${APP_PREFIX_PATH}/riderAgency`,
+        component: lazy(() => import('@/views/slikkLogistics/RiderAgency/RiderAgencyTable/RiderAgencyTable')),
+        authority: [ADMIN, USER],
+    },
     {
         key: 'appstryAndBuy.riderZone',
         path: `${APP_PREFIX_PATH}/riderZone`,

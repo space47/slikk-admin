@@ -3,8 +3,8 @@ import React from 'react'
 import moment from 'moment'
 import { IoMdRefresh } from 'react-icons/io'
 import { Tooltip } from '@/components/ui'
-import { Order } from './commontypes'
 import { notification } from 'antd'
+import { Order } from '@/store/types/newOrderTypes'
 
 interface Props {
     orders: Order[]
@@ -38,7 +38,7 @@ const OrderlistMobile: React.FC<Props> = ({ orders, handleNumberClick, handleSyn
                                 className={`font-semibold cursor-pointer ${
                                     item.user_order_count > 1 ? 'text-green-600 hover:text-green-500' : 'text-gray-600'
                                 }`}
-                                onClick={() => handleNumberClick(item.user.mobile as number)}
+                                onClick={() => handleNumberClick(item.user.mobile as any)}
                             >
                                 {item.user.mobile} ({item.user_order_count})
                             </span>
@@ -50,7 +50,7 @@ const OrderlistMobile: React.FC<Props> = ({ orders, handleNumberClick, handleSyn
                         value: (
                             <div className="flex items-center gap-2">
                                 <span>{item.delivery_type}</span>
-                                {item.distance > 0 ? (
+                                {(item.distance as number) > 0 ? (
                                     <span className="text-sm text-gray-700 dark:text-gray-300">({item.distance} km)</span>
                                 ) : (
                                     <Tooltip title="Refresh distance">
@@ -67,7 +67,7 @@ const OrderlistMobile: React.FC<Props> = ({ orders, handleNumberClick, handleSyn
                     },
                     { label: 'Payment Mode', value: item.payment?.mode || 'N/A' },
                     { label: 'Payment Status', value: item.payment?.status || 'N/A' },
-                    { label: 'Picker', value: item.picker?.name || 'Unassigned' },
+                    { label: 'Picker', value: item?.picker?.name || 'Unassigned' },
                     { label: 'Total Items', value: item.order_items_count },
                     { label: 'Order Total', value: `₹${item.amount}` },
                     { label: 'Area / PIN', value: `${item.area} / ${item.pincode}` },

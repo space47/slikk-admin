@@ -66,13 +66,10 @@ export type STORETABLE = {
 }
 
 export const StoreOption = [
-    { label: 'Mall', value: 'Mall' },
-    {
-        label: 'Independent Commercial Complex',
-        value: 'Independent Commercial Complex',
-    },
-    { label: 'Standalone', value: 'Standalone' },
-    { label: 'Warehouse', value: 'Warehouse' },
+    { label: 'Dark Store', value: 'darkstore' },
+    { label: 'Mini Store', value: 'ministore' },
+    { label: 'Local Hub', value: 'localhub' },
+    { label: 'Mother Hub', value: 'motherhub' },
 ]
 
 export const StoreStatusForAvailability = [

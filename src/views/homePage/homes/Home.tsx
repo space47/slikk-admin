@@ -221,7 +221,7 @@ const Home = () => {
                     </div>
                 </div>
 
-                <div className="xl:mr-16">
+                <div className="mr-10">
                     <UltimateDatePicker from={from} setFrom={setFrom} to={to} setTo={setTo} handleDateChange={handleDateChange} />
                 </div>
             </div>
