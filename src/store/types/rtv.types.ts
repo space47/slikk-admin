@@ -100,6 +100,7 @@ export type Rtv_Product_Params = {
     rtv_number?: string
     rtv_id?: string
     sku?: string
+    force_picked?: boolean
 }
 
 export type Rtv_status_request = {
