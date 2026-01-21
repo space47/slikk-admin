@@ -24,13 +24,15 @@ export const rtvService = RtkQueryService.injectEndpoints({
         }),
         rtvProducts: builder.query<Rtv_Products_Response, Rtv_Product_Params>({
             query: (params) => {
-                const parameters: Record<string, string | number> = {}
+                const parameters: Record<string, string | number | boolean> = {}
                 if (params.page) parameters.p = params.page
                 if (params.pageSize) parameters.page_size = params.pageSize
+                if (params.is_picked) parameters.is_picked = params.is_picked
                 if (params.is_picked) parameters.is_picked = params.is_picked
                 if (params.rtv_number) parameters.rtv_number = params.rtv_number
                 if (params.rtv_id) parameters.rtv_id = params.rtv_id
                 if (params.sku) parameters.sku = params.sku
+                if (params.force_picked) parameters.force_picked = params.force_picked
 
                 console.log('parameters', parameters)
                 return {
