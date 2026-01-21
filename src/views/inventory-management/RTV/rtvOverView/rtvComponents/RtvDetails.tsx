@@ -37,8 +37,7 @@ const RtvDetails = () => {
         rtv_id: rtv_number,
         page,
         pageSize,
-        is_picked: tabValue === 'force' ? 'true' : tabValue,
-        force_picked: tabValue === 'force',
+        is_picked: tabValue,
         sku: debounceFilter || '',
     })
     const { data: rtv, isSuccess: rtvSuccess } = rtvService.useRtvDataQuery({ rtv_id: rtv_number })
@@ -210,12 +209,6 @@ const RtvDetails = () => {
                             className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 hover:border-blue-500 border-b-2 border-transparent data-[state=active]:text-blue-600 data-[state=active]:border-blue-600 transition-colors duration-200"
                         >
                             Completed
-                        </TabNav>
-                        <TabNav
-                            value="force"
-                            className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 hover:border-blue-500 border-b-2 border-transparent data-[state=active]:text-blue-600 data-[state=active]:border-blue-600 transition-colors duration-200"
-                        >
-                            Force Picked
                         </TabNav>
                     </TabList>
                 </Tabs>
