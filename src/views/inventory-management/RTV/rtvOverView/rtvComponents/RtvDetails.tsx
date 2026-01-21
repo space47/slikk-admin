@@ -37,7 +37,8 @@ const RtvDetails = () => {
         rtv_id: rtv_number,
         page,
         pageSize,
-        is_picked: tabValue,
+        is_picked: tabValue === 'force' ? 'true' : tabValue,
+        force_picked: tabValue === 'force',
         sku: debounceFilter || '',
     })
     const { data: rtv, isSuccess: rtvSuccess } = rtvService.useRtvDataQuery({ rtv_id: rtv_number })
@@ -210,6 +211,12 @@ const RtvDetails = () => {
                         >
                             Completed
                         </TabNav>
+                        <TabNav
+                            value="force"
+                            className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 hover:border-blue-500 border-b-2 border-transparent data-[state=active]:text-blue-600 data-[state=active]:border-blue-600 transition-colors duration-200"
+                        >
+                            Force Picked
+                        </TabNav>
                     </TabList>
                 </Tabs>
             </div>
@@ -249,7 +256,7 @@ const RtvDetails = () => {
                 </div>
             </div>
             {isError && <NotFoundData />}
-            {isSuccess && (
+            {(isSuccess || isLoading) && (
                 <div className="space-y-6">
                     <div className="flex w-1/2 items-center justify-between bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-3 transition-all hover:shadow-md">
                         <Input
@@ -259,12 +266,11 @@ const RtvDetails = () => {
                             onChange={(e) => setSearchInput(e.target.value)}
                         />
                     </div>
-                    {isLoading ||
-                        (isFetching && (
-                            <div className="flex items-center justify-center py-6">
-                                <Spinner size={35} className="text-primary animate-spin" />
-                            </div>
-                        ))}
+                    {(isLoading || isFetching) && (
+                        <div className="flex items-center justify-center py-6">
+                            <Spinner size={35} className="text-primary animate-spin" />
+                        </div>
+                    )}
 
                     <div className="flex justify-between mb-4">
                         <h4 className="text-lg font-semibold text-gray-800 mb-3">RTV Items Details</h4>
