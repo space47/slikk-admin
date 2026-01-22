@@ -1,31 +1,42 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
-import { Field, Form, Formik } from 'formik'
-import { Button, Checkbox, FormContainer, FormItem, Input } from '@/components/ui'
+import { Formik, Form, Field } from 'formik'
+import { Button, Checkbox, FormContainer, FormItem, Input, Tabs } from '@/components/ui'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import { notification } from 'antd'
-import _ from 'lodash'
 import LoadingSpinner from '@/common/LoadingSpinner'
-import { handleimage } from '@/common/handleImage'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { FILTER_STATE } from '@/store/types/filters.types'
-import { ConfigInterface, EDITFIELDSARRAY } from './componentsConfigg/commonConfigTypes'
-import RenderAdd from '../storeConfig/storeConfigAdd/RenderAdd'
+import TabList from '@/components/ui/Tabs/TabList'
+import TabNav from '@/components/ui/Tabs/TabNav'
+import _ from 'lodash'
+import { handleimage } from '@/common/handleImage'
+import { EDITFIELDSARRAY } from './componentsConfigg/commonConfigTypes'
+import RenderFields from './componentsConfigg/RenderLogic'
+import ConfigJsonData from './componentsConfigg/ConfigJsonData'
+import { VscJson } from 'react-icons/vsc'
+import { CiTextAlignCenter } from 'react-icons/ci'
 
 const AddNewConfig = () => {
     const navigate = useNavigate()
-    const [showSpinner, setShowSpinner] = useState(false)
-    const [editableKeys, setEditableKeys] = useState<Record<string, string>>({})
-    const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
     const dispatch = useAppDispatch()
+    const [editableKeys, setEditableKeys] = useState<Record<string, string>>({})
+    const [showSpinner, setShowSpinner] = useState(false)
+    const [tabValue, setTabValue] = useState('field')
+
+    const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
 
     useEffect(() => {
         dispatch(getAllFiltersAPI())
     }, [dispatch])
 
-    const handleSubmit = async (values: ConfigInterface) => {
+    const initialValue = {}
+
+    const handleSubmit = async (values: any) => {
+        console.log('values', values)
+
         const processValues = async (obj: any): Promise<any> => {
             if (Array.isArray(obj)) {
                 return Promise.all(obj.map(processValues))
@@ -72,72 +83,103 @@ const AddNewConfig = () => {
             return obj
         }
 
-        const body = {
-            is_active: values?.is_active,
-            config_name: values.name,
-            config_value: await processValues(values.value),
-        }
+        console.log('here', tabValue)
 
-        console.log('body of the data is ', body)
+        const body = {
+            is_active: values.is_active,
+            config_name: values.name,
+            config_value: tabValue === 'field' ? await processValues(values.value) : await JSON.parse(values.json_value),
+        }
 
         try {
             setShowSpinner(true)
             const response = await axiosInstance.post('/app/configuration', body)
-            notification.success({ message: response.data?.message || 'Successfully Configured' })
-            navigate(-1)
+            notification.success({
+                message: response.data?.message || 'Configuration updated successfully',
+            })
+            navigate('/app/configurations')
         } catch (error) {
             console.error('Submit Error:', error)
-            notification.error({ message: 'Failed to configure' })
+            notification.error({ message: 'Failed to update configuration' })
         } finally {
             setShowSpinner(false)
         }
     }
 
-    if (showSpinner) {
-        return <LoadingSpinner />
-    }
+    if (showSpinner) return <LoadingSpinner />
 
     return (
         <div className="w-full shadow-xl p-4 rounded-xl">
-            <Formik enableReinitialize initialValues={{} as any} onSubmit={handleSubmit}>
-                {({ values, setFieldValue }) => (
-                    <Form className="w-4/5">
-                        <FormContainer>
-                            <h5 className="mb-5 text-neutral-900">Add New Configurations</h5>
+            <div className="w-full mb-10">
+                <Tabs defaultValue="active" className="flex flex-col" value={tabValue} onChange={(value) => setTabValue(value)}>
+                    <TabList className="flex gap-8 border-b border-gray-200 dark:border-gray-700">
+                        <TabNav
+                            value="field"
+                            icon={<CiTextAlignCenter className="text-green-500 text-xl" />}
+                            className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 hover:border-blue-500 border-b-2 border-transparent data-[state=active]:text-blue-600 data-[state=active]:border-blue-600 transition-colors duration-200"
+                        >
+                            <span className="text-xl">Field Data</span>
+                        </TabNav>
+                        <TabNav
+                            value="jsonData"
+                            icon={<VscJson className="text-orange-400 text-xl" />}
+                            className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 hover:border-blue-500 border-b-2 border-transparent data-[state=active]:text-blue-600 data-[state=active]:border-blue-600 transition-colors duration-200"
+                        >
+                            <span className="text-xl"> JSON DATA</span>
+                        </TabNav>
+                    </TabList>
+                </Tabs>
+            </div>
+            <Formik enableReinitialize initialValues={initialValue as any} onSubmit={handleSubmit}>
+                {({ values, setFieldValue }) => {
+                    return tabValue === 'field' ? (
+                        <>
+                            <Form className="w-full">
+                                <FormContainer>
+                                    <h5 className="mb-5 text-neutral-900">Edit Configurations</h5>
 
-                            {EDITFIELDSARRAY.map((item) => (
-                                <FormItem key={item.name} label={item.label} className="col-span-1 w-1/2">
-                                    <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
-                                </FormItem>
-                            ))}
-                            <FormItem label="Last Updated By" className="col-span-1 w-1/2">
-                                <Field disabled type="text" name="last_updated_by" placeholder="Enter updated by" component={Input} />
-                            </FormItem>
-                            <FormItem label="Is Active" className="col-span-1 w-1/2">
-                                <Field type="checkbox" name="is_active" placeholder="Enter updated by" component={Checkbox} />
-                            </FormItem>
-                            <FormContainer className="grid grid-cols-1 gap-10">
-                                <RenderAdd
-                                    obj={values.value}
-                                    parentKey="value"
-                                    setFieldValue={setFieldValue}
-                                    editableKeys={editableKeys}
-                                    setEditableKeys={setEditableKeys}
-                                    filters={filters}
-                                />
-                            </FormContainer>
+                                    {EDITFIELDSARRAY.map((item) => (
+                                        <FormItem key={item.name} label={item.label} className="col-span-1 w-1/2">
+                                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                        </FormItem>
+                                    ))}
+                                    <FormItem label="Last Updated By" className="col-span-1 w-1/2">
+                                        <Field
+                                            disabled
+                                            type="text"
+                                            name="last_updated_by"
+                                            placeholder="Enter updated by"
+                                            component={Input}
+                                        />
+                                    </FormItem>
+                                    <FormItem label="Is Active" className="col-span-1 w-1/2">
+                                        <Field type="checkbox" name="is_active" placeholder="Enter updated by" component={Checkbox} />
+                                    </FormItem>
 
-                            <FormContainer className="flex justify-end mt-5">
-                                <Button type="reset" className="mr-2">
-                                    Reset
-                                </Button>
-                                <Button variant="solid" type="submit" className="bg-blue-500 text-white">
-                                    Submit
-                                </Button>
-                            </FormContainer>
-                        </FormContainer>
-                    </Form>
-                )}
+                                    <RenderFields
+                                        obj={values.value}
+                                        parentKey="value"
+                                        setFieldValue={setFieldValue}
+                                        editableKeys={editableKeys}
+                                        setEditableKeys={setEditableKeys}
+                                        filters={filters}
+                                    />
+
+                                    <FormContainer className="flex justify-end mt-5">
+                                        <Button type="reset" className="mr-2">
+                                            Reset
+                                        </Button>
+                                        <Button variant="solid" type="submit" className="bg-blue-500 text-white">
+                                            Submit
+                                        </Button>
+                                    </FormContainer>
+                                </FormContainer>
+                            </Form>
+                        </>
+                    ) : (
+                        <ConfigJsonData />
+                    )
+                }}
             </Formik>
         </div>
     )
