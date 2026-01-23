@@ -18,6 +18,7 @@ import RenderFields from './componentsConfigg/RenderLogic'
 import ConfigJsonData from './componentsConfigg/ConfigJsonData'
 import { VscJson } from 'react-icons/vsc'
 import { CiTextAlignCenter } from 'react-icons/ci'
+import RenderAdd from '../storeConfig/storeConfigAdd/RenderAdd'
 
 const AddNewConfig = () => {
     const navigate = useNavigate()
@@ -156,7 +157,7 @@ const AddNewConfig = () => {
                                         <Field type="checkbox" name="is_active" placeholder="Enter updated by" component={Checkbox} />
                                     </FormItem>
 
-                                    <RenderFields
+                                    <RenderAdd
                                         obj={values.value}
                                         parentKey="value"
                                         setFieldValue={setFieldValue}
