@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from '@/components/ui'
 import React, { useState, useEffect } from 'react'
-import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'
+import { FaCheckCircle, FaTimes, FaTimesCircle } from 'react-icons/fa'
 import CommonAccordion from './CommonAccordion'
 import { notification } from 'antd'
-import { MdIron } from 'react-icons/md'
+import { MdIron, MdPhotoCamera } from 'react-icons/md'
+import OrderCameraModal from '@/views/sales/OrderDetails/components/OrderCameraModal'
 
 interface OrderItems {
     product: {
@@ -30,6 +31,9 @@ interface ItemStatus {
 
 const CancelItemSelect: React.FC<Props> = ({ orderItems, payload, setPayload }) => {
     const [itemStatuses, setItemStatuses] = useState<Record<string, ItemStatus[]>>({})
+    const [isPhotoCamera, setIsPhotoCamera] = useState(false)
+    const [storePhoto, setStorePhoto] = useState<{ [key: number | string]: string[] }>({})
+    const [currentId, setCurrentId] = useState<string | number | null>(null)
 
     useEffect(() => {
         if (!Array.isArray(orderItems)) {
@@ -139,6 +143,9 @@ const CancelItemSelect: React.FC<Props> = ({ orderItems, payload, setPayload }) 
                 if (!item) return null
                 const quantity = parseInt(item.quantity) || 1
                 const itemStatusArray = itemStatuses[item.order_item] || []
+                const isQcFailed = itemStatuses?.[item?.order_item]
+                    ? (Object.values(itemStatuses[item.order_item] ?? {}).find(Boolean)?.qc_failed ?? false)
+                    : false
 
                 return (
                     <div key={`${item.order_item}-${index}`} className="overflow-y-scroll">
@@ -248,6 +255,48 @@ const CancelItemSelect: React.FC<Props> = ({ orderItems, payload, setPayload }) 
                                                 </div>
                                             )
                                         })}
+                                        {isQcFailed && (
+                                            <>
+                                                <button
+                                                    className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow"
+                                                    onClick={() => {
+                                                        setIsPhotoCamera(true)
+                                                        setCurrentId(item?.order_item)
+                                                    }}
+                                                >
+                                                    <MdPhotoCamera className="text-lg" />
+                                                    Take Photo
+                                                </button>
+                                            </>
+                                        )}
+                                        {storePhoto[item?.order_item]?.length > 0 && (
+                                            <div className="flex flex-wrap gap-3">
+                                                {storePhoto[item?.order_item]?.map((img, index) => (
+                                                    <div key={index} className="relative group">
+                                                        <div className="w-20 h-20 rounded-lg overflow-hidden border-2 border-blue-200 bg-gray-50">
+                                                            <img
+                                                                src={img}
+                                                                alt={`Captured ${index + 1}`}
+                                                                className="w-full h-full object-cover"
+                                                            />
+                                                        </div>
+                                                        <button
+                                                            onClick={() => {
+                                                                setStorePhoto((prev) => ({
+                                                                    ...prev,
+                                                                    [item?.order_item]: prev[item?.order_item].filter(
+                                                                        (_, i) => i !== index,
+                                                                    ),
+                                                                }))
+                                                            }}
+                                                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 transition-all duration-200 opacity-0 group-hover:opacity-100 shadow-lg"
+                                                        >
+                                                            <FaTimes className="w-3 h-3" />
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
                                 }
                             </div>
@@ -266,6 +315,13 @@ const CancelItemSelect: React.FC<Props> = ({ orderItems, payload, setPayload }) 
                     </Button>
                 </div>
             </div>
+
+            <OrderCameraModal
+                isOpen={isPhotoCamera}
+                currentId={currentId as number}
+                setIsOpen={setIsPhotoCamera}
+                setStorePhoto={setStorePhoto}
+            />
         </div>
     )
 }
