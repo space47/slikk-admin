@@ -200,7 +200,13 @@ export const useOrderListColumns = ({
             {
                 header: 'Estimate Delivery Time',
                 accessorKey: 'eta_duration',
-                cell: ({ row }: any) => <div>{row?.original?.eta_duration ? `${row?.original?.eta_duration} mins` : 'N/A'}</div>,
+                cell: ({ row }: any) => {
+                    const val =
+                        typeof row?.original?.eta_duration === 'number'
+                            ? row?.original?.eta_duration?.toFixed(2)
+                            : Number(row?.original?.eta_duration).toFixed(2)
+                    return <div>{row?.original?.eta_duration ? `${val} mins` : 'N/A'}</div>
+                },
             },
             { header: 'Total Items', accessorKey: 'order_items_count' },
             { header: 'Order Count', accessorKey: 'user_order_count' },
