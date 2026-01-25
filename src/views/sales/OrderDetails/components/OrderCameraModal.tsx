@@ -10,9 +10,15 @@ interface Props {
     setIsOpen: (x: boolean) => void
     currentId: number
     setStorePhoto: React.Dispatch<React.SetStateAction<{ [key: number]: string[] }>>
+    handleManually?: (file: File) => Promise<void>
 }
 
-const OrderCameraModal = ({ isOpen, setIsOpen, currentId, setStorePhoto }: Props) => {
+const OrderCameraModal = ({ isOpen, setIsOpen, currentId, setStorePhoto, handleManually }: Props) => {
+    const handleData = (file: File) => {
+        setIsOpen(false)
+        handleManually ? handleManually(file) : handleUpload('orders', file)
+    }
+
     const handleUpload = async (fileType: string, files: File) => {
         const formData = new FormData()
         formData.append('file', files)
@@ -41,15 +47,14 @@ const OrderCameraModal = ({ isOpen, setIsOpen, currentId, setStorePhoto }: Props
             const instance = Modal.confirm({
                 title: 'Capture Image',
                 icon: null,
-                footer: null, // remove OK/Cancel buttons
+                footer: null,
                 width: 650,
                 closable: true,
                 content: (
                     <CommonCamera
                         onCapture={(file) => {
                             instance.destroy()
-                            setIsOpen(false)
-                            handleUpload('orders', file)
+                            handleData(file)
                         }}
                     />
                 ),
@@ -60,7 +65,7 @@ const OrderCameraModal = ({ isOpen, setIsOpen, currentId, setStorePhoto }: Props
         }
     }, [isOpen])
 
-    return null // Modal.confirm renders itself
+    return null
 }
 
 export default OrderCameraModal
