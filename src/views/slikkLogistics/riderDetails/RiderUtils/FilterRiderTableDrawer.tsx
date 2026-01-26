@@ -1,8 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Drawer, FormItem, Select } from '@/components/ui'
-import { RIDER_TYPES_FILTER, RiderAgency } from '../RiderDetailsCommon'
+import { DeliveryType, RIDER_TYPES_FILTER, RiderAgency } from '../RiderDetailsCommon'
 import { TimePicker } from 'antd'
 import dayjs from 'dayjs'
 import ZoneSelectComponent from '@/common/ZoneSelectCommon'
+import { useEffect, useState } from 'react'
+import { deliveryAgency } from '@/store/services/deliveryAgencyService'
 
 interface props {
     isOpen: boolean
@@ -33,6 +36,24 @@ const FilterRiderTableDrawer = ({
     zoneId,
     setZoneId,
 }: props) => {
+    const [riderAgencyArray, setRiderAgencyArray] = useState<DeliveryType[]>([])
+
+    const riderAgencyCall = deliveryAgency.useGetDeliveryAgencyQuery({ view_type: 'minimal' })
+
+    useEffect(() => {
+        if (riderAgencyCall.isSuccess) {
+            setRiderAgencyArray(
+                (riderAgencyCall.data as any)?.data?.map((item: any) => ({
+                    label: item || 'Slikk',
+                    value: item || 'slikk',
+                })),
+            )
+        }
+        if (riderAgencyCall.isError) {
+            setRiderAgencyArray(RiderAgency)
+        }
+    }, [riderAgencyCall.isSuccess, riderAgencyCall.isError])
+
     return (
         <Drawer
             title="Rider Filters"
@@ -64,12 +85,12 @@ const FilterRiderTableDrawer = ({
                     <Select
                         isClearable
                         isSearchable
-                        options={RiderAgency}
                         className="mt-5"
-                        defaultValue={RiderAgency.find((option) => option.value === currentAgency)}
+                        options={riderAgencyArray}
+                        value={riderAgencyArray.find((o) => o.value?.toLowerCase() === currentAgency?.toLowerCase())}
                         onChange={(val) => {
                             if (val) {
-                                setCurrentAgency(val?.value)
+                                setCurrentAgency(val?.value as string)
                             } else {
                                 setCurrentAgency('')
                             }
