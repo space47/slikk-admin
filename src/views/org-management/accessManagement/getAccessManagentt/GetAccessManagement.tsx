@@ -1,205 +1,307 @@
-import React, { useEffect, useState } from 'react'
-import { GROUPTYPES, USERGROUPDATA, PERMISSIONGROUPDATA } from './groupCommon' // Assuming GROUPTYPES is defined
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import PermCardComponent from './componentsManagement/PermCardComponent'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useEffect, useState, useCallback, useMemo } from 'react'
 import { notification } from 'antd'
+import { useNavigate } from 'react-router-dom'
+import { FiLock } from 'react-icons/fi'
+import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
+import PermCardComponent from './componentsManagement/PermCardComponent'
 import UserGroupTable from './componentsManagement/UserGroupTable'
 import { Button, Spinner } from '@/components/ui'
-import { useNavigate } from 'react-router-dom'
 import AccessDenied from '@/views/pages/AccessDenied'
+import { GROUPTYPES, USERGROUPDATA, PERMISSIONGROUPDATA } from './groupCommon'
+import { FaLock } from 'react-icons/fa'
+import { AxiosError } from 'axios'
+import { errorMessage } from '@/utils/responseMessages'
+
+interface SearchState {
+    allPermissions: string
+    addedPermissions: string
+}
+
+interface LoadingState {
+    table: boolean
+    initial: boolean
+    updating: boolean
+}
 
 const GetAccessManagement = () => {
-    const [getGroups, setGetGroups] = useState<GROUPTYPES[]>([])
-    const [userGroupData, setUserGroupData] = useState<USERGROUPDATA[]>([])
-    const [getPermission, setGetPermission] = useState<PERMISSIONGROUPDATA[]>([])
-    const [searchInput, setSearchInput] = useState('')
-    const [addedPermissions, setAddedPermissions] = useState<PERMISSIONGROUPDATA[]>([])
-    const [selectedPermissions, setSelectedPermissions] = useState<number[]>([])
-    const [activeGroup, setActiveGroup] = useState<number | null>(null)
-    const [page, setPage] = useState(1)
-    const [pageSize, setPageSize] = useState(10)
-    const [showTableSpinner, setShowTableSpinner] = useState(false)
-    const [accessDenied, setAccessDenied] = useState(false)
     const navigate = useNavigate()
+    const [groups, setGroups] = useState<GROUPTYPES[]>([])
+    const [userGroupData, setUserGroupData] = useState<USERGROUPDATA[]>([])
+    const [permissions, setPermissions] = useState<PERMISSIONGROUPDATA[]>([])
+    const [addedPermissions, setAddedPermissions] = useState<PERMISSIONGROUPDATA[]>([])
+    const [selectedPermissionIds, setSelectedPermissionIds] = useState<number[]>([])
+    const [activeGroupId, setActiveGroupId] = useState<number | null>(null)
+    const [search, setSearch] = useState<SearchState>({ allPermissions: '', addedPermissions: '' })
+    const [loading, setLoading] = useState<LoadingState>({ table: false, initial: true, updating: false })
+    const [accessDenied, setAccessDenied] = useState(false)
+    const filteredPermissions = useMemo(() => {
+        return permissions.filter((permission) => permission.name.toLowerCase().includes(search.allPermissions.toLowerCase()))
+    }, [permissions, search.allPermissions])
 
-    const fetchGroupsData = async () => {
+    const filteredAddedPermissions = useMemo(() => {
+        return addedPermissions.filter((permission) => permission.name.toLowerCase().includes(search.addedPermissions.toLowerCase()))
+    }, [addedPermissions, search.addedPermissions])
+
+    const filteredGroups = useMemo(() => {
+        return groups.filter((group) => group.id !== 1)
+    }, [groups])
+    const fetchGroups = useCallback(async () => {
         try {
-            const response = await axioisInstance.get(`/groups`)
-            const data = response?.data?.groups
-            setGetGroups(data)
+            const response = await axiosInstance.get('/groups')
+            setGroups(response?.data?.groups || [])
         } catch (error: any) {
-            if (error?.response && error?.response?.status === 403) {
+            if (error?.response?.status === 403) {
                 setAccessDenied(true)
+            } else {
+                if (error instanceof AxiosError) {
+                    errorMessage(error)
+                }
             }
-            console.log(error)
         }
-    }
-
-    const fetchPermissionData = async () => {
-        try {
-            const response = await axioisInstance.get(`/permissions`)
-            const perm = response.data?.permissions
-            setGetPermission(perm)
-        } catch (error: any) {
-            if (error?.response && error?.response?.status === 403) {
-                setAccessDenied(true)
-            }
-            console.log(error)
-        }
-    }
-
-    useEffect(() => {
-        fetchGroupsData()
-        fetchPermissionData()
     }, [])
 
-    const fetchForPermAndUser = async () => {
+    const fetchPermissions = useCallback(async () => {
         try {
-            setShowTableSpinner(true)
-            const response = await axioisInstance.get(`/groups?id=${activeGroup}&p=${page}&page_size=${pageSize}`)
-            const data = response?.data?.group
-            setUserGroupData(data?.users)
-            setAddedPermissions(data?.permissions)
-        } catch (error) {
-            console.error(error)
-        } finally {
-            setShowTableSpinner(false)
+            const response = await axiosInstance.get('/permissions')
+            setPermissions(response?.data?.permissions || [])
+        } catch (error: any) {
+            if (error?.response?.status === 403) {
+                setAccessDenied(true)
+            }
+            if (error instanceof AxiosError) {
+                errorMessage(error)
+            }
         }
-    }
+    }, [])
+
+    const fetchGroupDetails = useCallback(async (groupId: number) => {
+        if (!groupId) return
+        try {
+            setLoading((prev) => ({ ...prev, table: true }))
+            const response = await axiosInstance.get(`/groups?id=${groupId}`)
+            const groupData = response?.data?.group
+            setUserGroupData(groupData?.users || [])
+            setAddedPermissions(groupData?.permissions || [])
+            setSelectedPermissionIds([])
+        } catch (error: any) {
+            if (error instanceof AxiosError) {
+                errorMessage(error)
+            }
+        } finally {
+            setLoading((prev) => ({ ...prev, table: false }))
+        }
+    }, [])
 
     useEffect(() => {
-        if (activeGroup) {
-            fetchForPermAndUser()
+        const loadInitialData = async () => {
+            setLoading((prev) => ({ ...prev, initial: true }))
+            await Promise.allSettled([fetchGroups(), fetchPermissions()])
+            setLoading((prev) => ({ ...prev, initial: false }))
         }
-    }, [activeGroup])
 
-    const handleClick = (id: number) => {
-        setActiveGroup(id)
-    }
+        loadInitialData()
+    }, [fetchGroups, fetchPermissions])
 
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchInput(e.target.value)
-    }
+    useEffect(() => {
+        if (activeGroupId) {
+            fetchGroupDetails(activeGroupId)
+        }
+    }, [activeGroupId, fetchGroupDetails])
 
-    const handlePermissionSelect = (id: number) => {
-        setSelectedPermissions((prevSelected) =>
-            prevSelected.includes(id) ? prevSelected.filter((permId) => permId !== id) : [...prevSelected, id],
+    const handleGroupSelect = useCallback((groupId: number) => {
+        setActiveGroupId(groupId)
+        setSelectedPermissionIds([])
+        setSearch({ allPermissions: '', addedPermissions: '' })
+    }, [])
+
+    const handleSearch = useCallback((section: keyof SearchState, value: string) => {
+        setSearch((prev) => ({ ...prev, [section]: value }))
+    }, [])
+
+    const handlePermissionSelect = useCallback((permissionId: number) => {
+        setSelectedPermissionIds((prev) =>
+            prev.includes(permissionId) ? prev.filter((id) => id !== permissionId) : [...prev, permissionId],
         )
-    }
-    const handleAddPermissions = () => {
-        const alreadyAdded = selectedPermissions.filter((permId) => addedPermissions.some((added) => added.id === permId))
-        if (alreadyAdded.length > 0) {
-            notification.warning({
-                message: 'Warning',
-                description: 'Permission already added',
-            })
-        }
-        const selected = getPermission?.filter(
-            (perm) => selectedPermissions.includes(perm.id) && !addedPermissions.some((added) => added.id === perm.id),
-        )
-        setAddedPermissions((prevAdded) => [...prevAdded, ...selected])
-        setSelectedPermissions([])
-    }
-    const handleRemovePermissions = (id: number) => {
-        setAddedPermissions((prevAdded) => prevAdded.filter((perm) => perm.id !== id))
-    }
-    const filteredPermission = getPermission?.filter((item) => item.name.toLowerCase().includes(searchInput.toLowerCase()))
+    }, [])
 
-    const handleAddGroup = () => {
-        navigate(`/app/accessManagement/addNew`)
-    }
-    const handleUpdatePermission = async () => {
-        const permissionIds = addedPermissions.map((item) => item.id)
-        const body = {
-            group_id: activeGroup,
-            permissions: permissionIds,
+    const handleSelectAllPermissions = useCallback(() => {
+        const allIds = filteredPermissions.map((p) => p.id)
+        setSelectedPermissionIds((prev) => (prev.length === allIds.length ? [] : allIds))
+    }, [filteredPermissions])
+
+    const handleAddPermissions = useCallback(() => {
+        if (selectedPermissionIds.length === 0) {
+            notification.info({ message: 'Info', description: 'No permissions selected' })
+            return
         }
+        const newPermissions = permissions.filter(
+            (permission) => selectedPermissionIds.includes(permission.id) && !addedPermissions.some((added) => added.id === permission.id),
+        )
+
+        if (newPermissions.length === 0) {
+            notification.warning({ message: 'Warning', description: 'All selected permissions are already added' })
+            return
+        }
+
+        setAddedPermissions((prev) => [...prev, ...newPermissions])
+        setSelectedPermissionIds([])
+        notification.success({ message: 'Success', description: `Added ${newPermissions.length} permission(s)` })
+    }, [selectedPermissionIds, permissions, addedPermissions])
+
+    const handleRemovePermission = useCallback((permissionId: number) => {
+        setAddedPermissions((prev) => prev.filter((permission) => permission.id !== permissionId))
+    }, [])
+
+    const handleUpdatePermissions = useCallback(async () => {
+        if (!activeGroupId) {
+            notification.warning({ message: 'Warning', description: 'Please select a group first' })
+            return
+        }
+
+        setLoading((prev) => ({ ...prev, updating: true }))
+        const permissionIds = addedPermissions.map((permission) => permission.id)
+
         try {
-            const response = await axioisInstance.patch(`/groups`, body)
-            notification.success({
-                message: response?.data?.message || 'SUCCESSFULLY ADDED PERMISSION',
+            await axiosInstance.patch('/groups', {
+                group_id: activeGroupId,
+                permissions: permissionIds,
             })
-            navigate(0)
-        } catch (error: any) {
-            console.error(error)
-            notification.error({
-                message: 'Failed to add permission',
-            })
+
+            notification.success({ message: 'Success', description: 'Permissions updated successfully' })
+            await fetchGroupDetails(activeGroupId)
+        } catch (error) {
+            if (error instanceof AxiosError) errorMessage(error)
+        } finally {
+            setLoading((prev) => ({ ...prev, updating: false }))
         }
-    }
+    }, [activeGroupId, addedPermissions, fetchGroupDetails])
+
+    const handleAddGroup = useCallback(() => {
+        navigate('/app/accessManagement/addNew')
+    }, [navigate])
 
     if (accessDenied) {
         return <AccessDenied />
     }
+
+    if (loading.initial) {
+        return (
+            <div className="flex justify-center items-center min-h-screen">
+                <div className="text-center">
+                    <Spinner size={48} className="mb-4" />
+                    <p className="text-gray-600">Loading access management...</p>
+                </div>
+            </div>
+        )
+    }
+
     return (
-        <div className="p-6">
-            <div className="flex justify-end">
-                <Button variant="new" onClick={handleAddGroup}>
-                    Add Groups
+        <div className="p-6 space-y-8">
+            <div className="flex justify-between items-center">
+                <div className="flex gap-2 items-center">
+                    <span>
+                        <FaLock className="text-3xl text-orange-600" />
+                    </span>
+                    <div>
+                        <h1 className="text-3xl font-bold text-gray-900">Access Management</h1>
+                        <p className="text-gray-600 mt-1">Manage group permissions and user access</p>
+                    </div>
+                </div>
+                <Button variant="solid" onClick={handleAddGroup} className="flex items-center gap-2">
+                    <FiLock className="text-lg" />
+                    Add New Group
                 </Button>
             </div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">Group Names</h2>
-            <div className="flex gap-2 flex-wrap mb-5">
-                {getGroups
-                    .filter((group) => group.id !== 1)
-                    .map((group) => (
-                        <div
+            <section className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                <h2 className="text-xl font-semibold text-gray-800 mb-4">Select a Group</h2>
+                <div className="flex flex-wrap gap-3">
+                    {filteredGroups.map((group) => (
+                        <button
                             key={group.id}
-                            className={`cursor-pointer px-4 py-2 rounded-md shadow-md transition font-bold
-              ${activeGroup === group.id ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}
-            `}
-                            onClick={() => handleClick(group.id)}
+                            onClick={() => handleGroupSelect(group.id)}
+                            className={`px-5 py-3 rounded-xl transition-all duration-200 font-medium flex items-center gap-2
+                ${
+                    activeGroupId === group.id
+                        ? 'bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-lg transform scale-105'
+                        : 'bg-gray-50 text-gray-700 hover:bg-gray-100 hover:shadow-md border border-gray-200'
+                }
+              `}
                         >
-                            {group.name.toUpperCase()}
-                        </div>
+                            <FiLock />
+                            {group.name}
+                        </button>
                     ))}
-            </div>
-
-            {activeGroup ? (
-                <>
-                    {showTableSpinner ? (
-                        <div className="flex justify-center items-center h-screen">
-                            <Spinner size={40} />
-                        </div>
-                    ) : (
-                        <div className="flex flex-col gap-10">
+                </div>
+            </section>
+            {activeGroupId ? (
+                <div className="space-y-8">
+                    <section className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                        <div className="flex items-center justify-between mb-6">
                             <div>
-                                <h3>Permissions:</h3>
-                                <PermCardComponent
-                                    label="PERMISSIONS"
-                                    selectedValue={selectedPermissions}
-                                    getValue={filteredPermission}
-                                    handleSelect={handlePermissionSelect}
-                                    addedValue={addedPermissions}
-                                    handleAdd={handleAddPermissions}
-                                    handleRemove={handleRemovePermissions}
-                                    searchInput={searchInput}
-                                    handleSearch={handleSearch}
-                                    handleUpdatePermission={handleUpdatePermission}
-                                />
+                                <h3 className="text-xl font-semibold text-gray-800">Permission Management</h3>
+                                <p className="text-gray-600 mt-1">Manage permissions for the selected group</p>
                             </div>
-
-                            <div>
-                                <h3>User Table</h3>
-                                <UserGroupTable
-                                    data={userGroupData}
-                                    page={page}
-                                    pageSize={pageSize}
-                                    setPage={setPage}
-                                    setPageSize={setPageSize}
-                                    totalData={userGroupData?.length}
-                                    showTableSpinner={showTableSpinner}
-                                />
-                            </div>
+                            {loading.updating && (
+                                <div className="flex items-center gap-2 text-blue-600">
+                                    <Spinner size={20} />
+                                    <span className="text-sm">Updating...</span>
+                                </div>
+                            )}
                         </div>
-                    )}
-                </>
+                        <PermCardComponent
+                            label="PERMISSIONS"
+                            selectedValue={selectedPermissionIds}
+                            getValue={filteredPermissions}
+                            handleSelect={handlePermissionSelect}
+                            addedValue={filteredAddedPermissions}
+                            handleAdd={handleAddPermissions}
+                            handleRemove={handleRemovePermission}
+                            searchInput={search.allPermissions}
+                            handleSearch={(e) => handleSearch('allPermissions', e.target.value)}
+                            addedSearchInput={search.addedPermissions}
+                            handleAddedSearch={(e) => handleSearch('addedPermissions', e.target.value)}
+                            handleUpdatePermission={handleUpdatePermissions}
+                            selectAll={filteredPermissions.length > 0}
+                            handleSelectAll={handleSelectAllPermissions}
+                            isLoading={loading.updating}
+                        />
+                    </section>
+                    <section className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                        <div className="flex justify-between items-center mb-6">
+                            <div>
+                                <h3 className="text-xl font-semibold text-gray-800">Group Users</h3>
+                                <p className="text-gray-600 mt-1">Manage users in the selected group</p>
+                            </div>
+                            <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium">
+                                {userGroupData.length} users
+                            </span>
+                        </div>
+
+                        {loading.table ? (
+                            <div className="flex justify-center items-center h-64">
+                                <div className="text-center">
+                                    <Spinner size={40} className="mb-4" />
+                                    <p className="text-gray-600">Loading users...</p>
+                                </div>
+                            </div>
+                        ) : (
+                            <UserGroupTable data={userGroupData} showTableSpinner={loading.table} />
+                        )}
+                    </section>
+                </div>
             ) : (
-                <>
-                    <div className="flex justify-center items-center h-auto xl:mt-20">
-                        <h3>Select Groups To Display Data </h3>
+                <div className="flex flex-col items-center justify-center py-20 text-center bg-white rounded-2xl shadow-sm border border-gray-200">
+                    <div className="text-gray-300 mb-6">
+                        <FiLock size={80} />
                     </div>
-                </>
+                    <h3 className="text-2xl font-medium text-gray-700 mb-3">No Group Selected</h3>
+                    <p className="text-gray-500 max-w-md mb-8">Select a group from above to view and manage its permissions and users</p>
+                    <div className="flex items-center gap-2 text-gray-400">
+                        <FiLock />
+                        <span className="text-sm">Select a group to get started</span>
+                    </div>
+                </div>
             )}
         </div>
     )
