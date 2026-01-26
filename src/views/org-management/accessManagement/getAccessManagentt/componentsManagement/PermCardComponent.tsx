@@ -1,114 +1,212 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React from 'react'
+import React, { memo } from 'react'
 import { Card } from 'antd'
+import { FiSearch, FiX } from 'react-icons/fi'
 import Button from '@/components/ui/Button'
 
-interface CARDPROPS {
+interface PermissionItem {
+    id: number
+    name: string
+}
+
+interface PermCardProps {
     label: string
-    getValue: any
-    selectedValue: any
-    handleSelect: any
-    handleAdd: any
-    addedValue: any
-    handleRemove: any
+    getValue: PermissionItem[]
+    selectedValue: number[]
+    handleSelect: (id: number) => void
+    handleAdd: () => void
+    addedValue: PermissionItem[]
+    handleRemove: (id: number) => void
+    searchInput: string
+    handleSearch: (e: React.ChangeEvent<HTMLInputElement>) => void
+    addedSearchInput: string
+    handleAddedSearch: (e: React.ChangeEvent<HTMLInputElement>) => void
+    handleUpdatePermission: () => void
     selectAll?: boolean
-    handleSelectAll?: any
-    searchInput?: any
-    handleSearch?: any
-    handleUpdatePermission: any
+    handleSelectAll?: () => void
+    isLoading?: boolean
 }
 
-const PermCardComponent = ({
-    label,
-    getValue,
-    selectedValue,
-    handleSelect,
-    handleAdd,
-    addedValue,
-    handleRemove,
-    selectAll,
-    handleSelectAll,
-    searchInput,
-    handleSearch,
-    handleUpdatePermission,
-}: CARDPROPS) => {
-    return (
-        <div className="flex justify-around">
-            {/* All Permissions */}
-            <Card className="overflow-scroll h-[560px] w-[400px] flex flex-col">
-                <div className="sticky top-0 z-10 bg-white">
-                    <div className="mb-3 bg-white">
-                        <input
-                            type="text"
-                            className="border border-gray-200 w-[90%] h-8 items-center p-2 rounded-md active:border-0 hover:border-blue-500 active:border-blue-500"
-                            placeholder="Search Permissions"
-                            value={searchInput}
-                            onChange={handleSearch}
-                            onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
-                        />
+const PermCardComponent: React.FC<PermCardProps> = memo(
+    ({
+        label,
+        getValue,
+        selectedValue,
+        handleSelect,
+        handleAdd,
+        addedValue,
+        handleRemove,
+        searchInput,
+        handleSearch,
+        addedSearchInput,
+        handleAddedSearch,
+        handleUpdatePermission,
+        selectAll = false,
+        handleSelectAll,
+        isLoading = false,
+    }) => {
+        const handleKeyDown = (e: React.KeyboardEvent) => {
+            if (e.key === 'Enter') {
+                e.preventDefault()
+            }
+        }
+
+        const isAllSelected = selectAll && getValue.length > 0 && selectedValue.length === getValue.length
+
+        return (
+            <div className="flex justify-around gap-6">
+                {/* All Permissions Card */}
+                <Card
+                    className="h-[560px] w-[400px] flex flex-col border border-gray-200 rounded-xl shadow-sm overflow-hidden"
+                    bodyStyle={{ padding: 0, height: '100%', display: 'flex', flexDirection: 'column' }}
+                >
+                    <div className="sticky top-0 z-10 bg-white p-4 border-b border-gray-200">
+                        <div className="relative mb-3">
+                            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                            <input
+                                type="text"
+                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                placeholder="Search permissions..."
+                                value={searchInput}
+                                onChange={handleSearch}
+                                onKeyDown={handleKeyDown}
+                            />
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <h3 className="font-bold text-gray-800">ALL {label}</h3>
+                            <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">{getValue.length} items</span>
+                        </div>
                     </div>
-                    <label htmlFor="All Permissions" className="font-bold bg-white">
-                        ALL {label}
-                    </label>
-                </div>
-                <div className="">
-                    {selectAll && (
-                        <div className="flex gap-2 items-center">
-                            <input type="checkbox" checked={selectedValue.length === getValue.length} onChange={handleSelectAll} />{' '}
-                            <span className="font-bold">Select All</span>
-                        </div>
-                    )}
-                    {getValue?.map((item: any) => (
-                        <div key={item.id} className="flex flex-col">
-                            <label className="bg-gray-100 px-2 py-2 flex items-center">
-                                <input type="checkbox" checked={selectedValue?.includes(item.id)} onChange={() => handleSelect(item.id)} />
-                                <span className="ml-2">{item.name}</span>
-                            </label>
-                        </div>
-                    ))}
-                </div>
-            </Card>
 
-            {/* Buttons */}
-            <div className="flex justify-center items-center flex-col gap-4">
-                <Button type="button" variant="accept" className="w-32 px-8" onClick={handleAdd}>
-                    ADD {'>>'}
-                </Button>
-
-                <Button variant="yellow" size="sm" className="w-32 px-8" onClick={handleUpdatePermission}>
-                    UPDATE
-                </Button>
-            </div>
-
-            {/* Added Permissions */}
-            <Card className="overflow-scroll h-[560px] w-[400px] flex flex-col">
-                <div className="sticky top-0 z-10 bg-white">
-                    {/* <div className="mb-3 bg-white">
-                        <input
-                            type="text"
-                            className="border border-gray-200 w-[90%] h-8 items-center p-2 rounded-md active:border-0 hover:border-blue-500 active:border-blue-500"
-                            placeholder="Search Permissions"
-                        />
-                    </div> */}
-                    <label htmlFor="Added Permissions" className="font-bold bg-white">
-                        Added {label}
-                    </label>
-                </div>
-                <div className="">
-                    {addedValue?.map((item: any, key: any) => (
-                        <div key={key} className="flex flex-col">
-                            <div className="bg-gray-100 px-2 py-2 flex items-center justify-between">
-                                <span className="text-black">{item.name}</span>
-                                <button className="text-red-500 ml-2" onClick={() => handleRemove(item.id)}>
-                                    Remove
-                                </button>
+                    <div className="flex-1 overflow-y-auto p-2">
+                        {selectAll && getValue.length > 0 && (
+                            <div
+                                className="flex gap-3 items-center p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors mb-2"
+                                onClick={handleSelectAll}
+                            >
+                                <div
+                                    className={`w-5 h-5 flex items-center justify-center border-2 rounded ${isAllSelected ? 'bg-blue-500 border-blue-500' : 'border-gray-300'}`}
+                                >
+                                    {isAllSelected && <span className="text-white text-xs">✓</span>}
+                                </div>
+                                <span className="font-semibold text-gray-700">{isAllSelected ? 'Deselect All' : 'Select All'}</span>
                             </div>
-                        </div>
-                    ))}
+                        )}
+
+                        {getValue.length > 0 ? (
+                            <div className="space-y-1">
+                                {getValue.map((item) => (
+                                    <label
+                                        key={item.id}
+                                        className="flex items-center p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors group"
+                                    >
+                                        <div className="flex items-center flex-1">
+                                            <div
+                                                className={`w-5 h-5 flex items-center justify-center border-2 rounded mr-3 ${selectedValue.includes(item.id) ? 'bg-blue-500 border-blue-500' : 'border-gray-300'}`}
+                                            >
+                                                {selectedValue.includes(item.id) && <span className="text-white text-xs">✓</span>}
+                                            </div>
+                                            <span className="text-gray-700 group-hover:text-gray-900">{item.name}</span>
+                                        </div>
+                                        <input
+                                            type="checkbox"
+                                            className="sr-only"
+                                            checked={selectedValue.includes(item.id)}
+                                            onChange={() => handleSelect(item.id)}
+                                        />
+                                    </label>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center h-full text-gray-500">
+                                <FiSearch size={32} className="mb-2" />
+                                <p>No permissions found</p>
+                            </div>
+                        )}
+                    </div>
+                </Card>
+
+                {/* Action Buttons */}
+                <div className="flex flex-col justify-center items-center gap-6">
+                    <Button
+                        type="button"
+                        variant="accept"
+                        className="w-36 h-12 text-base font-medium rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                        onClick={handleAdd}
+                        disabled={selectedValue.length === 0 || isLoading}
+                    >
+                        ADD {'>>'}
+                    </Button>
+
+                    <Button
+                        variant="yellow"
+                        className="w-36 h-12 text-base font-medium rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                        onClick={handleUpdatePermission}
+                        disabled={isLoading}
+                        loading={isLoading}
+                    >
+                        UPDATE
+                    </Button>
                 </div>
-            </Card>
-        </div>
-    )
-}
+
+                {/* Added Permissions Card */}
+                <Card
+                    className="h-[560px] w-[400px] flex flex-col border border-gray-200 rounded-xl shadow-sm overflow-hidden"
+                    bodyStyle={{ padding: 0, height: '100%', display: 'flex', flexDirection: 'column' }}
+                >
+                    <div className="sticky top-0 z-10 bg-white p-4 border-b border-gray-200">
+                        <div className="relative mb-3">
+                            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                            <input
+                                type="text"
+                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                placeholder="Search added permissions..."
+                                value={addedSearchInput}
+                                onChange={handleAddedSearch}
+                                onKeyDown={handleKeyDown}
+                            />
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <h3 className="font-bold text-gray-800">Added {label}</h3>
+                            <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">{addedValue.length} items</span>
+                        </div>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto p-2">
+                        {addedValue.length > 0 ? (
+                            <div className="space-y-1">
+                                {addedValue.map((item) => (
+                                    <div
+                                        key={item.id}
+                                        className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors group"
+                                    >
+                                        <span className="text-gray-700 group-hover:text-gray-900 truncate">{item.name}</span>
+                                        <button
+                                            onClick={() => handleRemove(item.id)}
+                                            className="ml-2 p-1 text-gray-400 hover:text-red-500 transition-colors rounded hover:bg-red-50"
+                                            title="Remove permission"
+                                            disabled={isLoading}
+                                        >
+                                            <FiX size={18} />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center h-full text-gray-500">
+                                <div className="text-center">
+                                    <FiX size={32} className="mb-2 mx-auto" />
+                                    <p>No permissions added yet</p>
+                                    <p className="text-sm mt-1">Select permissions and click ADD</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </Card>
+            </div>
+        )
+    },
+)
+
+PermCardComponent.displayName = 'PermCardComponent'
 
 export default PermCardComponent
