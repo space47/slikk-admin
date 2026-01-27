@@ -212,8 +212,8 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
     }
 
     return (
-        <Dialog preventScroll isOpen={isOpen} width={1000} height={'85vh'} onClose={() => setIsOpen(false)}>
-            <div className="p-0 h-[80vh] overflow-scroll">
+        <Dialog preventScroll isOpen={isOpen} width={1000} height={'auto'} onClose={() => setIsOpen(false)}>
+            <div className="p-0 xl:h-[80vh] h-[90vh] overflow-scroll">
                 {cancelHeaderSection()}
                 {status !== EOrderStatus.accepted && (
                     <div className="mb-6">
