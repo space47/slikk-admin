@@ -57,7 +57,7 @@ const buildFailedData = (orderItems: OrderItems[], payload?: Record<string, Reco
     const reasons: { [key: string]: { [key: number]: string } } = {}
 
     orderItems?.forEach((item) => {
-        const failedData = (payload?.[item.order_item]?.qc_failed_data as QcFailedData[]) || []
+        const failedData = (payload?.[item.order_item]?.qc_field_data as QcFailedData[]) || []
         if (!failedData.length) return
         photos[item.order_item] = {}
         reasons[item.order_item] = {}
@@ -136,7 +136,7 @@ const CancelItemSelect: React.FC<Props> = ({ orderItems, payload, setPayload }) 
                 qc_passed: number
                 qc_failed: number
                 refurbished: number
-                qc_failed_data?: QcFailedData[]
+                qc_field_data?: QcFailedData[]
             }
         > = {}
 
@@ -161,7 +161,7 @@ const CancelItemSelect: React.FC<Props> = ({ orderItems, payload, setPayload }) 
                     refurbished: counts.refurbished,
                 }
                 if (failedItemsData.length > 0) {
-                    newPayload[orderItemId].qc_failed_data = failedItemsData
+                    newPayload[orderItemId].qc_field_data = failedItemsData
                 }
             }
         })
