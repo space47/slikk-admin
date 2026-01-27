@@ -108,7 +108,9 @@ const ReturnItemTable = () => {
                         </div>
                     )}
 
-                    {!!displayedData && <EasyTable overflow mainData={displayedData} columns={columns} page={page} pageSize={pageSize} />}
+                    {!!displayedData.length && (
+                        <EasyTable overflow mainData={displayedData} columns={columns} page={page} pageSize={pageSize} />
+                    )}
 
                     {!searchFilter && (
                         <div className="border-t border-gray-200 dark:border-gray-800 p-4">
