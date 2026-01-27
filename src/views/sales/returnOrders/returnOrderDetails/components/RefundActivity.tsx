@@ -151,11 +151,11 @@ const RefundActivity: React.FC<Props> = ({ returnDetails, returnOrderItems, refe
                     <CompleteReturnModal
                         isCompleting={isCompleting}
                         handleAction={handleCompleteReturn}
-                        returnOrderItems={returnOrderItems as any}
                         isModalOpen={isModalOpen}
                         setIsModalOpen={setIsModalOpen}
                         valueInsideModal={valueInsideModal}
                         handleInputChange={handleInputChange}
+                        orderItems={returnOrderItems as any}
                     />
                 )}
             {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === EReturnOrderStatus.refunded ||
@@ -164,11 +164,11 @@ const RefundActivity: React.FC<Props> = ({ returnDetails, returnOrderItems, refe
                     <CompleteReturnModal
                         isCompleting={isCompleting}
                         handleAction={handleCompleteReturn}
-                        returnOrderItems={returnOrderItems as any}
                         isModalOpen={isModalOpen}
                         setIsModalOpen={setIsModalOpen}
                         valueInsideModal={valueInsideModal}
                         handleInputChange={handleInputChange}
+                        orderItems={returnOrderItems as any}
                     />
                 )}
 
