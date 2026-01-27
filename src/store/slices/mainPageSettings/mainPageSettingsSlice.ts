@@ -19,7 +19,7 @@ export interface mainPageSettingsRequiredType {
 const initialState: mainPageSettingsRequiredType = {
     mainPageSettingsData: [],
     page: 1,
-    pageSize: 10,
+    pageSize: 25,
     count: 0,
     currentPageName: { label: 'Home', value: 1 },
     currentSubPageName: { label: '', value: null },
