@@ -9,6 +9,7 @@ import OrderCameraModal from '@/views/sales/OrderDetails/components/OrderCameraM
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { errorMessage, successMessage } from '@/utils/responseMessages'
 import { AxiosError } from 'axios'
+import { returnOrderDataService } from '@/store/services/returnOrderService'
 
 interface OrderItems {
     product: {
@@ -77,12 +78,16 @@ const CancelItemSelect: React.FC<Props> = ({ orderItems, payload, setPayload }) 
     const [storeReason, setStoreReason] = useState<{ [key: string]: { [key: number]: string } }>({})
     const [currentCameraItem, setCurrentCameraItem] = useState<{ orderItemId: string; itemIndex: number } | null>(null)
     const [previewImages, setPreviewImages] = useState<string[]>([])
-    const [reasonsArray] = useState<{ value: string; label: string }[]>([
-        { value: 'Qc Failed', label: 'QC Failed' },
-        { value: 'Damaged', label: 'Damaged' },
-        { value: 'Wrong Item', label: 'Wrong Item' },
-        { value: 'Other', label: 'Other' },
-    ])
+    const returnReasonCalls = returnOrderDataService.useReturnItemReasonsQuery({})
+    const [reasonsArray, setReasonsArray] = useState<{ value: string; label: string }[]>([])
+
+    useEffect(() => {
+        if (returnReasonCalls.isSuccess) {
+            setReasonsArray(returnReasonCalls?.data.config?.value?.reasons?.map((item) => ({ value: item, label: item })))
+        } else {
+            setReasonsArray([{ value: 'Qc Failed', label: 'qc failed' }])
+        }
+    }, [returnReasonCalls.isSuccess, returnReasonCalls.isError, returnReasonCalls.data?.config])
 
     useEffect(() => {
         if (!Array.isArray(orderItems)) {
