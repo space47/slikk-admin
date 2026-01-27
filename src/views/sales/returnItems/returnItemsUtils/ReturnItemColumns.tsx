@@ -48,14 +48,14 @@ export const ReturnItemColumns = () => {
                     <div>{row.original.inventory_sync_error?.length > 0 ? row.original.inventory_sync_error.length : '-'}</div>
                 ),
             },
-            {
-                header: 'Last Updated By',
-                accessorKey: 'last_updated_by',
-                cell: ({ row }) => {
-                    const updater = row.original.last_updated_by
-                    return <div>{updater && Object.keys(updater).length > 0 ? Object.values(updater).join(', ') : '-'}</div>
-                },
-            },
+            // {
+            //     header: 'Last Updated By',
+            //     accessorKey: 'last_updated_by',
+            //     cell: ({ row }) => {
+            //         const updater = row.original.last_updated_by
+            //         return <div>{updater && Object.keys(updater).length > 0 ? Object.values(updater).join(', ') : '-'}</div>
+            //     },
+            // },
             {
                 header: 'Created At',
                 accessorKey: 'create_date',
