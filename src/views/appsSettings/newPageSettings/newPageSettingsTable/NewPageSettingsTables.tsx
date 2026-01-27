@@ -187,8 +187,6 @@ const NewPageSettingsTables = () => {
         handleSelectPageId,
     })
 
-    console.log('page data', pageIdStore)
-
     const table = useReactTable({ data: mainPageSettingsData, columns, getCoreRowModel: getCoreRowModel() })
 
     if (isLoading) {
