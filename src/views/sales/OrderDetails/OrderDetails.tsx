@@ -27,6 +27,7 @@ import { TaskData } from '@/store/types/tasks.type'
 import ItemConvertModal from './components/ItemConvertModal'
 import { Order } from '@/store/types/newOrderTypes'
 import { newOrderService } from '@/store/services/newOrderaService'
+import DialogConfirm from '@/common/DialogConfirm'
 
 const OrderDetails = () => {
     const { invoice_id } = useParams()
@@ -36,6 +37,7 @@ const OrderDetails = () => {
     const [showUTMModal, setShowUTMModal] = useState(false)
     const [showCancelExchangeModal, setShowCancelExchangeModal] = useState(false)
     const [showRiderData, setShowRiderData] = useState(false)
+    const [isMarketing, setIsMarketing] = useState(false)
     const orderDetailsApi = newOrderService.useGetOrderDetailsQuery({ order_id: invoice_id }, { skip: !invoice_id })
 
     const showRider = useMemo(() => {
@@ -79,7 +81,7 @@ const OrderDetails = () => {
     })
 
     const { handlemarkAsPaid, handlePODAction, handleDownload, handleConvert, handleMarketingOrder, OrderLink, OrderList } =
-        useOrderDetailFunctions({ data, setShowCancelExchangeModal })
+        useOrderDetailFunctions({ data, setShowCancelExchangeModal, setIsMarketing })
 
     useEffect(() => {
         if (orderDetailsApi.currentData) {
@@ -109,8 +111,12 @@ const OrderDetails = () => {
                                     </div>
                                 ) : null}
                                 <div>
-                                    <Button variant="blue" size="sm" onClick={handleMarketingOrder}>
-                                        {data?.is_internal_order ? 'Marketing Marked' : 'Mark as Marketing'}
+                                    <Button
+                                        variant={data?.is_internal_order ? 'yellow' : 'blue'}
+                                        size="sm"
+                                        onClick={() => setIsMarketing(true)}
+                                    >
+                                        {data?.is_internal_order ? 'Make Customer Level' : 'Mark as Marketing'}
                                     </Button>
                                 </div>
                             </span>
@@ -357,6 +363,18 @@ const OrderDetails = () => {
                             />
 
                             <UtmModal isOpen={showUTMModal} setIsOpen={setShowUTMModal} orderData={data} />
+                            {isMarketing && (
+                                <DialogConfirm
+                                    IsOpen={isMarketing}
+                                    setIsOpen={setIsMarketing}
+                                    isProceed
+                                    headingName={
+                                        data?.is_internal_order ? 'Make this order Customer level' : 'Change this order to marketing level'
+                                    }
+                                    label={`Are you sure you want to change this order to ${data?.is_internal_order ? 'Customer level' : 'marketing level'}`}
+                                    onDialogOk={handleMarketingOrder}
+                                />
+                            )}
                         </div>
                     </>
                 )}
