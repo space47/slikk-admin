@@ -11,9 +11,10 @@ import { Order } from '@/store/types/newOrderTypes'
 interface Props {
     data?: Order
     setShowCancelExchangeModal: React.Dispatch<React.SetStateAction<boolean>>
+    setIsMarketing: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export const useOrderDetailFunctions = ({ data, setShowCancelExchangeModal }: Props) => {
+export const useOrderDetailFunctions = ({ data, setShowCancelExchangeModal, setIsMarketing }: Props) => {
     const navigate = useNavigate()
     const { invoice_id } = useParams()
 
@@ -72,6 +73,8 @@ export const useOrderDetailFunctions = ({ data, setShowCancelExchangeModal }: Pr
                     message: error?.response?.data?.message || error?.message || 'Failed to update marketing order status',
                 })
             }
+        } finally {
+            setIsMarketing(false)
         }
     }
 
