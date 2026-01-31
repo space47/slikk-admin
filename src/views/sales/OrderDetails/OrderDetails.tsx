@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import Loading from '@/components/shared/Loading'
 import OrderProducts from './components/OrderProducts'
 import PaymentSummary from './components/PaymentSummary'
@@ -39,6 +39,10 @@ const OrderDetails = () => {
     const [showRiderData, setShowRiderData] = useState(false)
     const [isMarketing, setIsMarketing] = useState(false)
     const orderDetailsApi = newOrderService.useGetOrderDetailsQuery({ order_id: invoice_id }, { skip: !invoice_id })
+
+    const hasStatus = useCallback((status: string) => data?.log.some((log) => log.status === status), [data?.log])
+    const terminalStatuses = [EOrderStatus.delivered, EOrderStatus.rto_delivered, EOrderStatus.cancelled]
+    const isRiderMoving = hasStatus(EOrderStatus.out_for_delivery) && !terminalStatuses.some(hasStatus)
 
     const showRider = useMemo(() => {
         return (
@@ -314,7 +318,11 @@ const OrderDetails = () => {
                                             )}
 
                                             {data?.logistic?.partner === 'Slikk' && (
-                                                <OrderMap task_id={data?.logistic?.task_id} taskData={taskData} />
+                                                <OrderMap
+                                                    isRiderMoving={isRiderMoving}
+                                                    task_id={data?.logistic?.task_id}
+                                                    taskData={taskData}
+                                                />
                                             )}
 
                                             {data?.logistic?.partner !== 'Slikk' && (
