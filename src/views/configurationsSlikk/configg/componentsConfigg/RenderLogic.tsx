@@ -104,7 +104,7 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
                                 {...field}
                                 type={inputType}
                                 placeholder={`Enter value`}
-                                className="w-auto"
+                                className="w-full"
                                 checked={typeof obj === 'boolean' ? field.value : undefined}
                                 onChange={(e) => {
                                     let value: string | number | boolean = e.target.value
@@ -137,7 +137,7 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
                         return (
                             <div
                                 key={fieldName}
-                                className="flex w-full overflow-auto gap-4 items-center mb-2 shadow-xl bg-gray-50 dark:bg-gray-900 p-3 rounded-lg"
+                                className="flex w-full overflow-full gap-4 items-center mb-2 shadow-xl bg-gray-50 dark:bg-gray-900 p-3 rounded-lg"
                             >
                                 {/* Editable key */}
                                 <Field name={fieldName}>
@@ -145,7 +145,7 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
                                         <Input
                                             placeholder="Key"
                                             value={tempKey}
-                                            className="w-auto"
+                                            className="w-1/3"
                                             onChange={(e) => {
                                                 const newKey = e.target.value
                                                 setEditableKeys((prev: any) => ({ ...prev, [key]: newKey }))
@@ -254,7 +254,7 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
                                             placeholder={`Enter ${key}`}
                                             name={fieldName}
                                             value={val}
-                                            className="w-auto"
+                                            className="w-full"
                                             onChange={(e: any) => setFieldValue(fieldName, e.target.value)}
                                         />
                                     </FormItem>
@@ -283,7 +283,7 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
                                             placeholder={`Enter ${key}`}
                                             name={fieldName}
                                             value={val}
-                                            className="w-auto"
+                                            className="w-full"
                                             onChange={(e: any) => setFieldValue(fieldName, e.target.value)}
                                         />
                                     </FormItem>
@@ -308,7 +308,7 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
                                                     {...field}
                                                     type={isPureNumber ? 'number' : 'text'}
                                                     placeholder="Value"
-                                                    className="w-auto"
+                                                    className="w-full"
                                                     onChange={(e) => setFieldValue(fieldName, e.target.value)}
                                                 />
                                             )
@@ -412,7 +412,7 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
                                                                                 {...field}
                                                                                 type={inputType}
                                                                                 placeholder={`Enter value`}
-                                                                                className="w-auto"
+                                                                                className="w-full"
                                                                                 checked={
                                                                                     typeof item === 'boolean' ? field.value : undefined
                                                                                 }
