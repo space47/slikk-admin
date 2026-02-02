@@ -263,6 +263,17 @@ const OrderMap: React.FC<Props> = ({ taskData, isRiderMoving }) => {
     }
     if (!mapCenter) return null
 
+    const renderRiderDelivery = () => (
+        <div className="mt-2 max-w-[400px] px-[8px] py-[12px] rounded-lg shadow-lg ">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span>
+                    <FaClock />
+                </span>
+                <span className="text-amber-900">Rider Delivers In </span>: {riderEstimateTime}
+            </div>
+        </div>
+    )
+
     return (
         <div ref={containerRef}>
             <div
@@ -299,7 +310,12 @@ const OrderMap: React.FC<Props> = ({ taskData, isRiderMoving }) => {
                     )}
                     {taskData?.drop_details && (
                         <Marker position={[taskData.drop_details.latitude, taskData.drop_details.longitude]} icon={icons.drop}>
-                            <Popup>{taskData.drop_details.name}</Popup>
+                            <Popup>
+                                <div>
+                                    {taskData.drop_details.name}
+                                    <span>{isRiderMoving && renderRiderDelivery()}</span>
+                                </div>
+                            </Popup>
                         </Marker>
                     )}
                     {taskData?.runner_latitude && taskData?.runner_longitude && !showOnlyRiderPath && (
@@ -403,16 +419,7 @@ const OrderMap: React.FC<Props> = ({ taskData, isRiderMoving }) => {
                             <div className="w-5 h-1 bg-blue-500" /> Warehouse → Delivery Address Shortest Path
                         </div>
                     </div>
-                    {isRiderMoving && (
-                        <div className="mt-2 max-w-[400px] px-[8px] py-[12px] rounded-lg shadow-lg ">
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                                <span>
-                                    <FaClock />
-                                </span>
-                                <span className="text-amber-900">Rider Delivers In </span>: {riderEstimateTime}
-                            </div>
-                        </div>
-                    )}
+                    {isRiderMoving && renderRiderDelivery()}
                 </div>
             </div>
         </div>
