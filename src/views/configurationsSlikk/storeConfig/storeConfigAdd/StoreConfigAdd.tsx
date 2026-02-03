@@ -100,7 +100,7 @@ const StoreConfigAdd = () => {
             notification.success({
                 message: response.data?.message || 'Configuration updated successfully',
             })
-            navigate(-1)
+            navigate(`/app/storeConfigurations`)
         } catch (error) {
             console.error('Submit Error:', error)
             notification.error({ message: 'Failed to update configuration' })
