@@ -47,7 +47,7 @@ const EditConfigurations = () => {
 
     const fetchConfigurationApi = async () => {
         try {
-            const response = await axiosInstance.get(`/app/configuration?config_id=${id}`)
+            const response = await axiosInstance.get(`/store/configuration?config_id=${id}`)
             setEditConfigData(response.data?.config || null)
         } catch (error) {
             console.error('Error fetching configuration:', error)
@@ -126,6 +126,7 @@ const EditConfigurations = () => {
 
         const body = {
             is_active: values.is_active,
+            store_id: typeof values.store === 'object' ? values.store?.id : values.store,
             config_name: values.name,
             config_value: tabValue === 'field' ? await processValues(values.value) : await JSON.parse(values.json_value),
         }
@@ -136,7 +137,7 @@ const EditConfigurations = () => {
             notification.success({
                 message: response.data?.message || 'Configuration updated successfully',
             })
-            navigate('/app/configurations')
+            navigate(`/app/storeConfigurations`)
         } catch (error) {
             console.error('Submit Error:', error)
             notification.error({ message: 'Failed to update configuration' })
