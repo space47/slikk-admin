@@ -3,75 +3,42 @@ import React, { useEffect, useState } from 'react'
 import { Formik, Form, Field } from 'formik'
 import { Button, Checkbox, FormContainer, FormItem, Input, Tabs } from '@/components/ui'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { notification } from 'antd'
 import LoadingSpinner from '@/common/LoadingSpinner'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { FILTER_STATE } from '@/store/types/filters.types'
-import { USER_PROFILE_DATA } from '@/store/types/company.types'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
-import ConfigJsonData from './ConfigJsonData'
-import { EDITFIELDSARRAY } from './commonConfigTypes'
-import RenderFields from './RenderLogic'
-import { handleimage } from '@/common/handleImage'
-import { CiTextAlignCenter } from 'react-icons/ci'
-import { VscJson } from 'react-icons/vsc'
 import _ from 'lodash'
+import { handleimage } from '@/common/handleImage'
+import { VscJson } from 'react-icons/vsc'
+import { CiTextAlignCenter } from 'react-icons/ci'
+import StoreSelectForm from '@/common/StoreSelectForm'
+import { EDITFIELDSARRAY } from '../configg/componentsConfigg/commonConfigTypes'
+import RenderAdd from '../storeConfig/storeConfigAdd/RenderAdd'
+import ConfigJsonData from '../configg/componentsConfigg/ConfigJsonData'
 
-const stringifyJson = (value: any) => {
-    try {
-        return JSON.stringify(value, null, 2)
-    } catch {
-        return ''
-    }
+interface Props {
+    configType: string
 }
 
-const EditConfigurations = () => {
+const BasicConfigAdd: React.FC<Props> = ({ configType }) => {
     const navigate = useNavigate()
-    const { id } = useParams()
     const dispatch = useAppDispatch()
     const [editableKeys, setEditableKeys] = useState<Record<string, string>>({})
-    const [editConfigData, setEditConfigData] = useState<any>(null)
     const [showSpinner, setShowSpinner] = useState(false)
+
     const [tabValue, setTabValue] = useState('field')
-    const selectedCompany = useAppSelector<USER_PROFILE_DATA>((store) => store.company)
+
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
 
     useEffect(() => {
         dispatch(getAllFiltersAPI())
     }, [dispatch])
 
-    const fetchConfigurationApi = async () => {
-        try {
-            const response = await axiosInstance.get(`/app/configuration?config_id=${id}`)
-            setEditConfigData(response.data?.config || null)
-        } catch (error) {
-            console.error('Error fetching configuration:', error)
-        }
-    }
-
-    useEffect(() => {
-        if (id) fetchConfigurationApi()
-    }, [id])
-
-    const initialValue =
-        tabValue === 'jsonData'
-            ? {
-                  name: editConfigData?.name || '',
-                  is_active: editConfigData?.is_active || false,
-                  json_value: stringifyJson(editConfigData?.value || {}),
-              }
-            : editConfigData || {
-                  id: '',
-                  name: '',
-                  is_active: false,
-                  last_updated_by: selectedCompany?.mobile || '',
-                  create_date: '',
-                  update_date: '',
-                  value: {},
-              }
+    const initialValue = {}
 
     const handleSubmit = async (values: any) => {
         const processValues = async (obj: any): Promise<any> => {
@@ -81,7 +48,6 @@ const EditConfigurations = () => {
             if (_.isPlainObject(obj)) {
                 const entries = await Promise.all(
                     Object.entries(obj).map(async ([key, val]: any) => {
-                        console.log('Value is......', val)
                         const value = key.includes('DLT_NUMBER')
                             ? val
                             : /^[0-9]+$/.test(val)
@@ -120,21 +86,32 @@ const EditConfigurations = () => {
             return obj
         }
 
-        const body = {
+        console.log('here', tabValue)
+
+        let body: Record<string, string | number> = {}
+
+        body = {
             is_active: values.is_active,
             config_name: values.name,
             config_value: tabValue === 'field' ? await processValues(values.value) : await JSON.parse(values.json_value),
         }
 
+        if (configType === 'store') {
+            body.store_id = values.store?.id
+        }
+
         try {
             setShowSpinner(true)
-            const response = await axiosInstance.post('/app/configuration', body)
+            const response = await axiosInstance.post(`/${configType}/configuration`, body)
             notification.success({
                 message: response.data?.message || 'Configuration updated successfully',
             })
-            navigate('/app/configurations')
+            if (configType === 'store') {
+                navigate(`/app/storeConfigurations`)
+            } else {
+                navigate('/app/configurations')
+            }
         } catch (error) {
-            console.error('Submit Error:', error)
             notification.error({ message: 'Failed to update configuration' })
         } finally {
             setShowSpinner(false)
@@ -165,7 +142,7 @@ const EditConfigurations = () => {
                     </TabList>
                 </Tabs>
             </div>
-            <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
+            <Formik enableReinitialize initialValues={initialValue as any} onSubmit={handleSubmit}>
                 {({ values, setFieldValue }) => {
                     return tabValue === 'field' ? (
                         <>
@@ -187,11 +164,12 @@ const EditConfigurations = () => {
                                             component={Input}
                                         />
                                     </FormItem>
+                                    {configType === 'store' && <StoreSelectForm label="Store" name="store" isSingle />}
                                     <FormItem label="Is Active" className="col-span-1 w-1/2">
                                         <Field type="checkbox" name="is_active" placeholder="Enter updated by" component={Checkbox} />
                                     </FormItem>
 
-                                    <RenderFields
+                                    <RenderAdd
                                         obj={values.value}
                                         parentKey="value"
                                         setFieldValue={setFieldValue}
@@ -220,4 +198,4 @@ const EditConfigurations = () => {
     )
 }
 
-export default EditConfigurations
+export default BasicConfigAdd
