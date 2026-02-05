@@ -1,3 +1,6 @@
+import { DropResult } from 'react-beautiful-dnd'
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface ConfigInterface {
     id: number | string
     name: string
