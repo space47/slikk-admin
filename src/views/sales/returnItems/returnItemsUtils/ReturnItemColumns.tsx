@@ -3,7 +3,11 @@ import { ColumnDef } from '@tanstack/react-table'
 import moment from 'moment'
 import { ReturnData } from '@/store/types/returnOrderData.types'
 
-export const ReturnItemColumns = () => {
+interface Props {
+    handleOpenModal: (x: string) => void
+}
+
+export const ReturnItemColumns = ({ handleOpenModal }: Props) => {
     return useMemo<ColumnDef<ReturnData>[]>(
         () => [
             {
@@ -48,6 +52,7 @@ export const ReturnItemColumns = () => {
                                         src={item.image}
                                         alt={`QC Failed ${index + 1}`}
                                         className="h-10 w-10 object-cover rounded border"
+                                        onClick={() => handleOpenModal(item?.image)}
                                     />
                                 ) : (
                                     <span key={index}>-</span>
