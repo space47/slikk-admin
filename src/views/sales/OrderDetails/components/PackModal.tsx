@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Modal, Select } from 'antd'
 import { Input } from '@/components/ui'
 import { FaRupeeSign, FaCamera, FaTimes, FaTrashAlt, FaBoxOpen, FaReceipt, FaWallet, FaTag } from 'react-icons/fa'
@@ -50,20 +50,25 @@ type Props = {
     handleSetPhoto: (id: number, images: string[]) => Promise<void>
 }
 
-const SelectCancelReason = ({ selectedReason, setSelectedReason, id, reasonsArray }: SelectCancelReasonProps) => {
+const SelectCancelReason: React.FC<SelectCancelReasonProps> = ({ selectedReason, setSelectedReason, id, reasonsArray }) => {
+    const handleChange = useCallback(
+        (value: string) => {
+            setSelectedReason((prev) => ({
+                ...prev,
+                [id]: value,
+            }))
+        },
+        [id, setSelectedReason],
+    )
+
     return (
         <div className="space-y-2">
-            <h4 className="text-sm font-medium text-gray-700">Reason for QC Failure:</h4>
+            <h4 className="text-sm font-medium text-gray-700">Reason for Incomplete Packing:</h4>
             <Select
                 className="w-full"
                 placeholder="Select Reason"
-                value={selectedReason[id ?? 0] ?? ''}
-                onChange={(value: any) => {
-                    setSelectedReason((prev) => ({
-                        ...prev,
-                        [id]: value,
-                    }))
-                }}
+                value={selectedReason[id] ?? ''}
+                onChange={handleChange}
                 options={reasonsArray}
             />
         </div>
@@ -293,31 +298,35 @@ const PackModal: React.FC<Props> = ({
                                                         Object.keys(pdts.location_details).length === 0 ||
                                                         Object.values(pdts.location_details).reduce((sum, qty) => sum + qty, 0) <
                                                             parseInt(pdts.quantity)) && (
-                                                        <div className="flex flex-col gap-2">
-                                                            <label className="text-sm font-medium text-gray-700">Fulfilled Quantity</label>
-                                                            <Select
-                                                                value={fulfilledQuantities[pdts.id] || 0}
-                                                                className="w-full max-w-[200px]"
-                                                                size="large"
-                                                                onChange={(value: any) => handleSelectChange(pdts.id, value)}
-                                                            >
-                                                                {Array.from({ length: parseInt(pdts.quantity, 10) + 1 }, (_, i) => (
-                                                                    <Option key={i} value={i.toString()}>
-                                                                        {i} unit{i !== 1 ? 's' : ''}
-                                                                    </Option>
-                                                                ))}
-                                                            </Select>
-                                                        </div>
+                                                        <>
+                                                            <div className="flex flex-col gap-2">
+                                                                <label className="text-sm font-medium text-gray-700">
+                                                                    Fulfilled Quantity
+                                                                </label>
+                                                                <Select
+                                                                    value={fulfilledQuantities[pdts.id] || 0}
+                                                                    className="w-full max-w-[200px]"
+                                                                    size="large"
+                                                                    onChange={(value: any) => handleSelectChange(pdts.id, value)}
+                                                                >
+                                                                    {Array.from({ length: parseInt(pdts.quantity, 10) + 1 }, (_, i) => (
+                                                                        <Option key={i} value={i.toString()}>
+                                                                            {i} unit{i !== 1 ? 's' : ''}
+                                                                        </Option>
+                                                                    ))}
+                                                                </Select>
+                                                            </div>
+                                                            {Number(fulfilledQuantities[pdts.id] || 0) < Number(pdts.quantity) && (
+                                                                <SelectCancelReason
+                                                                    id={pdts.id}
+                                                                    reasonsArray={reasonsArray}
+                                                                    selectedReason={selectedReason}
+                                                                    setSelectedReason={setSelectedReason}
+                                                                />
+                                                            )}
+                                                        </>
                                                     )}
                                                 {/* Here one for dropdown */}
-                                                {Number(fulfilledQuantities[pdts.id] || 0) < Number(pdts.quantity) && (
-                                                    <SelectCancelReason
-                                                        id={pdts.id}
-                                                        reasonsArray={reasonsArray}
-                                                        selectedReason={selectedReason}
-                                                        setSelectedReason={setSelectedReason}
-                                                    />
-                                                )}
                                             </div>
 
                                             {/* Location Selection */}
@@ -374,8 +383,11 @@ const PackModal: React.FC<Props> = ({
                                                                 </div>
                                                             </div>
                                                         )}
-                                                        {Object.values(pdts.location_details).reduce((sum, qty) => sum + qty, 0) <
-                                                            parseInt(pdts.quantity) && (
+
+                                                        {Object.values(selectedLocations?.[pdts?.id] ?? {}).reduce(
+                                                            (sum, qty) => sum + qty,
+                                                            0,
+                                                        ) < Number(pdts.quantity) && (
                                                             <SelectCancelReason
                                                                 id={pdts.id}
                                                                 reasonsArray={reasonsArray}
