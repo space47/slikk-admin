@@ -49,7 +49,7 @@ export const ReturnItemColumns = ({ handleOpenModal }: Props) => {
                                 item.image ? (
                                     <img
                                         key={index}
-                                        src={item.image}
+                                        src={item.image?.split(',')[0]}
                                         alt={`QC Failed ${index + 1}`}
                                         className="h-10 w-10 object-cover rounded border"
                                         onClick={() => handleOpenModal(item?.image)}
