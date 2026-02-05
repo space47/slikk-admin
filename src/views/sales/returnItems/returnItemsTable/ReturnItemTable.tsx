@@ -11,6 +11,7 @@ import { RTLStatusArray } from '../returnItemsUtils/returnItemcommons'
 import { GenericCommonTypes } from '@/common/allTypesCommon'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 import { PiKeyReturnFill } from 'react-icons/pi'
+import ImageMODAL from '@/common/ImageModal'
 
 const ReturnItemTable = () => {
     const [returnListData, setReturnListData] = useState<ReturnData[]>([])
@@ -19,6 +20,8 @@ const ReturnItemTable = () => {
     const [pageSize, setPageSize] = useState(10)
     const [searchFilter, setSearchFilter] = useState('')
     const [statusData, setStatusData] = useState<string>('')
+    const [particularRowImage, setParticularROwImage] = useState<string>('')
+    const [showImageModal, setShowImageModal] = useState(false)
     const returnListQuery = returnOrderDataService.useReturnManagementQuery({ page, pageSize, status: statusData })
     const [getReturnDetails, returnDetailsQuery] = returnOrderDataService.useLazyReturnItemDetailsQuery()
 
@@ -56,7 +59,12 @@ const ReturnItemTable = () => {
         return searchFilter ? 0 : count
     }, [searchFilter, count])
 
-    const columns = ReturnItemColumns()
+    const handleOpenModal = (img: string) => {
+        setParticularROwImage(img)
+        setShowImageModal(true)
+    }
+
+    const columns = ReturnItemColumns({ handleOpenModal })
 
     return (
         <Spin spinning={loadingState}>
@@ -124,6 +132,13 @@ const ReturnItemTable = () => {
                         </div>
                     )}
                 </div>
+                {showImageModal && (
+                    <ImageMODAL
+                        dialogIsOpen={showImageModal}
+                        setIsOpen={setShowImageModal}
+                        image={particularRowImage && particularRowImage?.split(',')}
+                    />
+                )}
             </div>
         </Spin>
     )
