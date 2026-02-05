@@ -32,6 +32,51 @@ export const ReturnItemColumns = () => {
                 cell: ({ row }) => <div>{row.original.qc_failed}</div>,
             },
             {
+                header: 'QC Failed Image',
+                id: 'qc_failed_image',
+                cell: ({ row }) => {
+                    const qcData = row.original.qc_field_data
+
+                    if (!qcData || qcData.length === 0) return '-'
+
+                    return (
+                        <div className="flex gap-2 flex-wrap">
+                            {qcData.map((item, index) =>
+                                item.image ? (
+                                    <img
+                                        key={index}
+                                        src={item.image}
+                                        alt={`QC Failed ${index + 1}`}
+                                        className="h-10 w-10 object-cover rounded border"
+                                    />
+                                ) : (
+                                    <span key={index}>-</span>
+                                ),
+                            )}
+                        </div>
+                    )
+                },
+            },
+            {
+                header: 'QC Failed Reason',
+                id: 'qc_failed_reason',
+                cell: ({ row }) => {
+                    const qcData = row.original.qc_field_data
+
+                    if (!qcData || qcData.length === 0) return '-'
+
+                    return (
+                        <div className="space-y-1">
+                            {qcData.map((item, index) => (
+                                <div key={index} className="text-sm flex gap-2">
+                                    <span className="p-2 shadow-sm border rounded-lg">{item.reason || '-'}</span>
+                                </div>
+                            ))}
+                        </div>
+                    )
+                },
+            },
+            {
                 header: 'Refurbished',
                 accessorKey: 'refurbished',
                 cell: ({ row }) => <div>{row.original.refurbished}</div>,
@@ -48,14 +93,7 @@ export const ReturnItemColumns = () => {
                     <div>{row.original.inventory_sync_error?.length > 0 ? row.original.inventory_sync_error.length : '-'}</div>
                 ),
             },
-            // {
-            //     header: 'Last Updated By',
-            //     accessorKey: 'last_updated_by',
-            //     cell: ({ row }) => {
-            //         const updater = row.original.last_updated_by
-            //         return <div>{updater && Object.keys(updater).length > 0 ? Object.values(updater).join(', ') : '-'}</div>
-            //     },
-            // },
+
             {
                 header: 'Created At',
                 accessorKey: 'create_date',

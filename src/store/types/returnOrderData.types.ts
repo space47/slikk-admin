@@ -216,6 +216,10 @@ export interface ReturnData {
     sku: string
     create_date: string
     update_date: string
+    qc_field_data: {
+        image: string
+        reason: string
+    }[]
 }
 
 export interface ReturnManagementResponse {
