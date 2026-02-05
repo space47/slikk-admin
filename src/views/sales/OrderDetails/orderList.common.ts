@@ -81,6 +81,7 @@ export interface IOrderPack {
     status: string
     bagsCount: string
     setTriggerPackCall: (x: boolean) => void
+    selectedReasons: Record<number, string>
 }
 
 export const enum EOrderStatus {
