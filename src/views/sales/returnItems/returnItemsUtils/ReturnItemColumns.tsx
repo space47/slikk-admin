@@ -10,11 +10,11 @@ interface Props {
 export const ReturnItemColumns = ({ handleOpenModal }: Props) => {
     return useMemo<ColumnDef<ReturnData>[]>(
         () => [
-            {
-                header: 'Item ID',
-                accessorKey: 'return_order_item',
-                cell: ({ row }) => <div>{row.original.return_order_item || '-'}</div>,
-            },
+            // {
+            //     header: 'Item ID',
+            //     accessorKey: 'return_order_item',
+            //     cell: ({ row }) => <div>{row.original.return_order_item || '-'}</div>,
+            // },
             {
                 header: 'SKU',
                 accessorKey: 'sku',
