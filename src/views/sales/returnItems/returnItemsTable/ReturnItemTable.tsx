@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react'
-import { FaSitemap } from 'react-icons/fa'
+import React, { useEffect, useState } from 'react'
+import { FaFilter, FaSearch, FaSitemap } from 'react-icons/fa'
 import { Select, Spin } from 'antd'
 import EasyTable from '@/common/EasyTable'
 import PageCommon from '@/common/PageCommon'
@@ -7,7 +7,7 @@ import { Input } from '@/components/ui'
 import { returnOrderDataService } from '@/store/services/returnOrderService'
 import { ReturnData } from '@/store/types/returnOrderData.types'
 import { ReturnItemColumns } from '../returnItemsUtils/ReturnItemColumns'
-import { RTLStatusArray } from '../returnItemsUtils/returnItemcommons'
+import { RTLFilters, RTLFilterTypes, RTLStatusArray } from '../returnItemsUtils/returnItemcommons'
 import { GenericCommonTypes } from '@/common/allTypesCommon'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 import { PiKeyReturnFill } from 'react-icons/pi'
@@ -20,13 +20,18 @@ const ReturnItemTable = () => {
     const [pageSize, setPageSize] = useState(10)
     const [searchFilter, setSearchFilter] = useState('')
     const [statusData, setStatusData] = useState<string>('')
+    const [filterTypeData, setFilterTypeData] = useState<string>(RTLFilters.SKU)
     const [particularRowImage, setParticularROwImage] = useState<string>('')
     const [showImageModal, setShowImageModal] = useState(false)
-    const returnListQuery = returnOrderDataService.useReturnManagementQuery({ page, pageSize, status: statusData })
-    const [getReturnDetails, returnDetailsQuery] = returnOrderDataService.useLazyReturnItemDetailsQuery()
+    const returnListQuery = returnOrderDataService.useReturnManagementQuery({
+        page,
+        pageSize,
+        status: statusData,
+        scanType: filterTypeData ?? '',
+        scanValue: searchFilter?.trim(),
+    })
 
-    const loadingState =
-        returnListQuery.isLoading || returnListQuery.isFetching || returnDetailsQuery.isLoading || returnDetailsQuery.isFetching
+    const loadingState = returnListQuery.isLoading || returnListQuery.isFetching
 
     const handleSearchChange = (e: GenericCommonTypes['InputEvent']) => {
         setSearchFilter(e.target.value)
@@ -37,27 +42,19 @@ const ReturnItemTable = () => {
         setStatusData(value ?? '')
         setPage(1)
     }
-    useEffect(() => {
-        if (!searchFilter) return
-        const debouncedData = setTimeout(() => {
-            getReturnDetails({ return_item_id: searchFilter.trim() })
-        }, 500)
-
-        return () => clearTimeout(debouncedData)
-    }, [searchFilter, getReturnDetails])
+    const handleFilterChange = (value?: string) => {
+        setFilterTypeData(value ?? '')
+        setPage(1)
+    }
 
     useEffect(() => {
-        if (!searchFilter && returnListQuery.isSuccess && returnListQuery.data) {
+        if (returnListQuery.isSuccess && returnListQuery.data) {
             setReturnListData(returnListQuery.data.data.results)
             setCount(returnListQuery.data.data.count || 0)
         }
     }, [returnListQuery.isSuccess, returnListQuery.data, returnListQuery.data?.data.count, searchFilter])
 
-    const displayedData: ReturnData[] = searchFilter ? (returnDetailsQuery.isSuccess ? [returnDetailsQuery.data.data] : []) : returnListData
-
-    const totalCount = useMemo(() => {
-        return searchFilter ? 0 : count
-    }, [searchFilter, count])
+    const displayedData: ReturnData[] = returnListData
 
     const handleOpenModal = (img: string) => {
         setParticularROwImage(img)
@@ -82,14 +79,32 @@ const ReturnItemTable = () => {
                     </div>
                 </div>
                 <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-800">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Search</label>
+                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <FaSearch className="text-green-500" />
+                                Search
+                            </label>
                             <Input
                                 type="search"
                                 value={searchFilter}
-                                placeholder="Search by Return Item ID"
+                                placeholder="Search here..."
+                                className="h-auto rounded-lg"
                                 onChange={handleSearchChange}
+                            />
+                        </div>
+                        <div className="space-y-2 xl:mt-2">
+                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <FaFilter className="text-blue-500" />
+                                Select Filter
+                            </label>
+                            <Select
+                                allowClear
+                                className="w-full"
+                                value={filterTypeData || undefined}
+                                placeholder="Select Status"
+                                options={RTLFilterTypes}
+                                onChange={handleFilterChange}
                             />
                         </div>
                         <div className="space-y-2 xl:mt-2">
@@ -99,7 +114,6 @@ const ReturnItemTable = () => {
                             </label>
                             <Select
                                 allowClear
-                                showSearch
                                 className="w-full"
                                 value={statusData || undefined}
                                 placeholder="Select Status"
@@ -120,17 +134,9 @@ const ReturnItemTable = () => {
                         <EasyTable overflow mainData={displayedData} columns={columns} page={page} pageSize={pageSize} />
                     )}
 
-                    {!searchFilter && (
-                        <div className="border-t border-gray-200 dark:border-gray-800 p-4">
-                            <PageCommon
-                                page={page}
-                                pageSize={pageSize}
-                                setPage={setPage}
-                                setPageSize={setPageSize}
-                                totalData={totalCount}
-                            />
-                        </div>
-                    )}
+                    <div className="border-t border-gray-200 dark:border-gray-800 p-4">
+                        <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={count} />
+                    </div>
                 </div>
                 {showImageModal && (
                     <ImageMODAL
