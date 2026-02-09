@@ -17,8 +17,6 @@ const StoreQrModal = ({ dialogIsOpen, setIsOpen, store_code }: Props) => {
     const [generatedQr, setGeneratedQr] = useState<string>('')
     const [loading, setLoading] = useState(false)
     const [downloading, setDownloading] = useState(false)
-
-    // Wrapper ref instead of SVG ref (react-qr-code doesn’t forward refs)
     const qrWrapperRef = useRef<HTMLDivElement>(null)
 
     const fetchQr = async (code: string) => {

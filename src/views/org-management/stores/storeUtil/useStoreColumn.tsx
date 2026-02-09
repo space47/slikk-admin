@@ -25,6 +25,18 @@ export const useStoreColumn = ({ handleActiveCareer, handleGenerateQR }: props) 
                 ),
             },
             {
+                header: 'Generate QR',
+                accessorKey: 'code',
+                cell: ({ row }) => {
+                    const data = row.original
+                    return (
+                        <button className="bg-black rounded-[50px] p-2 hover:bg-white" onClick={() => handleGenerateQR(data?.code)}>
+                            <FaQrcode className="text-xl text-white hover:text-gray-700 cursor-pointer" />
+                        </button>
+                    )
+                },
+            },
+            {
                 header: 'Store Availability',
                 accessorKey: 'is_accepting_orders',
                 cell: ({ row }) => {
@@ -177,18 +189,6 @@ export const useStoreColumn = ({ handleActiveCareer, handleGenerateQR }: props) 
                         Location
                     </a>
                 ),
-            },
-            {
-                header: 'Generate QR',
-                accessorKey: 'code',
-                cell: ({ row }) => {
-                    const data = row.original
-                    return (
-                        <button className="bg-black rounded-[50px] p-2 hover:bg-white" onClick={() => handleGenerateQR(data?.code)}>
-                            <FaQrcode className="text-xl text-white hover:text-gray-700 cursor-pointer" />
-                        </button>
-                    )
-                },
             },
         ],
         [],
