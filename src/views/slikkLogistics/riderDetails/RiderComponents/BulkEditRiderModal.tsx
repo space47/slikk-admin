@@ -73,6 +73,7 @@ const BulkEditRiderModal = ({ dialogIsOpen, setIsOpen, riderMobileStore }: Props
         try {
             const res = await axioisInstance.post(`/admin/token/disable`, body)
             successMessage(res)
+            setIsOpen(false)
         } catch (error) {
             if (error instanceof AxiosError) errorMessage(error)
         }
