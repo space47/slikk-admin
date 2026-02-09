@@ -37,7 +37,7 @@ const StoreSelectComponent = ({ label, store, setStore, customCss, isSingle = fa
                             className={customCss ?? 'w-full'}
                             options={storeResults}
                             getOptionLabel={(option) => option.code}
-                            getOptionValue={(option) => option.id}
+                            getOptionValue={(option) => option.id?.toString()}
                             value={selectedStores}
                             onChange={(newVal) => {
                                 setStore(newVal)
