@@ -63,6 +63,7 @@ export type STORETABLE = {
     create_date: string
     update_date: string
     location_url: string
+    is_accepting_orders: boolean
 }
 
 export const StoreOption = [
