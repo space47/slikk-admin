@@ -1,16 +1,17 @@
 import { ColumnDef } from '@tanstack/react-table'
 import React, { useMemo } from 'react'
 import { STORETABLE } from '../commonStores'
-import { FaEdit } from 'react-icons/fa'
+import { FaEdit, FaQrcode } from 'react-icons/fa'
 import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
 import { Switch } from 'antd'
 
 interface props {
-    handleActiveCareer: any
+    handleActiveCareer: (x: number, y: boolean, z: boolean) => void
+    handleGenerateQR: (x: string) => void
 }
 
-export const useStoreColumn = ({ handleActiveCareer }: props) => {
+export const useStoreColumn = ({ handleActiveCareer, handleGenerateQR }: props) => {
     const navigate = useNavigate()
     return useMemo<ColumnDef<STORETABLE>[]>(
         () => [
@@ -24,9 +25,21 @@ export const useStoreColumn = ({ handleActiveCareer }: props) => {
                 ),
             },
             {
+                header: 'Generate QR',
+                accessorKey: 'code',
+                cell: ({ row }) => {
+                    const data = row.original
+                    return (
+                        <button className="bg-black rounded-[50px] p-2 hover:bg-white" onClick={() => handleGenerateQR(data?.code)}>
+                            <FaQrcode className="text-xl text-white hover:text-gray-700 cursor-pointer" />
+                        </button>
+                    )
+                },
+            },
+            {
                 header: 'Store Availability',
                 accessorKey: 'is_accepting_orders',
-                cell: ({ row }: any) => {
+                cell: ({ row }) => {
                     return (
                         <div>
                             <Switch
@@ -177,15 +190,6 @@ export const useStoreColumn = ({ handleActiveCareer }: props) => {
                     </a>
                 ),
             },
-            // {
-            //     header: 'Store Availability',
-            //     accessorKey: '',
-            //     cell: ({ row }) => (
-            //         <button className="border-none bg-none" onClick={() => handleStoreAvailability(row?.original?.id)}>
-            //             <FaEdit className="text-xl text-blue-600" />
-            //         </button>
-            //     ),
-            // },
         ],
         [],
     )
