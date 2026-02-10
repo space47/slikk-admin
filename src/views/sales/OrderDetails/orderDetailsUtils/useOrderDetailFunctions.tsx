@@ -7,14 +7,16 @@ import React from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { BsBoxArrowInUpRight } from 'react-icons/bs'
 import { Order } from '@/store/types/newOrderTypes'
+import { errorMessage, successMessage } from '@/utils/responseMessages'
 
 interface Props {
     data?: Order
     setShowCancelExchangeModal: React.Dispatch<React.SetStateAction<boolean>>
     setIsMarketing: React.Dispatch<React.SetStateAction<boolean>>
+    refetch: any
 }
 
-export const useOrderDetailFunctions = ({ data, setShowCancelExchangeModal, setIsMarketing }: Props) => {
+export const useOrderDetailFunctions = ({ data, setShowCancelExchangeModal, setIsMarketing, refetch }: Props) => {
     const navigate = useNavigate()
     const { invoice_id } = useParams()
 
@@ -36,6 +38,19 @@ export const useOrderDetailFunctions = ({ data, setShowCancelExchangeModal, setI
             navigate(0)
         } catch (error) {
             console.log(error)
+        }
+    }
+
+    const handleReverseTNB = async () => {
+        try {
+            const body = { order_id: invoice_id, reason: 'Product not as expected' }
+            const response = await axioisInstance.post(`/merchant/tnb/reverse`, body)
+            successMessage(response)
+            refetch()
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                errorMessage(error)
+            }
         }
     }
 
@@ -191,5 +206,14 @@ export const useOrderDetailFunctions = ({ data, setShowCancelExchangeModal, setI
         )
     }
 
-    return { handlemarkAsPaid, handlePODAction, handleDownload, handleConvert, handleMarketingOrder, OrderList, OrderLink }
+    return {
+        handlemarkAsPaid,
+        handlePODAction,
+        handleDownload,
+        handleConvert,
+        handleMarketingOrder,
+        OrderList,
+        OrderLink,
+        handleReverseTNB,
+    }
 }
