@@ -9,10 +9,7 @@ type Task = {
 }
 
 type NewTaskFieldProps = {
-    onAddNewTask: (taskCount: {
-        completedTask: number
-        totalTask: number
-    }) => void
+    onAddNewTask: (taskCount: { completedTask: number; totalTask: number }) => void
 }
 
 const NewTaskField = ({ onAddNewTask }: NewTaskFieldProps) => {
@@ -81,9 +78,7 @@ const NewTaskField = ({ onAddNewTask }: NewTaskFieldProps) => {
                         <Checkbox
                             key={index}
                             defaultChecked={task.checked}
-                            onChange={(checked) =>
-                                onTaskCheckChange(checked as boolean, index)
-                            }
+                            onChange={(checked) => onTaskCheckChange(checked as boolean, index)}
                         >
                             {task.label}
                         </Checkbox>

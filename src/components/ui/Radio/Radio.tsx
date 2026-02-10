@@ -1,20 +1,11 @@
-import {
-    forwardRef,
-    useState,
-    useMemo,
-    useContext,
-    useCallback,
-    useEffect,
-} from 'react'
+import { forwardRef, useState, useMemo, useContext, useCallback, useEffect } from 'react'
 import classNames from 'classnames'
 import RadioGroupContext from './context'
 import { useConfig } from '../ConfigProvider'
 import type { CommonProps } from '../@types/common'
 import type { InputHTMLAttributes } from 'react'
 
-export interface RadioProps
-    extends CommonProps,
-        Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'> {
+export interface RadioProps extends CommonProps, Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'> {
     checked?: boolean
     color?: string
     defaultChecked?: boolean
@@ -62,15 +53,12 @@ const Radio = forwardRef<HTMLInputElement, RadioProps>((props, ref) => {
     const { themeColor, primaryColorLevel } = useConfig()
 
     const getChecked = () => {
-        return typeof groupValue !== 'undefined'
-            ? groupValue === value
-            : checkedProp
+        return typeof groupValue !== 'undefined' ? groupValue === value : checkedProp
     }
 
     const [radioChecked, setRadioChecked] = useState(getChecked())
 
-    const radioColor =
-        color || colorContext || `${themeColor}-${primaryColorLevel}`
+    const radioColor = color || colorContext || `${themeColor}-${primaryColorLevel}`
 
     const controlProps = useMemo(() => {
         if (typeof groupValue !== 'undefined') {
@@ -89,15 +77,7 @@ const Radio = forwardRef<HTMLInputElement, RadioProps>((props, ref) => {
             onChange?.(value, e)
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [
-            disabled,
-            setRadioChecked,
-            onChange,
-            value,
-            onGroupChange,
-            groupValue,
-            readOnly,
-        ]
+        [disabled, setRadioChecked, onChange, value, onGroupChange, groupValue, readOnly],
     )
 
     useEffect(() => {
@@ -118,7 +98,7 @@ const Radio = forwardRef<HTMLInputElement, RadioProps>((props, ref) => {
         labelDisabledClass,
         className,
         `${'inline-flex'}`,
-        `${radioGutter ? 'm' + (vertical ? 'b-' : 'r-') + radioGutter : ''}`
+        `${radioGutter ? 'm' + (vertical ? 'b-' : 'r-') + radioGutter : ''}`,
     )
 
     return (
@@ -136,16 +116,7 @@ const Radio = forwardRef<HTMLInputElement, RadioProps>((props, ref) => {
                 {...field}
                 {...rest}
             />
-            {children ? (
-                <span
-                    className={classNames(
-                        'ltr:ml-2 rtl:mr-2',
-                        disabled ? 'opacity-50' : ''
-                    )}
-                >
-                    {children}
-                </span>
-            ) : null}
+            {children ? <span className={classNames('ltr:ml-2 rtl:mr-2', disabled ? 'opacity-50' : '')}>{children}</span> : null}
         </label>
     )
 })

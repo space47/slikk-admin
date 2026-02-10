@@ -2,13 +2,7 @@ import { useRef, forwardRef } from 'react'
 import classNames from 'classnames'
 import useMergedRef from '../hooks/useMergeRef'
 import type { CommonProps } from '../@types/common'
-import type {
-    FocusEvent,
-    MouseEvent,
-    KeyboardEvent,
-    ChangeEvent,
-    Ref,
-} from 'react'
+import type { FocusEvent, MouseEvent, KeyboardEvent, ChangeEvent, Ref } from 'react'
 
 interface AmPmInputProps extends CommonProps {
     disabled?: boolean
@@ -21,8 +15,7 @@ interface AmPmInputProps extends CommonProps {
 }
 
 const AmPmInput = forwardRef<HTMLInputElement, AmPmInputProps>((props, ref) => {
-    const { className, onChange, onFocus, value, amLabel, pmLabel, ...rest } =
-        props
+    const { className, onChange, onFocus, value, amLabel, pmLabel, ...rest } = props
 
     const inputRef = useRef<HTMLInputElement>()
 
@@ -34,10 +27,7 @@ const AmPmInput = forwardRef<HTMLInputElement, AmPmInputProps>((props, ref) => {
     const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
             event.preventDefault()
-            onChange(
-                value === amLabel ? (pmLabel as string) : (amLabel as string),
-                true
-            )
+            onChange(value === amLabel ? (pmLabel as string) : (amLabel as string), true)
         }
     }
 

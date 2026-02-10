@@ -1,10 +1,6 @@
 import { useMemo } from 'react'
 import Table from '@/components/ui/Table'
-import {
-    getCoreRowModel,
-    flexRender,
-    useReactTable,
-} from '@tanstack/react-table'
+import { getCoreRowModel, flexRender, useReactTable } from '@tanstack/react-table'
 import { data10 } from './data'
 import type { Person } from './data'
 import type { ColumnDef } from '@tanstack/react-table'
@@ -21,7 +17,7 @@ function Resizable() {
             { header: 'Email', accessorKey: 'email' },
             { header: 'Gender', accessorKey: 'gender' },
         ],
-        []
+        [],
     )
 
     const table = useReactTable({
@@ -47,18 +43,11 @@ function Resizable() {
                                         width: header.getSize(),
                                     }}
                                 >
-                                    {header.isPlaceholder
-                                        ? null
-                                        : flexRender(
-                                              header.column.columnDef.header,
-                                              header.getContext()
-                                          )}
+                                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                                     {header.column.getCanResize() && (
                                         <div
                                             className={`table-resizer cursor-all-scroll ${
-                                                header.column.getIsResizing()
-                                                    ? 'isResizing'
-                                                    : ''
+                                                header.column.getIsResizing() ? 'isResizing' : ''
                                             }`}
                                             onMouseDown={header.getResizeHandler()}
                                             onTouchStart={header.getResizeHandler()}
@@ -76,14 +65,8 @@ function Resizable() {
                         <Tr key={row.id}>
                             {row.getVisibleCells().map((cell) => {
                                 return (
-                                    <Td
-                                        key={cell.id}
-                                        style={{ width: cell.column.getSize() }}
-                                    >
-                                        {flexRender(
-                                            cell.column.columnDef.cell,
-                                            cell.getContext()
-                                        )}
+                                    <Td key={cell.id} style={{ width: cell.column.getSize() }}>
+                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                     </Td>
                                 )
                             })}

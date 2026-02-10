@@ -4,12 +4,7 @@ import Button from '@/components/ui/Button'
 import Table from '@/components/ui/Table'
 import Badge from '@/components/ui/Badge'
 import useThemeClass from '@/utils/hooks/useThemeClass'
-import {
-    useReactTable,
-    getCoreRowModel,
-    flexRender,
-    createColumnHelper,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, flexRender, createColumnHelper } from '@tanstack/react-table'
 import { useNavigate } from 'react-router-dom'
 import { NumericFormat } from 'react-number-format'
 import dayjs from 'dayjs'
@@ -65,10 +60,7 @@ const OrderColumn = ({ row }: OrderColumnPros) => {
     }, [navigate, row])
 
     return (
-        <span
-            className={`cursor-pointer select-none font-semibold hover:${textTheme}`}
-            onClick={onView}
-        >
+        <span className={`cursor-pointer select-none font-semibold hover:${textTheme}`} onClick={onView}>
             #{row.id}
         </span>
     )
@@ -88,9 +80,7 @@ const columns = [
             return (
                 <div className="flex items-center">
                     <Badge className={orderStatusColor[status].dotClass} />
-                    <span
-                        className={`ml-2 rtl:mr-2 capitalize font-semibold ${orderStatusColor[status].textClass}`}
-                    >
+                    <span className={`ml-2 rtl:mr-2 capitalize font-semibold ${orderStatusColor[status].textClass}`}>
                         {orderStatusColor[status].label}
                     </span>
                 </div>
@@ -142,14 +132,8 @@ const LatestOrder = ({ data = [], className }: LatestOrderProps) => {
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => {
                                 return (
-                                    <Th
-                                        key={header.id}
-                                        colSpan={header.colSpan}
-                                    >
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
+                                    <Th key={header.id} colSpan={header.colSpan}>
+                                        {flexRender(header.column.columnDef.header, header.getContext())}
                                     </Th>
                                 )
                             })}
@@ -161,14 +145,7 @@ const LatestOrder = ({ data = [], className }: LatestOrderProps) => {
                         return (
                             <Tr key={row.id}>
                                 {row.getVisibleCells().map((cell) => {
-                                    return (
-                                        <Td key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext()
-                                            )}
-                                        </Td>
-                                    )
+                                    return <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                                 })}
                             </Tr>
                         )

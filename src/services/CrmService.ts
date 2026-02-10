@@ -14,9 +14,7 @@ export async function apiGetCrmCalendar<T>() {
     })
 }
 
-export async function apiGetCrmCustomers<T, U extends Record<string, unknown>>(
-    data: U
-) {
+export async function apiGetCrmCustomers<T, U extends Record<string, unknown>>(data: U) {
     return ApiService.fetchData<T>({
         url: '/crm/customers',
         method: 'post',
@@ -31,9 +29,7 @@ export async function apiGetCrmCustomersStatistic<T>() {
     })
 }
 
-export async function apPutCrmCustomer<T, U extends Record<string, unknown>>(
-    data: U
-) {
+export async function apPutCrmCustomer<T, U extends Record<string, unknown>>(data: U) {
     return ApiService.fetchData<T>({
         url: '/crm/customers',
         method: 'put',
@@ -41,10 +37,7 @@ export async function apPutCrmCustomer<T, U extends Record<string, unknown>>(
     })
 }
 
-export async function apiGetCrmCustomerDetails<
-    T,
-    U extends Record<string, unknown>
->(params: U) {
+export async function apiGetCrmCustomerDetails<T, U extends Record<string, unknown>>(params: U) {
     return ApiService.fetchData<T>({
         url: '/crm/customer-details',
         method: 'get',
@@ -52,10 +45,7 @@ export async function apiGetCrmCustomerDetails<
     })
 }
 
-export async function apiDeleteCrmCustomer<
-    T,
-    U extends Record<string, unknown>
->(data: U) {
+export async function apiDeleteCrmCustomer<T, U extends Record<string, unknown>>(data: U) {
     return ApiService.fetchData<T>({
         url: '/crm/customer/delete',
         method: 'delete',
@@ -63,9 +53,7 @@ export async function apiDeleteCrmCustomer<
     })
 }
 
-export async function apiGetCrmMails<T, U extends Record<string, unknown>>(
-    params: U
-) {
+export async function apiGetCrmMails<T, U extends Record<string, unknown>>(params: U) {
     return ApiService.fetchData<T>({
         url: '/crm/mails',
         method: 'get',
@@ -73,9 +61,7 @@ export async function apiGetCrmMails<T, U extends Record<string, unknown>>(
     })
 }
 
-export async function apiGetCrmMail<T, U extends Record<string, unknown>>(
-    params: U
-) {
+export async function apiGetCrmMail<T, U extends Record<string, unknown>>(params: U) {
     return ApiService.fetchData<T>({
         url: '/crm/mail',
         method: 'get',

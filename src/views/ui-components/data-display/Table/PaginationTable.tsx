@@ -2,13 +2,7 @@ import { useState, useMemo } from 'react'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
-import {
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    flexRender,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, flexRender } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 
 type Person = {
@@ -62,7 +56,7 @@ const PaginationTable = () => {
                 accessorKey: 'age',
             },
         ],
-        []
+        [],
     )
 
     const [data] = useState(() => tableData())
@@ -92,14 +86,8 @@ const PaginationTable = () => {
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => {
                                 return (
-                                    <Th
-                                        key={header.id}
-                                        colSpan={header.colSpan}
-                                    >
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
+                                    <Th key={header.id} colSpan={header.colSpan}>
+                                        {flexRender(header.column.columnDef.header, header.getContext())}
                                     </Th>
                                 )
                             })}
@@ -111,14 +99,7 @@ const PaginationTable = () => {
                         return (
                             <Tr key={row.id}>
                                 {row.getVisibleCells().map((cell) => {
-                                    return (
-                                        <Td key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext()
-                                            )}
-                                        </Td>
-                                    )
+                                    return <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                                 })}
                             </Tr>
                         )
@@ -136,11 +117,7 @@ const PaginationTable = () => {
                     <Select<Option>
                         size="sm"
                         isSearchable={false}
-                        value={pageSizeOption.filter(
-                            (option) =>
-                                option.value ===
-                                table.getState().pagination.pageSize
-                        )}
+                        value={pageSizeOption.filter((option) => option.value === table.getState().pagination.pageSize)}
                         options={pageSizeOption}
                         onChange={(option) => onSelectChange(option?.value)}
                     />

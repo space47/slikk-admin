@@ -32,15 +32,9 @@ const demoText =
 const Editor = ({ mode }: { mode: string }) => {
     const navigate = useNavigate()
 
-    const article = useAppSelector(
-        (state) => state.knowledgeBaseEditArticle.data.article
-    )
-    const categoryLabel = useAppSelector(
-        (state) => state.knowledgeBaseEditArticle.data.categoryLabel
-    )
-    const categoryValue = useAppSelector(
-        (state) => state.knowledgeBaseEditArticle.data.categoryValue
-    )
+    const article = useAppSelector((state) => state.knowledgeBaseEditArticle.data.article)
+    const categoryLabel = useAppSelector((state) => state.knowledgeBaseEditArticle.data.categoryLabel)
+    const categoryValue = useAppSelector((state) => state.knowledgeBaseEditArticle.data.categoryValue)
 
     const [categoryList, setCategoryList] = useState([
         { label: 'Survey', value: 'survey' },
@@ -53,34 +47,22 @@ const Editor = ({ mode }: { mode: string }) => {
         { label: 'Commission', value: 'commission' },
     ])
 
-    const onComplete = async (
-        value: FormModel,
-        setSubmitting: (isSubmitting: boolean) => void
-    ) => {
+    const onComplete = async (value: FormModel, setSubmitting: (isSubmitting: boolean) => void) => {
         setSubmitting(true)
         const newData = { ...article, ...value, categoryLabel }
         const resp = await apiPostArticle(newData)
         setSubmitting(false)
         if (resp.data) {
-            toast.push(
-                <Notification
-                    title={`Successfully ${mode} article`}
-                    type="success"
-                />,
-                {
-                    placement: 'top-center',
-                }
-            )
+            toast.push(<Notification title={`Successfully ${mode} article`} type="success" />, {
+                placement: 'top-center',
+            })
             navigate('/app/knowledge-base/manage-articles')
         }
     }
 
     useEffect(() => {
         if (categoryLabel && categoryValue) {
-            setCategoryList((prev) => [
-                ...prev,
-                { label: categoryLabel, value: categoryValue },
-            ])
+            setCategoryList((prev) => [...prev, { label: categoryLabel, value: categoryValue }])
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [categoryLabel, categoryValue])
@@ -103,28 +85,14 @@ const Editor = ({ mode }: { mode: string }) => {
                     {mode === 'preview' ? (
                         <div className="mt-6">
                             <h4 className="mb-4">{values.title}</h4>
-                            <div className="prose dark:prose-invert max-w-none">
-                                {ReactHtmlParser(values.content || '')}
-                            </div>
+                            <div className="prose dark:prose-invert max-w-none">{ReactHtmlParser(values.content || '')}</div>
                         </div>
                     ) : (
                         <FormContainer>
-                            <FormItem
-                                label="Title"
-                                invalid={errors.title && touched.title}
-                                errorMessage={errors.title}
-                            >
-                                <Field
-                                    autoComplete="off"
-                                    name="title"
-                                    component={Input}
-                                />
+                            <FormItem label="Title" invalid={errors.title && touched.title} errorMessage={errors.title}>
+                                <Field autoComplete="off" name="title" component={Input} />
                             </FormItem>
-                            <FormItem
-                                label="Category"
-                                invalid={errors.category && touched.category}
-                                errorMessage={errors.category}
-                            >
+                            <FormItem label="Category" invalid={errors.category && touched.category} errorMessage={errors.category}>
                                 <Field name="category">
                                     {({ field, form }: FieldProps) => (
                                         <Select
@@ -132,17 +100,8 @@ const Editor = ({ mode }: { mode: string }) => {
                                             field={field}
                                             form={form}
                                             options={categoryList}
-                                            value={categoryList.filter(
-                                                (category) =>
-                                                    category.value ===
-                                                    values.category
-                                            )}
-                                            onChange={(category) =>
-                                                form.setFieldValue(
-                                                    field.name,
-                                                    category?.value
-                                                )
-                                            }
+                                            value={categoryList.filter((category) => category.value === values.category)}
+                                            onChange={(category) => form.setFieldValue(field.name, category?.value)}
                                         />
                                     )}
                                 </Field>
@@ -156,15 +115,7 @@ const Editor = ({ mode }: { mode: string }) => {
                             >
                                 <Field name="content">
                                     {({ field, form }: FieldProps) => (
-                                        <RichTextEditor
-                                            value={field.value}
-                                            onChange={(val) =>
-                                                form.setFieldValue(
-                                                    field.name,
-                                                    val
-                                                )
-                                            }
-                                        />
+                                        <RichTextEditor value={field.value} onChange={(val) => form.setFieldValue(field.name, val)} />
                                     )}
                                 </Field>
                             </FormItem>

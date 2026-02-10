@@ -7,12 +7,7 @@ export interface TBodyProps extends ComponentPropsWithRef<'tbody'> {
 }
 
 const TBody = forwardRef<HTMLElement, TBodyProps>((props, ref) => {
-    const {
-        asElement: Component = 'tbody',
-        children,
-        className,
-        ...rest
-    } = props
+    const { asElement: Component = 'tbody', children, className, ...rest } = props
 
     const tBodyClass = classNames(Component !== 'tbody' && 'tbody', className)
 

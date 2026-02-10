@@ -3,14 +3,9 @@ import Checkbox from '@/components/ui/Checkbox'
 import type { SyntheticEvent } from 'react'
 
 const Group = () => {
-    const [checkboxList, setCheckboxList] = useState<(string | number)[]>([
-        'Selection A',
-    ])
+    const [checkboxList, setCheckboxList] = useState<(string | number)[]>(['Selection A'])
 
-    const onCheckboxChange = (
-        options: (string | number)[],
-        e: SyntheticEvent
-    ) => {
+    const onCheckboxChange = (options: (string | number)[], e: SyntheticEvent) => {
         console.log('Checkbox change', options, e)
         setCheckboxList(options)
     }

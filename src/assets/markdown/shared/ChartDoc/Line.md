@@ -28,13 +28,7 @@ const Line = () => {
             '12 Jan',
         ],
     }
-    return (
-        <Chart
-            series={visitorChartData.series}
-            xAxis={visitorChartData.categories}
-            height={400}
-        />
-    )
+    return <Chart series={visitorChartData.series} xAxis={visitorChartData.categories} height={400} />
 }
 
 export default Line

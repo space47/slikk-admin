@@ -6,12 +6,7 @@ import Tag from '@/components/ui/Tag'
 import { useNavigate } from 'react-router-dom'
 import UsersAvatarGroup from '@/components/shared/UsersAvatarGroup'
 import ActionLink from '@/components/shared/ActionLink'
-import {
-    useReactTable,
-    getCoreRowModel,
-    flexRender,
-    ColumnDef,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, flexRender, ColumnDef } from '@tanstack/react-table'
 
 type Task = {
     taskId: string
@@ -34,23 +29,11 @@ const { Tr, Th, Td, THead, TBody } = Table
 const PriorityTag = ({ priority }: { priority: number }) => {
     switch (priority) {
         case 0:
-            return (
-                <Tag className="text-red-600 bg-red-100 dark:text-red-100 dark:bg-red-500/20 rounded border-0">
-                    High
-                </Tag>
-            )
+            return <Tag className="text-red-600 bg-red-100 dark:text-red-100 dark:bg-red-500/20 rounded border-0">High</Tag>
         case 1:
-            return (
-                <Tag className="text-amber-600 bg-amber-100 dark:text-amber-100 dark:bg-amber-500/20 rounded border-0">
-                    Medium
-                </Tag>
-            )
+            return <Tag className="text-amber-600 bg-amber-100 dark:text-amber-100 dark:bg-amber-500/20 rounded border-0">Medium</Tag>
         case 2:
-            return (
-                <Tag className="bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-100 rounded border-0">
-                    Low
-                </Tag>
-            )
+            return <Tag className="bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-100 rounded border-0">Low</Tag>
         default:
             return null
     }
@@ -67,11 +50,7 @@ const MyTasks = ({ data = [] }: MyTasksProps) => {
                 cell: (props) => {
                     const { taskId } = props.row.original
                     return (
-                        <ActionLink
-                            themeColor={false}
-                            className="font-semibold"
-                            to="/app/project/scrum-board"
-                        >
+                        <ActionLink themeColor={false} className="font-semibold" to="/app/project/scrum-board">
                             {taskId}
                         </ActionLink>
                     )
@@ -98,7 +77,7 @@ const MyTasks = ({ data = [] }: MyTasksProps) => {
                 },
             },
         ],
-        []
+        [],
     )
 
     const table = useReactTable({
@@ -125,14 +104,8 @@ const MyTasks = ({ data = [] }: MyTasksProps) => {
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => {
                                 return (
-                                    <Th
-                                        key={header.id}
-                                        colSpan={header.colSpan}
-                                    >
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
+                                    <Th key={header.id} colSpan={header.colSpan}>
+                                        {flexRender(header.column.columnDef.header, header.getContext())}
                                     </Th>
                                 )
                             })}
@@ -144,14 +117,7 @@ const MyTasks = ({ data = [] }: MyTasksProps) => {
                         return (
                             <Tr key={row.id}>
                                 {row.getVisibleCells().map((cell) => {
-                                    return (
-                                        <Td key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext()
-                                            )}
-                                        </Td>
-                                    )
+                                    return <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                                 })}
                             </Tr>
                         )

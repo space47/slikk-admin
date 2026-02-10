@@ -25,42 +25,18 @@ const ChoroplethQuantile = () => {
             data.map((d) => {
                 const unemploymentRate = Number(d.unemployment_rate)
                 return isNaN(unemploymentRate) ? null : unemploymentRate
-            })
+            }),
         )
-        .range([
-            '#ffedea',
-            '#ffcec5',
-            '#ffad9f',
-            '#ff8a75',
-            '#ff5533',
-            '#e2492d',
-            '#be3d26',
-            '#9a311f',
-            '#782618',
-        ])
+        .range(['#ffedea', '#ffcec5', '#ffad9f', '#ff8a75', '#ff5533', '#e2492d', '#be3d26', '#9a311f', '#782618'])
 
     return (
-        <ComposableMap
-            height={200}
-            projectionConfig={{ scale: 450 }}
-            projection="geoAlbersUsa"
-        >
+        <ComposableMap height={200} projectionConfig={{ scale: 450 }} projection="geoAlbersUsa">
             <Geographies geography={geoUrl}>
                 {({ geographies }) =>
                     geographies.map((geo) => {
                         const cur = data.find((s) => s.id === geo.id)
                         return (
-                            <Geography
-                                key={geo.rsmKey}
-                                geography={geo}
-                                fill={
-                                    cur
-                                        ? colorScale(
-                                              Number(cur.unemployment_rate)
-                                          )
-                                        : '#EEE'
-                                }
-                            />
+                            <Geography key={geo.rsmKey} geography={geo} fill={cur ? colorScale(Number(cur.unemployment_rate)) : '#EEE'} />
                         )
                     })
                 }

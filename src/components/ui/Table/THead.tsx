@@ -7,12 +7,7 @@ export interface THeadProps extends ComponentPropsWithRef<'thead'> {
 }
 
 const THead = forwardRef<HTMLElement, THeadProps>((props, ref) => {
-    const {
-        asElement: Component = 'thead',
-        children,
-        className,
-        ...rest
-    } = props
+    const { asElement: Component = 'thead', children, className, ...rest } = props
 
     const tHeadClass = classNames(Component !== 'thead' && 'thead', className)
 

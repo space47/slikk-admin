@@ -21,10 +21,7 @@ export async function apiGetWalletData<T>() {
     })
 }
 
-export async function apiGetTransctionHistoryData<
-    T,
-    U extends Record<string, unknown>
->(data: U) {
+export async function apiGetTransctionHistoryData<T, U extends Record<string, unknown>>(data: U) {
     return ApiService.fetchData<T>({
         url: '/crypto/wallets/history',
         method: 'post',
@@ -32,9 +29,7 @@ export async function apiGetTransctionHistoryData<
     })
 }
 
-export async function apiGetMarketData<T, U extends Record<string, unknown>>(
-    data: U
-) {
+export async function apiGetMarketData<T, U extends Record<string, unknown>>(data: U) {
     return ApiService.fetchData<T>({
         url: '/crypto/market',
         method: 'post',

@@ -55,7 +55,13 @@ const LoyaltyTable = () => {
             accessorKey: 'tier_upgrade_offer',
             cell: ({ getValue }) => {
                 const value = getValue()
-                return <div>{value?.map((item, key) => <div key={key}>{item.type}</div>)}</div>
+                return (
+                    <div>
+                        {value?.map((item, key) => (
+                            <div key={key}>{item.type}</div>
+                        ))}
+                    </div>
+                )
             },
         },
         {
@@ -63,7 +69,13 @@ const LoyaltyTable = () => {
             accessorKey: 'tier_upgrade_offer',
             cell: ({ getValue }) => {
                 const value = getValue()
-                return <div className="w-[200px] line-clamp-3">{value?.map((item, key) => <div key={key}>{item.value}</div>)}</div>
+                return (
+                    <div className="w-[200px] line-clamp-3">
+                        {value?.map((item, key) => (
+                            <div key={key}>{item.value}</div>
+                        ))}
+                    </div>
+                )
             },
         },
         {
@@ -71,7 +83,13 @@ const LoyaltyTable = () => {
             accessorKey: 'tier_upgrade_offer',
             cell: ({ getValue }) => {
                 const value = getValue()
-                return <div>{value?.map((item, key) => <div key={key}>{item.max_discount}</div>)}</div>
+                return (
+                    <div>
+                        {value?.map((item, key) => (
+                            <div key={key}>{item.max_discount}</div>
+                        ))}
+                    </div>
+                )
             },
         },
         {
@@ -79,7 +97,13 @@ const LoyaltyTable = () => {
             accessorKey: 'tier_upgrade_offer',
             cell: ({ getValue }) => {
                 const value = getValue()
-                return <div>{value?.map((item, key) => <div key={key}>{item.max_order_value}</div>)}</div>
+                return (
+                    <div>
+                        {value?.map((item, key) => (
+                            <div key={key}>{item.max_order_value}</div>
+                        ))}
+                    </div>
+                )
             },
         },
         {
@@ -87,7 +111,13 @@ const LoyaltyTable = () => {
             accessorKey: 'tier_upgrade_offer',
             cell: ({ getValue }) => {
                 const value = getValue()
-                return <div>{value?.map((item, key) => <div key={key}>{item.min_order_value}</div>)}</div>
+                return (
+                    <div>
+                        {value?.map((item, key) => (
+                            <div key={key}>{item.min_order_value}</div>
+                        ))}
+                    </div>
+                )
             },
         },
         { header: 'Level', accessorKey: 'level' },

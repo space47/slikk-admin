@@ -46,10 +46,7 @@ const CustomRender = () => {
                     return (
                         <span className="relative flex justify-center items-center w-full h-full">
                             {day}
-                            <Badge
-                                className="absolute bottom-1"
-                                innerClass="h-1 w-1"
-                            />
+                            <Badge className="absolute bottom-1" innerClass="h-1 w-1" />
                         </span>
                     )
                 }}

@@ -1,10 +1,5 @@
 ```jsx
-import {
-    ComposableMap,
-    Geographies,
-    Geography,
-    Graticule,
-} from 'react-simple-maps'
+import { ComposableMap, Geographies, Geography, Graticule } from 'react-simple-maps'
 
 const geoUrl = '/data/features.json'
 
@@ -21,14 +16,7 @@ const EuropeMapWithGraticule = () => {
             <Graticule stroke="#EAEAEC" />
             <Geographies geography={geoUrl}>
                 {({ geographies }) =>
-                    geographies.map((geo) => (
-                        <Geography
-                            key={geo.rsmKey}
-                            geography={geo}
-                            fill="#9998A3"
-                            stroke="#EAEAEC"
-                        />
-                    ))
+                    geographies.map((geo) => <Geography key={geo.rsmKey} geography={geo} fill="#9998A3" stroke="#EAEAEC" />)
                 }
             </Geographies>
         </ComposableMap>

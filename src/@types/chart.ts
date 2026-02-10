@@ -25,11 +25,7 @@ export type ChartXAxis = {
         offsetX?: number
         offsetY?: number
         format?: string
-        formatter?(
-            value: string,
-            timestamp?: number,
-            opts?: any
-        ): string | string[]
+        formatter?(value: string, timestamp?: number, opts?: any): string | string[]
         datetimeUTC?: boolean
         datetimeFormatter?: {
             year?: string

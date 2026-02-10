@@ -1,12 +1,7 @@
 import classNames from 'classnames'
 import Select from '@/components/ui/Select'
 import Badge from '@/components/ui/Badge'
-import {
-    setThemeColor,
-    setThemeColorLevel,
-    useAppSelector,
-    useAppDispatch,
-} from '@/store'
+import { setThemeColor, setThemeColorLevel, useAppSelector, useAppDispatch } from '@/store'
 import { HiCheck } from 'react-icons/hi'
 import { components } from 'react-select'
 import type { ColorLevel } from '@/@types/theme'
@@ -53,37 +48,17 @@ const colorLevelList: ColorLevelList[] = [
     { label: '900', value: 900 },
 ]
 
-const ColorBadge = ({
-    className,
-    themeColor,
-}: {
-    className?: string
-    themeColor: string
-}) => {
-    const primaryColorLevel = useAppSelector(
-        (state) => state.theme.primaryColorLevel
-    )
+const ColorBadge = ({ className, themeColor }: { className?: string; themeColor: string }) => {
+    const primaryColorLevel = useAppSelector((state) => state.theme.primaryColorLevel)
 
-    return (
-        <Badge
-            className={className}
-            innerClass={classNames(`bg-${themeColor}-${primaryColorLevel}`)}
-        />
-    )
+    return <Badge className={className} innerClass={classNames(`bg-${themeColor}-${primaryColorLevel}`)} />
 }
 
-const CustomSelectOption = ({
-    innerProps,
-    label,
-    data,
-    isSelected,
-}: OptionProps<ColorList>) => {
+const CustomSelectOption = ({ innerProps, label, data, isSelected }: OptionProps<ColorList>) => {
     return (
         <div
             className={`flex items-center justify-between p-2 ${
-                isSelected
-                    ? 'bg-gray-100 dark:bg-gray-500'
-                    : 'hover:bg-gray-50 dark:hover:bg-gray-600'
+                isSelected ? 'bg-gray-100 dark:bg-gray-500' : 'hover:bg-gray-50 dark:hover:bg-gray-600'
             }`}
             {...innerProps}
         >
@@ -103,12 +78,7 @@ const CustomControl = ({ children, ...props }: ControlProps<ColorList>) => {
 
     return (
         <Control {...props}>
-            {selected && (
-                <ColorBadge
-                    themeColor={themeColor}
-                    className="ltr:ml-4 rtl:mr-4"
-                />
-            )}
+            {selected && <ColorBadge themeColor={themeColor} className="ltr:ml-4 rtl:mr-4" />}
             {children}
         </Control>
     )
@@ -118,9 +88,7 @@ const ThemeSwitcher = () => {
     const dispatch = useAppDispatch()
 
     const themeColor = useAppSelector((state) => state.theme.themeColor)
-    const primaryColorLevel = useAppSelector(
-        (state) => state.theme.primaryColorLevel
-    )
+    const primaryColorLevel = useAppSelector((state) => state.theme.primaryColorLevel)
 
     const onThemeColorChange = ({ value }: ColorList) => {
         dispatch(setThemeColor(value))
@@ -145,12 +113,8 @@ const ThemeSwitcher = () => {
             <Select<ColorLevelList>
                 size="sm"
                 options={colorLevelList}
-                value={colorLevelList.filter(
-                    (color) => color.value === primaryColorLevel
-                )}
-                onChange={(opt) =>
-                    onThemeColorLevelChange(opt as ColorLevelList)
-                }
+                value={colorLevelList.filter((color) => color.value === primaryColorLevel)}
+                onChange={(opt) => onThemeColorLevelChange(opt as ColorLevelList)}
             />
         </div>
     )

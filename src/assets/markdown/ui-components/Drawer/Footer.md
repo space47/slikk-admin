@@ -30,13 +30,7 @@ const Footer = () => {
             <Button variant="solid" onClick={() => openDrawer()}>
                 Open Drawer
             </Button>
-            <Drawer
-                title="Drawer Title"
-                isOpen={isOpen}
-                footer={Footer}
-                onClose={onDrawerClose}
-                onRequestClose={onDrawerClose}
-            >
+            <Drawer title="Drawer Title" isOpen={isOpen} footer={Footer} onClose={onDrawerClose} onRequestClose={onDrawerClose}>
                 Drawer Content
             </Drawer>
         </div>

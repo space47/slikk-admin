@@ -7,12 +7,7 @@ export interface TFootProps extends ComponentPropsWithRef<'tfoot'> {
 }
 
 const TFoot = forwardRef<HTMLElement, TFootProps>((props, ref) => {
-    const {
-        asElement: Component = 'tfoot',
-        children,
-        className,
-        ...rest
-    } = props
+    const { asElement: Component = 'tfoot', children, className, ...rest } = props
 
     const tBodyClass = classNames(Component !== 'tfoot' && 'tfoot', className)
 

@@ -50,11 +50,7 @@ const DemoLayout = (props: DemoLayoutProps) => {
             <AdaptableCard shadow={!innerFrame} isLastChild={!innerFrame}>
                 <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
                     <div className="xl:col-span-4">
-                        <DemoTitleSection
-                            className="mb-10"
-                            title={header.title}
-                            desc={header.desc}
-                        />
+                        <DemoTitleSection className="mb-10" title={header.title} desc={header.desc} />
                         {demos.map((card) => (
                             <div key={card.mdName} id={card.mdName}>
                                 <DemoCard
@@ -72,11 +68,7 @@ const DemoLayout = (props: DemoLayoutProps) => {
                         {note && <div className="mt-10">{note}</div>}
                         {api && (
                             <div className="mt-10" id="api">
-                                <DemoComponentApi
-                                    hideApiTitle={hideApiTitle}
-                                    api={api}
-                                    keyText={keyText}
-                                />
+                                <DemoComponentApi hideApiTitle={hideApiTitle} api={api} keyText={keyText} />
                             </div>
                         )}
                         {extra && <div className="mt-10">{extra}</div>}

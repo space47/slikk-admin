@@ -14,14 +14,7 @@ export interface TabNavProps extends CommonProps {
 }
 
 const TabNav = forwardRef<HTMLDivElement, TabNavProps>((props, ref) => {
-    const {
-        value: valueProp,
-        disabled,
-        className,
-        icon,
-        children,
-        ...rest
-    } = props
+    const { value: valueProp, disabled, className, icon, children, ...rest } = props
 
     const { value, onValueChange, variant } = useTabs()
     const isSelected = valueProp === value
@@ -39,17 +32,12 @@ const TabNav = forwardRef<HTMLDivElement, TabNavProps>((props, ref) => {
     const tabNavClass = classNames(
         'tab-nav',
         `tab-nav-${variant}`,
-        isSelected &&
-            `tab-nav-active text-${color} dark:text-${themeColor}-100`,
+        isSelected && `tab-nav-active text-${color} dark:text-${themeColor}-100`,
         isSelected && variant === 'underline' && `border-${color}`,
-        isSelected &&
-            variant === 'pill' &&
-            `bg-${themeColor}-50 dark:bg-${color} dark:text-gray-100`,
+        isSelected && variant === 'pill' && `bg-${themeColor}-50 dark:bg-${color} dark:text-gray-100`,
         disabled && 'tab-nav-disabled',
-        !disabled &&
-            !isSelected &&
-            `hover:text-${color} dark:hover:text-${themeColor}-100`,
-        className
+        !disabled && !isSelected && `hover:text-${color} dark:hover:text-${themeColor}-100`,
+        className,
     )
 
     return (

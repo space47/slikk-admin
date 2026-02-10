@@ -14,21 +14,11 @@ type Creator = {
     views_count: number
 }
 
-const RejectCreatorDetails = ({
-    name,
-    dp,
-    followers_count,
-    likes_count,
-    comments_count,
-    views_count,
-}: Creator) => {
+const RejectCreatorDetails = ({ name, dp, followers_count, likes_count, comments_count, views_count }: Creator) => {
     return (
         <Card className="w-[300px]">
             <div className="mb-4 text-xl">Creator Info</div>
-            <Link
-                className="group flex items-center justify-between"
-                to="/app/crm/customer-details?id=11"
-            >
+            <Link className="group flex items-center justify-between" to="/app/crm/customer-details?id=11">
                 <div className="flex items-center">
                     <Avatar shape="circle" src={dp} />
                     <div className="ltr:ml-2 rtl:mr-2">

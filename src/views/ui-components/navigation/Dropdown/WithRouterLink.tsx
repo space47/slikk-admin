@@ -6,10 +6,7 @@ const WithRouterLink = () => {
         <div>
             <Dropdown title="Click Me!">
                 <Dropdown.Item>
-                    <Link
-                        className="menu-item-link"
-                        to="/ui-components/checkbox"
-                    >
+                    <Link className="menu-item-link" to="/ui-components/checkbox">
                         Checkbox
                     </Link>
                 </Dropdown.Item>

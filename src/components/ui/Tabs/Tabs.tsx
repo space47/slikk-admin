@@ -13,14 +13,7 @@ export interface TabsProps extends CommonProps {
 }
 
 const Tabs = forwardRef<HTMLDivElement, TabsProps>((props, ref) => {
-    const {
-        className,
-        defaultValue,
-        onChange,
-        value: valueProp,
-        variant = 'underline',
-        ...rest
-    } = props
+    const { className, defaultValue, onChange, value: valueProp, variant = 'underline', ...rest } = props
 
     const [value, setValue] = useControllableState({
         prop: valueProp,

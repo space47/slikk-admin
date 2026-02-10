@@ -22,23 +22,11 @@ const Confirmations = ({ data }: { data: CategorizedArticles[] }) => {
     const categoryRenameInputRef = useRef<HTMLInputElement>(null)
     const categoryAddInputRef = useRef<HTMLInputElement>(null)
 
-    const articleDeleteConfirmation = useAppSelector(
-        (state) =>
-            state.knowledgeBaseManageArticles.data.articleDeleteConfirmation
-    )
-    const categoryDeleteConfirmation = useAppSelector(
-        (state) =>
-            state.knowledgeBaseManageArticles.data.categoryDeleteConfirmation
-    )
-    const categoryRenameDialog = useAppSelector(
-        (state) => state.knowledgeBaseManageArticles.data.categoryRenameDialog
-    )
-    const categoryAddDialog = useAppSelector(
-        (state) => state.knowledgeBaseManageArticles.data.categoryAddDialog
-    )
-    const selected = useAppSelector(
-        (state) => state.knowledgeBaseManageArticles.data.selected
-    )
+    const articleDeleteConfirmation = useAppSelector((state) => state.knowledgeBaseManageArticles.data.articleDeleteConfirmation)
+    const categoryDeleteConfirmation = useAppSelector((state) => state.knowledgeBaseManageArticles.data.categoryDeleteConfirmation)
+    const categoryRenameDialog = useAppSelector((state) => state.knowledgeBaseManageArticles.data.categoryRenameDialog)
+    const categoryAddDialog = useAppSelector((state) => state.knowledgeBaseManageArticles.data.categoryAddDialog)
+    const selected = useAppSelector((state) => state.knowledgeBaseManageArticles.data.selected)
 
     const onArticleDeleteConfirmationClose = () => {
         dispatch(toggleArticleDeleteConfirmation(false))
@@ -48,9 +36,7 @@ const Confirmations = ({ data }: { data: CategorizedArticles[] }) => {
         const allArticles = cloneDeep(data)
         const removedData = allArticles.map((categories) => {
             if (categories.value === selected.categoryValue) {
-                categories.articles = categories.articles.filter(
-                    (article) => article.id !== selected.id
-                )
+                categories.articles = categories.articles.filter((article) => article.id !== selected.id)
             }
             return categories
         })
@@ -65,10 +51,7 @@ const Confirmations = ({ data }: { data: CategorizedArticles[] }) => {
     const onRenameDialogConfirm = () => {
         const allArticles = cloneDeep(data)
         const renamedData = allArticles.map((categories) => {
-            if (
-                categories.value === selected.categoryValue &&
-                categoryRenameInputRef.current
-            ) {
+            if (categories.value === selected.categoryValue && categoryRenameInputRef.current) {
                 categories.label = categoryRenameInputRef.current.value
             }
             return categories
@@ -83,9 +66,7 @@ const Confirmations = ({ data }: { data: CategorizedArticles[] }) => {
 
     const onCategoryDeleteConfirm = () => {
         const allArticles = cloneDeep(data)
-        const removedData = allArticles.filter(
-            (categories) => categories.value !== selected.categoryValue
-        )
+        const removedData = allArticles.filter((categories) => categories.value !== selected.categoryValue)
         dispatch(toggleCategoryDeleteConfirmation(false))
         dispatch(setCategorizedArticles(removedData))
     }
@@ -122,10 +103,7 @@ const Confirmations = ({ data }: { data: CategorizedArticles[] }) => {
                 onCancel={onArticleDeleteConfirmationClose}
                 onConfirm={onArticleDeleteConfirm}
             >
-                <p>
-                    Are you sure you want to delete this article? This action
-                    cannot be undone.
-                </p>
+                <p>Are you sure you want to delete this article? This action cannot be undone.</p>
             </ConfirmDialog>
             <ConfirmDialog
                 isOpen={categoryDeleteConfirmation}
@@ -138,26 +116,17 @@ const Confirmations = ({ data }: { data: CategorizedArticles[] }) => {
                 onConfirm={onCategoryDeleteConfirm}
             >
                 <p>
-                    Are you sure you want to delete this category? All the
-                    articles under this category will be deleted as well. All
-                    This action cannot be undone.
+                    Are you sure you want to delete this category? All the articles under this category will be deleted as well. All This
+                    action cannot be undone.
                 </p>
             </ConfirmDialog>
-            <Dialog
-                isOpen={categoryRenameDialog}
-                onClose={onCategoryRenameDialogClose}
-                onRequestClose={onCategoryRenameDialogClose}
-            >
+            <Dialog isOpen={categoryRenameDialog} onClose={onCategoryRenameDialogClose} onRequestClose={onCategoryRenameDialogClose}>
                 <h5 className="mb-4">Rename Category</h5>
                 <div>
                     <Input ref={categoryRenameInputRef} />
                 </div>
                 <div className="text-right mt-6">
-                    <Button
-                        className="ltr:mr-2 rtl:ml-2"
-                        variant="plain"
-                        onClick={onCategoryRenameDialogClose}
-                    >
+                    <Button className="ltr:mr-2 rtl:ml-2" variant="plain" onClick={onCategoryRenameDialogClose}>
                         Cancel
                     </Button>
                     <Button variant="solid" onClick={onRenameDialogConfirm}>
@@ -165,29 +134,16 @@ const Confirmations = ({ data }: { data: CategorizedArticles[] }) => {
                     </Button>
                 </div>
             </Dialog>
-            <Dialog
-                isOpen={categoryAddDialog}
-                onClose={onCategoryAddDialogClose}
-                onRequestClose={onCategoryAddDialogClose}
-            >
+            <Dialog isOpen={categoryAddDialog} onClose={onCategoryAddDialogClose} onRequestClose={onCategoryAddDialogClose}>
                 <h5 className="mb-4">Add Category</h5>
                 <div>
                     <Input ref={categoryAddInputRef} />
                 </div>
                 <div className="text-right mt-6">
-                    <Button
-                        size="sm"
-                        className="ltr:mr-2 rtl:ml-2"
-                        variant="plain"
-                        onClick={onCategoryAddDialogClose}
-                    >
+                    <Button size="sm" className="ltr:mr-2 rtl:ml-2" variant="plain" onClick={onCategoryAddDialogClose}>
                         Cancel
                     </Button>
-                    <Button
-                        size="sm"
-                        variant="solid"
-                        onClick={onCategoryAddDialogConfirm}
-                    >
+                    <Button size="sm" variant="solid" onClick={onCategoryAddDialogConfirm}>
                         Add
                     </Button>
                 </div>

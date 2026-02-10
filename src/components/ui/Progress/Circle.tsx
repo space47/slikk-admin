@@ -15,16 +15,7 @@ interface CircleProps extends CommonProps {
 }
 
 const Circle = (props: CircleProps) => {
-    const {
-        strokeWidth,
-        percent,
-        strokeLinecap,
-        gapDegree,
-        gapPosition,
-        strokeColor,
-        width,
-        children,
-    } = props
+    const { strokeWidth, percent, strokeLinecap, gapDegree, gapPosition, strokeColor, width, children } = props
 
     const getPathStyles = useCallback(() => {
         const radius = 50 - strokeWidth / 2
@@ -63,9 +54,7 @@ const Circle = (props: CircleProps) => {
         }
 
         const strokePathStyle = {
-            strokeDasharray: `${
-                (percent / 100) * (len - gapDegree)
-            }px ${len}px`,
+            strokeDasharray: `${(percent / 100) * (len - gapDegree)}px ${len}px`,
             strokeDashoffset: `-${gapDegree / 2}px`,
         }
 
@@ -84,13 +73,7 @@ const Circle = (props: CircleProps) => {
         <div className="progress-circle" style={{ width: width }}>
             <span className="progress-circle-info">{children}</span>
             <svg viewBox="0 0 100 100">
-                <path
-                    d={pathString}
-                    strokeWidth={strokeWidth}
-                    fillOpacity="0"
-                    style={trailPathStyle}
-                    className="progress-circle-trail"
-                />
+                <path d={pathString} strokeWidth={strokeWidth} fillOpacity="0" style={trailPathStyle} className="progress-circle-trail" />
                 <path
                     d={pathString}
                     strokeLinecap={strokeLinecap}

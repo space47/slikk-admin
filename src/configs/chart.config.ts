@@ -24,12 +24,7 @@ export const apexLineChartDefaultOption: ApexOptions = {
             vertical: 10,
         },
         tooltipHoverFormatter: function (val, opts) {
-            return (
-                val +
-                ' - ' +
-                opts.w.globals.series[opts.seriesIndex][opts.dataPointIndex] +
-                ''
-            )
+            return val + ' - ' + opts.w.globals.series[opts.seriesIndex][opts.dataPointIndex] + ''
         },
     },
     xaxis: {
@@ -70,12 +65,7 @@ export const apexBarChartDefaultOption: ApexOptions = {
             vertical: 10,
         },
         tooltipHoverFormatter: function (val, opts) {
-            return (
-                val +
-                ' - ' +
-                opts.w.globals.series[opts.seriesIndex][opts.dataPointIndex] +
-                ''
-            )
+            return val + ' - ' + opts.w.globals.series[opts.seriesIndex][opts.dataPointIndex] + ''
         },
     },
     xaxis: {
@@ -103,12 +93,9 @@ export const apexDonutChartDefaultOption: ApexOptions = {
                         showAlways: true,
                         label: '',
                         formatter: function (w) {
-                            return w.globals.seriesTotals.reduce(
-                                (a: string, b: string) => {
-                                    return a + b
-                                },
-                                0
-                            )
+                            return w.globals.seriesTotals.reduce((a: string, b: string) => {
+                                return a + b
+                            }, 0)
                         },
                     },
                 },

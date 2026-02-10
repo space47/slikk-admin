@@ -1,12 +1,7 @@
 import { useRef } from 'react'
 import Input from '@/components/ui/Input'
 import { HiOutlineSearch } from 'react-icons/hi'
-import {
-    getProducts,
-    setTableData,
-    useAppSelector,
-    useAppDispatch,
-} from '../store'
+import { getProducts, setTableData, useAppSelector, useAppDispatch } from '../store'
 import debounce from 'lodash/debounce'
 import cloneDeep from 'lodash/cloneDeep'
 import type { TableQueries } from '@/@types/common'
@@ -17,9 +12,7 @@ const ProductTableSearch = () => {
 
     const searchInput = useRef(null)
 
-    const tableData = useAppSelector(
-        (state) => state.salesProductList.data.tableData
-    )
+    const tableData = useAppSelector((state) => state.salesProductList.data.tableData)
 
     const debounceFn = debounce(handleDebounceFn, 500)
 

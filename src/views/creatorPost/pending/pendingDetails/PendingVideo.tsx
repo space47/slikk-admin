@@ -17,9 +17,7 @@ const VideoFrame: React.FC<VideoPlayerProps> = ({ url }) => {
                 hls.on(Hls.Events.MANIFEST_PARSED, () => {
                     videoRef.current?.play()
                 })
-            } else if (
-                videoRef.current.canPlayType('application/vnd.apple.mpegurl')
-            ) {
+            } else if (videoRef.current.canPlayType('application/vnd.apple.mpegurl')) {
                 // For Safari browsers that support HLS natively
                 videoRef.current.src = url
                 videoRef.current.play()
@@ -29,12 +27,7 @@ const VideoFrame: React.FC<VideoPlayerProps> = ({ url }) => {
 
     return (
         <div>
-            <video
-                ref={videoRef}
-                controls
-                width="300"
-                className="overflow-clip h-[400px] rounded-xl"
-            >
+            <video ref={videoRef} controls width="300" className="overflow-clip h-[400px] rounded-xl">
                 <h4>NO VIDEO AVAILABLE</h4>
             </video>
         </div>

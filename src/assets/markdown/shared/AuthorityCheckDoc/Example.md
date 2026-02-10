@@ -34,30 +34,20 @@ const Example = () => {
                 {users.map((user, index) => (
                     <div key={index}>
                         <span className={user.color}>{user.name}</span>: {` `}
-                        <span className="font-semibold">
-                            {user.roles.toString()}
-                        </span>
+                        <span className="font-semibold">{user.roles.toString()}</span>
                     </div>
                 ))}
             </div>
             <hr className="my-4" />
             <div className="mb-4">
                 <span>Roles who can access: {` `}</span>
-                <span className="font-semibold">
-                    {permissionRole.toString()}
-                </span>
+                <span className="font-semibold">{permissionRole.toString()}</span>
             </div>
             <div>
                 <span>Result (Users who able to access): </span>
                 {users.map((user) => (
-                    <AuthorityCheck
-                        key={user.name}
-                        authority={permissionRole}
-                        userAuthority={user.roles}
-                    >
-                        <span className={`${user.color} font-semibold`}>
-                            {user.name},{' '}
-                        </span>
+                    <AuthorityCheck key={user.name} authority={permissionRole} userAuthority={user.roles}>
+                        <span className={`${user.color} font-semibold`}>{user.name}, </span>
                     </AuthorityCheck>
                 ))}
             </div>

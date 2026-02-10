@@ -1,7 +1,4 @@
-import CategoryForm, {
-    FormModel,
-    SetSubmitting,
-} from '@/views/category-management/category/CategoryForm'
+import CategoryForm, { FormModel, SetSubmitting } from '@/views/category-management/category/CategoryForm'
 import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
 import { useNavigate } from 'react-router-dom'
@@ -15,25 +12,18 @@ const CategoryNew = () => {
         return response.data
     }
 
-    const handleFormSubmit = async (
-        values: FormModel,
-        setSubmitting: SetSubmitting
-    ) => {
+    const handleFormSubmit = async (values: FormModel, setSubmitting: SetSubmitting) => {
         setSubmitting(true)
         const success = await addProduct(values)
         setSubmitting(false)
         if (success) {
             toast.push(
-                <Notification
-                    title={'Successfuly added'}
-                    type="success"
-                    duration={2500}
-                >
+                <Notification title={'Successfuly added'} type="success" duration={2500}>
                     Division successfuly added
                 </Notification>,
                 {
                     placement: 'top-center',
-                }
+                },
             )
             navigate('/app/category/category')
         }
@@ -45,11 +35,7 @@ const CategoryNew = () => {
 
     return (
         <>
-            <CategoryForm
-                type="new"
-                onFormSubmit={handleFormSubmit}
-                onDiscard={handleDiscard}
-            />
+            <CategoryForm type="new" onFormSubmit={handleFormSubmit} onDiscard={handleDiscard} />
         </>
     )
 }

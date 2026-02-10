@@ -28,14 +28,7 @@ const Area = () => {
             '12 Jan',
         ],
     }
-    return (
-        <Chart
-            type="area"
-            series={visitorChartData.series}
-            xAxis={visitorChartData.categories}
-            height={400}
-        />
-    )
+    return <Chart type="area" series={visitorChartData.series} xAxis={visitorChartData.categories} height={400} />
 }
 
 export default Area

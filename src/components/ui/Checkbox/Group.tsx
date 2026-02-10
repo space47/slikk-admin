@@ -17,25 +17,12 @@ export interface CheckboxGroupProps extends CommonProps {
 }
 
 const Group = forwardRef<HTMLDivElement, CheckboxGroupProps>((props, ref) => {
-    const {
-        children,
-        className,
-        color,
-        name,
-        onChange,
-        value: valueProp,
-        vertical,
-        ...rest
-    } = props
+    const { children, className, color, name, onChange, value: valueProp, vertical, ...rest } = props
 
     const [value, setValue] = useState(valueProp)
 
     const onCheckboxGroupChange = useCallback(
-        (
-            itemValue: CheckboxValue,
-            itemChecked: boolean,
-            event: SyntheticEvent
-        ) => {
+        (itemValue: CheckboxValue, itemChecked: boolean, event: SyntheticEvent) => {
             const nextValue = cloneDeep(value) || []
             if (itemChecked) {
                 nextValue.push(itemValue as never)
@@ -46,16 +33,14 @@ const Group = forwardRef<HTMLDivElement, CheckboxGroupProps>((props, ref) => {
             setValue(nextValue)
             onChange?.(nextValue, event)
         },
-        [onChange, setValue, value]
+        [onChange, setValue, value],
     )
 
     useEffect(() => {
         setValue(valueProp)
     }, [valueProp])
 
-    const checkboxGroupDefaultClass = `inline-flex ${
-        vertical ? 'flex-col gap-y-2' : ''
-    }`
+    const checkboxGroupDefaultClass = `inline-flex ${vertical ? 'flex-col gap-y-2' : ''}`
 
     const checkBoxGroupClass = classNames(checkboxGroupDefaultClass, className)
 
@@ -67,7 +52,7 @@ const Group = forwardRef<HTMLDivElement, CheckboxGroupProps>((props, ref) => {
             color,
             onChange: onCheckboxGroupChange,
         }),
-        [vertical, onCheckboxGroupChange, name, color, value]
+        [vertical, onCheckboxGroupChange, name, color, value],
     )
 
     return (

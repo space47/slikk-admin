@@ -14,12 +14,7 @@ const CloseButton = forwardRef<HTMLElement, CloseButtonProps>((props, ref) => {
     const { absolute, className, defaultStyle, ...rest } = props
     const closeButtonAbsoluteClass = 'absolute z-10'
 
-    const closeButtonClass = classNames(
-        'close-btn',
-        defaultStyle && 'close-btn-default',
-        absolute && closeButtonAbsoluteClass,
-        className
-    )
+    const closeButtonClass = classNames('close-btn', defaultStyle && 'close-btn-default', absolute && closeButtonAbsoluteClass, className)
 
     return (
         <span className={closeButtonClass} role="button" {...rest} ref={ref}>

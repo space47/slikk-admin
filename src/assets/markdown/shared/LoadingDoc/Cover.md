@@ -11,10 +11,7 @@ const Cover = () => {
         <>
             <div className="flex items-center mb-4 gap-2">
                 <span>Loading State: </span>
-                <Switcher
-                    checked={isLoading}
-                    onChange={(checked) => setIsLoading(!checked)}
-                />
+                <Switcher checked={isLoading} onChange={(checked) => setIsLoading(!checked)} />
             </div>
             <Loading loading={isLoading} type="cover">
                 <Alert type="info" title="Alert!" showIcon>

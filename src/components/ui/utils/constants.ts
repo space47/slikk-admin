@@ -63,10 +63,7 @@ export const PLACEMENT = {
     MIDDLE_END_BOTTOM: 'middle-end-bottom',
 }
 
-export const DROPDOWN_ITEM_TYPE: Record<
-    string,
-    'default' | 'header' | 'divider' | 'custom'
-> = {
+export const DROPDOWN_ITEM_TYPE: Record<string, 'default' | 'header' | 'divider' | 'custom'> = {
     DEFAULT: 'default',
     HEADER: 'header',
     DIVIDER: 'divider',

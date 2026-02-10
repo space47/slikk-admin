@@ -38,119 +38,105 @@ export interface TimeInputRangeProps extends CommonProps {
     form?: any
 }
 
-const TimeInputRange = forwardRef<HTMLInputElement, TimeInputRangeProps>(
-    (props, ref) => {
-        const {
-            amPmPlaceholder = 'am',
-            clearable = false,
-            className,
-            defaultValue = [null, null],
-            disabled = false,
-            format = '24',
-            id,
-            invalid,
-            name,
-            onChange,
-            prefix,
-            seperator = '~',
-            showSeconds = false,
-            size,
-            style,
-            suffix = <HiOutlineClock className="text-lg" />,
-            timeFieldPlaceholder = '--',
-            value,
-            ...rest
-        } = props
+const TimeInputRange = forwardRef<HTMLInputElement, TimeInputRangeProps>((props, ref) => {
+    const {
+        amPmPlaceholder = 'am',
+        clearable = false,
+        className,
+        defaultValue = [null, null],
+        disabled = false,
+        format = '24',
+        id,
+        invalid,
+        name,
+        onChange,
+        prefix,
+        seperator = '~',
+        showSeconds = false,
+        size,
+        style,
+        suffix = <HiOutlineClock className="text-lg" />,
+        timeFieldPlaceholder = '--',
+        value,
+        ...rest
+    } = props
 
-        const uuid = useUniqueId(id)
+    const uuid = useUniqueId(id)
 
-        const fromTimeRef = useRef<HTMLInputElement>()
-        const toTimeRef = useRef<HTMLInputElement>()
-        const [_value, setValue] = useState(value ?? defaultValue)
+    const fromTimeRef = useRef<HTMLInputElement>()
+    const toTimeRef = useRef<HTMLInputElement>()
+    const [_value, setValue] = useState(value ?? defaultValue)
 
-        useDidUpdate(() => {
-            typeof onChange === 'function' && onChange(_value)
-        }, [_value])
+    useDidUpdate(() => {
+        typeof onChange === 'function' && onChange(_value)
+    }, [_value])
 
-        useDidUpdate(() => {
-            if (
-                value &&
-                (value[0]?.getTime() !== _value[0]?.getTime() ||
-                    value[1]?.getTime() !== _value[1]?.getTime())
-            ) {
-                setValue(value)
-            }
-        }, [value])
-
-        const handleClear = () => {
-            setValue([null, null])
-            fromTimeRef.current?.focus()
+    useDidUpdate(() => {
+        if (value && (value[0]?.getTime() !== _value[0]?.getTime() || value[1]?.getTime() !== _value[1]?.getTime())) {
+            setValue(value)
         }
+    }, [value])
 
-        const suffixSlot =
-            clearable && _value ? (
-                <CloseButton onClick={handleClear} />
-            ) : (
-                <>{suffix}</>
-            )
-
-        const forwardProps = {
-            amPmPlaceholder,
-            disabled,
-            format,
-            size,
-            timeFieldPlaceholder,
-            showSeconds,
-        }
-
-        return (
-            <Input
-                asElement="div"
-                invalid={invalid}
-                size={size}
-                className={className}
-                style={style}
-                disabled={disabled}
-                suffix={suffixSlot}
-                prefix={prefix}
-                onClick={() => {
-                    fromTimeRef.current?.focus()
-                }}
-                {...rest}
-            >
-                <div className="time-input-wrapper">
-                    <TimeInput
-                        ref={useMergedRef(
-                            fromTimeRef as Ref<HTMLInputElement>,
-                            ref
-                        )}
-                        unstyle
-                        value={_value[0]}
-                        name={name}
-                        nextRef={toTimeRef as RefObject<HTMLInputElement>}
-                        id={uuid}
-                        clearable={false}
-                        suffix={null}
-                        onChange={(date) => setValue([date, _value[1]])}
-                        {...forwardProps}
-                    />
-
-                    <span className="time-input-separator">{seperator}</span>
-
-                    <TimeInput
-                        ref={toTimeRef as Ref<HTMLInputElement>}
-                        unstyle
-                        value={_value[1]}
-                        clearable={false}
-                        suffix={null}
-                        onChange={(date) => setValue([_value[0], date])}
-                        {...forwardProps}
-                    />
-                </div>
-            </Input>
-        )
+    const handleClear = () => {
+        setValue([null, null])
+        fromTimeRef.current?.focus()
     }
-)
+
+    const suffixSlot = clearable && _value ? <CloseButton onClick={handleClear} /> : <>{suffix}</>
+
+    const forwardProps = {
+        amPmPlaceholder,
+        disabled,
+        format,
+        size,
+        timeFieldPlaceholder,
+        showSeconds,
+    }
+
+    return (
+        <Input
+            asElement="div"
+            invalid={invalid}
+            size={size}
+            className={className}
+            style={style}
+            disabled={disabled}
+            suffix={suffixSlot}
+            prefix={prefix}
+            onClick={() => {
+                fromTimeRef.current?.focus()
+            }}
+            {...rest}
+        >
+            <div className="time-input-wrapper">
+                <TimeInput
+                    ref={useMergedRef(fromTimeRef as Ref<HTMLInputElement>, ref)}
+                    unstyle
+                    value={_value[0]}
+                    name={name}
+                    nextRef={toTimeRef as RefObject<HTMLInputElement>}
+                    id={uuid}
+                    clearable={false}
+                    suffix={null}
+                    onChange={(date) => setValue([date, _value[1]])}
+                    {...forwardProps}
+                />
+
+                <span className="time-input-separator">{seperator}</span>
+
+                <TimeInput
+                    ref={toTimeRef as Ref<HTMLInputElement>}
+                    unstyle
+                    value={_value[1]}
+                    clearable={false}
+                    suffix={null}
+                    onChange={(date) => setValue([_value[0], date])}
+                    {...forwardProps}
+                />
+            </div>
+        </Input>
+    )
+})
 
 TimeInputRange.displayName = 'TimeInputRange'
 

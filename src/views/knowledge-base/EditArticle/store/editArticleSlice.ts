@@ -31,16 +31,10 @@ export type EditArticleState = {
 
 export const SLICE_NAME = 'knowledgeBaseEditArticle'
 
-export const getArticle = createAsyncThunk(
-    SLICE_NAME + '/getArticle',
-    async (param: GetArticleRequest) => {
-        const response = await apiGetArticle<
-            GetArticleResponse,
-            GetArticleRequest
-        >(param)
-        return response.data
-    }
-)
+export const getArticle = createAsyncThunk(SLICE_NAME + '/getArticle', async (param: GetArticleRequest) => {
+    const response = await apiGetArticle<GetArticleResponse, GetArticleRequest>(param)
+    return response.data
+})
 
 const initialState: EditArticleState = {
     loading: false,

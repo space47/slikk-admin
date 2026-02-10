@@ -16,14 +16,7 @@ export interface PaginationProps extends CommonProps {
 }
 
 const Pagination = (props: PaginationProps) => {
-    const {
-        className,
-        currentPage = 1,
-        displayTotal = false,
-        onChange,
-        pageSize = 1,
-        total,
-    } = props
+    const { className, currentPage = 1, displayTotal = false, onChange, pageSize = 1, total } = props
 
     const [paginationTotal, setPaginationTotal] = useState(total)
     const [internalPageSize, setInternalPageSize] = useState(pageSize)
@@ -55,10 +48,7 @@ const Pagination = (props: PaginationProps) => {
                 }
             }
 
-            if (
-                (resetValue === undefined && isNaN(value)) ||
-                resetValue === 0
-            ) {
+            if ((resetValue === undefined && isNaN(value)) || resetValue === 0) {
                 resetValue = 1
             }
 
@@ -67,9 +57,7 @@ const Pagination = (props: PaginationProps) => {
         [getInternalPageCount],
     )
 
-    const [internalCurrentPage, setInternalCurrentPage] = useState(
-        currentPage ? getValidCurrentPage(currentPage) : 1,
-    )
+    const [internalCurrentPage, setInternalCurrentPage] = useState(currentPage ? getValidCurrentPage(currentPage) : 1)
 
     useEffect(() => {
         if (total !== paginationTotal) {
@@ -115,23 +103,14 @@ const Pagination = (props: PaginationProps) => {
     return (
         <div className={paginationClass}>
             {displayTotal && <Total total={total} />}
-            <Prev
-                currentPage={internalCurrentPage}
-                pagerClass={pagerClass}
-                onPrev={onPrev}
-            />
+            <Prev currentPage={internalCurrentPage} pagerClass={pagerClass} onPrev={onPrev} />
             <Pager
                 pageCount={getInternalPageCount as number}
                 currentPage={internalCurrentPage}
                 pagerClass={pagerClass}
                 onChange={onPaginationChange}
             />
-            <Next
-                currentPage={internalCurrentPage}
-                pageCount={getInternalPageCount as number}
-                pagerClass={pagerClass}
-                onNext={onNext}
-            />
+            <Next currentPage={internalCurrentPage} pageCount={getInternalPageCount as number} pagerClass={pagerClass} onNext={onNext} />
         </div>
     )
 }

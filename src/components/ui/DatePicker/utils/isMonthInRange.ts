@@ -6,11 +6,7 @@ type IsMonthInRangeParams = {
     maxDate?: Date
 }
 
-export function isMonthInRange({
-    date,
-    minDate,
-    maxDate,
-}: IsMonthInRangeParams) {
+export function isMonthInRange({ date, minDate, maxDate }: IsMonthInRangeParams) {
     const hasMinDate = minDate instanceof Date
     const hasMaxDate = maxDate instanceof Date
 

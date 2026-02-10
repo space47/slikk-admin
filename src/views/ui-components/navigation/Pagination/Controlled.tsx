@@ -10,11 +10,7 @@ const Controlled = () => {
 
     return (
         <div>
-            <Pagination
-                total={100}
-                currentPage={page}
-                onChange={onPaginationChange}
-            />
+            <Pagination total={100} currentPage={page} onChange={onPaginationChange} />
         </div>
     )
 }

@@ -19,7 +19,7 @@ type InitialData = {
     name?: string
     footer?: string
     description?: string
-    category?:string
+    category?: string
 }
 
 export type FormModel = Omit<InitialData, 'tags'> & {
@@ -87,8 +87,7 @@ const DeleteProductButton = ({ onDelete }: { onDelete: OnDelete }) => {
                 onConfirm={handleConfirm}
             >
                 <p>
-                    Are you sure you want to delete this division? All record
-                    related to this division will be deleted as well. This action
+                    Are you sure you want to delete this division? All record related to this division will be deleted as well. This action
                     cannot be undone.
                 </p>
             </ConfirmDialog>
@@ -104,8 +103,8 @@ const CategoryForm = forwardRef<FormikRef, CategoryForm>((props, ref) => {
             name: '',
             footer: '',
             description: '',
-            category:''
-        }, 
+            category: '',
+        },
         onFormSubmit,
         onDiscard,
         onDelete,
@@ -119,7 +118,7 @@ const CategoryForm = forwardRef<FormikRef, CategoryForm>((props, ref) => {
                 innerRef={ref}
                 initialValues={{
                     ...initialData,
-                    }}
+                }}
                 validationSchema={validationSchema}
                 onSubmit={(values: FormModel, { setSubmitting }) => {
                     // const formData = cloneDeep(values)
@@ -137,39 +136,19 @@ const CategoryForm = forwardRef<FormikRef, CategoryForm>((props, ref) => {
                         <FormContainer>
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                                 <div className="lg:col-span-2">
-                                    <BasicInformationFields
-                                        touched={touched}
-                                        errors={errors}
-                                    />
+                                    <BasicInformationFields touched={touched} errors={errors} />
                                 </div>
                             </div>
                             <StickyFooter
                                 className="-mx-8 px-8 flex items-center justify-between py-4"
                                 stickyClass="border-t bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
                             >
-                                <div>
-                                    {type === 'edit' && (
-                                        <DeleteProductButton
-                                            onDelete={onDelete as OnDelete}
-                                        />
-                                    )}
-                                </div>
+                                <div>{type === 'edit' && <DeleteProductButton onDelete={onDelete as OnDelete} />}</div>
                                 <div className="md:flex items-center">
-                                    <Button
-                                        size="sm"
-                                        className="ltr:mr-3 rtl:ml-3"
-                                        type="button"
-                                        onClick={() => onDiscard?.()}
-                                    >
+                                    <Button size="sm" className="ltr:mr-3 rtl:ml-3" type="button" onClick={() => onDiscard?.()}>
                                         Discard
                                     </Button>
-                                    <Button
-                                        size="sm"
-                                        variant="solid"
-                                        loading={isSubmitting}
-                                        icon={<AiOutlineSave />}
-                                        type="submit"
-                                    >
+                                    <Button size="sm" variant="solid" loading={isSubmitting} icon={<AiOutlineSave />} type="submit">
                                         Save
                                     </Button>
                                 </div>

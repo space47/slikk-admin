@@ -9,26 +9,21 @@ const Controlled = () => {
         (val: string[]) => {
             setSingleSegmentValue(val)
         },
-        [setSingleSegmentValue]
+        [setSingleSegmentValue],
     )
 
     const onMultipleSegmentValueChange = useCallback(
         (val: string[]) => {
             setMultipleSegmentValue(val)
         },
-        [setMultipleSegmentValue]
+        [setMultipleSegmentValue],
     )
 
     return (
         <>
             <div className="mb-6">
                 <h6 className="mb-3">Single Selection</h6>
-                <Segment
-                    value={singleSegmentValue}
-                    onChange={(val) =>
-                        onSingleSelectionSegmentChange(val as string[])
-                    }
-                >
+                <Segment value={singleSegmentValue} onChange={(val) => onSingleSelectionSegmentChange(val as string[])}>
                     <Segment.Item value="left">Left</Segment.Item>
                     <Segment.Item value="center">Center</Segment.Item>
                     <Segment.Item value="right">Right</Segment.Item>
@@ -39,9 +34,7 @@ const Controlled = () => {
                 <Segment
                     selectionType="multiple"
                     value={multipleSegmentValue}
-                    onChange={(val) =>
-                        onMultipleSegmentValueChange(val as string[])
-                    }
+                    onChange={(val) => onMultipleSegmentValueChange(val as string[])}
                 >
                     <Segment.Item value="left">Left</Segment.Item>
                     <Segment.Item value="center">Center</Segment.Item>

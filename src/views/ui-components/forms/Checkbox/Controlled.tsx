@@ -2,7 +2,6 @@ import { useState } from 'react'
 import Checkbox from '@/components/ui/Checkbox'
 
 const Controlled = () => {
-
     const [checked, setChecked] = useState(true)
 
     return (

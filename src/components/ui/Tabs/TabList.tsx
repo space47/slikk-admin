@@ -10,11 +10,7 @@ const TabList = forwardRef<HTMLDivElement, TabListProps>((props, ref) => {
 
     const { variant } = useTabs()
 
-    const tabListClass = classNames(
-        'tab-list',
-        `tab-list-${variant}`,
-        className
-    )
+    const tabListClass = classNames('tab-list', `tab-list-${variant}`, className)
 
     return (
         <div ref={ref} role="tablist" className={tabListClass} {...rest}>

@@ -3,21 +3,11 @@ import Loading from '@/components/shared/Loading'
 import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
 import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
-import reducer, {
-    getProduct,
-    updateProduct,
-    deleteProduct,
-    useAppSelector,
-    useAppDispatch,
-} from './store'
+import reducer, { getProduct, updateProduct, deleteProduct, useAppSelector, useAppDispatch } from './store'
 import { injectReducer } from '@/store'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import ProductForm, {
-    FormModel,
-    SetSubmitting,
-    OnDeleteCallback,
-} from '@/views/sales/ProductForm'
+import ProductForm, { FormModel, SetSubmitting, OnDeleteCallback } from '@/views/sales/ProductForm'
 import isEmpty from 'lodash/isEmpty'
 
 injectReducer('salesProductEdit', reducer)
@@ -28,21 +18,14 @@ const ProductEdit = () => {
     const location = useLocation()
     const navigate = useNavigate()
 
-    const productData = useAppSelector(
-        (state) => state.salesProductEdit.data.productData
-    )
-    const loading = useAppSelector(
-        (state) => state.salesProductEdit.data.loading
-    )
+    const productData = useAppSelector((state) => state.salesProductEdit.data.productData)
+    const loading = useAppSelector((state) => state.salesProductEdit.data.loading)
 
     const fetchData = (data: { id: string }) => {
         dispatch(getProduct(data))
     }
 
-    const handleFormSubmit = async (
-        values: FormModel,
-        setSubmitting: SetSubmitting
-    ) => {
+    const handleFormSubmit = async (values: FormModel, setSubmitting: SetSubmitting) => {
         setSubmitting(true)
         const success = await updateProduct(values)
         setSubmitting(false)
@@ -65,24 +48,18 @@ const ProductEdit = () => {
 
     const popNotification = (keyword: string) => {
         toast.push(
-            <Notification
-                title={`Successfuly ${keyword}`}
-                type="success"
-                duration={2500}
-            >
+            <Notification title={`Successfuly ${keyword}`} type="success" duration={2500}>
                 Product successfuly {keyword}
             </Notification>,
             {
                 placement: 'top-center',
-            }
+            },
         )
         navigate('/app/sales/product-list')
     }
 
     useEffect(() => {
-        const path = location.pathname.substring(
-            location.pathname.lastIndexOf('/') + 1
-        )
+        const path = location.pathname.substring(location.pathname.lastIndexOf('/') + 1)
         const rquestParam = { id: path }
         fetchData(rquestParam)
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -105,11 +82,7 @@ const ProductEdit = () => {
             </Loading>
             {!loading && isEmpty(productData) && (
                 <div className="h-full flex flex-col items-center justify-center">
-                    <DoubleSidedImage
-                        src="/img/others/img-2.png"
-                        darkModeSrc="/img/others/img-2-dark.png"
-                        alt="No product found!"
-                    />
+                    <DoubleSidedImage src="/img/others/img-2.png" darkModeSrc="/img/others/img-2-dark.png" alt="No product found!" />
                     <h3 className="mt-8">No product found!</h3>
                 </div>
             )}

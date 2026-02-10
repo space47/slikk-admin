@@ -19,7 +19,7 @@ const AsyncValidation = () => {
         value: string,
         form: {
             errors: FormikErrors<FormModel>
-        } & FormikProps<FormModel>
+        } & FormikProps<FormModel>,
     ) => {
         const { touched, errors } = form
         if (!value) {
@@ -55,10 +55,7 @@ const AsyncValidation = () => {
                         <FormContainer>
                             <FormItem
                                 label="Check valid username"
-                                invalid={
-                                    errors.userName &&
-                                    errors.userName.length > 0
-                                }
+                                invalid={errors.userName && errors.userName.length > 0}
                                 errorMessage={errors.userName}
                             >
                                 <Field
@@ -66,13 +63,7 @@ const AsyncValidation = () => {
                                     name="userName"
                                     autoComplete="off"
                                     placeholder="User Name"
-                                    suffix={
-                                        <Spinner
-                                            className={
-                                                !validating ? 'hidden' : ''
-                                            }
-                                        />
-                                    }
+                                    suffix={<Spinner className={!validating ? 'hidden' : ''} />}
                                     validate={(values: string) =>
                                         validateAsync(values, {
                                             errors,

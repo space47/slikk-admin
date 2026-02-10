@@ -9,11 +9,7 @@ const dirList = [
     { value: THEME_ENUM.DIR_RTL, label: 'RTL' },
 ]
 
-const DirectionSwitcher = ({
-    callBackClose,
-}: {
-    callBackClose?: () => void
-}) => {
+const DirectionSwitcher = ({ callBackClose }: { callBackClose?: () => void }) => {
     const [direction, updateDirection] = useDirection()
 
     const onDirChange = (val: Direction) => {
@@ -24,11 +20,7 @@ const DirectionSwitcher = ({
     return (
         <InputGroup size="sm">
             {dirList.map((dir) => (
-                <Button
-                    key={dir.value}
-                    active={direction === dir.value}
-                    onClick={() => onDirChange(dir.value)}
-                >
+                <Button key={dir.value} active={direction === dir.value} onClick={() => onDirChange(dir.value)}>
                     {dir.label}
                 </Button>
             ))}

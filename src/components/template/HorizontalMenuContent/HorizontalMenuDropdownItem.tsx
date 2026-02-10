@@ -22,24 +22,9 @@ const HorizontalMenuDropdownItem = ({ nav }: HorizontalMenuItemProps) => {
     const itemTitle = t(translateKey, title)
 
     return (
-        <Dropdown.Item 
-            eventKey={key} 
-            className={
-                classNames(
-                    path && 'px-0'
-                )
-            }
-        >
+        <Dropdown.Item eventKey={key} className={classNames(path && 'px-0')}>
             {path ? (
-                <HorizontalMenuNavLink 
-                    path={path}
-                    className={
-                        classNames(
-                            path && 'px-2'
-                        )
-                    }
-                    isExternalLink={isExternalLink}
-                >
+                <HorizontalMenuNavLink path={path} className={classNames(path && 'px-2')} isExternalLink={isExternalLink}>
                     {itemTitle}
                 </HorizontalMenuNavLink>
             ) : (

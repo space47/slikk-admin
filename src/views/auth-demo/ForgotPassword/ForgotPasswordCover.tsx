@@ -4,10 +4,7 @@ import Cover from '@/components/layouts/AuthLayout/Cover'
 const ForgotPasswordCover = () => {
     return (
         <Cover>
-            <ForgotPasswordForm
-                disableSubmit={true}
-                signInUrl="/auth/sign-in-cover"
-            />
+            <ForgotPasswordForm disableSubmit={true} signInUrl="/auth/sign-in-cover" />
         </Cover>
     )
 }

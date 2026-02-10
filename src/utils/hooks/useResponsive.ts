@@ -29,10 +29,8 @@ const useResponsive = () => {
         return Object.fromEntries(
             Object.entries(breakpoint).map(([key, value]) => [
                 key,
-                comparator === 'larger'
-                    ? currentWindowWidth > value
-                    : currentWindowWidth < value,
-            ])
+                comparator === 'larger' ? currentWindowWidth > value : currentWindowWidth < value,
+            ]),
         )
     }
 

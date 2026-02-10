@@ -17,9 +17,7 @@ const colourOptions = [
 ]
 
 const filterColors = (inputValue) => {
-    return colourOptions.filter((i) =>
-        i.label.toLowerCase().includes(inputValue.toLowerCase())
-    )
+    return colourOptions.filter((i) => i.label.toLowerCase().includes(inputValue.toLowerCase()))
 }
 
 const loadOptions = (inputValue, callback) => {
@@ -41,13 +39,7 @@ const AsyncOnSearch = () => {
 
     return (
         <div>
-            <Select
-                cacheOptions
-                loadOptions={loadOptions}
-                defaultOptions
-                onInputChange={handleInputChange}
-                componentAs={AsyncSelect}
-            />
+            <Select cacheOptions loadOptions={loadOptions} defaultOptions onInputChange={handleInputChange} componentAs={AsyncSelect} />
         </div>
     )
 }

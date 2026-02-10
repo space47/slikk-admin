@@ -19,10 +19,8 @@ const validationSchema = Yup.object({
     users: Yup.array().of(
         Yup.object().shape({
             name: Yup.string().required('Name required'),
-            email: Yup.string()
-                .required('Email required')
-                .email('Enter valid email'),
-        })
+            email: Yup.string().required('Email required').email('Enter valid email'),
+        }),
     ),
 })
 
@@ -66,17 +64,10 @@ const DynamicForm = () => {
                                         <FormItem
                                             layout="vertical"
                                             label="Group"
-                                            invalid={
-                                                errors.groupName &&
-                                                touched.groupName
-                                            }
+                                            invalid={errors.groupName && touched.groupName}
                                             errorMessage={errors.groupName}
                                         >
-                                            <Field
-                                                placeholder="Group Name"
-                                                name="groupName"
-                                                component={Input}
-                                            />
+                                            <Field placeholder="Group Name" name="groupName" component={Input} />
                                         </FormItem>
                                     </div>
                                     <FieldArray name="users">
@@ -84,72 +75,42 @@ const DynamicForm = () => {
                                             <div>
                                                 {users && users.length > 0
                                                     ? users.map((_, index) => {
-                                                          const nameFeedBack =
-                                                              fieldFeedback(
-                                                                  form,
-                                                                  `users[${index}].name`
-                                                              )
-                                                          const emailFeedBack =
-                                                              fieldFeedback(
-                                                                  form,
-                                                                  `users[${index}].email`
-                                                              )
+                                                          const nameFeedBack = fieldFeedback(form, `users[${index}].name`)
+                                                          const emailFeedBack = fieldFeedback(form, `users[${index}].email`)
 
                                                           return (
                                                               <div key={index}>
                                                                   <FormItem
                                                                       label="Name"
-                                                                      invalid={
-                                                                          nameFeedBack.invalid
-                                                                      }
-                                                                      errorMessage={
-                                                                          nameFeedBack.errorMessage
-                                                                      }
+                                                                      invalid={nameFeedBack.invalid}
+                                                                      errorMessage={nameFeedBack.errorMessage}
                                                                   >
                                                                       <Field
-                                                                          invalid={
-                                                                              nameFeedBack.invalid
-                                                                          }
+                                                                          invalid={nameFeedBack.invalid}
                                                                           placeholder="User Name"
                                                                           name={`users[${index}].name`}
                                                                           type="text"
-                                                                          component={
-                                                                              Input
-                                                                          }
+                                                                          component={Input}
                                                                       />
                                                                   </FormItem>
                                                                   <FormItem
                                                                       label="Email"
-                                                                      invalid={
-                                                                          emailFeedBack.invalid
-                                                                      }
-                                                                      errorMessage={
-                                                                          emailFeedBack.errorMessage
-                                                                      }
+                                                                      invalid={emailFeedBack.invalid}
+                                                                      errorMessage={emailFeedBack.errorMessage}
                                                                   >
                                                                       <Field
-                                                                          invalid={
-                                                                              emailFeedBack.invalid
-                                                                          }
+                                                                          invalid={emailFeedBack.invalid}
                                                                           placeholder="User Name"
                                                                           name={`users[${index}].email`}
                                                                           type="email"
-                                                                          component={
-                                                                              Input
-                                                                          }
+                                                                          component={Input}
                                                                       />
                                                                   </FormItem>
                                                                   <Button
                                                                       shape="circle"
                                                                       size="sm"
-                                                                      icon={
-                                                                          <HiMinus />
-                                                                      }
-                                                                      onClick={() =>
-                                                                          remove(
-                                                                              index
-                                                                          )
-                                                                      }
+                                                                      icon={<HiMinus />}
+                                                                      onClick={() => remove(index)}
                                                                   />
                                                               </div>
                                                           )
@@ -168,10 +129,7 @@ const DynamicForm = () => {
                                                     >
                                                         Add a User
                                                     </Button>
-                                                    <Button
-                                                        type="submit"
-                                                        variant="solid"
-                                                    >
+                                                    <Button type="submit" variant="solid">
                                                         Submit
                                                     </Button>
                                                 </div>

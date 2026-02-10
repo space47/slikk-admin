@@ -15,16 +15,7 @@ export interface AvatarProps extends CommonProps {
 }
 
 const Avatar = forwardRef<HTMLSpanElement, AvatarProps>((props, ref) => {
-    const {
-        alt,
-        className,
-        icon,
-        shape = 'rounded',
-        size = 'md',
-        src,
-        srcSet,
-        ...rest
-    } = props
+    const { alt, className, icon, shape = 'rounded', size = 'md', src, srcSet, ...rest } = props
 
     let { children } = props
     const [scale, setScale] = useState(1)
@@ -43,11 +34,7 @@ const Avatar = forwardRef<HTMLSpanElement, AvatarProps>((props, ref) => {
         if (avatarChildrenWidth === 0 || avatarNodeWidth === 0) {
             return
         }
-        setScale(
-            avatarNodeWidth - 8 < avatarChildrenWidth
-                ? (avatarNodeWidth - 8) / avatarChildrenWidth
-                : 1
-        )
+        setScale(avatarNodeWidth - 8 < avatarChildrenWidth ? (avatarNodeWidth - 8) / avatarChildrenWidth : 1)
     }
 
     useEffect(() => {
@@ -65,41 +52,21 @@ const Avatar = forwardRef<HTMLSpanElement, AvatarProps>((props, ref) => {
               }
             : {}
 
-    const classes = classNames(
-        'avatar',
-        `avatar-${shape}`,
-        typeof size === 'string' ? `avatar-${size}` : '',
-        className
-    )
+    const classes = classNames('avatar', `avatar-${shape}`, typeof size === 'string' ? `avatar-${size}` : '', className)
 
     if (src) {
-        children = (
-            <img
-                className={`avatar-img avatar-${shape}`}
-                src={src}
-                srcSet={srcSet}
-                alt={alt}
-                loading="lazy"
-            />
-        )
+        children = <img className={`avatar-img avatar-${shape}`} src={src} srcSet={srcSet} alt={alt} loading="lazy" />
     } else if (icon) {
-        children = (
-            <span className={classNames('avatar-icon', `avatar-icon-${size}`)}>
-                {icon}
-            </span>
-        )
+        children = <span className={classNames('avatar-icon', `avatar-icon-${size}`)}>{icon}</span>
     } else {
-        const childrenSizeStyle =
-            typeof size === 'number' ? { lineHeight: `${size}px` } : {}
+        const childrenSizeStyle = typeof size === 'number' ? { lineHeight: `${size}px` } : {}
         const stringCentralized = {
             transform: `translateX(-50%) scale(${scale})`,
         }
         children = (
             <span
                 ref={avatarChildren}
-                className={`avatar-string ${
-                    typeof size === 'number' ? '' : `avatar-inner-${size}`
-                }`}
+                className={`avatar-string ${typeof size === 'number' ? '' : `avatar-inner-${size}`}`}
                 style={{
                     ...childrenSizeStyle,
                     ...stringCentralized,
@@ -112,12 +79,7 @@ const Avatar = forwardRef<HTMLSpanElement, AvatarProps>((props, ref) => {
     }
 
     return (
-        <span
-            ref={avatarMergeRef}
-            className={classes}
-            style={{ ...sizeStyle, ...rest.style }}
-            {...rest}
-        >
+        <span ref={avatarMergeRef} className={classes} style={{ ...sizeStyle, ...rest.style }} {...rest}>
             {children}
         </span>
     )

@@ -38,31 +38,11 @@ const FieldValidation = () => {
                 {({ errors, touched }) => (
                     <Form>
                         <FormContainer>
-                            <FormItem
-                                label="Email"
-                                invalid={errors.email && touched.email}
-                                errorMessage={errors.email}
-                            >
-                                <Field
-                                    type="email"
-                                    name="email"
-                                    placeholder="Email"
-                                    component={Input}
-                                    validate={validateEmail}
-                                />
+                            <FormItem label="Email" invalid={errors.email && touched.email} errorMessage={errors.email}>
+                                <Field type="email" name="email" placeholder="Email" component={Input} validate={validateEmail} />
                             </FormItem>
-                            <FormItem
-                                label="User Name"
-                                invalid={errors.username && touched.username}
-                                errorMessage={errors.username}
-                            >
-                                <Field
-                                    type="text"
-                                    name="username"
-                                    placeholder="User Name"
-                                    component={Input}
-                                    validate={validateUsername}
-                                />
+                            <FormItem label="User Name" invalid={errors.username && touched.username} errorMessage={errors.username}>
+                                <Field type="text" name="username" placeholder="User Name" component={Input} validate={validateUsername} />
                             </FormItem>
                             <FormItem>
                                 <Button type="submit" variant="solid">

@@ -135,10 +135,8 @@ const Extra = () => {
         <>
             <h4 className="mb-4">More Charts Examples?</h4>
             <p>
-                There are several other charts which can be created by changing
-                a couple of options. The major configuration has to be done in
-                the <code>options</code> property of ApexCharts component and
-                rest will fall into places. Refer to:
+                There are several other charts which can be created by changing a couple of options. The major configuration has to be done
+                in the <code>options</code> property of ApexCharts component and rest will fall into places. Refer to:
                 <a
                     className="text-blue-500 hover:underline"
                     href="https://apexcharts.com/react-chart-demos/"
@@ -153,14 +151,7 @@ const Extra = () => {
 }
 
 const Charts = () => {
-    return (
-        <DemoLayout
-            header={demoHeader}
-            demos={demos}
-            api={demoApi}
-            extra={<Extra />}
-        />
-    )
+    return <DemoLayout header={demoHeader} demos={demos} api={demoApi} extra={<Extra />} />
 }
 
 export default Charts

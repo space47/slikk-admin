@@ -30,15 +30,7 @@ const _LanguageSelector = ({ className }: CommonProps) => {
 
     const selectedLanguage = (
         <div className={classNames(className, 'flex items-center')}>
-            {loading ? (
-                <Spinner size={20} />
-            ) : (
-                <Avatar
-                    size={24}
-                    shape="circle"
-                    src={`/img/countries/${selectLangFlag}.png`}
-                />
-            )}
+            {loading ? <Spinner size={20} /> : <Avatar size={24} shape="circle" src={`/img/countries/${selectLangFlag}.png`} />}
         </div>
     )
 
@@ -75,16 +67,10 @@ const _LanguageSelector = ({ className }: CommonProps) => {
                     onClick={() => onLanguageSelect(lang.value)}
                 >
                     <span className="flex items-center">
-                        <Avatar
-                            size={18}
-                            shape="circle"
-                            src={`/img/countries/${lang.flag}.png`}
-                        />
+                        <Avatar size={18} shape="circle" src={`/img/countries/${lang.flag}.png`} />
                         <span className="ltr:ml-2 rtl:mr-2">{lang.label}</span>
                     </span>
-                    {locale === lang.value && (
-                        <HiCheck className="text-emerald-500 text-lg" />
-                    )}
+                    {locale === lang.value && <HiCheck className="text-emerald-500 text-lg" />}
                 </Dropdown.Item>
             ))}
         </Dropdown>

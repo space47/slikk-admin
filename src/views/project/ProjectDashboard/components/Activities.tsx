@@ -41,10 +41,7 @@ const Activities = ({ data = [] }: ActivitiesProps) => {
                         <Timeline.Item>No Activities</Timeline.Item>
                     ) : (
                         data.map((event, index) => (
-                            <Timeline.Item
-                                key={event.type + index}
-                                media={<TimelineAvatar data={event} />}
-                            >
+                            <Timeline.Item key={event.type + index} media={<TimelineAvatar data={event} />}>
                                 <Event compact data={event} />
                             </Timeline.Item>
                         ))

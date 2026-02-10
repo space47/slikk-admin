@@ -27,18 +27,12 @@ const sideNavCollapseStyle = {
 
 const SideNav = () => {
     const themeColor = useAppSelector((state) => state.theme.themeColor)
-    const primaryColorLevel = useAppSelector(
-        (state) => state.theme.primaryColorLevel,
-    )
+    const primaryColorLevel = useAppSelector((state) => state.theme.primaryColorLevel)
     const navMode = useAppSelector((state) => state.theme.navMode)
     const mode = useAppSelector((state) => state.theme.mode)
     const direction = useAppSelector((state) => state.theme.direction)
-    const currentRouteKey = useAppSelector(
-        (state) => state.base.common.currentRouteKey,
-    )
-    const sideNavCollapse = useAppSelector(
-        (state) => state.theme.layout.sideNavCollapse,
-    )
+    const currentRouteKey = useAppSelector((state) => state.base.common.currentRouteKey)
+    const sideNavCollapse = useAppSelector((state) => state.theme.layout.sideNavCollapse)
     const userAuthority = useAppSelector((state) => state.auth.user.authority)
 
     const { larger } = useResponsive()
@@ -77,24 +71,14 @@ const SideNav = () => {
         <>
             {larger.md && (
                 <div
-                    style={
-                        sideNavCollapse ? sideNavCollapseStyle : sideNavStyle
-                    }
-                    className={classNames(
-                        'side-nav',
-                        sideNavColor(),
-                        !sideNavCollapse && 'side-nav-expand',
-                    )}
+                    style={sideNavCollapse ? sideNavCollapseStyle : sideNavStyle}
+                    className={classNames('side-nav', sideNavColor(), !sideNavCollapse && 'side-nav-expand')}
                 >
                     <div className="side-nav-header">
                         <Logo
                             mode={logoMode()}
                             type={sideNavCollapse ? 'streamline' : 'full'}
-                            className={
-                                sideNavCollapse
-                                    ? SIDE_NAV_CONTENT_GUTTER
-                                    : LOGO_X_GUTTER
-                            }
+                            className={sideNavCollapse ? SIDE_NAV_CONTENT_GUTTER : LOGO_X_GUTTER}
                             style={{
                                 marginBottom: '10px',
                                 marginTop: '10px',

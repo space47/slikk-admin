@@ -12,33 +12,16 @@ interface ActionLink extends CommonProps, ComponentPropsWithoutRef<'a'> {
 }
 
 const ActionLink = (props: ActionLink) => {
-    const {
-        children,
-        className,
-        themeColor = true,
-        to,
-        reloadDocument,
-        href = '',
-        ...rest
-    } = props
+    const { children, className, themeColor = true, to, reloadDocument, href = '', ...rest } = props
 
     const { textTheme } = useThemeClass()
 
     const classNameProps = {
-        className: classNames(
-            themeColor && textTheme,
-            'hover:underline',
-            className
-        ),
+        className: classNames(themeColor && textTheme, 'hover:underline', className),
     }
 
     return to ? (
-        <Link
-            to={to}
-            reloadDocument={reloadDocument}
-            {...classNameProps}
-            {...rest}
-        >
+        <Link to={to} reloadDocument={reloadDocument} {...classNameProps} {...rest}>
             {children}
         </Link>
     ) : (

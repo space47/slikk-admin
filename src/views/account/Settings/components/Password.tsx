@@ -9,11 +9,7 @@ import FormDesription from './FormDesription'
 import FormRow from './FormRow'
 import { Field, Form, Formik } from 'formik'
 import isLastChild from '@/utils/isLastChild'
-import {
-    HiOutlineDesktopComputer,
-    HiOutlineDeviceMobile,
-    HiOutlineDeviceTablet,
-} from 'react-icons/hi'
+import { HiOutlineDesktopComputer, HiOutlineDeviceMobile, HiOutlineDeviceTablet } from 'react-icons/hi'
 import dayjs from 'dayjs'
 import * as Yup from 'yup'
 
@@ -49,17 +45,11 @@ const validationSchema = Yup.object().shape({
         .required('Enter your new password')
         .min(8, 'Too Short!')
         .matches(/^[A-Za-z0-9_-]*$/, 'Only Letters & Numbers Allowed'),
-    confirmNewPassword: Yup.string().oneOf(
-        [Yup.ref('newPassword'), ''],
-        'Password not match'
-    ),
+    confirmNewPassword: Yup.string().oneOf([Yup.ref('newPassword'), ''], 'Password not match'),
 })
 
 const Password = ({ data }: { data?: LoginHistory[] }) => {
-    const onFormSubmit = (
-        values: PasswordFormModel,
-        setSubmitting: (isSubmitting: boolean) => void
-    ) => {
+    const onFormSubmit = (values: PasswordFormModel, setSubmitting: (isSubmitting: boolean) => void) => {
         toast.push(<Notification title={'Password updated'} type="success" />, {
             placement: 'top-center',
         })
@@ -88,15 +78,8 @@ const Password = ({ data }: { data?: LoginHistory[] }) => {
                     return (
                         <Form>
                             <FormContainer>
-                                <FormDesription
-                                    title="Password"
-                                    desc="Enter your current & new password to reset your password"
-                                />
-                                <FormRow
-                                    name="password"
-                                    label="Current Password"
-                                    {...validatorProps}
-                                >
+                                <FormDesription title="Password" desc="Enter your current & new password to reset your password" />
+                                <FormRow name="password" label="Current Password" {...validatorProps}>
                                     <Field
                                         type="password"
                                         autoComplete="off"
@@ -105,11 +88,7 @@ const Password = ({ data }: { data?: LoginHistory[] }) => {
                                         component={Input}
                                     />
                                 </FormRow>
-                                <FormRow
-                                    name="newPassword"
-                                    label="New Password"
-                                    {...validatorProps}
-                                >
+                                <FormRow name="newPassword" label="New Password" {...validatorProps}>
                                     <Field
                                         type="password"
                                         autoComplete="off"
@@ -118,11 +97,7 @@ const Password = ({ data }: { data?: LoginHistory[] }) => {
                                         component={Input}
                                     />
                                 </FormRow>
-                                <FormRow
-                                    name="confirmNewPassword"
-                                    label="Confirm Password"
-                                    {...validatorProps}
-                                >
+                                <FormRow name="confirmNewPassword" label="Confirm Password" {...validatorProps}>
                                     <Field
                                         type="password"
                                         autoComplete="off"
@@ -132,21 +107,11 @@ const Password = ({ data }: { data?: LoginHistory[] }) => {
                                     />
                                 </FormRow>
                                 <div className="mt-4 ltr:text-right">
-                                    <Button
-                                        className="ltr:mr-2 rtl:ml-2"
-                                        type="button"
-                                        onClick={() => resetForm()}
-                                    >
+                                    <Button className="ltr:mr-2 rtl:ml-2" type="button" onClick={() => resetForm()}>
                                         Reset
                                     </Button>
-                                    <Button
-                                        variant="solid"
-                                        loading={isSubmitting}
-                                        type="submit"
-                                    >
-                                        {isSubmitting
-                                            ? 'Updating'
-                                            : 'Update Password'}
+                                    <Button variant="solid" loading={isSubmitting} type="submit">
+                                        {isSubmitting ? 'Updating' : 'Update Password'}
                                     </Button>
                                 </div>
                             </FormContainer>
@@ -155,10 +120,7 @@ const Password = ({ data }: { data?: LoginHistory[] }) => {
                 }}
             </Formik>
             <div className="mt-6">
-                <FormDesription
-                    title="Where you're signed in"
-                    desc="You're signed in to your account on these devices."
-                />
+                <FormDesription title="Where you're signed in" desc="You're signed in to your account on these devices." />
                 {data && (
                     <div className="rounded-lg border border-gray-200 dark:border-gray-600 mt-6">
                         {data.map((log, index) => (
@@ -166,8 +128,7 @@ const Password = ({ data }: { data?: LoginHistory[] }) => {
                                 key={log.deviceName}
                                 className={classNames(
                                     'flex items-center px-4 py-6',
-                                    !isLastChild(data, index) &&
-                                        'border-b border-gray-200 dark:border-gray-600'
+                                    !isLastChild(data, index) && 'border-b border-gray-200 dark:border-gray-600',
                                 )}
                             >
                                 <div className="flex items-center">
@@ -176,23 +137,15 @@ const Password = ({ data }: { data?: LoginHistory[] }) => {
                                     </div>
                                     <div className="ml-3 rtl:mr-3">
                                         <div className="flex items-center">
-                                            <div className="text-gray-900 dark:text-gray-100 font-semibold">
-                                                {log.deviceName}
-                                            </div>
+                                            <div className="text-gray-900 dark:text-gray-100 font-semibold">{log.deviceName}</div>
                                             {index === 0 && (
                                                 <Tag className="bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-100 rounded-md border-0 mx-2">
-                                                    <span className="capitalize">
-                                                        {' '}
-                                                        Current{' '}
-                                                    </span>
+                                                    <span className="capitalize"> Current </span>
                                                 </Tag>
                                             )}
                                         </div>
                                         <span>
-                                            {log.location} •{' '}
-                                            {dayjs
-                                                .unix(log.time)
-                                                .format('DD-MMM-YYYY, hh:mm A')}
+                                            {log.location} • {dayjs.unix(log.time).format('DD-MMM-YYYY, hh:mm A')}
                                         </span>
                                     </div>
                                 </div>

@@ -65,16 +65,7 @@ const UnixDateTime = ({ value }: { value: number }) => {
 }
 
 const HighlightedText = ({ children, className }: CommonProps) => {
-    return (
-        <span
-            className={classNames(
-                'font-semibold text-gray-900 dark:text-gray-100',
-                className
-            )}
-        >
-            {children}
-        </span>
-    )
+    return <span className={classNames('font-semibold text-gray-900 dark:text-gray-100', className)}>{children}</span>
 }
 
 const Event = ({ data, compact }: EventProps) => {
@@ -82,11 +73,7 @@ const Event = ({ data, compact }: EventProps) => {
         // eslint-disable-next-line  @typescript-eslint/no-explicit-any
         replace: (node: any) => {
             if (node.type === 'tag' && node?.name === 'strong') {
-                return (
-                    <HighlightedText key={node?.children[0]?.data}>
-                        {node?.children[0]?.data}
-                    </HighlightedText>
-                )
+                return <HighlightedText key={node?.children[0]?.data}>{node?.children[0]?.data}</HighlightedText>
             }
             return node.data
         },
@@ -106,12 +93,8 @@ const Event = ({ data, compact }: EventProps) => {
                         <span className="mx-1">has change </span>
                         <HighlightedText>{data.ticket}</HighlightedText>
                         <span className="mx-1"> status to </span>
-                        <Badge
-                            className={ticketStatus[data.status || 0].bgClass}
-                        />
-                        <HighlightedText className="ml-1 rtl:mr-1">
-                            {ticketStatus[data.status || 0].label}
-                        </HighlightedText>
+                        <Badge className={ticketStatus[data.status || 0].bgClass} />
+                        <HighlightedText className="ml-1 rtl:mr-1">{ticketStatus[data.status || 0].label}</HighlightedText>
                     </div>
                 </>
             ) : (
@@ -121,9 +104,7 @@ const Event = ({ data, compact }: EventProps) => {
                     <HighlightedText>{data.ticket}</HighlightedText>
                     <span className="mx-1"> status to </span>
                     <Badge className={ticketStatus[data.status || 0].bgClass} />
-                    <HighlightedText className="ml-1 rtl:mr-1">
-                        {ticketStatus[data.status || 0].label}
-                    </HighlightedText>
+                    <HighlightedText className="ml-1 rtl:mr-1">{ticketStatus[data.status || 0].label}</HighlightedText>
                     <span className="ml-3 rtl:mr-3">
                         <UnixDateTime value={data.dateTime} />
                     </span>
@@ -135,9 +116,7 @@ const Event = ({ data, compact }: EventProps) => {
                     {compact ? (
                         <>
                             <div className="flex flex-col gap-y-0.5">
-                                <HighlightedText>
-                                    {data.userName}
-                                </HighlightedText>
+                                <HighlightedText>{data.userName}</HighlightedText>
                                 <span className="text-xs">
                                     <UnixDateTime value={data.dateTime} />
                                 </span>
@@ -168,26 +147,20 @@ const Event = ({ data, compact }: EventProps) => {
                     {compact ? (
                         <>
                             <div className="flex flex-col gap-y-0.5">
-                                <HighlightedText>
-                                    {data.userName}
-                                </HighlightedText>
+                                <HighlightedText>{data.userName}</HighlightedText>
                                 <span className="text-xs">
                                     <UnixDateTime value={data.dateTime} />
                                 </span>
                             </div>
                             <div className="mt-4">
-                                <span className="mx-1">
-                                    mentioned you in a comment
-                                </span>
+                                <span className="mx-1">mentioned you in a comment</span>
                                 <HighlightedText>Post</HighlightedText>
                             </div>
                         </>
                     ) : (
                         <p className="my-1 flex items-center">
                             <HighlightedText>{data.userName}</HighlightedText>
-                            <span className="mx-1">
-                                mentioned you in a comment
-                            </span>
+                            <span className="mx-1">mentioned you in a comment</span>
                             <HighlightedText>Post</HighlightedText>
                             <span className="ml-3 rtl:mr-3">
                                 <UnixDateTime value={data.dateTime} />
@@ -211,12 +184,7 @@ const Event = ({ data, compact }: EventProps) => {
                     <div className="mt-4">
                         <span className="mx-1">added tags </span>
                         {data?.tags?.map((label, index) => (
-                            <Tag
-                                key={label + index}
-                                prefix
-                                className="mx-1"
-                                prefixClass={`${taskLabelColors[label]}`}
-                            >
+                            <Tag key={label + index} prefix className="mx-1" prefixClass={`${taskLabelColors[label]}`}>
                                 {label}
                             </Tag>
                         ))}
@@ -227,12 +195,7 @@ const Event = ({ data, compact }: EventProps) => {
                     <HighlightedText>{data.userName} </HighlightedText>
                     <span className="mx-1">added tags </span>
                     {data?.tags?.map((label, index) => (
-                        <Tag
-                            key={label + index}
-                            prefix
-                            className="mx-1"
-                            prefixClass={`${taskLabelColors[label]}`}
-                        >
+                        <Tag key={label + index} prefix className="mx-1" prefixClass={`${taskLabelColors[label]}`}>
                             {label}
                         </Tag>
                     ))}
@@ -255,11 +218,7 @@ const Event = ({ data, compact }: EventProps) => {
                         {data?.files?.map((file, index) => (
                             <HighlightedText key={file + index}>
                                 {file}
-                                {!isLastChild(data?.files || [], index) && (
-                                    <span className="ltr:mr-1 rtl:ml-1">
-                                        ,{' '}
-                                    </span>
-                                )}
+                                {!isLastChild(data?.files || [], index) && <span className="ltr:mr-1 rtl:ml-1">, </span>}
                             </HighlightedText>
                         ))}
                     </div>
@@ -271,9 +230,7 @@ const Event = ({ data, compact }: EventProps) => {
                     {data?.files?.map((file, index) => (
                         <HighlightedText key={file + index}>
                             {file}
-                            {!isLastChild(data?.files || [], index) && (
-                                <span className="ltr:mr-1 rtl:ml-1">, </span>
-                            )}
+                            {!isLastChild(data?.files || [], index) && <span className="ltr:mr-1 rtl:ml-1">, </span>}
                         </HighlightedText>
                     ))}
                     <span className="mx-1">to ticket</span>

@@ -3,9 +3,7 @@ import classNames from 'classnames'
 import type { CommonProps } from '@/@types/common'
 import type { HTMLAttributes } from 'react'
 
-interface StickyFooterProps
-    extends CommonProps,
-        HTMLAttributes<HTMLDivElement> {
+interface StickyFooterProps extends CommonProps, HTMLAttributes<HTMLDivElement> {
     stickyClass?: string
 }
 
@@ -17,12 +15,9 @@ const StickyFooter = (props: StickyFooterProps) => {
 
     useEffect(() => {
         const cachedRef = ref.current
-        const observer = new IntersectionObserver(
-            ([e]) => setIsSticky(e.intersectionRatio < 1),
-            {
-                threshold: [1],
-            }
-        )
+        const observer = new IntersectionObserver(([e]) => setIsSticky(e.intersectionRatio < 1), {
+            threshold: [1],
+        })
 
         observer.observe(cachedRef as Element)
 
@@ -32,15 +27,7 @@ const StickyFooter = (props: StickyFooterProps) => {
     }, [])
 
     return (
-        <div
-            ref={ref}
-            className={classNames(
-                'sticky -bottom-1',
-                className,
-                isSticky && stickyClass
-            )}
-            {...rest}
-        >
+        <div ref={ref} className={classNames('sticky -bottom-1', className, isSticky && stickyClass)} {...rest}>
             {children}
         </div>
     )
