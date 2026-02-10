@@ -2,7 +2,6 @@
 // import logger from "redux-logger";
 // import { authReducer } from "./reducers/authReducers";
 
-
 // export const store = configureStore({
 //     reducer: {
 //         auth: authReducer

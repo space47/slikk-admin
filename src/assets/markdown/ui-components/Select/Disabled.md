@@ -18,24 +18,9 @@ const colourOptions = [
 const Disabled = () => {
     return (
         <div>
-            <Select
-                className="mb-4"
-                placeholder="Certain options disabled"
-                options={colourOptions}
-            />
-            <Select
-                className="mb-4"
-                isDisabled
-                placeholder="Please Select"
-                defaultValue={colourOptions[2]}
-                options={colourOptions}
-            />
-            <Select
-                isDisabled
-                isMulti
-                defaultValue={[colourOptions[2], colourOptions[3]]}
-                options={colourOptions}
-            />
+            <Select className="mb-4" placeholder="Certain options disabled" options={colourOptions} />
+            <Select className="mb-4" isDisabled placeholder="Please Select" defaultValue={colourOptions[2]} options={colourOptions} />
+            <Select isDisabled isMulti defaultValue={[colourOptions[2], colourOptions[3]]} options={colourOptions} />
         </div>
     )
 }

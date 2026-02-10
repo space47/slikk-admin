@@ -18,22 +18,6 @@ export const COLOR_5_LIGHT = twColor.red['100']
 export const COLOR_6_LIGHT = twColor.purple['100']
 export const COLOR_7_LIGHT = twColor.cyan['100']
 
-export const COLORS = [
-    COLOR_1,
-    COLOR_2,
-    COLOR_3,
-    COLOR_4,
-    COLOR_5,
-    COLOR_6,
-    COLOR_7,
-]
+export const COLORS = [COLOR_1, COLOR_2, COLOR_3, COLOR_4, COLOR_5, COLOR_6, COLOR_7]
 
-export const COLORS_LIGHT = [
-    COLOR_1_LIGHT,
-    COLOR_2_LIGHT,
-    COLOR_3_LIGHT,
-    COLOR_4_LIGHT,
-    COLOR_5_LIGHT,
-    COLOR_6_LIGHT,
-    COLOR_7_LIGHT,
-]
+export const COLORS_LIGHT = [COLOR_1_LIGHT, COLOR_2_LIGHT, COLOR_3_LIGHT, COLOR_4_LIGHT, COLOR_5_LIGHT, COLOR_6_LIGHT, COLOR_7_LIGHT]

@@ -26,18 +26,10 @@ const Prev = (props: PrevProps) => {
         onPrev(e)
     }
 
-    const pagerPrevClass = classNames(
-        pagerClass.default,
-        'pagination-pager-prev',
-        disabled ? pagerClass.disabled : pagerClass.inactive
-    )
+    const pagerPrevClass = classNames(pagerClass.default, 'pagination-pager-prev', disabled ? pagerClass.disabled : pagerClass.inactive)
 
     return (
-        <span
-            className={pagerPrevClass}
-            role="presentation"
-            onClick={onPrevClick}
-        >
+        <span className={pagerPrevClass} role="presentation" onClick={onPrevClick}>
             <HiChevronLeft />
         </span>
     )

@@ -7,7 +7,7 @@ const Duration = () => {
         toast.push(
             <Notification closable type="success" duration={0}>
                 Success
-            </Notification>
+            </Notification>,
         )
     }
 
@@ -15,7 +15,7 @@ const Duration = () => {
         toast.push(
             <Notification closable type="success" duration={2000}>
                 Success
-            </Notification>
+            </Notification>,
         )
     }
 

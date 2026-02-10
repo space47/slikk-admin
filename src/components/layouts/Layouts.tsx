@@ -37,24 +37,22 @@ const Layout = () => {
     useDirection()
 
     useLocale()
-    const dispatch = useAppDispatch();
-    const company = useAppSelector(state => state.company.currCompany);
+    const dispatch = useAppDispatch()
+    const company = useAppSelector((state) => state.company.currCompany)
 
     const AppLayout = useMemo(() => {
-
-        dispatch(getAllDivisionAPI());
-        dispatch(getAllCategoryAPI());
-        dispatch(getAllSubCategoryAPI());
-        dispatch(getAllProductTypeAPI());
+        dispatch(getAllDivisionAPI())
+        dispatch(getAllCategoryAPI())
+        dispatch(getAllSubCategoryAPI())
+        dispatch(getAllProductTypeAPI())
 
         if (authenticated) {
-            console.log("company", company);
-            if(!company?.id){
-                dispatch(getUserProfileAPI());
+            console.log('company', company)
+            if (!company?.id) {
+                dispatch(getUserProfileAPI())
             }
-            
-            return layouts[layoutType]
 
+            return layouts[layoutType]
         }
         return lazy(() => import('./AuthLayout'))
     }, [layoutType, authenticated])

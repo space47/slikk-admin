@@ -18,11 +18,7 @@ export interface DateTableProps extends CommonProps, MonthBaseProps {
     daysRefs: RefObject<HTMLButtonElement[][][]>
     onMonthChange: (month: Date) => void
     onNextLevel: (unit: 'month' | 'year') => void
-    onDayKeyDown: (
-        monthIndex: number,
-        payload: DayKeydownPayload,
-        event: React.KeyboardEvent<HTMLButtonElement>
-    ) => void
+    onDayKeyDown: (monthIndex: number, payload: DayKeydownPayload, event: React.KeyboardEvent<HTMLButtonElement>) => void
     labelFormat?: { month: string; year: string }
     weekdayLabelFormat?: string
     onChange?: (value: Date) => void
@@ -32,15 +28,7 @@ export interface DateTableProps extends CommonProps, MonthBaseProps {
     range?: [Date, Date]
 }
 
-function formatMonthLabel({
-    month,
-    locale,
-    format,
-}: {
-    month: Date
-    locale: string
-    format: string
-}) {
+function formatMonthLabel({ month, locale, format }: { month: Date; locale: string; format: string }) {
     return capitalize(dayjs(month).locale(locale).format(format))
 }
 
@@ -97,18 +85,8 @@ const DateTable = (props: DateTableProps) => {
                         }
                         className={className}
                         renderCenter={dateViewCount > 1}
-                        onNext={() =>
-                            onMonthChange(
-                                dayjs(month).add(paginateBy, 'months').toDate()
-                            )
-                        }
-                        onPrevious={() =>
-                            onMonthChange(
-                                dayjs(month)
-                                    .subtract(paginateBy, 'months')
-                                    .toDate()
-                            )
-                        }
+                        onNext={() => onMonthChange(dayjs(month).add(paginateBy, 'months').toDate())}
+                        onPrevious={() => onMonthChange(dayjs(month).subtract(paginateBy, 'months').toDate())}
                     >
                         <div>
                             <button
@@ -116,9 +94,7 @@ const DateTable = (props: DateTableProps) => {
                                 disabled={!enableHeaderLabel}
                                 tabIndex={index > 0 ? -1 : 0}
                                 onClick={() => onNextLevel('month')}
-                                onMouseDown={(event) =>
-                                    preventFocus && event.preventDefault()
-                                }
+                                onMouseDown={(event) => preventFocus && event.preventDefault()}
                                 type="button"
                             >
                                 {formatMonthLabel({
@@ -132,9 +108,7 @@ const DateTable = (props: DateTableProps) => {
                                 disabled={!enableHeaderLabel}
                                 tabIndex={index > 0 ? -1 : 0}
                                 onClick={() => onNextLevel('year')}
-                                onMouseDown={(event) =>
-                                    preventFocus && event.preventDefault()
-                                }
+                                onMouseDown={(event) => preventFocus && event.preventDefault()}
                                 type="button"
                             >
                                 {formatMonthLabel({
@@ -147,9 +121,7 @@ const DateTable = (props: DateTableProps) => {
                     </Header>
                     <Month
                         month={monthDate}
-                        daysRefs={
-                            (daysRefs.current as HTMLButtonElement[][][])[index]
-                        }
+                        daysRefs={(daysRefs.current as HTMLButtonElement[][][])[index]}
                         minDate={minDate}
                         maxDate={maxDate}
                         className={className}

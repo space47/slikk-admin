@@ -1,9 +1,4 @@
-import {
-    Draggable,
-    Droppable,
-    DraggableChildrenFn,
-    DroppableProvided,
-} from 'react-beautiful-dnd'
+import { Draggable, Droppable, DraggableChildrenFn, DroppableProvided } from 'react-beautiful-dnd'
 import BoardCard from './BoardCard'
 import type { Ticket } from '../types'
 import type { CSSProperties } from 'react'
@@ -37,11 +32,7 @@ function InnerList(props: InnerListProps) {
         <div ref={dropProvided.innerRef} className="board-dropzone h-full">
             <div className="px-4 h-full">
                 {contents?.map((item, index) => (
-                    <Draggable
-                        key={item.id}
-                        draggableId={item.id}
-                        index={index}
-                    >
+                    <Draggable key={item.id} draggableId={item.id} index={index}>
                         {(dragProvided) => (
                             <BoardCard
                                 ref={dragProvided.innerRef}
@@ -82,26 +73,13 @@ const BoardCardList = (props: BoardCardListProps) => {
             renderClone={useClone}
         >
             {(dropProvided) => (
-                <div
-                    style={style}
-                    className="board-wrapper overflow-hidden flex-auto"
-                    {...dropProvided.droppableProps}
-                >
+                <div style={style} className="board-wrapper overflow-hidden flex-auto" {...dropProvided.droppableProps}>
                     {internalScroll ? (
-                        <div
-                            className="board-scrollContainer"
-                            style={scrollContainerStyle}
-                        >
-                            <InnerList
-                                contents={contents}
-                                dropProvided={dropProvided}
-                            />
+                        <div className="board-scrollContainer" style={scrollContainerStyle}>
+                            <InnerList contents={contents} dropProvided={dropProvided} />
                         </div>
                     ) : (
-                        <InnerList
-                            contents={contents}
-                            dropProvided={dropProvided}
-                        />
+                        <InnerList contents={contents} dropProvided={dropProvided} />
                     )}
                     {dropProvided.placeholder}
                 </div>

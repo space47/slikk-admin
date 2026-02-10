@@ -7,9 +7,7 @@ export async function apiGetCategoriesData<T>() {
     })
 }
 
-export async function apiQueryArticleList<T, U extends Record<string, unknown>>(
-    data: U
-) {
+export async function apiQueryArticleList<T, U extends Record<string, unknown>>(data: U) {
     return ApiService.fetchData<T>({
         url: '/knowledge-base/articles-query',
         method: 'post',
@@ -17,9 +15,7 @@ export async function apiQueryArticleList<T, U extends Record<string, unknown>>(
     })
 }
 
-export async function apiGetArticle<T, U extends Record<string, unknown>>(
-    params: U
-) {
+export async function apiGetArticle<T, U extends Record<string, unknown>>(params: U) {
     return ApiService.fetchData<T>({
         url: '/knowledge-base/article',
         method: 'get',
@@ -27,9 +23,7 @@ export async function apiGetArticle<T, U extends Record<string, unknown>>(
     })
 }
 
-export async function apiPostArticle<T, U extends Record<string, unknown>>(
-    data: U
-) {
+export async function apiPostArticle<T, U extends Record<string, unknown>>(data: U) {
     return ApiService.fetchData<T>({
         url: '/knowledge-base/article',
         method: 'post',
@@ -37,10 +31,7 @@ export async function apiPostArticle<T, U extends Record<string, unknown>>(
     })
 }
 
-export async function apiGetOthersArticleList<
-    T,
-    U extends Record<string, unknown>
->(params: U) {
+export async function apiGetOthersArticleList<T, U extends Record<string, unknown>>(params: U) {
     return ApiService.fetchData<T>({
         url: '/knowledge-base/others-article',
         method: 'get',

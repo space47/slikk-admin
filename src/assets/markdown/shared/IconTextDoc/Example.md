@@ -4,10 +4,7 @@ import { HiClock } from 'react-icons/hi'
 
 const Example = () => {
     return (
-        <IconText
-            className="text-emerald-500 text-sm font-semibold"
-            icon={<HiClock className="text-lg" />}
-        >
+        <IconText className="text-emerald-500 text-sm font-semibold" icon={<HiClock className="text-lg" />}>
             In Progress
         </IconText>
     )

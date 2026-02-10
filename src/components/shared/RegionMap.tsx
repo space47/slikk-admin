@@ -38,11 +38,7 @@ const hoverPercentage = -10
 
 const { MODE_DARK } = THEME_ENUM
 
-const getHighlightedRegion = (
-    name: unknown,
-    data: MapDataProp,
-    defaultMapColor: string
-) => {
+const getHighlightedRegion = (name: unknown, data: MapDataProp, defaultMapColor: string) => {
     if (data.length > 0 || name) {
         for (let i = 0; i < data.length; i++) {
             const elm = data[i]
@@ -55,11 +51,7 @@ const getHighlightedRegion = (
     return defaultMapColor
 }
 
-const getRegionHoverColor = (
-    name: unknown,
-    data: MapDataProp,
-    defaultMapColor = ''
-) => {
+const getRegionHoverColor = (name: unknown, data: MapDataProp, defaultMapColor = '') => {
     if (data.length > 0 || name) {
         for (let i = 0; i < data.length; i++) {
             const elm = data[i]
@@ -72,12 +64,7 @@ const getRegionHoverColor = (
     return shadeColor(defaultMapColor, hoverPercentage)
 }
 
-const getRegionValue = (
-    name: unknown,
-    data: MapDataProp,
-    suffix = '',
-    prefix = ''
-) => {
+const getRegionValue = (name: unknown, data: MapDataProp, suffix = '', prefix = '') => {
     if (data.length > 0 || name) {
         for (let i = 0; i < data.length; i++) {
             const elm = data[i]
@@ -96,12 +83,7 @@ const MapChart = (props: MapChartProps) => {
     const mode = useAppSelector((state) => state.theme.mode)
 
     return (
-        <ComposableMap
-            style={{ transform: 'translateY(20px)' }}
-            data-tip=""
-            height={380}
-            projectionConfig={{ scale: 145 }}
-        >
+        <ComposableMap style={{ transform: 'translateY(20px)' }} data-tip="" height={380} projectionConfig={{ scale: 145 }}>
             <Geographies geography={mapSource}>
                 {({ geographies }) =>
                     geographies.map((geo) => {
@@ -111,39 +93,20 @@ const MapChart = (props: MapChartProps) => {
                                 key={geo.rsmKey}
                                 geography={geo}
                                 strokeWidth={2}
-                                fill={getHighlightedRegion(
-                                    geoName,
-                                    data,
-                                    mode === MODE_DARK
-                                        ? twColor.gray['500']
-                                        : twColor.gray['100']
-                                )}
-                                stroke={
-                                    mode === MODE_DARK
-                                        ? twColor.gray['600']
-                                        : twColor.gray['300']
-                                }
+                                fill={getHighlightedRegion(geoName, data, mode === MODE_DARK ? twColor.gray['500'] : twColor.gray['100'])}
+                                stroke={mode === MODE_DARK ? twColor.gray['600'] : twColor.gray['300']}
                                 style={{
                                     hover: {
                                         fill: getRegionHoverColor(
                                             geoName,
                                             data,
-                                            mode === MODE_DARK
-                                                ? twColor.gray['500']
-                                                : twColor.gray['100']
+                                            mode === MODE_DARK ? twColor.gray['500'] : twColor.gray['100'],
                                         ),
                                         outline: 'none',
                                     },
                                 }}
                                 onMouseEnter={() => {
-                                    setTooltipContent(
-                                        getRegionValue(
-                                            geoName,
-                                            data,
-                                            suffix,
-                                            prefix
-                                        )
-                                    )
+                                    setTooltipContent(getRegionValue(geoName, data, suffix, prefix))
                                 }}
                                 onMouseLeave={() => {
                                     setTooltipContent('')
@@ -170,14 +133,7 @@ const Map = (props: MapProps) => {
 const RegionMap = (props: RegionMapProps) => {
     const { data = [], mapSource = geoUrl, valueSuffix, valuePrefix } = props
 
-    return (
-        <Map
-            data={data}
-            mapSource={mapSource}
-            prefix={valuePrefix}
-            suffix={valueSuffix}
-        />
-    )
+    return <Map data={data} mapSource={mapSource} prefix={valuePrefix} suffix={valueSuffix} />
 }
 
 export default RegionMap

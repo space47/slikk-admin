@@ -66,11 +66,7 @@ const LayoutSwitcher = () => {
 
     return (
         <div>
-            <Segment
-                className="w-full"
-                value={[type]}
-                onChange={(val) => onLayoutSelect(val[0] as LayoutType)}
-            >
+            <Segment className="w-full" value={[type]} onChange={(val) => onLayoutSelect(val[0] as LayoutType)}>
                 <div className="grid grid-cols-3 gap-4 w-full">
                     {layouts.map((layout) => (
                         <Segment.Item key={layout.value} value={layout.value}>
@@ -84,32 +80,13 @@ const LayoutSwitcher = () => {
                                             defaultGutter={false}
                                             className="relative min-h-[80px] w-full"
                                             customCheck={
-                                                <HiCheckCircle
-                                                    className={classNames(
-                                                        textTheme,
-                                                        'absolute top-2 right-2 text-lg',
-                                                    )}
-                                                />
+                                                <HiCheckCircle className={classNames(textTheme, 'absolute top-2 right-2 text-lg')} />
                                             }
-                                            onSegmentItemClick={
-                                                onSegmentItemClick
-                                            }
+                                            onSegmentItemClick={onSegmentItemClick}
                                         >
-                                            <DoubleSidedImage
-                                                className="rounded-md"
-                                                src={layout.src}
-                                                darkModeSrc={layout.srcDark}
-                                                alt=""
-                                            />
+                                            <DoubleSidedImage className="rounded-md" src={layout.src} darkModeSrc={layout.srcDark} alt="" />
                                         </SegmentItemOption>
-                                        <div
-                                            className={classNames(
-                                                active && textTheme,
-                                                'mt-2 font-semibold',
-                                            )}
-                                        >
-                                            {layout.label}
-                                        </div>
+                                        <div className={classNames(active && textTheme, 'mt-2 font-semibold')}>{layout.label}</div>
                                     </div>
                                 )
                             }}

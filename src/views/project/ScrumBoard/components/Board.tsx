@@ -1,19 +1,7 @@
 import { useEffect, lazy, Suspense } from 'react'
 import Dialog from '@/components/ui/Dialog'
-import {
-    Droppable,
-    DragDropContext,
-    DropResult,
-    DraggableChildrenFn,
-} from 'react-beautiful-dnd'
-import {
-    getBoards,
-    updateColumns,
-    updateOrdered,
-    closeDialog,
-    useAppDispatch,
-    useAppSelector,
-} from '../store'
+import { Droppable, DragDropContext, DropResult, DraggableChildrenFn } from 'react-beautiful-dnd'
+import { getBoards, updateColumns, updateOrdered, closeDialog, useAppDispatch, useAppSelector } from '../store'
 import { reorder, reorderQuoteMap } from '../utils'
 import BoardColumn from './BoardColumn'
 
@@ -30,23 +18,14 @@ const AddNewColumnContent = lazy(() => import('./AddNewColumnContent'))
 const AddNewMemberContent = lazy(() => import('./AddNewMemberContent'))
 
 const Board = (props: BoardProps) => {
-    const {
-        containerHeight,
-        useClone,
-        isCombineEnabled,
-        withScrollableColumns,
-    } = props
+    const { containerHeight, useClone, isCombineEnabled, withScrollableColumns } = props
 
     const dispatch = useAppDispatch()
 
     const columns = useAppSelector((state) => state.scrumBoard.data.columns)
     const ordered = useAppSelector((state) => state.scrumBoard.data.ordered)
-    const dialogOpen = useAppSelector(
-        (state) => state.scrumBoard.data.dialogOpen
-    )
-    const dialogView = useAppSelector(
-        (state) => state.scrumBoard.data.dialogView
-    )
+    const dialogOpen = useAppSelector((state) => state.scrumBoard.data.dialogOpen)
+    const dialogView = useAppSelector((state) => state.scrumBoard.data.dialogView)
 
     const onDialogClose = () => {
         dispatch(closeDialog())
@@ -82,10 +61,7 @@ const Board = (props: BoardProps) => {
         const source = result.source
         const destination = result.destination
 
-        if (
-            source.droppableId === destination.droppableId &&
-            source.index === destination.index
-        ) {
+        if (source.droppableId === destination.droppableId && source.index === destination.index) {
             return
         }
 
@@ -146,9 +122,7 @@ const Board = (props: BoardProps) => {
                 onRequestClose={onDialogClose}
             >
                 <Suspense fallback={<></>}>
-                    {dialogView === 'TICKET' && (
-                        <TicketContent onTicketClose={onDialogClose} />
-                    )}
+                    {dialogView === 'TICKET' && <TicketContent onTicketClose={onDialogClose} />}
                     {dialogView === 'NEW_TICKET' && <AddNewTicketContent />}
                     {dialogView === 'NEW_COLUMN' && <AddNewColumnContent />}
                     {dialogView === 'ADD_MEMBER' && <AddNewMemberContent />}

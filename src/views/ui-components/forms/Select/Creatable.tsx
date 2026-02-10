@@ -22,20 +22,14 @@ const colourOptions = [
 ]
 
 const Creatable = () => {
-    const handleChange = (
-        newValue: Option | Option[] | null,
-        actionMeta: ActionMeta<Option>
-    ) => {
+    const handleChange = (newValue: Option | Option[] | null, actionMeta: ActionMeta<Option>) => {
         console.group('Value Changed')
         console.log(newValue)
         console.log(`action: ${actionMeta.action}`)
         console.groupEnd()
     }
 
-    const handleInputChange = (
-        inputValue: string,
-        actionMeta: InputActionMeta
-    ) => {
+    const handleInputChange = (inputValue: string, actionMeta: InputActionMeta) => {
         console.group('Input Changed')
         console.log(inputValue)
         console.log(`action: ${actionMeta.action}`)

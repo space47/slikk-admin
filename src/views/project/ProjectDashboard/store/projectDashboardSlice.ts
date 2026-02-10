@@ -78,14 +78,10 @@ export type ProjectDashboardState = {
 
 export const SLICE_NAME = 'projectDashboard'
 
-export const getProjectDashboardData = createAsyncThunk(
-    SLICE_NAME + '/getProjectDashboardData',
-    async () => {
-        const response =
-            await apiGetProjectDashboardData<GetProjectDashboardDataResponse>()
-        return response.data
-    }
-)
+export const getProjectDashboardData = createAsyncThunk(SLICE_NAME + '/getProjectDashboardData', async () => {
+    const response = await apiGetProjectDashboardData<GetProjectDashboardDataResponse>()
+    return response.data
+})
 
 const initialState: ProjectDashboardState = {
     loading: true,

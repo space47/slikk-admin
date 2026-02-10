@@ -84,9 +84,7 @@ const PendingDetails = () => {
         console.log('idddddddd', post_id)
         const fetchOrders = async () => {
             try {
-                const response = await axioisInstance.get(
-                    `userposts/approval?post_id=${post_id}&mobile=${owner}`,
-                )
+                const response = await axioisInstance.get(`userposts/approval?post_id=${post_id}&mobile=${owner}`)
 
                 const PendingData = response.data?.data || []
                 setLoading(false)
@@ -108,15 +106,11 @@ const PendingDetails = () => {
             status: 'APPROVED',
         }
         try {
-            const response = await axioisInstance.patch(
-                '/userposts/approval',
-                body,
-            )
+            const response = await axioisInstance.patch('/userposts/approval', body)
             const data = response.data.data
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Status Updated Successfully',
+                description: response?.data?.message || 'Status Updated Successfully',
             })
             navigate('/app/userposts/approval')
             return data
@@ -134,15 +128,11 @@ const PendingDetails = () => {
             status: 'REJECTED',
         }
         try {
-            const response = await axioisInstance.patch(
-                '/userposts/approval',
-                body,
-            )
+            const response = await axioisInstance.patch('/userposts/approval', body)
             const data = response.data.data
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Status Updated Successfully',
+                description: response?.data?.message || 'Status Updated Successfully',
             })
             navigate('/app/userposts/approval')
             return data
@@ -162,22 +152,14 @@ const PendingDetails = () => {
                     <>
                         <div className="mb-3 ">
                             <div className="flex justify-between ">
-                                <span className="text-xl font-bold">
-                                    POST ID :#{penddata.post_id}
-                                </span>
+                                <span className="text-xl font-bold">POST ID :#{penddata.post_id}</span>
                                 <span className="text-xl"></span>
 
                                 <div className="flex gap-4 ">
-                                    <Button
-                                        variant="accept"
-                                        onClick={() => handleAccept()}
-                                    >
+                                    <Button variant="accept" onClick={() => handleAccept()}>
                                         Accept
                                     </Button>
-                                    <Button
-                                        variant="reject"
-                                        onClick={() => handleReject()}
-                                    >
+                                    <Button variant="reject" onClick={() => handleReject()}>
                                         Reject
                                     </Button>
                                 </div>
@@ -190,9 +172,7 @@ const PendingDetails = () => {
                                     <PendCreatorDetails
                                         name={penddata.creator.name}
                                         dp={penddata.creator.dp}
-                                        followers_count={
-                                            penddata.creator.followers_count
-                                        }
+                                        followers_count={penddata.creator.followers_count}
                                         likes_count={penddata.likes_count}
                                         views_count={penddata.views_count}
                                         comments_count={penddata.comments_count}
@@ -206,11 +186,7 @@ const PendingDetails = () => {
                                     ) : (
                                         <>
                                             {' '}
-                                            <img
-                                                src={penddata.url}
-                                                alt=""
-                                                className=" w-[400px] h-[500px]"
-                                            />
+                                            <img src={penddata.url} alt="" className=" w-[400px] h-[500px]" />
                                         </>
                                     )}
                                 </div>
@@ -224,11 +200,7 @@ const PendingDetails = () => {
             </Loading>
             {!loading && isEmpty(penddata) && (
                 <div className="h-full flex flex-col items-center justify-center">
-                    <DoubleSidedImage
-                        src="/img/others/img-2.png"
-                        darkModeSrc="/img/others/img-2-dark.png"
-                        alt="No order found!"
-                    />
+                    <DoubleSidedImage src="/img/others/img-2.png" darkModeSrc="/img/others/img-2-dark.png" alt="No order found!" />
                     <h3 className="mt-8">No order found!</h3>
                 </div>
             )}

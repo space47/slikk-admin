@@ -1,8 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import {
-    apiGetScrumBoards,
-    apiGetScrumBoardtMembers,
-} from '@/services/ProjectService'
+import { apiGetScrumBoards, apiGetScrumBoardtMembers } from '@/services/ProjectService'
 import type { Members, Columns } from '../types'
 
 type GetScrumBoardsResponse = Columns
@@ -27,22 +24,15 @@ export type ScrumBoardState = {
 
 export const SLICE_NAME = 'scrumBoard'
 
-export const getBoards = createAsyncThunk(
-    SLICE_NAME + '/getBoards',
-    async () => {
-        const response = await apiGetScrumBoards<GetScrumBoardsResponse>()
-        return response.data
-    }
-)
+export const getBoards = createAsyncThunk(SLICE_NAME + '/getBoards', async () => {
+    const response = await apiGetScrumBoards<GetScrumBoardsResponse>()
+    return response.data
+})
 
-export const getMembers = createAsyncThunk(
-    SLICE_NAME + '/getMembers',
-    async () => {
-        const response =
-            await apiGetScrumBoardtMembers<GetScrumBoardtMembersResponse>()
-        return response.data
-    }
-)
+export const getMembers = createAsyncThunk(SLICE_NAME + '/getMembers', async () => {
+    const response = await apiGetScrumBoardtMembers<GetScrumBoardtMembersResponse>()
+    return response.data
+})
 
 const initialState: ScrumBoardState = {
     loading: false,

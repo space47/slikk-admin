@@ -8,9 +8,7 @@ const HeaderDivider = () => {
                 <Dropdown.Item variant="header">
                     <div className="pt-3 pb-1 px-3">
                         <span>Signed in as</span>
-                        <div className="font-semibold mt-1 text-gray-800 dark:text-white">
-                            alex_g@theme_nate.com
-                        </div>
+                        <div className="font-semibold mt-1 text-gray-800 dark:text-white">alex_g@theme_nate.com</div>
                     </div>
                 </Dropdown.Item>
                 <Dropdown.Item variant="divider" />

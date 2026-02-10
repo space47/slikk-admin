@@ -1,11 +1,6 @@
 import { padTime } from './padTime'
 
-export function getTimeValues(
-    value: Date,
-    format: '12' | '24',
-    amLabel: string,
-    pmLabel: string
-) {
+export function getTimeValues(value: Date, format: '12' | '24', amLabel: string, pmLabel: string) {
     if (!(value instanceof Date)) {
         return { hours: '', minutes: '', seconds: '', amPm: '' }
     }

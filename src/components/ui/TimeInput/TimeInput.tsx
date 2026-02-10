@@ -6,12 +6,7 @@ import TimeInputField from './TimeInputField'
 import AmPmInput from './AmPmInput'
 import CloseButton from '../CloseButton'
 import { Input } from '../Input'
-import {
-    getTimeValues,
-    getDate,
-    createAmPmHandler,
-    createTimeHandler,
-} from './utils'
+import { getTimeValues, getDate, createAmPmHandler, createTimeHandler } from './utils'
 import { HiOutlineClock } from 'react-icons/hi'
 import type { CommonProps, TypeAttributes } from '../@types/common'
 import type { ReactNode, RefObject, Ref } from 'react'
@@ -79,12 +74,8 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>((props, ref) => {
     const minutesRef = useRef<HTMLInputElement>()
     const secondsRef = useRef<HTMLInputElement>()
     const amPmRef = useRef<HTMLInputElement>()
-    const [time, setTime] = useState(
-        getTimeValues(value || (defaultValue as Date), format, amLabel, pmLabel)
-    )
-    const [_value, setValue] = useState<Value>(
-        (value as Date) || (defaultValue as Date)
-    )
+    const [time, setTime] = useState(getTimeValues(value || (defaultValue as Date), format, amLabel, pmLabel))
+    const [_value, setValue] = useState<Value>((value as Date) || (defaultValue as Date))
 
     useDidUpdate(() => {
         setTime(getTimeValues(_value as Date, format, amLabel, pmLabel))
@@ -98,14 +89,7 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>((props, ref) => {
 
     const setDate = (change: Partial<typeof time>) => {
         const timeWithChange = { ...time, ...change }
-        const newDate = getDate(
-            timeWithChange.hours,
-            timeWithChange.minutes,
-            timeWithChange.seconds,
-            format,
-            pmLabel,
-            timeWithChange.amPm
-        )
+        const newDate = getDate(timeWithChange.hours, timeWithChange.minutes, timeWithChange.seconds, format, pmLabel, timeWithChange.amPm)
         setValue(newDate)
         typeof onChange === 'function' && onChange(newDate)
     }
@@ -135,8 +119,8 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>((props, ref) => {
         nextRef: showSeconds
             ? (secondsRef as RefObject<HTMLInputElement>)
             : format === '12'
-            ? (amPmRef as RefObject<HTMLInputElement>)
-            : (nextRef as RefObject<HTMLInputElement>),
+              ? (amPmRef as RefObject<HTMLInputElement>)
+              : (nextRef as RefObject<HTMLInputElement>),
         nextMax: showSeconds ? 59 : undefined,
     })
 
@@ -146,10 +130,7 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>((props, ref) => {
         },
         min: 0,
         max: 59,
-        nextRef:
-            format === '12'
-                ? (amPmRef as RefObject<HTMLInputElement>)
-                : (nextRef as RefObject<HTMLInputElement>),
+        nextRef: format === '12' ? (amPmRef as RefObject<HTMLInputElement>) : (nextRef as RefObject<HTMLInputElement>),
     })
 
     const handleAmPmChange = createAmPmHandler({
@@ -168,8 +149,7 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>((props, ref) => {
         hoursRef?.current?.focus()
     }
 
-    const suffixSlot =
-        clearable && _value ? <CloseButton onClick={handleClear} /> : suffix
+    const suffixSlot = clearable && _value ? <CloseButton onClick={handleClear} /> : suffix
 
     return (
         <Input
@@ -191,9 +171,7 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>((props, ref) => {
                     ref={useMergedRef(hoursRef as Ref<HTMLInputElement>, ref)}
                     withSeparator
                     value={time.hours}
-                    setValue={(val) =>
-                        setTime((current) => ({ ...current, hours: val }))
-                    }
+                    setValue={(val) => setTime((current) => ({ ...current, hours: val }))}
                     id={uuid}
                     className={timeFieldClass}
                     max={format === '12' ? 12 : 23}
@@ -206,9 +184,7 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>((props, ref) => {
                 <TimeInputField
                     ref={minutesRef as Ref<HTMLInputElement>}
                     value={time.minutes}
-                    setValue={(val) =>
-                        setTime((current) => ({ ...current, minutes: val }))
-                    }
+                    setValue={(val) => setTime((current) => ({ ...current, minutes: val }))}
                     className={timeFieldClass}
                     withSeparator={showSeconds}
                     max={59}
@@ -221,9 +197,7 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>((props, ref) => {
                     <TimeInputField
                         ref={secondsRef as Ref<HTMLInputElement>}
                         value={time.seconds}
-                        setValue={(val) =>
-                            setTime((current) => ({ ...current, seconds: val }))
-                        }
+                        setValue={(val) => setTime((current) => ({ ...current, seconds: val }))}
                         className={timeFieldClass}
                         max={59}
                         placeholder={timeFieldPlaceholder}

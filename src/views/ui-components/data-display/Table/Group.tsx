@@ -1,10 +1,6 @@
 import { useMemo, useState } from 'react'
 import Table from '@/components/ui/Table'
-import {
-    useReactTable,
-    getCoreRowModel,
-    flexRender,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table'
 import { data10 } from './data'
 import type { Person } from './data'
 import type { ColumnDef } from '@tanstack/react-table'
@@ -45,7 +41,7 @@ const Group = () => {
                 ],
             },
         ],
-        []
+        [],
     )
 
     const table = useReactTable({
@@ -62,10 +58,7 @@ const Group = () => {
                         {headerGroup.headers.map((header) => {
                             return (
                                 <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext()
-                                    )}
+                                    {flexRender(header.column.columnDef.header, header.getContext())}
                                 </Th>
                             )
                         })}
@@ -77,14 +70,7 @@ const Group = () => {
                     return (
                         <Tr key={row.id}>
                             {row.getVisibleCells().map((cell) => {
-                                return (
-                                    <Td key={cell.id}>
-                                        {flexRender(
-                                            cell.column.columnDef.cell,
-                                            cell.getContext()
-                                        )}
-                                    </Td>
-                                )
+                                return <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                             })}
                         </Tr>
                     )

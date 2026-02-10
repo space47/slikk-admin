@@ -23,14 +23,9 @@ type SignUpFormSchema = {
 
 const validationSchema = Yup.object().shape({
     userName: Yup.string().required('Please enter your user name'),
-    email: Yup.string()
-        .email('Invalid email')
-        .required('Please enter your email'),
+    email: Yup.string().email('Invalid email').required('Please enter your email'),
     password: Yup.string().required('Please enter your password'),
-    confirmPassword: Yup.string().oneOf(
-        [Yup.ref('password')],
-        'Your passwords do not match'
-    ),
+    confirmPassword: Yup.string().oneOf([Yup.ref('password')], 'Your passwords do not match'),
 })
 
 const SignUpForm = (props: SignUpFormProps) => {
@@ -40,10 +35,7 @@ const SignUpForm = (props: SignUpFormProps) => {
 
     const [message, setMessage] = useTimeOutMessage()
 
-    const onSignUp = async (
-        values: SignUpFormSchema,
-        setSubmitting: (isSubmitting: boolean) => void
-    ) => {
+    const onSignUp = async (values: SignUpFormSchema, setSubmitting: (isSubmitting: boolean) => void) => {
         const { userName, password, email } = values
         setSubmitting(true)
         const result = await signUp({ userName, password, email })
@@ -81,68 +73,24 @@ const SignUpForm = (props: SignUpFormProps) => {
                 {({ touched, errors, isSubmitting }) => (
                     <Form>
                         <FormContainer>
-                            <FormItem
-                                label="User Name"
-                                invalid={errors.userName && touched.userName}
-                                errorMessage={errors.userName}
-                            >
-                                <Field
-                                    type="text"
-                                    autoComplete="off"
-                                    name="userName"
-                                    placeholder="User Name"
-                                    component={Input}
-                                />
+                            <FormItem label="User Name" invalid={errors.userName && touched.userName} errorMessage={errors.userName}>
+                                <Field type="text" autoComplete="off" name="userName" placeholder="User Name" component={Input} />
                             </FormItem>
-                            <FormItem
-                                label="Email"
-                                invalid={errors.email && touched.email}
-                                errorMessage={errors.email}
-                            >
-                                <Field
-                                    type="email"
-                                    autoComplete="off"
-                                    name="email"
-                                    placeholder="Email"
-                                    component={Input}
-                                />
+                            <FormItem label="Email" invalid={errors.email && touched.email} errorMessage={errors.email}>
+                                <Field type="email" autoComplete="off" name="email" placeholder="Email" component={Input} />
                             </FormItem>
-                            <FormItem
-                                label="Password"
-                                invalid={errors.password && touched.password}
-                                errorMessage={errors.password}
-                            >
-                                <Field
-                                    autoComplete="off"
-                                    name="password"
-                                    placeholder="Password"
-                                    component={PasswordInput}
-                                />
+                            <FormItem label="Password" invalid={errors.password && touched.password} errorMessage={errors.password}>
+                                <Field autoComplete="off" name="password" placeholder="Password" component={PasswordInput} />
                             </FormItem>
                             <FormItem
                                 label="Confirm Password"
-                                invalid={
-                                    errors.confirmPassword &&
-                                    touched.confirmPassword
-                                }
+                                invalid={errors.confirmPassword && touched.confirmPassword}
                                 errorMessage={errors.confirmPassword}
                             >
-                                <Field
-                                    autoComplete="off"
-                                    name="confirmPassword"
-                                    placeholder="Confirm Password"
-                                    component={PasswordInput}
-                                />
+                                <Field autoComplete="off" name="confirmPassword" placeholder="Confirm Password" component={PasswordInput} />
                             </FormItem>
-                            <Button
-                                block
-                                loading={isSubmitting}
-                                variant="solid"
-                                type="submit"
-                            >
-                                {isSubmitting
-                                    ? 'Creating Account...'
-                                    : 'Sign Up'}
+                            <Button block loading={isSubmitting} variant="solid" type="submit">
+                                {isSubmitting ? 'Creating Account...' : 'Sign Up'}
                             </Button>
                             <div className="mt-4 text-center">
                                 <span>Already have an account? </span>

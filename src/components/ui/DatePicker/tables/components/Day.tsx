@@ -4,9 +4,7 @@ import { useConfig } from '../../../ConfigProvider'
 import type { ComponentPropsWithRef, ReactNode, MouseEvent } from 'react'
 import type { CommonProps } from '../../../@types/common'
 
-export interface DayProps
-    extends CommonProps,
-        Omit<ComponentPropsWithRef<'button'>, 'value' | 'onMouseEnter'> {
+export interface DayProps extends CommonProps, Omit<ComponentPropsWithRef<'button'>, 'value' | 'onMouseEnter'> {
     value: Date
     selected: boolean
     weekend: boolean
@@ -91,37 +89,18 @@ const Day = forwardRef<HTMLButtonElement, DayProps>((props, ref) => {
                 weekend && !disabled && 'date-picker-cell-weekend',
                 outOfMonth && !disabled && 'date-picker-other-month',
                 outOfMonth && hideOutOfMonthDates && 'd-none',
-                !outOfMonth &&
-                    !disabled &&
-                    !selected &&
-                    'date-picker-cell-current-month',
-                !disabled &&
-                    !selected &&
-                    !inRange &&
-                    'date-picker-cell-hoverable',
-                selected &&
-                    !disabled &&
-                    `bg-${themeColor}-${primaryColorLevel} text-gray-100`,
-                inRange &&
-                    !disabled &&
-                    !firstInRange &&
-                    !lastInRange &&
-                    !selected &&
-                    `bg-${themeColor}-${primaryColorLevel} bg-opacity-10`,
+                !outOfMonth && !disabled && !selected && 'date-picker-cell-current-month',
+                !disabled && !selected && !inRange && 'date-picker-cell-hoverable',
+                selected && !disabled && `bg-${themeColor}-${primaryColorLevel} text-gray-100`,
+                inRange && !disabled && !firstInRange && !lastInRange && !selected && `bg-${themeColor}-${primaryColorLevel} bg-opacity-10`,
                 !inRange && !firstInRange && !lastInRange && 'rounded-lg',
-                firstInRange &&
-                    !disabled &&
-                    'ltr:rounded-tl-lg ltr:rounded-bl-lg rtl:rounded-tr-lg rtl:rounded-br-lg',
-                lastInRange &&
-                    !disabled &&
-                    'ltr:rounded-tr-lg ltr:rounded-br-lg rtl:rounded-tl-lg rtl:rounded-bl-lg',
-                className
+                firstInRange && !disabled && 'ltr:rounded-tl-lg ltr:rounded-bl-lg rtl:rounded-tr-lg rtl:rounded-br-lg',
+                lastInRange && !disabled && 'ltr:rounded-tr-lg ltr:rounded-br-lg rtl:rounded-tl-lg rtl:rounded-bl-lg',
+                className,
             )}
             onMouseEnter={(event) => onMouseEnter(value, event)}
         >
-            {typeof renderDay === 'function'
-                ? renderDay(value)
-                : value?.getDate()}
+            {typeof renderDay === 'function' ? renderDay(value) : value?.getDate()}
         </button>
     )
 })

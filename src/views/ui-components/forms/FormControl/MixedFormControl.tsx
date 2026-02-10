@@ -50,10 +50,7 @@ const MIN_UPLOAD = 1
 const MAX_UPLOAD = 2
 
 const validationSchema = Yup.object().shape({
-    input: Yup.string()
-        .min(3, 'Too Short!')
-        .max(20, 'Too Long!')
-        .required('Please input user name!'),
+    input: Yup.string().min(3, 'Too Short!').max(20, 'Too Long!').required('Please input user name!'),
     select: Yup.string().required('Please select one!'),
     multipleSelect: Yup.array().min(1, 'At least one is selected!'),
     date: Yup.date().required('Date Required!').nullable(),
@@ -121,45 +118,18 @@ const MixedFormControl = () => {
                 {({ values, touched, errors, resetForm }) => (
                     <Form>
                         <FormContainer>
-                            <FormItem
-                                asterisk
-                                label="Input"
-                                invalid={errors.input && touched.input}
-                                errorMessage={errors.input}
-                            >
-                                <Field
-                                    type="text"
-                                    name="input"
-                                    placeholder="Input"
-                                    component={Input}
-                                />
+                            <FormItem asterisk label="Input" invalid={errors.input && touched.input} errorMessage={errors.input}>
+                                <Field type="text" name="input" placeholder="Input" component={Input} />
                             </FormItem>
-                            <FormItem
-                                asterisk
-                                label="Select"
-                                invalid={errors.select && touched.select}
-                                errorMessage={errors.select}
-                            >
+                            <FormItem asterisk label="Select" invalid={errors.select && touched.select} errorMessage={errors.select}>
                                 <Field name="select">
-                                    {({
-                                        field,
-                                        form,
-                                    }: FieldProps<FormModel>) => (
+                                    {({ field, form }: FieldProps<FormModel>) => (
                                         <Select
                                             field={field}
                                             form={form}
                                             options={options}
-                                            value={options.filter(
-                                                (option) =>
-                                                    option.value ===
-                                                    values.select
-                                            )}
-                                            onChange={(option) =>
-                                                form.setFieldValue(
-                                                    field.name,
-                                                    option?.value
-                                                )
-                                            }
+                                            value={options.filter((option) => option.value === values.select)}
+                                            onChange={(option) => form.setFieldValue(field.name, option?.value)}
                                         />
                                     )}
                                 </Field>
@@ -167,17 +137,11 @@ const MixedFormControl = () => {
                             <FormItem
                                 asterisk
                                 label="Multiple Select"
-                                invalid={Boolean(
-                                    errors.multipleSelect &&
-                                        touched.multipleSelect
-                                )}
+                                invalid={Boolean(errors.multipleSelect && touched.multipleSelect)}
                                 errorMessage={errors.multipleSelect as string}
                             >
                                 <Field name="multipleSelect">
-                                    {({
-                                        field,
-                                        form,
-                                    }: FieldProps<FormModel>) => (
+                                    {({ field, form }: FieldProps<FormModel>) => (
                                         <Select<Option, true>
                                             isMulti
                                             componentAs={CreatableSelect}
@@ -186,60 +150,35 @@ const MixedFormControl = () => {
                                             options={options}
                                             value={values.multipleSelect}
                                             onChange={(option) => {
-                                                form.setFieldValue(
-                                                    field.name,
-                                                    option
-                                                )
+                                                form.setFieldValue(field.name, option)
                                             }}
                                         />
                                     )}
                                 </Field>
                             </FormItem>
-                            <FormItem
-                                asterisk
-                                label="Date"
-                                invalid={errors.date && touched.date}
-                                errorMessage={errors.date}
-                            >
+                            <FormItem asterisk label="Date" invalid={errors.date && touched.date} errorMessage={errors.date}>
                                 <Field name="date" placeholder="Date">
-                                    {({
-                                        field,
-                                        form,
-                                    }: FieldProps<FormModel>) => (
+                                    {({ field, form }: FieldProps<FormModel>) => (
                                         <DatePicker
                                             field={field}
                                             form={form}
                                             value={values.date}
                                             onChange={(date) => {
-                                                form.setFieldValue(
-                                                    field.name,
-                                                    date
-                                                )
+                                                form.setFieldValue(field.name, date)
                                             }}
                                         />
                                     )}
                                 </Field>
                             </FormItem>
-                            <FormItem
-                                asterisk
-                                label="Time"
-                                invalid={errors.time && touched.time}
-                                errorMessage={errors.time}
-                            >
+                            <FormItem asterisk label="Time" invalid={errors.time && touched.time} errorMessage={errors.time}>
                                 <Field name="time" placeholder="Date">
-                                    {({
-                                        field,
-                                        form,
-                                    }: FieldProps<FormModel>) => (
+                                    {({ field, form }: FieldProps<FormModel>) => (
                                         <TimeInput
                                             field={field}
                                             form={form}
                                             value={values.time}
                                             onChange={(time) => {
-                                                form.setFieldValue(
-                                                    field.name,
-                                                    time
-                                                )
+                                                form.setFieldValue(field.name, time)
                                             }}
                                         />
                                     )}
@@ -248,31 +187,16 @@ const MixedFormControl = () => {
                             <FormItem
                                 asterisk
                                 label="Upload"
-                                invalid={Boolean(
-                                    errors.upload && touched.upload
-                                )}
+                                invalid={Boolean(errors.upload && touched.upload)}
                                 errorMessage={errors.upload as string}
                             >
                                 <Field name="upload">
-                                    {({
-                                        field,
-                                        form,
-                                    }: FieldProps<FormModel>) => (
+                                    {({ field, form }: FieldProps<FormModel>) => (
                                         <Upload
                                             beforeUpload={beforeUpload}
                                             fileList={values.upload}
-                                            onChange={(files) =>
-                                                form.setFieldValue(
-                                                    field.name,
-                                                    files
-                                                )
-                                            }
-                                            onFileRemove={(files) =>
-                                                form.setFieldValue(
-                                                    field.name,
-                                                    files
-                                                )
-                                            }
+                                            onChange={(files) => form.setFieldValue(field.name, files)}
+                                            onFileRemove={(files) => form.setFieldValue(field.name, files)}
                                         />
                                     )}
                                 </Field>
@@ -280,43 +204,23 @@ const MixedFormControl = () => {
                             <FormItem
                                 asterisk
                                 label="Multiple Checkbox"
-                                invalid={Boolean(
-                                    errors.multipleCheckbox &&
-                                        touched.multipleCheckbox
-                                )}
+                                invalid={Boolean(errors.multipleCheckbox && touched.multipleCheckbox)}
                                 errorMessage={errors.multipleCheckbox as string}
                             >
                                 <Field name="multipleCheckbox">
-                                    {({
-                                        field,
-                                        form,
-                                    }: FieldProps<FormModel>) => (
+                                    {({ field, form }: FieldProps<FormModel>) => (
                                         <>
                                             <Checkbox.Group
                                                 value={values.multipleCheckbox}
-                                                onChange={(options) =>
-                                                    form.setFieldValue(
-                                                        field.name,
-                                                        options
-                                                    )
-                                                }
+                                                onChange={(options) => form.setFieldValue(field.name, options)}
                                             >
-                                                <Checkbox
-                                                    name={field.name}
-                                                    value="Apple"
-                                                >
+                                                <Checkbox name={field.name} value="Apple">
                                                     Apple{' '}
                                                 </Checkbox>
-                                                <Checkbox
-                                                    name={field.name}
-                                                    value="Banana"
-                                                >
+                                                <Checkbox name={field.name} value="Banana">
                                                     Banana{' '}
                                                 </Checkbox>
-                                                <Checkbox
-                                                    name={field.name}
-                                                    value="Lemon"
-                                                >
+                                                <Checkbox name={field.name} value="Lemon">
                                                     Lemon{' '}
                                                 </Checkbox>
                                             </Checkbox.Group>
@@ -324,26 +228,10 @@ const MixedFormControl = () => {
                                     )}
                                 </Field>
                             </FormItem>
-                            <FormItem
-                                asterisk
-                                label="Radio"
-                                invalid={errors.radio && touched.radio}
-                                errorMessage={errors.radio}
-                            >
+                            <FormItem asterisk label="Radio" invalid={errors.radio && touched.radio} errorMessage={errors.radio}>
                                 <Field name="radio">
-                                    {({
-                                        field,
-                                        form,
-                                    }: FieldProps<FormModel>) => (
-                                        <Radio.Group
-                                            value={values.radio}
-                                            onChange={(val) =>
-                                                form.setFieldValue(
-                                                    field.name,
-                                                    val
-                                                )
-                                            }
-                                        >
+                                    {({ field, form }: FieldProps<FormModel>) => (
+                                        <Radio.Group value={values.radio} onChange={(val) => form.setFieldValue(field.name, val)}>
                                             <Radio value={1}>Paypal</Radio>
                                             <Radio value={2}>Stripe</Radio>
                                         </Radio.Group>
@@ -353,16 +241,10 @@ const MixedFormControl = () => {
                             <FormItem
                                 asterisk
                                 label="Single Checkbox"
-                                invalid={
-                                    errors.singleCheckbox &&
-                                    touched.singleCheckbox
-                                }
+                                invalid={errors.singleCheckbox && touched.singleCheckbox}
                                 errorMessage={errors.singleCheckbox}
                             >
-                                <Field
-                                    name="singleCheckbox"
-                                    component={Checkbox}
-                                >
+                                <Field name="singleCheckbox" component={Checkbox}>
                                     I agree to the terms and conditions
                                 </Field>
                             </FormItem>
@@ -373,101 +255,57 @@ const MixedFormControl = () => {
                                 errorMessage={errors.switcher}
                             >
                                 <div>
-                                    <Field
-                                        name="switcher"
-                                        component={Switcher}
-                                    />
+                                    <Field name="switcher" component={Switcher} />
                                 </div>
                             </FormItem>
                             <FormItem
                                 asterisk
                                 label="Segment"
-                                invalid={Boolean(
-                                    errors.segment && touched.segment
-                                )}
+                                invalid={Boolean(errors.segment && touched.segment)}
                                 errorMessage={errors.segment as string}
                             >
                                 <Field name="segment">
-                                    {({
-                                        field,
-                                        form,
-                                    }: FieldProps<FormModel>) => (
+                                    {({ field, form }: FieldProps<FormModel>) => (
                                         <Segment
                                             className="w-full"
                                             selectionType="multiple"
                                             value={values.segment}
-                                            onChange={(val) =>
-                                                form.setFieldValue(
-                                                    field.name,
-                                                    val
-                                                )
-                                            }
+                                            onChange={(val) => form.setFieldValue(field.name, val)}
                                         >
                                             <div className="grid grid-cols-3 gap-4 w-full">
-                                                {segmentSelections.map(
-                                                    (segment) => (
-                                                        <Segment.Item
-                                                            key={segment.value}
-                                                            value={
-                                                                segment.value
-                                                            }
-                                                        >
-                                                            {({
-                                                                active,
-                                                                onSegmentItemClick,
-                                                                disabled,
-                                                            }) => {
-                                                                return (
-                                                                    <div className="text-center">
-                                                                        <SegmentItemOption
-                                                                            hoverable
-                                                                            active={
-                                                                                active
-                                                                            }
-                                                                            disabled={
-                                                                                disabled
-                                                                            }
-                                                                            defaultGutter={
-                                                                                false
-                                                                            }
-                                                                            className="relative min-h-[80px] w-full"
-                                                                            customCheck={
-                                                                                <HiCheckCircle className="text-indigo-600 absolute top-2 right-2 text-lg" />
-                                                                            }
-                                                                            onSegmentItemClick={
-                                                                                onSegmentItemClick
-                                                                            }
-                                                                        >
-                                                                            <div className="flex flex-col items-start mx-4">
-                                                                                <h6>
-                                                                                    {
-                                                                                        segment.value
-                                                                                    }
-                                                                                </h6>
-                                                                                <p>
-                                                                                    {
-                                                                                        segment.desc
-                                                                                    }
-                                                                                </p>
-                                                                            </div>
-                                                                        </SegmentItemOption>
-                                                                    </div>
-                                                                )
-                                                            }}
-                                                        </Segment.Item>
-                                                    )
-                                                )}
+                                                {segmentSelections.map((segment) => (
+                                                    <Segment.Item key={segment.value} value={segment.value}>
+                                                        {({ active, onSegmentItemClick, disabled }) => {
+                                                            return (
+                                                                <div className="text-center">
+                                                                    <SegmentItemOption
+                                                                        hoverable
+                                                                        active={active}
+                                                                        disabled={disabled}
+                                                                        defaultGutter={false}
+                                                                        className="relative min-h-[80px] w-full"
+                                                                        customCheck={
+                                                                            <HiCheckCircle className="text-indigo-600 absolute top-2 right-2 text-lg" />
+                                                                        }
+                                                                        onSegmentItemClick={onSegmentItemClick}
+                                                                    >
+                                                                        <div className="flex flex-col items-start mx-4">
+                                                                            <h6>{segment.value}</h6>
+                                                                            <p>{segment.desc}</p>
+                                                                        </div>
+                                                                    </SegmentItemOption>
+                                                                </div>
+                                                            )
+                                                        }}
+                                                    </Segment.Item>
+                                                ))}
                                             </div>
                                         </Segment>
                                     )}
                                 </Field>
                             </FormItem>
                             <FormItem>
-                                <Button
-                                    type="reset"
-                                    className="ltr:mr-2 rtl:ml-2"
-                                    onClick={() => resetForm()}
-                                >
+                                <Button type="reset" className="ltr:mr-2 rtl:ml-2" onClick={() => resetForm()}>
                                     Reset
                                 </Button>
                                 <Button variant="solid" type="submit">

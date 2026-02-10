@@ -17,11 +17,7 @@ const Custom = () => {
     return (
         <Segment defaultValue={['Team']} className="gap-2 md:flex-row flex-col">
             {segmentSelections.map((item) => (
-                <Segment.Item
-                    key={item.value}
-                    value={item.value}
-                    disabled={item.disabled}
-                >
+                <Segment.Item key={item.value} value={item.value} disabled={item.disabled}>
                     {({ active, value, onSegmentItemClick, disabled }) => {
                         return (
                             <div
@@ -37,12 +33,8 @@ const Custom = () => {
                                     'select-none',
                                     'w-100',
                                     'md:w-[260px]',
-                                    active
-                                        ? 'ring-cyan-500 border-cyan-500'
-                                        : 'ring-transparent',
-                                    disabled
-                                        ? 'opacity-50 cursor-not-allowed'
-                                        : 'hover:ring-cyan-500 hover:border-cyan-500'
+                                    active ? 'ring-cyan-500 border-cyan-500' : 'ring-transparent',
+                                    disabled ? 'opacity-50 cursor-not-allowed' : 'hover:ring-cyan-500 hover:border-cyan-500',
                                 )}
                                 onClick={onSegmentItemClick}
                             >
@@ -50,9 +42,7 @@ const Custom = () => {
                                     <h6>{value}</h6>
                                     <p>{item.desc}</p>
                                 </div>
-                                {active && (
-                                    <HiCheckCircle className="text-cyan-500 text-xl" />
-                                )}
+                                {active && <HiCheckCircle className="text-cyan-500 text-xl" />}
                             </div>
                         )
                     }}

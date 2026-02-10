@@ -18,12 +18,7 @@ const CustomStyle = () => {
             <Button block className="mx-2" onClick={() => onDrawerClose()}>
                 Cancel
             </Button>
-            <Button
-                block
-                className="mx-2"
-                variant="solid"
-                onClick={() => onDrawerClose()}
-            >
+            <Button block className="mx-2" variant="solid" onClick={() => onDrawerClose()}>
                 Confirm
             </Button>
         </div>

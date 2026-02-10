@@ -11,11 +11,9 @@ const AccountReview = () => {
             />
             <h4 className="mb-4">Account application proccessing</h4>
             <p>
-                Your account application is currently under review & will be
-                finalize shortly.
+                Your account application is currently under review & will be finalize shortly.
                 <br />
-                To fast track your account proccessing, you can try to contact
-                our customer services.
+                To fast track your account proccessing, you can try to contact our customer services.
             </p>
         </div>
     )

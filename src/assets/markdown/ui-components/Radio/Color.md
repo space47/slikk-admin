@@ -8,11 +8,7 @@ const Color = () => {
                 Radio
             </Radio>
             <div className="mt-4">
-                <Radio.Group
-                    color="yellow-500"
-                    value={'Apple'}
-                    name="radioColorGroup"
-                >
+                <Radio.Group color="yellow-500" value={'Apple'} name="radioColorGroup">
                     <Radio color="blue-600" value={'Apple'}>
                         Apple
                     </Radio>

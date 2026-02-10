@@ -11,11 +11,7 @@ const SignInSimple = () => {
                 </div>
             }
         >
-            <SignInForm
-                disableSubmit={true}
-                signUpUrl="/auth/sign-up-simple"
-                forgotPasswordUrl="/auth/forgot-password-simple"
-            />
+            <SignInForm disableSubmit={true} signUpUrl="/auth/sign-up-simple" forgotPasswordUrl="/auth/forgot-password-simple" />
         </Simple>
     )
 }

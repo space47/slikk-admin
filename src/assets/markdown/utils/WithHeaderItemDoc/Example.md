@@ -6,9 +6,7 @@ import { HiOutlineSearch } from 'react-icons/hi'
 
 const _Example = () => {
     return (
-        <Dropdown
-            renderTitle={<HiOutlineSearch className={classNames('text-4xl')} />}
-        >
+        <Dropdown renderTitle={<HiOutlineSearch className={classNames('text-4xl')} />}>
             <Dropdown.Item eventKey="a">Item A</Dropdown.Item>
             <Dropdown.Item eventKey="b">Item B</Dropdown.Item>
             <Dropdown.Item eventKey="c">Item C</Dropdown.Item>

@@ -1,12 +1,5 @@
 import { THEME_ENUM } from '@/constants/theme.constant'
-import {
-    Direction,
-    Mode,
-    ColorLevel,
-    NavMode,
-    ControlSize,
-    LayoutType,
-} from '@/@types/theme'
+import { Direction, Mode, ColorLevel, NavMode, ControlSize, LayoutType } from '@/@types/theme'
 
 export type ThemeConfig = {
     themeColor: string

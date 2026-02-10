@@ -18,10 +18,7 @@ const colourOptions = [
 const Basic = () => {
     return (
         <div>
-            <Select
-                placeholder="Please Select"
-                options={colourOptions}
-            ></Select>
+            <Select placeholder="Please Select" options={colourOptions}></Select>
         </div>
     )
 }

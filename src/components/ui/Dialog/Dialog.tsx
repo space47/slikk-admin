@@ -39,13 +39,7 @@ const Dialog = (props: DialogProps) => {
         onClose?.(e)
     }
 
-    const renderCloseButton = (
-        <CloseButton
-            absolute
-            className="ltr:right-6 rtl:left-6"
-            onClick={onCloseClick}
-        />
-    )
+    const renderCloseButton = <CloseButton absolute className="ltr:right-6 rtl:left-6" onClick={onCloseClick} />
 
     const contentStyle = {
         content: {
@@ -59,8 +53,7 @@ const Dialog = (props: DialogProps) => {
 
         if (
             typeof currentSize.width !== 'undefined' &&
-            currentSize.width <=
-                parseInt(theme`screens.sm`.split(/ /)[0].replace(/[^\d]/g, ''))
+            currentSize.width <= parseInt(theme`screens.sm`.split(/ /)[0].replace(/[^\d]/g, ''))
         ) {
             contentStyle.content.width = 'auto'
         }

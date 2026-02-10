@@ -19,12 +19,7 @@ import useThemeClass from '@/utils/hooks/useThemeClass'
 import { useNavigate } from 'react-router-dom'
 import cloneDeep from 'lodash/cloneDeep'
 import dayjs from 'dayjs'
-import type {
-    DataTableResetHandle,
-    OnSortParam,
-    ColumnDef,
-    Row,
-} from '@/components/shared/DataTable'
+import type { DataTableResetHandle, OnSortParam, ColumnDef, Row } from '@/components/shared/DataTable'
 
 type Order = {
     id: string
@@ -57,38 +52,14 @@ const orderStatusColor: Record<
     2: { label: 'Failed', dotClass: 'bg-red-500', textClass: 'text-red-500' },
 }
 
-const PaymentMethodImage = ({
-    paymentMehod,
-    className,
-}: {
-    paymentMehod: string
-    className: string
-}) => {
+const PaymentMethodImage = ({ paymentMehod, className }: { paymentMehod: string; className: string }) => {
     switch (paymentMehod) {
         case 'visa':
-            return (
-                <img
-                    className={className}
-                    src="/img/others/img-8.png"
-                    alt={paymentMehod}
-                />
-            )
+            return <img className={className} src="/img/others/img-8.png" alt={paymentMehod} />
         case 'master':
-            return (
-                <img
-                    className={className}
-                    src="/img/others/img-9.png"
-                    alt={paymentMehod}
-                />
-            )
+            return <img className={className} src="/img/others/img-9.png" alt={paymentMehod} />
         case 'paypal':
-            return (
-                <img
-                    className={className}
-                    src="/img/others/img-10.png"
-                    alt={paymentMehod}
-                />
-            )
+            return <img className={className} src="/img/others/img-10.png" alt={paymentMehod} />
         default:
             return <></>
     }
@@ -103,10 +74,7 @@ const OrderColumn = ({ row }: { row: Order }) => {
     }, [navigate, row])
 
     return (
-        <span
-            className={`cursor-pointer select-none font-semibold hover:${textTheme}`}
-            onClick={onView}
-        >
+        <span className={`cursor-pointer select-none font-semibold hover:${textTheme}`} onClick={onView}>
             #{row.id}
         </span>
     )
@@ -129,18 +97,12 @@ const ActionColumn = ({ row }: { row: Order }) => {
     return (
         <div className="flex justify-end text-lg">
             <Tooltip title="View">
-                <span
-                    className={`cursor-pointer p-2 hover:${textTheme}`}
-                    onClick={onView}
-                >
+                <span className={`cursor-pointer p-2 hover:${textTheme}`} onClick={onView}>
                     <HiOutlineEye />
                 </span>
             </Tooltip>
             <Tooltip title="Delete">
-                <span
-                    className="cursor-pointer p-2 hover:text-red-500"
-                    onClick={onDelete}
-                >
+                <span className="cursor-pointer p-2 hover:text-red-500" onClick={onDelete}>
                     <HiOutlineTrash />
                 </span>
             </Tooltip>
@@ -153,9 +115,7 @@ const OrdersTable = () => {
 
     const dispatch = useAppDispatch()
 
-    const { pageIndex, pageSize, sort, query, total } = useAppSelector(
-        (state) => state.salesOrderList.data.tableData
-    )
+    const { pageIndex, pageSize, sort, query, total } = useAppSelector((state) => state.salesOrderList.data.tableData)
     const loading = useAppSelector((state) => state.salesOrderList.data.loading)
 
     const data = useAppSelector((state) => state.salesOrderList.data.orderList)
@@ -181,10 +141,7 @@ const OrdersTable = () => {
         }
     }, [data])
 
-    const tableData = useMemo(
-        () => ({ pageIndex, pageSize, sort, query, total }),
-        [pageIndex, pageSize, sort, query, total]
-    )
+    const tableData = useMemo(() => ({ pageIndex, pageSize, sort, query, total }), [pageIndex, pageSize, sort, query, total])
 
     const columns: ColumnDef<Order>[] = useMemo(
         () => [
@@ -198,9 +155,7 @@ const OrdersTable = () => {
                 accessorKey: 'date',
                 cell: (props) => {
                     const row = props.row.original
-                    return (
-                        <span>{dayjs.unix(row.date).format('DD/MM/YYYY')}</span>
-                    )
+                    return <span>{dayjs.unix(row.date).format('DD/MM/YYYY')}</span>
                 },
             },
             {
@@ -214,12 +169,8 @@ const OrdersTable = () => {
                     const { status } = props.row.original
                     return (
                         <div className="flex items-center">
-                            <Badge
-                                className={orderStatusColor[status].dotClass}
-                            />
-                            <span
-                                className={`ml-2 rtl:mr-2 capitalize font-semibold ${orderStatusColor[status].textClass}`}
-                            >
+                            <Badge className={orderStatusColor[status].dotClass} />
+                            <span className={`ml-2 rtl:mr-2 capitalize font-semibold ${orderStatusColor[status].textClass}`}>
                                 {orderStatusColor[status].label}
                             </span>
                         </div>
@@ -230,17 +181,11 @@ const OrdersTable = () => {
                 header: 'Payment Method',
                 accessorKey: 'paymentMehod',
                 cell: (props) => {
-                    const { paymentMehod, paymentIdendifier } =
-                        props.row.original
+                    const { paymentMehod, paymentIdendifier } = props.row.original
                     return (
                         <span className="flex items-center">
-                            <PaymentMethodImage
-                                className="max-h-[20px]"
-                                paymentMehod={paymentMehod}
-                            />
-                            <span className="ltr:ml-2 rtl:mr-2">
-                                {paymentIdendifier}
-                            </span>
+                            <PaymentMethodImage className="max-h-[20px]" paymentMehod={paymentMehod} />
+                            <span className="ltr:ml-2 rtl:mr-2">{paymentIdendifier}</span>
                         </span>
                     )
                 },
@@ -253,9 +198,7 @@ const OrdersTable = () => {
                     return (
                         <NumericFormat
                             displayType="text"
-                            value={(
-                                Math.round(totalAmount * 100) / 100
-                            ).toFixed(2)}
+                            value={(Math.round(totalAmount * 100) / 100).toFixed(2)}
                             prefix={'$'}
                             thousandSeparator={true}
                         />
@@ -268,7 +211,7 @@ const OrdersTable = () => {
                 cell: (props) => <ActionColumn row={props.row.original} />,
             },
         ],
-        []
+        [],
     )
 
     const onPaginationChange = (page: number) => {
@@ -311,7 +254,7 @@ const OrdersTable = () => {
                 dispatch(setSelectedRows([]))
             }
         },
-        [dispatch]
+        [dispatch],
     )
 
     return (

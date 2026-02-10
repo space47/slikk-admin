@@ -55,11 +55,9 @@ const MonthTable = (props: MonthTableProps) => {
                 key={month}
                 className={classNames(
                     'year-picker-cell',
-                    active &&
-                        !disabled &&
-                        `bg-${themeColor}-${primaryColorLevel} text-white month-picker-cell-active`,
+                    active && !disabled && `bg-${themeColor}-${primaryColorLevel} text-white month-picker-cell-active`,
                     !active && !disabled && 'hover:bg-gray-100',
-                    disabled && 'month-picker-cell-disabled'
+                    disabled && 'month-picker-cell-disabled',
                 )}
                 disabled={disabled}
                 onClick={() => onChange(index)}
@@ -76,9 +74,7 @@ const MonthTable = (props: MonthTableProps) => {
             <Header
                 label={formatYear(year, yearLabelFormat)}
                 hasNext={typeof maxYear === 'number' ? year < maxYear : true}
-                hasPrevious={
-                    typeof minYear === 'number' ? year > minYear : true
-                }
+                hasPrevious={typeof minYear === 'number' ? year > minYear : true}
                 className={className}
                 nextLabel={'Next year'}
                 previousLabel={'Previous year'}

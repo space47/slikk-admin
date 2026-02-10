@@ -5,23 +5,12 @@ import DataTable from '@/components/shared/DataTable'
 import { HiOutlinePencil, HiOutlineTrash } from 'react-icons/hi'
 import { FiPackage } from 'react-icons/fi'
 import ReactHtmlParser from 'html-react-parser'
-import {
-    getProducts,
-    setTableData,
-    setSelectedProduct,
-    toggleDeleteConfirmation,
-    useAppDispatch,
-    useAppSelector,
-} from '../store'
+import { getProducts, setTableData, setSelectedProduct, toggleDeleteConfirmation, useAppDispatch, useAppSelector } from '../store'
 import useThemeClass from '@/utils/hooks/useThemeClass'
 import ProductDeleteConfirmation from './ProductDeleteConfirmation'
 import { useNavigate } from 'react-router-dom'
 import cloneDeep from 'lodash/cloneDeep'
-import type {
-    DataTableResetHandle,
-    OnSortParam,
-    ColumnDef,
-} from '@/components/shared/DataTable'
+import type { DataTableResetHandle, OnSortParam, ColumnDef } from '@/components/shared/DataTable'
 import { apiGetAllCategory } from '@/services/SalesService'
 
 type Product = {
@@ -29,7 +18,7 @@ type Product = {
     name: string
     description: string
     is_active: boolean
-    footer:string
+    footer: string
 }
 
 const inventoryStatusColor: Record<
@@ -73,16 +62,10 @@ const ActionColumn = ({ row }: { row: Product }) => {
 
     return (
         <div className="flex justify-end text-lg">
-            <span
-                className={`cursor-pointer p-2 hover:${textTheme}`}
-                onClick={onEdit}
-            >
+            <span className={`cursor-pointer p-2 hover:${textTheme}`} onClick={onEdit}>
                 <HiOutlinePencil />
             </span>
-            <span
-                className="cursor-pointer p-2 hover:text-red-500"
-                onClick={onDelete}
-            >
+            <span className="cursor-pointer p-2 hover:text-red-500" onClick={onDelete}>
                 <HiOutlineTrash />
             </span>
         </div>
@@ -90,11 +73,7 @@ const ActionColumn = ({ row }: { row: Product }) => {
 }
 
 const ProductColumn = ({ row }: { row: Product }) => {
-    const avatar = row.img ? (
-        <Avatar src={row.img} />
-    ) : (
-        <Avatar icon={<FiPackage />} />
-    )
+    const avatar = row.img ? <Avatar src={row.img} /> : <Avatar icon={<FiPackage />} />
 
     return (
         <div className="flex items-center">
@@ -105,20 +84,14 @@ const ProductColumn = ({ row }: { row: Product }) => {
 
 const CategoryTable = () => {
     const tableRef = useRef<DataTableResetHandle>(null)
-const [gridData,setGridData] = useState([]);
+    const [gridData, setGridData] = useState([])
     const dispatch = useAppDispatch()
 
-    const { pageIndex, pageSize, sort, query, total } = useAppSelector(
-        (state) => state.salesProductList.data.tableData
-    )
+    const { pageIndex, pageSize, sort, query, total } = useAppSelector((state) => state.salesProductList.data.tableData)
 
-    const filterData = useAppSelector(
-        (state) => state.salesProductList.data.filterData
-    )
+    const filterData = useAppSelector((state) => state.salesProductList.data.filterData)
 
-    const loading = useAppSelector(
-        (state) => state.salesProductList.data.loading
-    )
+    const loading = useAppSelector((state) => state.salesProductList.data.loading)
 
     // const data = useAppSelector(
     //     (state) => state.salesProductList.data.productList
@@ -135,18 +108,15 @@ const [gridData,setGridData] = useState([]);
         }
     }, [filterData])
 
-    const tableData = useMemo(
-        () => ({ pageIndex, pageSize, sort, query, total }),
-        [pageIndex, pageSize, sort, query, total]
-    )
+    const tableData = useMemo(() => ({ pageIndex, pageSize, sort, query, total }), [pageIndex, pageSize, sort, query, total])
 
-    useEffect(()=>{
+    useEffect(() => {
         fetchData()
-    },[])
+    }, [])
 
-    const fetchData = async() => {
-        var {data}  = await apiGetAllCategory();
-        setGridData(data.data);
+    const fetchData = async () => {
+        var { data } = await apiGetAllCategory()
+        setGridData(data.data)
         //dispatch(getProducts({ pageIndex, pageSize, sort, query, filterData }))
     }
 
@@ -164,8 +134,8 @@ const [gridData,setGridData] = useState([]);
                 header: 'Footer',
                 accessorKey: 'footer',
                 cell: (props) => {
-                    const {footer} = props.row.original
-                    return footer;
+                    const { footer } = props.row.original
+                    return footer
                 },
             },
             {
@@ -175,16 +145,8 @@ const [gridData,setGridData] = useState([]);
                     const { is_active } = props.row.original
                     return (
                         <div className="flex items-center gap-2">
-                            <Badge
-                                className={
-                                    is_active?"bg-amber-500":"bg-emerald-500"
-                                }
-                            />
-                            <span
-                                className={`capitalize font-semibold text-amber-500`}
-                            >
-                                {is_active ? "Active" : "Inactive"}
-                            </span>
+                            <Badge className={is_active ? 'bg-amber-500' : 'bg-emerald-500'} />
+                            <span className={`capitalize font-semibold text-amber-500`}>{is_active ? 'Active' : 'Inactive'}</span>
                         </div>
                     )
                 },
@@ -193,16 +155,16 @@ const [gridData,setGridData] = useState([]);
                 header: 'Description',
                 accessorKey: 'description',
                 cell: (props) => {
-                    const {description} = props.row.original
-                    return  ReactHtmlParser(description)
+                    const { description } = props.row.original
+                    return ReactHtmlParser(description)
                 },
             },
             {
                 header: 'Division',
                 accessorKey: 'division',
                 cell: (props) => {
-                    const {division} = props.row.original
-                    return division;
+                    const { division } = props.row.original
+                    return division
                 },
             },
             {
@@ -211,7 +173,7 @@ const [gridData,setGridData] = useState([]);
                 cell: (props) => <ActionColumn row={props.row.original} />,
             },
         ],
-        []
+        [],
     )
 
     const onPaginationChange = (page: number) => {

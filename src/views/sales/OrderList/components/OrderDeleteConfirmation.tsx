@@ -1,30 +1,14 @@
 import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
 import ConfirmDialog from '@/components/shared/ConfirmDialog'
-import {
-    setDeleteMode,
-    setSelectedRow,
-    setSelectedRows,
-    deleteOrders,
-    getOrders,
-    useAppDispatch,
-    useAppSelector,
-} from '../store'
+import { setDeleteMode, setSelectedRow, setSelectedRows, deleteOrders, getOrders, useAppDispatch, useAppSelector } from '../store'
 
 const OrderDeleteConfirmation = () => {
     const dispatch = useAppDispatch()
-    const selectedRows = useAppSelector(
-        (state) => state.salesOrderList.data.selectedRows
-    )
-    const selectedRow = useAppSelector(
-        (state) => state.salesOrderList.data.selectedRow
-    )
-    const deleteMode = useAppSelector(
-        (state) => state.salesOrderList.data.deleteMode
-    )
-    const tableData = useAppSelector(
-        (state) => state.salesOrderList.data.tableData
-    )
+    const selectedRows = useAppSelector((state) => state.salesOrderList.data.selectedRows)
+    const selectedRow = useAppSelector((state) => state.salesOrderList.data.selectedRow)
+    const deleteMode = useAppSelector((state) => state.salesOrderList.data.deleteMode)
+    const tableData = useAppSelector((state) => state.salesOrderList.data.tableData)
 
     const onDialogClose = () => {
         dispatch(setDeleteMode(''))
@@ -54,18 +38,14 @@ const OrderDeleteConfirmation = () => {
         if (success) {
             dispatch(getOrders(tableData))
             toast.push(
-                <Notification
-                    title={'Successfuly Deleted'}
-                    type="success"
-                    duration={2500}
-                >
+                <Notification title={'Successfuly Deleted'} type="success" duration={2500}>
                     {deleteMode === 'single' && 'Order '}
                     {deleteMode === 'batch' && `${orders} orders `}
                     successfuly deleted
                 </Notification>,
                 {
                     placement: 'top-center',
-                }
+                },
             )
         }
     }
@@ -82,8 +62,7 @@ const OrderDeleteConfirmation = () => {
             onConfirm={onDelete}
         >
             <p>
-                Are you sure you want to delete this order? All record related
-                to this order will be deleted as well. This action cannot be
+                Are you sure you want to delete this order? All record related to this order will be deleted as well. This action cannot be
                 undone.
             </p>
         </ConfirmDialog>

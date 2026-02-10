@@ -5,9 +5,7 @@ import TimeInputRange from './TimeInputRange'
 export type { TimeInputProps } from './TimeInput'
 export type { TimeInputRangeProps } from './TimeInputRange'
 
-type CompoundedComponent = ForwardRefExoticComponent<
-    TimeInputProps & RefAttributes<HTMLSpanElement>
-> & {
+type CompoundedComponent = ForwardRefExoticComponent<TimeInputProps & RefAttributes<HTMLSpanElement>> & {
     TimeInputRange: typeof TimeInputRange
 }
 

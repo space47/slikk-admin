@@ -113,6 +113,12 @@ export const enum EOrderStatus {
     out_for_pickup = 'OUT_FOR_PICKUP',
 }
 
+export enum EDeliveryType {
+    try_and_buy = 'TRY_AND_BUY',
+    express = 'EXPRESS',
+    standard = 'STANDARD',
+}
+
 export const enum EOrderButton {
     accept = 'ACCEPT',
     out_for_delivery = 'OUT FOR DELIVERY',

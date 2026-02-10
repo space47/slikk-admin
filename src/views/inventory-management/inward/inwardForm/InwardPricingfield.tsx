@@ -2,13 +2,7 @@ import AdaptableCard from '@/components/shared/AdaptableCard'
 import { FormItem } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import { NumericFormat, NumericFormatProps } from 'react-number-format'
-import {
-    Field,
-    FormikErrors,
-    FormikTouched,
-    FieldProps,
-    FieldInputProps,
-} from 'formik'
+import { Field, FormikErrors, FormikTouched, FieldProps, FieldInputProps } from 'formik'
 import type { ComponentType } from 'react'
 import type { InputProps } from '@/components/ui/Input'
 
@@ -44,15 +38,7 @@ const NumericFormatInput = ({
     form: any
     field: FieldInputProps<unknown>
 }) => {
-    return (
-        <NumericFormat
-            customInput={Input as ComponentType}
-            type="text"
-            autoComplete="off"
-            onValueChange={onValueChange}
-            {...rest}
-        />
-    )
+    return <NumericFormat customInput={Input as ComponentType} type="text" autoComplete="off" onValueChange={onValueChange} {...rest} />
 }
 
 const InwardPricingfield = (props: PricingFieldsProps) => {
@@ -64,11 +50,7 @@ const InwardPricingfield = (props: PricingFieldsProps) => {
             <p className="mb-6">Section to config product sales information</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="col-span-1">
-                    <FormItem
-                        label="SKU"
-                        invalid={(errors.stock && touched.stock) as boolean}
-                        errorMessage={errors.stock}
-                    >
+                    <FormItem label="SKU" invalid={(errors.stock && touched.stock) as boolean} errorMessage={errors.stock}>
                         <Field name="stock">
                             {({ field, form }: FieldProps) => {
                                 return (
@@ -77,14 +59,9 @@ const InwardPricingfield = (props: PricingFieldsProps) => {
                                         field={field}
                                         placeholder="Stock"
                                         maxLength={10}
-                                        customInput={
-                                            NumberInput as ComponentType
-                                        }
+                                        customInput={NumberInput as ComponentType}
                                         onValueChange={(e) => {
-                                            form.setFieldValue(
-                                                field.name,
-                                                e.value,
-                                            )
+                                            form.setFieldValue(field.name, e.value)
                                         }}
                                     />
                                 )
@@ -93,11 +70,7 @@ const InwardPricingfield = (props: PricingFieldsProps) => {
                     </FormItem>
                 </div>
                 <div className="col-span-1">
-                    <FormItem
-                        label="Price"
-                        invalid={(errors.price && touched.price) as boolean}
-                        errorMessage={errors.price}
-                    >
+                    <FormItem label="Price" invalid={(errors.price && touched.price) as boolean} errorMessage={errors.price}>
                         <Field name="price">
                             {({ field, form }: FieldProps) => {
                                 return (
@@ -105,14 +78,9 @@ const InwardPricingfield = (props: PricingFieldsProps) => {
                                         form={form}
                                         field={field}
                                         placeholder="Price"
-                                        customInput={
-                                            PriceInput as ComponentType
-                                        }
+                                        customInput={PriceInput as ComponentType}
                                         onValueChange={(e) => {
-                                            form.setFieldValue(
-                                                field.name,
-                                                e.value,
-                                            )
+                                            form.setFieldValue(field.name, e.value)
                                         }}
                                     />
                                 )
@@ -125,10 +93,7 @@ const InwardPricingfield = (props: PricingFieldsProps) => {
                 <div className="col-span-1">
                     <FormItem
                         label="Bulk Discount Price"
-                        invalid={
-                            (errors.bulkDiscountPrice &&
-                                touched.bulkDiscountPrice) as boolean
-                        }
+                        invalid={(errors.bulkDiscountPrice && touched.bulkDiscountPrice) as boolean}
                         errorMessage={errors.bulkDiscountPrice}
                     >
                         <Field name="bulkDiscountPrice">
@@ -138,14 +103,9 @@ const InwardPricingfield = (props: PricingFieldsProps) => {
                                         form={form}
                                         field={field}
                                         placeholder="Bulk Discount Price"
-                                        customInput={
-                                            PriceInput as ComponentType
-                                        }
+                                        customInput={PriceInput as ComponentType}
                                         onValueChange={(e) => {
-                                            form.setFieldValue(
-                                                field.name,
-                                                e.value,
-                                            )
+                                            form.setFieldValue(field.name, e.value)
                                         }}
                                     />
                                 )
@@ -154,11 +114,7 @@ const InwardPricingfield = (props: PricingFieldsProps) => {
                     </FormItem>
                 </div>
                 <div className="col-span-1">
-                    <FormItem
-                        label="Tax Rate(%)"
-                        invalid={(errors.taxRate && touched.taxRate) as boolean}
-                        errorMessage={errors.taxRate}
-                    >
+                    <FormItem label="Tax Rate(%)" invalid={(errors.taxRate && touched.taxRate) as boolean} errorMessage={errors.taxRate}>
                         <Field name="taxRate">
                             {({ field, form }: FieldProps) => {
                                 return (
@@ -166,17 +122,10 @@ const InwardPricingfield = (props: PricingFieldsProps) => {
                                         form={form}
                                         field={field}
                                         placeholder="Tax Rate"
-                                        customInput={
-                                            TaxRateInput as ComponentType
-                                        }
-                                        isAllowed={({ floatValue }) =>
-                                            (floatValue as number) <= 100
-                                        }
+                                        customInput={TaxRateInput as ComponentType}
+                                        isAllowed={({ floatValue }) => (floatValue as number) <= 100}
                                         onValueChange={(e) => {
-                                            form.setFieldValue(
-                                                field.name,
-                                                e.value,
-                                            )
+                                            form.setFieldValue(field.name, e.value)
                                         }}
                                     />
                                 )

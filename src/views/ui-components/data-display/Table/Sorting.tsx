@@ -1,11 +1,6 @@
 import { useState } from 'react'
 import Table from '@/components/ui/Table'
-import {
-    flexRender,
-    getCoreRowModel,
-    getSortedRowModel,
-    useReactTable,
-} from '@tanstack/react-table'
+import { flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table'
 import type { ColumnDef, ColumnSort } from '@tanstack/react-table'
 
 type Person = {
@@ -111,31 +106,16 @@ const Sorting = () => {
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => {
                                 return (
-                                    <Th
-                                        key={header.id}
-                                        colSpan={header.colSpan}
-                                    >
+                                    <Th key={header.id} colSpan={header.colSpan}>
                                         {header.isPlaceholder ? null : (
                                             <div
                                                 {...{
-                                                    className:
-                                                        header.column.getCanSort()
-                                                            ? 'cursor-pointer select-none'
-                                                            : '',
-                                                    onClick:
-                                                        header.column.getToggleSortingHandler(),
+                                                    className: header.column.getCanSort() ? 'cursor-pointer select-none' : '',
+                                                    onClick: header.column.getToggleSortingHandler(),
                                                 }}
                                             >
-                                                {flexRender(
-                                                    header.column.columnDef
-                                                        .header,
-                                                    header.getContext()
-                                                )}
-                                                {
-                                                    <Sorter
-                                                        sort={header.column.getIsSorted()}
-                                                    />
-                                                }
+                                                {flexRender(header.column.columnDef.header, header.getContext())}
+                                                {<Sorter sort={header.column.getIsSorted()} />}
                                             </div>
                                         )}
                                     </Th>
@@ -152,14 +132,7 @@ const Sorting = () => {
                             return (
                                 <Tr key={row.id}>
                                     {row.getVisibleCells().map((cell) => {
-                                        return (
-                                            <Td key={cell.id}>
-                                                {flexRender(
-                                                    cell.column.columnDef.cell,
-                                                    cell.getContext()
-                                                )}
-                                            </Td>
-                                        )
+                                        return <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                                     })}
                                 </Tr>
                             )

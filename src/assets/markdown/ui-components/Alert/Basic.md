@@ -4,9 +4,7 @@ import Alert from '@/components/ui/Alert'
 const Basic = () => {
     return (
         <div>
-            <Alert>
-                Additional description and information about copywriting.
-            </Alert>
+            <Alert>Additional description and information about copywriting.</Alert>
         </div>
     )
 }

@@ -14,13 +14,7 @@ export interface FormContainerProps extends CommonProps {
 const FormContainer = (props: FormContainerProps) => {
     const { controlSize } = useConfig()
 
-    const {
-        children,
-        className,
-        labelWidth = 100,
-        layout = LAYOUT.VERTICAL,
-        size = SIZES.MD,
-    } = props
+    const { children, className, labelWidth = 100, layout = LAYOUT.VERTICAL, size = SIZES.MD } = props
 
     const contextValue = {
         labelWidth,
@@ -32,17 +26,7 @@ const FormContainer = (props: FormContainerProps) => {
         <FormContextProvider value={contextValue as FormContextProps}>
             <FormContextConsumer>
                 {(context) => {
-                    return (
-                        <div
-                            className={classNames(
-                                'form-container',
-                                context?.layout,
-                                className
-                            )}
-                        >
-                            {children}
-                        </div>
-                    )
+                    return <div className={classNames('form-container', context?.layout, className)}>{children}</div>
                 }}
             </FormContextConsumer>
         </FormContextProvider>

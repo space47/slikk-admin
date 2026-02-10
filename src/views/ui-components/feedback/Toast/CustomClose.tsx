@@ -16,30 +16,21 @@ const CustomClose = () => {
     function openNotification() {
         const notificationKey = toast.push(
             <Notification title="Mesasge" duration={0}>
-                <div>
-                    The fat cat sat on the mat bat away with paws annoy owner.
-                </div>
+                <div>The fat cat sat on the mat bat away with paws annoy owner.</div>
                 <div className="text-right mt-3">
                     <Button
                         size="sm"
                         variant="solid"
                         className="mr-2"
-                        onClick={() =>
-                            closeNotification(notificationKey as string | Promise<string>)
-                        }
+                        onClick={() => closeNotification(notificationKey as string | Promise<string>)}
                     >
                         Confirm
                     </Button>
-                    <Button
-                        size="sm"
-                        onClick={() =>
-                            closeNotification(notificationKey as string | Promise<string>)
-                        }
-                    >
+                    <Button size="sm" onClick={() => closeNotification(notificationKey as string | Promise<string>)}>
                         Close
                     </Button>
                 </div>
-            </Notification>
+            </Notification>,
         )
     }
 

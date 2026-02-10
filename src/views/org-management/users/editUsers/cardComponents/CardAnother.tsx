@@ -34,7 +34,11 @@ const CardAnother = ({ label, getValue, selectedValue, handleSelect, handleAdd, 
                     {getValue?.map((item: any) => (
                         <div key={item.id} className="flex flex-col">
                             <label className="bg-gray-100 px-2 py-2 flex items-center">
-                                <input type="checkbox" checked={selectedValue?.includes(item.name)} onChange={() => handleSelect(item.name)} />
+                                <input
+                                    type="checkbox"
+                                    checked={selectedValue?.includes(item.name)}
+                                    onChange={() => handleSelect(item.name)}
+                                />
                                 <span className="ml-2">{item.name}</span>
                             </label>
                         </div>

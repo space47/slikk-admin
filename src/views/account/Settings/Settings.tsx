@@ -40,9 +40,7 @@ type GetAccountSettingData = AccountSetting
 
 const Profile = lazy(() => import('./components/Profile'))
 const Password = lazy(() => import('./components/Password'))
-const NotificationSetting = lazy(
-    () => import('./components/NotificationSetting')
-)
+const NotificationSetting = lazy(() => import('./components/NotificationSetting'))
 const Integration = lazy(() => import('./components/Integration'))
 const Billing = lazy(() => import('./components/Billing'))
 
@@ -70,9 +68,7 @@ const Settings = () => {
 
     const location = useLocation()
 
-    const path = location.pathname.substring(
-        location.pathname.lastIndexOf('/') + 1
-    )
+    const path = location.pathname.substring(location.pathname.lastIndexOf('/') + 1)
 
     const onTabChange = (val: string) => {
         setCurrentTab(val)
@@ -106,15 +102,9 @@ const Settings = () => {
                 </Tabs>
                 <div className="px-4 py-6">
                     <Suspense fallback={<></>}>
-                        {currentTab === 'profile' && (
-                            <Profile data={data.profile} />
-                        )}
-                        {currentTab === 'password' && (
-                            <Password data={data.loginHistory} />
-                        )}
-                        {currentTab === 'notification' && (
-                            <NotificationSetting data={data.notification} />
-                        )}
+                        {currentTab === 'profile' && <Profile data={data.profile} />}
+                        {currentTab === 'password' && <Password data={data.loginHistory} />}
+                        {currentTab === 'notification' && <NotificationSetting data={data.notification} />}
                         {currentTab === 'integration' && <Integration />}
                         {currentTab === 'billing' && <Billing />}
                     </Suspense>

@@ -49,29 +49,15 @@ const OrganizationFields = (props: OrganizationFieldsProps) => {
             <p className="mb-6">Section to config the product attribute</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="col-span-1">
-                    <FormItem
-                        label="Category"
-                        invalid={
-                            (errors.category && touched.category) as boolean
-                        }
-                        errorMessage={errors.category}
-                    >
+                    <FormItem label="Category" invalid={(errors.category && touched.category) as boolean} errorMessage={errors.category}>
                         <Field name="category">
                             {({ field, form }: FieldProps) => (
                                 <Select
                                     field={field}
                                     form={form}
                                     options={categories}
-                                    value={categories.filter(
-                                        (category) =>
-                                            category.value === values.category
-                                    )}
-                                    onChange={(option) =>
-                                        form.setFieldValue(
-                                            field.name,
-                                            option?.value
-                                        )
-                                    }
+                                    value={categories.filter((category) => category.value === values.category)}
+                                    onChange={(option) => form.setFieldValue(field.name, option?.value)}
                                 />
                             )}
                         </Field>
@@ -80,9 +66,7 @@ const OrganizationFields = (props: OrganizationFieldsProps) => {
                 <div className="col-span-1">
                     <FormItem
                         label="Tags"
-                        invalid={
-                            (errors.tags && touched.tags) as unknown as boolean
-                        }
+                        invalid={(errors.tags && touched.tags) as unknown as boolean}
                         errorMessage={errors.tags as string}
                     >
                         <Field name="tags">
@@ -94,9 +78,7 @@ const OrganizationFields = (props: OrganizationFieldsProps) => {
                                     form={form}
                                     options={tags}
                                     value={values.tags}
-                                    onChange={(option) =>
-                                        form.setFieldValue(field.name, option)
-                                    }
+                                    onChange={(option) => form.setFieldValue(field.name, option)}
                                 />
                             )}
                         </Field>
@@ -105,33 +87,13 @@ const OrganizationFields = (props: OrganizationFieldsProps) => {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="col-span-1">
-                    <FormItem
-                        label="Brand"
-                        invalid={(errors.brand && touched.brand) as boolean}
-                        errorMessage={errors.brand}
-                    >
-                        <Field
-                            type="text"
-                            autoComplete="off"
-                            name="brand"
-                            placeholder="Brand"
-                            component={Input}
-                        />
+                    <FormItem label="Brand" invalid={(errors.brand && touched.brand) as boolean} errorMessage={errors.brand}>
+                        <Field type="text" autoComplete="off" name="brand" placeholder="Brand" component={Input} />
                     </FormItem>
                 </div>
                 <div className="col-span-1">
-                    <FormItem
-                        label="Vendor"
-                        invalid={(errors.vendor && touched.vendor) as boolean}
-                        errorMessage={errors.vendor}
-                    >
-                        <Field
-                            type="text"
-                            autoComplete="off"
-                            name="vendor"
-                            placeholder="Vendor"
-                            component={Input}
-                        />
+                    <FormItem label="Vendor" invalid={(errors.vendor && touched.vendor) as boolean} errorMessage={errors.vendor}>
+                        <Field type="text" autoComplete="off" name="vendor" placeholder="Vendor" component={Input} />
                     </FormItem>
                 </div>
             </div>

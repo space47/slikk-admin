@@ -52,17 +52,7 @@ const quickStartList: QuickStartType[] = [
 ]
 
 const QuickStartItem = (props: QuickStartItemProps) => {
-    const {
-        title,
-        desc,
-        btnText,
-        index,
-        available,
-        textTheme = '',
-        borderTheme = '',
-        path = '',
-        callBack,
-    } = props
+    const { title, desc, btnText, index, available, textTheme = '', borderTheme = '', path = '', callBack } = props
 
     const navigate = useNavigate()
 
@@ -95,13 +85,7 @@ const QuickStartItem = (props: QuickStartItemProps) => {
                         <p>{desc}</p>
                     </div>
                 </div>
-                <Button
-                    disabled={!available}
-                    variant="solid"
-                    className="mt-4 md:mt-0"
-                    size="sm"
-                    onClick={handleClick}
-                >
+                <Button disabled={!available} variant="solid" className="mt-4 md:mt-0" size="sm" onClick={handleClick}>
                     {btnText}
                 </Button>
             </div>
@@ -134,11 +118,7 @@ const QuickStart = () => {
                         title={item.label}
                         btnText={item.btnText}
                         desc={item.desc}
-                        available={completion.some(
-                            (c) =>
-                                c.value === item.id &&
-                                (c.completed || c.current)
-                        )}
+                        available={completion.some((c) => c.value === item.id && (c.completed || c.current))}
                         path={item.navigate}
                         callBack={item.callBack}
                     />

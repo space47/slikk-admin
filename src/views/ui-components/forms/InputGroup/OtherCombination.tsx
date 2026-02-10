@@ -44,11 +44,7 @@ const OtherCombination = () => {
     return (
         <div>
             <InputGroup className="mb-4">
-                <Input
-                    prefix={
-                        <HiOutlineMicrophone className="text-xl text-indigo-600 cursor-pointer" />
-                    }
-                />
+                <Input prefix={<HiOutlineMicrophone className="text-xl text-indigo-600 cursor-pointer" />} />
                 <Button>Send</Button>
             </InputGroup>
             <InputGroup className="mb-4">
@@ -59,21 +55,13 @@ const OtherCombination = () => {
             <InputGroup className="mb-4">
                 <Input />
                 <div style={{ minWidth: 100 }}>
-                    <Select
-                        isSearchable={false}
-                        defaultValue={{ label: '.com', value: '.com' }}
-                        options={options1}
-                    />
+                    <Select isSearchable={false} defaultValue={{ label: '.com', value: '.com' }} options={options1} />
                 </div>
             </InputGroup>
             <InputGroup className="mb-4">
                 <DatePicker placeholder="Select Date" />
                 <div style={{ minWidth: 120 }}>
-                    <Select
-                        isSearchable={false}
-                        placeholder="Time"
-                        options={options2}
-                    />
+                    <Select isSearchable={false} placeholder="Time" options={options2} />
                 </div>
             </InputGroup>
         </div>

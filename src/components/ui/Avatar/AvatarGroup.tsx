@@ -15,24 +15,10 @@ export interface AvatarGroupProps extends CommonProps {
     omittedAvatarTooltip?: boolean
 }
 
-interface GroupContainerProps
-    extends CommonProps,
-        Pick<AvatarGroupProps, 'chained'> {}
+interface GroupContainerProps extends CommonProps, Pick<AvatarGroupProps, 'chained'> {}
 
-const GroupContainer = ({
-    children,
-    chained,
-    className,
-}: GroupContainerProps) => (
-    <div
-        className={classNames(
-            'avatar-group',
-            chained && 'avatar-group-chained',
-            className
-        )}
-    >
-        {children}
-    </div>
+const GroupContainer = ({ children, chained, className }: GroupContainerProps) => (
+    <div className={classNames('avatar-group', chained && 'avatar-group-chained', className)}>{children}</div>
 )
 
 const AvatarGroup = (props: AvatarGroupProps) => {
@@ -52,7 +38,7 @@ const AvatarGroup = (props: AvatarGroupProps) => {
     const childWithKey = Children.toArray(children).map((child, index) =>
         cloneElement(child as ReactElement, {
             key: `grouped-avatar-${index}`,
-        })
+        }),
     )
 
     if (maxCount && maxCount < childCount) {
@@ -70,15 +56,12 @@ const AvatarGroup = (props: AvatarGroupProps) => {
 
         childToShow.push(
             omittedAvatarTooltip ? (
-                <Tooltip
-                    key="avatar-more-tooltip"
-                    title={`${overflowCount} More`}
-                >
+                <Tooltip key="avatar-more-tooltip" title={`${overflowCount} More`}>
                     <>{avatar}</>
                 </Tooltip>
             ) : (
                 <Fragment key="avatar-more-tooltip">{avatar}</Fragment>
-            )
+            ),
         )
         return (
             <GroupContainer className={className} chained={chained}>

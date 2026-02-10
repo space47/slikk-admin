@@ -21,16 +21,11 @@ const ArticleAction = () => {
 
     return (
         <>
-            <Card
-                bordered
-                className="mt-8"
-                bodyClass="flex items-center justify-between"
-            >
+            <Card bordered className="mt-8" bodyClass="flex items-center justify-between">
                 <div>
                     <h5>Was this article helpful?</h5>
                     <p>
-                        {helpful === 'Y' ? '1' : '0'} out of{' '}
-                        {helpful === 'Y' ? '1' : '0'} found this helpful
+                        {helpful === 'Y' ? '1' : '0'} out of {helpful === 'Y' ? '1' : '0'} found this helpful
                     </p>
                 </div>
                 <div className="flex gap-2">
@@ -52,11 +47,7 @@ const ArticleAction = () => {
             </Card>
             <div className="mt-12">
                 <h3 className="mb-4">Comments</h3>
-                <Input
-                    ref={commentInput}
-                    textArea
-                    placeholder="Enter your comment here..."
-                />
+                <Input ref={commentInput} textArea placeholder="Enter your comment here..." />
                 <div className="mt-3 flex justify-end">
                     <Button variant="solid" onClick={onCommentSubmit}>
                         Submit

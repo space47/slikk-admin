@@ -23,13 +23,7 @@ const MenuGroup = (props: MenuGroupProps) => {
     return (
         <div className={menuGroupClass}>
             {label && !sideCollapsed && (
-                <div
-                    className={classNames(
-                        'menu-title',
-                        `menu-title-${variant}`
-                    )}
-                    id={entityHeaderId}
-                >
+                <div className={classNames('menu-title', `menu-title-${variant}`)} id={entityHeaderId}>
                     {label}
                 </div>
             )}

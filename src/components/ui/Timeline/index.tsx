@@ -5,9 +5,7 @@ import TimeLineItem from './TimeLineItem'
 export type { TimelineProps } from './Timeline'
 export type { TimeLineItemProps } from './TimeLineItem'
 
-type CompoundedComponent = ForwardRefExoticComponent<
-    TimelineProps & RefAttributes<HTMLUListElement>
-> & {
+type CompoundedComponent = ForwardRefExoticComponent<TimelineProps & RefAttributes<HTMLUListElement>> & {
     Item: typeof TimeLineItem
 }
 

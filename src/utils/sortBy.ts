@@ -2,11 +2,7 @@ type Primitive = string | number | boolean
 
 export type Primer = (value: Primitive) => Primitive
 
-const sortBy = <T extends Record<string, Primitive>>(
-    field: keyof T,
-    reverse: boolean,
-    primer?: (value: Primitive) => Primitive
-) => {
+const sortBy = <T extends Record<string, Primitive>>(field: keyof T, reverse: boolean, primer?: (value: Primitive) => Primitive) => {
     const key = primer
         ? function (x: T) {
               return primer(x[field])

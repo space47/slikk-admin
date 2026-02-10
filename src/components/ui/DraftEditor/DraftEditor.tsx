@@ -8,9 +8,7 @@ interface DraftEditorProps {
 }
 
 const DraftEditor: React.FC<DraftEditorProps> = ({ value, onChange }) => {
-    const [editorState, setEditorState] = useState(() =>
-        EditorState.createEmpty(),
-    )
+    const [editorState, setEditorState] = useState(() => EditorState.createEmpty())
 
     const handleEditorChange = (newState: EditorState) => {
         setEditorState(newState)

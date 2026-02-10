@@ -19,9 +19,7 @@ const uiComponentsRoute: Routes = [
     {
         key: 'uiComponent.common.typography',
         path: `${UI_COMPONENTS_PREFIX_PATH}/typography`,
-        component: lazy(
-            () => import('@/views/ui-components/common/Typography')
-        ),
+        component: lazy(() => import('@/views/ui-components/common/Typography')),
         authority: [ADMIN, USER],
     },
     {
@@ -51,17 +49,13 @@ const uiComponentsRoute: Routes = [
     {
         key: 'uiComponent.feedback.progress',
         path: `${UI_COMPONENTS_PREFIX_PATH}/progress`,
-        component: lazy(
-            () => import('@/views/ui-components/feedback/Progress')
-        ),
+        component: lazy(() => import('@/views/ui-components/feedback/Progress')),
         authority: [ADMIN, USER],
     },
     {
         key: 'uiComponent.feedback.skeleton',
         path: `${UI_COMPONENTS_PREFIX_PATH}/skeleton`,
-        component: lazy(
-            () => import('@/views/ui-components/feedback/Skeleton')
-        ),
+        component: lazy(() => import('@/views/ui-components/feedback/Skeleton')),
         authority: [ADMIN, USER],
     },
     {
@@ -79,41 +73,31 @@ const uiComponentsRoute: Routes = [
     {
         key: 'uiComponent.dataDisplay.avatar',
         path: `${UI_COMPONENTS_PREFIX_PATH}/avatar`,
-        component: lazy(
-            () => import('@/views/ui-components/data-display/Avatar')
-        ),
+        component: lazy(() => import('@/views/ui-components/data-display/Avatar')),
         authority: [ADMIN, USER],
     },
     {
         key: 'uiComponent.dataDisplay.badge',
         path: `${UI_COMPONENTS_PREFIX_PATH}/badge`,
-        component: lazy(
-            () => import('@/views/ui-components/data-display/Badge')
-        ),
+        component: lazy(() => import('@/views/ui-components/data-display/Badge')),
         authority: [ADMIN, USER],
     },
     {
         key: 'uiComponent.dataDisplay.calendar',
         path: `${UI_COMPONENTS_PREFIX_PATH}/calendar`,
-        component: lazy(
-            () => import('@/views/ui-components/data-display/Calendar')
-        ),
+        component: lazy(() => import('@/views/ui-components/data-display/Calendar')),
         authority: [ADMIN, USER],
     },
     {
         key: 'uiComponent.dataDisplay.cards',
         path: `${UI_COMPONENTS_PREFIX_PATH}/cards`,
-        component: lazy(
-            () => import('@/views/ui-components/data-display/Cards')
-        ),
+        component: lazy(() => import('@/views/ui-components/data-display/Cards')),
         authority: [ADMIN, USER],
     },
     {
         key: 'uiComponent.dataDisplay.table',
         path: `${UI_COMPONENTS_PREFIX_PATH}/table`,
-        component: lazy(
-            () => import('@/views/ui-components/data-display/Table')
-        ),
+        component: lazy(() => import('@/views/ui-components/data-display/Table')),
         authority: [ADMIN, USER],
     },
     {
@@ -125,17 +109,13 @@ const uiComponentsRoute: Routes = [
     {
         key: 'uiComponent.dataDisplay.timeline',
         path: `${UI_COMPONENTS_PREFIX_PATH}/timeline`,
-        component: lazy(
-            () => import('@/views/ui-components/data-display/Timeline')
-        ),
+        component: lazy(() => import('@/views/ui-components/data-display/Timeline')),
         authority: [ADMIN, USER],
     },
     {
         key: 'uiComponent.dataDisplay.tooltip',
         path: `${UI_COMPONENTS_PREFIX_PATH}/tooltip`,
-        component: lazy(
-            () => import('@/views/ui-components/data-display/Tooltip')
-        ),
+        component: lazy(() => import('@/views/ui-components/data-display/Tooltip')),
         authority: [ADMIN, USER],
     },
     {
@@ -153,9 +133,7 @@ const uiComponentsRoute: Routes = [
     {
         key: 'uiComponent.forms.formControl',
         path: `${UI_COMPONENTS_PREFIX_PATH}/form-control`,
-        component: lazy(
-            () => import('@/views/ui-components/forms/FormControl')
-        ),
+        component: lazy(() => import('@/views/ui-components/forms/FormControl')),
         authority: [ADMIN, USER],
     },
     {
@@ -209,9 +187,7 @@ const uiComponentsRoute: Routes = [
     {
         key: 'uiComponent.navigation.dropdown',
         path: `${UI_COMPONENTS_PREFIX_PATH}/dropdown`,
-        component: lazy(
-            () => import('@/views/ui-components/navigation/Dropdown')
-        ),
+        component: lazy(() => import('@/views/ui-components/navigation/Dropdown')),
         authority: [ADMIN, USER],
     },
     {
@@ -223,9 +199,7 @@ const uiComponentsRoute: Routes = [
     {
         key: 'uiComponent.navigation.pagination',
         path: `${UI_COMPONENTS_PREFIX_PATH}/pagination`,
-        component: lazy(
-            () => import('@/views/ui-components/navigation/Pagination')
-        ),
+        component: lazy(() => import('@/views/ui-components/navigation/Pagination')),
         authority: [ADMIN, USER],
     },
     {

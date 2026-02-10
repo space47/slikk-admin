@@ -171,7 +171,13 @@ export const usePageSettingsColumns = ({
                 header: 'Stores Assigned',
                 accessorKey: 'stores',
                 cell: ({ row }: any) => {
-                    return <div>{row?.original?.store?.map((item: any, key: any) => <div key={key}>{item?.name}</div>)}</div>
+                    return (
+                        <div>
+                            {row?.original?.store?.map((item: any, key: any) => (
+                                <div key={key}>{item?.name}</div>
+                            ))}
+                        </div>
+                    )
                 },
             },
             { header: 'Last Updated By', accessorKey: 'last_updated_by.name' },

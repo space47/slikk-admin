@@ -7,9 +7,7 @@ export type { DatePickerProps } from './DatePicker'
 export type { DatePickerRangeProps } from './DatePickerRange'
 export type { DateTimepickerProps } from './DateTimepicker'
 
-type CompoundedComponent = ForwardRefExoticComponent<
-    DatePickerProps & RefAttributes<HTMLSpanElement>
-> & {
+type CompoundedComponent = ForwardRefExoticComponent<DatePickerProps & RefAttributes<HTMLSpanElement>> & {
     DatePickerRange: typeof DatePickerRange
     DateTimepicker: typeof DateTimepicker
 }

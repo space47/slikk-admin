@@ -1,9 +1,6 @@
 import type { FirstDayOfWeek } from '../../@types/date'
 
-export function getStartOfWeek(
-    date: Date,
-    firstDayOfWeek: FirstDayOfWeek = 'monday'
-) {
+export function getStartOfWeek(date: Date, firstDayOfWeek: FirstDayOfWeek = 'monday') {
     const value = new Date(date)
     const day = value.getDay() || 7
     const isSunday = firstDayOfWeek === 'sunday'

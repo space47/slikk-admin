@@ -1,11 +1,6 @@
 import Table from '@/components/ui/Table'
 import Badge from '@/components/ui/Badge'
-import {
-    useReactTable,
-    getCoreRowModel,
-    flexRender,
-    createColumnHelper,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, flexRender, createColumnHelper } from '@tanstack/react-table'
 import { NumericFormat } from 'react-number-format'
 import dayjs from 'dayjs'
 
@@ -53,9 +48,7 @@ const columns = [
             return (
                 <div className="flex items-center">
                     <Badge className={statusColor[row.status]} />
-                    <span className="ml-2 rtl:mr-2 capitalize">
-                        {row.status}
-                    </span>
+                    <span className="ml-2 rtl:mr-2 capitalize">{row.status}</span>
                 </div>
             )
         },
@@ -64,11 +57,7 @@ const columns = [
         header: 'Date',
         cell: (props) => {
             const row = props.row.original
-            return (
-                <div className="flex items-center">
-                    {dayjs.unix(row.date).format('MM/DD/YYYY')}
-                </div>
-            )
+            return <div className="flex items-center">{dayjs.unix(row.date).format('MM/DD/YYYY')}</div>
         },
     }),
     columnHelper.accessor('amount', {
@@ -104,14 +93,8 @@ const BillingHistory = ({ data = [], ...rest }: BillingHistoryProps) => {
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => {
                                 return (
-                                    <Th
-                                        key={header.id}
-                                        colSpan={header.colSpan}
-                                    >
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
+                                    <Th key={header.id} colSpan={header.colSpan}>
+                                        {flexRender(header.column.columnDef.header, header.getContext())}
                                     </Th>
                                 )
                             })}
@@ -123,14 +106,7 @@ const BillingHistory = ({ data = [], ...rest }: BillingHistoryProps) => {
                         return (
                             <Tr key={row.id}>
                                 {row.getVisibleCells().map((cell) => {
-                                    return (
-                                        <Td key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext()
-                                            )}
-                                        </Td>
-                                    )
+                                    return <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                                 })}
                             </Tr>
                         )

@@ -5,10 +5,7 @@ const Basic = () => {
         <div>
             <Card>
                 <h5>Card title</h5>
-                <p>
-                    Some quick example text to build on the card title and make
-                    up the bulk of the card&apos;s content.
-                </p>
+                <p>Some quick example text to build on the card title and make up the bulk of the card&apos;s content.</p>
             </Card>
         </div>
     )

@@ -132,11 +132,11 @@ export const orderSlice = createSlice({
                 state.loading = true
             })
             .addCase(fetchOrders.fulfilled, (state, action) => {
-                ;(state.loading = false), (state.orders = action.payload?.orders)
+                ;((state.loading = false), (state.orders = action.payload?.orders))
                 state.orderCount = action.payload?.orderCount
             })
             .addCase(fetchOrders.rejected, (state, action) => {
-                ;(state.loading = false), (state.message = action.error.message || 'Failed to fetch Order Lists')
+                ;((state.loading = false), (state.message = action.error.message || 'Failed to fetch Order Lists'))
             })
     },
 })

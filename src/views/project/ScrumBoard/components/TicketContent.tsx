@@ -48,13 +48,7 @@ const createCommentObject = (message: string): TransformedComment => {
     }
 }
 
-const TicketSection = ({
-    title,
-    icon,
-    children,
-    titleSize: Title = 'h6',
-    ticketClose,
-}: TicketSectionProps) => {
+const TicketSection = ({ title, icon, children, titleSize: Title = 'h6', ticketClose }: TicketSectionProps) => {
     return (
         <div className="flex mb-10">
             <div className="text-2xl">{icon}</div>
@@ -62,13 +56,7 @@ const TicketSection = ({
                 <div className="flex justify-between">
                     <Title>{title}</Title>
                     {ticketClose && (
-                        <Button
-                            size="sm"
-                            shape="circle"
-                            variant="plain"
-                            icon={<HiX className="text-lg" />}
-                            onClick={() => ticketClose()}
-                        />
+                        <Button size="sm" shape="circle" variant="plain" icon={<HiX className="text-lg" />} onClick={() => ticketClose()} />
                     )}
                 </div>
                 {children}
@@ -90,15 +78,11 @@ const AddMoreMember = () => {
 const TicketContent = ({ onTicketClose }: { onTicketClose: () => void }) => {
     const ticketId = useAppSelector((state) => state.scrumBoard.data.ticketId)
     const columns = useAppSelector((state) => state.scrumBoard.data.columns)
-    const boardMembers = useAppSelector(
-        (state) => state.scrumBoard.data.boardMembers
-    )
+    const boardMembers = useAppSelector((state) => state.scrumBoard.data.boardMembers)
 
     const dispatch = useAppDispatch()
 
-    const [ticketData, setTicketData] = useState<
-        Partial<Omit<Ticket, 'comments'> & { comments: TransformedComment[] }>
-    >({})
+    const [ticketData, setTicketData] = useState<Partial<Omit<Ticket, 'comments'> & { comments: TransformedComment[] }>>({})
     const [loading, setLoading] = useState(false)
 
     const commentInput = useRef<HTMLInputElement>(null)
@@ -194,64 +178,35 @@ const TicketContent = ({ onTicketClose }: { onTicketClose: () => void }) => {
                         >
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="mt-4">
-                                    <div className="font-semibold mb-3 text-gray-900 dark:text-gray-100">
-                                        Assigned to:
-                                    </div>
+                                    <div className="font-semibold mb-3 text-gray-900 dark:text-gray-100">Assigned to:</div>
                                     <UsersAvatarGroup
                                         avatarProps={{
-                                            className:
-                                                'mr-1 rtl:ml-1 cursor-pointer',
+                                            className: 'mr-1 rtl:ml-1 cursor-pointer',
                                         }}
                                         avatarGroupProps={{ maxCount: 4 }}
                                         chained={false}
                                         users={ticketData.members}
                                     />
-                                    {boardMembers.length !==
-                                        ticketData.members?.length && (
-                                        <Dropdown
-                                            renderTitle={<AddMoreMember />}
-                                        >
+                                    {boardMembers.length !== ticketData.members?.length && (
+                                        <Dropdown renderTitle={<AddMoreMember />}>
                                             {boardMembers.map(
                                                 (member) =>
-                                                    !ticketData.members?.some(
-                                                        (m) =>
-                                                            m.id === member.id
-                                                    ) && (
-                                                        <Dropdown.Item
-                                                            key={member.name}
-                                                            eventKey={member.id}
-                                                            onSelect={
-                                                                onAddMemberClick
-                                                            }
-                                                        >
+                                                    !ticketData.members?.some((m) => m.id === member.id) && (
+                                                        <Dropdown.Item key={member.name} eventKey={member.id} onSelect={onAddMemberClick}>
                                                             <div className="flex items-center justify-between">
                                                                 <div className="flex items-center">
-                                                                    <Avatar
-                                                                        shape="circle"
-                                                                        size={
-                                                                            22
-                                                                        }
-                                                                        src={
-                                                                            member.img
-                                                                        }
-                                                                    />
-                                                                    <span className="ml-2 rtl:mr-2">
-                                                                        {
-                                                                            member.name
-                                                                        }
-                                                                    </span>
+                                                                    <Avatar shape="circle" size={22} src={member.img} />
+                                                                    <span className="ml-2 rtl:mr-2">{member.name}</span>
                                                                 </div>
                                                             </div>
                                                         </Dropdown.Item>
-                                                    )
+                                                    ),
                                             )}
                                         </Dropdown>
                                     )}
                                 </div>
                                 <div className="mt-4">
-                                    <div className="font-semibold mb-3 text-gray-900 dark:text-gray-100">
-                                        Label:
-                                    </div>
+                                    <div className="font-semibold mb-3 text-gray-900 dark:text-gray-100">Label:</div>
                                     <div>
                                         {ticketData.labels?.map((label) => (
                                             <Tag
@@ -264,35 +219,19 @@ const TicketContent = ({ onTicketClose }: { onTicketClose: () => void }) => {
                                             </Tag>
                                         ))}
                                         <Dropdown
-                                            renderTitle={
-                                                <Tag className="border-dashed cursor-pointer mr-2 rtl:ml-2">
-                                                    Add Label
-                                                </Tag>
-                                            }
+                                            renderTitle={<Tag className="border-dashed cursor-pointer mr-2 rtl:ml-2">Add Label</Tag>}
                                             placement="bottom-end"
                                         >
                                             {labelList.map(
                                                 (label) =>
-                                                    !ticketData.labels?.includes(
-                                                        label
-                                                    ) && (
-                                                        <Dropdown.Item
-                                                            key={label}
-                                                            eventKey={label}
-                                                            onSelect={
-                                                                onAddLabelClick
-                                                            }
-                                                        >
+                                                    !ticketData.labels?.includes(label) && (
+                                                        <Dropdown.Item key={label} eventKey={label} onSelect={onAddLabelClick}>
                                                             <div className="flex items-center">
-                                                                <Badge
-                                                                    innerClass={`${taskLabelColors[label]}`}
-                                                                />
-                                                                <span className="ml-2 rtl:mr-2">
-                                                                    {label}
-                                                                </span>
+                                                                <Badge innerClass={`${taskLabelColors[label]}`} />
+                                                                <span className="ml-2 rtl:mr-2">{label}</span>
                                                             </div>
                                                         </Dropdown.Item>
-                                                    )
+                                                    ),
                                             )}
                                         </Dropdown>
                                     </div>
@@ -300,129 +239,69 @@ const TicketContent = ({ onTicketClose }: { onTicketClose: () => void }) => {
                             </div>
                         </TicketSection>
                         {ticketData.description && (
-                            <TicketSection
-                                title="Description"
-                                icon={<HiOutlineClipboardList />}
-                            >
+                            <TicketSection title="Description" icon={<HiOutlineClipboardList />}>
                                 <div className="mt-2">
-                                    <p className="mt-2">
-                                        {ticketData.description}
-                                    </p>
+                                    <p className="mt-2">{ticketData.description}</p>
                                 </div>
                             </TicketSection>
                         )}
 
-                        {ticketData.attachments &&
-                            ticketData?.attachments?.length > 0 && (
-                                <TicketSection
-                                    title="Attachments"
-                                    icon={<HiOutlinePaperClip />}
-                                >
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
-                                        {ticketData.attachments.map((file) => (
-                                            <Card
-                                                key={file.id}
-                                                bodyClass="px-2 pt-2 pb-1"
-                                            >
-                                                <img
-                                                    className="max-w-full rounded"
-                                                    alt={file.name}
-                                                    src={file.src}
-                                                />
-                                                <div className="mt-1 flex justify-between items-center">
-                                                    <div>
-                                                        <div className="font-semibold text-gray-900 dark:text-gray-100">
-                                                            {file.name}
-                                                        </div>
-                                                        <span className="text-xs">
-                                                            {file.size}
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex items-center">
-                                                        <Tooltip title="Download">
-                                                            <Button
-                                                                className="mr-1 rtl:ml-1"
-                                                                variant="plain"
-                                                                size="xs"
-                                                                icon={
-                                                                    <HiOutlineDownload />
-                                                                }
-                                                            />
-                                                        </Tooltip>
-                                                        <Tooltip title="Delete">
-                                                            <Button
-                                                                variant="plain"
-                                                                size="xs"
-                                                                icon={
-                                                                    <HiOutlineTrash />
-                                                                }
-                                                            />
-                                                        </Tooltip>
-                                                    </div>
+                        {ticketData.attachments && ticketData?.attachments?.length > 0 && (
+                            <TicketSection title="Attachments" icon={<HiOutlinePaperClip />}>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+                                    {ticketData.attachments.map((file) => (
+                                        <Card key={file.id} bodyClass="px-2 pt-2 pb-1">
+                                            <img className="max-w-full rounded" alt={file.name} src={file.src} />
+                                            <div className="mt-1 flex justify-between items-center">
+                                                <div>
+                                                    <div className="font-semibold text-gray-900 dark:text-gray-100">{file.name}</div>
+                                                    <span className="text-xs">{file.size}</span>
                                                 </div>
-                                            </Card>
-                                        ))}
-                                    </div>
-                                </TicketSection>
-                            )}
+                                                <div className="flex items-center">
+                                                    <Tooltip title="Download">
+                                                        <Button
+                                                            className="mr-1 rtl:ml-1"
+                                                            variant="plain"
+                                                            size="xs"
+                                                            icon={<HiOutlineDownload />}
+                                                        />
+                                                    </Tooltip>
+                                                    <Tooltip title="Delete">
+                                                        <Button variant="plain" size="xs" icon={<HiOutlineTrash />} />
+                                                    </Tooltip>
+                                                </div>
+                                            </div>
+                                        </Card>
+                                    ))}
+                                </div>
+                            </TicketSection>
+                        )}
 
-                        <TicketSection
-                            title="Comments"
-                            icon={<HiOutlineChatAlt />}
-                        >
+                        <TicketSection title="Comments" icon={<HiOutlineChatAlt />}>
                             <div className="mt-2 w-full">
-                                {ticketData.comments &&
-                                    ticketData?.comments?.length > 0 && (
-                                        <>
-                                            {ticketData.comments.map(
-                                                (comment) => (
-                                                    <div
-                                                        key={comment.id}
-                                                        className="mb-3 flex"
-                                                    >
-                                                        <div className="mt-2">
-                                                            <Avatar
-                                                                shape="circle"
-                                                                src={
-                                                                    comment.src
-                                                                }
-                                                            />
-                                                        </div>
-                                                        <div className="ml-2 rtl:mr-2 p-3 rounded w-100">
-                                                            <div className="flex items-center mb-2">
-                                                                <span className="font-semibold text-gray-900 dark:text-gray-100">
-                                                                    {
-                                                                        comment.name
-                                                                    }
-                                                                </span>
-                                                                <span className="mx-1">
-                                                                    {' '}
-                                                                    |{' '}
-                                                                </span>
-                                                                <span>
-                                                                    {dayjs(
-                                                                        comment.date
-                                                                    ).format(
-                                                                        'DD MMMM YYYY'
-                                                                    )}
-                                                                </span>
-                                                            </div>
-                                                            <p className="mb-0">
-                                                                {
-                                                                    comment.message
-                                                                }
-                                                            </p>
-                                                        </div>
+                                {ticketData.comments && ticketData?.comments?.length > 0 && (
+                                    <>
+                                        {ticketData.comments.map((comment) => (
+                                            <div key={comment.id} className="mb-3 flex">
+                                                <div className="mt-2">
+                                                    <Avatar shape="circle" src={comment.src} />
+                                                </div>
+                                                <div className="ml-2 rtl:mr-2 p-3 rounded w-100">
+                                                    <div className="flex items-center mb-2">
+                                                        <span className="font-semibold text-gray-900 dark:text-gray-100">
+                                                            {comment.name}
+                                                        </span>
+                                                        <span className="mx-1"> | </span>
+                                                        <span>{dayjs(comment.date).format('DD MMMM YYYY')}</span>
                                                     </div>
-                                                )
-                                            )}
-                                        </>
-                                    )}
+                                                    <p className="mb-0">{comment.message}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </>
+                                )}
                                 <div className="mb-3 flex">
-                                    <Avatar
-                                        shape="circle"
-                                        src="/img/avatars/thumb-1.jpg"
-                                    />
+                                    <Avatar shape="circle" src="/img/avatars/thumb-1.jpg" />
                                     <div className="ml-2 rtl:mr-2 px-3 rounded w-full">
                                         <Input
                                             ref={commentInput}
@@ -430,9 +309,7 @@ const TicketContent = ({ onTicketClose }: { onTicketClose: () => void }) => {
                                             suffix={
                                                 <div
                                                     className="cursor-pointer font-weight-semibold text-primary"
-                                                    onClick={() =>
-                                                        submitComment()
-                                                    }
+                                                    onClick={() => submitComment()}
                                                 >
                                                     Send
                                                 </div>
@@ -444,19 +321,10 @@ const TicketContent = ({ onTicketClose }: { onTicketClose: () => void }) => {
                         </TicketSection>
                     </div>
                     <div className="text-right mt-4">
-                        <Button
-                            className="mr-2 rtl:ml-2"
-                            size="sm"
-                            variant="plain"
-                            onClick={() => handleTicketClose()}
-                        >
+                        <Button className="mr-2 rtl:ml-2" size="sm" variant="plain" onClick={() => handleTicketClose()}>
                             Cancel
                         </Button>
-                        <Button
-                            variant="solid"
-                            size="sm"
-                            onClick={() => handleTicketClose()}
-                        >
+                        <Button variant="solid" size="sm" onClick={() => handleTicketClose()}>
                             Change
                         </Button>
                     </div>

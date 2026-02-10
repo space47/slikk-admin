@@ -11,11 +11,7 @@ const SignInSide = () => {
                 </>
             }
         >
-            <SignInForm
-                disableSubmit={true}
-                signUpUrl="/auth/sign-up-side"
-                forgotPasswordUrl="/auth/forgot-password-side"
-            />
+            <SignInForm disableSubmit={true} signUpUrl="/auth/sign-up-side" forgotPasswordUrl="/auth/forgot-password-side" />
         </Side>
     )
 }

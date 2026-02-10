@@ -13,10 +13,7 @@ const NavModeSwitcher = () => {
     }
 
     return (
-        <Radio.Group
-            value={navMode === NAV_MODE_THEMED ? NAV_MODE_THEMED : 'default'}
-            onChange={onSetNavMode}
-        >
+        <Radio.Group value={navMode === NAV_MODE_THEMED ? NAV_MODE_THEMED : 'default'} onChange={onSetNavMode}>
             <Radio value="default">Default</Radio>
             <Radio value={NAV_MODE_THEMED}>Themed</Radio>
         </Radio.Group>

@@ -14,18 +14,8 @@ type CreateTimeHandlerParams = {
     nextMax?: number
 }
 
-export function createTimeHandler({
-    onChange,
-    nextRef,
-    min,
-    max,
-    nextMax,
-}: CreateTimeHandlerParams) {
-    return (
-        value: string,
-        triggerShift: boolean,
-        forceTriggerShift = false
-    ) => {
+export function createTimeHandler({ onChange, nextRef, min, max, nextMax }: CreateTimeHandlerParams) {
+    return (value: string, triggerShift: boolean, forceTriggerShift = false) => {
         const parsed = parseInt(value, 10)
 
         if (Number.isNaN(parsed)) {
@@ -38,11 +28,7 @@ export function createTimeHandler({
             let updatedValue
             let carryOver
 
-            if (
-                parsed > max &&
-                nextMax &&
-                lastDigit <= allButLastDigit(nextMax)
-            ) {
+            if (parsed > max && nextMax && lastDigit <= allButLastDigit(nextMax)) {
                 updatedValue = padTime(allButLastDigit(parsed).toString())
                 carryOver = padTime(lastDigit.toString())
             } else {

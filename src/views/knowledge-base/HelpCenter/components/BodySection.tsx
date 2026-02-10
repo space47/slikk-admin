@@ -7,21 +7,11 @@ import { getCategories, useAppDispatch, useAppSelector } from '../store'
 const BodySection = () => {
     const dispatch = useAppDispatch()
 
-    const categories = useAppSelector(
-        (state) => state.knowledgeBaseHelpCenter.data.categories
-    )
-    const articles = useAppSelector(
-        (state) => state.knowledgeBaseHelpCenter.data.articles
-    )
-    const loading = useAppSelector(
-        (state) => state.knowledgeBaseHelpCenter.data.loading
-    )
-    const queryText = useAppSelector(
-        (state) => state.knowledgeBaseHelpCenter.data.queryText
-    )
-    const isSearchResult = useAppSelector(
-        (state) => state.knowledgeBaseHelpCenter.data.isSearchResult
-    )
+    const categories = useAppSelector((state) => state.knowledgeBaseHelpCenter.data.categories)
+    const articles = useAppSelector((state) => state.knowledgeBaseHelpCenter.data.articles)
+    const loading = useAppSelector((state) => state.knowledgeBaseHelpCenter.data.loading)
+    const queryText = useAppSelector((state) => state.knowledgeBaseHelpCenter.data.queryText)
+    const isSearchResult = useAppSelector((state) => state.knowledgeBaseHelpCenter.data.isSearchResult)
 
     useEffect(() => {
         if (categories.length === 0) {

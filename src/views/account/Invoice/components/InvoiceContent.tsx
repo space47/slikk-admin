@@ -43,15 +43,10 @@ const InvoiceContent = () => {
     }, [])
 
     const fetchData = async () => {
-        const id = location.pathname.substring(
-            location.pathname.lastIndexOf('/') + 1
-        )
+        const id = location.pathname.substring(location.pathname.lastIndexOf('/') + 1)
         if (id) {
             setLoading(true)
-            const response = await apiGetAccountInvoiceData<
-                GetAccountInvoiceDataResponse,
-                GetAccountInvoiceDataRequest
-            >({ id })
+            const response = await apiGetAccountInvoiceData<GetAccountInvoiceDataResponse, GetAccountInvoiceDataRequest>({ id })
             if (response) {
                 setLoading(false)
                 setData(response.data)
@@ -82,18 +77,11 @@ const InvoiceContent = () => {
                         <div className="my-4">
                             <div className="mb-2">
                                 <h4>Invoice #{data?.id}</h4>
-                                <span>
-                                    Date:{' '}
-                                    {dayjs
-                                        .unix(data.dateTime as number)
-                                        .format('dddd, DD MMMM, YYYY')}
-                                </span>
+                                <span>Date: {dayjs.unix(data.dateTime as number).format('dddd, DD MMMM, YYYY')}</span>
                             </div>
                             <h6>{data.recipient}</h6>
                             <div className="mt-4 flex">
-                                <HiLocationMarker
-                                    className={`text-xl ${textTheme}`}
-                                />
+                                <HiLocationMarker className={`text-xl ${textTheme}`} />
                                 <div className="ltr:ml-3 rtl:mr-3">
                                     {data?.address?.map((line) => (
                                         <div key={line} className="mb-1">
@@ -104,21 +92,13 @@ const InvoiceContent = () => {
                             </div>
                             <div className="mt-4 flex">
                                 <HiPhone className={`text-xl ${textTheme}`} />
-                                <div className="ltr:ml-3 rtl:mr-3">
-                                    {data.phoneNumber}
-                                </div>
+                                <div className="ltr:ml-3 rtl:mr-3">{data.phoneNumber}</div>
                             </div>
                         </div>
                     </div>
-                    <ContentTable
-                        products={data?.product}
-                        summary={data.paymentSummary}
-                    />
+                    <ContentTable products={data?.product} summary={data.paymentSummary} />
                     <div className="print:hidden mt-6 flex items-center justify-between">
-                        <small className="italic">
-                            Invoice was created on a computer and is valid
-                            without the signature and seal.
-                        </small>
+                        <small className="italic">Invoice was created on a computer and is valid without the signature and seal.</small>
                         <Button variant="solid" onClick={() => window.print()}>
                             Print
                         </Button>

@@ -15,18 +15,10 @@ import {
 import { rankItem } from '@tanstack/match-sorter-utils'
 import { data10 } from './data'
 import type { Person } from './data'
-import type {
-    ColumnDef,
-    FilterFn,
-    ColumnFiltersState,
-} from '@tanstack/react-table'
+import type { ColumnDef, FilterFn, ColumnFiltersState } from '@tanstack/react-table'
 import type { InputHTMLAttributes } from 'react'
 
-interface DebouncedInputProps
-    extends Omit<
-        InputHTMLAttributes<HTMLInputElement>,
-        'onChange' | 'size' | 'prefix'
-    > {
+interface DebouncedInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size' | 'prefix'> {
     value: string | number
     onChange: (value: string | number) => void
     debounce?: number
@@ -34,12 +26,7 @@ interface DebouncedInputProps
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
-function DebouncedInput({
-    value: initialValue,
-    onChange,
-    debounce = 500,
-    ...props
-}: DebouncedInputProps) {
+function DebouncedInput({ value: initialValue, onChange, debounce = 500, ...props }: DebouncedInputProps) {
     const [value, setValue] = useState(initialValue)
 
     useEffect(() => {
@@ -59,11 +46,7 @@ function DebouncedInput({
         <div className="flex justify-end">
             <div className="flex items-center mb-4">
                 <span className="mr-2">Search:</span>
-                <Input
-                    {...props}
-                    value={value}
-                    onChange={(e) => setValue(e.target.value)}
-                />
+                <Input {...props} value={value} onChange={(e) => setValue(e.target.value)} />
             </div>
         </div>
     )
@@ -93,7 +76,7 @@ const Filtering = () => {
             { header: 'Last Name', accessorKey: 'lastName' },
             { header: 'Email', accessorKey: 'email' },
         ],
-        []
+        [],
     )
 
     const [data] = useState(() => data10)
@@ -136,31 +119,16 @@ const Filtering = () => {
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => {
                                 return (
-                                    <Th
-                                        key={header.id}
-                                        colSpan={header.colSpan}
-                                    >
+                                    <Th key={header.id} colSpan={header.colSpan}>
                                         {header.isPlaceholder ? null : (
                                             <div
                                                 {...{
-                                                    className:
-                                                        header.column.getCanSort()
-                                                            ? 'cursor-pointer select-none'
-                                                            : '',
-                                                    onClick:
-                                                        header.column.getToggleSortingHandler(),
+                                                    className: header.column.getCanSort() ? 'cursor-pointer select-none' : '',
+                                                    onClick: header.column.getToggleSortingHandler(),
                                                 }}
                                             >
-                                                {flexRender(
-                                                    header.column.columnDef
-                                                        .header,
-                                                    header.getContext()
-                                                )}
-                                                {
-                                                    <Sorter
-                                                        sort={header.column.getIsSorted()}
-                                                    />
-                                                }
+                                                {flexRender(header.column.columnDef.header, header.getContext())}
+                                                {<Sorter sort={header.column.getIsSorted()} />}
                                             </div>
                                         )}
                                     </Th>
@@ -174,14 +142,7 @@ const Filtering = () => {
                         return (
                             <Tr key={row.id}>
                                 {row.getVisibleCells().map((cell) => {
-                                    return (
-                                        <Td key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext()
-                                            )}
-                                        </Td>
-                                    )
+                                    return <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                                 })}
                             </Tr>
                         )

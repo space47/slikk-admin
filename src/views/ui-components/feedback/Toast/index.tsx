@@ -146,24 +146,15 @@ const toastApi = (
                 <TBody>
                     <Tr>
                         <Td className="font-semibold">
-                            <code>
-                                toast.push(message: ReactNode, options?:
-                                ToastProps): string
-                            </code>
+                            <code>toast.push(message: ReactNode, options?: ToastProps): string</code>
                         </Td>
-                        <Td>
-                            Method to pop a toast message, it will return a UID
-                            for the current toast
-                        </Td>
+                        <Td>Method to pop a toast message, it will return a UID for the current toast</Td>
                     </Tr>
                     <Tr>
                         <Td className="font-semibold">
                             <code>toast.remove(key: string): void</code>
                         </Td>
-                        <Td>
-                            Method to remove a specify toast message by using
-                            the key from push method
-                        </Td>
+                        <Td>Method to remove a specify toast message by using the key from push method</Td>
                     </Tr>
                     <Tr>
                         <Td className="font-semibold">
@@ -220,11 +211,8 @@ const toastApi = (
                         <Td className="font-semibold">placement</Td>
                         <Td>Placement of toast</Td>
                         <Td>
-                            <code>'top-start'</code> | <code>'top-center'</code>{' '}
-                            | <code>'top-end'</code> |{' '}
-                            <code>'bottom-start'</code> |{' '}
-                            <code>'bottom-center'</code> |{' '}
-                            <code>'bottom-end'</code>
+                            <code>'top-start'</code> | <code>'top-center'</code> | <code>'top-end'</code> | <code>'bottom-start'</code> |{' '}
+                            <code>'bottom-center'</code> | <code>'bottom-end'</code>
                         </Td>
                         <Td>
                             <code>'top-end'</code>
@@ -247,15 +235,7 @@ const toastApi = (
 )
 
 const Noification = () => {
-    return (
-        <DemoLayout
-            header={demoHeader}
-            demos={demos}
-            api={demoApi}
-            note={toastApi}
-            hideApiTitle={true}
-        />
-    )
+    return <DemoLayout header={demoHeader} demos={demos} api={demoApi} note={toastApi} hideApiTitle={true} />
 }
 
 export default Noification

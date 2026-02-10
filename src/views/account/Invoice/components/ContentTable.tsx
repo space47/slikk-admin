@@ -1,11 +1,6 @@
 import { Fragment } from 'react'
 import Table from '@/components/ui/Table'
-import {
-    useReactTable,
-    getCoreRowModel,
-    flexRender,
-    createColumnHelper,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, flexRender, createColumnHelper } from '@tanstack/react-table'
 import { NumericFormat } from 'react-number-format'
 import isLastChild from '@/utils/isLastChild'
 
@@ -62,21 +57,12 @@ const ProductColumn = ({ row }: { row: Product }) => {
                 {Object.keys(row.details).map((key, i) => (
                     <div key={key + i} className="mb-1">
                         <span className="capitalize">{key}: </span>
-                        {row.details[key as keyof Product['details']].map(
-                            (item, j) => (
-                                <Fragment key={item + j}>
-                                    <span className="font-semibold">
-                                        {item}
-                                    </span>
-                                    {!isLastChild(
-                                        row.details[
-                                            key as keyof Product['details']
-                                        ],
-                                        j
-                                    ) && <span>, </span>}
-                                </Fragment>
-                            )
-                        )}
+                        {row.details[key as keyof Product['details']].map((item, j) => (
+                            <Fragment key={item + j}>
+                                <span className="font-semibold">{item}</span>
+                                {!isLastChild(row.details[key as keyof Product['details']], j) && <span>, </span>}
+                            </Fragment>
+                        ))}
                     </div>
                 ))}
             </div>
@@ -85,14 +71,7 @@ const ProductColumn = ({ row }: { row: Product }) => {
 }
 
 const PriceAmount = ({ amount = 0 }: { amount?: number }) => {
-    return (
-        <NumericFormat
-            displayType="text"
-            value={(Math.round(amount * 100) / 100).toFixed(2)}
-            prefix={'$'}
-            thousandSeparator={true}
-        />
-    )
+    return <NumericFormat displayType="text" value={(Math.round(amount * 100) / 100).toFixed(2)} prefix={'$'} thousandSeparator={true} />
 }
 
 const columnHelper = createColumnHelper<Product>()
@@ -139,10 +118,7 @@ const ContentTable = ({ products = [], summary = {} }: ContentTableProps) => {
                         {headerGroup.headers.map((header) => {
                             return (
                                 <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext()
-                                    )}
+                                    {flexRender(header.column.columnDef.header, header.getContext())}
                                 </Th>
                             )
                         })}
@@ -154,14 +130,7 @@ const ContentTable = ({ products = [], summary = {} }: ContentTableProps) => {
                     return (
                         <Tr key={row.id}>
                             {row.getVisibleCells().map((cell) => {
-                                return (
-                                    <Td key={cell.id}>
-                                        {flexRender(
-                                            cell.column.columnDef.cell,
-                                            cell.getContext()
-                                        )}
-                                    </Td>
-                                )
+                                return <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                             })}
                         </Tr>
                     )

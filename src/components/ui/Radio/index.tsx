@@ -5,9 +5,7 @@ import type { ForwardRefExoticComponent, RefAttributes } from 'react'
 export type { RadioProps } from './Radio'
 export type { RadioGroupProps } from './Group'
 
-type CompoundedComponent = ForwardRefExoticComponent<
-    RadioProps & RefAttributes<HTMLHtmlElement>
-> & {
+type CompoundedComponent = ForwardRefExoticComponent<RadioProps & RefAttributes<HTMLHtmlElement>> & {
     Group: typeof Group
 }
 

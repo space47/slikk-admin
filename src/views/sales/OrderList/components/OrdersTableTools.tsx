@@ -12,22 +12,14 @@ const BatchDeleteButton = () => {
     }
 
     return (
-        <Button
-            variant="solid"
-            color="red-600"
-            size="sm"
-            icon={<HiOutlineTrash />}
-            onClick={onBatchDelete}
-        >
+        <Button variant="solid" color="red-600" size="sm" icon={<HiOutlineTrash />} onClick={onBatchDelete}>
             Batch Delete
         </Button>
     )
 }
 
 const OrdersTableTools = () => {
-    const selectedRows = useAppSelector(
-        (state) => state.salesOrderList.data.selectedRows
-    )
+    const selectedRows = useAppSelector((state) => state.salesOrderList.data.selectedRows)
     return (
         <div className="flex flex-col lg:flex-row lg:items-center gap-4">
             {selectedRows.length > 0 && <BatchDeleteButton />}
