@@ -26,25 +26,15 @@ const AllRoutes = (props: AllRoutesProps) => {
     return (
         <Routes>
             <Route path="/" element={<ProtectedRoute />}>
-                <Route
-                    path="/"
-                    element={<Navigate replace to={authenticatedEntryPath} />}
-                />
+                <Route path="/" element={<Navigate replace to={authenticatedEntryPath} />} />
                 {protectedRoutes.map((route, index) => (
                     <Route
                         key={route.key + index}
                         path={route.path}
                         element={
-                            <AuthorityGuard
-                                userAuthority={userAuthority}
-                                authority={route.authority}
-                            >
+                            <AuthorityGuard userAuthority={userAuthority} authority={route.authority}>
                                 <PageContainer {...props} {...route.meta}>
-                                    <AppRoute
-                                        routeKey={route.key}
-                                        component={route.component}
-                                        {...route.meta}
-                                    />
+                                    <AppRoute routeKey={route.key} component={route.component} {...route.meta} />
                                 </PageContainer>
                             </AuthorityGuard>
                         }
@@ -57,13 +47,7 @@ const AllRoutes = (props: AllRoutesProps) => {
                     <Route
                         key={route.path}
                         path={route.path}
-                        element={
-                            <AppRoute
-                                routeKey={route.key}
-                                component={route.component}
-                                {...route.meta}
-                            />
-                        }
+                        element={<AppRoute routeKey={route.key} component={route.component} {...route.meta} />}
                     />
                 ))}
             </Route>

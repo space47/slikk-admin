@@ -27,11 +27,7 @@ type FormModel = PersonalInformationType
 
 type PersonalInformationProps = {
     data: PersonalInformationType
-    onNextChange?: (
-        values: FormModel,
-        formName: string,
-        setSubmitting: (isSubmitting: boolean) => void
-    ) => void
+    onNextChange?: (values: FormModel, formName: string, setSubmitting: (isSubmitting: boolean) => void) => void
     currentStepStatus?: string
 }
 
@@ -55,28 +51,14 @@ const NumericFormatInput = ({
     form: any
     field: FieldInputProps<unknown>
 }) => {
-    return (
-        <NumericFormat
-            customInput={Input as ComponentType}
-            type="text"
-            autoComplete="off"
-            onValueChange={onValueChange}
-            {...rest}
-        />
-    )
+    return <NumericFormat customInput={Input as ComponentType} type="text" autoComplete="off" onValueChange={onValueChange} {...rest} />
 }
 
-const PhoneSelectOption = ({
-    innerProps,
-    data,
-    isSelected,
-}: OptionProps<CountryOption>) => {
+const PhoneSelectOption = ({ innerProps, data, isSelected }: OptionProps<CountryOption>) => {
     return (
         <div
             className={`cursor-pointer flex items-center justify-between p-2 ${
-                isSelected
-                    ? 'bg-gray-100 dark:bg-gray-500'
-                    : 'hover:bg-gray-50 dark:hover:bg-gray-600'
+                isSelected ? 'bg-gray-100 dark:bg-gray-500' : 'hover:bg-gray-50 dark:hover:bg-gray-600'
             }`}
             {...innerProps}
         >
@@ -91,11 +73,7 @@ const PhoneSelectOption = ({
 
 const PhoneControl = (props: SingleValueProps<CountryOption>) => {
     const selected = props.getValue()[0]
-    return (
-        <SingleValue {...props}>
-            {selected && <span>{selected.dialCode}</span>}
-        </SingleValue>
-    )
+    return <SingleValue {...props}>{selected && <span>{selected.dialCode}</span>}</SingleValue>
 }
 
 const validationSchema = Yup.object().shape({
@@ -126,10 +104,7 @@ const PersonalInformation = ({
     onNextChange,
     currentStepStatus,
 }: PersonalInformationProps) => {
-    const onNext = (
-        values: FormModel,
-        setSubmitting: (isSubmitting: boolean) => void
-    ) => {
+    const onNext = (values: FormModel, setSubmitting: (isSubmitting: boolean) => void) => {
         onNextChange?.(values, 'personalInformation', setSubmitting)
     }
 
@@ -157,57 +132,24 @@ const PersonalInformation = ({
                                 <div className="md:grid grid-cols-2 gap-4">
                                     <FormItem
                                         label="First Name"
-                                        invalid={
-                                            errors.firstName &&
-                                            touched.firstName
-                                        }
+                                        invalid={errors.firstName && touched.firstName}
                                         errorMessage={errors.firstName}
                                     >
-                                        <Field
-                                            type="text"
-                                            autoComplete="off"
-                                            name="firstName"
-                                            placeholder="First Name"
-                                            component={Input}
-                                        />
+                                        <Field type="text" autoComplete="off" name="firstName" placeholder="First Name" component={Input} />
                                     </FormItem>
                                     <FormItem
                                         label="Last Name"
-                                        invalid={
-                                            errors.lastName && touched.lastName
-                                        }
+                                        invalid={errors.lastName && touched.lastName}
                                         errorMessage={errors.lastName}
                                     >
-                                        <Field
-                                            type="text"
-                                            autoComplete="off"
-                                            name="lastName"
-                                            placeholder="Last Name"
-                                            component={Input}
-                                        />
+                                        <Field type="text" autoComplete="off" name="lastName" placeholder="Last Name" component={Input} />
                                     </FormItem>
                                 </div>
-                                <FormItem
-                                    label="Email"
-                                    invalid={errors.email && touched.email}
-                                    errorMessage={errors.email}
-                                >
-                                    <Field
-                                        type="email"
-                                        autoComplete="off"
-                                        name="email"
-                                        placeholder="Email"
-                                        component={Input}
-                                    />
+                                <FormItem label="Email" invalid={errors.email && touched.email} errorMessage={errors.email}>
+                                    <Field type="email" autoComplete="off" name="email" placeholder="Email" component={Input} />
                                 </FormItem>
                                 <div className="md:grid grid-cols-2 gap-4">
-                                    <FormItem
-                                        label="Gender"
-                                        invalid={
-                                            errors.gender && touched.gender
-                                        }
-                                        errorMessage={errors.gender}
-                                    >
+                                    <FormItem label="Gender" invalid={errors.gender && touched.gender} errorMessage={errors.gender}>
                                         <Field name="gender">
                                             {({ field, form }: FieldProps) => (
                                                 <Select
@@ -215,27 +157,15 @@ const PersonalInformation = ({
                                                     field={field}
                                                     form={form}
                                                     options={genderOptions}
-                                                    value={genderOptions.filter(
-                                                        (gender) =>
-                                                            gender.value ===
-                                                            values.gender
-                                                    )}
-                                                    onChange={(gender) =>
-                                                        form.setFieldValue(
-                                                            field.name,
-                                                            gender?.value
-                                                        )
-                                                    }
+                                                    value={genderOptions.filter((gender) => gender.value === values.gender)}
+                                                    onChange={(gender) => form.setFieldValue(field.name, gender?.value)}
                                                 />
                                             )}
                                         </Field>
                                     </FormItem>
                                     <FormItem
                                         label="Marital Status"
-                                        invalid={
-                                            errors.maritalStatus &&
-                                            touched.maritalStatus
-                                        }
+                                        invalid={errors.maritalStatus && touched.maritalStatus}
                                         errorMessage={errors.maritalStatus}
                                     >
                                         <Field name="maritalStatus">
@@ -245,17 +175,8 @@ const PersonalInformation = ({
                                                     field={field}
                                                     form={form}
                                                     options={statusOptions}
-                                                    value={statusOptions.filter(
-                                                        (status) =>
-                                                            status.value ===
-                                                            values.maritalStatus
-                                                    )}
-                                                    onChange={(status) =>
-                                                        form.setFieldValue(
-                                                            field.name,
-                                                            status?.value
-                                                        )
-                                                    }
+                                                    value={statusOptions.filter((status) => status.value === values.maritalStatus)}
+                                                    onChange={(status) => form.setFieldValue(field.name, status?.value)}
                                                 />
                                             )}
                                         </Field>
@@ -263,10 +184,7 @@ const PersonalInformation = ({
                                 </div>
                                 <FormItem
                                     label="Nationality"
-                                    invalid={
-                                        errors.nationality &&
-                                        touched.nationality
-                                    }
+                                    invalid={errors.nationality && touched.nationality}
                                     errorMessage={errors.nationality}
                                 >
                                     <Field name="nationality">
@@ -276,17 +194,8 @@ const PersonalInformation = ({
                                                 field={field}
                                                 form={form}
                                                 options={countryList}
-                                                value={countryList.filter(
-                                                    (country) =>
-                                                        country.value ===
-                                                        values.nationality
-                                                )}
-                                                onChange={(country) =>
-                                                    form.setFieldValue(
-                                                        field.name,
-                                                        country?.value
-                                                    )
-                                                }
+                                                value={countryList.filter((country) => country.value === values.nationality)}
+                                                onChange={(country) => form.setFieldValue(field.name, country?.value)}
                                             />
                                         )}
                                     </Field>
@@ -294,65 +203,37 @@ const PersonalInformation = ({
                                 <div className="md:grid grid-cols-2 gap-4">
                                     <FormItem
                                         label="Phone Number"
-                                        invalid={
-                                            (errors.dialCode &&
-                                                touched.dialCode) ||
-                                            (errors.phoneNumber &&
-                                                touched.phoneNumber)
-                                        }
+                                        invalid={(errors.dialCode && touched.dialCode) || (errors.phoneNumber && touched.phoneNumber)}
                                         errorMessage="Please enter your phone number"
                                     >
                                         <InputGroup>
                                             <Field name="dialCode">
-                                                {({
-                                                    field,
-                                                    form,
-                                                }: FieldProps) => (
+                                                {({ field, form }: FieldProps) => (
                                                     <Select<CountryOption>
                                                         className="min-w-[130px]"
                                                         placeholder="Dial Code"
                                                         components={{
                                                             Option: PhoneSelectOption,
-                                                            SingleValue:
-                                                                PhoneControl,
+                                                            SingleValue: PhoneControl,
                                                         }}
                                                         field={field}
                                                         form={form}
                                                         options={countryList}
-                                                        value={countryList.filter(
-                                                            (country) =>
-                                                                country.value ===
-                                                                values.dialCode
-                                                        )}
-                                                        onChange={(country) =>
-                                                            form.setFieldValue(
-                                                                field.name,
-                                                                country?.value
-                                                            )
-                                                        }
+                                                        value={countryList.filter((country) => country.value === values.dialCode)}
+                                                        onChange={(country) => form.setFieldValue(field.name, country?.value)}
                                                     />
                                                 )}
                                             </Field>
                                             <Field name="phoneNumber">
-                                                {({
-                                                    field,
-                                                    form,
-                                                }: FieldProps) => {
+                                                {({ field, form }: FieldProps) => {
                                                     return (
                                                         <NumericFormatInput
                                                             form={form}
                                                             field={field}
-                                                            customInput={
-                                                                NumberInput as ComponentType
-                                                            }
+                                                            customInput={NumberInput as ComponentType}
                                                             placeholder="Phone Number"
-                                                            onValueChange={(
-                                                                e
-                                                            ) => {
-                                                                form.setFieldValue(
-                                                                    field.name,
-                                                                    e.value
-                                                                )
+                                                            onValueChange={(e) => {
+                                                                form.setFieldValue(field.name, e.value)
                                                             }}
                                                         />
                                                     )
@@ -360,11 +241,7 @@ const PersonalInformation = ({
                                             </Field>
                                         </InputGroup>
                                     </FormItem>
-                                    <FormItem
-                                        label="Date of Birth"
-                                        invalid={errors.dob && touched.dob}
-                                        errorMessage={errors.dob}
-                                    >
+                                    <FormItem label="Date of Birth" invalid={errors.dob && touched.dob} errorMessage={errors.dob}>
                                         <Field name="dob" placeholder="Date">
                                             {({ field, form }: FieldProps) => (
                                                 <DatePicker
@@ -372,12 +249,7 @@ const PersonalInformation = ({
                                                     form={form}
                                                     value={field.value}
                                                     onChange={(date) => {
-                                                        form.setFieldValue(
-                                                            field.name,
-                                                            dayjs(date).format(
-                                                                'YYYY-MM-DD'
-                                                            )
-                                                        )
+                                                        form.setFieldValue(field.name, dayjs(date).format('YYYY-MM-DD'))
                                                     }}
                                                 />
                                             )}
@@ -385,14 +257,8 @@ const PersonalInformation = ({
                                     </FormItem>
                                 </div>
                                 <div className="flex justify-end gap-2">
-                                    <Button
-                                        loading={isSubmitting}
-                                        variant="solid"
-                                        type="submit"
-                                    >
-                                        {currentStepStatus === 'complete'
-                                            ? 'Save'
-                                            : 'Next'}
+                                    <Button loading={isSubmitting} variant="solid" type="submit">
+                                        {currentStepStatus === 'complete' ? 'Save' : 'Next'}
                                     </Button>
                                 </div>
                             </FormContainer>

@@ -164,14 +164,10 @@ const Icons = () => {
             <div className="text-center mb-8">
                 <h2 className="mb-2">React Icons</h2>
                 <p className="max-w-xl mx-auto">
-                    <ActionLink
-                        href="https://react-icons.github.io/react-icons"
-                        target="_blank"
-                    >
+                    <ActionLink href="https://react-icons.github.io/react-icons" target="_blank">
                         react-icons
                     </ActionLink>
-                    {` `}includes many popular icons set which utilizes ES6
-                    imports that allows you to include only the icons is using.
+                    {` `}includes many popular icons set which utilizes ES6 imports that allows you to include only the icons is using.
                 </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-[1200px] mx-auto">

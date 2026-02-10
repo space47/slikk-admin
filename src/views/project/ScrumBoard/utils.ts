@@ -57,8 +57,7 @@ export const reorderQuoteMap = ({
 
 export const createUID = (len: number) => {
     const buf = [],
-        chars =
-            'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
+        chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
         charlen = chars.length,
         length = len || 32
 

@@ -20,11 +20,7 @@ const DemoCard = (props: DemoCardProps) => {
         <div className="demo-card">
             <div className="mb-6">
                 <h4>{title}</h4>
-                {desc && (
-                    <div className="mt-1 demo-card-description">
-                        {ReactHtmlParser(desc)}
-                    </div>
-                )}
+                {desc && <div className="mt-1 demo-card-description">{ReactHtmlParser(desc)}</div>}
             </div>
             <Card
                 bordered

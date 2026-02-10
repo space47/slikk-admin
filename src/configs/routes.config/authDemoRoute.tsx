@@ -73,10 +73,7 @@ const authDemoRoute: Routes = [
     {
         key: 'authentication.forgotPasswordSimple',
         path: `${AUTH_PREFIX_PATH}/forgot-password-simple`,
-        component: lazy(
-            () =>
-                import('@/views/auth-demo/ForgotPassword/ForgotPasswordSimple')
-        ),
+        component: lazy(() => import('@/views/auth-demo/ForgotPassword/ForgotPasswordSimple')),
         authority: [ADMIN, USER],
         meta: {
             layout: 'blank',
@@ -87,9 +84,7 @@ const authDemoRoute: Routes = [
     {
         key: 'authentication.forgotPasswordSide',
         path: `${AUTH_PREFIX_PATH}/forgot-password-side`,
-        component: lazy(
-            () => import('@/views/auth-demo/ForgotPassword/ForgotPasswordSide')
-        ),
+        component: lazy(() => import('@/views/auth-demo/ForgotPassword/ForgotPasswordSide')),
         authority: [ADMIN, USER],
         meta: {
             layout: 'blank',
@@ -100,9 +95,7 @@ const authDemoRoute: Routes = [
     {
         key: 'authentication.forgotPasswordCover',
         path: `${AUTH_PREFIX_PATH}/forgot-password-cover`,
-        component: lazy(
-            () => import('@/views/auth-demo/ForgotPassword/ForgotPasswordCover')
-        ),
+        component: lazy(() => import('@/views/auth-demo/ForgotPassword/ForgotPasswordCover')),
         authority: [ADMIN, USER],
         meta: {
             layout: 'blank',
@@ -113,9 +106,7 @@ const authDemoRoute: Routes = [
     {
         key: 'authentication.resetPasswordSimple',
         path: `${AUTH_PREFIX_PATH}/reset-password-simple`,
-        component: lazy(
-            () => import('@/views/auth-demo/ResetPassword/ResetPasswordSimple')
-        ),
+        component: lazy(() => import('@/views/auth-demo/ResetPassword/ResetPasswordSimple')),
         authority: [ADMIN, USER],
         meta: {
             layout: 'blank',
@@ -126,9 +117,7 @@ const authDemoRoute: Routes = [
     {
         key: 'authentication.resetPasswordSide',
         path: `${AUTH_PREFIX_PATH}/reset-password-side`,
-        component: lazy(
-            () => import('@/views/auth-demo/ResetPassword/ResetPasswordSide')
-        ),
+        component: lazy(() => import('@/views/auth-demo/ResetPassword/ResetPasswordSide')),
         authority: [ADMIN, USER],
         meta: {
             layout: 'blank',
@@ -139,9 +128,7 @@ const authDemoRoute: Routes = [
     {
         key: 'authentication.resetPasswordCover',
         path: `${AUTH_PREFIX_PATH}/reset-password-cover`,
-        component: lazy(
-            () => import('@/views/auth-demo/ResetPassword/ResetPasswordCover')
-        ),
+        component: lazy(() => import('@/views/auth-demo/ResetPassword/ResetPasswordCover')),
         authority: [ADMIN, USER],
         meta: {
             layout: 'blank',

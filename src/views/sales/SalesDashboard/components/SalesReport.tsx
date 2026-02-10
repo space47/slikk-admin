@@ -20,12 +20,7 @@ const SalesReport = ({ className, data = {} }: SalesReportProps) => {
                 <h4>Sales Report</h4>
                 <Button size="sm">Export Report</Button>
             </div>
-            <Chart
-                series={data.series}
-                xAxis={data.categories}
-                height="380px"
-                customOptions={{ legend: { show: false } }}
-            />
+            <Chart series={data.series} xAxis={data.categories} height="380px" customOptions={{ legend: { show: false } }} />
         </Card>
     )
 }

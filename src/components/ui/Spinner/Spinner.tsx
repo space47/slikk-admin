@@ -14,21 +14,11 @@ export interface SpinnerProps extends CommonProps {
 }
 
 const Spinner = forwardRef((props: SpinnerProps, ref) => {
-    const {
-        className,
-        color,
-        enableTheme = true,
-        indicator: Component = CgSpinner,
-        isSpining = true,
-        size = 20,
-        style,
-        ...rest
-    } = props
+    const { className, color, enableTheme = true, indicator: Component = CgSpinner, isSpining = true, size = 20, style, ...rest } = props
 
     const { themeColor, primaryColorLevel } = useConfig()
 
-    const spinnerColor =
-        color || (enableTheme && `${themeColor}-${primaryColorLevel}`)
+    const spinnerColor = color || (enableTheme && `${themeColor}-${primaryColorLevel}`)
 
     const spinnerStyle = {
         height: size,
@@ -36,20 +26,9 @@ const Spinner = forwardRef((props: SpinnerProps, ref) => {
         ...style,
     }
 
-    const spinnerClass = classNames(
-        isSpining && 'animate-spin',
-        spinnerColor && `text-${spinnerColor}`,
-        className
-    )
+    const spinnerClass = classNames(isSpining && 'animate-spin', spinnerColor && `text-${spinnerColor}`, className)
 
-    return (
-        <Component
-            ref={ref}
-            style={spinnerStyle}
-            className={spinnerClass}
-            {...rest}
-        />
-    )
+    return <Component ref={ref} style={spinnerStyle} className={spinnerClass} {...rest} />
 })
 
 Spinner.displayName = 'Spinner'

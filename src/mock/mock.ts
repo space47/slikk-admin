@@ -1,39 +1,13 @@
 import { createServer } from 'miragejs'
 import appConfig from '@/configs/app.config'
 import { notificationListData, searchQueryPoolData } from './data/commonData'
-import {
-    projectList,
-    scrumboardData,
-    issueData,
-    projectDashboardData,
-} from './data/projectData'
+import { projectList, scrumboardData, issueData, projectDashboardData } from './data/projectData'
 import { usersData, userDetailData } from './data/usersData'
 import { eventsData, mailData, crmDashboardData } from './data/crmData'
-import {
-    productsData,
-    ordersData,
-    orderDetailsData,
-    salesDashboardData,
-} from './data/salesData'
-import {
-    portfolioData,
-    walletsData,
-    marketData,
-    transactionHistoryData,
-    cryptoDashboardData,
-} from './data/cryptoData'
-import {
-    settingData,
-    settingIntergrationData,
-    settingBillingData,
-    invoiceData,
-    logData,
-    accountFormData,
-} from './data/accountData'
-import {
-    helpCenterCategoriesData,
-    helpCenterArticleListData,
-} from './data/knowledgeBaseData'
+import { productsData, ordersData, orderDetailsData, salesDashboardData } from './data/salesData'
+import { portfolioData, walletsData, marketData, transactionHistoryData, cryptoDashboardData } from './data/cryptoData'
+import { settingData, settingIntergrationData, settingBillingData, invoiceData, logData, accountFormData } from './data/accountData'
+import { helpCenterCategoriesData, helpCenterArticleListData } from './data/knowledgeBaseData'
 import { signInUserData } from './data/authData'
 
 import {
@@ -48,7 +22,7 @@ import {
 } from './fakeApi'
 
 let { apiPrefix } = appConfig
-apiPrefix = "/api"
+apiPrefix = '/api'
 export function mockServer({ environment = 'test' }) {
     return createServer({
         environment,

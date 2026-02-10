@@ -3,10 +3,7 @@ type ProjectDashboardHeaderProps = {
     taskCount?: number
 }
 
-const ProjectDashboardHeader = ({
-    userName,
-    taskCount,
-}: ProjectDashboardHeaderProps) => {
+const ProjectDashboardHeader = ({ userName, taskCount }: ProjectDashboardHeaderProps) => {
     return (
         <div>
             <h4 className="mb-1">Hello, {userName}!</h4>

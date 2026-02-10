@@ -4,10 +4,7 @@ import Side from '@/components/layouts/AuthLayout/Side'
 const ResetPasswordSide = () => {
     return (
         <Side>
-            <ResetPasswordForm
-                disableSubmit={true}
-                signInUrl="/auth/sign-in-side"
-            />
+            <ResetPasswordForm disableSubmit={true} signInUrl="/auth/sign-in-side" />
         </Side>
     )
 }

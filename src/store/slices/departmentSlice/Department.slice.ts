@@ -41,12 +41,12 @@ export const departmentsSlice = createSlice({
                 state.accessDenied = false
             })
             .addCase(fetchDepartments.fulfilled, (state, action) => {
-                ;(state.loading = false), (state.departmentsData = action.payload?.departmentsData)
+                ;((state.loading = false), (state.departmentsData = action.payload?.departmentsData))
             })
             .addCase(fetchDepartments.rejected, (state, action) => {
-                ;(state.loading = false),
+                ;((state.loading = false),
                     (state.message = action.error.message || 'Failed to fetch Departments Lists'),
-                    (state.accessDenied = action?.payload?.accessDenied)
+                    (state.accessDenied = action?.payload?.accessDenied))
             })
     },
 })

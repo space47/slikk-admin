@@ -1,8 +1,5 @@
 import { combineReducers } from '@reduxjs/toolkit'
-import reducers, {
-    SLICE_NAME,
-    ProjectDashboardState,
-} from './projectDashboardSlice'
+import reducers, { SLICE_NAME, ProjectDashboardState } from './projectDashboardSlice'
 import { useSelector } from 'react-redux'
 
 import type { TypedUseSelectorHook } from 'react-redux'

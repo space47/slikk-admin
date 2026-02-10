@@ -32,9 +32,7 @@ export default function accountFakeApi(server: Server, apiPrefix: string) {
         }
         logs = logs.slice(count, activityIndex * maxGetItem) as any
         logs = logs.map((log) => {
-            log.events = log.events.filter((event: any) =>
-                filter.includes(event.type)
-            )
+            log.events = log.events.filter((event: any) => filter.includes(event.type))
             return log
         }) as any
         const response = {

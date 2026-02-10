@@ -10,9 +10,7 @@ type SalesByCategoriesProps = {
     }
 }
 
-const SalesByCategories = ({
-    data = { labels: [], data: [] },
-}: SalesByCategoriesProps) => {
+const SalesByCategories = ({ data = { labels: [], data: [] } }: SalesByCategoriesProps) => {
     return (
         <Card>
             <h4>Categories</h4>
@@ -20,10 +18,7 @@ const SalesByCategories = ({
                 {data.data.length > 0 && (
                     <>
                         <Chart
-                            donutTitle={`${data.data.reduce(
-                                (a, b) => a + b,
-                                0
-                            )}`}
+                            donutTitle={`${data.data.reduce((a, b) => a + b, 0)}`}
                             donutText="Product Sold"
                             series={data.data}
                             customOptions={{ labels: data.labels }}
@@ -32,18 +27,13 @@ const SalesByCategories = ({
                         {data.data.length === data.labels.length && (
                             <div className="mt-6 grid grid-cols-2 gap-4 max-w-[180px] mx-auto">
                                 {data.labels.map((value, index) => (
-                                    <div
-                                        key={value}
-                                        className="flex items-center gap-1"
-                                    >
+                                    <div key={value} className="flex items-center gap-1">
                                         <Badge
                                             badgeStyle={{
                                                 backgroundColor: COLORS[index],
                                             }}
                                         />
-                                        <span className="font-semibold">
-                                            {value}
-                                        </span>
+                                        <span className="font-semibold">{value}</span>
                                     </div>
                                 ))}
                             </div>

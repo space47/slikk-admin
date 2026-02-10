@@ -22,31 +22,11 @@ const BasicInformationFields = (props: BasicInformationFields) => {
         <AdaptableCard divider className="mb-4">
             <h5>Basic Information</h5>
             <p className="mb-6">Section to config basic division information</p>
-            <FormItem
-                label="Division Name"
-                invalid={(errors.name && touched.name) as boolean}
-                errorMessage={errors.name}
-            >
-                <Field
-                    type="text"
-                    autoComplete="off"
-                    name="name"
-                    placeholder="Name"
-                    component={Input}
-                />
+            <FormItem label="Division Name" invalid={(errors.name && touched.name) as boolean} errorMessage={errors.name}>
+                <Field type="text" autoComplete="off" name="name" placeholder="Name" component={Input} />
             </FormItem>
-            <FormItem
-                label="Footer"
-                invalid={(errors.footer && touched.footer) as boolean}
-                errorMessage={errors.footer}
-            >
-                <Field
-                    type="text"
-                    autoComplete="off"
-                    name="footer"
-                    placeholder="Footer"
-                    component={Input}
-                />
+            <FormItem label="Footer" invalid={(errors.footer && touched.footer) as boolean} errorMessage={errors.footer}>
+                <Field type="text" autoComplete="off" name="footer" placeholder="Footer" component={Input} />
             </FormItem>
             <FormItem
                 label="Description"
@@ -56,12 +36,7 @@ const BasicInformationFields = (props: BasicInformationFields) => {
             >
                 <Field name="description">
                     {({ field, form }: FieldProps) => (
-                        <RichTextEditor
-                            value={field.value}
-                            onChange={(val) =>
-                                form.setFieldValue(field.name, val)
-                            }
-                        />
+                        <RichTextEditor value={field.value} onChange={(val) => form.setFieldValue(field.name, val)} />
                     )}
                 </Field>
             </FormItem>

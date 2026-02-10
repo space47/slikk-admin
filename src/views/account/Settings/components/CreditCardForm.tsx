@@ -43,7 +43,7 @@ const validationSchema = Yup.object().shape({
         .required('Credit card number required')
         .matches(
             /^(?:4[0-9]{12}(?:[0-9]{3})?|[25][1-7][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\d{3})\d{11})$/,
-            'Invalid credit card number'
+            'Invalid credit card number',
         ),
     cardExpiry: Yup.string()
         .required('Card holder name required')
@@ -119,9 +119,7 @@ const CreditCardForm = ({ card, type, onUpdate }: CreditCardFormProps) => {
             initialValues={{
                 cardHolderName: card?.cardHolderName || '',
                 ccNumber: '',
-                cardExpiry:
-                    (card?.expMonth as string) + (card?.expYear as string) ||
-                    '',
+                cardExpiry: (card?.expMonth as string) + (card?.expYear as string) || '',
                 code: '',
                 primary: card?.primary || false,
             }}
@@ -136,23 +134,12 @@ const CreditCardForm = ({ card, type, onUpdate }: CreditCardFormProps) => {
                     <FormContainer>
                         <FormItem
                             label="Card holder name"
-                            invalid={
-                                errors.cardHolderName && touched.cardHolderName
-                            }
+                            invalid={errors.cardHolderName && touched.cardHolderName}
                             errorMessage={errors.cardHolderName}
                         >
-                            <Field
-                                type="text"
-                                autoComplete="off"
-                                name="cardHolderName"
-                                component={Input}
-                            />
+                            <Field type="text" autoComplete="off" name="cardHolderName" component={Input} />
                         </FormItem>
-                        <FormItem
-                            label="Credit Card Number"
-                            invalid={errors.ccNumber && touched.ccNumber}
-                            errorMessage={errors.ccNumber}
-                        >
+                        <FormItem label="Credit Card Number" invalid={errors.ccNumber && touched.ccNumber} errorMessage={errors.ccNumber}>
                             <Field name="ccNumber">
                                 {({ field, form }: FieldProps) => {
                                     return (
@@ -161,14 +148,9 @@ const CreditCardForm = ({ card, type, onUpdate }: CreditCardFormProps) => {
                                             field={field}
                                             placeholder="•••• •••• •••• ••••"
                                             format="#### #### #### ####"
-                                            inputSuffix={
-                                                <HiCreditCard className="text-lg" />
-                                            }
+                                            inputSuffix={<HiCreditCard className="text-lg" />}
                                             onValueChange={(e) => {
-                                                form.setFieldValue(
-                                                    field.name,
-                                                    e.value
-                                                )
+                                                form.setFieldValue(field.name, e.value)
                                             }}
                                         />
                                     )
@@ -178,9 +160,7 @@ const CreditCardForm = ({ card, type, onUpdate }: CreditCardFormProps) => {
                         <div className="grid grid-cols-2 gap-4">
                             <FormItem
                                 label="Expiration date"
-                                invalid={
-                                    errors.cardExpiry && touched.cardExpiry
-                                }
+                                invalid={errors.cardExpiry && touched.cardExpiry}
                                 errorMessage={errors.cardExpiry}
                             >
                                 <Field name="cardExpiry">
@@ -190,29 +170,18 @@ const CreditCardForm = ({ card, type, onUpdate }: CreditCardFormProps) => {
                                                 form={form}
                                                 field={field}
                                                 placeholder="••/••"
-                                                inputSuffix={
-                                                    <HiCalendar className="text-lg" />
-                                                }
+                                                inputSuffix={<HiCalendar className="text-lg" />}
                                                 format={cardExpiryFormat}
-                                                defaultValue={
-                                                    form.values.cardExpiry
-                                                }
+                                                defaultValue={form.values.cardExpiry}
                                                 onValueChange={(e) => {
-                                                    form.setFieldValue(
-                                                        field.name,
-                                                        e.value
-                                                    )
+                                                    form.setFieldValue(field.name, e.value)
                                                 }}
                                             />
                                         )
                                     }}
                                 </Field>
                             </FormItem>
-                            <FormItem
-                                label="CVV"
-                                invalid={errors.code && touched.code}
-                                errorMessage={errors.code}
-                            >
+                            <FormItem label="CVV" invalid={errors.code && touched.code} errorMessage={errors.code}>
                                 <Field name="code">
                                     {({ field, form }: FieldProps) => {
                                         return (
@@ -227,10 +196,7 @@ const CreditCardForm = ({ card, type, onUpdate }: CreditCardFormProps) => {
                                                     </Tooltip>
                                                 }
                                                 onValueChange={(e) => {
-                                                    form.setFieldValue(
-                                                        field.name,
-                                                        e.value
-                                                    )
+                                                    form.setFieldValue(field.name, e.value)
                                                 }}
                                             />
                                         )

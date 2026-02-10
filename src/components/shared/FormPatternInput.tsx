@@ -9,9 +9,7 @@ interface InputAffix {
     inputPrefix?: string | ReactNode
 }
 
-interface NumberInputProps
-    extends Omit<InputProps, 'prefix' | 'suffix'>,
-        InputAffix {}
+interface NumberInputProps extends Omit<InputProps, 'prefix' | 'suffix'>, InputAffix {}
 
 type NumberFormatInputProps = Omit<PatternFormatProps, 'form'> & {
     /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -21,27 +19,11 @@ type NumberFormatInputProps = Omit<PatternFormatProps, 'form'> & {
 
 type FormPatternInputProps = NumberInputProps & NumberFormatInputProps
 
-const NumberInput = ({
-    inputSuffix,
-    inputPrefix,
-    ...props
-}: NumberInputProps) => {
-    return (
-        <Input
-            {...props}
-            value={props.value}
-            suffix={inputSuffix}
-            prefix={inputPrefix}
-        />
-    )
+const NumberInput = ({ inputSuffix, inputPrefix, ...props }: NumberInputProps) => {
+    return <Input {...props} value={props.value} suffix={inputSuffix} prefix={inputPrefix} />
 }
 
-const NumberFormatInput = ({
-    onValueChange,
-    form,
-    field,
-    ...rest
-}: NumberFormatInputProps) => {
+const NumberFormatInput = ({ onValueChange, form, field, ...rest }: NumberFormatInputProps) => {
     return (
         <PatternFormat
             customInput={NumberInput as ComponentType}
@@ -56,14 +38,7 @@ const NumberFormatInput = ({
     )
 }
 
-const FormPatternInput = ({
-    form,
-    field,
-    inputSuffix,
-    inputPrefix,
-    onValueChange,
-    ...rest
-}: FormPatternInputProps) => {
+const FormPatternInput = ({ form, field, inputSuffix, inputPrefix, onValueChange, ...rest }: FormPatternInputProps) => {
     return (
         <NumberFormatInput
             form={form}

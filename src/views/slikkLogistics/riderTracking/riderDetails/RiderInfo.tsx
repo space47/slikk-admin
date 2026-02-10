@@ -17,16 +17,7 @@ type InfoProps = {
     className: string
 }
 
-const RiderInfo = ({
-    name,
-    address,
-    landmark,
-    latitude,
-    longitude,
-    contact_number,
-    title,
-    className,
-}: InfoProps) => {
+const RiderInfo = ({ name, address, landmark, latitude, longitude, contact_number, title, className }: InfoProps) => {
     return (
         <Card className={className}>
             <h5 className="mb-4">{title} Details</h5>
@@ -37,22 +28,16 @@ const RiderInfo = ({
                 <div className="font-bold flex gap-4">Name: {name}</div>
 
                 <IconText icon={<HiPhone className="text-xl opacity-70" />}>
-                    <span className="font-semibold">
-                        Phone: {contact_number}
-                    </span>
+                    <span className="font-semibold">Phone: {contact_number}</span>
                 </IconText>
             </div>
             <hr className="my-5" />
             <h6 className="mb-4">Shipping Address</h6>
             <div className="flex flex-col items-start gap-4">
-                <IconText
-                    icon={<FaAddressCard className="text-xl opacity-70" />}
-                >
+                <IconText icon={<FaAddressCard className="text-xl opacity-70" />}>
                     Address: <span className="font-semibold">{address}</span>
                 </IconText>
-                <IconText
-                    icon={<BiSolidLandmark className="text-xl opacity-70" />}
-                >
+                <IconText icon={<BiSolidLandmark className="text-xl opacity-70" />}>
                     Landmark : <span className="font-semibold">{landmark}</span>
                 </IconText>
             </div>

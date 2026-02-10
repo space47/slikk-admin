@@ -1,10 +1,6 @@
 import { useMemo, useState } from 'react'
 import Table from '@/components/ui/Table'
-import {
-    flexRender,
-    getCoreRowModel,
-    useReactTable,
-} from '@tanstack/react-table'
+import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { MdDragIndicator } from 'react-icons/md'
 import { data10 } from './data'
@@ -48,7 +44,7 @@ const DragAndDrop = () => {
             { header: 'Last Name', accessorKey: 'lastName' },
             { header: 'Email', accessorKey: 'email' },
         ],
-        []
+        [],
     )
 
     const table = useReactTable({
@@ -66,10 +62,7 @@ const DragAndDrop = () => {
                         {headerGroup.headers.map((header) => {
                             return (
                                 <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext()
-                                    )}
+                                    {flexRender(header.column.columnDef.header, header.getContext())}
                                 </Th>
                             )
                         })}
@@ -79,51 +72,27 @@ const DragAndDrop = () => {
             <DragDropContext onDragEnd={handleDragEnd}>
                 <StrictModeDroppable droppableId="table-body">
                     {(provided) => (
-                        <TBody
-                            ref={provided.innerRef}
-                            {...provided.droppableProps}
-                        >
+                        <TBody ref={provided.innerRef} {...provided.droppableProps}>
                             {table.getRowModel().rows.map((row) => {
                                 return (
-                                    <Draggable
-                                        key={row.id}
-                                        draggableId={row.id}
-                                        index={row.index}
-                                    >
+                                    <Draggable key={row.id} draggableId={row.id} index={row.index}>
                                         {(provided, snapshot) => {
-                                            const { style } =
-                                                provided.draggableProps
+                                            const { style } = provided.draggableProps
                                             return (
                                                 <Tr
                                                     ref={provided.innerRef}
-                                                    className={
-                                                        snapshot.isDragging
-                                                            ? 'table'
-                                                            : ''
-                                                    }
+                                                    className={snapshot.isDragging ? 'table' : ''}
                                                     style={style}
                                                     {...provided.draggableProps}
                                                     {...provided.dragHandleProps}
                                                 >
-                                                    {row
-                                                        .getVisibleCells()
-                                                        .map((cell) => {
-                                                            return (
-                                                                <Td
-                                                                    key={
-                                                                        cell.id
-                                                                    }
-                                                                >
-                                                                    {flexRender(
-                                                                        cell
-                                                                            .column
-                                                                            .columnDef
-                                                                            .cell,
-                                                                        cell.getContext()
-                                                                    )}
-                                                                </Td>
-                                                            )
-                                                        })}
+                                                    {row.getVisibleCells().map((cell) => {
+                                                        return (
+                                                            <Td key={cell.id}>
+                                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                            </Td>
+                                                        )
+                                                    })}
                                                 </Tr>
                                             )
                                         }}

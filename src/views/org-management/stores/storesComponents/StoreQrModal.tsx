@@ -54,6 +54,7 @@ const StoreQrModal = ({ dialogIsOpen, setIsOpen, store_code }: Props) => {
 
     const handleDownloadQr = async () => {
         if (!qrWrapperRef.current || !store_code) return
+        console.log('xssx')
 
         const svg = qrWrapperRef.current.querySelector('svg')
         if (!svg) return

@@ -12,14 +12,7 @@ const BasicWorldMap = () => {
         >
             <Geographies geography={geoUrl}>
                 {({ geographies }) =>
-                    geographies.map((geo) => (
-                        <Geography
-                            key={geo.rsmKey}
-                            fill="#EAEAEC"
-                            stroke="#D6D6DA"
-                            geography={geo}
-                        />
-                    ))
+                    geographies.map((geo) => <Geography key={geo.rsmKey} fill="#EAEAEC" stroke="#D6D6DA" geography={geo} />)
                 }
             </Geographies>
         </ComposableMap>

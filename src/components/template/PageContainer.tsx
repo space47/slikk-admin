@@ -1,10 +1,7 @@
 import { Suspense } from 'react'
 import classNames from 'classnames'
 import Container from '@/components/shared/Container'
-import {
-    PAGE_CONTAINER_GUTTER_X,
-    PAGE_CONTAINER_GUTTER_Y,
-} from '@/constants/theme.constant'
+import { PAGE_CONTAINER_GUTTER_X, PAGE_CONTAINER_GUTTER_Y } from '@/constants/theme.constant'
 import Footer from '@/components/template/Footer'
 import type { CommonProps } from '@/@types/common'
 import type { Meta } from '@/@types/routes'
@@ -26,14 +23,7 @@ const CustomHeader = <T extends ElementType>({
 }
 
 const PageContainer = (props: PageContainerProps) => {
-    const {
-        pageContainerType = 'default',
-        children,
-        header,
-        contained = false,
-        extraHeader,
-        footer = true,
-    } = props
+    const { pageContainerType = 'default', children, header, contained = false, extraHeader, footer = true } = props
 
     return (
         <div className="h-full flex flex-auto flex-col justify-between">
@@ -41,33 +31,20 @@ const PageContainer = (props: PageContainerProps) => {
                 <div
                     className={classNames(
                         'page-container relative h-full flex flex-auto flex-col',
-                        pageContainerType !== 'gutterless' &&
-                            `${PAGE_CONTAINER_GUTTER_X} ${PAGE_CONTAINER_GUTTER_Y}`,
-                        pageContainerType === 'contained' && 'container mx-auto'
+                        pageContainerType !== 'gutterless' && `${PAGE_CONTAINER_GUTTER_X} ${PAGE_CONTAINER_GUTTER_Y}`,
+                        pageContainerType === 'contained' && 'container mx-auto',
                     )}
                 >
                     {(header || extraHeader) && (
-                        <div
-                            className={classNames(
-                                contained && 'container mx-auto',
-                                'flex items-center justify-between mb-4'
-                            )}
-                        >
+                        <div className={classNames(contained && 'container mx-auto', 'flex items-center justify-between mb-4')}>
                             <div>
-                                {header && typeof header === 'string' && (
-                                    <h3>{header}</h3>
-                                )}
+                                {header && typeof header === 'string' && <h3>{header}</h3>}
                                 <Suspense fallback={<div></div>}>
-                                    {header && typeof header !== 'string' && (
-                                        <CustomHeader header={header} />
-                                    )}
+                                    {header && typeof header !== 'string' && <CustomHeader header={header} />}
                                 </Suspense>
                             </div>
                             <Suspense fallback={<div></div>}>
-                                {extraHeader &&
-                                    typeof extraHeader !== 'string' && (
-                                        <CustomHeader header={extraHeader} />
-                                    )}
+                                {extraHeader && typeof extraHeader !== 'string' && <CustomHeader header={extraHeader} />}
                             </Suspense>
                         </div>
                     )}
@@ -80,13 +57,7 @@ const PageContainer = (props: PageContainerProps) => {
                     )}
                 </div>
             </main>
-            {footer && (
-                <Footer
-                    pageContainerType={
-                        pageContainerType as FooterPageContainerType
-                    }
-                />
-            )}
+            {footer && <Footer pageContainerType={pageContainerType as FooterPageContainerType} />}
         </div>
     )
 }

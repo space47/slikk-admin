@@ -18,11 +18,7 @@ const colourOptions = [
 const DisabledSearch = () => {
     return (
         <div>
-            <Select
-                isSearchable={false}
-                placeholder="Please Select"
-                options={colourOptions}
-            />
+            <Select isSearchable={false} placeholder="Please Select" options={colourOptions} />
         </div>
     )
 }

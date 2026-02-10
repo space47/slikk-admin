@@ -4,10 +4,7 @@ import Cover from '@/components/layouts/AuthLayout/Cover'
 const ResetPasswordCover = () => {
     return (
         <Cover>
-            <ResetPasswordForm
-                disableSubmit={true}
-                signInUrl="/auth/sign-in-cover"
-            />
+            <ResetPasswordForm disableSubmit={true} signInUrl="/auth/sign-in-cover" />
         </Cover>
     )
 }

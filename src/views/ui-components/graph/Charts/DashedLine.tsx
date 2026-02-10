@@ -38,14 +38,7 @@ const DashedLine = () => {
                 },
                 legend: {
                     tooltipHoverFormatter: function (val, opts) {
-                        return (
-                            val +
-                            ' - ' +
-                            opts.w.globals.series[opts.seriesIndex][
-                                opts.dataPointIndex
-                            ] +
-                            ''
-                        )
+                        return val + ' - ' + opts.w.globals.series[opts.seriesIndex][opts.dataPointIndex] + ''
                     },
                 },
                 markers: {

@@ -7,12 +7,7 @@ type CreateAmPmHandlerParams = {
     nextRef?: RefObject<HTMLInputElement>
 }
 
-export function createAmPmHandler({
-    amLabel,
-    pmLabel,
-    onChange,
-    nextRef,
-}: CreateAmPmHandlerParams) {
+export function createAmPmHandler({ amLabel, pmLabel, onChange, nextRef }: CreateAmPmHandlerParams) {
     return (value: string, triggerShift: boolean) => {
         const testRegex = new RegExp(`(^(${amLabel}|${pmLabel})?$)`)
         const valLower = value.toLowerCase()

@@ -25,19 +25,11 @@ interface DefaultItemProps {
 
 interface VerticalMenuItemProps extends CollapsedItemProps, DefaultItemProps {}
 
-const CollapsedItem = ({
-    title,
-    translateKey,
-    children,
-    direction,
-}: CollapsedItemProps) => {
+const CollapsedItem = ({ title, translateKey, children, direction }: CollapsedItemProps) => {
     const { t } = useTranslation()
 
     return (
-        <Tooltip
-            title={t(translateKey) || title}
-            placement={direction === 'rtl' ? 'left' : 'right'}
-        >
+        <Tooltip title={t(translateKey) || title} placement={direction === 'rtl' ? 'left' : 'right'}>
             {children}
         </Tooltip>
     )
@@ -59,15 +51,12 @@ const DefaultItem = (props: DefaultItemProps) => {
                             path: nav.path,
                         })
                     }
-                    target={nav.isExternalLink ? '_blank' :  ''}
+                    target={nav.isExternalLink ? '_blank' : ''}
                 >
                     <VerticalMenuIcon icon={nav.icon} />
                     {!sideCollapsed && (
                         <span>
-                            <Trans
-                                i18nKey={nav.translateKey}
-                                defaults={nav.title}
-                            />
+                            <Trans i18nKey={nav.translateKey} defaults={nav.title} />
                         </span>
                     )}
                 </Link>
@@ -86,25 +75,11 @@ const VerticalSingleMenuItem = ({
     return (
         <AuthorityCheck userAuthority={userAuthority} authority={nav.authority}>
             {sideCollapsed ? (
-                <CollapsedItem
-                    title={nav.title}
-                    translateKey={nav.translateKey}
-                    direction={direction}
-                >
-                    <DefaultItem
-                        nav={nav}
-                        sideCollapsed={sideCollapsed}
-                        userAuthority={userAuthority}
-                        onLinkClick={onLinkClick}
-                    />
+                <CollapsedItem title={nav.title} translateKey={nav.translateKey} direction={direction}>
+                    <DefaultItem nav={nav} sideCollapsed={sideCollapsed} userAuthority={userAuthority} onLinkClick={onLinkClick} />
                 </CollapsedItem>
             ) : (
-                <DefaultItem
-                    nav={nav}
-                    sideCollapsed={sideCollapsed}
-                    userAuthority={userAuthority}
-                    onLinkClick={onLinkClick}
-                />
+                <DefaultItem nav={nav} sideCollapsed={sideCollapsed} userAuthority={userAuthority} onLinkClick={onLinkClick} />
             )}
         </AuthorityCheck>
     )

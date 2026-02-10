@@ -1,12 +1,7 @@
 import { useState, forwardRef } from 'react'
 import classNames from 'classnames'
 import useTimeout from '../hooks/useTimeout'
-import {
-    HiCheckCircle,
-    HiInformationCircle,
-    HiExclamation,
-    HiXCircle,
-} from 'react-icons/hi'
+import { HiCheckCircle, HiInformationCircle, HiExclamation, HiXCircle } from 'react-icons/hi'
 import { motion } from 'framer-motion'
 import CloseButton from '../CloseButton'
 import StatusIcon from '../StatusIcon'
@@ -59,12 +54,7 @@ const TYPE_MAP = {
     },
 }
 
-const TYPE_ARRAY: TypeAttributes.Status[] = [
-    'success',
-    'danger',
-    'info',
-    'warning',
-]
+const TYPE_ARRAY: TypeAttributes.Status[] = ['success', 'danger', 'info', 'warning']
 
 const Alert = forwardRef<HTMLDivElement, AlertProps>((props, ref) => {
     const {
@@ -95,11 +85,7 @@ const Alert = forwardRef<HTMLDivElement, AlertProps>((props, ref) => {
 
     const [display, setDisplay] = useState('show')
 
-    const { clear } = useTimeout(
-        onClose as () => void,
-        duration,
-        (duration as number) > 0
-    )
+    const { clear } = useTimeout(onClose as () => void, duration, (duration as number) > 0)
 
     const handleClose = (e: MouseEvent<HTMLDivElement>) => {
         setDisplay('hiding')
@@ -114,11 +100,7 @@ const Alert = forwardRef<HTMLDivElement, AlertProps>((props, ref) => {
 
     const renderClose = () => {
         return (
-            <div
-                className="cursor-pointer"
-                role="presentation"
-                onClick={(e) => handleClose(e)}
-            >
+            <div className="cursor-pointer" role="presentation" onClick={(e) => handleClose(e)}>
                 {customClose || <CloseButton defaultStyle={false} />}
             </div>
         )
@@ -135,7 +117,7 @@ const Alert = forwardRef<HTMLDivElement, AlertProps>((props, ref) => {
         closable ? 'justify-between' : '',
         closable && !title ? 'items-center' : '',
         rounded && 'rounded-lg',
-        className
+        className,
     )
 
     if (display === 'hide') {
@@ -160,21 +142,9 @@ const Alert = forwardRef<HTMLDivElement, AlertProps>((props, ref) => {
             {...rest}
         >
             <div className={`flex ${title ? '' : 'items-center'}`}>
-                {showIcon && (
-                    <StatusIcon
-                        iconColor={typeMap.iconColor}
-                        custom={customIcon}
-                        type={type}
-                    />
-                )}
+                {showIcon && <StatusIcon iconColor={typeMap.iconColor} custom={customIcon} type={type} />}
                 <div className={showIcon ? 'ltr:ml-2 rtl:mr-2' : ''}>
-                    {title ? (
-                        <div
-                            className={`font-semibold mb-1 ${typeMap.titleColor}`}
-                        >
-                            {title}
-                        </div>
-                    ) : null}
+                    {title ? <div className={`font-semibold mb-1 ${typeMap.titleColor}`}>{title}</div> : null}
                     {children}
                 </div>
             </div>

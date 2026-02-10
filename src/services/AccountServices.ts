@@ -21,10 +21,7 @@ export async function apiGetAccountSettingBillingData<T>() {
     })
 }
 
-export async function apiGetAccountInvoiceData<
-    T,
-    U extends Record<string, unknown>
->(params: U) {
+export async function apiGetAccountInvoiceData<T, U extends Record<string, unknown>>(params: U) {
     return ApiService.fetchData<T>({
         url: '/account/invoice',
         method: 'get',
@@ -32,10 +29,7 @@ export async function apiGetAccountInvoiceData<
     })
 }
 
-export async function apiGetAccountLogData<
-    T,
-    U extends Record<string, unknown>
->(data: U) {
+export async function apiGetAccountLogData<T, U extends Record<string, unknown>>(data: U) {
     return ApiService.fetchData<T>({
         url: '/account/log',
         method: 'post',

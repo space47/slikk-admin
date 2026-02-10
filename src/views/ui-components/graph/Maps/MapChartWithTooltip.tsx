@@ -6,17 +6,9 @@ import type { Dispatch, SetStateAction } from 'react'
 
 const geoUrl = '/data/features.json'
 
-const MapChart = ({
-    setTooltipContent,
-}: {
-    setTooltipContent: Dispatch<SetStateAction<string>>
-}) => {
+const MapChart = ({ setTooltipContent }: { setTooltipContent: Dispatch<SetStateAction<string>> }) => {
     return (
-        <ComposableMap
-            data-tip=""
-            height={200}
-            projectionConfig={{ scale: 80 }}
-        >
+        <ComposableMap data-tip="" height={200} projectionConfig={{ scale: 80 }}>
             <Geographies geography={geoUrl}>
                 {({ geographies }) =>
                     geographies.map((geo) => (

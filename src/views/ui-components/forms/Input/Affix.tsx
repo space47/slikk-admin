@@ -6,10 +6,7 @@ const Affix = () => {
     return (
         <div>
             <div className="mb-4">
-                <Input
-                    placeholder="Enter your name"
-                    prefix={<HiOutlineUser className="text-lg" />}
-                />
+                <Input placeholder="Enter your name" prefix={<HiOutlineUser className="text-lg" />} />
             </div>
             <div className="mb-4">
                 <Input

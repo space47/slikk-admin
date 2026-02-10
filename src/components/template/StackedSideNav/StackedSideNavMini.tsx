@@ -2,12 +2,7 @@ import { useEffect } from 'react'
 import Logo from '@/components/template/Logo'
 import Menu from '@/components/ui/Menu'
 import ScrollBar from '@/components/ui/ScrollBar'
-import {
-    NAV_MODE_DARK,
-    NAV_MODE_THEMED,
-    NAV_MODE_TRANSPARENT,
-    SIDE_NAV_CONTENT_GUTTER,
-} from '@/constants/theme.constant'
+import { NAV_MODE_DARK, NAV_MODE_THEMED, NAV_MODE_TRANSPARENT, SIDE_NAV_CONTENT_GUTTER } from '@/constants/theme.constant'
 import { NAV_ITEM_TYPE_ITEM } from '@/constants/navigation.constant'
 import AuthorityCheck from '@/components/shared/AuthorityCheck'
 import navigationConfig from '@/configs/navigation.config'
@@ -39,17 +34,7 @@ interface StackedSideNavMiniProps extends CommonProps {
 }
 
 const StackedSideNavMini = (props: StackedSideNavMiniProps) => {
-    const {
-        navMode,
-        onChange,
-        routeKey,
-        activeKeys,
-        onSetActiveKey,
-        userAuthority,
-        mode,
-        direction,
-        ...rest
-    } = props
+    const { navMode, onChange, routeKey, activeKeys, onSetActiveKey, userAuthority, mode, direction, ...rest } = props
 
     const { includedRouteTree } = useMenuActive(navigationConfig, routeKey)
 
@@ -65,12 +50,7 @@ const StackedSideNavMini = (props: StackedSideNavMiniProps) => {
         return navMode
     }
 
-    const handleMenuItemSelect = ({
-        key,
-        title,
-        menu,
-        translateKey,
-    }: SelectedMenuItem) => {
+    const handleMenuItemSelect = ({ key, title, menu, translateKey }: SelectedMenuItem) => {
         onChange({ title, menu, translateKey })
         onSetActiveKey([key as string])
     }
@@ -81,10 +61,7 @@ const StackedSideNavMini = (props: StackedSideNavMiniProps) => {
     }
 
     useEffect(() => {
-        if (
-            includedRouteTree.type !== NAV_ITEM_TYPE_ITEM &&
-            !isEmpty(includedRouteTree)
-        ) {
+        if (includedRouteTree.type !== NAV_ITEM_TYPE_ITEM && !isEmpty(includedRouteTree)) {
             onChange({
                 key: includedRouteTree.key,
                 title: includedRouteTree.title,
@@ -97,23 +74,11 @@ const StackedSideNavMini = (props: StackedSideNavMiniProps) => {
 
     return (
         <div {...rest}>
-            <Logo
-                mode={logoMode()}
-                type="streamline"
-                className={SIDE_NAV_CONTENT_GUTTER}
-            />
+            <Logo mode={logoMode()} type="streamline" className={SIDE_NAV_CONTENT_GUTTER} />
             <ScrollBar autoHide direction={direction}>
-                <Menu
-                    className="px-4 pb-4"
-                    variant={navMode}
-                    defaultActiveKeys={activeKeys || [includedRouteTree.key]}
-                >
+                <Menu className="px-4 pb-4" variant={navMode} defaultActiveKeys={activeKeys || [includedRouteTree.key]}>
                     {navigationConfig.map((nav) => (
-                        <AuthorityCheck
-                            key={nav.key}
-                            authority={nav.authority}
-                            userAuthority={userAuthority}
-                        >
+                        <AuthorityCheck key={nav.key} authority={nav.authority} userAuthority={userAuthority}>
                             {nav.subMenu && nav.subMenu.length > 0 ? (
                                 <Menu.MenuItem
                                     eventKey={nav.key}
@@ -127,9 +92,7 @@ const StackedSideNavMini = (props: StackedSideNavMiniProps) => {
                                         })
                                     }
                                 >
-                                    <div className="text-2xl">
-                                        {navigationIcon[nav.icon]}
-                                    </div>
+                                    <div className="text-2xl">{navigationIcon[nav.icon]}</div>
                                 </Menu.MenuItem>
                             ) : (
                                 <Link
@@ -141,13 +104,8 @@ const StackedSideNavMini = (props: StackedSideNavMiniProps) => {
                                         })
                                     }
                                 >
-                                    <Menu.MenuItem
-                                        eventKey={nav.key}
-                                        className="mb-2"
-                                    >
-                                        <div className="text-2xl">
-                                            {navigationIcon[nav.icon]}
-                                        </div>
+                                    <Menu.MenuItem eventKey={nav.key} className="mb-2">
+                                        <div className="text-2xl">{navigationIcon[nav.icon]}</div>
                                     </Menu.MenuItem>
                                 </Link>
                             )}

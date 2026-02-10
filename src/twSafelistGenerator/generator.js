@@ -10,26 +10,25 @@ function cartesian(array) {
 function deepKeys(object, separator = '.', prefix = '') {
     return Object.keys(object).reduce((result, key) => {
         if (Array.isArray(object[key])) {
-            return [...result, prefix + key];
+            return [...result, prefix + key]
         } else if (typeof object[key] === 'object' && object[key] !== null) {
-            return [...result, ...deepKeys(object[key], separator, prefix + key + separator)];
+            return [...result, ...deepKeys(object[key], separator, prefix + key + separator)]
         }
 
-        return [...result, prefix + key];
-  }, []);
+        return [...result, prefix + key]
+    }, [])
 }
 
-const extractTokens = pattern =>
-    pattern.split(/(?={[^}]+})|(?<={[^}]+})/)
+const extractTokens = (pattern) => pattern.split(/(?={[^}]+})|(?<={[^}]+})/)
 
-const expandTokens = theme => tokens => {
-    return tokens.map(token => {
-        if(token.startsWith('{')) {
+const expandTokens = (theme) => (tokens) => {
+    return tokens.map((token) => {
+        if (token.startsWith('{')) {
             const cleanToken = token.replace(/{|}/g, '')
-            if(cleanToken.includes('.')) {
+            if (cleanToken.includes('.')) {
                 const color = cleanToken.split('.')[1]
                 const colorToken = {
-                    [color]: theme(cleanToken, {})
+                    [color]: theme(cleanToken, {}),
                 }
                 return deepKeys(colorToken, '-')
             }
@@ -39,17 +38,13 @@ const expandTokens = theme => tokens => {
         }
     })
 }
-    
 
-const mapToClasses = expanded =>
-    expanded.map(values =>
-        values.join('').replace('-DEFAULT', ''))
+const mapToClasses = (expanded) => expanded.map((values) => values.join('').replace('-DEFAULT', ''))
 
-module.exports = theme => patterns => {
-    return patterns                       // ["text-{gray}", …]
-        .map(extractTokens)        // [["text", "{gray}"], …]
-        .map(expandTokens(theme))  // [[["text"], ["gray-100", "gray-200",…]], …]
-        .map(cartesian)            // [[["text", "gray-100"], ["text", "gray-200"], …], …]
-        .flatMap(mapToClasses)     // ["text-gray-100", "text-gray-200",…]
+module.exports = (theme) => (patterns) => {
+    return patterns // ["text-{gray}", …]
+        .map(extractTokens) // [["text", "{gray}"], …]
+        .map(expandTokens(theme)) // [[["text"], ["gray-100", "gray-200",…]], …]
+        .map(cartesian) // [[["text", "gray-100"], ["text", "gray-200"], …], …]
+        .flatMap(mapToClasses) // ["text-gray-100", "text-gray-200",…]
 }
-    

@@ -5,9 +5,7 @@ import StepItem from './StepItem'
 export type { StepsProps } from './Steps'
 export type { StepItemProps } from './StepItem'
 
-type CompoundedComponent = ForwardRefExoticComponent<
-    StepsProps & RefAttributes<HTMLDivElement>
-> & {
+type CompoundedComponent = ForwardRefExoticComponent<StepsProps & RefAttributes<HTMLDivElement>> & {
     Item: typeof StepItem
 }
 

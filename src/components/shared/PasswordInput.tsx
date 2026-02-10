@@ -24,15 +24,8 @@ const PasswordInput = (props: PasswordInputProps) => {
             {...rest}
             type={pwInputType}
             suffix={
-                <span
-                    className="cursor-pointer text-xl"
-                    onClick={onPasswordVisibleClick}
-                >
-                    {pwInputType === 'password' ? (
-                        <HiOutlineEyeOff />
-                    ) : (
-                        <HiOutlineEye />
-                    )}
+                <span className="cursor-pointer text-xl" onClick={onPasswordVisibleClick}>
+                    {pwInputType === 'password' ? <HiOutlineEyeOff /> : <HiOutlineEye />}
                 </span>
             }
         />

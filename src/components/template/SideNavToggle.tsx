@@ -5,9 +5,7 @@ import NavToggle from '@/components/shared/NavToggle'
 import type { CommonProps } from '@/@types/common'
 
 const _SideNavToggle = ({ className }: CommonProps) => {
-    const sideNavCollapse = useAppSelector(
-        (state) => state.theme.layout.sideNavCollapse
-    )
+    const sideNavCollapse = useAppSelector((state) => state.theme.layout.sideNavCollapse)
     const dispatch = useAppDispatch()
 
     const { larger } = useResponsive()

@@ -1,9 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import {
-    apiGetSalesProduct,
-    apiPutSalesProduct,
-    apiDeleteSalesProducts,
-} from '@/services/SalesService'
+import { apiGetSalesProduct, apiPutSalesProduct, apiDeleteSalesProducts } from '@/services/SalesService'
 
 type ProductData = {
     id?: string
@@ -37,27 +33,17 @@ type GetSalesProductResponse = ProductData
 
 export const SLICE_NAME = 'salesProductEdit'
 
-export const getProduct = createAsyncThunk(
-    SLICE_NAME + '/getProducts',
-    async (data: { id: string }) => {
-        const response = await apiGetSalesProduct<
-            GetSalesProductResponse,
-            { id: string }
-        >(data)
-        return response.data
-    }
-)
+export const getProduct = createAsyncThunk(SLICE_NAME + '/getProducts', async (data: { id: string }) => {
+    const response = await apiGetSalesProduct<GetSalesProductResponse, { id: string }>(data)
+    return response.data
+})
 
-export const updateProduct = async <T, U extends Record<string, unknown>>(
-    data: U
-) => {
+export const updateProduct = async <T, U extends Record<string, unknown>>(data: U) => {
     const response = await apiPutSalesProduct<T, U>(data)
     return response.data
 }
 
-export const deleteProduct = async <T, U extends Record<string, unknown>>(
-    data: U
-) => {
+export const deleteProduct = async <T, U extends Record<string, unknown>>(data: U) => {
     const response = await apiDeleteSalesProducts<T, U>(data)
     return response.data
 }

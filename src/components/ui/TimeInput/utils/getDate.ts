@@ -1,13 +1,6 @@
 import dayjs from 'dayjs'
 
-export function getDate(
-    hours: string,
-    minutes: string,
-    seconds: string,
-    format: '12' | '24',
-    pmLabel: string,
-    amPm?: string
-) {
+export function getDate(hours: string, minutes: string, seconds: string, format: '12' | '24', pmLabel: string, amPm?: string) {
     const date = dayjs()
     let _hours = parseInt(hours, 10)
     const _minutes = parseInt(minutes, 10)

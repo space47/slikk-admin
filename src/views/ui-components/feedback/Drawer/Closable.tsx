@@ -18,13 +18,7 @@ const Closable = () => {
     return (
         <div>
             <Button onClick={() => openDrawer()}>Open Drawer</Button>
-            <Drawer
-                title="Drawer Title"
-                isOpen={isOpen}
-                closable={false}
-                onClose={onDrawerClose}
-                onRequestClose={onDrawerClose}
-            >
+            <Drawer title="Drawer Title" isOpen={isOpen} closable={false} onClose={onDrawerClose} onRequestClose={onDrawerClose}>
                 Drawer Content
             </Drawer>
         </div>

@@ -12,15 +12,7 @@ export interface SkeletonProps extends CommonProps {
 }
 
 const Skeleton = forwardRef<ElementType, SkeletonProps>((props, ref) => {
-    const {
-        animation = true,
-        asElement: Component = 'span',
-        className,
-        height,
-        style,
-        variant = 'block',
-        width,
-    } = props
+    const { animation = true, asElement: Component = 'span', className, height, style, variant = 'block', width } = props
 
     return (
         <Component
@@ -30,7 +22,7 @@ const Skeleton = forwardRef<ElementType, SkeletonProps>((props, ref) => {
                 variant === 'circle' && 'skeleton-circle',
                 variant === 'block' && 'skeleton-block',
                 animation && 'animate-pulse',
-                className
+                className,
             )}
             style={{
                 width,

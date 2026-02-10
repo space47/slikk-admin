@@ -13,10 +13,7 @@ const Content = () => {
                 <Switcher checkedContent="a" unCheckedContent="b" />
             </div>
             <div className="mb-4">
-                <Switcher
-                    unCheckedContent={withIcon(<RiMoonClearLine />)}
-                    checkedContent={withIcon(<RiSunLine />)}
-                />
+                <Switcher unCheckedContent={withIcon(<RiMoonClearLine />)} checkedContent={withIcon(<RiSunLine />)} />
             </div>
         </div>
     )

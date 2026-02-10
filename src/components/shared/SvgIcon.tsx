@@ -6,11 +6,7 @@ const SvgIcon = forwardRef<HTMLSpanElement, CommonProps>((props, ref) => {
     const { children, className, ...rest } = props
 
     return (
-        <span
-            ref={ref}
-            className={classNames('inline-flex', className)}
-            {...rest}
-        >
+        <span ref={ref} className={classNames('inline-flex', className)} {...rest}>
             {children}
         </span>
     )

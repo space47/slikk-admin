@@ -31,10 +31,7 @@ const ForgotPasswordForm = (props: ForgotPasswordFormProps) => {
 
     const [message, setMessage] = useTimeOutMessage()
 
-    const onSendMail = async (
-        values: ForgotPasswordFormSchema,
-        setSubmitting: (isSubmitting: boolean) => void
-    ) => {
+    const onSendMail = async (values: ForgotPasswordFormSchema, setSubmitting: (isSubmitting: boolean) => void) => {
         setSubmitting(true)
         try {
             const resp = await apiForgotPassword(values)
@@ -43,10 +40,7 @@ const ForgotPasswordForm = (props: ForgotPasswordFormProps) => {
                 setEmailSent(true)
             }
         } catch (errors) {
-            setMessage(
-                (errors as AxiosError<{ message: string }>)?.response?.data
-                    ?.message || (errors as Error).toString()
-            )
+            setMessage((errors as AxiosError<{ message: string }>)?.response?.data?.message || (errors as Error).toString())
             setSubmitting(false)
         }
     }
@@ -57,18 +51,12 @@ const ForgotPasswordForm = (props: ForgotPasswordFormProps) => {
                 {emailSent ? (
                     <>
                         <h3 className="mb-1">Check your email</h3>
-                        <p>
-                            We have sent a password recovery instruction to your
-                            email
-                        </p>
+                        <p>We have sent a password recovery instruction to your email</p>
                     </>
                 ) : (
                     <>
                         <h3 className="mb-1">Forgot Password</h3>
-                        <p>
-                            Please enter your email address to receive a
-                            verification code
-                        </p>
+                        <p>Please enter your email address to receive a verification code</p>
                     </>
                 )}
             </div>
@@ -94,25 +82,11 @@ const ForgotPasswordForm = (props: ForgotPasswordFormProps) => {
                     <Form>
                         <FormContainer>
                             <div className={emailSent ? 'hidden' : ''}>
-                                <FormItem
-                                    invalid={errors.email && touched.email}
-                                    errorMessage={errors.email}
-                                >
-                                    <Field
-                                        type="email"
-                                        autoComplete="off"
-                                        name="email"
-                                        placeholder="Email"
-                                        component={Input}
-                                    />
+                                <FormItem invalid={errors.email && touched.email} errorMessage={errors.email}>
+                                    <Field type="email" autoComplete="off" name="email" placeholder="Email" component={Input} />
                                 </FormItem>
                             </div>
-                            <Button
-                                block
-                                loading={isSubmitting}
-                                variant="solid"
-                                type="submit"
-                            >
+                            <Button block loading={isSubmitting} variant="solid" type="submit">
                                 {emailSent ? 'Resend Email' : 'Send Email'}
                             </Button>
                             <div className="mt-4 text-center">

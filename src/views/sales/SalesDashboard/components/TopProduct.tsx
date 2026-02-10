@@ -2,12 +2,7 @@ import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import Table from '@/components/ui/Table'
 import Avatar from '@/components/ui/Avatar'
-import {
-    useReactTable,
-    getCoreRowModel,
-    flexRender,
-    createColumnHelper,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, flexRender, createColumnHelper } from '@tanstack/react-table'
 import { FiPackage } from 'react-icons/fi'
 
 type Product = {
@@ -25,11 +20,7 @@ type TopProductProps = {
 const { Tr, Td, TBody, THead, Th } = Table
 
 const ProductColumn = ({ row }: { row: Product }) => {
-    const avatar = row.img ? (
-        <Avatar src={row.img} />
-    ) : (
-        <Avatar icon={<FiPackage />} />
-    )
+    const avatar = row.img ? <Avatar src={row.img} /> : <Avatar icon={<FiPackage />} />
 
     return (
         <div className="flex items-center gap-2">
@@ -73,14 +64,8 @@ const TopProduct = ({ data = [], className }: TopProductProps) => {
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => {
                                 return (
-                                    <Th
-                                        key={header.id}
-                                        colSpan={header.colSpan}
-                                    >
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
+                                    <Th key={header.id} colSpan={header.colSpan}>
+                                        {flexRender(header.column.columnDef.header, header.getContext())}
                                     </Th>
                                 )
                             })}
@@ -92,14 +77,7 @@ const TopProduct = ({ data = [], className }: TopProductProps) => {
                         return (
                             <Tr key={row.id}>
                                 {row.getVisibleCells().map((cell) => {
-                                    return (
-                                        <Td key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext()
-                                            )}
-                                        </Td>
-                                    )
+                                    return <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                                 })}
                             </Tr>
                         )

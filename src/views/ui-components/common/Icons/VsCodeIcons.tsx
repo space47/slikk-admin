@@ -1,15 +1,5 @@
 import IconWrapper from './IconWrapper'
-import {
-    VscAccount,
-    VscBellDot,
-    VscBold,
-    VscDebug,
-    VscGear,
-    VscHome,
-    VscMagnet,
-    VscPaintcan,
-    VscSourceControl,
-} from 'react-icons/vsc'
+import { VscAccount, VscBellDot, VscBold, VscDebug, VscGear, VscHome, VscMagnet, VscPaintcan, VscSourceControl } from 'react-icons/vsc'
 
 const renderIcon = [
     { render: () => <VscAccount /> },
@@ -27,9 +17,7 @@ const VsCodeIcons = () => {
     return (
         <div className="grid grid-cols-3 gap-y-6 text-4xl text-center heading-text">
             {renderIcon.map((icon, index) => (
-                <IconWrapper key={`vsCodeIcons-${index}`}>
-                    {icon.render()}
-                </IconWrapper>
+                <IconWrapper key={`vsCodeIcons-${index}`}>{icon.render()}</IconWrapper>
             ))}
         </div>
     )

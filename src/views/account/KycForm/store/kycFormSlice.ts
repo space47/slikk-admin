@@ -183,7 +183,6 @@ const kycFormSlice = createSlice({
     },
 })
 
-export const { setFormData, setStepStatus, setCurrentStep } =
-    kycFormSlice.actions
+export const { setFormData, setStepStatus, setCurrentStep } = kycFormSlice.actions
 
 export default kycFormSlice.reducer

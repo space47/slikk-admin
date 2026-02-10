@@ -14,26 +14,10 @@ const CustomInfo = () => {
     return (
         <div className="md:flex items-center">
             <div style={{ minWidth: '50%' }} className="md:mb-0 mb-4 mx-6">
-                <Progress
-                    color="red-500"
-                    percent={60}
-                    className="mb-4"
-                    customInfo={<HiXCircle className="text-red-500 text-xl" />}
-                />
-                <Progress
-                    color="green-500"
-                    percent={100}
-                    customInfo={
-                        <HiCheckCircle className="text-emerald-500 text-xl" />
-                    }
-                />
+                <Progress color="red-500" percent={60} className="mb-4" customInfo={<HiXCircle className="text-red-500 text-xl" />} />
+                <Progress color="green-500" percent={100} customInfo={<HiCheckCircle className="text-emerald-500 text-xl" />} />
             </div>
-            <Progress
-                variant="circle"
-                percent={40}
-                width={150}
-                customInfo={<CircleCustomInfo percent={40} />}
-            />
+            <Progress variant="circle" percent={40} width={150} customInfo={<CircleCustomInfo percent={40} />} />
         </div>
     )
 }

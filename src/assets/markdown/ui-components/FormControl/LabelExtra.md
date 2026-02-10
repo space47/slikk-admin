@@ -30,20 +30,10 @@ const LabelExtra = () => {
                 <Form>
                     <FormContainer>
                         <FormItem label="Name" extra={tip}>
-                            <Field
-                                type="text"
-                                name="fieldA"
-                                placeholder="Please Input"
-                                component={Input}
-                            />
+                            <Field type="text" name="fieldA" placeholder="Please Input" component={Input} />
                         </FormItem>
                         <FormItem label="Email" extra={optional}>
-                            <Field
-                                type="text"
-                                name="fieldB"
-                                placeholder="Please Input"
-                                component={Input}
-                            />
+                            <Field type="text" name="fieldB" placeholder="Please Input" component={Input} />
                         </FormItem>
                         <FormItem>
                             <Button type="submit">Submit</Button>

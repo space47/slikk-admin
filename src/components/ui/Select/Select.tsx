@@ -13,11 +13,7 @@ import { HiCheck, HiChevronDown, HiX } from 'react-icons/hi'
 import Spinner from '../Spinner/Spinner'
 import { CONTROL_SIZES } from '../utils/constants'
 import type { CommonProps, TypeAttributes } from '../@types/common'
-import type {
-    ControlProps,
-    Props as ReactSelectProps,
-    GroupBase,
-} from 'react-select'
+import type { ControlProps, Props as ReactSelectProps, GroupBase } from 'react-select'
 import type { AsyncProps } from 'react-select/async'
 import type { CreatableProps } from 'react-select/creatable'
 import type { ForwardedRef } from 'react'
@@ -31,31 +27,15 @@ interface DefaultOptionProps {
     isFocused: boolean
 }
 
-const DefaultOption = ({
-    innerProps,
-    label,
-    selectProps,
-    isSelected,
-    isDisabled,
-    isFocused,
-}: DefaultOptionProps) => {
+const DefaultOption = ({ innerProps, label, selectProps, isSelected, isDisabled, isFocused }: DefaultOptionProps) => {
     const { themeColor } = selectProps
     return (
         <div
-            className={classNames(
-                'select-option',
-                isSelected && 'selected',
-                isDisabled && 'disabled',
-                isFocused && 'focused'
-            )}
+            className={classNames('select-option', isSelected && 'selected', isDisabled && 'disabled', isFocused && 'focused')}
             {...innerProps}
         >
             <span className="ml-2">{label}</span>
-            {isSelected && (
-                <HiCheck
-                    className={`text-${themeColor} dark:text-white text-xl`}
-                />
-            )}
+            {isSelected && <HiCheck className={`text-${themeColor} dark:text-white text-xl`} />}
         </div>
     )
 }
@@ -73,9 +53,7 @@ interface DefaultClearIndicatorProps {
     ref: Ref<HTMLElement>
 }
 
-const DefaultClearIndicator = ({
-    innerProps: { ref, ...restInnerProps },
-}: DefaultClearIndicatorProps) => {
+const DefaultClearIndicator = ({ innerProps: { ref, ...restInnerProps } }: DefaultClearIndicatorProps) => {
     return (
         <div {...restInnerProps} ref={ref}>
             <div className="select-clear-indicator">
@@ -89,20 +67,13 @@ interface DefaultLoadingIndicatorProps {
     selectProps: { themeColor?: string }
 }
 
-const DefaultLoadingIndicator = ({
-    selectProps,
-}: DefaultLoadingIndicatorProps) => {
+const DefaultLoadingIndicator = ({ selectProps }: DefaultLoadingIndicatorProps) => {
     const { themeColor } = selectProps
-    return (
-        <Spinner className={`select-loading-indicatior text-${themeColor}`} />
-    )
+    return <Spinner className={`select-loading-indicatior text-${themeColor}`} />
 }
 
-export interface SelectProps<
-    Option,
-    IsMulti extends boolean = false,
-    Group extends GroupBase<Option> = GroupBase<Option>
-> extends CommonProps,
+export interface SelectProps<Option, IsMulti extends boolean = false, Group extends GroupBase<Option> = GroupBase<Option>>
+    extends CommonProps,
         ReactSelectProps<Option, IsMulti, Group>,
         AsyncProps<Option, IsMulti, Group>,
         CreatableProps<Option, IsMulti, Group> {
@@ -114,24 +85,11 @@ export interface SelectProps<
     componentAs?: ReactSelect | CreatableSelect | AsyncSelect
 }
 
-function _Select<
-    Option,
-    IsMulti extends boolean = false,
-    Group extends GroupBase<Option> = GroupBase<Option>
->(
+function _Select<Option, IsMulti extends boolean = false, Group extends GroupBase<Option> = GroupBase<Option>>(
     props: SelectProps<Option, IsMulti, Group>,
-    ref: ForwardedRef<ReactSelect | CreatableSelect | AsyncSelect>
+    ref: ForwardedRef<ReactSelect | CreatableSelect | AsyncSelect>,
 ) {
-    const {
-        size,
-        style,
-        className,
-        form,
-        field,
-        components,
-        componentAs: Component = ReactSelect,
-        ...rest
-    } = props
+    const { size, style, className, form, field, components, componentAs: Component = ReactSelect, ...rest } = props
 
     const { themeColor, controlSize, primaryColorLevel, mode } = useConfig()
     const formControlSize = useForm()?.size
@@ -186,9 +144,7 @@ function _Select<
                         },
                         boxShadow: getBoxShadow(state),
                         borderRadius: tw`rounded-md`.borderRadius,
-                        ...(isInvalid
-                            ? { borderColor: twColor.red['500'] }
-                            : {}),
+                        ...(isInvalid ? { borderColor: twColor.red['500'] } : {}),
                     }
                 },
                 input: (css) => {
@@ -208,19 +164,10 @@ function _Select<
                 ...theme,
                 colors: {
                     ...theme.colors,
-                    neutral20:
-                        mode === 'dark'
-                            ? twColor.gray['600']
-                            : twColor.gray['300'],
-                    neutral30:
-                        mode === 'dark'
-                            ? twColor.gray['600']
-                            : twColor.gray['300'],
+                    neutral20: mode === 'dark' ? twColor.gray['600'] : twColor.gray['300'],
+                    neutral30: mode === 'dark' ? twColor.gray['600'] : twColor.gray['300'],
                     neutral80: twColor.gray['700'],
-                    neutral10:
-                        mode === 'dark'
-                            ? twColor.gray['600']
-                            : twColor.gray['300'],
+                    neutral10: mode === 'dark' ? twColor.gray['600'] : twColor.gray['300'],
                     primary25: twColor[themeColor]['50'],
                     primary50: twColor[themeColor]['100'],
                     primary: twColor[themeColor][primaryColorLevel],
@@ -241,14 +188,10 @@ function _Select<
     )
 }
 
-const Select = forwardRef(_Select) as <
-    Option,
-    IsMulti extends boolean = false,
-    Group extends GroupBase<Option> = GroupBase<Option>
->(
+const Select = forwardRef(_Select) as <Option, IsMulti extends boolean = false, Group extends GroupBase<Option> = GroupBase<Option>>(
     props: SelectProps<Option, IsMulti, Group> & {
         ref?: ForwardedRef<ReactSelect | CreatableSelect | AsyncSelect>
-    }
+    },
 ) => ReturnType<typeof _Select>
 
 export default Select

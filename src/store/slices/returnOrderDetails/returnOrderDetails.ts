@@ -14,33 +14,28 @@ const initialState: ReturnOrderState = {
     message: '',
 }
 
-export const fetchReturnOrders = createAsyncThunk(
-    'returnOrders/fetchReturnOrders',
-    async (id: any, { dispatch }) => {
-        dispatch({ type: 'getAllReturnOrdersRequest' })
+export const fetchReturnOrders = createAsyncThunk('returnOrders/fetchReturnOrders', async (id: any, { dispatch }) => {
+    dispatch({ type: 'getAllReturnOrdersRequest' })
 
-        try {
-            const response = await axioisInstance.get(
-                `merchant/return_order/${id}`,
-            )
-            dispatch(
-                getAllReturnOrdersSuccess({
-                    returnOrders: response.data.data,
-                    loading: false,
-                    message: 'Success',
-                }),
-            )
-        } catch (error: any) {
-            dispatch(
-                getAllReturnOrdersFailure({
-                    returnOrders: null,
-                    loading: false,
-                    message: error.message || 'Failure',
-                }),
-            )
-        }
-    },
-)
+    try {
+        const response = await axioisInstance.get(`merchant/return_order/${id}`)
+        dispatch(
+            getAllReturnOrdersSuccess({
+                returnOrders: response.data.data,
+                loading: false,
+                message: 'Success',
+            }),
+        )
+    } catch (error: any) {
+        dispatch(
+            getAllReturnOrdersFailure({
+                returnOrders: null,
+                loading: false,
+                message: error.message || 'Failure',
+            }),
+        )
+    }
+})
 
 const returnOrdersSlice = createSlice({
     name: 'returnOrder',
@@ -52,13 +47,10 @@ const returnOrdersSlice = createSlice({
                 state.loading = true
             })
             .addCase(getAllReturnOrdersSuccess, (state, action) => {
-                ;(state.loading = false),
-                    (state.returnOrders = action.payload.returnOrders),
-                    (state.message = action.payload.message)
+                ;((state.loading = false), (state.returnOrders = action.payload.returnOrders), (state.message = action.payload.message))
             })
             .addCase(getAllReturnOrdersFailure, (state, action) => {
-                ;(state.loading = false),
-                    (state.returnOrders = action.payload.returnOrders)
+                ;((state.loading = false), (state.returnOrders = action.payload.returnOrders))
                 state.message = action.payload.message
             })
     },

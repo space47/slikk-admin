@@ -15,16 +15,7 @@ export interface YearTableProps extends CommonProps {
 }
 
 const YearTable = (props: YearTableProps) => {
-    const {
-        className,
-        value,
-        onChange,
-        minYear,
-        maxYear,
-        preventFocus,
-        yearLabelFormat = 'YYYY',
-        ...rest
-    } = props
+    const { className, value, onChange, minYear, maxYear, preventFocus, yearLabelFormat = 'YYYY', ...rest } = props
 
     const { themeColor, primaryColorLevel } = useConfig()
 
@@ -32,8 +23,7 @@ const YearTable = (props: YearTableProps) => {
     const range = getDecadeRange(decade)
 
     const years = range.map((year) => {
-        const disabled =
-            year < (minYear as number) || year > (maxYear as number)
+        const disabled = year < (minYear as number) || year > (maxYear as number)
 
         const active = year === value
 
@@ -43,11 +33,9 @@ const YearTable = (props: YearTableProps) => {
                 disabled={disabled}
                 className={classNames(
                     'year-picker-cell',
-                    active &&
-                        !disabled &&
-                        `bg-${themeColor}-${primaryColorLevel} text-white year-picker-cell-active`,
+                    active && !disabled && `bg-${themeColor}-${primaryColorLevel} text-white year-picker-cell-active`,
                     !active && !disabled && 'hover:bg-gray-100',
-                    disabled && 'year-picker-cell-disabled'
+                    disabled && 'year-picker-cell-disabled',
                 )}
                 onClick={() => onChange(year)}
                 onMouseDown={(event) => preventFocus && event.preventDefault()}
@@ -62,18 +50,9 @@ const YearTable = (props: YearTableProps) => {
         <div className={classNames('year-picker', className)} {...rest}>
             <Header
                 nextLevelDisabled
-                label={`${formatYear(range[0], yearLabelFormat)} - ${formatYear(
-                    range[range.length - 1],
-                    yearLabelFormat
-                )}`}
-                hasPrevious={
-                    typeof minYear === 'number' ? minYear < range[0] : true
-                }
-                hasNext={
-                    typeof maxYear === 'number'
-                        ? maxYear > range[range.length - 1]
-                        : true
-                }
+                label={`${formatYear(range[0], yearLabelFormat)} - ${formatYear(range[range.length - 1], yearLabelFormat)}`}
+                hasPrevious={typeof minYear === 'number' ? minYear < range[0] : true}
+                hasNext={typeof maxYear === 'number' ? maxYear > range[range.length - 1] : true}
                 nextLabel={'Next decade'}
                 previousLabel={'Previous decade'}
                 preventFocus={preventFocus}

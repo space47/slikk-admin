@@ -19,9 +19,7 @@ function deepParseJson(jsonString: Json): Json {
     } else if (typeof jsonString === 'object' && jsonString !== null) {
         return Object.keys(jsonString).reduce<JsonObject>((obj, key) => {
             const val = jsonString[key]
-            obj[key] = isNumString(val as string)
-                ? val
-                : deepParseJson(val as number)
+            obj[key] = isNumString(val as string) ? val : deepParseJson(val as number)
             return obj
         }, {})
     } else {

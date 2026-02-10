@@ -18,48 +18,31 @@ import { injectReducer } from '@/store'
 
 injectReducer('accountDetailForm', reducer)
 
-const PersonalInformation = lazy(
-    () => import('./components/PersonalInformation')
-)
+const PersonalInformation = lazy(() => import('./components/PersonalInformation'))
 const Identification = lazy(() => import('./components/Identification'))
 const AddressInfomation = lazy(() => import('./components/AddressInfomation'))
-const FinancialInformation = lazy(
-    () => import('./components/FinancialInformation')
-)
+const FinancialInformation = lazy(() => import('./components/FinancialInformation'))
 const AccountReview = lazy(() => import('./components/AccountReview'))
 
 const DetailForm = () => {
     const dispatch = useAppDispatch()
-    const stepStatus = useAppSelector(
-        (state) => state.accountDetailForm.data.stepStatus
-    )
-    const currentStep = useAppSelector(
-        (state) => state.accountDetailForm.data.currentStep
-    )
-    const formData = useAppSelector(
-        (state) => state.accountDetailForm.data.formData
-    )
+    const stepStatus = useAppSelector((state) => state.accountDetailForm.data.stepStatus)
+    const currentStep = useAppSelector((state) => state.accountDetailForm.data.currentStep)
+    const formData = useAppSelector((state) => state.accountDetailForm.data.formData)
 
     useEffect(() => {
         dispatch(getForm())
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    const handleNextChange = (
-        values:
-            | PersonalInformationType
-            | IdentificationType
-            | Address
-            | FinancialInformationType,
-        name: string
-    ) => {
+    const handleNextChange = (values: PersonalInformationType | IdentificationType | Address | FinancialInformationType, name: string) => {
         const nextStep = currentStep + 1
         dispatch(setFormData({ [name]: values }))
         dispatch(
             setStepStatus({
                 [currentStep]: { status: 'complete' },
                 [nextStep]: { status: 'current' },
-            })
+            }),
         )
         dispatch(setCurrentStep(nextStep))
     }
@@ -69,10 +52,7 @@ const DetailForm = () => {
         dispatch(setCurrentStep(previousStep))
     }
 
-    const currentStepStatus = useMemo(
-        () => stepStatus[currentStep].status,
-        [stepStatus, currentStep]
-    )
+    const currentStepStatus = useMemo(() => stepStatus[currentStep].status, [stepStatus, currentStep])
 
     return (
         <Container className="h-full">
@@ -80,20 +60,10 @@ const DetailForm = () => {
                 <div className="grid lg:grid-cols-5 xl:grid-cols-3 2xl:grid-cols-5 gap-4 h-full">
                     {currentStep !== 4 && (
                         <div className="2xl:col-span-1 xl:col-span-1 lg:col-span-2">
-                            <FormStep
-                                currentStep={currentStep}
-                                currentStepStatus={currentStepStatus}
-                                stepStatus={stepStatus}
-                            />
+                            <FormStep currentStep={currentStep} currentStepStatus={currentStepStatus} stepStatus={stepStatus} />
                         </div>
                     )}
-                    <div
-                        className={
-                            currentStep !== 4
-                                ? '2xl:col-span-4 lg:col-span-3 xl:col-span-2'
-                                : 'lg:col-span-5'
-                        }
-                    >
+                    <div className={currentStep !== 4 ? '2xl:col-span-4 lg:col-span-3 xl:col-span-2' : 'lg:col-span-5'}>
                         <Suspense fallback={<></>}>
                             {currentStep === 0 && (
                                 <PersonalInformation

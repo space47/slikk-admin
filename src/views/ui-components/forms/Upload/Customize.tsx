@@ -20,14 +20,10 @@ const Customize = () => {
                             <FcImageFile />
                         </div>
                         <p className="font-semibold">
-                            <span className="text-gray-800 dark:text-white">
-                                Drop your image here, or{' '}
-                            </span>
+                            <span className="text-gray-800 dark:text-white">Drop your image here, or </span>
                             <span className="text-blue-500">browse</span>
                         </p>
-                        <p className="mt-1 opacity-60 dark:text-white">
-                            Support: jpeg, png, gif
-                        </p>
+                        <p className="mt-1 opacity-60 dark:text-white">Support: jpeg, png, gif</p>
                     </div>
                 </Upload>
             </div>

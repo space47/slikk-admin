@@ -10,15 +10,7 @@ import Loading from '@/components/shared/Loading'
 import Container from '@/components/shared/Container'
 import RichTextEditor from '@/components/shared/RichTextEditor'
 import IconText from '@/components/shared/IconText'
-import {
-    HiPencil,
-    HiClock,
-    HiCalendar,
-    HiTag,
-    HiTicket,
-    HiUserCircle,
-    HiLightningBolt,
-} from 'react-icons/hi'
+import { HiPencil, HiClock, HiCalendar, HiTag, HiTicket, HiUserCircle, HiLightningBolt } from 'react-icons/hi'
 import { apiGetScrumBoardtTicketDetail } from '@/services/ProjectService'
 import ReactHtmlParser from 'html-react-parser'
 import isLastChild from '@/utils/isLastChild'
@@ -90,19 +82,12 @@ const TimelineAssign = ({ timeline, ...rest }: TimelineAssignProps) => {
             {...rest}
         >
             <p className="my-1 flex items-center">
-                <span className="font-semibold text-gray-900 dark:text-gray-100">
-                    {timeline.name}
-                </span>
+                <span className="font-semibold text-gray-900 dark:text-gray-100">{timeline.name}</span>
                 <span className="mx-2">assigned </span>
                 {timeline.assignees?.map((assignee, index) => (
-                    <span
-                        key={assignee}
-                        className="font-semibold text-gray-900 dark:text-gray-100 mr-1 rtl:ml-1"
-                    >
+                    <span key={assignee} className="font-semibold text-gray-900 dark:text-gray-100 mr-1 rtl:ml-1">
                         {assignee}
-                        {!isLastChild(timeline.assignees || [], index) && (
-                            <span>,</span>
-                        )}
+                        {!isLastChild(timeline.assignees || [], index) && <span>,</span>}
                     </span>
                 ))}
                 <span>{timeline.time}</span>
@@ -113,15 +98,9 @@ const TimelineAssign = ({ timeline, ...rest }: TimelineAssignProps) => {
 
 const TimelineComment = ({ timeline, ...rest }: TimelineCommentProps) => {
     return (
-        <Timeline.Item
-            className="w-full"
-            media={<TimelineAvatar src={timeline.img} />}
-            {...rest}
-        >
+        <Timeline.Item className="w-full" media={<TimelineAvatar src={timeline.img} />} {...rest}>
             <p className="my-1 flex items-center">
-                <span className="font-semibold text-gray-900 dark:text-gray-100">
-                    {timeline.name}
-                </span>
+                <span className="font-semibold text-gray-900 dark:text-gray-100">{timeline.name}</span>
                 <span className="mx-2">added a comment </span>
                 <span>{timeline.time}</span>
             </p>
@@ -146,17 +125,10 @@ const TimelineTag = ({ timeline, ...rest }: TimelineTagProps) => {
             {...rest}
         >
             <div className="flex items-center">
-                <span className="font-semibold text-gray-900 dark:text-gray-100">
-                    {timeline.name}{' '}
-                </span>
+                <span className="font-semibold text-gray-900 dark:text-gray-100">{timeline.name} </span>
                 <span className="mx-2">added tags </span>
                 {timeline.labels?.map((label) => (
-                    <Tag
-                        key={label.title}
-                        prefix
-                        className="mr-2 rtl:ml-2 cursor-pointer"
-                        prefixClass={label.class}
-                    >
+                    <Tag key={label.title} prefix className="mr-2 rtl:ml-2 cursor-pointer" prefixClass={label.class}>
                         {label.title}
                     </Tag>
                 ))}
@@ -186,8 +158,7 @@ const Issue = () => {
 
     const fetchData = useCallback(async () => {
         setLoading(true)
-        const resp =
-            await apiGetScrumBoardtTicketDetail<GetScrumBoardtTicketDetailResponse>()
+        const resp = await apiGetScrumBoardtTicketDetail<GetScrumBoardtTicketDetailResponse>()
         setData(resp.data)
         setLoading(false)
     }, [])
@@ -242,9 +213,7 @@ const Issue = () => {
                         <AdaptableCard rightSideBorder bodyClass="p-5">
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                 <div>
-                                    <h3 className="mb-2 font-bold">
-                                        {data.title}
-                                    </h3>
+                                    <h3 className="mb-2 font-bold">{data.title}</h3>
                                     <p>
                                         {data.ticketId} created by
                                         <span className="font-semibold text-gray-900 dark:text-gray-100 mx-1 cursor-pointer">
@@ -254,19 +223,11 @@ const Issue = () => {
                                 </div>
                                 <div>
                                     {editMode ? (
-                                        <Button
-                                            block
-                                            variant="solid"
-                                            onClick={onEditComplete}
-                                        >
+                                        <Button block variant="solid" onClick={onEditComplete}>
                                             Done
                                         </Button>
                                     ) : (
-                                        <Button
-                                            block
-                                            icon={<HiPencil />}
-                                            onClick={onEditModeActive}
-                                        >
+                                        <Button block icon={<HiPencil />} onClick={onEditModeActive}>
                                             Edit
                                         </Button>
                                     )}
@@ -275,16 +236,9 @@ const Issue = () => {
                             <hr className="my-6" />
                             <div className="text-base">
                                 {editMode ? (
-                                    <RichTextEditor
-                                        value={data.description}
-                                        onChange={onEdit}
-                                    />
+                                    <RichTextEditor value={data.description} onChange={onEdit} />
                                 ) : (
-                                    <div className="prose dark:prose-invert max-w-none">
-                                        {ReactHtmlParser(
-                                            data.description || ''
-                                        )}
-                                    </div>
+                                    <div className="prose dark:prose-invert max-w-none">{ReactHtmlParser(data.description || '')}</div>
                                 )}
                             </div>
                             <div className="mt-12">
@@ -293,31 +247,18 @@ const Issue = () => {
                                 <Timeline>
                                     {data.activity?.map((item, index) => (
                                         <Fragment key={item.type + index}>
-                                            {getTimelineItem(
-                                                item,
-                                                isLastChild(
-                                                    data.activity || [],
-                                                    index
-                                                )
-                                            )}
+                                            {getTimelineItem(item, isLastChild(data.activity || [], index))}
                                         </Fragment>
                                     ))}
                                 </Timeline>
                                 <div className="mt-6 mb-3 flex flex-auto">
                                     <TimelineAvatar src="/img/avatars/thumb-1.jpg" />
                                     <div className="ml-4 rtl:mr-4 w-full">
-                                        <Input
-                                            ref={commentInput}
-                                            textArea
-                                            placeholder="Leave a comment"
-                                        />
+                                        <Input ref={commentInput} textArea placeholder="Leave a comment" />
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <Button
-                                        variant="solid"
-                                        onClick={() => submitComment()}
-                                    >
+                                    <Button variant="solid" onClick={() => submitComment()}>
                                         Comment
                                     </Button>
                                 </div>
@@ -327,79 +268,31 @@ const Issue = () => {
                     <div>
                         <AdaptableCard bodyClass="p-5">
                             <h4 className="mb-6">Details</h4>
-                            <IconText
-                                className="mb-4 text-emerald-500"
-                                icon={<HiClock className="text-lg" />}
-                            >
-                                <span className="font-semibold">
-                                    In Progress
-                                </span>
+                            <IconText className="mb-4 text-emerald-500" icon={<HiClock className="text-lg" />}>
+                                <span className="font-semibold">In Progress</span>
                             </IconText>
-                            <IconText
-                                className="mb-4"
-                                icon={<HiTag className="text-lg opacity-70" />}
-                            >
-                                <span className="font-semibold">
-                                    {data.underProject}
-                                </span>
+                            <IconText className="mb-4" icon={<HiTag className="text-lg opacity-70" />}>
+                                <span className="font-semibold">{data.underProject}</span>
                             </IconText>
-                            <IconText
-                                className="mb-4"
-                                icon={
-                                    <HiTicket className="text-lg opacity-70" />
-                                }
-                            >
-                                <span className="font-semibold cursor-pointer">
-                                    Linked tickets
-                                </span>
+                            <IconText className="mb-4" icon={<HiTicket className="text-lg opacity-70" />}>
+                                <span className="font-semibold cursor-pointer">Linked tickets</span>
                             </IconText>
-                            <IconText
-                                className="mb-4"
-                                icon={
-                                    <HiLightningBolt className="text-lg opacity-70" />
-                                }
-                            >
-                                <span className="font-semibold cursor-pointer">
-                                    5 story point
-                                </span>
+                            <IconText className="mb-4" icon={<HiLightningBolt className="text-lg opacity-70" />}>
+                                <span className="font-semibold cursor-pointer">5 story point</span>
                             </IconText>
-                            <IconText
-                                className="mb-4"
-                                icon={
-                                    <HiCalendar className="text-lg opacity-70" />
-                                }
-                            >
-                                <span className="font-semibold">
-                                    Created on {data.date}
-                                </span>
+                            <IconText className="mb-4" icon={<HiCalendar className="text-lg opacity-70" />}>
+                                <span className="font-semibold">Created on {data.date}</span>
                             </IconText>
                             <hr className="my-6" />
                             <p className="font-semibold mb-4">Assignees</p>
                             {data.assignees?.map((assignee) => (
-                                <IconText
-                                    key={assignee.id}
-                                    className="mb-4"
-                                    icon={
-                                        <Avatar
-                                            size={20}
-                                            shape="circle"
-                                            src={assignee.img}
-                                        />
-                                    }
-                                >
-                                    <span className="font-semibold text-gray-700 dark:text-gray-100">
-                                        {assignee.name}
-                                    </span>
+                                <IconText key={assignee.id} className="mb-4" icon={<Avatar size={20} shape="circle" src={assignee.img} />}>
+                                    <span className="font-semibold text-gray-700 dark:text-gray-100">{assignee.name}</span>
                                 </IconText>
                             ))}
                             <p className="font-semibold mb-4 mt-8">Tags</p>
                             {data.labels?.map((label) => (
-                                <Tag
-                                    key={label.title}
-                                    prefix
-                                    className="mr-2 rtl:ml-2 cursor-pointer"
-                                    prefixClass={label.class}
-                                >
+                                <Tag key={label.title} prefix className="mr-2 rtl:ml-2 cursor-pointer" prefixClass={label.class}>
                                     {label.title}
                                 </Tag>
                             ))}

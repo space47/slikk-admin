@@ -8,13 +8,7 @@ import FormRow from './FormRow'
 import { Field, Form, Formik } from 'formik'
 import isLastChild from '@/utils/isLastChild'
 import { HiMail, HiGlobeAlt, HiOutlineDeviceMobile } from 'react-icons/hi'
-import type {
-    FieldProps,
-    FormikTouched,
-    FormikErrors,
-    FieldInputProps,
-    FormikProps,
-} from 'formik'
+import type { FieldProps, FormikTouched, FormikErrors, FieldInputProps, FormikProps } from 'formik'
 
 type NotificationFormModel = {
     news: string[]
@@ -78,29 +72,15 @@ const Selector = ({ field, form, values, name }: SelectorProps) => {
             selectionType="multiple"
             onChange={(selected) => form.setFieldValue(field.name, selected)}
         >
-            <Segment.Item
-                className="flex items-center justify-center"
-                type="button"
-                value="email"
-            >
+            <Segment.Item className="flex items-center justify-center" type="button" value="email">
                 <HiMail className="text-xl" />
                 <span className="hidden sm:block ltr:ml-2 rtl:mr-2">Email</span>
             </Segment.Item>
-            <Segment.Item
-                className="flex items-center justify-center"
-                type="button"
-                value="browser"
-            >
+            <Segment.Item className="flex items-center justify-center" type="button" value="browser">
                 <HiGlobeAlt className="text-xl" />
-                <span className="hidden sm:block  ltr:ml-2 rtl:mr-2">
-                    Browser
-                </span>
+                <span className="hidden sm:block  ltr:ml-2 rtl:mr-2">Browser</span>
             </Segment.Item>
-            <Segment.Item
-                className="flex items-center justify-center"
-                type="button"
-                value="app"
-            >
+            <Segment.Item className="flex items-center justify-center" type="button" value="app">
                 <HiOutlineDeviceMobile className="text-xl" />
                 <span className="hidden sm:block  ltr:ml-2 rtl:mr-2">App</span>
             </Segment.Item>
@@ -120,16 +100,8 @@ const Rows = ({ rows, validators, values }: RowsProps) => {
                     border={!isLastChild(rows, index)}
                 >
                     <Field name={row.name}>
-                        {({
-                            field,
-                            form,
-                        }: FieldProps<NotificationFormModel>) => (
-                            <Selector
-                                field={field}
-                                form={form}
-                                values={values}
-                                name={row.name}
-                            />
+                        {({ field, form }: FieldProps<NotificationFormModel>) => (
+                            <Selector field={field} form={form} values={values} name={row.name} />
                         )}
                     </Field>
                 </FormRow>
@@ -152,19 +124,10 @@ const NotificationSetting = ({
         newOrder: [],
     },
 }: NotificationSettingProps) => {
-    const onFormSubmit = (
-        values: NotificationFormModel,
-        setSubmitting: (isSubmitting: boolean) => void
-    ) => {
-        toast.push(
-            <Notification
-                title={'Notification setting updated'}
-                type="success"
-            />,
-            {
-                placement: 'top-center',
-            }
-        )
+    const onFormSubmit = (values: NotificationFormModel, setSubmitting: (isSubmitting: boolean) => void) => {
+        toast.push(<Notification title={'Notification setting updated'} type="success" />, {
+            placement: 'top-center',
+        })
         setSubmitting(false)
         console.log(values)
     }
@@ -189,44 +152,24 @@ const NotificationSetting = ({
                                 title="General Notification"
                                 desc="Select how you'll be notified when the following changes occur."
                             />
-                            <Rows
-                                rows={generalNotificationForm}
-                                validators={validatorProps}
-                                values={values}
-                            />
+                            <Rows rows={generalNotificationForm} validators={validatorProps} values={values} />
                             <FormDesription
                                 className="mt-6"
                                 title="Project Notification"
                                 desc="Select how you'll be notified when the project related events happended."
                             />
-                            <Rows
-                                rows={projectNotificationForm}
-                                validators={validatorProps}
-                                values={values}
-                            />
+                            <Rows rows={projectNotificationForm} validators={validatorProps} values={values} />
                             <FormDesription
                                 className="mt-6"
                                 title="Sales Notification"
                                 desc="Select how you'll be notified when any products & order updated."
                             />
-                            <Rows
-                                rows={salesNotificationForm}
-                                validators={validatorProps}
-                                values={values}
-                            />
+                            <Rows rows={salesNotificationForm} validators={validatorProps} values={values} />
                             <div className="mt-4 ltr:text-right">
-                                <Button
-                                    className="ltr:mr-2 rtl:ml-2"
-                                    type="button"
-                                    onClick={() => resetForm()}
-                                >
+                                <Button className="ltr:mr-2 rtl:ml-2" type="button" onClick={() => resetForm()}>
                                     Reset
                                 </Button>
-                                <Button
-                                    variant="solid"
-                                    loading={isSubmitting}
-                                    type="submit"
-                                >
+                                <Button variant="solid" loading={isSubmitting} type="submit">
                                     {isSubmitting ? 'Updating' : 'Update'}
                                 </Button>
                             </div>

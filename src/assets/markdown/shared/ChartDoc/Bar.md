@@ -13,15 +13,7 @@ const Bar = () => {
                 data: [35, 41, 62, 42, 13, 18, 29],
             },
         ],
-        categories: [
-            '01 Jan',
-            '02 Jan',
-            '03 Jan',
-            '04 Jan',
-            '05 Jan',
-            '06 Jan',
-            '07 Jan',
-        ],
+        categories: ['01 Jan', '02 Jan', '03 Jan', '04 Jan', '05 Jan', '06 Jan', '07 Jan'],
     }
 
     return (

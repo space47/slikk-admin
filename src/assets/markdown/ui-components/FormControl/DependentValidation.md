@@ -34,25 +34,12 @@ const DependentValidation = () => {
                 return (
                     <Form>
                         <FormContainer>
-                            <FormItem
-                                label="Password"
-                                invalid={errors.password && touched.password}
-                                errorMessage={errors.password}
-                            >
-                                <Field
-                                    autoComplete="off"
-                                    name="password"
-                                    placeholder="Password"
-                                    component={Input}
-                                    type="password"
-                                />
+                            <FormItem label="Password" invalid={errors.password && touched.password} errorMessage={errors.password}>
+                                <Field autoComplete="off" name="password" placeholder="Password" component={Input} type="password" />
                             </FormItem>
                             <FormItem
                                 label="Password"
-                                invalid={
-                                    errors.confirmPassword &&
-                                    touched.confirmPassword
-                                }
+                                invalid={errors.confirmPassword && touched.confirmPassword}
                                 errorMessage={errors.confirmPassword}
                             >
                                 <Field
@@ -65,17 +52,10 @@ const DependentValidation = () => {
                             </FormItem>
                             <FormItem>
                                 <div className="flex gap-2">
-                                    <Button
-                                        type="reset"
-                                        onClick={() => resetForm()}
-                                    >
+                                    <Button type="reset" onClick={() => resetForm()}>
                                         Reset
                                     </Button>
-                                    <Button
-                                        variant="solid"
-                                        type="submit"
-                                        loading={isSubmitting}
-                                    >
+                                    <Button variant="solid" type="submit" loading={isSubmitting}>
                                         Submit
                                     </Button>
                                 </div>

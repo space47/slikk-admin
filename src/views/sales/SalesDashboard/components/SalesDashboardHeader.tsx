@@ -1,11 +1,6 @@
 import DatePicker from '@/components/ui/DatePicker'
 import Button from '@/components/ui/Button'
-import {
-    setStartDate,
-    setEndDate,
-    getSalesDashboardData,
-    useAppSelector,
-} from '../store'
+import { setStartDate, setEndDate, getSalesDashboardData, useAppSelector } from '../store'
 import { useAppDispatch } from '@/store'
 import { HiOutlineFilter } from 'react-icons/hi'
 import dayjs from 'dayjs'
@@ -17,9 +12,7 @@ const { DatePickerRange } = DatePicker
 const SalesDashboardHeader = () => {
     const dispatch = useAppDispatch()
 
-    const startDate = useAppSelector(
-        (state) => state.salesDashboard.data.startDate
-    )
+    const startDate = useAppSelector((state) => state.salesDashboard.data.startDate)
     const endDate = useAppSelector((state) => state.salesDashboard.data.endDate)
 
     const handleDateChange = (value: [Date | null, Date | null]) => {
@@ -39,10 +32,7 @@ const SalesDashboardHeader = () => {
             </div>
             <div className="flex flex-col lg:flex-row lg:items-center gap-3">
                 <DatePickerRange
-                    value={[
-                        dayjs.unix(startDate).toDate(),
-                        dayjs.unix(endDate).toDate(),
-                    ]}
+                    value={[dayjs.unix(startDate).toDate(), dayjs.unix(endDate).toDate()]}
                     inputFormat={dateFormat}
                     size="sm"
                     onChange={handleDateChange}

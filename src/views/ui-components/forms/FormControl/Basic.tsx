@@ -10,10 +10,7 @@ import type { MouseEvent } from 'react'
 
 const validationSchema = Yup.object().shape({
     email: Yup.string().email('Invalid email').required('Email Required'),
-    userName: Yup.string()
-        .min(3, 'Too Short!')
-        .max(12, 'Too Long!')
-        .required('User Name Required'),
+    userName: Yup.string().min(3, 'Too Short!').max(12, 'Too Long!').required('User Name Required'),
     password: Yup.string()
         .required('Password Required')
         .min(8, 'Too Short!')
@@ -30,15 +27,8 @@ const Basic = () => {
     }
 
     const passwordVisible = (
-        <span
-            className="cursor-pointer"
-            onClick={(e) => onPasswordVisibleClick(e)}
-        >
-            {pwInputType === 'password' ? (
-                <HiOutlineEyeOff />
-            ) : (
-                <HiOutlineEye />
-            )}
+        <span className="cursor-pointer" onClick={(e) => onPasswordVisibleClick(e)}>
+            {pwInputType === 'password' ? <HiOutlineEyeOff /> : <HiOutlineEye />}
         </span>
     )
 
@@ -63,37 +53,13 @@ const Basic = () => {
                 {({ touched, errors, resetForm }) => (
                     <Form>
                         <FormContainer>
-                            <FormItem
-                                label="Email"
-                                invalid={errors.email && touched.email}
-                                errorMessage={errors.email}
-                            >
-                                <Field
-                                    type="email"
-                                    autoComplete="off"
-                                    name="email"
-                                    placeholder="Email"
-                                    component={Input}
-                                />
+                            <FormItem label="Email" invalid={errors.email && touched.email} errorMessage={errors.email}>
+                                <Field type="email" autoComplete="off" name="email" placeholder="Email" component={Input} />
                             </FormItem>
-                            <FormItem
-                                label="User Name"
-                                invalid={errors.userName && touched.userName}
-                                errorMessage={errors.userName}
-                            >
-                                <Field
-                                    type="text"
-                                    autoComplete="off"
-                                    name="userName"
-                                    placeholder="User Name"
-                                    component={Input}
-                                />
+                            <FormItem label="User Name" invalid={errors.userName && touched.userName} errorMessage={errors.userName}>
+                                <Field type="text" autoComplete="off" name="userName" placeholder="User Name" component={Input} />
                             </FormItem>
-                            <FormItem
-                                label="Password"
-                                invalid={errors.password && touched.password}
-                                errorMessage={errors.password}
-                            >
+                            <FormItem label="Password" invalid={errors.password && touched.password} errorMessage={errors.password}>
                                 <Field
                                     type={pwInputType}
                                     suffix={passwordVisible}
@@ -109,11 +75,7 @@ const Basic = () => {
                                 </Field>
                             </FormItem>
                             <FormItem>
-                                <Button
-                                    type="reset"
-                                    className="ltr:mr-2 rtl:ml-2"
-                                    onClick={() => resetForm()}
-                                >
+                                <Button type="reset" className="ltr:mr-2 rtl:ml-2" onClick={() => resetForm()}>
                                     Reset
                                 </Button>
                                 <Button variant="solid" type="submit">

@@ -12,25 +12,14 @@ const PasswordVisible = () => {
     }
 
     const inputIcon = (
-        <span
-            className="cursor-pointer"
-            onClick={(e) => onPasswordVisibleClick(e)}
-        >
-            {pwInputType === 'password' ? (
-                <HiOutlineEyeOff />
-            ) : (
-                <HiOutlineEye />
-            )}
+        <span className="cursor-pointer" onClick={(e) => onPasswordVisibleClick(e)}>
+            {pwInputType === 'password' ? <HiOutlineEyeOff /> : <HiOutlineEye />}
         </span>
     )
 
     return (
         <div>
-            <Input
-                type={pwInputType}
-                suffix={inputIcon}
-                placeholder="Password"
-            />
+            <Input type={pwInputType} suffix={inputIcon} placeholder="Password" />
         </div>
     )
 }

@@ -8,8 +8,7 @@ const Closable = () => {
     return (
         <div>
             <Alert closable type="success" onClose={onCloseClick}>
-                Thanks for submitting your application. Our team will get back
-                to you soon.
+                Thanks for submitting your application. Our team will get back to you soon.
             </Alert>
         </div>
     )

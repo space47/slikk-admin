@@ -1,9 +1,5 @@
 import { APP_PREFIX_PATH } from '@/constants/route.constant'
-import {
-    NAV_ITEM_TYPE_TITLE,
-    NAV_ITEM_TYPE_COLLAPSE,
-    NAV_ITEM_TYPE_ITEM
-} from '@/constants/navigation.constant'
+import { NAV_ITEM_TYPE_TITLE, NAV_ITEM_TYPE_COLLAPSE, NAV_ITEM_TYPE_ITEM } from '@/constants/navigation.constant'
 import { ADMIN, USER } from '@/constants/roles.constant'
 import type { NavigationTree } from '@/@types/navigation'
 
@@ -35,7 +31,7 @@ const vendorNavigationConfig: NavigationTree[] = [
                 icon: 'bill',
                 type: NAV_ITEM_TYPE_ITEM,
                 authority: [ADMIN, USER],
-                subMenu: []
+                subMenu: [],
             },
 
             {
@@ -46,7 +42,7 @@ const vendorNavigationConfig: NavigationTree[] = [
                 icon: 'return',
                 type: NAV_ITEM_TYPE_ITEM,
                 authority: [ADMIN, USER],
-                subMenu: []
+                subMenu: [],
             },
             {
                 key: 'appsVendorManagement.catalog',
@@ -56,7 +52,7 @@ const vendorNavigationConfig: NavigationTree[] = [
                 icon: 'category',
                 type: NAV_ITEM_TYPE_ITEM,
                 authority: [ADMIN, USER],
-                subMenu: []
+                subMenu: [],
             },
             {
                 key: 'appsVendorManagement.stockOverview',
@@ -66,7 +62,7 @@ const vendorNavigationConfig: NavigationTree[] = [
                 icon: 'inventory',
                 type: NAV_ITEM_TYPE_ITEM,
                 authority: [ADMIN, USER],
-                subMenu: []
+                subMenu: [],
             },
             {
                 key: 'appsVendorManagement.businessDetails',
@@ -76,7 +72,7 @@ const vendorNavigationConfig: NavigationTree[] = [
                 icon: 'brand',
                 type: NAV_ITEM_TYPE_ITEM,
                 authority: [ADMIN, USER],
-                subMenu: []
+                subMenu: [],
             },
 
             {
@@ -87,8 +83,8 @@ const vendorNavigationConfig: NavigationTree[] = [
                 icon: 'users',
                 type: NAV_ITEM_TYPE_ITEM,
                 authority: [ADMIN, USER],
-                subMenu: []
-            }
+                subMenu: [],
+            },
 
             // {
             //     key: 'appsVendorManagement.accounts',
@@ -812,8 +808,8 @@ const vendorNavigationConfig: NavigationTree[] = [
             //         },
             //     ],
             // },
-        ]
-    }
+        ],
+    },
 ]
 
 export default vendorNavigationConfig

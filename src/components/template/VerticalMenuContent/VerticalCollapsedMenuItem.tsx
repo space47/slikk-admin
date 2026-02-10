@@ -33,10 +33,7 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }: DefaultItemProps) => {
                     <>
                         <VerticalMenuIcon icon={nav.icon} />
                         <span>
-                            <Trans
-                                i18nKey={nav.translateKey}
-                                defaults={nav.title}
-                            />
+                            <Trans i18nKey={nav.translateKey} defaults={nav.title} />
                         </span>
                     </>
                 }
@@ -45,11 +42,7 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }: DefaultItemProps) => {
                 className="mb-2"
             >
                 {nav.subMenu.map((subNav) => (
-                    <AuthorityCheck
-                        key={subNav.key}
-                        userAuthority={userAuthority}
-                        authority={subNav.authority}
-                    >
+                    <AuthorityCheck key={subNav.key} userAuthority={userAuthority} authority={subNav.authority}>
                         <MenuItem eventKey={subNav.key}>
                             {subNav.path ? (
                                 <Link
@@ -62,21 +55,15 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }: DefaultItemProps) => {
                                             path: subNav.path,
                                         })
                                     }
-                                    target={subNav.isExternalLink ? '_blank' :  ''}
+                                    target={subNav.isExternalLink ? '_blank' : ''}
                                 >
                                     <span>
-                                        <Trans
-                                            i18nKey={subNav.translateKey}
-                                            defaults={subNav.title}
-                                        />
+                                        <Trans i18nKey={subNav.translateKey} defaults={subNav.title} />
                                     </span>
                                 </Link>
                             ) : (
                                 <span>
-                                    <Trans
-                                        i18nKey={subNav.translateKey}
-                                        defaults={subNav.title}
-                                    />
+                                    <Trans i18nKey={subNav.translateKey} defaults={subNav.title} />
                                 </span>
                             )}
                         </MenuItem>
@@ -87,12 +74,7 @@ const DefaultItem = ({ nav, onLinkClick, userAuthority }: DefaultItemProps) => {
     )
 }
 
-const CollapsedItem = ({
-    nav,
-    onLinkClick,
-    userAuthority,
-    direction,
-}: CollapsedItemProps) => {
+const CollapsedItem = ({ nav, onLinkClick, userAuthority, direction }: CollapsedItemProps) => {
     const menuItem = (
         <MenuItem key={nav.key} eventKey={nav.key} className="mb-2">
             <VerticalMenuIcon icon={nav.icon} />
@@ -101,19 +83,9 @@ const CollapsedItem = ({
 
     return (
         <AuthorityCheck userAuthority={userAuthority} authority={nav.authority}>
-            <Dropdown
-                trigger="hover"
-                renderTitle={menuItem}
-                placement={
-                    direction === 'rtl' ? 'middle-end-top' : 'middle-start-top'
-                }
-            >
+            <Dropdown trigger="hover" renderTitle={menuItem} placement={direction === 'rtl' ? 'middle-end-top' : 'middle-start-top'}>
                 {nav.subMenu.map((subNav) => (
-                    <AuthorityCheck
-                        key={subNav.key}
-                        userAuthority={userAuthority}
-                        authority={subNav.authority}
-                    >
+                    <AuthorityCheck key={subNav.key} userAuthority={userAuthority} authority={subNav.authority}>
                         <Dropdown.Item eventKey={subNav.key}>
                             {subNav.path ? (
                                 <Link
@@ -126,21 +98,15 @@ const CollapsedItem = ({
                                             path: subNav.path,
                                         })
                                     }
-                                    target={subNav.isExternalLink ? '_blank' :  ''}
+                                    target={subNav.isExternalLink ? '_blank' : ''}
                                 >
                                     <span>
-                                        <Trans
-                                            i18nKey={subNav.translateKey}
-                                            defaults={subNav.title}
-                                        />
+                                        <Trans i18nKey={subNav.translateKey} defaults={subNav.title} />
                                     </span>
                                 </Link>
                             ) : (
                                 <span>
-                                    <Trans
-                                        i18nKey={subNav.translateKey}
-                                        defaults={subNav.title}
-                                    />
+                                    <Trans i18nKey={subNav.translateKey} defaults={subNav.title} />
                                 </span>
                             )}
                         </Dropdown.Item>
@@ -151,15 +117,8 @@ const CollapsedItem = ({
     )
 }
 
-const VerticalCollapsedMenuItem = ({
-    sideCollapsed,
-    ...rest
-}: VerticalCollapsedMenuItemProps) => {
-    return sideCollapsed ? (
-        <CollapsedItem {...rest} />
-    ) : (
-        <DefaultItem {...rest} />
-    )
+const VerticalCollapsedMenuItem = ({ sideCollapsed, ...rest }: VerticalCollapsedMenuItemProps) => {
+    return sideCollapsed ? <CollapsedItem {...rest} /> : <DefaultItem {...rest} />
 }
 
 export default VerticalCollapsedMenuItem
