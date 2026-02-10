@@ -54,7 +54,7 @@ const OrderDetails = () => {
 
     const isReverseTryAndBuy = useMemo(() => {
         return data?.log?.at(-1)?.status === EOrderStatus.delivered && data?.delivery_type === EDeliveryType.try_and_buy
-    }, [data?.delivery_type, data?.status])
+    }, [data?.delivery_type, data?.log])
 
     const showTicket = useMemo(() => {
         return data?.log?.some((item) => item?.status?.includes(EOrderStatus.packed)) && data?.utm_params?.ticket === true
