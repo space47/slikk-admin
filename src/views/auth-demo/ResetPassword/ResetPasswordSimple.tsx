@@ -4,10 +4,7 @@ import Simple from '@/components/layouts/AuthLayout/Simple'
 const ResetPasswordSimple = () => {
     return (
         <Simple>
-            <ResetPasswordForm
-                disableSubmit={true}
-                signInUrl="/auth/sign-in-simple"
-            />
+            <ResetPasswordForm disableSubmit={true} signInUrl="/auth/sign-in-simple" />
         </Simple>
     )
 }

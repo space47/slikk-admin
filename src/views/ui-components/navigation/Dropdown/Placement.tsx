@@ -48,10 +48,7 @@ const Placement = () => {
                 </Dropdown>
             </div>
             <div>
-                <Dropdown
-                    placement="middle-start-bottom"
-                    title="Middle start bottom"
-                >
+                <Dropdown placement="middle-start-bottom" title="Middle start bottom">
                     <DropdownItems />
                 </Dropdown>
             </div>
@@ -61,10 +58,7 @@ const Placement = () => {
                 </Dropdown>
             </div>
             <div>
-                <Dropdown
-                    placement="middle-end-bottom"
-                    title="Middle end bottom"
-                >
+                <Dropdown placement="middle-end-bottom" title="Middle end bottom">
                     <DropdownItems />
                 </Dropdown>
             </div>

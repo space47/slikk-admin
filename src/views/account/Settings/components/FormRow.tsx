@@ -13,22 +13,14 @@ type FormRow<T> = PropsWithChildren<{
 }>
 
 const FormRow = <T extends Record<string, unknown>>(props: FormRow<T>) => {
-    const {
-        label,
-        children,
-        errors,
-        touched,
-        name,
-        border = true,
-        alignCenter = true,
-    } = props
+    const { label, children, errors, touched, name, border = true, alignCenter = true } = props
 
     return (
         <div
             className={classNames(
                 'grid md:grid-cols-3 gap-4 py-8',
                 border && 'border-b border-gray-200 dark:border-gray-600',
-                alignCenter && 'items-center'
+                alignCenter && 'items-center',
             )}
         >
             <div className="font-semibold">{label}</div>

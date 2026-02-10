@@ -29,11 +29,7 @@ const Sizes = () => {
         <div>
             <InputGroup className="mb-6">
                 {options.map((opt) => (
-                    <Button
-                        key={opt.value}
-                        active={size === opt.value}
-                        onClick={() => onSizeSelect(opt.value)}
-                    >
+                    <Button key={opt.value} active={size === opt.value} onClick={() => onSizeSelect(opt.value)}>
                         {opt.label}
                     </Button>
                 ))}
@@ -52,20 +48,10 @@ const Sizes = () => {
                 <Form>
                     <FormContainer size={size}>
                         <FormItem label="Name">
-                            <Field
-                                type="text"
-                                name="name"
-                                placeholder="Please enter your name"
-                                component={Input}
-                            />
+                            <Field type="text" name="name" placeholder="Please enter your name" component={Input} />
                         </FormItem>
                         <FormItem label="Email">
-                            <Field
-                                type="email"
-                                name="email"
-                                placeholder="Please enter your email"
-                                component={Input}
-                            />
+                            <Field type="email" name="email" placeholder="Please enter your email" component={Input} />
                         </FormItem>
                         <FormItem label="Date">
                             <Field name="date">

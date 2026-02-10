@@ -34,9 +34,7 @@ export default function projectFakeApi(server: Server, apiPrefix: string) {
 
     server.post(`${apiPrefix}/project/scrum-board/members`, (schema) => {
         const borderMembersId = ['3', '2', '5', '7', '1', '10', '9']
-        const participantMembers = schema.db.usersData.filter((user) =>
-            borderMembersId.includes(user.id)
-        )
+        const participantMembers = schema.db.usersData.filter((user) => borderMembersId.includes(user.id))
         const allMembers = schema.db.usersData
         return {
             participantMembers,
@@ -50,8 +48,5 @@ export default function projectFakeApi(server: Server, apiPrefix: string) {
         return data
     })
 
-    server.get(
-        `${apiPrefix}/project/scrum-board/tickets/detail`,
-        (schema) => schema.db.issueData[0]
-    )
+    server.get(`${apiPrefix}/project/scrum-board/tickets/detail`, (schema) => schema.db.issueData[0])
 }

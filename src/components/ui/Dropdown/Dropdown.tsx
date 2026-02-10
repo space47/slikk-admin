@@ -3,9 +3,7 @@ import DropdownMenu from './DropdownMenu'
 import DropdownToggle from './DropdownToggle'
 import useUniqueId from '../hooks/useUniqueId'
 import DropdownContext from './context/dropdownContext'
-import DropdownMenuContext, {
-    useDropdownMenuContext,
-} from './context/dropdownMenuContext'
+import DropdownMenuContext, { useDropdownMenuContext } from './context/dropdownMenuContext'
 import chainedFunction from '../utils/chainedFunction'
 import useRootClose from '../hooks/useRootClose'
 import arrayIndexOf from '../utils/arrayIndexOf'
@@ -132,28 +130,16 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>((props, ref) => {
     }
 
     if (arrayIndexOf(CLICK, trigger)) {
-        toggleEventHandlers.onClick = chainedFunction(
-            handleClick,
-            toggleEventHandlers.onClick,
-        )
+        toggleEventHandlers.onClick = chainedFunction(handleClick, toggleEventHandlers.onClick)
     }
 
     if (arrayIndexOf(CONTEXT, trigger)) {
-        toggleEventHandlers.onContextMenu = chainedFunction(
-            handleClick,
-            onContextMenu,
-        )
+        toggleEventHandlers.onContextMenu = chainedFunction(handleClick, onContextMenu)
     }
 
     if (arrayIndexOf(HOVER, trigger)) {
-        dropdownProps.onMouseEnter = chainedFunction(
-            handleMouseEnter,
-            onMouseEnter,
-        )
-        dropdownProps.onMouseLeave = chainedFunction(
-            handleMouseLeave,
-            onMouseLeave,
-        )
+        dropdownProps.onMouseEnter = chainedFunction(handleMouseEnter, onMouseEnter)
+        dropdownProps.onMouseLeave = chainedFunction(handleMouseLeave, onMouseLeave)
     }
 
     const toggleElement = (
@@ -188,16 +174,9 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>((props, ref) => {
 
     return (
         <DropdownContext.Provider value={{ activeKey }}>
-            <div
-                {...dropdownProps}
-                ref={ref}
-                style={style}
-                className="dropdown"
-            >
+            <div {...dropdownProps} ref={ref} style={style} className="dropdown">
                 {toggleElement}
-                <DropdownMenuContext.Provider value={menuControl}>
-                    {menuElement}
-                </DropdownMenuContext.Provider>
+                <DropdownMenuContext.Provider value={menuControl}>{menuElement}</DropdownMenuContext.Provider>
             </div>
         </DropdownContext.Provider>
     )

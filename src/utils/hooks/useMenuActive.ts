@@ -8,10 +8,7 @@ interface NavInfo extends NavigationTree {
     parentKey?: string
 }
 
-const getRouteInfo = (
-    navTree: NavInfo | NavInfo[],
-    key: string
-): NavInfo | undefined => {
+const getRouteInfo = (navTree: NavInfo | NavInfo[], key: string): NavInfo | undefined => {
     if (!Array.isArray(navTree) && navTree.key === key) {
         return navTree
     }
@@ -24,15 +21,8 @@ const getRouteInfo = (
             navTree.hasOwnProperty(p) &&
             typeof (navTree as any)[p] === 'object'
         ) {
-            if (
-                isPlainObject((navTree as any)[p]) &&
-                (navTree as any)[p].subMenu.length > 0
-            ) {
-                if (
-                    (navTree as any)[p].subMenu.some(
-                        (el: NavInfo) => el.key === key
-                    )
-                ) {
+            if (isPlainObject((navTree as any)[p]) && (navTree as any)[p].subMenu.length > 0) {
+                if ((navTree as any)[p].subMenu.some((el: NavInfo) => el.key === key)) {
                     isIncludeActivedRoute = true
                 }
             }
@@ -61,10 +51,7 @@ const findNestedRoute = (navTree: NavigationTree[], key: string): boolean => {
     return navTree.some((c) => findNestedRoute(c.subMenu, key))
 }
 
-const getTopRouteKey = (
-    navTree: NavigationTree[],
-    key: string
-): NavigationTree => {
+const getTopRouteKey = (navTree: NavigationTree[], key: string): NavigationTree => {
     let foundNav = {} as NavigationTree
     navTree.forEach((nav) => {
         if (findNestedRoute([nav], key)) {

@@ -2,10 +2,7 @@ import wildCardSearch from '@/utils/wildCardSearch'
 import type { Server } from 'miragejs'
 
 export default function commonFakeApi(server: Server, apiPrefix: string) {
-    server.get(
-        `${apiPrefix}/notification/list`,
-        (schema) => schema.db.notificationListData
-    )
+    server.get(`${apiPrefix}/notification/list`, (schema) => schema.db.notificationListData)
 
     server.get(`${apiPrefix}/notification/count`, ({ db }) => {
         const unreadNotification = db.notificationListData.where({
@@ -17,9 +14,7 @@ export default function commonFakeApi(server: Server, apiPrefix: string) {
     server.post(`${apiPrefix}/search/query`, (schema, { requestBody }) => {
         const body = JSON.parse(requestBody)
         const { query } = body
-        const searchData = schema.db.searchQueryPoolData.filter(
-            (elm) => typeof elm !== 'function'
-        )
+        const searchData = schema.db.searchQueryPoolData.filter((elm) => typeof elm !== 'function')
         const result = wildCardSearch(searchData, query, 'title')
         const categories: (string | number)[] = []
 

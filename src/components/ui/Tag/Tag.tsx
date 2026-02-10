@@ -12,30 +12,14 @@ export interface TagProps extends CommonProps {
 }
 
 const Tag = forwardRef<HTMLDivElement, TagProps>((props, ref) => {
-    const {
-        className,
-        children,
-        prefix,
-        suffix,
-        prefixClass,
-        suffixClass,
-        ...rest
-    } = props
+    const { className, children, prefix, suffix, prefixClass, suffixClass, ...rest } = props
 
     return (
         <div ref={ref} className={classNames('tag', className)} {...rest}>
-            {prefix && typeof prefix === 'boolean' && (
-                <span
-                    className={classNames('tag-affix tag-prefix', prefixClass)}
-                />
-            )}
+            {prefix && typeof prefix === 'boolean' && <span className={classNames('tag-affix tag-prefix', prefixClass)} />}
             {typeof prefix === 'object' && prefix}
             {children}
-            {suffix && typeof suffix === 'boolean' && (
-                <span
-                    className={classNames('tag-affix tag-suffix', suffixClass)}
-                />
-            )}
+            {suffix && typeof suffix === 'boolean' && <span className={classNames('tag-affix tag-suffix', suffixClass)} />}
             {typeof suffix === 'object' && suffix}
         </div>
     )

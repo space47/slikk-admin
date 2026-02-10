@@ -28,11 +28,7 @@ const Categories = (props: { data: Category[] }) => {
     return (
         <div className="grid lg:grid-cols-2 2xl:grid-cols-4 gap-4">
             {data.map((cat) => (
-                <Card
-                    key={cat.id}
-                    clickable
-                    onClick={() => onCategoryClick(cat.name)}
-                >
+                <Card key={cat.id} clickable onClick={() => onCategoryClick(cat.name)}>
                     <div className="mb-4 flex justify-center">
                         <CategoryIcon type={cat.id} />
                     </div>

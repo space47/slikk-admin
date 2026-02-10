@@ -5,11 +5,7 @@ export type UseTimeoutReturn = {
     reset: () => void
 }
 
-function useTimeout(
-    fn: (() => void) | undefined,
-    ms = 0,
-    enabled = true
-): UseTimeoutReturn {
+function useTimeout(fn: (() => void) | undefined, ms = 0, enabled = true): UseTimeoutReturn {
     const timeout = useRef<ReturnType<typeof setTimeout>>()
     const callback = useRef(fn)
 

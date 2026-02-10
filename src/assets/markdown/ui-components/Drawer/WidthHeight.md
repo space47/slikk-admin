@@ -22,11 +22,7 @@ const WidthHeight = () => {
 
     return (
         <div>
-            <Button
-                variant="twoTone"
-                className="mx-2"
-                onClick={() => onVerticalOpen()}
-            >
+            <Button variant="twoTone" className="mx-2" onClick={() => onVerticalOpen()}>
                 Vertical Drawer
             </Button>
             <Button variant="twoTone" onClick={() => onHorizontalOpen()}>

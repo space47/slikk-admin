@@ -17,14 +17,9 @@ const Addon = forwardRef<HTMLDivElement, AddonProps>((props, ref) => {
     const formControlSize = useForm()?.size
     const inputGroupSize = useInputGroup()?.size
 
-    const inputAddonSize =
-        size || inputGroupSize || formControlSize || controlSize
+    const inputAddonSize = size || inputGroupSize || formControlSize || controlSize
 
-    const addonClass = classNames(
-        'input-addon',
-        `input-addon-${inputAddonSize} h-${CONTROL_SIZES[inputAddonSize]}`,
-        className
-    )
+    const addonClass = classNames('input-addon', `input-addon-${inputAddonSize} h-${CONTROL_SIZES[inputAddonSize]}`, className)
 
     return (
         <div ref={ref} className={addonClass}>

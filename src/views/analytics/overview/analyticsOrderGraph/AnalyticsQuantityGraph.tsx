@@ -11,9 +11,7 @@ type GraphProps = {
 }
 
 const AnalyticsQuantityGraph: React.FC<GraphProps> = ({ data }) => {
-    const sortedData = data.sort(
-        (a, b) => new Date(a.dateKey).getTime() - new Date(b.dateKey).getTime(),
-    )
+    const sortedData = data.sort((a, b) => new Date(a.dateKey).getTime() - new Date(b.dateKey).getTime())
 
     const Quantitydata = [
         {
@@ -24,9 +22,7 @@ const AnalyticsQuantityGraph: React.FC<GraphProps> = ({ data }) => {
 
     return (
         <div>
-            <span className="flex justify-center font-semibold">
-                TOTAL QUANTITY
-            </span>
+            <span className="flex justify-center font-semibold">TOTAL QUANTITY</span>
             <Chart
                 options={{
                     chart: {

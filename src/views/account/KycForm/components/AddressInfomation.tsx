@@ -15,11 +15,7 @@ type FormModel = Address
 
 type AddressInfomationProps = {
     data: Address
-    onNextChange?: (
-        values: FormModel,
-        formName: string,
-        setSubmitting: (isSubmitting: boolean) => void
-    ) => void
+    onNextChange?: (values: FormModel, formName: string, setSubmitting: (isSubmitting: boolean) => void) => void
     onBackChange?: () => void
     currentStepStatus?: string
 }
@@ -49,9 +45,7 @@ const validationSchema = Yup.object().shape({
         then: (schema) =>
             schema.shape({
                 country: Yup.string().required('Please select country'),
-                addressLine1: Yup.string().required(
-                    'Please enter your address'
-                ),
+                addressLine1: Yup.string().required('Please enter your address'),
                 addressLine2: Yup.string(),
                 city: Yup.string().required('Please enter your city'),
                 state: Yup.string().required('Please enter your state'),
@@ -62,40 +56,26 @@ const validationSchema = Yup.object().shape({
 })
 
 const AddressForm = (props: AddressFormProps) => {
-    const {
-        values,
-        touched,
-        errors,
-        countryName,
-        addressLine1Name,
-        addressLine2Name,
-        cityName,
-        stateName,
-        zipCodeName,
-    } = props
+    const { values, touched, errors, countryName, addressLine1Name, addressLine2Name, cityName, stateName, zipCodeName } = props
 
     const getError = useCallback(
         (name: string) => {
             return get(errors, name)
         },
-        [errors]
+        [errors],
     )
 
     const getTouched = useCallback(
         (name: string) => {
             return get(touched, name)
         },
-        [touched]
+        [touched],
     )
 
     return (
         <>
             <div className="md:grid grid-cols-2 gap-4">
-                <FormItem
-                    label="Country"
-                    invalid={getError(countryName) && getTouched(countryName)}
-                    errorMessage={getError(countryName)}
-                >
+                <FormItem label="Country" invalid={getError(countryName) && getTouched(countryName)} errorMessage={getError(countryName)}>
                     <Field name={countryName}>
                         {({ field, form }: FieldProps) => (
                             <Select
@@ -103,90 +83,38 @@ const AddressForm = (props: AddressFormProps) => {
                                 field={field}
                                 form={form}
                                 options={countryList}
-                                value={countryList.filter(
-                                    (c) => c.value === get(values, countryName)
-                                )}
-                                onChange={(c) =>
-                                    form.setFieldValue(field.name, c?.value)
-                                }
+                                value={countryList.filter((c) => c.value === get(values, countryName))}
+                                onChange={(c) => form.setFieldValue(field.name, c?.value)}
                             />
                         )}
                     </Field>
                 </FormItem>
                 <FormItem
                     label="Address Line 1"
-                    invalid={
-                        getError(addressLine1Name) &&
-                        getTouched(addressLine1Name)
-                    }
+                    invalid={getError(addressLine1Name) && getTouched(addressLine1Name)}
                     errorMessage={getError(addressLine1Name)}
                 >
-                    <Field
-                        type="text"
-                        autoComplete="off"
-                        name={addressLine1Name}
-                        placeholder="Address Line 1"
-                        component={Input}
-                    />
+                    <Field type="text" autoComplete="off" name={addressLine1Name} placeholder="Address Line 1" component={Input} />
                 </FormItem>
             </div>
             <div className="md:grid grid-cols-2 gap-4">
                 <FormItem
                     label="Address Line 2"
-                    invalid={
-                        getError(addressLine2Name) &&
-                        getTouched(addressLine2Name)
-                    }
+                    invalid={getError(addressLine2Name) && getTouched(addressLine2Name)}
                     errorMessage={getError(addressLine2Name)}
                 >
-                    <Field
-                        type="text"
-                        autoComplete="off"
-                        name={addressLine2Name}
-                        placeholder="Address Line 2"
-                        component={Input}
-                    />
+                    <Field type="text" autoComplete="off" name={addressLine2Name} placeholder="Address Line 2" component={Input} />
                 </FormItem>
-                <FormItem
-                    label="City"
-                    invalid={getError(cityName) && getTouched(cityName)}
-                    errorMessage={getError(cityName)}
-                >
-                    <Field
-                        type="text"
-                        autoComplete="off"
-                        name={cityName}
-                        placeholder="City"
-                        component={Input}
-                    />
+                <FormItem label="City" invalid={getError(cityName) && getTouched(cityName)} errorMessage={getError(cityName)}>
+                    <Field type="text" autoComplete="off" name={cityName} placeholder="City" component={Input} />
                 </FormItem>
             </div>
             <div className="md:grid grid-cols-2 gap-4">
-                <FormItem
-                    label="State"
-                    invalid={getError(stateName) && getTouched(stateName)}
-                    errorMessage={getError(stateName)}
-                >
-                    <Field
-                        type="text"
-                        autoComplete="off"
-                        name={stateName}
-                        placeholder="State"
-                        component={Input}
-                    />
+                <FormItem label="State" invalid={getError(stateName) && getTouched(stateName)} errorMessage={getError(stateName)}>
+                    <Field type="text" autoComplete="off" name={stateName} placeholder="State" component={Input} />
                 </FormItem>
-                <FormItem
-                    label="Zip Code"
-                    invalid={getError(zipCodeName) && getTouched(zipCodeName)}
-                    errorMessage={getError(zipCodeName)}
-                >
-                    <Field
-                        type="text"
-                        autoComplete="off"
-                        name={zipCodeName}
-                        placeholder="Zip Code"
-                        component={Input}
-                    />
+                <FormItem label="Zip Code" invalid={getError(zipCodeName) && getTouched(zipCodeName)} errorMessage={getError(zipCodeName)}>
+                    <Field type="text" autoComplete="off" name={zipCodeName} placeholder="Zip Code" component={Input} />
                 </FormItem>
             </div>
         </>
@@ -215,10 +143,7 @@ const AddressInfomation = ({
     onBackChange,
     currentStepStatus,
 }: AddressInfomationProps) => {
-    const onNext = (
-        values: FormModel,
-        setSubmitting: (isSubmitting: boolean) => void
-    ) => {
+    const onNext = (values: FormModel, setSubmitting: (isSubmitting: boolean) => void) => {
         onNextChange?.(values, 'addressInformation', setSubmitting)
     }
 
@@ -230,10 +155,7 @@ const AddressInfomation = ({
         <>
             <div className="mb-8">
                 <h3 className="mb-2">Address Information</h3>
-                <p>
-                    Enter your address information help us to speed up the
-                    verication process.
-                </p>
+                <p>Enter your address information help us to speed up the verication process.</p>
             </div>
             <Formik
                 enableReinitialize
@@ -265,27 +187,17 @@ const AddressInfomation = ({
                                     <Field name="sameCorrespondenceAddress">
                                         {({ field, form }: FieldProps) => (
                                             <Checkbox
-                                                checked={
-                                                    values.sameCorrespondenceAddress
-                                                }
-                                                onChange={(val) =>
-                                                    form.setFieldValue(
-                                                        field.name,
-                                                        val
-                                                    )
-                                                }
+                                                checked={values.sameCorrespondenceAddress}
+                                                onChange={(val) => form.setFieldValue(field.name, val)}
                                             >
-                                                Correspondence address is same
-                                                as above
+                                                Correspondence address is same as above
                                             </Checkbox>
                                         )}
                                     </Field>
                                 </FormItem>
                                 {!values.sameCorrespondenceAddress && (
                                     <>
-                                        <h5 className="mb-4">
-                                            Correspondence Address
-                                        </h5>
+                                        <h5 className="mb-4">Correspondence Address</h5>
                                         <AddressForm
                                             countryName="correspondenceAddress.country"
                                             addressLine1Name="correspondenceAddress.addressLine1"
@@ -301,14 +213,8 @@ const AddressInfomation = ({
                                     <Button type="button" onClick={onBack}>
                                         Back
                                     </Button>
-                                    <Button
-                                        loading={isSubmitting}
-                                        variant="solid"
-                                        type="submit"
-                                    >
-                                        {currentStepStatus === 'complete'
-                                            ? 'Save'
-                                            : 'Next'}
+                                    <Button loading={isSubmitting} variant="solid" type="submit">
+                                        {currentStepStatus === 'complete' ? 'Save' : 'Next'}
                                     </Button>
                                 </div>
                             </FormContainer>

@@ -27,11 +27,7 @@ const Layout = () => {
         <div>
             <InputGroup className="mb-6">
                 {options.map((opt) => (
-                    <Button
-                        key={opt.value}
-                        active={layout === opt.value}
-                        onClick={() => onLayoutSelect(opt.value)}
-                    >
+                    <Button key={opt.value} active={layout === opt.value} onClick={() => onLayoutSelect(opt.value)}>
                         {opt.label}
                     </Button>
                 ))}
@@ -49,20 +45,10 @@ const Layout = () => {
                 <Form>
                     <FormContainer layout={layout}>
                         <FormItem label="Name">
-                            <Field
-                                type="text"
-                                name="name"
-                                placeholder="Please enter your name"
-                                component={Input}
-                            />
+                            <Field type="text" name="name" placeholder="Please enter your name" component={Input} />
                         </FormItem>
                         <FormItem label="Email">
-                            <Field
-                                type="email"
-                                name="email"
-                                placeholder="Please enter your email"
-                                component={Input}
-                            />
+                            <Field type="email" name="email" placeholder="Please enter your email" component={Input} />
                         </FormItem>
                         <FormItem>
                             <Button type="submit">Submit</Button>

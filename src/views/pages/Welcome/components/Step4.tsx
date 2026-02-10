@@ -3,13 +3,7 @@ import Segment from '@/components/ui/Segment'
 import Button from '@/components/ui/Button'
 import { Field, Form, Formik } from 'formik'
 import SegmentItemOption from '@/components/shared/SegmentItemOption'
-import {
-    HiOutlineBookOpen,
-    HiOutlineClock,
-    HiOutlineAdjustments,
-    HiOutlineSparkles,
-    HiArrowSmLeft,
-} from 'react-icons/hi'
+import { HiOutlineBookOpen, HiOutlineClock, HiOutlineAdjustments, HiOutlineSparkles, HiArrowSmLeft } from 'react-icons/hi'
 import type { CallbackSetBack } from '../types'
 import type { FieldProps } from 'formik'
 import type { ReactNode } from 'react'
@@ -57,63 +51,31 @@ const Step4 = ({ onNext, onBack }: Step4Props) => {
                         return (
                             <Form>
                                 <FormContainer>
-                                    <FormItem
-                                        invalid={errors.role && touched.role}
-                                        errorMessage={errors.role}
-                                    >
+                                    <FormItem invalid={errors.role && touched.role} errorMessage={errors.role}>
                                         <Field name="role">
                                             {({ field, form }: FieldProps) => (
                                                 <Segment
                                                     value={[field.value]}
                                                     onChange={(val) => {
-                                                        form.setFieldValue(
-                                                            field.name,
-                                                            val[0]
-                                                        )
+                                                        form.setFieldValue(field.name, val[0])
                                                         onNext?.()
                                                     }}
                                                 >
                                                     <div className="w-full">
                                                         {roles.map((item) => (
-                                                            <Segment.Item
-                                                                key={item.value}
-                                                                value={
-                                                                    item.value
-                                                                }
-                                                                disabled={
-                                                                    item.disabled
-                                                                }
-                                                            >
-                                                                {({
-                                                                    active,
-                                                                    onSegmentItemClick,
-                                                                    disabled,
-                                                                }) => {
+                                                            <Segment.Item key={item.value} value={item.value} disabled={item.disabled}>
+                                                                {({ active, onSegmentItemClick, disabled }) => {
                                                                     return (
                                                                         <SegmentItemOption
                                                                             hoverable
-                                                                            active={
-                                                                                active
-                                                                            }
-                                                                            disabled={
-                                                                                disabled
-                                                                            }
+                                                                            active={active}
+                                                                            disabled={disabled}
                                                                             className="mb-4 bg-white dark:bg-gray-800"
-                                                                            onSegmentItemClick={
-                                                                                onSegmentItemClick
-                                                                            }
+                                                                            onSegmentItemClick={onSegmentItemClick}
                                                                         >
                                                                             <div className="flex items-center gap-3">
-                                                                                <span className="text-2xl">
-                                                                                    {
-                                                                                        item.icon
-                                                                                    }
-                                                                                </span>
-                                                                                <h6>
-                                                                                    {
-                                                                                        item.label
-                                                                                    }
-                                                                                </h6>
+                                                                                <span className="text-2xl">{item.icon}</span>
+                                                                                <h6>{item.label}</h6>
                                                                             </div>
                                                                         </SegmentItemOption>
                                                                     )
@@ -125,13 +87,7 @@ const Step4 = ({ onNext, onBack }: Step4Props) => {
                                             )}
                                         </Field>
                                     </FormItem>
-                                    <Button
-                                        block
-                                        variant="plain"
-                                        type="button"
-                                        icon={<HiArrowSmLeft />}
-                                        onClick={onBack}
-                                    >
+                                    <Button block variant="plain" type="button" icon={<HiArrowSmLeft />} onClick={onBack}>
                                         Back
                                     </Button>
                                 </FormContainer>

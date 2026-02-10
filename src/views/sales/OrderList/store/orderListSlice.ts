@@ -1,13 +1,5 @@
-import {
-    createSlice,
-    createAsyncThunk,
-    current,
-    PayloadAction,
-} from '@reduxjs/toolkit'
-import {
-    apiGetSalesOrders,
-    apiDeleteSalesOrders,
-} from '@/services/SalesService'
+import { createSlice, createAsyncThunk, current, PayloadAction } from '@reduxjs/toolkit'
+import { apiGetSalesOrders, apiDeleteSalesOrders } from '@/services/SalesService'
 import type { TableQueries } from '@/@types/common'
 
 type Order = {
@@ -38,22 +30,13 @@ export type SalesOrderListState = {
 
 export const SLICE_NAME = 'salesOrderList'
 
-export const getOrders = createAsyncThunk(
-    SLICE_NAME + '/getOrders',
-    async (data: TableQueries) => {
-        const response = await apiGetSalesOrders<
-            GetSalesOrdersResponse,
-            TableQueries
-        >(data)
-        return response.data
-    }
-)
+export const getOrders = createAsyncThunk(SLICE_NAME + '/getOrders', async (data: TableQueries) => {
+    const response = await apiGetSalesOrders<GetSalesOrdersResponse, TableQueries>(data)
+    return response.data
+})
 
 export const deleteOrders = async (data: { id: string | string[] }) => {
-    const response = await apiDeleteSalesOrders<
-        boolean,
-        { id: string | string[] }
-    >(data)
+    const response = await apiDeleteSalesOrders<boolean, { id: string | string[] }>(data)
     return response.data
 }
 
@@ -100,9 +83,7 @@ const orderListSlice = createSlice({
         removeRowItem: (state, { payload }: PayloadAction<string>) => {
             const currentState = current(state)
             if (currentState.selectedRows.includes(payload)) {
-                state.selectedRows = currentState.selectedRows.filter(
-                    (id) => id !== payload
-                )
+                state.selectedRows = currentState.selectedRows.filter((id) => id !== payload)
             }
         },
         setDeleteMode: (state, action) => {
@@ -122,14 +103,7 @@ const orderListSlice = createSlice({
     },
 })
 
-export const {
-    setOrderList,
-    setTableData,
-    setSelectedRows,
-    setSelectedRow,
-    addRowItem,
-    removeRowItem,
-    setDeleteMode,
-} = orderListSlice.actions
+export const { setOrderList, setTableData, setSelectedRows, setSelectedRow, addRowItem, removeRowItem, setDeleteMode } =
+    orderListSlice.actions
 
 export default orderListSlice.reducer

@@ -1,13 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-    forwardRef,
-    useState,
-    useImperativeHandle,
-    useRef,
-    useCallback,
-    cloneElement,
-    createRef,
-} from 'react'
+import { forwardRef, useState, useImperativeHandle, useRef, useCallback, cloneElement, createRef } from 'react'
 import classNames from 'classnames'
 import chainedFunction from '../utils/chainedFunction'
 import { motion } from 'framer-motion'
@@ -36,7 +28,7 @@ const useMessages = (msgKey: string) => {
             }
             return key
         },
-        [messages]
+        [messages],
     )
 
     const push = useCallback(
@@ -45,7 +37,7 @@ const useMessages = (msgKey: string) => {
             setMessages([...messages, { key, visible: true, node: message }])
             return key
         },
-        [messages, msgKey]
+        [messages, msgKey],
     )
 
     const removeAll = useCallback(() => {
@@ -63,14 +55,14 @@ const useMessages = (msgKey: string) => {
                         elm.visible = false
                     }
                     return elm
-                })
+                }),
             )
 
             setTimeout(() => {
                 setMessages(messages.filter((msg) => msg.visible))
             }, 50)
         },
-        [messages, getKey]
+        [messages, getKey],
     )
 
     return { messages, push, removeAll, remove }
@@ -140,18 +132,12 @@ const ToastWrapper = forwardRef((props: ToastWrapperProps, ref: any) => {
                 animate={item.visible ? 'animate' : 'exit'}
                 transition={{ duration: 0.15, type: 'tween' }}
             >
-                {cloneElement(
-                    item.node as DetailedReactHTMLElement<any, HTMLElement>,
-                    {
-                        ...toastProps,
-                        ref,
-                        onClose: chainedFunction(
-                            item.node?.props?.onClose,
-                            () => remove(item.key)
-                        ),
-                        className: classNames(item.node?.props?.className),
-                    }
-                )}
+                {cloneElement(item.node as DetailedReactHTMLElement<any, HTMLElement>, {
+                    ...toastProps,
+                    ref,
+                    onClose: chainedFunction(item.node?.props?.onClose, () => remove(item.key)),
+                    className: classNames(item.node?.props?.className),
+                })}
             </motion.div>
         )
     })
@@ -176,8 +162,7 @@ ToastWrapper.getInstance = (props: ToastWrapperProps) => {
 
     const wrapperRef = createRef<ToastWrapperInstance>()
 
-    const wrapperElement =
-        (typeof wrapper === 'function' ? wrapper() : wrapper) || document.body
+    const wrapperElement = (typeof wrapper === 'function' ? wrapper() : wrapper) || document.body
 
     return new Promise((resolve) => {
         const renderCallback = () => {
@@ -198,13 +183,7 @@ ToastWrapper.getInstance = (props: ToastWrapperProps) => {
             return root
         }
 
-        const { unmount } = renderElement(
-            <ToastWrapper
-                {...rest}
-                ref={wrapperRef}
-                callback={renderCallback}
-            />
-        )
+        const { unmount } = renderElement(<ToastWrapper {...rest} ref={wrapperRef} callback={renderCallback} />)
     })
 }
 

@@ -17,15 +17,7 @@ interface UsersAvatarGroupProps extends AvatarGroupProps {
 }
 
 const UsersAvatarGroup = (props: UsersAvatarGroupProps) => {
-    const {
-        avatarGroupProps = {},
-        avatarProps = {},
-        imgKey = 'img',
-        nameKey = 'name',
-        onAvatarClick,
-        users = [],
-        ...rest
-    } = props
+    const { avatarGroupProps = {}, avatarProps = {}, imgKey = 'img', nameKey = 'name', onAvatarClick, users = [], ...rest } = props
 
     const bgColor = useTwColorByName()
 
@@ -43,20 +35,12 @@ const UsersAvatarGroup = (props: UsersAvatarGroupProps) => {
     }
 
     return (
-        <Avatar.Group
-            omittedAvatarTooltip
-            chained
-            omittedAvatarProps={defaultAvatarProps}
-            {...avatarGroupProps}
-            {...rest}
-        >
+        <Avatar.Group omittedAvatarTooltip chained omittedAvatarProps={defaultAvatarProps} {...avatarGroupProps} {...rest}>
             {users.map((elm, index) => (
                 <Tooltip key={elm[nameKey] + index} title={elm[nameKey]}>
                     <Avatar
                         {...defaultAvatarProps}
-                        className={`${
-                            elm[imgKey] ? '' : bgColor(elm[nameKey])
-                        } ${defaultAvatarProps.className}`}
+                        className={`${elm[imgKey] ? '' : bgColor(elm[nameKey])} ${defaultAvatarProps.className}`}
                         src={elm[imgKey]}
                         onClick={() => handleAvatarClick(elm)}
                     >

@@ -8,16 +8,7 @@ const HorizontalNav = () => {
 
     const { larger } = useResponsive()
 
-    return (
-        <>
-            {larger.md && (
-                <HorizontalMenuContent
-                    manuVariant={mode}
-                    userAuthority={userAuthority}
-                />
-            )}
-        </>
-    )
+    return <>{larger.md && <HorizontalMenuContent manuVariant={mode} userAuthority={userAuthority} />}</>
 }
 
 export default HorizontalNav

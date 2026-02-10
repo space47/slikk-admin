@@ -40,14 +40,10 @@ export type ManageArticleState = {
 
 export const SLICE_NAME = 'knowledgeBaseManageArticles'
 
-export const getCategorizedArticles = createAsyncThunk(
-    SLICE_NAME + '/getCategorizedArticles',
-    async () => {
-        const response =
-            await apiGetCategorizedArticles<GetCategorizedArticles>()
-        return response.data
-    }
-)
+export const getCategorizedArticles = createAsyncThunk(SLICE_NAME + '/getCategorizedArticles', async () => {
+    const response = await apiGetCategorizedArticles<GetCategorizedArticles>()
+    return response.data
+})
 
 const initialState: ManageArticleState = {
     loading: false,

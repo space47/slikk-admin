@@ -28,18 +28,10 @@ const Next = (props: NextProps) => {
         onNext(e)
     }
 
-    const pagerNextClass = classNames(
-        pagerClass.default,
-        'pagination-pager-next',
-        disabled ? pagerClass.disabled : pagerClass.inactive
-    )
+    const pagerNextClass = classNames(pagerClass.default, 'pagination-pager-next', disabled ? pagerClass.disabled : pagerClass.inactive)
 
     return (
-        <span
-            className={pagerNextClass}
-            role="presentation"
-            onClick={onNextClick}
-        >
+        <span className={pagerNextClass} role="presentation" onClick={onNextClick}>
             <HiChevronRight />
         </span>
     )

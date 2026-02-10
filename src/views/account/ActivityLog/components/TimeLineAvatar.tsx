@@ -2,21 +2,8 @@ import { useMemo } from 'react'
 import Avatar from '@/components/ui/Avatar'
 import acronym from '@/utils/acronym'
 import useTwColorByName from '@/utils/hooks/useTwColorByName'
-import {
-    HiTag,
-    HiUserCircle,
-    HiDocumentText,
-    HiXCircle,
-    HiTicket,
-} from 'react-icons/hi'
-import {
-    ADD_TAGS_TO_TICKET,
-    ADD_FILES_TO_TICKET,
-    UPDATE_TICKET,
-    CREATE_TICKET,
-    avatarType,
-    iconType,
-} from '../constants'
+import { HiTag, HiUserCircle, HiDocumentText, HiXCircle, HiTicket } from 'react-icons/hi'
+import { ADD_TAGS_TO_TICKET, ADD_FILES_TO_TICKET, UPDATE_TICKET, CREATE_TICKET, avatarType, iconType } from '../constants'
 import type { AvatarProps } from '@/components/ui/Avatar'
 
 type TimelineAvatar = {
@@ -45,15 +32,10 @@ const Icon = ({ type }: { type: string }) => {
 const TimelineAvatar = ({ data }: TimelineAvatar) => {
     const color = useTwColorByName()
 
-    const defaultAvatarProps: AvatarProps = useMemo(
-        () => ({ size: 30, shape: 'circle' }),
-        []
-    )
+    const defaultAvatarProps: AvatarProps = useMemo(() => ({ size: 30, shape: 'circle' }), [])
 
     if (data && avatarType.includes(data.type)) {
-        const avatarProps = data.userImg
-            ? { src: data.userImg }
-            : { className: `${color(data.userName || '')}` }
+        const avatarProps = data.userImg ? { src: data.userImg } : { className: `${color(data.userName || '')}` }
 
         return (
             <Avatar {...avatarProps} {...defaultAvatarProps}>
@@ -63,13 +45,7 @@ const TimelineAvatar = ({ data }: TimelineAvatar) => {
     }
 
     if (data && iconType.includes(data.type)) {
-        return (
-            <Avatar
-                className="text-gray-700 bg-gray-200 dark:text-gray-100"
-                icon={<Icon type={data.type} />}
-                {...defaultAvatarProps}
-            />
-        )
+        return <Avatar className="text-gray-700 bg-gray-200 dark:text-gray-100" icon={<Icon type={data.type} />} {...defaultAvatarProps} />
     }
 
     return null

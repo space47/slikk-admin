@@ -7,9 +7,7 @@ export type { DropdownProps } from './Dropdown'
 export type { DropdownItemProps } from './DropdownItem'
 export type { DropdownMenuProps } from './DropdownMenu'
 
-type CompoundedComponent = ForwardRefExoticComponent<
-    DropdownProps & RefAttributes<HTMLDivElement>
-> & {
+type CompoundedComponent = ForwardRefExoticComponent<DropdownProps & RefAttributes<HTMLDivElement>> & {
     Item: typeof DropdownItem
     Menu: typeof DropdownMenu
 }

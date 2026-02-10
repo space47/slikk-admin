@@ -1,9 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import {
-    apiGetProjectList,
-    apiGetScrumBoardtMembers,
-    apiPutProjectList,
-} from '@/services/ProjectService'
+import { apiGetProjectList, apiGetScrumBoardtMembers, apiPutProjectList } from '@/services/ProjectService'
 
 type Member = {
     id: string
@@ -68,41 +64,25 @@ export type ProjectListState = {
 
 export const SLICE_NAME = 'projectList'
 
-export const getList = createAsyncThunk(
-    SLICE_NAME + '/getList',
-    async (data: GetProjectListRequest) => {
-        const response = await apiGetProjectList<
-            GetProjectListResponse,
-            GetProjectListRequest
-        >(data)
-        return response.data
-    }
-)
+export const getList = createAsyncThunk(SLICE_NAME + '/getList', async (data: GetProjectListRequest) => {
+    const response = await apiGetProjectList<GetProjectListResponse, GetProjectListRequest>(data)
+    return response.data
+})
 
-export const getMembers = createAsyncThunk(
-    SLICE_NAME + '/getMembers',
-    async () => {
-        const response =
-            await apiGetScrumBoardtMembers<GetScrumBoardtMembersResponse>()
-        const data = response.data.allMembers.map((item) => ({
-            value: item.id,
-            label: item.name,
-            img: item.img,
-        }))
-        return data
-    }
-)
+export const getMembers = createAsyncThunk(SLICE_NAME + '/getMembers', async () => {
+    const response = await apiGetScrumBoardtMembers<GetScrumBoardtMembersResponse>()
+    const data = response.data.allMembers.map((item) => ({
+        value: item.id,
+        label: item.name,
+        img: item.img,
+    }))
+    return data
+})
 
-export const putProject = createAsyncThunk(
-    SLICE_NAME + '/putProject',
-    async (data: PutProjectListRequest) => {
-        const response = await apiPutProjectList<
-            PutProjectListResponse,
-            PutProjectListRequest
-        >(data)
-        return response.data
-    }
-)
+export const putProject = createAsyncThunk(SLICE_NAME + '/putProject', async (data: PutProjectListRequest) => {
+    const response = await apiPutProjectList<PutProjectListResponse, PutProjectListRequest>(data)
+    return response.data
+})
 
 const initialState: ProjectListState = {
     loading: false,
@@ -151,7 +131,6 @@ const projectListSlice = createSlice({
     },
 })
 
-export const { toggleView, toggleSort, toggleNewProjectDialog, setSearch } =
-    projectListSlice.actions
+export const { toggleView, toggleSort, toggleNewProjectDialog, setSearch } = projectListSlice.actions
 
 export default projectListSlice.reducer

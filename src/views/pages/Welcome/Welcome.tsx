@@ -26,18 +26,10 @@ const Welcome = () => {
         <Container className="h-full">
             <div className="h-full flex flex-col items-center justify-center">
                 <Suspense fallback={<></>}>
-                    {surveyStep === 0 && (
-                        <Step1 onNext={handleNext} onSkip={handleSkip} />
-                    )}
-                    {surveyStep === 1 && (
-                        <Step2 onNext={handleNext} onBack={handleBack} />
-                    )}
-                    {surveyStep === 2 && (
-                        <Step3 onNext={handleNext} onBack={handleBack} />
-                    )}
-                    {surveyStep === 3 && (
-                        <Step4 onNext={handleNext} onBack={handleBack} />
-                    )}
+                    {surveyStep === 0 && <Step1 onNext={handleNext} onSkip={handleSkip} />}
+                    {surveyStep === 1 && <Step2 onNext={handleNext} onBack={handleBack} />}
+                    {surveyStep === 2 && <Step3 onNext={handleNext} onBack={handleBack} />}
+                    {surveyStep === 3 && <Step4 onNext={handleNext} onBack={handleBack} />}
                     {surveyStep === 4 && <QuickStart />}
                 </Suspense>
             </div>

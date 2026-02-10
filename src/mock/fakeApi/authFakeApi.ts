@@ -17,11 +17,7 @@ export default function authFakeApi(server: Server, apiPrefix: string) {
                 token: 'wVYrxaeNa9OxdnULvde1Au5m5w63',
             }
         }
-        return new Response(
-            401,
-            { some: 'header' },
-            { message: 'Invalid email or password!' }
-        )
+        return new Response(401, { some: 'header' }, { message: 'Invalid email or password!' })
     })
 
     server.post(`${apiPrefix}/sign-out`, () => {
@@ -41,25 +37,13 @@ export default function authFakeApi(server: Server, apiPrefix: string) {
             authority: ['admin', 'user'],
         }
         if (!isEmpty(userExist)) {
-            const errors = [
-                { message: '', domain: 'global', reason: 'invalid' },
-            ]
-            return new Response(
-                400,
-                { some: 'header' },
-                { errors, message: 'User already exist!' }
-            )
+            const errors = [{ message: '', domain: 'global', reason: 'invalid' }]
+            return new Response(400, { some: 'header' }, { errors, message: 'User already exist!' })
         }
 
         if (!isEmpty(emailUsed)) {
-            const errors = [
-                { message: '', domain: 'global', reason: 'invalid' },
-            ]
-            return new Response(
-                400,
-                { some: 'header' },
-                { errors, message: 'Email already used' }
-            )
+            const errors = [{ message: '', domain: 'global', reason: 'invalid' }]
+            return new Response(400, { some: 'header' }, { errors, message: 'Email already used' })
         }
 
         schema.db.signInUserData.insert({

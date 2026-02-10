@@ -41,9 +41,7 @@ const Switcher = forwardRef<HTMLInputElement, SwitcherProps>((props, ref) => {
 
     const { themeColor, primaryColorLevel } = useConfig()
 
-    const [switcherChecked, setSwitcherChecked] = useState(
-        defaultChecked || checked
-    )
+    const [switcherChecked, setSwitcherChecked] = useState(defaultChecked || checked)
 
     useEffect(() => {
         if (typeof checked !== 'undefined') {
@@ -63,8 +61,7 @@ const Switcher = forwardRef<HTMLInputElement, SwitcherProps>((props, ref) => {
         }
 
         if (field) {
-            checkedValue =
-                typeof field.value === 'boolean' ? field.value : defaultChecked
+            checkedValue = typeof field.value === 'boolean' ? field.value : defaultChecked
             checked = { value: checkedValue, checked: checkedValue }
         }
 
@@ -95,10 +92,9 @@ const Switcher = forwardRef<HTMLInputElement, SwitcherProps>((props, ref) => {
 
     const switcherClass = classNames(
         'switcher',
-        (switcherChecked || controlProps.checked) &&
-            `switcher-checked bg-${switcherColor} dark:bg-${switcherColor}`,
+        (switcherChecked || controlProps.checked) && `switcher-checked bg-${switcherColor} dark:bg-${switcherColor}`,
         disabled && 'switcher-disabled',
-        className
+        className,
     )
 
     return (
@@ -118,17 +114,13 @@ const Switcher = forwardRef<HTMLInputElement, SwitcherProps>((props, ref) => {
                 <Spinner
                     className={classNames(
                         'switcher-toggle-loading',
-                        switcherChecked
-                            ? 'switcher-checked-loading'
-                            : 'switcher-uncheck-loading'
+                        switcherChecked ? 'switcher-checked-loading' : 'switcher-uncheck-loading',
                     )}
                 />
             ) : (
                 <div className="switcher-toggle" />
             )}
-            <span className="switcher-content">
-                {switcherChecked ? checkedContent : unCheckedContent}
-            </span>
+            <span className="switcher-content">{switcherChecked ? checkedContent : unCheckedContent}</span>
         </label>
     )
 })

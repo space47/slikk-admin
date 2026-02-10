@@ -10,10 +10,7 @@ const Clickable = () => {
                 onClick={(e) => console.log('Card Clickable', e)}
             >
                 <h5>Card title</h5>
-                <p className="mt-2">
-                    Some quick example text to build on the card title and make
-                    up the bulk of the card&apos;s content.
-                </p>
+                <p className="mt-2">Some quick example text to build on the card title and make up the bulk of the card&apos;s content.</p>
             </Card>
         </div>
     )

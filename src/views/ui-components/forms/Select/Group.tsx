@@ -42,19 +42,13 @@ const groupedOptions: Option[] = [
 ]
 
 const formatGroupLabel = (data: Option) => (
-    <div className="font-bold text-xs uppercase text-gray-800 dark:text-white my-2">
-        {data.label}
-    </div>
+    <div className="font-bold text-xs uppercase text-gray-800 dark:text-white my-2">{data.label}</div>
 )
 
 const Group = () => {
     return (
         <div>
-            <Select
-                defaultValue={groupedOptions[0].options[1]}
-                options={groupedOptions}
-                formatGroupLabel={formatGroupLabel}
-            />
+            <Select defaultValue={groupedOptions[0].options[1]} options={groupedOptions} formatGroupLabel={formatGroupLabel} />
         </div>
     )
 }

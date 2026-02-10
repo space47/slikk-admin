@@ -5,23 +5,14 @@ import Button from '@/components/ui/Button'
 import Editor from './components/Editor'
 import useQuery from '@/utils/hooks/useQuery'
 import { injectReducer } from '@/store'
-import reducer, {
-    getArticle,
-    setArticle,
-    setCategory,
-    setMode,
-    useAppDispatch,
-    useAppSelector,
-} from './store'
+import reducer, { getArticle, setArticle, setCategory, setMode, useAppDispatch, useAppSelector } from './store'
 
 injectReducer('knowledgeBaseEditArticle', reducer)
 
 const EditArticle = () => {
     const dispatch = useAppDispatch()
 
-    const mode = useAppSelector(
-        (state) => state.knowledgeBaseEditArticle.data.mode
-    )
+    const mode = useAppSelector((state) => state.knowledgeBaseEditArticle.data.mode)
 
     const query = useQuery()
 
@@ -65,19 +56,11 @@ const EditArticle = () => {
                             {mode === 'preview' && <span>Preview Article</span>}
                         </h3>
                         {mode === 'preview' ? (
-                            <Button
-                                size="sm"
-                                onClick={() =>
-                                    onModeChange(id ? 'edit' : 'add')
-                                }
-                            >
+                            <Button size="sm" onClick={() => onModeChange(id ? 'edit' : 'add')}>
                                 Back
                             </Button>
                         ) : (
-                            <Button
-                                size="sm"
-                                onClick={() => onModeChange('preview')}
-                            >
+                            <Button size="sm" onClick={() => onModeChange('preview')}>
                                 Preview
                             </Button>
                         )}

@@ -61,63 +61,31 @@ const Step3 = ({ onNext, onBack }: Step3Props) => {
                         return (
                             <Form>
                                 <FormContainer>
-                                    <FormItem
-                                        invalid={errors.role && touched.role}
-                                        errorMessage={errors.role}
-                                    >
+                                    <FormItem invalid={errors.role && touched.role} errorMessage={errors.role}>
                                         <Field name="role">
                                             {({ field, form }: FieldProps) => (
                                                 <Segment
                                                     value={[field.value]}
                                                     onChange={(val) => {
-                                                        form.setFieldValue(
-                                                            field.name,
-                                                            val[0]
-                                                        )
+                                                        form.setFieldValue(field.name, val[0])
                                                         onNext?.()
                                                     }}
                                                 >
                                                     <div className="grid grid-cols-2 gap-4 w-full">
                                                         {roles.map((item) => (
-                                                            <Segment.Item
-                                                                key={item.value}
-                                                                value={
-                                                                    item.value
-                                                                }
-                                                                disabled={
-                                                                    item.disabled
-                                                                }
-                                                            >
-                                                                {({
-                                                                    active,
-                                                                    onSegmentItemClick,
-                                                                    disabled,
-                                                                }) => {
+                                                            <Segment.Item key={item.value} value={item.value} disabled={item.disabled}>
+                                                                {({ active, onSegmentItemClick, disabled }) => {
                                                                     return (
                                                                         <SegmentItemOption
                                                                             hoverable
-                                                                            active={
-                                                                                active
-                                                                            }
-                                                                            disabled={
-                                                                                disabled
-                                                                            }
+                                                                            active={active}
+                                                                            disabled={disabled}
                                                                             className="bg-white dark:bg-gray-800"
-                                                                            onSegmentItemClick={
-                                                                                onSegmentItemClick
-                                                                            }
+                                                                            onSegmentItemClick={onSegmentItemClick}
                                                                         >
                                                                             <div className="flex items-center gap-3">
-                                                                                <span className="text-2xl">
-                                                                                    {
-                                                                                        item.icon
-                                                                                    }
-                                                                                </span>
-                                                                                <h6>
-                                                                                    {
-                                                                                        item.label
-                                                                                    }
-                                                                                </h6>
+                                                                                <span className="text-2xl">{item.icon}</span>
+                                                                                <h6>{item.label}</h6>
                                                                             </div>
                                                                         </SegmentItemOption>
                                                                     )
@@ -129,13 +97,7 @@ const Step3 = ({ onNext, onBack }: Step3Props) => {
                                             )}
                                         </Field>
                                     </FormItem>
-                                    <Button
-                                        block
-                                        variant="plain"
-                                        type="button"
-                                        icon={<HiArrowSmLeft />}
-                                        onClick={onBack}
-                                    >
+                                    <Button block variant="plain" type="button" icon={<HiArrowSmLeft />} onClick={onBack}>
                                         Back
                                     </Button>
                                 </FormContainer>

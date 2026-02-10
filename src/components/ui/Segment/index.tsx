@@ -5,9 +5,7 @@ import SegmentItem from './SegmentItem'
 export type { SegmentProps } from './Segment'
 export type { SegmentItemProps } from './SegmentItem'
 
-type CompoundedComponent = ForwardRefExoticComponent<
-    SegmentProps & RefAttributes<HTMLHtmlElement>
-> & {
+type CompoundedComponent = ForwardRefExoticComponent<SegmentProps & RefAttributes<HTMLHtmlElement>> & {
     Item: typeof SegmentItem
 }
 

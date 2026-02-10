@@ -1,11 +1,4 @@
-import {
-    ComposableMap,
-    Geographies,
-    Geography,
-    Graticule,
-    Line,
-    Sphere,
-} from 'react-simple-maps'
+import { ComposableMap, Geographies, Geography, Graticule, Line, Sphere } from 'react-simple-maps'
 import { PatternLines } from '@visx/pattern'
 
 const geoUrl = '/data/features.json'
@@ -96,50 +89,26 @@ const MapChartWithTexture = () => {
                 background="#F6F0E9"
                 orientation={['diagonal']}
             />
-            <Sphere
-                id="rsm-sphere-1"
-                fill="currentcolor"
-                stroke="#DDD"
-                strokeWidth={0.5}
-            />
+            <Sphere id="rsm-sphere-1" fill="currentcolor" stroke="#DDD" strokeWidth={0.5} />
             <Graticule stroke="#DDD" />
             <Geographies geography={geoUrl} stroke="#FFF" strokeWidth={0.5}>
                 {({ geographies }) =>
                     geographies.map((geo) => {
-                        const isHighlighted =
-                            highlighted.indexOf(geo.properties.ISO_A3) !== -1
+                        const isHighlighted = highlighted.indexOf(geo.properties.ISO_A3) !== -1
                         return (
                             <Geography
                                 key={geo.rsmKey}
                                 geography={geo}
-                                fill={
-                                    isHighlighted ? "url('#lines')" : '#F6F0E9'
-                                }
-                                onClick={() =>
-                                    console.log(geo.properties.ISO_A3)
-                                }
+                                fill={isHighlighted ? "url('#lines')" : '#F6F0E9'}
+                                onClick={() => console.log(geo.properties.ISO_A3)}
                             />
                         )
                     })
                 }
             </Geographies>
-            <Line
-                coordinates={generateCircle(0)}
-                stroke="#F53"
-                strokeWidth={2}
-            />
-            <Line
-                coordinates={generateCircle(23)}
-                stroke="#776865"
-                strokeWidth={1}
-                strokeDasharray={`[5, 5]`}
-            />
-            <Line
-                coordinates={generateCircle(-24)}
-                stroke="#776865"
-                strokeWidth={1}
-                strokeDasharray={`[5, 5]`}
-            />
+            <Line coordinates={generateCircle(0)} stroke="#F53" strokeWidth={2} />
+            <Line coordinates={generateCircle(23)} stroke="#776865" strokeWidth={1} strokeDasharray={`[5, 5]`} />
+            <Line coordinates={generateCircle(-24)} stroke="#776865" strokeWidth={1} strokeDasharray={`[5, 5]`} />
         </ComposableMap>
     )
 }

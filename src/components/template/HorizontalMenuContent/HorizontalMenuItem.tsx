@@ -17,11 +17,7 @@ export type HorizontalMenuItemProps = {
     manuVariant: NavMode
 }
 
-const HorizontalMenuItem = ({
-    nav,
-    isLink,
-    manuVariant,
-}: HorizontalMenuItemProps) => {
+const HorizontalMenuItem = ({ nav, isLink, manuVariant }: HorizontalMenuItemProps) => {
     const { title, translateKey, icon, path, isExternalLink } = nav
 
     const { t } = useTranslation()

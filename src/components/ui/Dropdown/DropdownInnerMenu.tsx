@@ -1,10 +1,7 @@
 import { forwardRef } from 'react'
 import { MenuContextProvider } from './context/menuContext'
 import useUncertainRef from '../hooks/useUncertainRef'
-import {
-    useDropdownMenuContext,
-    DropdownMenuContextProvider,
-} from './context/dropdownMenuContext'
+import { useDropdownMenuContext, DropdownMenuContextProvider } from './context/dropdownMenuContext'
 import useUniqueId from '../hooks/useUniqueId'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { CommonProps } from '../@types/common'
@@ -20,21 +17,11 @@ export interface DropdownInnerMenuProps extends CommonProps {
 }
 
 const Menu = forwardRef<HTMLElement, DropdownInnerMenuProps>((props, ref) => {
-    const {
-        children,
-        activeKey,
-        onSelect,
-        hidden,
-        placement,
-        menuClass,
-        ...rest
-    } = props
+    const { children, activeKey, onSelect, hidden, placement, menuClass, ...rest } = props
 
     const menuRef = useUncertainRef<HTMLElement>(ref)
     const menuId = useUniqueId('menu-')
-    const menuControl = useDropdownMenuContext<HTMLElement>(
-        menuRef as RefObject<HTMLElement>
-    )
+    const menuControl = useDropdownMenuContext<HTMLElement>(menuRef as RefObject<HTMLElement>)
 
     const getTransform = (deg: number) => {
         const rotate = `rotateX(${deg}deg)`

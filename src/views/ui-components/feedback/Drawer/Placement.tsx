@@ -18,9 +18,7 @@ const placementList: {
 
 const Placement = () => {
     const [isOpen, setIsOpen] = useState(false)
-    const [placement, setPlacement] = useState<Direction>(
-        placementList[1].value
-    )
+    const [placement, setPlacement] = useState<Direction>(placementList[1].value)
 
     const openDrawer = () => {
         setIsOpen(true)
@@ -45,13 +43,7 @@ const Placement = () => {
                 ))}
             </Radio.Group>
             <Button onClick={() => openDrawer()}>Open Drawer</Button>
-            <Drawer
-                title="Drawer Title"
-                isOpen={isOpen}
-                placement={placement}
-                onClose={onDrawerClose}
-                onRequestClose={onDrawerClose}
-            >
+            <Drawer title="Drawer Title" isOpen={isOpen} placement={placement} onClose={onDrawerClose} onRequestClose={onDrawerClose}>
                 Drawer Content
             </Drawer>
         </div>

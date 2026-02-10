@@ -238,10 +238,8 @@ const reactTableApi = (
             React Table
         </h6>
         <p className="mb-1">
-            Most of the examples above were integrated with{' '}
-            <code>react-table</code>, its is lightweight and extensible data
-            table component for materialize, filter, sort, group, aggregate,
-            paginate and display massive data. Vist the{' '}
+            Most of the examples above were integrated with <code>react-table</code>, its is lightweight and extensible data table component
+            for materialize, filter, sort, group, aggregate, paginate and display massive data. Vist the{' '}
             <a
                 className="underline text-blue-500"
                 href="https://react-table.tanstack.com/docs/overview"
@@ -256,14 +254,7 @@ const reactTableApi = (
 )
 
 const Table = () => {
-    return (
-        <DemoLayout
-            header={demoHeader}
-            demos={demos}
-            api={demoApi}
-            extra={reactTableApi}
-        />
-    )
+    return <DemoLayout header={demoHeader} demos={demos} api={demoApi} extra={reactTableApi} />
 }
 
 export default Table

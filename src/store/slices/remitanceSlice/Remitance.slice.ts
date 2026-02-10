@@ -59,7 +59,7 @@ export const remitanceSlice = createSlice({
                 state.loading = true
             })
             .addCase(fetchRemitanceOrders.fulfilled, (state, action) => {
-                ;(state.loading = false), (state.remitance = action.payload?.remitance)
+                ;((state.loading = false), (state.remitance = action.payload?.remitance))
                 state.count = action.payload?.count
                 state.total_amount = action.payload?.total_amount
             })

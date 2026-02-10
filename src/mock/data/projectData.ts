@@ -216,14 +216,7 @@ export const projectDashboardData = {
                         data: [1, 4, 8, 15, 16, 18],
                     },
                 ],
-                range: [
-                    '6:00am',
-                    '9:00am',
-                    '12:00pm',
-                    '03:00pm',
-                    '06:00pm',
-                    '09:00pm',
-                ],
+                range: ['6:00am', '9:00am', '12:00pm', '03:00pm', '06:00pm', '09:00pm'],
             },
             weekly: {
                 onGoing: 126,
@@ -239,15 +232,7 @@ export const projectDashboardData = {
                         data: [35, 41, 62, 62, 75, 81, 87],
                     },
                 ],
-                range: [
-                    '21 Jan',
-                    '22 Jan',
-                    '23 Jan',
-                    '24 Jan',
-                    '25 Jan',
-                    '26 Jan',
-                    '27 Jan',
-                ],
+                range: ['21 Jan', '22 Jan', '23 Jan', '24 Jan', '25 Jan', '26 Jan', '27 Jan'],
             },
             monthly: {
                 onGoing: 270,
@@ -263,15 +248,7 @@ export const projectDashboardData = {
                         data: [22, 31, 74, 88, 97, 107, 113],
                     },
                 ],
-                range: [
-                    '01 Jan',
-                    '05 Jan',
-                    '10 Jan',
-                    '15 Jan',
-                    '20 Jan',
-                    '25 Jan',
-                    '27 Jan',
-                ],
+                range: ['01 Jan', '05 Jan', '10 Jan', '15 Jan', '20 Jan', '25 Jan', '27 Jan'],
             },
         },
     },
@@ -531,8 +508,7 @@ const toBeProcessCards = [
                 id: '3AhkqqSFFr',
                 name: 'Ron Vargas',
                 src: '/img/avatars/thumb-3.jpg',
-                message:
-                    'Af trust fund meggings, meditation chicharrones brunch wolf narwhal shoreditch whatever bicycle rights ramps. ',
+                message: 'Af trust fund meggings, meditation chicharrones brunch wolf narwhal shoreditch whatever bicycle rights ramps. ',
                 date: new Date(y, 4, 20),
             },
         ],
@@ -611,8 +587,7 @@ const processingCards = [
     {
         id: 'tkBXWJGwkr',
         name: 'New design',
-        description:
-            'Typewriter hell of cloud bread health goth beard mlkshk four loko.',
+        description: 'Typewriter hell of cloud bread health goth beard mlkshk four loko.',
         cover: '',
         members: [
             {
@@ -636,8 +611,7 @@ const processingCards = [
                 id: 'MAsPDzGwnA',
                 name: 'Ron Vargas',
                 src: '/img/avatars/thumb-3.jpg',
-                message:
-                    'Af trust fund meggings, meditation chicharrones brunch wolf narwhal shoreditch whatever bicycle rights ramps. ',
+                message: 'Af trust fund meggings, meditation chicharrones brunch wolf narwhal shoreditch whatever bicycle rights ramps. ',
                 date: new Date(y, 4, 20),
             },
         ],
@@ -695,8 +669,7 @@ const submittedCards = [
     {
         id: 'ZFQDPmscwA',
         name: 'Remove user data',
-        description:
-            'Crucifix polaroid hot chicken asymmetrical wolf helvetica keytar fashion axe ramps YOLO wayfarers 90s.',
+        description: 'Crucifix polaroid hot chicken asymmetrical wolf helvetica keytar fashion axe ramps YOLO wayfarers 90s.',
         cover: '/img/others/img-15.jpg',
         members: [
             {
@@ -739,8 +712,7 @@ const completedCards = [
     {
         id: 'yhjk5679xr',
         name: 'Ready to test',
-        description:
-            'Yr green juice health goth, williamsburg four dollar toast shabby chic meggings jean shorts VHS.',
+        description: 'Yr green juice health goth, williamsburg four dollar toast shabby chic meggings jean shorts VHS.',
         cover: '',
         members: [
             {
@@ -772,8 +744,7 @@ const completedCards = [
     {
         id: 'UMgvapYVXm',
         name: 'Slow API connection',
-        description:
-            'Yr green juice health goth, williamsburg four dollar toast shabby chic meggings jean shorts VHS.',
+        description: 'Yr green juice health goth, williamsburg four dollar toast shabby chic meggings jean shorts VHS.',
         cover: '',
         members: [
             {
@@ -803,8 +774,7 @@ const completedCards = [
     {
         id: 'uRZNVsCmDW',
         name: 'Login failed',
-        description:
-            'Air plant subway tile four loko ramps. Microdosing offal tote bag, single-origin coffee biodiesel before they sold.',
+        description: 'Air plant subway tile four loko ramps. Microdosing offal tote bag, single-origin coffee biodiesel before they sold.',
         cover: '',
         members: [
             {
@@ -822,8 +792,7 @@ const completedCards = [
     {
         id: 'PBSGmhVgvS',
         name: 'Locale incorrect',
-        description:
-            'Hoodie mustache woke pour-over you probably havent heard of them cray.',
+        description: 'Hoodie mustache woke pour-over you probably havent heard of them cray.',
         cover: '',
         members: [
             {
@@ -846,8 +815,7 @@ const completedCards = [
                 id: 'dNskbPFeQD',
                 name: 'Ron Vargas',
                 src: '/img/avatars/thumb-3.jpg',
-                message:
-                    'Af trust fund meggings, meditation chicharrones brunch wolf narwhal shoreditch whatever bicycle rights ramps. ',
+                message: 'Af trust fund meggings, meditation chicharrones brunch wolf narwhal shoreditch whatever bicycle rights ramps. ',
                 date: new Date(y, 4, 20),
             },
             {

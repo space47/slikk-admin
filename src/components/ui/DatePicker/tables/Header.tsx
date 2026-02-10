@@ -53,52 +53,31 @@ const Header = (props: HeaderProps) => {
     const renderChildren = children ? children : headerLabel
 
     return (
-        <div
-            className={classNames(
-                'picker-header flex items-center justify-between mb-2',
-                className
-            )}
-            {...rest}
-        >
+        <div className={classNames('picker-header flex items-center justify-between mb-2', className)} {...rest}>
             {!renderCenter && renderChildren}
-            <div
-                className={classNames(
-                    renderCenter && 'justify-between w-full',
-                    'flex items-center rtl:flex-row-reverse'
-                )}
-            >
+            <div className={classNames(renderCenter && 'justify-between w-full', 'flex items-center rtl:flex-row-reverse')}>
                 <Button
                     type="button"
                     variant="plain"
-                    className={classNames(
-                        !hasPrevious &&
-                            renderCenter &&
-                            'opacity-0 cursor-default'
-                    )}
+                    className={classNames(!hasPrevious && renderCenter && 'opacity-0 cursor-default')}
                     size="sm"
                     icon={<HiChevronLeft />}
                     disabled={!hasPrevious}
                     aria-label={previousLabel}
                     onClick={onPrevious}
-                    onMouseDown={(event) =>
-                        preventFocus && event.preventDefault()
-                    }
+                    onMouseDown={(event) => preventFocus && event.preventDefault()}
                 />
                 {renderCenter && renderChildren}
                 <Button
                     type="button"
                     variant="plain"
-                    className={classNames(
-                        !hasNext && renderCenter && 'opacity-0 cursor-default'
-                    )}
+                    className={classNames(!hasNext && renderCenter && 'opacity-0 cursor-default')}
                     size="sm"
                     icon={<HiChevronRight />}
                     disabled={!hasNext}
                     aria-label={nextLabel}
                     onClick={onNext}
-                    onMouseDown={(event) =>
-                        preventFocus && event.preventDefault()
-                    }
+                    onMouseDown={(event) => preventFocus && event.preventDefault()}
                 />
             </div>
         </div>

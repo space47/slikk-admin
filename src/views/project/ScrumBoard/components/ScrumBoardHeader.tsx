@@ -4,13 +4,7 @@ import BoardAddNewColumn from './BoardAddNewColumn'
 import QuickFilterTab from './QuickFilterTab'
 import Container from '@/components/shared/Container'
 import UsersAvatarGroup from '@/components/shared/UsersAvatarGroup'
-import {
-    getMembers,
-    openDialog,
-    updateDialogView,
-    useAppDispatch,
-    useAppSelector,
-} from '../store'
+import { getMembers, openDialog, updateDialogView, useAppDispatch, useAppSelector } from '../store'
 import { HiOutlineUserAdd, HiOutlineCog } from 'react-icons/hi'
 import { useNavigate } from 'react-router-dom'
 
@@ -19,9 +13,7 @@ const BoardHeader = () => {
 
     const navigate = useNavigate()
 
-    const boardMembers = useAppSelector(
-        (state) => state.scrumBoard.data.boardMembers
-    )
+    const boardMembers = useAppSelector((state) => state.scrumBoard.data.boardMembers)
 
     const onAddMember = () => {
         dispatch(updateDialogView('ADD_MEMBER'))
@@ -45,18 +37,8 @@ const BoardHeader = () => {
                 <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-4">
                     <QuickFilterTab />
                     <div className="flex items-center gap-2">
-                        <Button
-                            size="sm"
-                            icon={<HiOutlineUserAdd />}
-                            onClick={onAddMember}
-                        />
-                        <Button
-                            size="sm"
-                            icon={<HiOutlineCog />}
-                            onClick={() =>
-                                navigate('/app/account/settings/profile')
-                            }
-                        />
+                        <Button size="sm" icon={<HiOutlineUserAdd />} onClick={onAddMember} />
+                        <Button size="sm" icon={<HiOutlineCog />} onClick={() => navigate('/app/account/settings/profile')} />
                         <BoardAddNewColumn />
                     </div>
                 </div>

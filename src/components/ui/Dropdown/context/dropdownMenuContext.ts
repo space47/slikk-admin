@@ -7,10 +7,7 @@ type Item = {
 }
 
 type DropdownMenuContextProps = {
-    registerItem?: (
-        element: HTMLElement | null,
-        props: { disabled?: boolean }
-    ) => void
+    registerItem?: (element: HTMLElement | null, props: { disabled?: boolean }) => void
     unregisterItem?: (id: string) => void
 }
 
@@ -20,21 +17,16 @@ export const DropdownMenuContextProvider = DropdownMenuContext.Provider
 
 export const DropdownMenuContextConsumer = DropdownMenuContext.Consumer
 
-export function useDropdownMenuContext<E extends HTMLElement>(
-    menuRef: React.RefObject<E>
-) {
+export function useDropdownMenuContext<E extends HTMLElement>(menuRef: React.RefObject<E>) {
     const [open, setOpen] = useState(false)
 
     const [items, setItems] = useState<Item[]>([])
     const [activeItemIndex, setActiveItemIndex] = useState<number | null>(null)
     const previousActiveElementRef = useRef<HTMLElement | null>(null)
 
-    const registerItem = useCallback(
-        (element: HTMLElement | null, props: { disabled?: boolean }) => {
-            setItems((items) => [...items, { element, props }])
-        },
-        []
-    )
+    const registerItem = useCallback((element: HTMLElement | null, props: { disabled?: boolean }) => {
+        setItems((items) => [...items, { element, props }])
+    }, [])
 
     const unregisterItem = useCallback((id: string) => {
         setItems((items) => items.filter((item) => item?.element?.id !== id))
@@ -43,8 +35,7 @@ export function useDropdownMenuContext<E extends HTMLElement>(
     const focusSelf = useCallback(() => {
         requestAnimationFrame(() => {
             if (document.activeElement !== menuRef.current) {
-                previousActiveElementRef.current =
-                    document.activeElement as HTMLElement
+                previousActiveElementRef.current = document.activeElement as HTMLElement
                 menuRef.current?.focus()
             }
         })
@@ -58,7 +49,7 @@ export function useDropdownMenuContext<E extends HTMLElement>(
                 focusSelf()
             }
         },
-        [items, focusSelf]
+        [items, focusSelf],
     )
 
     const lookupNextActiveItemIndex = useCallback(
@@ -70,7 +61,7 @@ export function useDropdownMenuContext<E extends HTMLElement>(
             }
             return null
         },
-        [items]
+        [items],
     )
 
     const focusItemAt = useCallback(
@@ -83,10 +74,7 @@ export function useDropdownMenuContext<E extends HTMLElement>(
                 if (index === 0) {
                     activeItemIndex = lookupNextActiveItemIndex(0, 1)
                 } else if (index === -1) {
-                    activeItemIndex = lookupNextActiveItemIndex(
-                        items.length - 1,
-                        -1
-                    )
+                    activeItemIndex = lookupNextActiveItemIndex(items.length - 1, -1)
                 }
 
                 if (!isNil(activeItemIndex)) {
@@ -94,7 +82,7 @@ export function useDropdownMenuContext<E extends HTMLElement>(
                 }
             }
         },
-        [items, focusItem, focusSelf, lookupNextActiveItemIndex]
+        [items, focusItem, focusSelf, lookupNextActiveItemIndex],
     )
 
     const openMenu = useCallback(() => {

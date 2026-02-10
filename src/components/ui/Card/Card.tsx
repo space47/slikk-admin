@@ -4,9 +4,7 @@ import { useConfig } from '../ConfigProvider'
 import type { CommonProps } from '../@types/common'
 import type { ReactNode, ComponentPropsWithRef, MouseEvent } from 'react'
 
-export interface CardProps
-    extends CommonProps,
-        Omit<ComponentPropsWithRef<'div'>, 'onClick'> {
+export interface CardProps extends CommonProps, Omit<ComponentPropsWithRef<'div'>, 'onClick'> {
     clickable?: boolean
     bodyClass?: string
     bordered?: boolean
@@ -44,21 +42,12 @@ const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
         'card',
         className,
         bordered ? `card-border` : `card-shadow`,
-        clickable && 'cursor-pointer user-select-none'
+        clickable && 'cursor-pointer user-select-none',
     )
 
     const cardBodyClasss = classNames('card-body', bodyClass)
-    const cardHeaderClass = classNames(
-        'card-header',
-        headerBorder && 'card-header-border',
-        headerExtra && 'card-header-extra',
-        headerClass
-    )
-    const cardFooterClass = classNames(
-        'card-footer',
-        footerBorder && `card-footer-border`,
-        footerClass
-    )
+    const cardHeaderClass = classNames('card-header', headerBorder && 'card-header-border', headerExtra && 'card-header-extra', headerClass)
+    const cardFooterClass = classNames('card-footer', footerBorder && `card-footer-border`, footerClass)
 
     const renderHeader = () => {
         if (typeof header === 'string') {
@@ -72,13 +61,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
     }
 
     return (
-        <div
-            ref={ref}
-            className={cardClass}
-            role="presentation"
-            onClick={handleClick}
-            {...rest}
-        >
+        <div ref={ref} className={cardClass} role="presentation" onClick={handleClick} {...rest}>
             {header && (
                 <div className={cardHeaderClass}>
                     {renderHeader()}

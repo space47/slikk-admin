@@ -10,30 +10,14 @@ interface TextBlockSkeletonProps extends SkeletonProps {
 }
 
 const TextBlockSkeleton = (props: TextBlockSkeletonProps) => {
-    const {
-        height,
-        lastChildWidth = '60%',
-        rowCount = 3,
-        title = true,
-        titleWidth = '40%',
-    } = props
+    const { height, lastChildWidth = '60%', rowCount = 3, title = true, titleWidth = '40%' } = props
 
     return (
         <div className="flex flex-col gap-4">
-            {title && (
-                <Skeleton className="mb-1" height={height} width={titleWidth} />
-            )}
-            {Array.from(new Array(rowCount), (_, i) => i + 1).map(
-                (row, index) => (
-                    <Skeleton
-                        key={row}
-                        height={height}
-                        width={
-                            index === rowCount - 1 ? lastChildWidth : undefined
-                        }
-                    />
-                )
-            )}
+            {title && <Skeleton className="mb-1" height={height} width={titleWidth} />}
+            {Array.from(new Array(rowCount), (_, i) => i + 1).map((row, index) => (
+                <Skeleton key={row} height={height} width={index === rowCount - 1 ? lastChildWidth : undefined} />
+            ))}
         </div>
     )
 }

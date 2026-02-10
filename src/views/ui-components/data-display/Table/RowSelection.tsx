@@ -1,11 +1,5 @@
 import { useRef, useEffect, useMemo, useState } from 'react'
-import {
-    flexRender,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    useReactTable,
-} from '@tanstack/react-table'
+import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table'
 import Table from '@/components/ui/Table'
 import Checkbox from '@/components/ui/Checkbox'
 import { data10 } from './data'
@@ -25,11 +19,7 @@ interface IndeterminateCheckboxProps extends Omit<CheckboxProps, 'onChange'> {
 
 const { Tr, Th, Td, THead, TBody } = Table
 
-function IndeterminateCheckbox({
-    indeterminate,
-    onChange,
-    ...rest
-}: IndeterminateCheckboxProps) {
+function IndeterminateCheckbox({ indeterminate, onChange, ...rest }: IndeterminateCheckboxProps) {
     const ref = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
@@ -110,14 +100,8 @@ function RowSelection() {
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => {
                                 return (
-                                    <Th
-                                        key={header.id}
-                                        colSpan={header.colSpan}
-                                    >
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
+                                    <Th key={header.id} colSpan={header.colSpan}>
+                                        {flexRender(header.column.columnDef.header, header.getContext())}
                                     </Th>
                                 )
                             })}
@@ -129,14 +113,7 @@ function RowSelection() {
                         return (
                             <Tr key={row.id}>
                                 {row.getVisibleCells().map((cell) => {
-                                    return (
-                                        <Td key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext()
-                                            )}
-                                        </Td>
-                                    )
+                                    return <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                                 })}
                             </Tr>
                         )

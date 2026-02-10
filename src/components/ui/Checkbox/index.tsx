@@ -6,9 +6,7 @@ export type { CheckboxProps } from './Checkbox'
 export type { CheckboxGroupProps } from './Group'
 export type { CheckboxGroupValue, CheckboxValue } from './context'
 
-type CompoundedComponent = ForwardRefExoticComponent<
-    CheckboxProps & RefAttributes<HTMLInputElement>
-> & {
+type CompoundedComponent = ForwardRefExoticComponent<CheckboxProps & RefAttributes<HTMLInputElement>> & {
     Group: typeof CheckboxGroup
 }
 

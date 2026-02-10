@@ -1,11 +1,6 @@
 import { useMemo, useState } from 'react'
 import Table from '@/components/ui/Table'
-import {
-    useReactTable,
-    getCoreRowModel,
-    getExpandedRowModel,
-    flexRender,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, getExpandedRowModel, flexRender } from '@tanstack/react-table'
 import { dataWithSubRows } from './data'
 import { HiOutlinePlusCircle, HiOutlineMinusCircle } from 'react-icons/hi'
 import type { PersonWithSubRow } from './data'
@@ -23,15 +18,10 @@ function Exapanding() {
                         <button
                             className="text-xl"
                             {...{
-                                onClick:
-                                    table.getToggleAllRowsExpandedHandler(),
+                                onClick: table.getToggleAllRowsExpandedHandler(),
                             }}
                         >
-                            {table.getIsAllRowsExpanded() ? (
-                                <HiOutlineMinusCircle />
-                            ) : (
-                                <HiOutlinePlusCircle />
-                            )}
+                            {table.getIsAllRowsExpanded() ? <HiOutlineMinusCircle /> : <HiOutlinePlusCircle />}
                         </button>
                     )
                 },
@@ -45,11 +35,7 @@ function Exapanding() {
                                         onClick: row.getToggleExpandedHandler(),
                                     }}
                                 >
-                                    {row.getIsExpanded() ? (
-                                        <HiOutlineMinusCircle />
-                                    ) : (
-                                        <HiOutlinePlusCircle />
-                                    )}
+                                    {row.getIsExpanded() ? <HiOutlineMinusCircle /> : <HiOutlinePlusCircle />}
                                 </button>
                             ) : null}
                             {getValue()}
@@ -82,7 +68,7 @@ function Exapanding() {
                 accessorKey: 'progress',
             },
         ],
-        []
+        [],
     )
 
     const [data] = useState(dataWithSubRows)
@@ -108,14 +94,8 @@ function Exapanding() {
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => {
                                 return (
-                                    <Th
-                                        key={header.id}
-                                        colSpan={header.colSpan}
-                                    >
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
+                                    <Th key={header.id} colSpan={header.colSpan}>
+                                        {flexRender(header.column.columnDef.header, header.getContext())}
                                     </Th>
                                 )
                             })}
@@ -127,14 +107,7 @@ function Exapanding() {
                         return (
                             <Tr key={row.id}>
                                 {row.getVisibleCells().map((cell) => {
-                                    return (
-                                        <Td key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext()
-                                            )}
-                                        </Td>
-                                    )
+                                    return <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                                 })}
                             </Tr>
                         )

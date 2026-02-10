@@ -4,11 +4,7 @@ import AuthorityCheck from '@/components/shared/AuthorityCheck'
 import VerticalSingleMenuItem from './VerticalSingleMenuItem'
 import VerticalCollapsedMenuItem from './VerticalCollapsedMenuItem'
 import { themeConfig } from '@/configs/theme.config'
-import {
-    NAV_ITEM_TYPE_TITLE,
-    NAV_ITEM_TYPE_COLLAPSE,
-    NAV_ITEM_TYPE_ITEM,
-} from '@/constants/navigation.constant'
+import { NAV_ITEM_TYPE_TITLE, NAV_ITEM_TYPE_COLLAPSE, NAV_ITEM_TYPE_ITEM } from '@/constants/navigation.constant'
 import useMenuActive from '@/utils/hooks/useMenuActive'
 import { useTranslation } from 'react-i18next'
 import { Direction, NavMode } from '@/@types/theme'
@@ -84,11 +80,7 @@ const VerticalMenuContent = (props: VerticalMenuContentProps) => {
         if (nav.type === NAV_ITEM_TYPE_TITLE) {
             if (nav.subMenu.length > 0) {
                 return (
-                    <AuthorityCheck
-                        key={nav.key}
-                        userAuthority={userAuthority}
-                        authority={nav.authority}
-                    >
+                    <AuthorityCheck key={nav.key} userAuthority={userAuthority} authority={nav.authority}>
                         <MenuGroup label={t(nav.translateKey) || nav.title}>
                             {nav.subMenu.map((subNav) =>
                                 subNav.subMenu.length > 0 ? (
@@ -109,7 +101,7 @@ const VerticalMenuContent = (props: VerticalMenuContentProps) => {
                                         direction={direction}
                                         onLinkClick={onMenuItemClick}
                                     />
-                                )
+                                ),
                             )}
                         </MenuGroup>
                     </AuthorityCheck>

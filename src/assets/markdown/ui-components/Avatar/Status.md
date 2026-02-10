@@ -6,10 +6,7 @@ import { HiOutlineUser } from 'react-icons/hi'
 const Status = () => {
     return (
         <div className="flex items-center">
-            <Badge
-                className="mr-4 rounded-full"
-                badgeStyle={{ top: '7px', right: '5px' }}
-            >
+            <Badge className="mr-4 rounded-full" badgeStyle={{ top: '7px', right: '5px' }}>
                 <Avatar shape="circle" icon={<HiOutlineUser />} />
             </Badge>
             <Badge className="mr-4">

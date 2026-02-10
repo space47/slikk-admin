@@ -24,15 +24,10 @@ const colourOptions: Option[] = [
 ]
 
 const filterColors = (inputValue: string) => {
-    return colourOptions.filter((i) =>
-        i.label.toLowerCase().includes(inputValue.toLowerCase())
-    )
+    return colourOptions.filter((i) => i.label.toLowerCase().includes(inputValue.toLowerCase()))
 }
 
-const loadOptions = (
-    inputValue: string,
-    callback: (options: Option[]) => void
-) => {
+const loadOptions = (inputValue: string, callback: (options: Option[]) => void) => {
     setTimeout(() => {
         const filteredOptions = filterColors(inputValue)
         callback(filteredOptions)
@@ -52,13 +47,7 @@ const AsyncOnSearch = () => {
 
     return (
         <div>
-            <Select
-                cacheOptions
-                defaultOptions
-                loadOptions={loadOptions}
-                componentAs={AsyncSelect}
-                onInputChange={handleInputChange}
-            />
+            <Select cacheOptions defaultOptions loadOptions={loadOptions} componentAs={AsyncSelect} onInputChange={handleInputChange} />
         </div>
     )
 }

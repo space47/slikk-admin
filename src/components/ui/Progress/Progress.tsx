@@ -44,20 +44,12 @@ const Progress = forwardRef<HTMLDivElement, ProgressProps>((props, ref) => {
         if (!showInfo) {
             return null
         }
-        return (
-            <span className={`progress-info ${variant}`}>
-                {customInfo || `${percent}%`}
-            </span>
-        )
+        return <span className={`progress-info ${variant}`}>{customInfo || `${percent}%`}</span>
     }
 
     const strokeColor = color || `${themeColor}-${primaryColorLevel}`
 
-    const progressClass = classNames(
-        'progress',
-        className,
-        variant === 'circle' ? 'circle' : 'line'
-    )
+    const progressClass = classNames('progress', className, variant === 'circle' ? 'circle' : 'line')
 
     const renderProgress = () => {
         const progressInfo = renderProcessInfo()
@@ -65,12 +57,7 @@ const Progress = forwardRef<HTMLDivElement, ProgressProps>((props, ref) => {
 
         if (variant === 'line') {
             progress = (
-                <Line
-                    percent={percent}
-                    size={size}
-                    strokeColor={strokeColor}
-                    {...props}
-                >
+                <Line percent={percent} size={size} strokeColor={strokeColor} {...props}>
                     {progressInfo}
                 </Line>
             )

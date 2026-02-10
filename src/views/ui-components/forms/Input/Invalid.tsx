@@ -12,19 +12,11 @@ const Invalid = () => {
                 <Input
                     invalid={invalid}
                     placeholder="Invalid input"
-                    suffix={
-                        invalid ? (
-                            <HiExclamationCircle className="text-red-500 text-xl" />
-                        ) : null
-                    }
+                    suffix={invalid ? <HiExclamationCircle className="text-red-500 text-xl" /> : null}
                 />
             </div>
             <div className="mb-4">
-                <Input
-                    textArea
-                    invalid={invalid}
-                    placeholder="Invalid text area"
-                />
+                <Input textArea invalid={invalid} placeholder="Invalid text area" />
             </div>
             <Button variant="solid" onClick={() => setInvalid(!invalid)}>
                 Set {invalid ? 'Valid' : 'Invalid'}

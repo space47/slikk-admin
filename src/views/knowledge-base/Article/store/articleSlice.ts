@@ -1,8 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import {
-    apiGetArticle,
-    apiGetOthersArticleList,
-} from '@/services/KnowledgeBaseService'
+import { apiGetArticle, apiGetOthersArticleList } from '@/services/KnowledgeBaseService'
 
 export type Article = {
     id: string
@@ -43,27 +40,15 @@ export type ArticleState = {
 
 export const SLICE_NAME = 'knowledgeBaseArticle'
 
-export const getArticle = createAsyncThunk(
-    SLICE_NAME + '/getArticle',
-    async (param: GetArticleRequest) => {
-        const response = await apiGetArticle<
-            GetArticleRespsonse,
-            GetArticleRequest
-        >(param)
-        return response.data
-    }
-)
+export const getArticle = createAsyncThunk(SLICE_NAME + '/getArticle', async (param: GetArticleRequest) => {
+    const response = await apiGetArticle<GetArticleRespsonse, GetArticleRequest>(param)
+    return response.data
+})
 
-export const getOthersArticle = createAsyncThunk(
-    SLICE_NAME + '/getOthersArticle',
-    async (param: GetOtherArticleRequest) => {
-        const response = await apiGetOthersArticleList<
-            GetOthersArticleListResponse,
-            GetOtherArticleRequest
-        >(param)
-        return response.data
-    }
-)
+export const getOthersArticle = createAsyncThunk(SLICE_NAME + '/getOthersArticle', async (param: GetOtherArticleRequest) => {
+    const response = await apiGetOthersArticleList<GetOthersArticleListResponse, GetOtherArticleRequest>(param)
+    return response.data
+})
 
 const initialState: ArticleState = {
     loading: false,

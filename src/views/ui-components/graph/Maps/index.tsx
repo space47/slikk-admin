@@ -384,19 +384,11 @@ const Extra = () => {
             <h4 className="mb-4">More usage & examples?</h4>
             <p>
                 Read the{' '}
-                <a
-                    target="_blank"
-                    href="https://www.react-simple-maps.io/docs/getting-started/"
-                    rel="noreferrer"
-                >
+                <a target="_blank" href="https://www.react-simple-maps.io/docs/getting-started/" rel="noreferrer">
                     docs
                 </a>
                 , or check out the{' '}
-                <a
-                    target="_blank"
-                    href="https://www.react-simple-maps.io/examples/"
-                    rel="noreferrer"
-                >
+                <a target="_blank" href="https://www.react-simple-maps.io/examples/" rel="noreferrer">
                     examples
                 </a>
                 .
@@ -406,14 +398,7 @@ const Extra = () => {
 }
 
 const Maps = () => {
-    return (
-        <DemoLayout
-            header={demoHeader}
-            demos={demos}
-            api={demoApi}
-            extra={<Extra />}
-        />
-    )
+    return <DemoLayout header={demoHeader} demos={demos} api={demoApi} extra={<Extra />} />
 }
 
 export default Maps

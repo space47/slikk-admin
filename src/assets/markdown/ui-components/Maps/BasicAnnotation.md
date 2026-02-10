@@ -1,10 +1,5 @@
 ```jsx
-import {
-    ComposableMap,
-    Geographies,
-    Geography,
-    Annotation,
-} from 'react-simple-maps'
+import { ComposableMap, Geographies, Geography, Annotation } from 'react-simple-maps'
 
 const geoUrl = '/data/features.json'
 
@@ -18,17 +13,8 @@ const BasicAnnotation = () => {
                 scale: 500,
             }}
         >
-            <Geographies
-                geography={geoUrl}
-                fill="#D6D6DA"
-                stroke="#FFFFFF"
-                strokeWidth={0.5}
-            >
-                {({ geographies }) =>
-                    geographies.map((geo) => (
-                        <Geography key={geo.rsmKey} geography={geo} />
-                    ))
-                }
+            <Geographies geography={geoUrl} fill="#D6D6DA" stroke="#FFFFFF" strokeWidth={0.5}>
+                {({ geographies }) => geographies.map((geo) => <Geography key={geo.rsmKey} geography={geo} />)}
             </Geographies>
             <Annotation
                 subject={[2.3522, 48.8566]}
@@ -40,12 +26,7 @@ const BasicAnnotation = () => {
                     strokeLinecap: 'round',
                 }}
             >
-                <text
-                    x="-8"
-                    textAnchor="end"
-                    alignmentBaseline="middle"
-                    fill="#F53"
-                >
+                <text x="-8" textAnchor="end" alignmentBaseline="middle" fill="#F53">
                     {'Paris'}
                 </text>
             </Annotation>

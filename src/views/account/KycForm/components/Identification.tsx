@@ -8,16 +8,7 @@ import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
 import SegmentItemOption from '@/components/shared/SegmentItemOption'
 import { DriversLicenseSvg, PassportSvg, NationalIdSvg } from '@/assets/svg'
 import classNames from 'classnames'
-import {
-    Field,
-    Form,
-    Formik,
-    FieldProps,
-    FormikTouched,
-    FormikErrors,
-    FormikProps,
-    FieldInputProps,
-} from 'formik'
+import { Field, Form, Formik, FieldProps, FormikTouched, FormikErrors, FormikProps, FieldInputProps } from 'formik'
 import useThemeClass from '@/utils/hooks/useThemeClass'
 import * as Yup from 'yup'
 import type { Identification as IdentificationType } from '../store'
@@ -27,11 +18,7 @@ type FormModel = IdentificationType
 
 type IdentificationProps = {
     data: IdentificationType
-    onNextChange?: (
-        values: FormModel,
-        formName: string,
-        setSubmitting: (isSubmitting: boolean) => void
-    ) => void
+    onNextChange?: (values: FormModel, formName: string, setSubmitting: (isSubmitting: boolean) => void) => void
     onBackChange?: () => void
     currentStepStatus?: string
 }
@@ -57,26 +44,22 @@ const validationSchema = Yup.object().shape({
     }),
     nationalIdFront: Yup.string().when('documentType', {
         is: 'nationalId',
-        then: (schema) =>
-            schema.required('Please upload your front National ID'),
+        then: (schema) => schema.required('Please upload your front National ID'),
         otherwise: (schema) => schema,
     }),
     nationalIdBack: Yup.string().when('documentType', {
         is: 'nationalId',
-        then: (schema) =>
-            schema.required('Please upload your back National ID'),
+        then: (schema) => schema.required('Please upload your back National ID'),
         otherwise: (schema) => schema,
     }),
     driversLicenseFront: Yup.string().when('documentType', {
         is: 'driversLicense',
-        then: (schema) =>
-            schema.required('Please upload your front Drivers license'),
+        then: (schema) => schema.required('Please upload your front Drivers license'),
         otherwise: (schema) => schema,
     }),
     driversLicenseBack: Yup.string().when('documentType', {
         is: 'driversLicense',
-        then: (schema) =>
-            schema.required('Please upload your back Drivers license'),
+        then: (schema) => schema.required('Please upload your back Drivers license'),
         otherwise: (schema) => schema,
     }),
 })
@@ -126,20 +109,12 @@ const DocumentTypeIcon = ({ type }: { type: string }) => {
 const DocumentUploadField = (props: DocumentUploadFieldProps) => {
     const { label, name, children, touched, errors } = props
 
-    const onSetFormFile = (
-        form: FormikProps<IdentificationType>,
-        field: FieldInputProps<IdentificationType>,
-        file: File[]
-    ) => {
+    const onSetFormFile = (form: FormikProps<IdentificationType>, field: FieldInputProps<IdentificationType>, file: File[]) => {
         form.setFieldValue(field.name, URL.createObjectURL(file[0]))
     }
 
     return (
-        <FormItem
-            label={label}
-            invalid={errors[name] && touched[name]}
-            errorMessage={errors[name]}
-        >
+        <FormItem label={label} invalid={errors[name] && touched[name]} errorMessage={errors[name]}>
             <Field name={name}>
                 {({ field, form }: FieldProps) => (
                     <Upload
@@ -148,30 +123,18 @@ const DocumentUploadField = (props: DocumentUploadFieldProps) => {
                         showList={false}
                         uploadLimit={1}
                         onChange={(files) => onSetFormFile(form, field, files)}
-                        onFileRemove={(files) =>
-                            onSetFormFile(form, field, files)
-                        }
+                        onFileRemove={(files) => onSetFormFile(form, field, files)}
                     >
                         {field.value ? (
-                            <img
-                                className="p-3 max-h-[300px]"
-                                src={field.value}
-                                alt=""
-                            />
+                            <img className="p-3 max-h-[300px]" src={field.value} alt="" />
                         ) : (
                             <div className="text-center">
                                 {children}
                                 <p className="font-semibold">
-                                    <span className="text-gray-800 dark:text-white">
-                                        Drop your image here, or{' '}
-                                    </span>
-                                    <span className="text-blue-500">
-                                        browse
-                                    </span>
+                                    <span className="text-gray-800 dark:text-white">Drop your image here, or </span>
+                                    <span className="text-blue-500">browse</span>
                                 </p>
-                                <p className="mt-1 opacity-60 dark:text-white">
-                                    Support: jpeg, png
-                                </p>
+                                <p className="mt-1 opacity-60 dark:text-white">Support: jpeg, png</p>
                             </div>
                         )}
                     </Upload>
@@ -197,10 +160,7 @@ const Identification = ({
 }: IdentificationProps) => {
     const { textTheme, bgTheme } = useThemeClass()
 
-    const onNext = (
-        values: FormModel,
-        setSubmitting: (isSubmitting: boolean) => void
-    ) => {
+    const onNext = (values: FormModel, setSubmitting: (isSubmitting: boolean) => void) => {
         onNextChange?.(values, 'identification', setSubmitting)
     }
 
@@ -232,10 +192,7 @@ const Identification = ({
                             <FormContainer>
                                 <FormItem
                                     label="Select your document type"
-                                    invalid={
-                                        errors.documentType &&
-                                        touched.documentType
-                                    }
+                                    invalid={errors.documentType && touched.documentType}
                                     errorMessage={errors.documentType}
                                 >
                                     <Field name="documentType">
@@ -243,93 +200,46 @@ const Identification = ({
                                             <Segment
                                                 className="flex xl:items-center flex-col xl:flex-row gap-4"
                                                 value={[field.value]}
-                                                onChange={(val) =>
-                                                    form.setFieldValue(
-                                                        field.name,
-                                                        val[0]
-                                                    )
-                                                }
+                                                onChange={(val) => form.setFieldValue(field.name, val[0])}
                                             >
                                                 <>
-                                                    {documentTypes.map(
-                                                        (item) => (
-                                                            <Segment.Item
-                                                                key={item.value}
-                                                                value={
-                                                                    item.value
-                                                                }
-                                                                disabled={
-                                                                    item.disabled
-                                                                }
-                                                            >
-                                                                {({
-                                                                    active,
-                                                                    value,
-                                                                    onSegmentItemClick,
-                                                                    disabled,
-                                                                }) => {
-                                                                    return (
-                                                                        <SegmentItemOption
-                                                                            active={
-                                                                                active
-                                                                            }
-                                                                            disabled={
-                                                                                disabled
-                                                                            }
-                                                                            className="w-full xl:w-[260px]"
-                                                                            onSegmentItemClick={
-                                                                                onSegmentItemClick
-                                                                            }
-                                                                        >
-                                                                            <div className="flex items-center">
-                                                                                <SvgIcon
-                                                                                    className={classNames(
-                                                                                        'text-4xl ltr:mr-3 rtl:ml-3',
-                                                                                        active &&
-                                                                                            textTheme
-                                                                                    )}
-                                                                                >
-                                                                                    <DocumentTypeIcon
-                                                                                        type={
-                                                                                            value
-                                                                                        }
-                                                                                    />
-                                                                                </SvgIcon>
-                                                                                <h6>
-                                                                                    {
-                                                                                        item.label
-                                                                                    }
-                                                                                </h6>
-                                                                            </div>
-                                                                        </SegmentItemOption>
-                                                                    )
-                                                                }}
-                                                            </Segment.Item>
-                                                        )
-                                                    )}
+                                                    {documentTypes.map((item) => (
+                                                        <Segment.Item key={item.value} value={item.value} disabled={item.disabled}>
+                                                            {({ active, value, onSegmentItemClick, disabled }) => {
+                                                                return (
+                                                                    <SegmentItemOption
+                                                                        active={active}
+                                                                        disabled={disabled}
+                                                                        className="w-full xl:w-[260px]"
+                                                                        onSegmentItemClick={onSegmentItemClick}
+                                                                    >
+                                                                        <div className="flex items-center">
+                                                                            <SvgIcon
+                                                                                className={classNames(
+                                                                                    'text-4xl ltr:mr-3 rtl:ml-3',
+                                                                                    active && textTheme,
+                                                                                )}
+                                                                            >
+                                                                                <DocumentTypeIcon type={value} />
+                                                                            </SvgIcon>
+                                                                            <h6>{item.label}</h6>
+                                                                        </div>
+                                                                    </SegmentItemOption>
+                                                                )
+                                                            }}
+                                                        </Segment.Item>
+                                                    ))}
                                                 </>
                                             </Segment>
                                         )}
                                     </Field>
                                 </FormItem>
                                 <div className="mb-6">
-                                    <h6>
-                                        In order to complete upload and avoid
-                                        delays when verifiying account, Please
-                                        make sure bellow:
-                                    </h6>
+                                    <h6>In order to complete upload and avoid delays when verifiying account, Please make sure bellow:</h6>
                                     <ul className="mt-4">
-                                        {documentUploadDescription[
-                                            values.documentType
-                                        ].map((desc, index) => (
-                                            <li
-                                                key={desc + index}
-                                                className="mb-2 flex items-center"
-                                            >
-                                                <Badge
-                                                    className="rtl:ml-3 ltr:mr-3"
-                                                    innerClass={bgTheme}
-                                                />
+                                        {documentUploadDescription[values.documentType].map((desc, index) => (
+                                            <li key={desc + index} className="mb-2 flex items-center">
+                                                <Badge className="rtl:ml-3 ltr:mr-3" innerClass={bgTheme} />
                                                 <span>{desc}</span>
                                             </li>
                                         ))}
@@ -338,11 +248,7 @@ const Identification = ({
                                 <div className="grid xl:grid-cols-2 gap-4">
                                     {values.documentType === 'passport' && (
                                         <>
-                                            <DocumentUploadField
-                                                name="passportCover"
-                                                label="Passport Cover"
-                                                {...validatedProps}
-                                            >
+                                            <DocumentUploadField name="passportCover" label="Passport Cover" {...validatedProps}>
                                                 <DoubleSidedImage
                                                     className="mx-auto mb-3"
                                                     src="/img/thumbs/passport.png"
@@ -350,11 +256,7 @@ const Identification = ({
                                                     alt=""
                                                 />
                                             </DocumentUploadField>
-                                            <DocumentUploadField
-                                                name="passportDataPage"
-                                                label="Passport Data Page"
-                                                {...validatedProps}
-                                            >
+                                            <DocumentUploadField name="passportDataPage" label="Passport Data Page" {...validatedProps}>
                                                 <DoubleSidedImage
                                                     className="mx-auto mb-3"
                                                     src="/img/thumbs/passport-data.png"
@@ -366,11 +268,7 @@ const Identification = ({
                                     )}
                                     {values.documentType === 'nationalId' && (
                                         <>
-                                            <DocumentUploadField
-                                                name="nationalIdFront"
-                                                label="National Id Front"
-                                                {...validatedProps}
-                                            >
+                                            <DocumentUploadField name="nationalIdFront" label="National Id Front" {...validatedProps}>
                                                 <DoubleSidedImage
                                                     className="mx-auto mb-3"
                                                     src="/img/thumbs/id-card-front.png"
@@ -378,11 +276,7 @@ const Identification = ({
                                                     alt=""
                                                 />
                                             </DocumentUploadField>
-                                            <DocumentUploadField
-                                                name="nationalIdBack"
-                                                label="National Id Back"
-                                                {...validatedProps}
-                                            >
+                                            <DocumentUploadField name="nationalIdBack" label="National Id Back" {...validatedProps}>
                                                 <DoubleSidedImage
                                                     className="mx-auto mb-3"
                                                     src="/img/thumbs/id-card-back.png"
@@ -392,8 +286,7 @@ const Identification = ({
                                             </DocumentUploadField>
                                         </>
                                     )}
-                                    {values.documentType ===
-                                        'driversLicense' && (
+                                    {values.documentType === 'driversLicense' && (
                                         <>
                                             <DocumentUploadField
                                                 name="driversLicenseFront"
@@ -407,11 +300,7 @@ const Identification = ({
                                                     alt=""
                                                 />
                                             </DocumentUploadField>
-                                            <DocumentUploadField
-                                                name="driversLicenseBack"
-                                                label="Drivers License Back"
-                                                {...validatedProps}
-                                            >
+                                            <DocumentUploadField name="driversLicenseBack" label="Drivers License Back" {...validatedProps}>
                                                 <DoubleSidedImage
                                                     className="mx-auto mb-3"
                                                     src="/img/thumbs/drivers-license-back.png"
@@ -426,14 +315,8 @@ const Identification = ({
                                     <Button type="button" onClick={onBack}>
                                         Back
                                     </Button>
-                                    <Button
-                                        loading={isSubmitting}
-                                        variant="solid"
-                                        type="submit"
-                                    >
-                                        {currentStepStatus === 'complete'
-                                            ? 'Save'
-                                            : 'Next'}
+                                    <Button loading={isSubmitting} variant="solid" type="submit">
+                                        {currentStepStatus === 'complete' ? 'Save' : 'Next'}
                                     </Button>
                                 </div>
                             </FormContainer>

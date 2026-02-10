@@ -27,15 +27,9 @@ export interface MonthBaseProps {
     firstDayOfWeek?: FirstDayOfWeek
     hideOutOfMonthDates?: boolean
     weekendDays?: [number, number]
-    isDateInRange?:
-        | (() => boolean)
-        | ((date: Date, props: GetDayPropsReturn) => boolean)
-    isDateFirstInRange?:
-        | (() => boolean)
-        | ((date: Date, props: GetDayPropsReturn) => boolean)
-    isDateLastInRange?:
-        | (() => boolean)
-        | ((date: Date, props: GetDayPropsReturn) => boolean)
+    isDateInRange?: (() => boolean) | ((date: Date, props: GetDayPropsReturn) => boolean)
+    isDateFirstInRange?: (() => boolean) | ((date: Date, props: GetDayPropsReturn) => boolean)
+    isDateLastInRange?: (() => boolean) | ((date: Date, props: GetDayPropsReturn) => boolean)
 }
 
 export interface MonthProps extends CommonProps, MonthBaseProps {
@@ -43,10 +37,7 @@ export interface MonthProps extends CommonProps, MonthBaseProps {
     locale?: string
     onDayMouseEnter?: (date: Date, event: MouseEvent<HTMLButtonElement>) => void
     range?: [Date, Date]
-    onDayKeyDown?: (
-        payload: DayKeydownPayload,
-        event: KeyboardEvent<HTMLButtonElement>
-    ) => void
+    onDayKeyDown?: (payload: DayKeydownPayload, event: KeyboardEvent<HTMLButtonElement>) => void
     daysRefs: HTMLButtonElement[][]
     renderDay?: (date: Date) => ReactNode
     weekdayLabelFormat?: string
@@ -91,24 +82,16 @@ const Month = forwardRef<HTMLTableElement, MonthProps>((props, ref) => {
     const finalLocale = locale || themeLocale
     const days = getMonthDays(month as Date, firstDayOfWeek)
 
-    const weekdays = getWeekdaysNames(
-        finalLocale,
-        firstDayOfWeek,
-        weekdayLabelFormat
-    ).map((weekday) => (
+    const weekdays = getWeekdaysNames(finalLocale, firstDayOfWeek, weekdayLabelFormat).map((weekday) => (
         <th key={weekday} className="week-day-cell">
             <span className="week-day-cell-content">{weekday}</span>
         </th>
     ))
 
-    const hasValue = Array.isArray(value)
-        ? value.every((item) => item instanceof Date)
-        : value instanceof Date
+    const hasValue = Array.isArray(value) ? value.every((item) => item instanceof Date) : value instanceof Date
 
     const hasValueInMonthRange =
-        value instanceof Date &&
-        dayjs(value).isAfter(dayjs(month).startOf('month')) &&
-        dayjs(value).isBefore(dayjs(month).endOf('month'))
+        value instanceof Date && dayjs(value).isAfter(dayjs(month).startOf('month')) && dayjs(value).isBefore(dayjs(month).endOf('month'))
 
     const getDayPropsParams = {
         month: month as Date,
@@ -135,7 +118,7 @@ const Month = forwardRef<HTMLTableElement, MonthProps>((props, ref) => {
                     return !dayProps.disabled && !dayProps.outOfMonth
                 }) || dayjs(month).startOf('month').toDate(),
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        []
+        [],
     )
 
     const rows = days.map((row, rowIndex) => {
@@ -153,36 +136,19 @@ const Month = forwardRef<HTMLTableElement, MonthProps>((props, ref) => {
                                     daysRefs[rowIndex] = []
                                 }
 
-                                daysRefs[rowIndex][cellIndex] =
-                                    button as HTMLButtonElement
+                                daysRefs[rowIndex][cellIndex] = button as HTMLButtonElement
                             }
                         }}
                         outOfMonth={dayProps.outOfMonth}
                         weekend={dayProps.weekend}
-                        inRange={
-                            dayProps.inRange || isDateInRange(date, dayProps)
-                        }
-                        firstInRange={
-                            dayProps.firstInRange ||
-                            isDateFirstInRange(date, dayProps)
-                        }
-                        lastInRange={
-                            dayProps.lastInRange ||
-                            isDateLastInRange(date, dayProps)
-                        }
+                        inRange={dayProps.inRange || isDateInRange(date, dayProps)}
+                        firstInRange={dayProps.firstInRange || isDateFirstInRange(date, dayProps)}
+                        lastInRange={dayProps.lastInRange || isDateLastInRange(date, dayProps)}
                         firstInMonth={isSameDate(date, firstIncludedDay)}
                         selected={dayProps.selected || dayProps.selectedInRange}
                         hasValue={hasValueInMonthRange}
-                        className={
-                            typeof dayClassName === 'function'
-                                ? dayClassName(date, dayProps)
-                                : ''
-                        }
-                        style={
-                            typeof dayStyle === 'function'
-                                ? dayStyle(date, dayProps)
-                                : {}
-                        }
+                        className={typeof dayClassName === 'function' ? dayClassName(date, dayProps) : ''}
+                        style={typeof dayStyle === 'function' ? dayStyle(date, dayProps) : {}}
                         disabled={dayProps.disabled}
                         fullWidth={fullWidth}
                         focusable={focusable}
@@ -190,21 +156,10 @@ const Month = forwardRef<HTMLTableElement, MonthProps>((props, ref) => {
                         renderDay={renderDay}
                         isToday={isSameDate(date, new Date())}
                         value={date}
-                        onClick={() =>
-                            typeof onChange === 'function' && onChange(date)
-                        }
-                        onMouseDown={(event) =>
-                            preventFocus && event.preventDefault()
-                        }
-                        onKeyDown={(event) =>
-                            typeof onDayKeyDown === 'function' &&
-                            onDayKeyDown(onKeyDownPayload, event)
-                        }
-                        onMouseEnter={
-                            typeof onDayMouseEnter === 'function'
-                                ? onDayMouseEnter
-                                : noop
-                        }
+                        onClick={() => typeof onChange === 'function' && onChange(date)}
+                        onMouseDown={(event) => preventFocus && event.preventDefault()}
+                        onKeyDown={(event) => typeof onDayKeyDown === 'function' && onDayKeyDown(onKeyDownPayload, event)}
+                        onMouseEnter={typeof onDayMouseEnter === 'function' ? onDayMouseEnter : noop}
                     />
                 </td>
             )
@@ -218,12 +173,7 @@ const Month = forwardRef<HTMLTableElement, MonthProps>((props, ref) => {
     })
 
     return (
-        <table
-            ref={ref}
-            className={classNames('picker-table', className)}
-            cellSpacing="0"
-            {...rest}
-        >
+        <table ref={ref} className={classNames('picker-table', className)} cellSpacing="0" {...rest}>
             {!hideWeekdays && (
                 <thead>
                     <tr>{weekdays}</tr>

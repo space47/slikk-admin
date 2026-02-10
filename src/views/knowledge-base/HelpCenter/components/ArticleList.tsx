@@ -41,11 +41,7 @@ const ArticleList = (props: { data: Article[] }) => {
         <>
             {data.map((article) => (
                 <article key={article.id}>
-                    <Card
-                        clickable
-                        className="group mb-4"
-                        onClick={() => onArticleClick(article.id)}
-                    >
+                    <Card clickable className="group mb-4" onClick={() => onArticleClick(article.id)}>
                         <div className="px-8 py-3 relative">
                             {article.starred && (
                                 <div className="absolute ltr:left-0 rtl:right-0">
@@ -55,36 +51,19 @@ const ArticleList = (props: { data: Article[] }) => {
                                 </div>
                             )}
                             <div className="flex items-center justify-between mb-2">
-                                <h5 className="group-hover:underline">
-                                    {article.title}
-                                </h5>
-                                <Tag
-                                    className={`border-0 rounded capitalize ${articleTagClass(
-                                        article.category
-                                    )}`}
-                                >
-                                    {article.category}
-                                </Tag>
+                                <h5 className="group-hover:underline">{article.title}</h5>
+                                <Tag className={`border-0 rounded capitalize ${articleTagClass(article.category)}`}>{article.category}</Tag>
                             </div>
-                            <p>
-                                {article.content.length > 230
-                                    ? article.content.substring(0, 229) + '...'
-                                    : article.content}
-                            </p>
+                            <p>{article.content.length > 230 ? article.content.substring(0, 229) + '...' : article.content}</p>
                             <div className="flex items-center justify-between mt-6">
                                 <div className="flex items-center gap-2">
                                     <span>Written by:</span>
-                                    <UsersAvatarGroup
-                                        avatarProps={{ size: 25 }}
-                                        users={article.authors || []}
-                                    />
+                                    <UsersAvatarGroup avatarProps={{ size: 25 }} users={article.authors || []} />
                                 </div>
                                 <div className="flex items-center gap-4">
                                     <span className="flex items-center gap-2">
                                         <HiOutlineClock className="text-lg" />
-                                        <span>
-                                            Updated {article.updateTime}
-                                        </span>
+                                        <span>Updated {article.updateTime}</span>
                                     </span>
                                 </div>
                             </div>

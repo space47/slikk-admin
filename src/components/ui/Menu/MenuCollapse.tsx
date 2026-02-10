@@ -16,19 +16,11 @@ export interface MenuCollapseProps extends CommonProps {
 }
 
 const MenuCollapse = (props: MenuCollapseProps) => {
-    const {
-        children,
-        className,
-        eventKey,
-        expanded = false,
-        label = null,
-        onToggle,
-    } = props
+    const { children, className, eventKey, expanded = false, label = null, onToggle } = props
 
     const [isExpanded, setIsExpanded] = useState(expanded)
 
-    const { menuItemHeight, variant, sideCollapsed, defaultExpandedKeys } =
-        useContext(MenuContext)
+    const { menuItemHeight, variant, sideCollapsed, defaultExpandedKeys } = useContext(MenuContext)
 
     const { direction } = useConfig()
 
@@ -49,27 +41,17 @@ const MenuCollapse = (props: MenuCollapseProps) => {
         setIsExpanded(!isExpanded)
     }
 
-    const menuCollapseItemClass = classNames(
-        'menu-collapse-item',
-        `menu-collapse-item-${variant}`,
-        className
-    )
+    const menuCollapseItemClass = classNames('menu-collapse-item', `menu-collapse-item-${variant}`, className)
 
     return (
         <div className="menu-collapse">
-            <div
-                className={menuCollapseItemClass}
-                role="presentation"
-                onClick={toggleCollapse}
-            >
+            <div className={menuCollapseItemClass} role="presentation" onClick={toggleCollapse}>
                 <span className="flex items-center">{label}</span>
                 <motion.span
                     className="text-lg mt-1"
                     initial={{ transform: 'rotate(0deg)' }}
                     animate={{
-                        transform: isExpanded
-                            ? 'rotate(-180deg)'
-                            : 'rotate(0deg)',
+                        transform: isExpanded ? 'rotate(-180deg)' : 'rotate(0deg)',
                     }}
                     transition={{ duration: 0.15 }}
                 >

@@ -11,15 +11,7 @@ export interface BadgeProps extends CommonProps {
 }
 
 const Badge = forwardRef<HTMLElement, BadgeProps>((props, ref) => {
-    const {
-        badgeStyle,
-        children,
-        className,
-        content,
-        innerClass,
-        maxCount = 99,
-        ...rest
-    } = props
+    const { badgeStyle, children, className, content, innerClass, maxCount = 99, ...rest } = props
 
     const dot = typeof content !== 'number' && typeof content !== 'string'
 
@@ -28,30 +20,16 @@ const Badge = forwardRef<HTMLElement, BadgeProps>((props, ref) => {
     const renderBadge = () => {
         if (children) {
             return (
-                <span
-                    ref={ref}
-                    className={classNames('badge-wrapper', className)}
-                    {...rest}
-                >
-                    <span
-                        className={classNames(badgeClass, 'badge-inner')}
-                        style={badgeStyle}
-                    >
-                        {typeof content === 'number' && content > maxCount
-                            ? `${maxCount}+`
-                            : content}
+                <span ref={ref} className={classNames('badge-wrapper', className)} {...rest}>
+                    <span className={classNames(badgeClass, 'badge-inner')} style={badgeStyle}>
+                        {typeof content === 'number' && content > maxCount ? `${maxCount}+` : content}
                     </span>
                     {children}
                 </span>
             )
         }
         return (
-            <span
-                ref={ref}
-                className={classNames(badgeClass, className)}
-                style={badgeStyle}
-                {...rest}
-            >
+            <span ref={ref} className={classNames(badgeClass, className)} style={badgeStyle} {...rest}>
                 {content}
             </span>
         )

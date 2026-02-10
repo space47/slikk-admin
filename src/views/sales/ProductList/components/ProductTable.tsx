@@ -4,23 +4,12 @@ import Badge from '@/components/ui/Badge'
 import DataTable from '@/components/shared/DataTable'
 import { HiOutlinePencil, HiOutlineTrash } from 'react-icons/hi'
 import { FiPackage } from 'react-icons/fi'
-import {
-    getProducts,
-    setTableData,
-    setSelectedProduct,
-    toggleDeleteConfirmation,
-    useAppDispatch,
-    useAppSelector,
-} from '../store'
+import { getProducts, setTableData, setSelectedProduct, toggleDeleteConfirmation, useAppDispatch, useAppSelector } from '../store'
 import useThemeClass from '@/utils/hooks/useThemeClass'
 import ProductDeleteConfirmation from './ProductDeleteConfirmation'
 import { useNavigate } from 'react-router-dom'
 import cloneDeep from 'lodash/cloneDeep'
-import type {
-    DataTableResetHandle,
-    OnSortParam,
-    ColumnDef,
-} from '@/components/shared/DataTable'
+import type { DataTableResetHandle, OnSortParam, ColumnDef } from '@/components/shared/DataTable'
 
 type Product = {
     id: string
@@ -74,16 +63,10 @@ const ActionColumn = ({ row }: { row: Product }) => {
 
     return (
         <div className="flex justify-end text-lg">
-            <span
-                className={`cursor-pointer p-2 hover:${textTheme}`}
-                onClick={onEdit}
-            >
+            <span className={`cursor-pointer p-2 hover:${textTheme}`} onClick={onEdit}>
                 <HiOutlinePencil />
             </span>
-            <span
-                className="cursor-pointer p-2 hover:text-red-500"
-                onClick={onDelete}
-            >
+            <span className="cursor-pointer p-2 hover:text-red-500" onClick={onDelete}>
                 <HiOutlineTrash />
             </span>
         </div>
@@ -91,11 +74,7 @@ const ActionColumn = ({ row }: { row: Product }) => {
 }
 
 const ProductColumn = ({ row }: { row: Product }) => {
-    const avatar = row.img ? (
-        <Avatar src={row.img} />
-    ) : (
-        <Avatar icon={<FiPackage />} />
-    )
+    const avatar = row.img ? <Avatar src={row.img} /> : <Avatar icon={<FiPackage />} />
 
     return (
         <div className="flex items-center">
@@ -110,21 +89,13 @@ const ProductTable = () => {
 
     const dispatch = useAppDispatch()
 
-    const { pageIndex, pageSize, sort, query, total } = useAppSelector(
-        (state) => state.salesProductList.data.tableData
-    )
+    const { pageIndex, pageSize, sort, query, total } = useAppSelector((state) => state.salesProductList.data.tableData)
 
-    const filterData = useAppSelector(
-        (state) => state.salesProductList.data.filterData
-    )
+    const filterData = useAppSelector((state) => state.salesProductList.data.filterData)
 
-    const loading = useAppSelector(
-        (state) => state.salesProductList.data.loading
-    )
+    const loading = useAppSelector((state) => state.salesProductList.data.loading)
 
-    const data = useAppSelector(
-        (state) => state.salesProductList.data.productList
-    )
+    const data = useAppSelector((state) => state.salesProductList.data.productList)
 
     useEffect(() => {
         fetchData()
@@ -137,10 +108,7 @@ const ProductTable = () => {
         }
     }, [filterData])
 
-    const tableData = useMemo(
-        () => ({ pageIndex, pageSize, sort, query, total }),
-        [pageIndex, pageSize, sort, query, total]
-    )
+    const tableData = useMemo(() => ({ pageIndex, pageSize, sort, query, total }), [pageIndex, pageSize, sort, query, total])
 
     const fetchData = () => {
         dispatch(getProducts({ pageIndex, pageSize, sort, query, filterData }))
@@ -176,14 +144,8 @@ const ProductTable = () => {
                     const { status } = props.row.original
                     return (
                         <div className="flex items-center gap-2">
-                            <Badge
-                                className={
-                                    inventoryStatusColor[status].dotClass
-                                }
-                            />
-                            <span
-                                className={`capitalize font-semibold ${inventoryStatusColor[status].textClass}`}
-                            >
+                            <Badge className={inventoryStatusColor[status].dotClass} />
+                            <span className={`capitalize font-semibold ${inventoryStatusColor[status].textClass}`}>
                                 {inventoryStatusColor[status].label}
                             </span>
                         </div>
@@ -204,7 +166,7 @@ const ProductTable = () => {
                 cell: (props) => <ActionColumn row={props.row.original} />,
             },
         ],
-        []
+        [],
     )
 
     const onPaginationChange = (page: number) => {

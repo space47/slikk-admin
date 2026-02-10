@@ -15,17 +15,7 @@ export interface RadioGroupProps extends CommonProps {
 }
 
 const Group = forwardRef<HTMLDivElement, RadioGroupProps>((props, ref) => {
-    const {
-        color,
-        disabled,
-        name,
-        onChange,
-        radioGutter = 3,
-        value: valueProp,
-        vertical = false,
-        className,
-        ...rest
-    } = props
+    const { color, disabled, name, onChange, radioGutter = 3, value: valueProp, vertical = false, className, ...rest } = props
 
     const [value, setValue] = useState(valueProp)
 
@@ -40,7 +30,7 @@ const Group = forwardRef<HTMLDivElement, RadioGroupProps>((props, ref) => {
             setValue(nextValue)
             onChange?.(nextValue, e)
         },
-        [onChange, setValue]
+        [onChange, setValue],
     )
 
     const contextValue = useMemo(
@@ -53,22 +43,10 @@ const Group = forwardRef<HTMLDivElement, RadioGroupProps>((props, ref) => {
             radioGutter,
             onChange: onRadioGroupChange,
         }),
-        [
-            disabled,
-            onRadioGroupChange,
-            vertical,
-            name,
-            color,
-            radioGutter,
-            value,
-        ]
+        [disabled, onRadioGroupChange, vertical, name, color, radioGutter, value],
     )
 
-    const radioGroupClass = classNames(
-        'radio-group',
-        vertical && 'vertical',
-        className
-    )
+    const radioGroupClass = classNames('radio-group', vertical && 'vertical', className)
 
     return (
         <RadioGroupContextProvider value={contextValue}>

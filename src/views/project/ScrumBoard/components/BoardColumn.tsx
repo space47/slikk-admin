@@ -9,8 +9,7 @@ interface BoardColumnProps extends BaseBoardProps {
 }
 
 const BoardColumn = (props: BoardColumnProps) => {
-    const { title, contents, index, isScrollable, isCombineEnabled, useClone } =
-        props
+    const { title, contents, index, isScrollable, isCombineEnabled, useClone } = props
 
     return (
         <Draggable draggableId={title} index={index}>
@@ -30,10 +29,7 @@ const BoardColumn = (props: BoardColumnProps) => {
 						"
                     {...provided.draggableProps}
                 >
-                    <BoardTitle
-                        title={title}
-                        dragHandleProps={provided.dragHandleProps}
-                    />
+                    <BoardTitle title={title} dragHandleProps={provided.dragHandleProps} />
                     <BoardCardList
                         listId={title}
                         listType="CONTENT"
