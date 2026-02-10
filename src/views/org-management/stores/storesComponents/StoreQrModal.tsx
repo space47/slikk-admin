@@ -6,6 +6,7 @@ import QRCode from 'react-qr-code'
 import { AxiosError } from 'axios'
 import { errorMessage } from '@/utils/responseMessages'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import DialogConfirm from '@/common/DialogConfirm'
 
 interface Props {
     dialogIsOpen: boolean
@@ -17,6 +18,7 @@ const StoreQrModal = ({ dialogIsOpen, setIsOpen, store_code }: Props) => {
     const [generatedQr, setGeneratedQr] = useState<string>('')
     const [loading, setLoading] = useState(false)
     const [downloading, setDownloading] = useState(false)
+    const [isConfirmationModal, setIsConfirmationModal] = useState(false)
     const qrWrapperRef = useRef<HTMLDivElement>(null)
 
     const fetchQr = async (code: string) => {
@@ -45,6 +47,7 @@ const StoreQrModal = ({ dialogIsOpen, setIsOpen, store_code }: Props) => {
                 store_code,
             })
             setGeneratedQr(res?.data?.data?.qr_code ?? '')
+            setIsConfirmationModal(false)
         } catch (error) {
             if (error instanceof AxiosError) errorMessage(error)
         } finally {
@@ -120,7 +123,7 @@ const StoreQrModal = ({ dialogIsOpen, setIsOpen, store_code }: Props) => {
             </div>
 
             <div className="flex justify-end gap-3 mt-6">
-                <Button variant="blue" disabled={loading} onClick={handleGenerateNewQr}>
+                <Button variant="blue" disabled={loading} onClick={() => setIsConfirmationModal(true)}>
                     {loading ? 'Generating…' : 'Generate New QR'}
                 </Button>
 
@@ -128,6 +131,16 @@ const StoreQrModal = ({ dialogIsOpen, setIsOpen, store_code }: Props) => {
                     {downloading ? 'Downloading…' : 'Download QR'}
                 </Button>
             </div>
+            {isConfirmationModal && (
+                <DialogConfirm
+                    isProceed
+                    IsOpen={isConfirmationModal}
+                    setIsOpen={setIsConfirmationModal}
+                    headingName="Are you Sure you want to generate new qr Code"
+                    label="Generating new Qr will have to print a new copy."
+                    onDialogOk={handleGenerateNewQr}
+                />
+            )}
         </Dialog>
     )
 }
