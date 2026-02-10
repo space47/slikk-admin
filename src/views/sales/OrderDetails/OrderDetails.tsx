@@ -12,7 +12,7 @@ import { useParams } from 'react-router-dom'
 import moment from 'moment'
 import ReturnOrderDrawer from './components/ReturnOrderDrawer'
 import { FaDownload } from 'react-icons/fa'
-import { EOrderStatus, scheduleSlots } from './orderList.common'
+import { EDeliveryType, EOrderStatus, scheduleSlots } from './orderList.common'
 import { Button } from '@/components/ui'
 import TrackModal from '@/views/slikkLogistics/taskTracking/TrackModal'
 import OrderPickerSummary from './components/OrderPickersummary'
@@ -52,6 +52,10 @@ const OrderDetails = () => {
         )
     }, [data?.logistic, data?.status])
 
+    const isReverseTryAndBuy = useMemo(() => {
+        return data?.log?.at(-1)?.status === EOrderStatus.delivered && data?.delivery_type === EDeliveryType.try_and_buy
+    }, [data?.delivery_type, data?.status])
+
     const showTicket = useMemo(() => {
         return data?.log?.some((item) => item?.status?.includes(EOrderStatus.packed)) && data?.utm_params?.ticket === true
     }, [data?.log, data?.utm_params])
@@ -84,8 +88,16 @@ const OrderDetails = () => {
         pollingInterval: query ? 60000 : undefined,
     })
 
-    const { handlemarkAsPaid, handlePODAction, handleDownload, handleConvert, handleMarketingOrder, OrderLink, OrderList } =
-        useOrderDetailFunctions({ data, setShowCancelExchangeModal, setIsMarketing })
+    const {
+        handlemarkAsPaid,
+        handlePODAction,
+        handleDownload,
+        handleConvert,
+        handleMarketingOrder,
+        OrderLink,
+        OrderList,
+        handleReverseTNB,
+    } = useOrderDetailFunctions({ data, setShowCancelExchangeModal, setIsMarketing, refetch: orderDetailsApi.refetch })
 
     useEffect(() => {
         if (orderDetailsApi.currentData) {
@@ -154,6 +166,16 @@ const OrderDetails = () => {
                 </div>
                 <div className="mt-4 md:mt-0 flex flex-col items-center xl:items-end gap-5 justify-center w-full xl:w-1/2">
                     <div className="flex gap-4">
+                        {showReturnOrder && (
+                            <Button variant="reject" size="sm" onClick={() => setReturnOrderDrawer(true)}>
+                                Return/Exchange ORDER
+                            </Button>
+                        )}
+                        {isReverseTryAndBuy && (
+                            <Button variant="gray" size="sm" onClick={handleReverseTNB}>
+                                Reverse TNB Return
+                            </Button>
+                        )}
                         {showReturnOrder && (
                             <Button variant="reject" size="sm" onClick={() => setReturnOrderDrawer(true)}>
                                 Return/Exchange ORDER
