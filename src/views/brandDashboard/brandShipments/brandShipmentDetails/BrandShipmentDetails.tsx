@@ -108,12 +108,17 @@ const BrandShipmentDetails = () => {
                     <div className="">
                         <div className="flex justify-between items-center py-2 border-b border-gray-100">
                             <span className="text-gray-600 font-bold">Box Count:</span>
-                            <span className="font-semibold">{shipmentDetails?.box_count ?? '0'}</span>
+                            <span className="font-semibold">{shipmentDetails?.total_box_count ?? '0'}</span>
                         </div>
 
                         <div className="flex justify-between items-center py-2 border-b border-gray-100">
                             <span className="text-gray-600 font-bold">Items Count:</span>
                             <span className="font-semibold">{shipmentDetails?.upload_count ?? '0'}</span>
+                        </div>
+
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span className="text-gray-600 font-bold">Total Quantity:</span>
+                            <span className="font-semibold">{shipmentDetails?.total_quantity ?? '0'}</span>
                         </div>
 
                         <div className="pt-4">

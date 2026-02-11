@@ -11,6 +11,7 @@ import { BrandColumns } from './brandUtils/BrandColumns'
 import { Option } from '../catalog/CommonType'
 import { pageSizeOptions } from '../orderlist/commontypes'
 import { useFetchApi } from '@/commonHooks/useFetchApi'
+import ClearCache from '@/common/ClearCache'
 
 const Brand = () => {
     const [page, setPage] = useState<number>(1)
@@ -61,14 +62,19 @@ const Brand = () => {
 
     return (
         <div className="p-2 rounded-xl shadow-xl">
-            <div className="mb-4">
-                <input
-                    type="text"
-                    placeholder="Search here"
-                    value={globalFilter}
-                    className="p-2 border rounded"
-                    onChange={(e) => setGlobalFilter(e.target.value)}
-                />
+            <div className="flex justify-between">
+                <div className="mb-4">
+                    <input
+                        type="text"
+                        placeholder="Search here"
+                        value={globalFilter}
+                        className="p-2 border rounded"
+                        onChange={(e) => setGlobalFilter(e.target.value)}
+                    />
+                </div>
+                <div>
+                    <ClearCache cacheKey="brand" />
+                </div>
             </div>
             <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
             <div className="flex items-center justify-between mt-4">
