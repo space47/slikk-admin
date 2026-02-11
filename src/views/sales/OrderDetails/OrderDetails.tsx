@@ -176,11 +176,6 @@ const OrderDetails = () => {
                                 Reverse TNB Return
                             </Button>
                         )}
-                        {showReturnOrder && (
-                            <Button variant="reject" size="sm" onClick={() => setReturnOrderDrawer(true)}>
-                                Return/Exchange ORDER
-                            </Button>
-                        )}
                         {data.status !== EOrderStatus.declined && data.status !== EOrderStatus.cancelled && (
                             <Button variant="reject" size="sm" onClick={() => setShowCancelModal(true)}>
                                 Cancel Order
