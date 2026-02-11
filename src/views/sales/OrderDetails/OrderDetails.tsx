@@ -38,6 +38,7 @@ const OrderDetails = () => {
     const [showCancelExchangeModal, setShowCancelExchangeModal] = useState(false)
     const [showRiderData, setShowRiderData] = useState(false)
     const [isMarketing, setIsMarketing] = useState(false)
+    const [isTryAndBuyReverse, setIsTryAndBuyReverse] = useState(false)
     const orderDetailsApi = newOrderService.useGetOrderDetailsQuery({ order_id: invoice_id }, { skip: !invoice_id })
 
     const hasStatus = useCallback((status: string) => data?.log.some((log) => log.status === status), [data?.log])
@@ -97,7 +98,13 @@ const OrderDetails = () => {
         OrderLink,
         OrderList,
         handleReverseTNB,
-    } = useOrderDetailFunctions({ data, setShowCancelExchangeModal, setIsMarketing, refetch: orderDetailsApi.refetch })
+    } = useOrderDetailFunctions({
+        data,
+        setShowCancelExchangeModal,
+        setIsMarketing,
+        refetch: orderDetailsApi.refetch,
+        setIsTryAndBuyReverse,
+    })
 
     useEffect(() => {
         if (orderDetailsApi.currentData) {
@@ -172,13 +179,8 @@ const OrderDetails = () => {
                             </Button>
                         )}
                         {isReverseTryAndBuy && (
-                            <Button variant="gray" size="sm" onClick={handleReverseTNB}>
+                            <Button variant="gray" size="sm" onClick={() => setIsTryAndBuyReverse(true)}>
                                 Reverse TNB Return
-                            </Button>
-                        )}
-                        {showReturnOrder && (
-                            <Button variant="reject" size="sm" onClick={() => setReturnOrderDrawer(true)}>
-                                Return/Exchange ORDER
                             </Button>
                         )}
                         {data.status !== EOrderStatus.declined && data.status !== EOrderStatus.cancelled && (
@@ -395,14 +397,24 @@ const OrderDetails = () => {
                             <UtmModal isOpen={showUTMModal} setIsOpen={setShowUTMModal} orderData={data} />
                             {isMarketing && (
                                 <DialogConfirm
+                                    isProceed
                                     IsOpen={isMarketing}
                                     setIsOpen={setIsMarketing}
-                                    isProceed
                                     headingName={
                                         data?.is_internal_order ? 'Make this order Customer level' : 'Change this order to marketing level'
                                     }
                                     label={`Are you sure you want to change this order to ${data?.is_internal_order ? 'Customer level' : 'marketing level'}`}
                                     onDialogOk={handleMarketingOrder}
+                                />
+                            )}
+                            {isTryAndBuyReverse && (
+                                <DialogConfirm
+                                    isProceed
+                                    IsOpen={isReverseTryAndBuy}
+                                    setIsOpen={setIsTryAndBuyReverse}
+                                    headingName={`Reverse Try And Buy`}
+                                    label={`Are you sure you want to reverse the try and but order : ${data?.invoice_id}`}
+                                    onDialogOk={handleReverseTNB}
                                 />
                             )}
                         </div>

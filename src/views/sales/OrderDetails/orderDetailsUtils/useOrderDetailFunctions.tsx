@@ -13,10 +13,11 @@ interface Props {
     data?: Order
     setShowCancelExchangeModal: React.Dispatch<React.SetStateAction<boolean>>
     setIsMarketing: React.Dispatch<React.SetStateAction<boolean>>
+    setIsTryAndBuyReverse: React.Dispatch<React.SetStateAction<boolean>>
     refetch: any
 }
 
-export const useOrderDetailFunctions = ({ data, setShowCancelExchangeModal, setIsMarketing, refetch }: Props) => {
+export const useOrderDetailFunctions = ({ data, setShowCancelExchangeModal, setIsMarketing, refetch, setIsTryAndBuyReverse }: Props) => {
     const navigate = useNavigate()
     const { invoice_id } = useParams()
 
@@ -51,6 +52,8 @@ export const useOrderDetailFunctions = ({ data, setShowCancelExchangeModal, setI
             if (error instanceof AxiosError) {
                 errorMessage(error)
             }
+        } finally {
+            setIsTryAndBuyReverse(false)
         }
     }
 
