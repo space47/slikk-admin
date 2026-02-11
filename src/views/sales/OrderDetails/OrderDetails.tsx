@@ -98,7 +98,13 @@ const OrderDetails = () => {
         OrderLink,
         OrderList,
         handleReverseTNB,
-    } = useOrderDetailFunctions({ data, setShowCancelExchangeModal, setIsMarketing, refetch: orderDetailsApi.refetch })
+    } = useOrderDetailFunctions({
+        data,
+        setShowCancelExchangeModal,
+        setIsMarketing,
+        refetch: orderDetailsApi.refetch,
+        setIsTryAndBuyReverse,
+    })
 
     useEffect(() => {
         if (orderDetailsApi.currentData) {
@@ -409,18 +415,6 @@ const OrderDetails = () => {
                                     headingName={`Reverse Try And Buy`}
                                     label={`Are you sure you want to reverse the try and but order : ${data?.invoice_id}`}
                                     onDialogOk={handleReverseTNB}
-                                />
-                            )}
-                            {isMarketing && (
-                                <DialogConfirm
-                                    IsOpen={isMarketing}
-                                    setIsOpen={setIsMarketing}
-                                    isProceed
-                                    headingName={
-                                        data?.is_internal_order ? 'Make this order Customer level' : 'Change this order to marketing level'
-                                    }
-                                    label={`Are you sure you want to change this order to ${data?.is_internal_order ? 'Customer level' : 'marketing level'}`}
-                                    onDialogOk={handleMarketingOrder}
                                 />
                             )}
                         </div>
