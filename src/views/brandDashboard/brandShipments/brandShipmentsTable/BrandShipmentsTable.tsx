@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui'
+import { Button, Input } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { setShipmentDetails, ShipmentDetailType, setCount, setPage, setPageSize } from '@/store/slices/shipemntsSlice/shipments.slice'
 import React, { useEffect, useState } from 'react'
@@ -9,6 +9,7 @@ import { USER_PROFILE_DATA } from '@/store/types/company.types'
 import { shipmentService } from '@/store/services/shipmentService'
 import PageCommon from '@/common/PageCommon'
 import { Spin } from 'antd'
+import { FaPlus } from 'react-icons/fa'
 
 const BrandShipmentsTable = () => {
     const navigate = useNavigate()
@@ -36,10 +37,18 @@ const BrandShipmentsTable = () => {
             <div className="flex flex-col gap-5">
                 <div className="flex justify-between">
                     <div>
-                        <input type="text" placeholder="Search" value={globalFilter} onChange={(e) => setGlobalFilter(e.target.value)} />
+                        <Input
+                            type="search"
+                            size="sm"
+                            placeholder="Search"
+                            value={globalFilter}
+                            onChange={(e) => setGlobalFilter(e.target.value)}
+                        />
                     </div>
-                    <div onClick={() => navigate(`/app/vendor/shipments/add`)}>
-                        <Button variant="new">Add New Shipments</Button>
+                    <div>
+                        <Button variant="new" size="sm" icon={<FaPlus />} onClick={() => navigate(`/app/vendor/shipments/add`)}>
+                            Add New Shipments
+                        </Button>
                     </div>
                 </div>
                 <div>

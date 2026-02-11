@@ -12,6 +12,7 @@ import { ShipmentData } from '@/store/types/shipment.types'
 import InwardMaterialModule from '@/views/inventory-management/inward/inwardModules/InwardMaterialModule'
 import { AxiosError } from 'axios'
 import { errorMessage } from '@/utils/responseMessages'
+import ShipmentDownload from '../brandShipmentsUtils/ShipmentDownload'
 
 const formatDate = (date?: string | null) => {
     if (!date) return 'N/A'
@@ -186,6 +187,9 @@ const BrandShipmentDetails: React.FC = () => {
                             )}
                         </div>
                     </Card>
+                </div>
+                <div>
+                    <ShipmentDownload id={id as string} />
                 </div>
                 <div className="mt-12">
                     <h2 className="text-xl font-semibold text-gray-800">Shipment Items</h2>
