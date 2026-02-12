@@ -27,7 +27,7 @@ export const getButtonAndModalContent = (data: Event[], mainData?: { delivery_ty
         return { buttonText: EOrderButton.out_for_delivery, modalContent: 'Out for Delivery' }
     }
     if (lastLogStatus === EOrderStatus.rto_delivered && !isOrderDone && !isOrderCancelled) {
-        return { buttonText: '', modalContent: '' }
+        return { buttonText: EOrderButton.out_for_delivery, modalContent: 'Out for Delivery' }
     }
     if (isDriverAssigned && isPacked && mainData?.delivery_type !== EOrderButton.standard && !isOrderDone && !isOrderCancelled) {
         return { buttonText: EOrderButton.out_for_delivery, modalContent: 'Out for Delivery' }
