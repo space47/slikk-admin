@@ -14,7 +14,7 @@ const AlertToast = () => {
                 offsetY: 0,
                 transitionType: 'fade',
                 block: true,
-            }
+            },
         )
     }
 

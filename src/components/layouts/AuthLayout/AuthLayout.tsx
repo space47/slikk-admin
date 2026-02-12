@@ -10,11 +10,9 @@ const AuthLayout = () => {
 
     return (
         <div className="app-layout-blank flex flex-auto flex-col h-[100vh]">
-            
-                <Side>
-                    <View />
-                </Side>
-           
+            <Side>
+                <View />
+            </Side>
         </div>
     )
 }

@@ -16,11 +16,7 @@ const Loading = () => {
 
     return (
         <div>
-            <Switcher
-                checked={checked}
-                isLoading={isLoading}
-                onChange={onSwitcherToggle}
-            />
+            <Switcher checked={checked} isLoading={isLoading} onChange={onSwitcherToggle} />
         </div>
     )
 }

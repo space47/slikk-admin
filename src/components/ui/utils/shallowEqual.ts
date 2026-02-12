@@ -14,12 +14,7 @@ export default function shallowEqual(objA: any, objB: any) {
         return true
     }
 
-    if (
-        typeof objA !== 'object' ||
-        objA === null ||
-        typeof objB !== 'object' ||
-        objB === null
-    ) {
+    if (typeof objA !== 'object' || objA === null || typeof objB !== 'object' || objB === null) {
         return false
     }
 
@@ -31,10 +26,7 @@ export default function shallowEqual(objA: any, objB: any) {
     }
 
     for (let i = 0; i < keysA.length; i += 1) {
-        if (
-            !hasOwnProperty.call(objB, keysA[i]) ||
-            !is(objA[keysA[i]], objB[keysA[i]])
-        ) {
+        if (!hasOwnProperty.call(objB, keysA[i]) || !is(objA[keysA[i]], objB[keysA[i]])) {
             return false
         }
     }

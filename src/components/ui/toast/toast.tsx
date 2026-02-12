@@ -13,10 +13,7 @@ export const toastDefaultProps = {
 }
 
 export interface Toast {
-    push(
-        message: ReactNode,
-        options?: ToastProps
-    ): string | undefined | Promise<string | undefined>
+    push(message: ReactNode, options?: ToastProps): string | undefined | Promise<string | undefined>
     remove(key: string): void
     removeAll(): void
 }

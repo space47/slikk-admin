@@ -86,9 +86,7 @@ const RejectDetails = () => {
         console.log('idddddddd', post_id)
         const fetchOrders = async () => {
             try {
-                const response = await axioisInstance.get(
-                    `userposts/approval?post_id=${post_id}&mobile=${mobile}`,
-                )
+                const response = await axioisInstance.get(`userposts/approval?post_id=${post_id}&mobile=${mobile}`)
 
                 const PendingData = response.data?.data || []
                 setLoading(false)
@@ -108,15 +106,11 @@ const RejectDetails = () => {
             status: 'APPROVED',
         }
         try {
-            const response = await axioisInstance.patch(
-                '/userposts/approval',
-                body,
-            )
+            const response = await axioisInstance.patch('/userposts/approval', body)
             const data = response.data.data
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Status Updated Successfully',
+                description: response?.data?.message || 'Status Updated Successfully',
             })
             navigate('/app/userposts/approval')
             return data
@@ -134,15 +128,11 @@ const RejectDetails = () => {
             status: 'PENDING',
         }
         try {
-            const response = await axioisInstance.patch(
-                '/userposts/approval',
-                body,
-            )
+            const response = await axioisInstance.patch('/userposts/approval', body)
             const data = response.data.data
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Status Updated Successfully',
+                description: response?.data?.message || 'Status Updated Successfully',
             })
             navigate('/app/userposts/approval')
             return data
@@ -162,22 +152,14 @@ const RejectDetails = () => {
                     <>
                         <div className="mb-3 ">
                             <div className="flex justify-between ">
-                                <span className="text-xl font-bold">
-                                    POST ID :#{rejectData.post_id}
-                                </span>
+                                <span className="text-xl font-bold">POST ID :#{rejectData.post_id}</span>
                                 <span className="text-xl"></span>
 
                                 <div className="flex gap-4 ">
-                                    <Button
-                                        variant="pending"
-                                        onClick={() => handlePending()}
-                                    >
+                                    <Button variant="pending" onClick={() => handlePending()}>
                                         Pending
                                     </Button>
-                                    <Button
-                                        variant="reject"
-                                        onClick={() => handleAccept()}
-                                    >
+                                    <Button variant="reject" onClick={() => handleAccept()}>
                                         Accept
                                     </Button>
                                 </div>
@@ -190,14 +172,10 @@ const RejectDetails = () => {
                                     <RejectCreatorDetails
                                         name={rejectData.creator.name}
                                         dp={rejectData.creator.dp}
-                                        followers_count={
-                                            rejectData.creator.followers_count
-                                        }
+                                        followers_count={rejectData.creator.followers_count}
                                         likes_count={rejectData.likes_count}
                                         views_count={rejectData.views_count}
-                                        comments_count={
-                                            rejectData.comments_count
-                                        }
+                                        comments_count={rejectData.comments_count}
                                     />
                                 </div>
 
@@ -208,11 +186,7 @@ const RejectDetails = () => {
                                     ) : (
                                         <>
                                             {' '}
-                                            <img
-                                                src={rejectData.url}
-                                                alt=""
-                                                className=" w-[400px] h-[500px]"
-                                            />
+                                            <img src={rejectData.url} alt="" className=" w-[400px] h-[500px]" />
                                         </>
                                     )}
                                 </div>
@@ -226,11 +200,7 @@ const RejectDetails = () => {
             </Loading>
             {!loading && isEmpty(rejectData) && (
                 <div className="h-full flex flex-col items-center justify-center">
-                    <DoubleSidedImage
-                        src="/img/others/img-2.png"
-                        darkModeSrc="/img/others/img-2-dark.png"
-                        alt="No order found!"
-                    />
+                    <DoubleSidedImage src="/img/others/img-2.png" darkModeSrc="/img/others/img-2-dark.png" alt="No order found!" />
                     <h3 className="mt-8">No order found!</h3>
                 </div>
             )}

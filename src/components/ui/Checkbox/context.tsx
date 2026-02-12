@@ -6,11 +6,7 @@ export type CheckboxGroupValue = CheckboxValue[]
 export interface CheckboxGroupContextProps {
     color?: string
     name?: string
-    onChange?: (
-        value: CheckboxValue,
-        checked: boolean,
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => void
+    onChange?: (value: CheckboxValue, checked: boolean, event: React.ChangeEvent<HTMLInputElement>) => void
     value?: CheckboxGroupValue
     vertical?: boolean
 }

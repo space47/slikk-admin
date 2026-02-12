@@ -1,11 +1,5 @@
 import Menu from '@/components/ui/Menu'
-import {
-    HiOutlineCog,
-    HiOutlineChat,
-    HiOutlineGlobeAlt,
-    HiOutlineSupport,
-    HiWifi,
-} from 'react-icons/hi'
+import { HiOutlineCog, HiOutlineChat, HiOutlineGlobeAlt, HiOutlineSupport, HiWifi } from 'react-icons/hi'
 import type { ReactNode } from 'react'
 
 const MenuContent = ({ icon, label }: { icon: ReactNode; label: string }) => {
@@ -27,23 +21,12 @@ const MenuWithIcon = () => {
                 <Menu.MenuItem eventKey="messages">
                     <MenuContent icon={<HiOutlineChat />} label="Messages" />
                 </Menu.MenuItem>
-                <Menu.MenuCollapse
-                    eventKey="others"
-                    label={
-                        <MenuContent
-                            icon={<HiOutlineGlobeAlt />}
-                            label="Network"
-                        />
-                    }
-                >
+                <Menu.MenuCollapse eventKey="others" label={<MenuContent icon={<HiOutlineGlobeAlt />} label="Network" />}>
                     <Menu.MenuItem eventKey="wifi">
                         <MenuContent icon={<HiWifi />} label="Wifi" />
                     </Menu.MenuItem>
                     <Menu.MenuItem eventKey="support">
-                        <MenuContent
-                            icon={<HiOutlineSupport />}
-                            label="Support"
-                        />
+                        <MenuContent icon={<HiOutlineSupport />} label="Support" />
                     </Menu.MenuItem>
                 </Menu.MenuCollapse>
             </Menu>

@@ -16,12 +16,7 @@ const colourOptions = [
 const MultiSelection = () => {
     return (
         <div>
-            <Select
-                isMulti
-                placeholder="Please Select"
-                defaultValue={[colourOptions[2], colourOptions[3]]}
-                options={colourOptions}
-            />
+            <Select isMulti placeholder="Please Select" defaultValue={[colourOptions[2], colourOptions[3]]} options={colourOptions} />
         </div>
     )
 }

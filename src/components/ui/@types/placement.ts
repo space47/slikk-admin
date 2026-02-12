@@ -1,10 +1,4 @@
-export type NotificationPlacement =
-    | 'top-start'
-    | 'top-center'
-    | 'top-end'
-    | 'bottom-start'
-    | 'bottom-center'
-    | 'bottom-end'
+export type NotificationPlacement = 'top-start' | 'top-center' | 'top-end' | 'bottom-start' | 'bottom-center' | 'bottom-end'
 
 export type DropdownPlacement =
     | 'top-start'

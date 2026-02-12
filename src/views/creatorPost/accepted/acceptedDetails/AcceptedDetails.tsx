@@ -87,9 +87,7 @@ const AcceptedDetails = () => {
         console.log('iddddddd', id)
         const fetchOrders = async () => {
             try {
-                const response = await axioisInstance.get(
-                    `userposts/approval?post_id=${post_id}&mobile=${mobile}`,
-                )
+                const response = await axioisInstance.get(`userposts/approval?post_id=${post_id}&mobile=${mobile}`)
 
                 const PendingData = response.data?.data || []
                 setLoading(false)
@@ -101,7 +99,7 @@ const AcceptedDetails = () => {
         }
 
         fetchOrders()
-    }, [id, post_id,mobile])
+    }, [id, post_id, mobile])
 
     const handleReject = async () => {
         const body = {
@@ -109,15 +107,11 @@ const AcceptedDetails = () => {
             status: 'REJECTED',
         }
         try {
-            const response = await axioisInstance.patch(
-                '/userposts/approval',
-                body,
-            )
+            const response = await axioisInstance.patch('/userposts/approval', body)
             const data = response.data.data
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Status Updated Successfully',
+                description: response?.data?.message || 'Status Updated Successfully',
             })
             navigate('/app/userposts/approval')
             return data
@@ -135,15 +129,11 @@ const AcceptedDetails = () => {
             status: 'PENDING',
         }
         try {
-            const response = await axioisInstance.patch(
-                '/userposts/approval',
-                body,
-            )
+            const response = await axioisInstance.patch('/userposts/approval', body)
             const data = response.data.data
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Status Updated Successfully',
+                description: response?.data?.message || 'Status Updated Successfully',
             })
             navigate('/app/userposts/approval')
             return data
@@ -163,22 +153,14 @@ const AcceptedDetails = () => {
                     <>
                         <div className="mb-3 ">
                             <div className="flex justify-between ">
-                                <span className="text-xl font-bold">
-                                    POST ID :#{acceptedData.post_id}
-                                </span>
+                                <span className="text-xl font-bold">POST ID :#{acceptedData.post_id}</span>
                                 <span className="text-xl"></span>
 
                                 <div className="flex gap-4 ">
-                                    <Button
-                                        variant="pending"
-                                        onClick={() => handlePending()}
-                                    >
+                                    <Button variant="pending" onClick={() => handlePending()}>
                                         Pending
                                     </Button>
-                                    <Button
-                                        variant="reject"
-                                        onClick={() => handleReject()}
-                                    >
+                                    <Button variant="reject" onClick={() => handleReject()}>
                                         Reject
                                     </Button>
                                 </div>
@@ -191,14 +173,10 @@ const AcceptedDetails = () => {
                                     <AcceptCreatorDetails
                                         name={acceptedData.creator.name}
                                         dp={acceptedData.creator.dp}
-                                        followers_count={
-                                            acceptedData.creator.followers_count
-                                        }
+                                        followers_count={acceptedData.creator.followers_count}
                                         likes_count={acceptedData.likes_count}
                                         views_count={acceptedData.views_count}
-                                        comments_count={
-                                            acceptedData.comments_count
-                                        }
+                                        comments_count={acceptedData.comments_count}
                                     />
                                 </div>
 
@@ -209,11 +187,7 @@ const AcceptedDetails = () => {
                                     ) : (
                                         <>
                                             {' '}
-                                            <img
-                                                src={acceptedData.url}
-                                                alt=""
-                                                className=" w-[400px] h-[500px]"
-                                            />
+                                            <img src={acceptedData.url} alt="" className=" w-[400px] h-[500px]" />
                                         </>
                                     )}
                                 </div>
@@ -227,11 +201,7 @@ const AcceptedDetails = () => {
             </Loading>
             {!loading && isEmpty(acceptedData) && (
                 <div className="h-full flex flex-col items-center justify-center">
-                    <DoubleSidedImage
-                        src="/img/others/img-2.png"
-                        darkModeSrc="/img/others/img-2-dark.png"
-                        alt="No order found!"
-                    />
+                    <DoubleSidedImage src="/img/others/img-2.png" darkModeSrc="/img/others/img-2-dark.png" alt="No order found!" />
                     <h3 className="mt-8">No order found!</h3>
                 </div>
             )}

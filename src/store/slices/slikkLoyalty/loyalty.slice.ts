@@ -46,7 +46,7 @@ export const loyaltySlice = createSlice({
                 state.loading = true
             })
             .addCase(fetchLoyalty.fulfilled, (state, action) => {
-                ;(state.loading = false), (state.loyalty = action.payload?.data)
+                ;((state.loading = false), (state.loyalty = action.payload?.data))
             })
             .addCase(fetchLoyalty.rejected, (state) => {
                 state.loading = false

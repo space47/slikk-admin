@@ -3,10 +3,7 @@ import { THEME_ENUM } from '@/constants/theme.constant'
 import { setMode, useAppSelector, useAppDispatch } from '@/store'
 import type { Mode } from '@/@types/theme'
 
-function useDarkMode(): [
-    isEnabled: boolean,
-    onModeChange: (mode: Mode) => void
-] {
+function useDarkMode(): [isEnabled: boolean, onModeChange: (mode: Mode) => void] {
     const mode = useAppSelector((state) => state.theme.mode)
     const { MODE_DARK, MODE_LIGHT } = THEME_ENUM
 

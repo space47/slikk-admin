@@ -31,11 +31,7 @@ const Controlled = () => {
                 <h6>Step {`${step + 1}`} content</h6>
             </div>
             <div className="mt-4 text-right">
-                <Button
-                    className="mx-2"
-                    disabled={step === 0}
-                    onClick={onPrevious}
-                >
+                <Button className="mx-2" disabled={step === 0} onClick={onPrevious}>
                     Previous
                 </Button>
                 <Button disabled={step === 3} variant="solid" onClick={onNext}>

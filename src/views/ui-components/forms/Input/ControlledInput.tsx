@@ -4,16 +4,11 @@ import type { ChangeEvent } from 'react'
 
 const ControlledInput = () => {
     const [value, setValue] = useState('')
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) =>
-        setValue(e.target.value)
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => setValue(e.target.value)
 
     return (
         <div>
-            <Input
-                value={value}
-                placeholder="Sample placeholder"
-                onChange={handleChange}
-            />
+            <Input value={value} placeholder="Sample placeholder" onChange={handleChange} />
         </div>
     )
 }

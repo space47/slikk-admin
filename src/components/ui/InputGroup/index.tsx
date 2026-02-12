@@ -5,9 +5,7 @@ import Addon from './Addon'
 export type { InputGroupProps } from './InputGroup'
 export type { AddonProps } from './Addon'
 
-type CompoundedComponent = ForwardRefExoticComponent<
-    InputGroupProps & RefAttributes<HTMLDivElement>
-> & {
+type CompoundedComponent = ForwardRefExoticComponent<InputGroupProps & RefAttributes<HTMLDivElement>> & {
     Addon: typeof Addon
 }
 

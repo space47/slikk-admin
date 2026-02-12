@@ -1,9 +1,4 @@
-import {
-    HiCheckCircle,
-    HiInformationCircle,
-    HiExclamation,
-    HiXCircle,
-} from 'react-icons/hi'
+import { HiCheckCircle, HiInformationCircle, HiExclamation, HiXCircle } from 'react-icons/hi'
 import type { TypeAttributes, CommonProps } from '../@types/common'
 import type { ReactNode } from 'react'
 
@@ -43,11 +38,7 @@ const StatusIcon = (props: StatusIconProps) => {
 
     const icon = ICONS[type]
 
-    return (
-        <span className={`text-2xl ${iconColor || icon.color}`}>
-            {custom || icon.icon}
-        </span>
-    )
+    return <span className={`text-2xl ${iconColor || icon.color}`}>{custom || icon.icon}</span>
 }
 
 export default StatusIcon

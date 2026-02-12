@@ -10,9 +10,7 @@ const Format = () => {
                 <DatePicker inputFormat="MMM, DD YYYY" defaultValue={date} />
             </div>
             <div>
-                <div className="mb-1 font-semibold text-sm">
-                    Inner label format:
-                </div>
+                <div className="mb-1 font-semibold text-sm">Inner label format:</div>
                 <DatePicker
                     labelFormat={{
                         month: 'MMMM',

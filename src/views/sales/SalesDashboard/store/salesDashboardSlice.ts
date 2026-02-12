@@ -52,18 +52,13 @@ export type SalesDashboardState = {
 
 export const SLICE_NAME = 'salesDashboard'
 
-export const getSalesDashboardData = createAsyncThunk(
-    SLICE_NAME + '/getSalesDashboardData',
-    async () => {
-        const response = await apiGetSalesDashboardData<DashboardDataResponse>()
-        return response.data
-    }
-)
+export const getSalesDashboardData = createAsyncThunk(SLICE_NAME + '/getSalesDashboardData', async () => {
+    const response = await apiGetSalesDashboardData<DashboardDataResponse>()
+    return response.data
+})
 
 const initialState: SalesDashboardState = {
-    startDate: dayjs(
-        dayjs().subtract(3, 'month').format('DD-MMM-YYYY, hh:mm A')
-    ).unix(),
+    startDate: dayjs(dayjs().subtract(3, 'month').format('DD-MMM-YYYY, hh:mm A')).unix(),
     endDate: dayjs(new Date()).unix(),
     loading: true,
     dashboardData: {},

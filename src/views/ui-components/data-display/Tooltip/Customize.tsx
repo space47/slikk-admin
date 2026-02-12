@@ -6,8 +6,7 @@ const Customize = () => {
             <Tooltip
                 title={
                     <div>
-                        This is{' '}
-                        <strong className="text-yellow-400">HTML</strong>
+                        This is <strong className="text-yellow-400">HTML</strong>
                     </div>
                 }
             >

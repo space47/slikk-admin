@@ -19,9 +19,7 @@ export type { ThProps } from './Th'
 export type { TdProps } from './Td'
 export type { SorterProps } from './Sorter'
 
-type CompoundedComponent = ForwardRefExoticComponent<
-    TableProps & RefAttributes<HTMLElement>
-> & {
+type CompoundedComponent = ForwardRefExoticComponent<TableProps & RefAttributes<HTMLElement>> & {
     THead: typeof THead
     TBody: typeof TBody
     TFoot: typeof TFoot

@@ -7,12 +7,7 @@ export interface IconTextProps extends CommonProps {
     asElement?: ElementType
 }
 
-const IconText = ({
-    className,
-    asElement: Component = 'span',
-    icon,
-    children,
-}: IconTextProps) => {
+const IconText = ({ className, asElement: Component = 'span', icon, children }: IconTextProps) => {
     return (
         <Component className={classNames('flex items-center gap-2', className)}>
             {icon}

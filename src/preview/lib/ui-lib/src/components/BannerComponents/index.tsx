@@ -1,3 +1,3 @@
-export * from "./GenderComponents";
-export * from "./CouponBanner";
-export * from "./GenericComponent";
+export * from './GenderComponents'
+export * from './CouponBanner'
+export * from './GenericComponent'

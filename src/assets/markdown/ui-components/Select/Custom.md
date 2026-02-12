@@ -18,9 +18,7 @@ const CustomSelectOption = ({ innerProps, label, data, isSelected }) => {
     return (
         <div
             className={`flex items-center justify-between p-2 ${
-                isSelected
-                    ? 'bg-gray-100 dark:bg-gray-500'
-                    : 'hover:bg-gray-50 dark:hover:bg-gray-600'
+                isSelected ? 'bg-gray-100 dark:bg-gray-500' : 'hover:bg-gray-50 dark:hover:bg-gray-600'
             }`}
             {...innerProps}
         >
@@ -37,14 +35,7 @@ const CustomControl = ({ children, ...props }) => {
     const selected = props.getValue()[0]
     return (
         <Control {...props}>
-            {selected && (
-                <Avatar
-                    className="ltr:ml-4 rtl:mr-4"
-                    shape="circle"
-                    size={18}
-                    src={selected.imgPath}
-                />
-            )}
+            {selected && <Avatar className="ltr:ml-4 rtl:mr-4" shape="circle" size={18} src={selected.imgPath} />}
             {children}
         </Control>
     )
@@ -55,12 +46,7 @@ const CustomControlMulti = ({ children, data, ...props }) => {
     return (
         <MultiValueLabel {...props}>
             <div className="inline-flex items-center">
-                <Avatar
-                    className="mr-2 rtl:ml-2"
-                    shape="circle"
-                    size={15}
-                    src={imgPath}
-                />
+                <Avatar className="mr-2 rtl:ml-2" shape="circle" size={15} src={imgPath} />
                 {children}
             </div>
         </MultiValueLabel>

@@ -175,15 +175,9 @@ const formikNote = (
     <div>
         <h4>Formik</h4>
         <p className="mt-2">
-            Formik is a flexible form library for React, which allow us to do
-            form state manipulation, validation & submission, you can visit the
-            official
-            <a
-                className="underline text-blue-500"
-                href="https://formik.org/docs/overview"
-                target="_blank"
-                rel="noreferrer"
-            >
+            Formik is a flexible form library for React, which allow us to do form state manipulation, validation & submission, you can
+            visit the official
+            <a className="underline text-blue-500" href="https://formik.org/docs/overview" target="_blank" rel="noreferrer">
                 {' '}
                 documentation{' '}
             </a>
@@ -191,17 +185,10 @@ const formikNote = (
         </p>
         <h4 className="mt-10">Yup</h4>
         <p className="mt-2">
-            Yup is a schema builder for runtime value parsing and validation.
-            Define a schema, transform a value to match, assert the shape of an
-            existing value, or both. Yup schema are extremely expressive and
-            allow modeling complex, interdependent validations, or value
-            transformation. you can visit the official
-            <a
-                className="underline text-blue-500"
-                href="https://github.com/jquense/yup"
-                target="_blank"
-                rel="noreferrer"
-            >
+            Yup is a schema builder for runtime value parsing and validation. Define a schema, transform a value to match, assert the shape
+            of an existing value, or both. Yup schema are extremely expressive and allow modeling complex, interdependent validations, or
+            value transformation. you can visit the official
+            <a className="underline text-blue-500" href="https://github.com/jquense/yup" target="_blank" rel="noreferrer">
                 {' '}
                 documentation{' '}
             </a>
@@ -211,14 +198,7 @@ const formikNote = (
 )
 
 const FormControl = () => {
-    return (
-        <DemoLayout
-            header={demoHeader}
-            demos={demos}
-            api={demoApi}
-            note={formikNote}
-        />
-    )
+    return <DemoLayout header={demoHeader} demos={demos} api={demoApi} note={formikNote} />
 }
 
 export default FormControl

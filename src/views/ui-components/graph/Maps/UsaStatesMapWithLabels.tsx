@@ -1,11 +1,5 @@
 import { geoCentroid } from 'd3-geo'
-import {
-    ComposableMap,
-    Geographies,
-    Geography,
-    Marker,
-    Annotation,
-} from 'react-simple-maps'
+import { ComposableMap, Geographies, Geography, Marker, Annotation } from 'react-simple-maps'
 
 import allStates from '@/assets/maps/allstates.json'
 
@@ -25,21 +19,12 @@ const offsets: Record<string, [number, number]> = {
 
 const UsaStatesMapWithLabels = () => {
     return (
-        <ComposableMap
-            height={200}
-            projectionConfig={{ scale: 450 }}
-            projection="geoAlbersUsa"
-        >
+        <ComposableMap height={200} projectionConfig={{ scale: 450 }} projection="geoAlbersUsa">
             <Geographies geography={geoUrl}>
                 {({ geographies }) => (
                     <>
                         {geographies.map((geo) => (
-                            <Geography
-                                key={geo.rsmKey}
-                                stroke="#FFF"
-                                geography={geo}
-                                fill="#DDD"
-                            />
+                            <Geography key={geo.rsmKey} stroke="#FFF" geography={geo} fill="#DDD" />
                         ))}
                         {geographies.map((geo) => {
                             const centroid = geoCentroid(geo)
@@ -49,15 +34,9 @@ const UsaStatesMapWithLabels = () => {
                                     {cur &&
                                         centroid[0] > -160 &&
                                         centroid[0] < -67 &&
-                                        (Object.keys(offsets).indexOf(
-                                            cur.id
-                                        ) === -1 ? (
+                                        (Object.keys(offsets).indexOf(cur.id) === -1 ? (
                                             <Marker coordinates={centroid}>
-                                                <text
-                                                    y="2"
-                                                    fontSize={7}
-                                                    textAnchor="middle"
-                                                >
+                                                <text y="2" fontSize={7} textAnchor="middle">
                                                     {cur.id}
                                                 </text>
                                             </Marker>
@@ -68,11 +47,7 @@ const UsaStatesMapWithLabels = () => {
                                                 dy={offsets[cur.id][1]}
                                                 connectorProps={{}}
                                             >
-                                                <text
-                                                    x={4}
-                                                    fontSize={7}
-                                                    alignmentBaseline="middle"
-                                                >
+                                                <text x={4} fontSize={7} alignmentBaseline="middle">
                                                     {cur.id}
                                                 </text>
                                             </Annotation>

@@ -20,10 +20,7 @@ const domContains = (context: Element, node: (Node & ParentNode) | null) => {
     if (context.contains) {
         return context.contains(node)
     } else if (context.compareDocumentPosition) {
-        return (
-            context === node ||
-            !!(context.compareDocumentPosition(node as Node) & 16)
-        )
+        return context === node || !!(context.compareDocumentPosition(node as Node) & 16)
     }
     if (node) {
         do {
@@ -40,8 +37,7 @@ const getRefTarget = (ref: RefObject<Element> | Element | null | undefined) => {
 }
 
 function getDOMNode(elementOrRef: any) {
-    const element =
-        elementOrRef?.root || elementOrRef?.child || getRefTarget(elementOrRef)
+    const element = elementOrRef?.root || elementOrRef?.child || getRefTarget(elementOrRef)
 
     if (element?.nodeType && typeof element?.nodeName === 'string') {
         return element
@@ -63,7 +59,7 @@ function onEventListener<K extends keyof DocumentEventMap>(
     target: Element | Window | Document | EventTarget,
     eventType: K,
     listener: EventListenerOrEventListenerObject | CustomEventListener,
-    options: boolean | AddEventListenerOptions = false
+    options: boolean | AddEventListenerOptions = false,
 ): { off: () => void } {
     target.addEventListener(eventType, listener, options)
 
@@ -74,10 +70,7 @@ function onEventListener<K extends keyof DocumentEventMap>(
     }
 }
 
-function useRootClose(
-    onRootClose: ReactEventHandler | undefined,
-    { disabled, triggerTarget, overlayTarget }: Options
-) {
+function useRootClose(onRootClose: ReactEventHandler | undefined, { disabled, triggerTarget, overlayTarget }: Options) {
     const handleDocumentMouseDown = useCallback(
         (event: any) => {
             const triggerElement = getDOMNode(triggerTarget)
@@ -97,7 +90,7 @@ function useRootClose(
 
             onRootClose?.(event)
         },
-        [onRootClose, triggerTarget, overlayTarget]
+        [onRootClose, triggerTarget, overlayTarget],
     )
 
     useEffect(() => {
@@ -105,14 +98,8 @@ function useRootClose(
 
         if (disabled || !currentTarget) return
 
-        const doc = () =>
-            (currentTarget && currentTarget.ownerDocument) || document
-        const onDocumentMouseDownListener = onEventListener(
-            doc(),
-            'mousedown',
-            handleDocumentMouseDown,
-            true
-        )
+        const doc = () => (currentTarget && currentTarget.ownerDocument) || document
+        const onDocumentMouseDownListener = onEventListener(doc(), 'mousedown', handleDocumentMouseDown, true)
 
         return () => {
             onDocumentMouseDownListener?.off()

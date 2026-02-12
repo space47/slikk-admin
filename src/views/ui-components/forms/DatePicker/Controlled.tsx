@@ -3,10 +3,7 @@ import DatePicker from '@/components/ui/DatePicker'
 
 const Controlled = () => {
     const [date, setDate] = useState<Date | null>(new Date())
-    const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
-        new Date(2022, 11, 1),
-        new Date(2022, 11, 5),
-    ])
+    const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([new Date(2022, 11, 1), new Date(2022, 11, 5)])
     const [dateTime, setDateTime] = useState<Date | null>(new Date())
 
     const handleDatePickerChange = (date: Date | null) => {
@@ -26,21 +23,9 @@ const Controlled = () => {
 
     return (
         <div className="flex flex-col gap-5">
-            <DatePicker
-                placeholder="Pick a date"
-                value={date}
-                onChange={handleDatePickerChange}
-            />
-            <DatePicker.DatePickerRange
-                placeholder="Select dates range"
-                value={dateRange}
-                onChange={handleRangePickerChange}
-            />
-            <DatePicker.DateTimepicker
-                placeholder="Pick date & time"
-                value={dateTime}
-                onChange={handleDateTimeChange}
-            />
+            <DatePicker placeholder="Pick a date" value={date} onChange={handleDatePickerChange} />
+            <DatePicker.DatePickerRange placeholder="Select dates range" value={dateRange} onChange={handleRangePickerChange} />
+            <DatePicker.DateTimepicker placeholder="Pick date & time" value={dateTime} onChange={handleDateTimeChange} />
         </div>
     )
 }

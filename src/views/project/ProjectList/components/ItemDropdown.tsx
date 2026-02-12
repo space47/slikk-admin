@@ -1,9 +1,5 @@
 import Dropdown from '@/components/ui/Dropdown'
-import {
-    HiOutlineSwitchHorizontal,
-    HiOutlineFlag,
-    HiOutlineCog,
-} from 'react-icons/hi'
+import { HiOutlineSwitchHorizontal, HiOutlineFlag, HiOutlineCog } from 'react-icons/hi'
 import EllipsisButton from '@/components/shared/EllipsisButton'
 
 const dropdownList = [

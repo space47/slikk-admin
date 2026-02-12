@@ -38,13 +38,7 @@ type props1 = {
     status: string
 }
 
-export const CustomModal1: React.FC<props1> = ({
-    isModalOpen,
-    handlePack,
-    handleClose,
-    modalContent,
-    status,
-}) => {
+export const CustomModal1: React.FC<props1> = ({ isModalOpen, handlePack, handleClose, modalContent, status }) => {
     return (
         <Modal
             {...modalStyles}
@@ -70,13 +64,7 @@ type props2 = {
     status: string
 }
 
-export const CustomModal2: React.FC<props2> = ({
-    isModalOpen,
-    handlePack,
-    handleClose,
-    modalContent,
-    status,
-}) => {
+export const CustomModal2: React.FC<props2> = ({ isModalOpen, handlePack, handleClose, modalContent, status }) => {
     return (
         <Modal
             {...modalStyles}
@@ -102,13 +90,7 @@ type props3 = {
     status: string
 }
 
-export const CustomModal3: React.FC<props3> = ({
-    isModalOpen,
-    handlePack,
-    handleClose,
-    modalContent,
-    status,
-}) => {
+export const CustomModal3: React.FC<props3> = ({ isModalOpen, handlePack, handleClose, modalContent, status }) => {
     return (
         <Modal
             {...modalStyles}
@@ -121,9 +103,7 @@ export const CustomModal3: React.FC<props3> = ({
             onCancel={handleClose}
         >
             <p className="text-lg mb-4">{modalContent}</p>
-            <h1 className="text-2xl font-semibold">
-                Your order has been picked
-            </h1>
+            <h1 className="text-2xl font-semibold">Your order has been picked</h1>
         </Modal>
     )
 }
@@ -136,13 +116,7 @@ type props4 = {
     status: string
 }
 
-export const CustomModal4: React.FC<props4> = ({
-    isModalOpen,
-    handlePack,
-    handleClose,
-    modalContent,
-    status,
-}) => {
+export const CustomModal4: React.FC<props4> = ({ isModalOpen, handlePack, handleClose, modalContent, status }) => {
     return (
         <Modal
             {...modalStyles}
@@ -155,9 +129,7 @@ export const CustomModal4: React.FC<props4> = ({
             onCancel={handleClose}
         >
             <p className="text-lg mb-4">{modalContent}</p>
-            <h1 className="text-2xl font-semibold">
-                Your order is out for delivery
-            </h1>
+            <h1 className="text-2xl font-semibold">Your order is out for delivery</h1>
         </Modal>
     )
 }
@@ -170,13 +142,7 @@ type props5 = {
     status: string
 }
 
-export const CustomModal5: React.FC<props5> = ({
-    isModalOpen,
-    handlePack,
-    handleClose,
-    modalContent,
-    status,
-}) => {
+export const CustomModal5: React.FC<props5> = ({ isModalOpen, handlePack, handleClose, modalContent, status }) => {
     return (
         <Modal
             {...modalStyles}
@@ -189,9 +155,7 @@ export const CustomModal5: React.FC<props5> = ({
             onCancel={handleClose}
         >
             <p className="text-lg mb-4">{modalContent}</p>
-            <h1 className="text-2xl font-semibold">
-                Your location has been updated
-            </h1>
+            <h1 className="text-2xl font-semibold">Your location has been updated</h1>
         </Modal>
     )
 }
@@ -204,13 +168,7 @@ type props6 = {
     status: string
 }
 
-export const CustomModal6: React.FC<props6> = ({
-    isModalOpen,
-    handlePack,
-    handleClose,
-    modalContent,
-    status,
-}) => {
+export const CustomModal6: React.FC<props6> = ({ isModalOpen, handlePack, handleClose, modalContent, status }) => {
     return (
         <Modal
             {...modalStyles}

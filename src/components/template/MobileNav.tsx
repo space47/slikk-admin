@@ -1,28 +1,20 @@
 import { useState, Suspense, lazy } from 'react'
 import classNames from 'classnames'
 import Drawer from '@/components/ui/Drawer'
-import {
-    NAV_MODE_THEMED,
-    NAV_MODE_TRANSPARENT,
-    DIR_RTL,
-} from '@/constants/theme.constant'
+import { NAV_MODE_THEMED, NAV_MODE_TRANSPARENT, DIR_RTL } from '@/constants/theme.constant'
 import withHeaderItem, { WithHeaderItemProps } from '@/utils/hoc/withHeaderItem'
 import NavToggle from '@/components/shared/NavToggle'
 import navigationConfig from '@/configs/navigation.config'
 import useResponsive from '@/utils/hooks/useResponsive'
 import { useAppSelector } from '@/store'
 
-const VerticalMenuContent = lazy(
-    () => import('@/components/template/VerticalMenuContent')
-)
+const VerticalMenuContent = lazy(() => import('@/components/template/VerticalMenuContent'))
 
 type MobileNavToggleProps = {
     toggled?: boolean
 }
 
-const MobileNavToggle = withHeaderItem<
-    MobileNavToggleProps & WithHeaderItemProps
->(NavToggle)
+const MobileNavToggle = withHeaderItem<MobileNavToggleProps & WithHeaderItemProps>(NavToggle)
 
 const MobileNav = () => {
     const [isOpen, setIsOpen] = useState(false)
@@ -36,18 +28,12 @@ const MobileNav = () => {
     }
 
     const themeColor = useAppSelector((state) => state.theme.themeColor)
-    const primaryColorLevel = useAppSelector(
-        (state) => state.theme.primaryColorLevel
-    )
+    const primaryColorLevel = useAppSelector((state) => state.theme.primaryColorLevel)
     const navMode = useAppSelector((state) => state.theme.navMode)
     const mode = useAppSelector((state) => state.theme.mode)
     const direction = useAppSelector((state) => state.theme.direction)
-    const currentRouteKey = useAppSelector(
-        (state) => state.base.common.currentRouteKey
-    )
-    const sideNavCollapse = useAppSelector(
-        (state) => state.theme.layout.sideNavCollapse
-    )
+    const currentRouteKey = useAppSelector((state) => state.base.common.currentRouteKey)
+    const sideNavCollapse = useAppSelector((state) => state.theme.layout.sideNavCollapse)
     const userAuthority = useAppSelector((state) => state.auth.user.authority)
 
     const { smaller } = useResponsive()

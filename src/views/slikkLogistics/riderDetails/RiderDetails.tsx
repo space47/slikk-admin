@@ -60,6 +60,7 @@ const RiderDetails = () => {
     const [currentRow, setCurrentRow] = useState<RiderDetailsType>()
     const [showDeleteModal, setShowDeleteModal] = useState(false)
     const { storeResults } = useAppSelector<companyStore>((state) => state.companyStore)
+
     const { count, from, page, pageSize, to, currentStoreLocation } = useAppSelector<RiderDetailType>((state) => state.riderDetails)
     const [riderDownload, riderDownloadResponse] = ridersService.useLazyRiderDetailsDownloadQuery()
     const { debounceFilter } = useDebounceInput({ globalFilter: globalFilter as string, delay: DEBOUNCE_DELAY })

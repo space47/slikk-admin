@@ -3,11 +3,7 @@ import { useState } from 'react'
 import Table from '@/components/ui/Table'
 import Switcher from '@/components/ui/Switcher'
 import TableRowSkeleton from '@/components/shared/loaders/TableRowSkeleton'
-import {
-    useReactTable,
-    getCoreRowModel,
-    flexRender,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table'
 
 const columns = [
     {
@@ -67,10 +63,7 @@ const Basic = () => {
         <>
             <div className="flex items-center mb-4 gap-2">
                 <span>Loading State: </span>
-                <Switcher
-                    checked={isLoading}
-                    onChange={(checked) => setIsLoading(!checked)}
-                />
+                <Switcher checked={isLoading} onChange={(checked) => setIsLoading(!checked)} />
             </div>
             <Table>
                 <THead>
@@ -78,14 +71,8 @@ const Basic = () => {
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => {
                                 return (
-                                    <Th
-                                        key={header.id}
-                                        colSpan={header.colSpan}
-                                    >
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
+                                    <Th key={header.id} colSpan={header.colSpan}>
+                                        {flexRender(header.column.columnDef.header, header.getContext())}
                                     </Th>
                                 )
                             })}
@@ -100,14 +87,7 @@ const Basic = () => {
                             return (
                                 <Tr key={row.id}>
                                     {row.getVisibleCells().map((cell) => {
-                                        return (
-                                            <Td key={cell.id}>
-                                                {flexRender(
-                                                    cell.column.columnDef.cell,
-                                                    cell.getContext()
-                                                )}
-                                            </Td>
-                                        )
+                                        return <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                                     })}
                                 </Tr>
                             )

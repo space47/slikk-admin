@@ -24,10 +24,7 @@ type ResetPasswordFormSchema = {
 
 const validationSchema = Yup.object().shape({
     password: Yup.string().required('Please enter your password'),
-    confirmPassword: Yup.string().oneOf(
-        [Yup.ref('password')],
-        'Your passwords do not match'
-    ),
+    confirmPassword: Yup.string().oneOf([Yup.ref('password')], 'Your passwords do not match'),
 })
 
 const ResetPasswordForm = (props: ResetPasswordFormProps) => {
@@ -39,10 +36,7 @@ const ResetPasswordForm = (props: ResetPasswordFormProps) => {
 
     const navigate = useNavigate()
 
-    const onSubmit = async (
-        values: ResetPasswordFormSchema,
-        setSubmitting: (isSubmitting: boolean) => void
-    ) => {
+    const onSubmit = async (values: ResetPasswordFormSchema, setSubmitting: (isSubmitting: boolean) => void) => {
         const { password } = values
         setSubmitting(true)
         try {
@@ -52,10 +46,7 @@ const ResetPasswordForm = (props: ResetPasswordFormProps) => {
                 setResetComplete(true)
             }
         } catch (errors) {
-            setMessage(
-                (errors as AxiosError<{ message: string }>)?.response?.data
-                    ?.message || (errors as Error).toString()
-            )
+            setMessage((errors as AxiosError<{ message: string }>)?.response?.data?.message || (errors as Error).toString())
             setSubmitting(false)
         }
     }
@@ -75,9 +66,7 @@ const ResetPasswordForm = (props: ResetPasswordFormProps) => {
                 ) : (
                     <>
                         <h3 className="mb-1">Set new password</h3>
-                        <p>
-                            Your new password must different to previos password
-                        </p>
+                        <p>Your new password must different to previos password</p>
                     </>
                 )}
             </div>
@@ -105,26 +94,12 @@ const ResetPasswordForm = (props: ResetPasswordFormProps) => {
                         <FormContainer>
                             {!resetComplete ? (
                                 <>
-                                    <FormItem
-                                        label="Password"
-                                        invalid={
-                                            errors.password && touched.password
-                                        }
-                                        errorMessage={errors.password}
-                                    >
-                                        <Field
-                                            autoComplete="off"
-                                            name="password"
-                                            placeholder="Password"
-                                            component={PasswordInput}
-                                        />
+                                    <FormItem label="Password" invalid={errors.password && touched.password} errorMessage={errors.password}>
+                                        <Field autoComplete="off" name="password" placeholder="Password" component={PasswordInput} />
                                     </FormItem>
                                     <FormItem
                                         label="Confirm Password"
-                                        invalid={
-                                            errors.confirmPassword &&
-                                            touched.confirmPassword
-                                        }
+                                        invalid={errors.confirmPassword && touched.confirmPassword}
                                         errorMessage={errors.confirmPassword}
                                     >
                                         <Field
@@ -134,24 +109,12 @@ const ResetPasswordForm = (props: ResetPasswordFormProps) => {
                                             component={PasswordInput}
                                         />
                                     </FormItem>
-                                    <Button
-                                        block
-                                        loading={isSubmitting}
-                                        variant="solid"
-                                        type="submit"
-                                    >
-                                        {isSubmitting
-                                            ? 'Submiting...'
-                                            : 'Submit'}
+                                    <Button block loading={isSubmitting} variant="solid" type="submit">
+                                        {isSubmitting ? 'Submiting...' : 'Submit'}
                                     </Button>
                                 </>
                             ) : (
-                                <Button
-                                    block
-                                    variant="solid"
-                                    type="button"
-                                    onClick={onContinue}
-                                >
+                                <Button block variant="solid" type="button" onClick={onContinue}>
                                     Continue
                                 </Button>
                             )}

@@ -11,11 +11,7 @@ const DisabledCertainDate = () => {
 
     return (
         <div className="md:w-[260px] max-w-[260px] mx-auto">
-            <Calendar
-                value={value}
-                disableDate={disableCertainDate}
-                onChange={setValue}
-            />
+            <Calendar value={value} disableDate={disableCertainDate} onChange={setValue} />
         </div>
     )
 }

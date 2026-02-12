@@ -16,8 +16,8 @@ import {
     useDismiss,
     useRole,
     useInteractions,
-    FloatingPortal
-  } from '@floating-ui/react';
+    FloatingPortal,
+} from '@floating-ui/react'
 
 export interface TooltipProps extends CommonProps {
     isOpen?: boolean
@@ -27,15 +27,7 @@ export interface TooltipProps extends CommonProps {
 }
 
 const Tooltip = (props: TooltipProps) => {
-    const {
-        className,
-        children,
-        isOpen = false,
-        placement = 'top',
-        title,
-        wrapperClass,
-        ...rest
-    } = props
+    const { className, children, isOpen = false, placement = 'top', title, wrapperClass, ...rest } = props
 
     const [tooltipOpen, setTooltipOpen] = useState<boolean>(isOpen)
 
@@ -52,41 +44,29 @@ const Tooltip = (props: TooltipProps) => {
         middleware: [
             offset(7),
             flip({
-                fallbackAxisSideDirection: 'start'
+                fallbackAxisSideDirection: 'start',
             }),
-            shift()
-        ]
-    });
-    
-    const hover = useHover(context, { move: false });
-    const focus = useFocus(context);
-    const dismiss = useDismiss(context);
-    const role = useRole(context, { role: 'tooltip' });
-    
-    const { getReferenceProps, getFloatingProps } = useInteractions([
-        hover,
-        focus,
-        dismiss,
-        role
-    ]);
+            shift(),
+        ],
+    })
+
+    const hover = useHover(context, { move: false })
+    const focus = useFocus(context)
+    const dismiss = useDismiss(context)
+    const role = useRole(context, { role: 'tooltip' })
+
+    const { getReferenceProps, getFloatingProps } = useInteractions([hover, focus, dismiss, role])
 
     return (
         <>
-            <span
-                ref={refs.setReference} 
-                {...getReferenceProps()}
-                className={classNames('tooltip-wrapper', wrapperClass)}
-            >
+            <span ref={refs.setReference} {...getReferenceProps()} className={classNames('tooltip-wrapper', wrapperClass)}>
                 {children}
             </span>
             <FloatingPortal>
                 {tooltipOpen && (
-                     <AnimatePresence>
+                    <AnimatePresence>
                         <motion.div
-                            className={classNames(
-                                defaultTooltipClass,
-                                className
-                            )}
+                            className={classNames(defaultTooltipClass, className)}
                             initial={{
                                 opacity: 0,
                                 visibility: 'hidden',
@@ -94,13 +74,13 @@ const Tooltip = (props: TooltipProps) => {
                             animate={
                                 tooltipOpen
                                     ? {
-                                        opacity: 1,
-                                        visibility: 'visible',
-                                    }
+                                          opacity: 1,
+                                          visibility: 'visible',
+                                      }
                                     : {
-                                        opacity: 0,
-                                        visibility: 'hidden',
-                                    }
+                                          opacity: 0,
+                                          visibility: 'hidden',
+                                      }
                             }
                             transition={{
                                 duration: 0.15,
@@ -111,11 +91,7 @@ const Tooltip = (props: TooltipProps) => {
                             {...getFloatingProps()}
                         >
                             <span>{title}</span>
-                            <Arrow
-                                placement={context.placement}
-                                color={tooltipBackground}
-                                colorDark={tooltipDarkBackground}
-                            />
+                            <Arrow placement={context.placement} color={tooltipBackground} colorDark={tooltipDarkBackground} />
                         </motion.div>
                     </AnimatePresence>
                 )}

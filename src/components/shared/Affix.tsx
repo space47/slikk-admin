@@ -29,8 +29,7 @@ function Affix(props: AffixProps) {
             if (distanceToBody - scrollTop < offset) {
                 if (ref.current.style.position !== 'fixed') {
                     for (const key in prevStyle) {
-                        prevStyle[key as keyof AffixStyles] =
-                            ref.current.style[key as keyof AffixStyles]
+                        prevStyle[key as keyof AffixStyles] = ref.current.style[key as keyof AffixStyles]
                     }
                     ref.current.style.position = 'fixed'
                     ref.current.style.width = width + 'px'
@@ -38,8 +37,7 @@ function Affix(props: AffixProps) {
                 }
             } else {
                 for (const key in prevStyle) {
-                    ref.current.style[key as keyof AffixStyles] =
-                        prevStyle[key as keyof AffixStyles]
+                    ref.current.style[key as keyof AffixStyles] = prevStyle[key as keyof AffixStyles]
                 }
             }
         }
@@ -51,8 +49,7 @@ function Affix(props: AffixProps) {
         }
 
         if (ref.current) {
-            const distanceToBody =
-                window.scrollY + ref.current.getBoundingClientRect().top
+            const distanceToBody = window.scrollY + ref.current.getBoundingClientRect().top
             const handleScroll = () => {
                 if (!ref.current) {
                     return

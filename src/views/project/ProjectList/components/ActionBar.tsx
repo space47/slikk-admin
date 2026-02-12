@@ -10,14 +10,7 @@ import {
     HiOutlineSortAscending,
     HiOutlineSortDescending,
 } from 'react-icons/hi'
-import {
-    toggleView,
-    toggleSort,
-    setSearch,
-    toggleNewProjectDialog,
-    useAppDispatch,
-    useAppSelector,
-} from '../store'
+import { toggleView, toggleSort, setSearch, toggleNewProjectDialog, useAppDispatch, useAppSelector } from '../store'
 import debounce from 'lodash/debounce'
 import type { ChangeEvent } from 'react'
 
@@ -68,13 +61,7 @@ const ActionBar = () => {
                         className="hidden md:flex"
                         variant="plain"
                         size="sm"
-                        icon={
-                            view === 'grid' ? (
-                                <HiOutlineViewList />
-                            ) : (
-                                <HiOutlineViewGrid />
-                            )
-                        }
+                        icon={view === 'grid' ? <HiOutlineViewList /> : <HiOutlineViewGrid />}
                         onClick={() => onViewToggle()}
                     />
                 </Tooltip>
@@ -83,22 +70,11 @@ const ActionBar = () => {
                         className="hidden md:flex"
                         variant="plain"
                         size="sm"
-                        icon={
-                            sort === 'asc' ? (
-                                <HiOutlineSortAscending />
-                            ) : (
-                                <HiOutlineSortDescending />
-                            )
-                        }
+                        icon={sort === 'asc' ? <HiOutlineSortAscending /> : <HiOutlineSortDescending />}
                         onClick={onToggleSort}
                     />
                 </Tooltip>
-                <Button
-                    size="sm"
-                    variant="twoTone"
-                    icon={<HiOutlinePlusCircle />}
-                    onClick={onAddNewProject}
-                >
+                <Button size="sm" variant="twoTone" icon={<HiOutlinePlusCircle />} onClick={onAddNewProject}>
                     New Project
                 </Button>
             </div>

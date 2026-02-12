@@ -12,11 +12,7 @@ const BoardAddNewColumn = () => {
     }
 
     return (
-        <Button
-            size="sm"
-            icon={<HiOutlinePlusCircle />}
-            onClick={onAddNewColumn}
-        >
+        <Button size="sm" icon={<HiOutlinePlusCircle />} onClick={onAddNewColumn}>
             <span>New Board</span>
         </Button>
     )

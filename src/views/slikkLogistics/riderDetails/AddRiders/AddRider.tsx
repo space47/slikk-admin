@@ -138,6 +138,7 @@ const AddRider = () => {
     }, [riderAddResponse.isSuccess, riderEditResponse.isSuccess, riderAddResponse.isError, riderEditResponse.isError])
 
     const handleSubmit = (values: RiderAddTypes) => {
+        console.log('store', values?.store)
         if (!values?.mobile) {
             notification.error({ message: 'Mobile is required' })
         }
@@ -153,7 +154,7 @@ const AddRider = () => {
                 shift_end_time: values?.shift_end_time,
                 is_active: values?.is_active || false,
                 agency: values?.agency || '',
-                store_id: (values?.store as any)?.id || '',
+                store_id: (values?.store as any)?.id || Number(values?.store) || '',
                 rider_delivery_type: values?.rider_delivery_type || 'standard',
                 zone: values?.rider_zone || '',
                 delivery_type: values?.delivery_type,

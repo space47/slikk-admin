@@ -2,13 +2,7 @@ import { useCallback } from 'react'
 import classNames from 'classnames'
 import Checkbox from '@/components/ui/Checkbox'
 import Affix from '@/components/shared/Affix'
-import {
-    setSelected,
-    setActivityIndex,
-    filterLogs,
-    useAppDispatch,
-    useAppSelector,
-} from '../store'
+import { setSelected, setActivityIndex, filterLogs, useAppDispatch, useAppSelector } from '../store'
 import {
     UPDATE_TICKET,
     COMMENT,
@@ -37,26 +31,13 @@ const ticketCheckboxes = [
 ]
 
 const CategoryTitle = ({ children, className }: CategoryTitleProps) => {
-    return (
-        <h6
-            className={classNames(
-                'text-gray-900 uppercase tracking-wide font-semibold text-sm lg:text-xs',
-                className
-            )}
-        >
-            {children}
-        </h6>
-    )
+    return <h6 className={classNames('text-gray-900 uppercase tracking-wide font-semibold text-sm lg:text-xs', className)}>{children}</h6>
 }
 
 const LogFilter = () => {
     const dispatch = useAppDispatch()
-    const selectedType = useAppSelector(
-        (state) => state.accountActivityLog.data.selectedType
-    )
-    const activityIndex = useAppSelector(
-        (state) => state.accountActivityLog.data.activityIndex
-    )
+    const selectedType = useAppSelector((state) => state.accountActivityLog.data.selectedType)
+    const activityIndex = useAppSelector((state) => state.accountActivityLog.data.activityIndex)
 
     const onFilterChange = useCallback(
         (selected: string[]) => {
@@ -66,7 +47,7 @@ const LogFilter = () => {
             }
             dispatch(setSelected(selected))
         },
-        [dispatch, activityIndex]
+        [dispatch, activityIndex],
     )
 
     const { larger } = useResponsive()
@@ -84,21 +65,13 @@ const LogFilter = () => {
                 >
                     <CategoryTitle className="mb-3">Ticket</CategoryTitle>
                     {ticketCheckboxes.map((checkbox) => (
-                        <Checkbox
-                            key={checkbox.value}
-                            className="mb-4"
-                            value={checkbox.value}
-                        >
+                        <Checkbox key={checkbox.value} className="mb-4" value={checkbox.value}>
                             {checkbox.label}
                         </Checkbox>
                     ))}
                     <CategoryTitle className="mt-4 mb-3">Comment</CategoryTitle>
                     {commentCheckboxes.map((checkbox) => (
-                        <Checkbox
-                            key={checkbox.value}
-                            className="mb-4"
-                            value={checkbox.value}
-                        >
+                        <Checkbox key={checkbox.value} className="mb-4" value={checkbox.value}>
                             {checkbox.label}
                         </Checkbox>
                     ))}
@@ -109,15 +82,13 @@ const LogFilter = () => {
 
     return (
         <div>
-            {
-                larger.md ? (
-                    <Affix className="hidden lg:block" offset={80}>
-                        {renderLogFilterContent()}
-                    </Affix>
-                ) 
-                : 
+            {larger.md ? (
+                <Affix className="hidden lg:block" offset={80}>
+                    {renderLogFilterContent()}
+                </Affix>
+            ) : (
                 renderLogFilterContent()
-            }
+            )}
         </div>
     )
 }

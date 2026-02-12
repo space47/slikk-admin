@@ -4,10 +4,7 @@ import Simple from '@/components/layouts/AuthLayout/Simple'
 const ForgotPasswordSimple = () => {
     return (
         <Simple>
-            <ForgotPasswordForm
-                disableSubmit={true}
-                signInUrl="/auth/sign-in-simple"
-            />
+            <ForgotPasswordForm disableSubmit={true} signInUrl="/auth/sign-in-simple" />
         </Simple>
     )
 }

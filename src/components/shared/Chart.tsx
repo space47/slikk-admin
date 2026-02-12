@@ -66,9 +66,7 @@ const Chart = (props: ChartProps) => {
 
     const setLegendOffset = useCallback(() => {
         if (chartRef.current) {
-            const lengend = chartRef.current.querySelectorAll<HTMLDivElement>(
-                'div.apexcharts-legend'
-            )[0]
+            const lengend = chartRef.current.querySelectorAll<HTMLDivElement>('div.apexcharts-legend')[0]
             if (direction === DIR_RTL) {
                 lengend.style.right = 'auto'
                 lengend.style.left = '0'
@@ -101,26 +99,13 @@ const Chart = (props: ChartProps) => {
             options.plotOptions.pie.donut.labels.total.label = donutTitle
         }
         if (donutText) {
-            options.plotOptions.pie.donut.labels.total.formatter = () =>
-                donutText
+            options.plotOptions.pie.donut.labels.total.formatter = () => donutText
         }
     }
 
     return (
-        <div
-            ref={chartRef}
-            style={direction === DIR_RTL ? { direction: 'ltr' } : {}}
-            className="chartRef"
-        >
-            <ApexChart
-                options={options}
-                type={type}
-                series={series}
-                width={width}
-                height={height}
-                className={className}
-                {...rest}
-            />
+        <div ref={chartRef} style={direction === DIR_RTL ? { direction: 'ltr' } : {}} className="chartRef">
+            <ApexChart options={options} type={type} series={series} width={width} height={height} className={className} {...rest} />
         </div>
     )
 }

@@ -29,27 +29,11 @@ export type GetDayPropsReturn = {
 }
 
 export default function getDayProps(props: GetDayProps): GetDayPropsReturn {
-    const {
-        date,
-        month,
-        hasValue,
-        minDate,
-        maxDate,
-        value,
-        disableDate,
-        disableOutOfMonth,
-        range,
-        weekendDays,
-    } = props
+    const { date, month, hasValue, minDate, maxDate, value, disableDate, disableOutOfMonth, range, weekendDays } = props
 
     const outOfMonth = isOutside(date, month)
-    const selected =
-        hasValue &&
-        (Array.isArray(value)
-            ? value.some((val) => isSameDate(val, date))
-            : isSameDate(date, value))
-    const { inRange, lastInRange, firstInRange, selectedInRange } =
-        getRangeProps(date, range)
+    const selected = hasValue && (Array.isArray(value) ? value.some((val) => isSameDate(val, date)) : isSameDate(date, value))
+    const { inRange, lastInRange, firstInRange, selectedInRange } = getRangeProps(date, range)
 
     return {
         disabled: isDisabled({

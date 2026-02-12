@@ -18,22 +18,9 @@ const colourOptions = [
 const Size = () => {
     return (
         <div>
-            <Select
-                size="sm"
-                className="mb-4"
-                placeholder="Please Select"
-                options={colourOptions}
-            ></Select>
-            <Select
-                className="mb-4"
-                placeholder="Please Select"
-                options={colourOptions}
-            ></Select>
-            <Select
-                size="lg"
-                placeholder="Please Select"
-                options={colourOptions}
-            ></Select>
+            <Select size="sm" className="mb-4" placeholder="Please Select" options={colourOptions}></Select>
+            <Select className="mb-4" placeholder="Please Select" options={colourOptions}></Select>
+            <Select size="lg" placeholder="Please Select" options={colourOptions}></Select>
         </div>
     )
 }

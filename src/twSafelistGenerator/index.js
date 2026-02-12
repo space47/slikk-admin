@@ -4,7 +4,6 @@ const generator = require('./generator')
 const crypto = require('crypto')
 
 module.exports = plugin.withOptions(({ path = 'safelist.txt', patterns = [] }) => ({ theme }) => {
-
     const safeList = generator(theme)(patterns).join('\n')
     const currentSafeList = fs.readFileSync(path).toString()
 

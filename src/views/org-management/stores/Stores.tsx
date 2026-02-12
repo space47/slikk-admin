@@ -8,12 +8,15 @@ import { useStoreColumn } from './storeUtil/useStoreColumn'
 import { useFetchApi } from '@/commonHooks/useFetchApi'
 import { Button } from '@/components/ui'
 import ActiveStoreModal from './storesComponents/ActivateStoreModal'
+import StoreQrModal from './storesComponents/StoreQrModal'
 
 const Stores = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
     const [currentStoreId, setCurrentStoreId] = useState<number | null>(null)
+    const [currentStoreCode, setCurrentStoreCode] = useState('')
+    const [isQrModal, setIsQrModal] = useState(false)
     const [isStoreAvailableModal, setStoreAvailableModal] = useState(false)
     const [checkActive, setCheckActive] = useState(false)
 
@@ -23,14 +26,19 @@ const Stores = () => {
         return `merchant/store?p=${page}&page_size=${pageSize}`
     }, [page, pageSize])
 
-    const handleActiveCareer = (id: number, e, checked: boolean) => {
+    const handleActiveCareer = (id: number, e: boolean, checked: boolean) => {
         setCurrentStoreId(id)
         setStoreAvailableModal(true)
         setCheckActive(checked)
     }
 
+    const handleGenerateQR = (x: string) => {
+        setCurrentStoreCode(x)
+        setIsQrModal(true)
+    }
+
     const { data, totalData, responseStatus } = useFetchApi<STORETABLE>({ url: query, initialData: [] })
-    const columns = useStoreColumn({ handleActiveCareer })
+    const columns = useStoreColumn({ handleActiveCareer, handleGenerateQR })
     if (responseStatus === 403) return <AccessDenied />
 
     return (
@@ -61,6 +69,7 @@ const Stores = () => {
                     storeId={currentStoreId as number}
                 />
             )}
+            {isQrModal && <StoreQrModal dialogIsOpen={isQrModal} setIsOpen={setIsQrModal} store_code={currentStoreCode} />}
         </div>
     )
 }

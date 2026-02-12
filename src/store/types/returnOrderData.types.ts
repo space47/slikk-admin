@@ -1,3 +1,5 @@
+import { RTLActions } from '@/views/sales/returnItems/returnItemsUtils/returnItemcommons'
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type LocationReturnType = {
     latitude: string
@@ -175,4 +177,73 @@ export interface AccountDetails {
     ifsc_code: string
     account_number: string
     beneficiary_name: string
+}
+
+export interface ReturnLocationRequestData {
+    action?: RTLActions.ADD | RTLActions.REMOVE | RTLActions.MOVE
+    sku?: string
+    quantity?: number
+    location?: string
+    id?: number | string
+    return_item_id?: string
+    from_status?: string
+    to_status?: string
+}
+
+export interface RTLData {
+    sku: string
+    quantity: number
+    location: string
+}
+
+export interface ReturnToLocationResponse {
+    status: string
+    message: string
+    data: RTLData
+}
+
+export interface ReturnData {
+    id: number
+    return_order_item: string
+    quantity: number
+    qc_passed: number
+    qc_failed: number
+    refurbished: number
+    synced_quantity: number
+    product_images?: string
+    inventory_sync_error: []
+    last_updated_by: Record<string, string>
+    sku: string
+    create_date: string
+    update_date: string
+    qc_field_data: {
+        image: string
+        reason: string
+    }[]
+}
+
+export interface ReturnManagementResponse {
+    status: string
+    data: {
+        count: number
+        results: ReturnData[]
+    }
+}
+
+export type ReturnItemConfigurationResponse = {
+    config: ReturnItemConfiguration
+}
+export type ReturnItemConfiguration = {
+    id: number
+    name: string
+    value: ReturnItemConfigurationValue
+    is_active: boolean
+    previous_configurations: unknown[]
+    create_date: string
+    update_date: string
+    last_updated_by: string
+}
+
+export type ReturnItemConfigurationValue = {
+    reasons: string[]
 }

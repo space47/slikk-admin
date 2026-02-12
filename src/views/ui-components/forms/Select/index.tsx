@@ -120,24 +120,14 @@ const reactSelectApi = (
         </h6>
         <p className="mb-1">
             <code>Select</code> is a wrapper component of{' '}
-            <a
-                className="underline text-blue-500"
-                href="https://react-select.com/home"
-                target="_blank"
-                rel="noreferrer"
-            >
+            <a className="underline text-blue-500" href="https://react-select.com/home" target="_blank" rel="noreferrer">
                 react-select
             </a>
             .
         </p>
         <p>
             All react-select props can be applied on this component, refer{' '}
-            <a
-                className="underline text-blue-500"
-                href="https://react-select.com/props"
-                target="_blank"
-                rel="noreferrer"
-            >
+            <a className="underline text-blue-500" href="https://react-select.com/props" target="_blank" rel="noreferrer">
                 official docs
             </a>{' '}
             for the complete api list.{' '}
@@ -146,14 +136,7 @@ const reactSelectApi = (
 )
 
 const Select = () => {
-    return (
-        <DemoLayout
-            header={demoHeader}
-            demos={demos}
-            api={demoApi}
-            extra={reactSelectApi}
-        />
-    )
+    return <DemoLayout header={demoHeader} demos={demos} api={demoApi} extra={reactSelectApi} />
 }
 
 export default Select

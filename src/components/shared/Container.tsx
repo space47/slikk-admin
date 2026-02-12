@@ -10,11 +10,7 @@ const Container = forwardRef((props: ContainerProps, ref) => {
     const { className, children, asElement: Component = 'div', ...rest } = props
 
     return (
-        <Component
-            ref={ref}
-            className={classNames('container mx-auto', className)}
-            {...rest}
-        >
+        <Component ref={ref} className={classNames('container mx-auto', className)} {...rest}>
             {children}
         </Component>
     )

@@ -17,21 +17,14 @@ const steps = [
     { label: 'Financial Information', value: 3 },
 ]
 
-const FormStep = ({
-    currentStep,
-    currentStepStatus,
-    stepStatus,
-}: FormStepProps) => {
+const FormStep = ({ currentStep, currentStepStatus, stepStatus }: FormStepProps) => {
     const { textTheme } = useThemeClass()
     const dispatch = useDispatch()
 
     const onStepChange = (step: number) => {
         const selectedStepStatus = stepStatus[step].status
 
-        if (
-            selectedStepStatus === 'complete' ||
-            selectedStepStatus === 'current'
-        ) {
+        if (selectedStepStatus === 'complete' || selectedStepStatus === 'current') {
             dispatch(setCurrentStep(step))
             return
         }
@@ -55,23 +48,15 @@ const FormStep = ({
                     onSelect={() => onStepChange(step.value)}
                 >
                     <span className="text-2xl ltr:mr-2 rtl:ml-2">
-                        {stepStatus[step.value].status === 'complete' && (
-                            <HiCheckCircle className={textTheme} />
-                        )}
-                        {stepStatus[step.value].status === 'current' && (
+                        {stepStatus[step.value].status === 'complete' && <HiCheckCircle className={textTheme} />}
+                        {stepStatus[step.value].status === 'current' && <HiCheckCircle className="text-gray-400" />}
+                        {stepStatus[step.value].status === 'pending' && currentStep === step.value && (
                             <HiCheckCircle className="text-gray-400" />
                         )}
-                        {stepStatus[step.value].status === 'pending' &&
-                            currentStep === step.value && (
-                                <HiCheckCircle className="text-gray-400" />
-                            )}
-                        {stepStatus[step.value].status === 'pending' &&
-                            currentStep !== step.value && (
-                                <HiLockClosed className="text-gray-400" />
-                            )}
-                        {stepStatus[step.value].status === 'invalid' && (
-                            <HiCheckCircle className="text-gray-400" />
+                        {stepStatus[step.value].status === 'pending' && currentStep !== step.value && (
+                            <HiLockClosed className="text-gray-400" />
                         )}
+                        {stepStatus[step.value].status === 'invalid' && <HiCheckCircle className="text-gray-400" />}
                     </span>
                     <span>{step.label}</span>
                 </Menu.MenuItem>

@@ -12,59 +12,32 @@ export interface DropdownMenuProps extends DropdownInnerMenuProps {
     id?: string
 }
 
-const DropdownMenu = forwardRef<HTMLElement, DropdownMenuProps>(
-    (props, ref) => {
-        const { eventKey, title, className, placement, ...rest } = props
+const DropdownMenu = forwardRef<HTMLElement, DropdownMenuProps>((props, ref) => {
+    const { eventKey, title, className, placement, ...rest } = props
 
-        const parentMenu = useContext(MenuContext)
+    const parentMenu = useContext(MenuContext)
 
-        const dropdownMenuDefaultClass = `dropdown-menu`
-        const dropdownMenuPositionClass = placement
+    const dropdownMenuDefaultClass = `dropdown-menu`
+    const dropdownMenuPositionClass = placement
 
-        const dropdownMenuClass = classNames(
-            dropdownMenuDefaultClass,
-            dropdownMenuPositionClass,
-            className
-        )
+    const dropdownMenuClass = classNames(dropdownMenuDefaultClass, dropdownMenuPositionClass, className)
 
-        const dropdownSubmenuClass = classNames(
-            dropdownMenuDefaultClass,
-            'dropdown-submenu'
-        )
+    const dropdownSubmenuClass = classNames(dropdownMenuDefaultClass, 'dropdown-submenu')
 
-        const dropdownSubmenu = (
-            <Menu
-                ref={ref}
-                className={dropdownSubmenuClass}
-                placement={placement}
-                {...rest}
-            />
-        )
+    const dropdownSubmenu = <Menu ref={ref} className={dropdownSubmenuClass} placement={placement} {...rest} />
 
-        if (parentMenu) {
-            const itemClassName = classNames(className)
-
-            return (
-                <DropdownItem
-                    className={itemClassName}
-                    submenu={dropdownSubmenu}
-                    eventKey={eventKey}
-                >
-                    {title}
-                </DropdownItem>
-            )
-        }
+    if (parentMenu) {
+        const itemClassName = classNames(className)
 
         return (
-            <Menu
-                ref={ref}
-                className={dropdownMenuClass}
-                placement={placement}
-                {...rest}
-            />
+            <DropdownItem className={itemClassName} submenu={dropdownSubmenu} eventKey={eventKey}>
+                {title}
+            </DropdownItem>
         )
     }
-)
+
+    return <Menu ref={ref} className={dropdownMenuClass} placement={placement} {...rest} />
+})
 
 DropdownMenu.displayName = 'DropdownMenu'
 

@@ -41,10 +41,7 @@ const CardFooter = (props: CardFooterProps) => {
         if (copied && markdown) {
             navigator.clipboard.writeText(markdown.replace(/```jsx|```/g, ''))
             if (copied) {
-                const copyFeedbackInterval = setTimeout(
-                    () => setCopied(false),
-                    3000
-                )
+                const copyFeedbackInterval = setTimeout(() => setCopied(false), 3000)
 
                 return () => {
                     clearTimeout(copyFeedbackInterval)
@@ -66,21 +63,12 @@ const CardFooter = (props: CardFooterProps) => {
             <div className="flex items-center justify-between">
                 <div>{loadingMd && <Spinner />}</div>
                 <div>
-                    <Tooltip
-                        title={copied ? 'Copied' : 'Copy Code'}
-                        wrapperClass="mr-1"
-                    >
+                    <Tooltip title={copied ? 'Copied' : 'Copy Code'} wrapperClass="mr-1">
                         <Button
                             variant="plain"
                             shape="circle"
                             size="xs"
-                            icon={
-                                copied ? (
-                                    <HiCheck className="text-emerald-500" />
-                                ) : (
-                                    <CgCopy />
-                                )
-                            }
+                            icon={copied ? <HiCheck className="text-emerald-500" /> : <CgCopy />}
                             onClick={onCodeCopy}
                         />
                     </Tooltip>

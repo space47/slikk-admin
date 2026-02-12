@@ -7,9 +7,7 @@ const { TabNav, TabList } = Tabs
 const QuickFilterTab = () => {
     const dispatch = useAppDispatch()
 
-    const selectedTab = useAppSelector(
-        (state) => state.scrumBoard.data.selectedTab
-    )
+    const selectedTab = useAppSelector((state) => state.scrumBoard.data.selectedTab)
 
     const handleTabChange = (val: string) => {
         dispatch(setSelectedTab(val))

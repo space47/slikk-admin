@@ -12,14 +12,14 @@ import type {
 } from '@/@types/auth'
 
 export async function apiSignInTwoFactor(data: SignInTwoFactor) {
-    let dataObj = {data:data.mobileNumber,type:"MOBILE"};
-    data = dataObj;
+    let dataObj = { data: data.mobileNumber, type: 'MOBILE' }
+    data = dataObj
     // return ApiService.fetchData<SignInTwoFactorResponse>({
     //     url: '/login',
     //     method: 'post',
     //     data,
     // })
-    return axioisInstance.post("/login",data);
+    return axioisInstance.post('/login', data)
 }
 
 export async function apiSignIn(data: SignInCredential) {
@@ -28,7 +28,7 @@ export async function apiSignIn(data: SignInCredential) {
     //     method: 'post',
     //     data,
     // })
-    return axioisInstance.post("/verify",data);
+    return axioisInstance.post('/verify', data)
 }
 
 export async function apiSignUp(data: SignUpCredential) {

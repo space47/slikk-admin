@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import Loading from '@/components/shared/Loading'
 import OrderProducts from './components/OrderProducts'
 import PaymentSummary from './components/PaymentSummary'
@@ -12,7 +12,7 @@ import { useParams } from 'react-router-dom'
 import moment from 'moment'
 import ReturnOrderDrawer from './components/ReturnOrderDrawer'
 import { FaDownload } from 'react-icons/fa'
-import { EOrderStatus, scheduleSlots } from './orderList.common'
+import { EDeliveryType, EOrderStatus, scheduleSlots } from './orderList.common'
 import { Button } from '@/components/ui'
 import TrackModal from '@/views/slikkLogistics/taskTracking/TrackModal'
 import OrderPickerSummary from './components/OrderPickersummary'
@@ -27,6 +27,7 @@ import { TaskData } from '@/store/types/tasks.type'
 import ItemConvertModal from './components/ItemConvertModal'
 import { Order } from '@/store/types/newOrderTypes'
 import { newOrderService } from '@/store/services/newOrderaService'
+import DialogConfirm from '@/common/DialogConfirm'
 
 const OrderDetails = () => {
     const { invoice_id } = useParams()
@@ -36,7 +37,13 @@ const OrderDetails = () => {
     const [showUTMModal, setShowUTMModal] = useState(false)
     const [showCancelExchangeModal, setShowCancelExchangeModal] = useState(false)
     const [showRiderData, setShowRiderData] = useState(false)
+    const [isMarketing, setIsMarketing] = useState(false)
+    const [isTryAndBuyReverse, setIsTryAndBuyReverse] = useState(false)
     const orderDetailsApi = newOrderService.useGetOrderDetailsQuery({ order_id: invoice_id }, { skip: !invoice_id })
+
+    const hasStatus = useCallback((status: string) => data?.log.some((log) => log.status === status), [data?.log])
+    const terminalStatuses = [EOrderStatus.delivered, EOrderStatus.rto_delivered, EOrderStatus.cancelled]
+    const isRiderMoving = hasStatus(EOrderStatus.out_for_delivery) && !terminalStatuses.some(hasStatus)
 
     const showRider = useMemo(() => {
         return (
@@ -45,6 +52,10 @@ const OrderDetails = () => {
             data?.logistic?.runner_phone_number === ''
         )
     }, [data?.logistic, data?.status])
+
+    const isReverseTryAndBuy = useMemo(() => {
+        return data?.log?.at(-1)?.status === EOrderStatus.delivered && data?.delivery_type === EDeliveryType.try_and_buy
+    }, [data?.delivery_type, data?.log])
 
     const showTicket = useMemo(() => {
         return data?.log?.some((item) => item?.status?.includes(EOrderStatus.packed)) && data?.utm_params?.ticket === true
@@ -78,8 +89,22 @@ const OrderDetails = () => {
         pollingInterval: query ? 60000 : undefined,
     })
 
-    const { handlemarkAsPaid, handlePODAction, handleDownload, handleConvert, handleMarketingOrder, OrderLink, OrderList } =
-        useOrderDetailFunctions({ data, setShowCancelExchangeModal })
+    const {
+        handlemarkAsPaid,
+        handlePODAction,
+        handleDownload,
+        handleConvert,
+        handleMarketingOrder,
+        OrderLink,
+        OrderList,
+        handleReverseTNB,
+    } = useOrderDetailFunctions({
+        data,
+        setShowCancelExchangeModal,
+        setIsMarketing,
+        refetch: orderDetailsApi.refetch,
+        setIsTryAndBuyReverse,
+    })
 
     useEffect(() => {
         if (orderDetailsApi.currentData) {
@@ -109,8 +134,12 @@ const OrderDetails = () => {
                                     </div>
                                 ) : null}
                                 <div>
-                                    <Button variant="blue" size="sm" onClick={handleMarketingOrder}>
-                                        {data?.is_internal_order ? 'Marketing Marked' : 'Mark as Marketing'}
+                                    <Button
+                                        variant={data?.is_internal_order ? 'yellow' : 'blue'}
+                                        size="sm"
+                                        onClick={() => setIsMarketing(true)}
+                                    >
+                                        {data?.is_internal_order ? 'Make Customer Level' : 'Mark as Marketing'}
                                     </Button>
                                 </div>
                             </span>
@@ -147,6 +176,11 @@ const OrderDetails = () => {
                         {showReturnOrder && (
                             <Button variant="reject" size="sm" onClick={() => setReturnOrderDrawer(true)}>
                                 Return/Exchange ORDER
+                            </Button>
+                        )}
+                        {isReverseTryAndBuy && (
+                            <Button variant="gray" size="sm" onClick={() => setIsTryAndBuyReverse(true)}>
+                                Reverse TNB Return
                             </Button>
                         )}
                         {data.status !== EOrderStatus.declined && data.status !== EOrderStatus.cancelled && (
@@ -308,7 +342,11 @@ const OrderDetails = () => {
                                             )}
 
                                             {data?.logistic?.partner === 'Slikk' && (
-                                                <OrderMap task_id={data?.logistic?.task_id} taskData={taskData} />
+                                                <OrderMap
+                                                    isRiderMoving={isRiderMoving}
+                                                    task_id={data?.logistic?.task_id}
+                                                    taskData={taskData}
+                                                />
                                             )}
 
                                             {data?.logistic?.partner !== 'Slikk' && (
@@ -357,6 +395,28 @@ const OrderDetails = () => {
                             />
 
                             <UtmModal isOpen={showUTMModal} setIsOpen={setShowUTMModal} orderData={data} />
+                            {isMarketing && (
+                                <DialogConfirm
+                                    isProceed
+                                    IsOpen={isMarketing}
+                                    setIsOpen={setIsMarketing}
+                                    headingName={
+                                        data?.is_internal_order ? 'Make this order Customer level' : 'Change this order to marketing level'
+                                    }
+                                    label={`Are you sure you want to change this order to ${data?.is_internal_order ? 'Customer level' : 'marketing level'}`}
+                                    onDialogOk={handleMarketingOrder}
+                                />
+                            )}
+                            {isTryAndBuyReverse && (
+                                <DialogConfirm
+                                    isProceed
+                                    IsOpen={isReverseTryAndBuy}
+                                    setIsOpen={setIsTryAndBuyReverse}
+                                    headingName={`Reverse Try And Buy`}
+                                    label={`Are you sure you want to reverse the try and but order : ${data?.invoice_id}`}
+                                    onDialogOk={handleReverseTNB}
+                                />
+                            )}
                         </div>
                     </>
                 )}

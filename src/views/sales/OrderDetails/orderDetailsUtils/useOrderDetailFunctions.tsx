@@ -7,13 +7,17 @@ import React from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { BsBoxArrowInUpRight } from 'react-icons/bs'
 import { Order } from '@/store/types/newOrderTypes'
+import { errorMessage, successMessage } from '@/utils/responseMessages'
 
 interface Props {
     data?: Order
     setShowCancelExchangeModal: React.Dispatch<React.SetStateAction<boolean>>
+    setIsMarketing: React.Dispatch<React.SetStateAction<boolean>>
+    setIsTryAndBuyReverse: React.Dispatch<React.SetStateAction<boolean>>
+    refetch: any
 }
 
-export const useOrderDetailFunctions = ({ data, setShowCancelExchangeModal }: Props) => {
+export const useOrderDetailFunctions = ({ data, setShowCancelExchangeModal, setIsMarketing, refetch, setIsTryAndBuyReverse }: Props) => {
     const navigate = useNavigate()
     const { invoice_id } = useParams()
 
@@ -35,6 +39,21 @@ export const useOrderDetailFunctions = ({ data, setShowCancelExchangeModal }: Pr
             navigate(0)
         } catch (error) {
             console.log(error)
+        }
+    }
+
+    const handleReverseTNB = async () => {
+        try {
+            const body = { order_id: invoice_id, reason: 'Product not as expected' }
+            const response = await axioisInstance.post(`/merchant/tnb/reverse`, body)
+            successMessage(response)
+            refetch()
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                errorMessage(error)
+            }
+        } finally {
+            setIsTryAndBuyReverse(false)
         }
     }
 
@@ -72,6 +91,8 @@ export const useOrderDetailFunctions = ({ data, setShowCancelExchangeModal }: Pr
                     message: error?.response?.data?.message || error?.message || 'Failed to update marketing order status',
                 })
             }
+        } finally {
+            setIsMarketing(false)
         }
     }
 
@@ -188,5 +209,14 @@ export const useOrderDetailFunctions = ({ data, setShowCancelExchangeModal }: Pr
         )
     }
 
-    return { handlemarkAsPaid, handlePODAction, handleDownload, handleConvert, handleMarketingOrder, OrderList, OrderLink }
+    return {
+        handlemarkAsPaid,
+        handlePODAction,
+        handleDownload,
+        handleConvert,
+        handleMarketingOrder,
+        OrderList,
+        OrderLink,
+        handleReverseTNB,
+    }
 }

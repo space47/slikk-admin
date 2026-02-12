@@ -11,11 +11,7 @@ const Size = () => {
     }
 
     return (
-        <Segment
-            size={size[0]}
-            value={size}
-            onChange={(value) => onSizeChange(value as SizeType[])}
-        >
+        <Segment size={size[0]} value={size} onChange={(value) => onSizeChange(value as SizeType[])}>
             <Segment.Item value="xs">Extra Small</Segment.Item>
             <Segment.Item value="sm">Small</Segment.Item>
             <Segment.Item value="md">Medium</Segment.Item>

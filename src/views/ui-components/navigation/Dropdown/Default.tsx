@@ -21,11 +21,7 @@ const Default = () => {
         <div>
             <Dropdown title="Click Me!" onClick={onDropdownClick}>
                 {dropdownItems.map((item) => (
-                    <Dropdown.Item
-                        key={item.key}
-                        eventKey={item.key}
-                        onSelect={onDropdownItemClick}
-                    >
+                    <Dropdown.Item key={item.key} eventKey={item.key} onSelect={onDropdownItemClick}>
                         {item.name}
                     </Dropdown.Item>
                 ))}

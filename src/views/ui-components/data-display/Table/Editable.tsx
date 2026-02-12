@@ -1,25 +1,14 @@
 import { useMemo, useEffect, useState, useRef, useCallback } from 'react'
 import Table from '@/components/ui/Table'
 import Input from '@/components/ui/Input'
-import {
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    flexRender,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, flexRender } from '@tanstack/react-table'
 import { data10 } from './data'
 import type { Person } from './data'
 import type { ColumnDef, CellContext, RowData } from '@tanstack/react-table'
 
 declare module '@tanstack/react-table' {
     interface TableMeta<TData extends RowData> {
-        updateData: (
-            rowIndex: number,
-            columnId: string,
-            value: unknown,
-            dataPlaceHolder?: TData
-        ) => void
+        updateData: (rowIndex: number, columnId: string, value: unknown, dataPlaceHolder?: TData) => void
     }
 }
 
@@ -27,12 +16,7 @@ type EditablePerson = Person
 
 const { Tr, Th, Td, THead, TBody } = Table
 
-const EditableCell = ({
-    getValue,
-    row: { index },
-    column: { id },
-    table,
-}: CellContext<EditablePerson, unknown>) => {
+const EditableCell = ({ getValue, row: { index }, column: { id }, table }: CellContext<EditablePerson, unknown>) => {
     const initialValue = getValue()
     // We need to keep and update the state of the cell normally
     const [value, setValue] = useState(initialValue)
@@ -85,7 +69,7 @@ function Editable() {
             { header: 'Last Name', accessorKey: 'lastName' },
             { header: 'Email', accessorKey: 'email' },
         ],
-        []
+        [],
     )
 
     const [data, setData] = useState(() => data10)
@@ -102,11 +86,7 @@ function Editable() {
         autoResetPageIndex: autoResetPageIndex as boolean,
         // Provide our updateData function to our table meta
         meta: {
-            updateData: (
-                rowIndex: number,
-                columnId: string,
-                value: unknown
-            ) => {
+            updateData: (rowIndex: number, columnId: string, value: unknown) => {
                 // Skip age index reset until after next rerender
                 if (typeof skipAutoResetPageIndex === 'function') {
                     skipAutoResetPageIndex()
@@ -120,7 +100,7 @@ function Editable() {
                             }
                         }
                         return row
-                    })
+                    }),
                 )
             },
         },
@@ -134,14 +114,8 @@ function Editable() {
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => {
                                 return (
-                                    <Th
-                                        key={header.id}
-                                        colSpan={header.colSpan}
-                                    >
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
+                                    <Th key={header.id} colSpan={header.colSpan}>
+                                        {flexRender(header.column.columnDef.header, header.getContext())}
                                     </Th>
                                 )
                             })}
@@ -153,14 +127,7 @@ function Editable() {
                         return (
                             <Tr key={row.id}>
                                 {row.getVisibleCells().map((cell) => {
-                                    return (
-                                        <Td key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext()
-                                            )}
-                                        </Td>
-                                    )
+                                    return <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                                 })}
                             </Tr>
                         )

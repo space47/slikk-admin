@@ -8,13 +8,14 @@ import Button from '@/components/ui/Button'
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { Modal, notification } from 'antd'
 import { useNavigate } from 'react-router-dom'
-import { CustomModal, CustomModal2, CustomModal3, CustomModal4, CustomModal5, ExchangeModal, RejectModal } from './Modal'
+import { CustomModal2, CustomModal3, CustomModal4, CustomModal5, ExchangeModal, RejectModal } from './Modal'
 import { ActivityProps, LOGISTIC_PARTNER } from './activityCommon'
 import { buildPackOrderPayload, getButtonAndModalContent, usePackOrder } from './activityFunctions'
 import RtoCancelModal from '../orderDetailsUtils/RtoCancelModal'
 import OrderCameraModal from './OrderCameraModal'
 import { newOrderService } from '@/store/services/newOrderaService'
 import { EOrderButton, EOrderStatus } from '../orderList.common'
+import PackModal from './PackModal'
 
 const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refetch }: ActivityProps) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -33,6 +34,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
     const [bagsCount, setBagsCount] = useState('1')
     const [binNumber, setBinNumber] = useState('1')
     const [selectedLocations, setSelectedLocations] = useState<{ [productId: number]: { [location: string]: number } }>({})
+    const [selectedReasons, setSelectedReasons] = useState<Record<number, string>>({})
     const [isPhotoCamera, setIsPhotoCamera] = useState(false)
     const [currentId, setCurrentId] = useState<number | null>(null)
     const [storePhoto, setStorePhoto] = useState<{ [key: number]: string[] }>({})
@@ -145,19 +147,21 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
         status,
         bagsCount,
         setTriggerPackCall,
+        selectedReasons,
     })
 
     useEffect(() => {
         if (!triggerPackCall) return
         const result = handlePack()
         if (!result) return
-        const { zeroQty, required, fulfilled, data } = result
+        const { zeroQty, required, fulfilled, data, selectedReasons } = result
         const executeApi = async () => {
             const body = buildPackOrderPayload({
                 action,
                 data,
                 bagsCount,
                 binNumber,
+                selectedReasons,
             })
             packOrder({ id: invoice_id as string, data: body })
         }
@@ -331,7 +335,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
                 />
             )}
             {(lastLogStatus === EOrderStatus.accepted || lastLogStatus === EOrderStatus.picking) && (
-                <CustomModal
+                <PackModal
                     isModalOpen={isModalOpen}
                     handleOk={() => {
                         setAction(EOrderStatus.packed)
@@ -358,6 +362,8 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
                     storePhoto={storePhoto}
                     setStorePhoto={setStorePhoto}
                     handleSetPhoto={handleSetPhoto}
+                    setSelectedReason={setSelectedReasons}
+                    selectedReason={selectedReasons}
                 />
             )}
 

@@ -81,7 +81,7 @@ const InventoryTable = () => {
     const handleDownload = async () => {
         try {
             setSpinner(true)
-            const res = await axioisInstance.get(`${query()}+&download=true`)
+            const res = await axioisInstance.get(`${query()}` + '&download=true' + `&store_id=${storeId}`)
             notification.success({ message: res?.data?.message || 'Successfully downloaded' })
         } catch (error) {
             if (error instanceof AxiosError) {

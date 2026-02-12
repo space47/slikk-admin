@@ -52,27 +52,15 @@ export type ActivityLogState = {
 
 export const SLICE_NAME = 'accountActivityLog'
 
-export const getLogs = createAsyncThunk(
-    SLICE_NAME + '/getLogs',
-    async (data: GetAccountLogDataRequest) => {
-        const response = await apiGetAccountLogData<
-            GetAccountLogDataResponse,
-            GetAccountLogDataRequest
-        >(data)
-        return response.data
-    }
-)
+export const getLogs = createAsyncThunk(SLICE_NAME + '/getLogs', async (data: GetAccountLogDataRequest) => {
+    const response = await apiGetAccountLogData<GetAccountLogDataResponse, GetAccountLogDataRequest>(data)
+    return response.data
+})
 
-export const filterLogs = createAsyncThunk(
-    SLICE_NAME + '/filterLogs',
-    async (data: GetAccountLogDataRequest) => {
-        const response = await apiGetAccountLogData<
-            GetAccountLogDataResponse,
-            GetAccountLogDataRequest
-        >(data)
-        return response.data
-    }
-)
+export const filterLogs = createAsyncThunk(SLICE_NAME + '/filterLogs', async (data: GetAccountLogDataRequest) => {
+    const response = await apiGetAccountLogData<GetAccountLogDataResponse, GetAccountLogDataRequest>(data)
+    return response.data
+})
 
 const initialState: ActivityLogState = {
     loading: false,
@@ -80,15 +68,7 @@ const initialState: ActivityLogState = {
     loadable: false,
     activityIndex: 1,
     logs: [],
-    selectedType: [
-        UPDATE_TICKET,
-        COMMENT,
-        COMMENT_MENTION,
-        ASSIGN_TICKET,
-        ADD_TAGS_TO_TICKET,
-        ADD_FILES_TO_TICKET,
-        CREATE_TICKET,
-    ],
+    selectedType: [UPDATE_TICKET, COMMENT, COMMENT_MENTION, ASSIGN_TICKET, ADD_TAGS_TO_TICKET, ADD_FILES_TO_TICKET, CREATE_TICKET],
 }
 
 const activityLogSlice = createSlice({

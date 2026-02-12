@@ -9,13 +9,7 @@ import NewTaskField from './NewTaskField'
 import { Field, Form, Formik, FieldProps } from 'formik'
 import { HiCheck } from 'react-icons/hi'
 import { components, MultiValueGenericProps, OptionProps } from 'react-select'
-import {
-    getMembers,
-    putProject,
-    toggleNewProjectDialog,
-    useAppDispatch,
-    useAppSelector,
-} from '../store'
+import { getMembers, putProject, toggleNewProjectDialog, useAppDispatch, useAppSelector } from '../store'
 import cloneDeep from 'lodash/cloneDeep'
 import * as Yup from 'yup'
 
@@ -38,18 +32,11 @@ const { MultiValueLabel } = components
 
 const { useUniqueId } = hooks
 
-const CustomSelectOption = ({
-    innerProps,
-    label,
-    data,
-    isSelected,
-}: OptionProps<{ img: string }>) => {
+const CustomSelectOption = ({ innerProps, label, data, isSelected }: OptionProps<{ img: string }>) => {
     return (
         <div
             className={`flex items-center justify-between p-2 ${
-                isSelected
-                    ? 'bg-gray-100 dark:bg-gray-500'
-                    : 'hover:bg-gray-50 dark:hover:bg-gray-600'
+                isSelected ? 'bg-gray-100 dark:bg-gray-500' : 'hover:bg-gray-50 dark:hover:bg-gray-600'
             }`}
             {...innerProps}
         >
@@ -68,12 +55,7 @@ const CustomControlMulti = ({ children, ...props }: MultiValueGenericProps) => {
     return (
         <MultiValueLabel {...props}>
             <div className="inline-flex items-center">
-                <Avatar
-                    className="mr-2 rtl:ml-2"
-                    shape="circle"
-                    size={15}
-                    src={img}
-                />
+                <Avatar className="mr-2 rtl:ml-2" shape="circle" size={15} src={img} />
                 {children}
             </div>
         </MultiValueLabel>
@@ -104,10 +86,7 @@ const NewProjectForm = () => {
         setTaskCount(count)
     }
 
-    const onSubmit = (
-        formValue: FormModel,
-        setSubmitting: (isSubmitting: boolean) => void
-    ) => {
+    const onSubmit = (formValue: FormModel, setSubmitting: (isSubmitting: boolean) => void) => {
         setSubmitting(true)
 
         const { title, content, assignees } = formValue
@@ -125,8 +104,7 @@ const NewProjectForm = () => {
             desc: content,
             totalTask,
             completedTask,
-            progression:
-                ((completedTask as number) / (totalTask as number)) * 100 || 0,
+            progression: ((completedTask as number) / (totalTask as number)) * 100 || 0,
             member,
         }
         dispatch(putProject(values))
@@ -148,24 +126,12 @@ const NewProjectForm = () => {
             {({ touched, errors, values }) => (
                 <Form>
                     <FormContainer>
-                        <FormItem
-                            label="Title"
-                            invalid={errors.title && touched.title}
-                            errorMessage={errors.title}
-                        >
-                            <Field
-                                type="text"
-                                autoComplete="off"
-                                name="title"
-                                placeholder="Enter title"
-                                component={Input}
-                            />
+                        <FormItem label="Title" invalid={errors.title && touched.title} errorMessage={errors.title}>
+                            <Field type="text" autoComplete="off" name="title" placeholder="Enter title" component={Input} />
                         </FormItem>
                         <FormItem
                             label="Assignees"
-                            invalid={
-                                (errors.assignees && touched.assignees) as ''
-                            }
+                            invalid={(errors.assignees && touched.assignees) as ''}
                             errorMessage={errors.assignees as string}
                         >
                             <Field name="assignees">
@@ -182,28 +148,14 @@ const NewProjectForm = () => {
                                         options={members}
                                         value={values.assignees}
                                         onChange={(option) => {
-                                            form.setFieldValue(
-                                                field.name,
-                                                option
-                                            )
+                                            form.setFieldValue(field.name, option)
                                         }}
                                     />
                                 )}
                             </Field>
                         </FormItem>
-                        <FormItem
-                            label="Content"
-                            invalid={errors.content && touched.content}
-                            errorMessage={errors.content}
-                        >
-                            <Field
-                                textArea
-                                type="text"
-                                autoComplete="off"
-                                name="content"
-                                placeholder="Enter content"
-                                component={Input}
-                            />
+                        <FormItem label="Content" invalid={errors.content && touched.content} errorMessage={errors.content}>
+                            <Field textArea type="text" autoComplete="off" name="content" placeholder="Enter content" component={Input} />
                         </FormItem>
                         <NewTaskField onAddNewTask={handleAddNewTask} />
                         <Button block variant="solid" type="submit">

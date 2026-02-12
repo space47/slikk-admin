@@ -22,7 +22,7 @@ export { default as RegionMap } from './RegionMap'
 export { default as RichTextEditor } from './RichTextEditor'
 export { default as SegmentItemOption } from './SegmentItemOption'
 export { default as StickyFooter } from './StickyFooter'
-export { default as StrictModeDroppable } from'./StrictModeDroppable'
+export { default as StrictModeDroppable } from './StrictModeDroppable'
 export { default as SvgIcon } from './SvgIcon'
 export { default as SyntaxHighlighter } from './SyntaxHighlighter'
 export { default as TableRowSkeleton } from './loaders/TableRowSkeleton'
@@ -30,11 +30,5 @@ export { default as TextBlockSkeleton } from './loaders/TextBlockSkeleton'
 export { default as TextEllipsis } from './TextEllipsis'
 export { default as UsersAvatarGroup } from './UsersAvatarGroup'
 
-export type {
-    DataTableResetHandle,
-    OnSortParam,
-    ColumnDef,
-    Row,
-    CellContext,
-} from './DataTable'
+export type { DataTableResetHandle, OnSortParam, ColumnDef, Row, CellContext } from './DataTable'
 export type { RichTextEditorRef } from './RichTextEditor'

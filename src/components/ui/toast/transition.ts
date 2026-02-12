@@ -31,12 +31,7 @@ type MotionTransition = {
     variants: MotionProps
 }
 
-export const getPlacementTransition = ({
-    offsetX,
-    offsetY,
-    placement,
-    transitionType,
-}: GetPlacementTransitionParams) => {
+export const getPlacementTransition = ({ offsetX, offsetY, placement, transitionType }: GetPlacementTransitionParams) => {
     if (transitionType === 'fade') {
         return fadeTransition(offsetX, offsetY)[placement]
     }
@@ -71,10 +66,7 @@ const fadeMotionProps = {
     },
 }
 
-const scaleTransition = (
-    offsetX: number | string,
-    offsetY: number | string
-): Record<NotificationPlacement, MotionTransition> => {
+const scaleTransition = (offsetX: number | string, offsetY: number | string): Record<NotificationPlacement, MotionTransition> => {
     return {
         'top-end': {
             default: {
@@ -135,10 +127,7 @@ const scaleTransition = (
     }
 }
 
-const fadeTransition = (
-    offsetX: number | string,
-    offsetY: number | string
-): Record<NotificationPlacement, MotionTransition> => {
+const fadeTransition = (offsetX: number | string, offsetY: number | string): Record<NotificationPlacement, MotionTransition> => {
     return {
         'top-end': {
             default: {

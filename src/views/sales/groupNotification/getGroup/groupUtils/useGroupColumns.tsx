@@ -71,7 +71,7 @@ export const useGroupColumns = ({ handleEditClick, handleDownloadUserCsv, downlo
             },
             {
                 header: 'User',
-                accessorKey: 'users',
+                accessorKey: 'user_count',
                 cell: ({ row }: any) => {
                     return <div>{row?.original.user?.length || 0} Users</div>
                 },

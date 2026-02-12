@@ -16,16 +16,7 @@ export interface StepsProps extends CommonProps {
 }
 
 const Steps = forwardRef<HTMLDivElement, StepsProps>((props, ref) => {
-    const {
-        className,
-        children,
-        vertical = false,
-        current = 0,
-        status = IN_PROGRESS,
-        onChange,
-        isNoStepsNumber: isStepsNumber,
-        ...rest
-    } = props
+    const { className, children, vertical = false, current = 0, status = IN_PROGRESS, onChange, ...rest } = props
 
     const count = Children.count(children)
 
@@ -35,7 +26,7 @@ const Steps = forwardRef<HTMLDivElement, StepsProps>((props, ref) => {
             maxWidth: index === count - 1 ? `${100 / count}%` : undefined,
         }
         const itemProps: StepItemProps = {
-            stepNumber: isStepsNumber ? undefined : index + 1,
+            stepNumber: index + 1,
             status: PENDING as StepStatus,
             style: !vertical ? itemStyles : undefined,
             isLast: index === count - 1,

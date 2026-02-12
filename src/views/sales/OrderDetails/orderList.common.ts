@@ -81,6 +81,7 @@ export interface IOrderPack {
     status: string
     bagsCount: string
     setTriggerPackCall: (x: boolean) => void
+    selectedReasons: Record<number, string>
 }
 
 export const enum EOrderStatus {
@@ -110,6 +111,12 @@ export const enum EOrderStatus {
     exchange = 'EXCHANGE',
     driver_assigned = 'DRIVER_ASSIGNED',
     out_for_pickup = 'OUT_FOR_PICKUP',
+}
+
+export enum EDeliveryType {
+    try_and_buy = 'TRY_AND_BUY',
+    express = 'EXPRESS',
+    standard = 'STANDARD',
 }
 
 export const enum EOrderButton {

@@ -110,6 +110,12 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsOrderManagement.returnItems',
+        path: `${APP_PREFIX_PATH}/returnItems`,
+        component: lazy(() => import('@/views/sales/returnItems/returnItemsTable/ReturnItemTable')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsOrderManagement.returnOrderList',
         path: `${APP_PREFIX_PATH}/returnOrders/`,
         component: lazy(() => import('@/views/sales/returnOrders/ReturnOrders')),
@@ -1496,7 +1502,7 @@ const appsRoute: Routes = [
     {
         key: 'appsConfiguration.configurations',
         path: `${APP_PREFIX_PATH}/configurations/edit/:id`,
-        component: lazy(() => import('@/views/configurationsSlikk/configg/componentsConfigg/EditConfigurations')),
+        component: lazy(() => import('@/views/configurationsSlikk/configg/EditConfig')),
         authority: [ADMIN, USER],
     },
     {

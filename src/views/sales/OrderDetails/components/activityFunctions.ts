@@ -27,7 +27,7 @@ export const getButtonAndModalContent = (data: Event[], mainData?: { delivery_ty
         return { buttonText: EOrderButton.out_for_delivery, modalContent: 'Out for Delivery' }
     }
     if (lastLogStatus === EOrderStatus.rto_delivered && !isOrderDone && !isOrderCancelled) {
-        return { buttonText: '', modalContent: '' }
+        return { buttonText: EOrderButton.out_for_delivery, modalContent: 'Out for Delivery' }
     }
     if (isDriverAssigned && isPacked && mainData?.delivery_type !== EOrderButton.standard && !isOrderDone && !isOrderCancelled) {
         return { buttonText: EOrderButton.out_for_delivery, modalContent: 'Out for Delivery' }
@@ -132,19 +132,30 @@ export const buildPackOrderPayload = ({
     data,
     bagsCount,
     binNumber,
+    selectedReasons,
 }: {
     action: string
     data: any
     bagsCount?: string
     binNumber?: string
+    selectedReasons: Record<number, string>
 }) => ({
     action,
     data,
     ...(bagsCount ? { packets_count: Number(bagsCount) } : {}),
     ...(binNumber ? { bin_id: binNumber } : {}),
+    return_reasons: selectedReasons,
 })
 
-export const usePackOrder = ({ mainData, selectedLocations, fulfilledQuantities, status, bagsCount, setTriggerPackCall }: IOrderPack) => {
+export const usePackOrder = ({
+    mainData,
+    selectedLocations,
+    fulfilledQuantities,
+    status,
+    bagsCount,
+    setTriggerPackCall,
+    selectedReasons,
+}: IOrderPack) => {
     const handlePack = () => {
         if (status === 'ACCEPTED' && !bagsCount) {
             notification.error({ message: 'Number of bags Required' })
@@ -159,6 +170,11 @@ export const usePackOrder = ({ mainData, selectedLocations, fulfilledQuantities,
         if (withLocation?.length) {
             Object.assign(data, buildLocationData(selectedLocations))
         }
+
+        // if(Object.entries(selectedReasons).length){
+        //     // validation here
+
+        // }
 
         if (withoutLocation?.length) {
             Object.assign(data, buildQuantityData(fulfilledQuantities))
@@ -176,7 +192,7 @@ export const usePackOrder = ({ mainData, selectedLocations, fulfilledQuantities,
 
         const { required, fulfilled } = getTotalQuantities(mainData?.order_items, selectedLocations, fulfilledQuantities)
 
-        return { zeroQty, required, fulfilled, data }
+        return { zeroQty, required, fulfilled, data, selectedReasons }
     }
 
     return { handlePack }

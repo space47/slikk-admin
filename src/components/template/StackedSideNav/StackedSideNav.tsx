@@ -25,15 +25,11 @@ const StackedSideNav = () => {
     const [activeKeys, setActiveKeys] = useState<string[]>([])
 
     const themeColor = useAppSelector((state) => state.theme.themeColor)
-    const primaryColorLevel = useAppSelector(
-        (state) => state.theme.primaryColorLevel
-    )
+    const primaryColorLevel = useAppSelector((state) => state.theme.primaryColorLevel)
     const navMode = useAppSelector((state) => state.theme.navMode)
     const mode = useAppSelector((state) => state.theme.mode)
     const direction = useAppSelector((state) => state.theme.direction)
-    const currentRouteKey = useAppSelector(
-        (state) => state.base.common.currentRouteKey
-    )
+    const currentRouteKey = useAppSelector((state) => state.base.common.currentRouteKey)
     const userAuthority = useAppSelector((state) => state.auth.user.authority)
 
     const { larger } = useResponsive()
@@ -77,10 +73,7 @@ const StackedSideNav = () => {
             {larger.md && (
                 <div className={`stacked-side-nav`}>
                     <StackedSideNavMini
-                        className={`stacked-side-nav-mini ${navColor(
-                            'stacked-side-nav-mini',
-                            navMode
-                        )}`}
+                        className={`stacked-side-nav-mini ${navColor('stacked-side-nav-mini', navMode)}`}
                         style={stackedSideNavDefaultStyle}
                         routeKey={currentRouteKey}
                         activeKeys={activeKeys}
@@ -92,24 +85,15 @@ const StackedSideNav = () => {
                         onSetActiveKey={handleSetActiveKey}
                     />
                     <div
-                        className={`stacked-side-nav-secondary ${navColor(
-                            'stacked-side-nav-secondary',
-                            mode,
-                            false
-                        )}`}
+                        className={`stacked-side-nav-secondary ${navColor('stacked-side-nav-secondary', mode, false)}`}
                         style={{
                             width: SPLITTED_SIDE_NAV_SECONDARY_WIDTH,
-                            ...(isEmpty(selectedMenu)
-                                ? stackedSideNavSecondaryDirStyle()
-                                : {}),
+                            ...(isEmpty(selectedMenu) ? stackedSideNavSecondaryDirStyle() : {}),
                         }}
                     >
                         {!isEmpty(selectedMenu) && (
                             <StackedSideNavSecondary
-                                title={t(
-                                    selectedMenu.translateKey as string,
-                                    selectedMenu.title as string
-                                )}
+                                title={t(selectedMenu.translateKey as string, selectedMenu.title as string)}
                                 menu={selectedMenu.menu}
                                 routeKey={currentRouteKey}
                                 navMode={NAV_MODE_TRANSPARENT}

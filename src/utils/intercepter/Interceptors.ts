@@ -24,6 +24,8 @@ const onRequest = async (config: InternalAxiosRequestConfig): Promise<InternalAx
         'merchant/orders?p=1&page_size=100&mobile=',
         'query/execute',
         'merchant/product/sku/sales',
+        'picker/profile',
+        'picker/profile?mobile',
     ]
 
     if (storeCodes && storeCodes.length > 0 && ifGetCall) {
@@ -48,38 +50,45 @@ const onResponse = (response: AxiosResponse): AxiosResponse => {
 }
 
 const onResponseError = (error: AxiosError): Promise<AxiosError> => {
+    const status = error.response?.status
     const method = error.config?.method?.toLowerCase()
-    console.log('Error in response:', method)
-
     const url = error.config?.url || ''
-    const signInPath = appConfig.unAuthenticatedEntryPath
 
-    console.log(signInPath)
+    const signInPath = appConfig.unAuthenticatedEntryPath
+    const token = localStorage.getItem('accessToken')
 
     const restrictedPaths = ['https://api.olamaps.io/']
-    const excludeUrls = !restrictedPaths.some((path) => url.includes(path))
+    const isAllowedUrl = !restrictedPaths.some((path) => url.includes(path))
 
-    if (excludeUrls) {
-        if ((method === 'post' || method === 'patch') && error.response) {
-            console.log('Error response:', error.response)
-            const message = error.response.data?.message || error.response.statusText || 'Something went wrong!'
+    if (!isAllowedUrl) {
+        return Promise.reject(error)
+    }
+    if (status === 401 && token) {
+        localStorage.clear()
+        sessionStorage.clear()
+        store.dispatch(signOutSuccess())
 
-            notification.error({
-                message,
-            })
-        } else if (error.response?.status === 403) {
-            notification.error({
-                message: 'You have no access to this resource.',
-            })
-        } else if (error?.response?.status === 401) {
-            localStorage.clear()
-            sessionStorage.clear()
-            store.dispatch(signOutSuccess())
-            if (!signInPath) {
-                window.location.href = signInPath
-            }
-            notification.error({ message: 'your token has been expired and you have been logged out' })
+        notification.error({
+            message: 'Session expired',
+            description: 'Your session has expired. Please login again.',
+        })
+
+        if (signInPath) {
+            window.location.href = signInPath
         }
+
+        return Promise.reject(error)
+    }
+    if (status === 403) {
+        notification.error({
+            message: 'You have no access to this resource.',
+        })
+    }
+
+    if ((method === 'post' || method === 'patch') && error.response) {
+        const message = (error.response.data as any)?.message || error.response.statusText || 'Something went wrong!'
+
+        notification.error({ message })
     }
 
     return Promise.reject(error)

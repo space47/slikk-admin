@@ -1,8 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import {
-    apiGetSalesProducts,
-    apiDeleteSalesProducts,
-} from '@/services/SalesService'
+import { apiGetSalesProducts, apiDeleteSalesProducts } from '@/services/SalesService'
 import type { TableQueries } from '@/@types/common'
 
 type Product = {
@@ -43,22 +40,13 @@ type GetSalesProductsRequest = TableQueries & { filterData?: FilterQueries }
 
 export const SLICE_NAME = 'salesProductList'
 
-export const getProducts = createAsyncThunk(
-    SLICE_NAME + '/getProducts',
-    async (data: GetSalesProductsRequest) => {
-        const response = await apiGetSalesProducts<
-            GetSalesProductsResponse,
-            GetSalesProductsRequest
-        >(data)
-        return response.data
-    }
-)
+export const getProducts = createAsyncThunk(SLICE_NAME + '/getProducts', async (data: GetSalesProductsRequest) => {
+    const response = await apiGetSalesProducts<GetSalesProductsResponse, GetSalesProductsRequest>(data)
+    return response.data
+})
 
 export const deleteProduct = async (data: { id: string | string[] }) => {
-    const response = await apiDeleteSalesProducts<
-        boolean,
-        { id: string | string[] }
-    >(data)
+    const response = await apiDeleteSalesProducts<boolean, { id: string | string[] }>(data)
     return response.data
 }
 
@@ -120,12 +108,6 @@ const productListSlice = createSlice({
     },
 })
 
-export const {
-    updateProductList,
-    setTableData,
-    setFilterData,
-    toggleDeleteConfirmation,
-    setSelectedProduct,
-} = productListSlice.actions
+export const { updateProductList, setTableData, setFilterData, toggleDeleteConfirmation, setSelectedProduct } = productListSlice.actions
 
 export default productListSlice.reducer

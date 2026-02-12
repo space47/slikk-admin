@@ -2,16 +2,15 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { notification } from 'antd'
-import { IoIosAddCircle, IoIosCheckmarkCircle, IoIosInformationCircle, IoIosListBox, IoIosWarning } from 'react-icons/io'
+import { IoIosAddCircle, IoIosCheckmarkCircle, IoIosInformationCircle, IoIosWarning } from 'react-icons/io'
 import { AxiosError } from 'axios'
 import { Button, Dialog, Dropdown, Spinner } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { OrderCancelReasons } from '@/constants/commonArray.constant'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { errorMessage, successMessage } from '@/utils/responseMessages'
-import { EOrderStatus, LocationDetail } from '../orderList.common'
+import { LocationDetail } from '../orderList.common'
 import { Order } from '@/store/types/newOrderTypes'
-import CancelItemSelect from '@/common/CancelItemSelect'
 
 interface RtoCancelModalProps {
     isOpen: boolean
@@ -22,28 +21,13 @@ interface RtoCancelModalProps {
     status?: string
 }
 
-const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orderItems, invoice_id, isCancel = false, status }) => {
+const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orderItems, invoice_id, isCancel = false }) => {
     const navigate = useNavigate()
     const [locationWiseDetails, setLocationWiseDetails] = useState<Record<number, LocationDetail[]>>({})
-    const [payload, setPayload] = useState<Record<string, Record<string, number>>>()
     const [cancelReason, setCancelReason] = useState<string>('')
     const [showCancelInput, setShowCancelInput] = useState(false)
     const [customReason, setCustomReason] = useState('')
     const [isLoading, setIsLoading] = useState(false)
-
-    const orderItemsCuration = useMemo(
-        () =>
-            orderItems?.map((item) => ({
-                product: {
-                    image: item?.image?.split(',')[0],
-                    size: item?.size,
-                    sku: item?.sku,
-                },
-                quantity: item?.quantity,
-                order_item: item?.id?.toString(),
-            })),
-        [orderItems],
-    )
 
     const filteredOrderItems = useMemo(
         () =>
@@ -72,24 +56,11 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
     }, [cancelReason, customReason, isCancel])
 
     const handleCancelOrder = async () => {
-        const isAccepted = status === EOrderStatus.accepted
-
-        if (isAccepted) {
-            const payloadId = Object.keys(payload || {}) || []
-            const totalIdsInLocationWiseDetails = Object.keys(locationWiseDetails)
-            const checkIfAllKeysExist = totalIdsInLocationWiseDetails?.every((item) => payloadId.includes(item?.toString()))
-            if (!checkIfAllKeysExist) {
-                notification.error({ message: 'All the items are required to proceed further' })
-                return
-            }
-        }
-
         if (isCancel && !cancelReason && !customReason) {
             notification.error({ message: 'Reason Required : Please select or enter a cancel reason before proceeding.' })
             return
         }
         const body: any = { return_reason: getCancelReason() }
-        if (!isAccepted) body.items_details = payload
 
         try {
             setIsLoading(true)
@@ -212,20 +183,10 @@ const RtoCancelModal: React.FC<RtoCancelModalProps> = ({ isOpen, setIsOpen, orde
     }
 
     return (
-        <Dialog preventScroll isOpen={isOpen} width={1000} height={'85vh'} onClose={() => setIsOpen(false)}>
-            <div className="p-0 h-[80vh] overflow-scroll">
+        <Dialog preventScroll isOpen={isOpen} width={1000} height={'auto'} onClose={() => setIsOpen(false)}>
+            <div className="p-0 xl:h-[80vh] h-[90vh] overflow-scroll">
                 {cancelHeaderSection()}
-                {status !== EOrderStatus.accepted && (
-                    <div className="mb-6">
-                        <div className="flex items-center gap-2 mb-3">
-                            <IoIosListBox className="text-blue-600 text-xl" />
-                            <h3 className="text-lg font-semibold text-gray-800">Order Items & Locations</h3>
-                        </div>
-                        <div>
-                            <CancelItemSelect orderItems={orderItemsCuration} payload={payload} setPayload={setPayload} />
-                        </div>
-                    </div>
-                )}
+
                 {renderCancelReasonSection()}
                 <div className="mt-6 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                     <div className="flex items-start gap-2">

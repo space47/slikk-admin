@@ -9,25 +9,16 @@ const ProjectListContent = () => {
     const dispatch = useAppDispatch()
 
     const loading = useAppSelector((state) => state.projectList.data.loading)
-    const projectList = useAppSelector(
-        (state) => state.projectList.data.projectList
-    )
+    const projectList = useAppSelector((state) => state.projectList.data.projectList)
     const view = useAppSelector((state) => state.projectList.data.view)
-    const { sort, search } = useAppSelector(
-        (state) => state.projectList.data.query
-    )
+    const { sort, search } = useAppSelector((state) => state.projectList.data.query)
 
     useEffect(() => {
         dispatch(getList({ sort, search }))
     }, [dispatch, sort, search])
 
     return (
-        <div
-            className={classNames(
-                'mt-6 h-full flex flex-col',
-                loading && 'justify-center'
-            )}
-        >
+        <div className={classNames('mt-6 h-full flex flex-col', loading && 'justify-center')}>
             {loading && (
                 <div className="flex justify-center">
                     <Spinner size={40} />
@@ -43,9 +34,7 @@ const ProjectListContent = () => {
             {view === 'list' &&
                 projectList.length > 0 &&
                 !loading &&
-                projectList.map((project) => (
-                    <ListItem key={project.id} data={project} />
-                ))}
+                projectList.map((project) => <ListItem key={project.id} data={project} />)}
         </div>
     )
 }

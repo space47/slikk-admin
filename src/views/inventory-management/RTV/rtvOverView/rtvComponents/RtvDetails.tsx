@@ -249,7 +249,7 @@ const RtvDetails = () => {
                 </div>
             </div>
             {isError && <NotFoundData />}
-            {isSuccess && (
+            {(isSuccess || isLoading) && (
                 <div className="space-y-6">
                     <div className="flex w-1/2 items-center justify-between bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-3 transition-all hover:shadow-md">
                         <Input
@@ -259,12 +259,11 @@ const RtvDetails = () => {
                             onChange={(e) => setSearchInput(e.target.value)}
                         />
                     </div>
-                    {isLoading ||
-                        (isFetching && (
-                            <div className="flex items-center justify-center py-6">
-                                <Spinner size={35} className="text-primary animate-spin" />
-                            </div>
-                        ))}
+                    {(isLoading || isFetching) && (
+                        <div className="flex items-center justify-center py-6">
+                            <Spinner size={35} className="text-primary animate-spin" />
+                        </div>
+                    )}
 
                     <div className="flex justify-between mb-4">
                         <h4 className="text-lg font-semibold text-gray-800 mb-3">RTV Items Details</h4>

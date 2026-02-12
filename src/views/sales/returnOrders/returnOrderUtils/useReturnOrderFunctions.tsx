@@ -18,6 +18,8 @@ interface ReturnOrderFunctionProps {
     setIsLoading: (x: boolean) => void
     refetch: any
     setTriggerAction: (x: boolean) => void
+    taskId?: string
+    runnerPhoneNumber?: string
 }
 
 export const useReturnOrderFunctions = ({
@@ -32,6 +34,8 @@ export const useReturnOrderFunctions = ({
     refetch,
     setIsLoading,
     setTriggerAction,
+    runnerPhoneNumber,
+    taskId,
 }: ReturnOrderFunctionProps) => {
     const reCreationCall = async () => {
         try {
@@ -153,5 +157,21 @@ export const useReturnOrderFunctions = ({
         }
     }
 
-    return { sendApiRequest, triggerApiCall, handleForceCod, handleCompleteReturn, handleReturnReject }
+    const handleReAssign = async () => {
+        try {
+            const riderBody = {
+                action: 'assign_rider',
+                rider_mobile: runnerPhoneNumber,
+            }
+            const response = await axioisInstance.patch(`logistic/slikk/task/${taskId}`, riderBody)
+            successMessage(response)
+            refetch()
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                errorMessage(error)
+            }
+        }
+    }
+
+    return { sendApiRequest, triggerApiCall, handleForceCod, handleCompleteReturn, handleReturnReject, handleReAssign }
 }

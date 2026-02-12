@@ -21,14 +21,7 @@ const data = [
 ]
 
 const Example = () => {
-    return (
-        <UsersAvatarGroup
-            nameKey="userName"
-            imgKey="avatarImg"
-            avatarProps={{ size: 40 }}
-            users={data}
-        />
-    )
+    return <UsersAvatarGroup nameKey="userName" imgKey="avatarImg" avatarProps={{ size: 40 }} users={data} />
 }
 
 export default Example

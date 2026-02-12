@@ -12,10 +12,7 @@ const WithLoding = () => {
         <>
             <div className="flex items-center mb-4 gap-2">
                 <span>Loading State: </span>
-                <Switcher
-                    checked={isLoading}
-                    onChange={(checked) => setIsLoading(!checked)}
-                />
+                <Switcher checked={isLoading} onChange={(checked) => setIsLoading(!checked)} />
             </div>
             <Loading
                 loading={isLoading}
@@ -35,11 +32,7 @@ const WithLoding = () => {
                 }
             >
                 <div className="flex items-center gap-2">
-                    <Avatar
-                        size={45}
-                        src="/img/avatars/thumb-1.jpg"
-                        shape="circle"
-                    />
+                    <Avatar size={45} src="/img/avatars/thumb-1.jpg" shape="circle" />
                     <div>
                         <h6>Carolyn Perkins</h6>
                         <p>carolyn.p@elstar.com</p>

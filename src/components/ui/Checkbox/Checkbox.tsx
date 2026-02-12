@@ -21,12 +21,7 @@ export interface CheckboxProps extends CommonProps {
 }
 
 const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>((props, ref) => {
-    const {
-        name: nameContext,
-        value: groupValue,
-        onChange: onGroupChange,
-        color: colorContext,
-    } = useContext(CheckboxGroupContext)
+    const { name: nameContext, value: groupValue, onChange: onGroupChange, color: colorContext } = useContext(CheckboxGroupContext)
 
     const {
         color,
@@ -72,8 +67,7 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>((props, ref) => {
         }
 
         if (field) {
-            checkedValue =
-                typeof field.value === 'boolean' ? field.value : defaultChecked
+            checkedValue = typeof field.value === 'boolean' ? field.value : defaultChecked
             singleChecked = {
                 value: checkedValue as boolean,
                 checked: checkedValue,
@@ -108,20 +102,10 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>((props, ref) => {
             onChange?.(nextChecked, e)
             onGroupChange?.(value as CheckboxValue, nextChecked, e)
         },
-        [
-            checkboxChecked,
-            disabled,
-            readOnly,
-            setCheckboxChecked,
-            onChange,
-            value,
-            onGroupChange,
-            groupValue,
-        ]
+        [checkboxChecked, disabled, readOnly, setCheckboxChecked, onChange, value, onGroupChange, groupValue],
     )
 
-    const checkboxColor =
-        color || colorContext || `${themeColor}-${primaryColorLevel}`
+    const checkboxColor = color || colorContext || `${themeColor}-${primaryColorLevel}`
 
     const checkboxDefaultClass = `checkbox text-${checkboxColor}`
     const checkboxColorClass = disabled && 'disabled'
@@ -130,11 +114,7 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>((props, ref) => {
 
     const checkBoxClass = classNames(checkboxDefaultClass, checkboxColorClass)
 
-    const labelClass = classNames(
-        labelDefaultClass,
-        labelDisabledClass,
-        className
-    )
+    const labelClass = classNames(labelDefaultClass, labelDisabledClass, className)
 
     return (
         <label ref={labelRef} className={labelClass}>
@@ -150,16 +130,7 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>((props, ref) => {
                 {...field}
                 {...rest}
             />
-            {children ? (
-                <span
-                    className={classNames(
-                        'ltr:ml-2 rtl:mr-2',
-                        disabled ? 'opacity-50' : ''
-                    )}
-                >
-                    {children}
-                </span>
-            ) : null}
+            {children ? <span className={classNames('ltr:ml-2 rtl:mr-2', disabled ? 'opacity-50' : '')}>{children}</span> : null}
         </label>
     )
 })

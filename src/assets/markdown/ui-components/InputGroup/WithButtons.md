@@ -16,10 +16,7 @@ const WithButtons = () => {
                 <Button icon={<HiOutlineSearch className="text-xl" />} />
             </InputGroup>
             <InputGroup className="mb-4">
-                <Button
-                    variant="solid"
-                    icon={<HiOutlineMicrophone className="text-xl" />}
-                />
+                <Button variant="solid" icon={<HiOutlineMicrophone className="text-xl" />} />
                 <Input placeholder="Input text to search" />
             </InputGroup>
         </div>

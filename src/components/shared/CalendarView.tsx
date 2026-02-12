@@ -111,11 +111,7 @@ const defaultColorList: Record<
 }
 
 const CalendarView = (props: CalendarViewProps) => {
-    const {
-        wrapperClass,
-        eventColors = () => defaultColorList,
-        ...rest
-    } = props
+    const { wrapperClass, eventColors = () => defaultColorList, ...rest } = props
 
     return (
         <div className={classNames('calendar', wrapperClass)}>
@@ -134,23 +130,13 @@ const CalendarView = (props: CalendarViewProps) => {
                             className={classNames(
                                 'custom-calendar-event',
                                 extendedProps.eventColor
-                                    ? (eventColors(defaultColorList) ||
-                                          defaultColorList)[
-                                          extendedProps.eventColor
-                                      ]?.bg
+                                    ? (eventColors(defaultColorList) || defaultColorList)[extendedProps.eventColor]?.bg
                                     : '',
                                 extendedProps.eventColor
-                                    ? (eventColors(defaultColorList) ||
-                                          defaultColorList)[
-                                          extendedProps.eventColor
-                                      ]?.text
+                                    ? (eventColors(defaultColorList) || defaultColorList)[extendedProps.eventColor]?.text
                                     : '',
-                                isEnd &&
-                                    !isStart &&
-                                    '!rounded-tl-none !rounded-bl-none !rtl:rounded-tr-none !rtl:rounded-br-none',
-                                !isEnd &&
-                                    isStart &&
-                                    '!rounded-tr-none !rounded-br-none !rtl:rounded-tl-none !rtl:rounded-bl-none'
+                                isEnd && !isStart && '!rounded-tl-none !rounded-bl-none !rtl:rounded-tr-none !rtl:rounded-br-none',
+                                !isEnd && isStart && '!rounded-tr-none !rounded-br-none !rtl:rounded-tl-none !rtl:rounded-bl-none',
                             )}
                         >
                             {!(isEnd && !isStart) && (
@@ -158,20 +144,13 @@ const CalendarView = (props: CalendarViewProps) => {
                                     className={classNames(
                                         'mr-1 rtl:ml-1',
                                         extendedProps.eventColor
-                                            ? (eventColors(defaultColorList) ||
-                                                  defaultColorList)[
-                                                  extendedProps.eventColor
-                                              ].dot
-                                            : ''
+                                            ? (eventColors(defaultColorList) || defaultColorList)[extendedProps.eventColor].dot
+                                            : '',
                                     )}
                                 />
                             )}
-                            {!(isEnd && !isStart) && (
-                                <span>{arg.timeText}</span>
-                            )}
-                            <span className="font-semibold ml-1 rtl:mr-1">
-                                {arg.event.title}
-                            </span>
+                            {!(isEnd && !isStart) && <span>{arg.timeText}</span>}
+                            <span className="font-semibold ml-1 rtl:mr-1">{arg.event.title}</span>
                         </div>
                     )
                 }}

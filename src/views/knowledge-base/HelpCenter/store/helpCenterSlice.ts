@@ -1,8 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import {
-    apiGetCategoriesData,
-    apiQueryArticleList,
-} from '@/services/KnowledgeBaseService'
+import { apiGetCategoriesData, apiQueryArticleList } from '@/services/KnowledgeBaseService'
 
 export type Article = {
     id: string
@@ -43,24 +40,15 @@ export type HelpCenterState = {
 
 export const SLICE_NAME = 'knowledgeBaseHelpCenter'
 
-export const getCategories = createAsyncThunk(
-    SLICE_NAME + '/getCategories',
-    async () => {
-        const response = await apiGetCategoriesData<GetCategoriesDataResponse>()
-        return response.data
-    }
-)
+export const getCategories = createAsyncThunk(SLICE_NAME + '/getCategories', async () => {
+    const response = await apiGetCategoriesData<GetCategoriesDataResponse>()
+    return response.data
+})
 
-export const queryArticles = createAsyncThunk(
-    SLICE_NAME + '/queryArticles',
-    async (data: QueryArticleListRequest) => {
-        const response = await apiQueryArticleList<
-            QueryArticleListResponse,
-            QueryArticleListRequest
-        >(data)
-        return response.data
-    }
-)
+export const queryArticles = createAsyncThunk(SLICE_NAME + '/queryArticles', async (data: QueryArticleListRequest) => {
+    const response = await apiQueryArticleList<QueryArticleListResponse, QueryArticleListRequest>(data)
+    return response.data
+})
 
 const initialState: HelpCenterState = {
     loading: false,

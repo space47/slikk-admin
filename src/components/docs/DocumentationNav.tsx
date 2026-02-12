@@ -27,9 +27,7 @@ const NavContent = ({ onLinkClick, routes }: NavContentProps) => {
                                 key={menu.label}
                                 className={({ isActive }) =>
                                     `cursor-pointer font-semibold ltr:border-l rtl:border-r px-4 h-6 mb-4 flex items-center gap-2 hover:text-gray-900 dark:hover:text-gray-100 ltr:-ml-px rtl:-mr-px ${
-                                        isActive
-                                            ? activeClass
-                                            : 'border-transparent'
+                                        isActive ? activeClass : 'border-transparent'
                                     }`
                                 }
                                 to={menu.path}
@@ -65,14 +63,7 @@ const MobileNav = ({ routes }: { routes: DocumentationRoute[] }) => {
                 icon={<NavToggle className="text-2xl" toggled={isOpen} />}
                 onClick={openDrawer}
             />
-            <Drawer
-                title="Navigation"
-                isOpen={isOpen}
-                width={300}
-                placement="left"
-                onClose={onDrawerClose}
-                onRequestClose={onDrawerClose}
-            >
+            <Drawer title="Navigation" isOpen={isOpen} width={300} placement="left" onClose={onDrawerClose} onRequestClose={onDrawerClose}>
                 <NavContent routes={routes} onLinkClick={onDrawerClose} />
             </Drawer>
         </>

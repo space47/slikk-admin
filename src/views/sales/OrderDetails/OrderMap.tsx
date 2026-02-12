@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap, CircleMarker 
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet-rotatedmarker'
-import { FaMapMarkerAlt } from 'react-icons/fa'
+import { FaClock, FaMapMarkerAlt } from 'react-icons/fa'
 import polyline from '@mapbox/polyline'
 import axios from 'axios'
 import { BsFullscreenExit } from 'react-icons/bs'
@@ -14,6 +14,7 @@ import { calculateBearing } from '@/utils/common'
 interface Props {
     task_id?: string
     taskData: any
+    isRiderMoving?: boolean
 }
 
 const customIcon = (iconUrl: string) =>
@@ -67,12 +68,12 @@ const CurrentLocationButton = () => {
     )
 }
 
-const OrderMap: React.FC<Props> = ({ taskData }) => {
+const OrderMap: React.FC<Props> = ({ taskData, isRiderMoving }) => {
     const MAP_KEY = import.meta.env.VITE_OLA_API_KEY
     const containerRef = useRef<HTMLDivElement | null>(null)
     const mapContainerRef = useRef<any>(null)
     const riderMarkerRef = useRef<Leaflet.Marker | null>(null)
-
+    const [riderEstimateTime, setRiderEstimateTime] = useState('')
     const [showOnlyRiderPath, setShowOnlyRiderPath] = useState(false)
     const [isFullScreen, setIsFullScreen] = useState(false)
     const [polyLine, setPolyLine] = useState('')
@@ -189,6 +190,7 @@ const OrderMap: React.FC<Props> = ({ taskData }) => {
                 },
             })
             setRiderRoutePolyline(response.data.routes[0]?.overview_polyline || '')
+            setRiderEstimateTime(response.data.routes[0]?.legs[0]?.readable_duration || '')
         } catch (err) {
             console.error('Error fetching rider route:', err)
         }
@@ -261,6 +263,17 @@ const OrderMap: React.FC<Props> = ({ taskData }) => {
     }
     if (!mapCenter) return null
 
+    const renderRiderDelivery = () => (
+        <div className="mt-2 max-w-[400px] px-[8px] py-[12px] rounded-lg shadow-lg ">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span>
+                    <FaClock />
+                </span>
+                <span className="text-amber-900">Rider Delivers In </span>: {riderEstimateTime}
+            </div>
+        </div>
+    )
+
     return (
         <div ref={containerRef}>
             <div
@@ -297,7 +310,12 @@ const OrderMap: React.FC<Props> = ({ taskData }) => {
                     )}
                     {taskData?.drop_details && (
                         <Marker position={[taskData.drop_details.latitude, taskData.drop_details.longitude]} icon={icons.drop}>
-                            <Popup>{taskData.drop_details.name}</Popup>
+                            <Popup>
+                                <div>
+                                    {taskData.drop_details.name}
+                                    <span>{isRiderMoving && renderRiderDelivery()}</span>
+                                </div>
+                            </Popup>
                         </Marker>
                     )}
                     {taskData?.runner_latitude && taskData?.runner_longitude && !showOnlyRiderPath && (
@@ -377,28 +395,31 @@ const OrderMap: React.FC<Props> = ({ taskData }) => {
                     )}
                     <CurrentLocationButton />
                 </MapContainer>
-                <div
-                    style={{
-                        marginTop: 10,
-                        maxWidth: 400,
-                        background: 'white',
-                        padding: '8px 12px',
-                        borderRadius: 6,
-                        fontSize: 12,
-                        boxShadow: '0 0 6px rgba(0,0,0,0.3)',
-                        lineHeight: '16px',
-                    }}
-                >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <div className="w-5 h-1 bg-black" /> Actual Rider Path
+                <div className="flex items-center gap-5">
+                    <div
+                        style={{
+                            marginTop: 10,
+                            maxWidth: 400,
+                            background: 'white',
+                            padding: '8px 12px',
+                            borderRadius: 6,
+                            fontSize: 12,
+                            boxShadow: '0 0 6px rgba(0,0,0,0.3)',
+                            lineHeight: '16px',
+                        }}
+                    >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <div className="w-5 h-1 bg-black" /> Actual Rider Path
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+                            <div className="w-5 h-1 bg-red-500" />
+                            Recommended Rider Path
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+                            <div className="w-5 h-1 bg-blue-500" /> Warehouse → Delivery Address Shortest Path
+                        </div>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
-                        <div className="w-5 h-1 bg-red-500" />
-                        Recommended Rider Path
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
-                        <div className="w-5 h-1 bg-blue-500" /> Warehouse → Delivery Address Shortest Path
-                    </div>
+                    {isRiderMoving && renderRiderDelivery()}
                 </div>
             </div>
         </div>

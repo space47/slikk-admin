@@ -24,13 +24,7 @@ const ButtonWithIcon = () => {
                     <span>Settings</span>
                 </span>
             </Button>
-            <Button
-                className="mr-2"
-                variant="solid"
-                onClick={onClick}
-                loading={loading}
-                icon={<HiOutlineInboxIn />}
-            >
+            <Button className="mr-2" variant="solid" onClick={onClick} loading={loading} icon={<HiOutlineInboxIn />}>
                 <span>With Loading (Click to trigger)</span>
             </Button>
         </div>

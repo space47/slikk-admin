@@ -2,13 +2,7 @@ import { FormItem, FormContainer } from '@/components/ui'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import { Formik, Field, Form } from 'formik'
-import {
-    updateColumns,
-    closeDialog,
-    setSelectedBoard,
-    useAppDispatch,
-    useAppSelector,
-} from '../store'
+import { updateColumns, closeDialog, setSelectedBoard, useAppDispatch, useAppSelector } from '../store'
 import cloneDeep from 'lodash/cloneDeep'
 import requiredFieldValidation from '@/utils/requiredFieldValidation'
 import { createCardObject } from '../utils'
@@ -35,29 +29,17 @@ const AddNewColumnContent = () => {
         <div>
             <h5>Add New Ticket</h5>
             <div className="mt-8">
-                <Formik
-                    initialValues={{ title: '' }}
-                    onSubmit={({ title }) => onFormSubmit(title)}
-                >
+                <Formik initialValues={{ title: '' }} onSubmit={({ title }) => onFormSubmit(title)}>
                     {({ errors, touched }) => (
                         <Form>
                             <FormContainer layout="inline">
-                                <FormItem
-                                    label="Ticket title"
-                                    invalid={errors.title && touched.title}
-                                    errorMessage={errors.title}
-                                >
+                                <FormItem label="Ticket title" invalid={errors.title && touched.title} errorMessage={errors.title}>
                                     <Field
                                         type="text"
                                         name="title"
                                         placeholder="Please enter ticket title"
                                         component={Input}
-                                        validate={(value: string) =>
-                                            requiredFieldValidation(
-                                                value,
-                                                'Ticket title is required!'
-                                            )
-                                        }
+                                        validate={(value: string) => requiredFieldValidation(value, 'Ticket title is required!')}
                                     />
                                 </FormItem>
                                 <FormItem>

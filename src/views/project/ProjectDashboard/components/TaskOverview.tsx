@@ -33,12 +33,7 @@ type ChartLegendProps = {
     showBadge?: boolean
 }
 
-const ChartLegend = ({
-    label,
-    value,
-    badgeClass,
-    showBadge = true,
-}: ChartLegendProps) => {
+const ChartLegend = ({ label, value, badgeClass, showBadge = true }: ChartLegendProps) => {
     return (
         <div className="flex gap-2">
             {showBadge && <Badge className="mt-2.5" innerClass={badgeClass} />}
@@ -55,9 +50,7 @@ const TaskOverview = ({ data = {}, className }: TaskOverviewProps) => {
 
     const [repaint, setRepaint] = useState(false)
 
-    const sideNavCollapse = useAppSelector(
-        (state) => state.theme.layout.sideNavCollapse
-    )
+    const sideNavCollapse = useAppSelector((state) => state.theme.layout.sideNavCollapse)
 
     useEffect(() => {
         setRepaint(true)
@@ -72,13 +65,7 @@ const TaskOverview = ({ data = {}, className }: TaskOverviewProps) => {
         <Card className={className}>
             <div className="flex sm:flex-row flex-col md:items-center justify-between mb-6 gap-4">
                 <h4>Task Overview</h4>
-                <Segment
-                    value={timeRange}
-                    size="sm"
-                    onChange={(val: string | string[]) =>
-                        setTimeRange(val as string[])
-                    }
-                >
+                <Segment value={timeRange} size="sm" onChange={(val: string | string[]) => setTimeRange(val as string[])}>
                     <Segment.Item value="monthly">Monthly</Segment.Item>
                     <Segment.Item value="weekly">Weekly</Segment.Item>
                     <Segment.Item value="daily">Daily</Segment.Item>
@@ -88,11 +75,7 @@ const TaskOverview = ({ data = {}, className }: TaskOverviewProps) => {
                 <>
                     <div className="flex items-center justify-between mb-4">
                         <div>
-                            <ChartLegend
-                                showBadge={false}
-                                label="Total Tasks"
-                                value={data.chart[timeRange[0]].total}
-                            />
+                            <ChartLegend showBadge={false} label="Total Tasks" value={data.chart[timeRange[0]].total} />
                         </div>
                         <div className="flex gap-x-6">
                             <ChartLegend

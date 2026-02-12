@@ -4,12 +4,7 @@ import TextEllipsis from '@/components/shared/TextEllipsis'
 import Loading from '@/components/shared/Loading'
 import TextBlockSkeleton from '@/components/shared/loaders/TextBlockSkeleton'
 import isLastChild from '@/utils/isLastChild'
-import {
-    getOthersArticle,
-    useAppDispatch,
-    useAppSelector,
-    Article,
-} from '../store'
+import { getOthersArticle, useAppDispatch, useAppSelector, Article } from '../store'
 import { useNavigate, useLocation } from 'react-router-dom'
 
 type ArticleItemProps = {
@@ -20,14 +15,12 @@ type ArticleItemProps = {
 const Loaders = ({ counts = 2 }: { counts?: number }) => {
     return (
         <div className="flex flex-col mt-6">
-            {Array.from(new Array(counts), (_, i) => i + 1).map(
-                (loader, index) => (
-                    <div key={loader}>
-                        <TextBlockSkeleton rowCount={2} />
-                        {index !== counts - 1 && <hr className="my-6" />}
-                    </div>
-                )
-            )}
+            {Array.from(new Array(counts), (_, i) => i + 1).map((loader, index) => (
+                <div key={loader}>
+                    <TextBlockSkeleton rowCount={2} />
+                    {index !== counts - 1 && <hr className="my-6" />}
+                </div>
+            ))}
         </div>
     )
 }
@@ -41,15 +34,10 @@ const ArticleItem = ({ data = {}, isLastChild }: ArticleItemProps) => {
 
     return (
         <div
-            className={classNames(
-                'py-6 group cursor-pointer',
-                !isLastChild && 'border-b border-gray-200 dark:border-gray-600'
-            )}
+            className={classNames('py-6 group cursor-pointer', !isLastChild && 'border-b border-gray-200 dark:border-gray-600')}
             onClick={() => onArticleClick(data.id)}
         >
-            <h6 className="mb-1 group-hover:underline !text-sm">
-                {data.title}
-            </h6>
+            <h6 className="mb-1 group-hover:underline !text-sm">{data.title}</h6>
             <p className="mb-1">
                 <TextEllipsis text={data.content} maxTextCount={40} />
             </p>
@@ -61,12 +49,8 @@ const ArticleItem = ({ data = {}, isLastChild }: ArticleItemProps) => {
 const OthersArticle = ({ articleId }: { articleId: string }) => {
     const dispatch = useAppDispatch()
 
-    const { popularArticle, relatedArticle } = useAppSelector(
-        (state) => state.knowledgeBaseArticle.data.othersArticle
-    )
-    const loading = useAppSelector(
-        (state) => state.knowledgeBaseArticle.data.otherLoading
-    )
+    const { popularArticle, relatedArticle } = useAppSelector((state) => state.knowledgeBaseArticle.data.othersArticle)
+    const loading = useAppSelector((state) => state.knowledgeBaseArticle.data.otherLoading)
 
     const { search } = useLocation()
 
@@ -87,26 +71,15 @@ const OthersArticle = ({ articleId }: { articleId: string }) => {
                 <h4>Related Topics</h4>
                 <Loading customLoader={<Loaders />} loading={loading}>
                     {relatedArticle?.map((article, index) => (
-                        <ArticleItem
-                            key={article.id}
-                            data={article}
-                            isLastChild={isLastChild(relatedArticle, index)}
-                        />
+                        <ArticleItem key={article.id} data={article} isLastChild={isLastChild(relatedArticle, index)} />
                     ))}
                 </Loading>
             </div>
             <div>
                 <h4>Popular Topics</h4>
-                <Loading
-                    customLoader={<Loaders counts={4} />}
-                    loading={loading}
-                >
+                <Loading customLoader={<Loaders counts={4} />} loading={loading}>
                     {popularArticle?.map((article, index) => (
-                        <ArticleItem
-                            key={article.id}
-                            data={article}
-                            isLastChild={isLastChild(popularArticle, index)}
-                        />
+                        <ArticleItem key={article.id} data={article} isLastChild={isLastChild(popularArticle, index)} />
                     ))}
                 </Loading>
             </div>

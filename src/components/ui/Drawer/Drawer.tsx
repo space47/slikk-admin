@@ -65,9 +65,7 @@ const Drawer = (props: DrawerProps) => {
                 dimensionClass: 'vertical',
                 contentStyle: { width },
                 motionStyle: {
-                    [placement]: `-${width}${
-                        typeof width === 'number' && 'px'
-                    }`,
+                    [placement]: `-${width}${typeof width === 'number' && 'px'}`,
                 },
             }
         }
@@ -77,9 +75,7 @@ const Drawer = (props: DrawerProps) => {
                 dimensionClass: 'horizontal',
                 contentStyle: { height },
                 motionStyle: {
-                    [placement]: `-${height}${
-                        typeof height === 'number' && 'px'
-                    }`,
+                    [placement]: `-${height}${typeof height === 'number' && 'px'}`,
                 },
             }
         }
@@ -99,20 +95,12 @@ const Drawer = (props: DrawerProps) => {
                 beforeClose: 'drawer-before-close',
             }}
             overlayClassName={{
-                base: classNames(
-                    'drawer-overlay',
-                    overlayClassName as string,
-                    !showBackdrop && 'bg-transparent'
-                ),
+                base: classNames('drawer-overlay', overlayClassName as string, !showBackdrop && 'bg-transparent'),
                 afterOpen: 'drawer-overlay-after-open',
                 beforeClose: 'drawer-overlay-before-close',
             }}
             portalClassName={classNames('drawer-portal', portalClassName)}
-            bodyOpenClassName={classNames(
-                'drawer-open',
-                lockScroll && 'drawer-lock-scroll',
-                bodyOpenClassName
-            )}
+            bodyOpenClassName={classNames('drawer-open', lockScroll && 'drawer-lock-scroll', bodyOpenClassName)}
             ariaHideApp={false}
             isOpen={isOpen}
             closeTimeoutMS={closeTimeoutMS}
@@ -123,29 +111,17 @@ const Drawer = (props: DrawerProps) => {
                 style={contentStyle}
                 initial={motionStyle}
                 animate={{
-                    [placement as 'top' | 'right' | 'bottom' | 'left']: isOpen
-                        ? 0
-                        : motionStyle[placement],
+                    [placement as 'top' | 'right' | 'bottom' | 'left']: isOpen ? 0 : motionStyle[placement],
                 }}
             >
                 {title || closable ? (
                     <div className={classNames('drawer-header', headerClass)}>
-                        {typeof title === 'string' ? (
-                            <h4>{title}</h4>
-                        ) : (
-                            <span>{title}</span>
-                        )}
+                        {typeof title === 'string' ? <h4>{title}</h4> : <span>{title}</span>}
                         {closable && renderCloseButton}
                     </div>
                 ) : null}
-                <div className={classNames('drawer-body', bodyClass)}>
-                    {children}
-                </div>
-                {footer && (
-                    <div className={classNames('drawer-footer', footerClass)}>
-                        {footer}
-                    </div>
-                )}
+                <div className={classNames('drawer-body', bodyClass)}>{children}</div>
+                {footer && <div className={classNames('drawer-footer', footerClass)}>{footer}</div>}
             </motion.div>
         </Modal>
     )

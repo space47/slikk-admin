@@ -12,9 +12,7 @@ type Step2Props = CallbackSetBack
 
 const validationSchema = Yup.object().shape({
     organizationName: Yup.string().required('Organization name is required'),
-    organizationSize: Yup.string().required(
-        'Please select your organization size'
-    ),
+    organizationSize: Yup.string().required('Please select your organization size'),
 })
 
 const sizes = [
@@ -46,10 +44,7 @@ const Step2 = ({ onNext, onBack }: Step2Props) => {
                                 <FormContainer>
                                     <FormItem
                                         label="Name of your organization"
-                                        invalid={
-                                            errors.organizationName &&
-                                            touched.organizationName
-                                        }
+                                        invalid={errors.organizationName && touched.organizationName}
                                         errorMessage={errors.organizationName}
                                     >
                                         <Field
@@ -62,10 +57,7 @@ const Step2 = ({ onNext, onBack }: Step2Props) => {
                                     </FormItem>
                                     <FormItem
                                         label="Size of your organization"
-                                        invalid={
-                                            errors.organizationSize &&
-                                            touched.organizationSize
-                                        }
+                                        invalid={errors.organizationSize && touched.organizationSize}
                                         errorMessage={errors.organizationSize}
                                     >
                                         <Field name="organizationSize">
@@ -75,27 +67,14 @@ const Step2 = ({ onNext, onBack }: Step2Props) => {
                                                     field={field}
                                                     form={form}
                                                     options={sizes}
-                                                    value={sizes.filter(
-                                                        (size) =>
-                                                            size.value ===
-                                                            values.organizationSize
-                                                    )}
-                                                    onChange={(size) =>
-                                                        form.setFieldValue(
-                                                            field.name,
-                                                            size?.value
-                                                        )
-                                                    }
+                                                    value={sizes.filter((size) => size.value === values.organizationSize)}
+                                                    onChange={(size) => form.setFieldValue(field.name, size?.value)}
                                                 />
                                             )}
                                         </Field>
                                     </FormItem>
                                     <FormItem>
-                                        <Button
-                                            block
-                                            variant="solid"
-                                            type="submit"
-                                        >
+                                        <Button block variant="solid" type="submit">
                                             Continue
                                         </Button>
                                         <Button

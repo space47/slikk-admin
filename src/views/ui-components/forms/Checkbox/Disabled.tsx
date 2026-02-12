@@ -20,11 +20,7 @@ const Disabled = () => {
             </div>
             <Checkbox.Group value={selected}>
                 {checkboxes.map((checkbox) => (
-                    <Checkbox
-                        key={checkbox.label}
-                        value={checkbox.value}
-                        disabled={checkbox.disabled}
-                    >
+                    <Checkbox key={checkbox.label} value={checkbox.value} disabled={checkbox.disabled}>
                         {checkbox.label}
                     </Checkbox>
                 ))}

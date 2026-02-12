@@ -53,6 +53,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         subMenu: [],
                     },
                     {
+                        key: 'appsOrderManagement.returnItems',
+                        path: `${APP_PREFIX_PATH}/returnItems`,
+                        title: 'Return Items',
+                        translateKey: 'nav.appsOrderManagement.returnItems',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
                         key: 'appsOrderManagement.deliveryOrders',
                         path: `${APP_PREFIX_PATH}/deliveryOrders`,
                         title: 'Forward Delivery',

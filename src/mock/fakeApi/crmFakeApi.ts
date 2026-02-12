@@ -21,11 +21,7 @@ export default function crmFakeApi(server: Server, apiPrefix: string) {
 
         if (key && order) {
             if (key !== 'lastOnline') {
-                data.sort(
-                    sortBy(key, order === 'desc', (a) =>
-                        (a as string).toUpperCase()
-                    )
-                )
+                data.sort(sortBy(key, order === 'desc', (a) => (a as string).toUpperCase()))
             } else {
                 data.sort(sortBy(key, order === 'desc', parseInt as Primer))
             }
@@ -62,23 +58,17 @@ export default function crmFakeApi(server: Server, apiPrefix: string) {
         }
     })
 
-    server.get(
-        `${apiPrefix}/crm/customer-details`,
-        (schema, { queryParams }) => {
-            const id = queryParams.id
-            const user = schema.db.userDetailData.find(id as string)
-            return user
-        }
-    )
+    server.get(`${apiPrefix}/crm/customer-details`, (schema, { queryParams }) => {
+        const id = queryParams.id
+        const user = schema.db.userDetailData.find(id as string)
+        return user
+    })
 
-    server.del(
-        `${apiPrefix}/crm/customer/delete`,
-        (schema, { requestBody }) => {
-            const { id } = JSON.parse(requestBody)
-            schema.db.userDetailData.remove({ id })
-            return {}
-        }
-    )
+    server.del(`${apiPrefix}/crm/customer/delete`, (schema, { requestBody }) => {
+        const { id } = JSON.parse(requestBody)
+        schema.db.userDetailData.remove({ id })
+        return {}
+    })
 
     server.put(`${apiPrefix}/crm/customers`, (schema, { requestBody }) => {
         const data = JSON.parse(requestBody)
@@ -107,11 +97,7 @@ export default function crmFakeApi(server: Server, apiPrefix: string) {
             data = schema.db.mailData.where({ starred: true })
         }
 
-        if (
-            category === 'work' ||
-            category === 'private' ||
-            category === 'important'
-        ) {
+        if (category === 'work' || category === 'private' || category === 'important') {
             data = schema.db.mailData.where({ label: category })
         }
 

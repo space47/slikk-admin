@@ -1,12 +1,7 @@
 import AdaptableCard from '@/components/shared/AdaptableCard'
 import Table from '@/components/ui/Table'
 import Avatar from '@/components/ui/Avatar'
-import {
-    useReactTable,
-    getCoreRowModel,
-    flexRender,
-    createColumnHelper,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, flexRender, createColumnHelper } from '@tanstack/react-table'
 import { NumericFormat } from 'react-number-format'
 
 type Product = {
@@ -45,15 +40,11 @@ const ProductColumn = ({ row }: { row: Product }) => {
             <div className="ltr:ml-2 rtl:mr-2">
                 <div className="mb-2 text-[18px] font-bold ">
                     Brand Name:
-                    <h4 className="font-light text-[16px] flex-wrap">
-                        {row.brand}
-                    </h4>
+                    <h4 className="font-light text-[16px] flex-wrap">{row.brand}</h4>
                 </div>
                 <div className="mb-2 text-[18px] font-bold ">
                     Product Name:
-                    <h4 className="font-light text-[16px] flex-wrap">
-                        {row.name}
-                    </h4>
+                    <h4 className="font-light text-[16px] flex-wrap">{row.name}</h4>
                 </div>
                 {/* skv */}
                 <h4 className="font-light text-[14px]"></h4>
@@ -64,14 +55,7 @@ const ProductColumn = ({ row }: { row: Product }) => {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PriceAmount = ({ amount }: { amount: number }) => {
-    return (
-        <NumericFormat
-            displayType="text"
-            value={(Math.round(amount * 100) / 100).toFixed(2)}
-            prefix={'Rs.'}
-            thousandSeparator={true}
-        />
-    )
+    return <NumericFormat displayType="text" value={(Math.round(amount * 100) / 100).toFixed(2)} prefix={'Rs.'} thousandSeparator={true} />
 }
 
 const columns = [
@@ -142,14 +126,8 @@ const RejectProduct = ({ data = [] }: OrderProductsProps) => {
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => {
                                 return (
-                                    <Th
-                                        key={header.id}
-                                        colSpan={header.colSpan}
-                                    >
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext(),
-                                        )}
+                                    <Th key={header.id} colSpan={header.colSpan}>
+                                        {flexRender(header.column.columnDef.header, header.getContext())}
                                     </Th>
                                 )
                             })}
@@ -161,14 +139,7 @@ const RejectProduct = ({ data = [] }: OrderProductsProps) => {
                         return (
                             <Tr key={row.id}>
                                 {row.getVisibleCells().map((cell) => {
-                                    return (
-                                        <Td key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext(),
-                                            )}
-                                        </Td>
-                                    )
+                                    return <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                                 })}
                             </Tr>
                         )
