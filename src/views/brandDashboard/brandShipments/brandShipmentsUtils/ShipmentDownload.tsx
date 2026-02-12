@@ -116,7 +116,7 @@ const ShipmentDownload: React.FC<Props> = ({ id }) => {
                         disabled={loading || !id}
                         onClick={handleDownload}
                     >
-                        View Downloads
+                        View Docs
                     </Button>
 
                     <Button
@@ -127,7 +127,7 @@ const ShipmentDownload: React.FC<Props> = ({ id }) => {
                         disabled={loading || !id}
                         onClick={handleRegenerate}
                     >
-                        Regenerate and view
+                        Regenerate Docs and view
                     </Button>
                 </div>
             </div>
