@@ -32,10 +32,21 @@ const RefundActivity: React.FC<Props> = ({ returnDetails, returnOrderItems, refe
     const [modalContent, setModalContent] = useState<string>()
     const [isLoading, setIsLoading] = useState(false)
     const [forceCOD, setForceCOD] = useState(false)
+
     const showModal = (content: string | undefined) => {
         setModalContent(content)
         setIsModalOpen(true)
     }
+
+    const returnProducts = returnDetails?.return_order_delivery?.find((item) => item?.state !== EReturnOrderStatus.cancelled)
+
+    const taskId = useMemo(() => {
+        return returnProducts?.task_id
+    }, [returnProducts])
+    const runnerPhoneNumber = useMemo(() => {
+        return returnProducts?.runner_phone_number
+    }, [returnProducts])
+
     const { buttonText, modalContent: content } = getButtonAndModalContent(
         returnDetails?.log?.[returnDetails.log.length - 1]?.status || '',
         returnDetails?.return_order_delivery?.find((item) => item?.state !== EReturnOrderStatus.cancelled)?.partner as string,
@@ -55,19 +66,22 @@ const RefundActivity: React.FC<Props> = ({ returnDetails, returnOrderItems, refe
         setTriggerPickedUpGenerate(true)
     }
 
-    const { sendApiRequest, triggerApiCall, handleForceCod, handleCompleteReturn, handleReturnReject } = useReturnOrderFunctions({
-        action,
-        returnDetails,
-        setForceCOD,
-        setIsModalOpen,
-        valueInsideModal,
-        setTriggerPickedUpGenerate,
-        locationWiseArray,
-        setIsCompleting,
-        refetch,
-        setIsLoading,
-        setTriggerAction,
-    })
+    const { sendApiRequest, triggerApiCall, handleForceCod, handleCompleteReturn, handleReturnReject, handleReAssign } =
+        useReturnOrderFunctions({
+            action,
+            returnDetails,
+            setForceCOD,
+            setIsModalOpen,
+            valueInsideModal,
+            setTriggerPickedUpGenerate,
+            locationWiseArray,
+            setIsCompleting,
+            refetch,
+            setIsLoading,
+            setTriggerAction,
+            runnerPhoneNumber,
+            taskId,
+        })
 
     useEffect(() => {
         if (triggerPickedUpGenerate) {
@@ -116,6 +130,14 @@ const RefundActivity: React.FC<Props> = ({ returnDetails, returnOrderItems, refe
                     ))
                 )}
             </Timeline>
+
+            <div className="mb-8">
+                {returnDetails?.status === EReturnOrderStatus.attempt_failed && (
+                    <Button variant="gray" onClick={handleReAssign}>
+                        Re-Attempt
+                    </Button>
+                )}
+            </div>
             {buttonText &&
                 returnDetails?.status &&
                 returnDetails.status !== EReturnOrderStatus.cancelled &&
