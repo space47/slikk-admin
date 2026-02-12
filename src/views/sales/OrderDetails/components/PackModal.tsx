@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useCallback, useEffect, useState } from 'react'
-import { Modal, Select } from 'antd'
+import { Modal, notification, Select } from 'antd'
 import { Input } from '@/components/ui'
 import { FaRupeeSign, FaCamera, FaTimes, FaTrashAlt, FaBoxOpen, FaReceipt, FaWallet, FaTag } from 'react-icons/fa'
 import { IoBagOutline } from 'react-icons/io5'
@@ -105,6 +105,27 @@ const PackModal: React.FC<Props> = ({
     const returnReasonCalls = returnOrderDataService.useReturnItemReasonsQuery({})
     const [reasonsArray, setReasonsArray] = useState<{ value: string; label: string }[]>([])
 
+    const validateReasons = useCallback(() => {
+        if (!product) return false
+        for (const pdts of product) {
+            const orderedQty = Number(pdts.quantity)
+            if (fulfilledQuantities[pdts.id] !== undefined) {
+                const fulfilledQty = Number(fulfilledQuantities[pdts.id] || 0)
+                if (fulfilledQty < orderedQty && !selectedReason[pdts.id]) {
+                    return true
+                }
+            }
+            if (selectedLocations[pdts.id]) {
+                const selectedQty = Object.values(selectedLocations[pdts.id]).reduce((sum, qty) => sum + qty, 0)
+                if (selectedQty < orderedQty && !selectedReason[pdts.id]) {
+                    return true
+                }
+            }
+        }
+
+        return false
+    }, [product, fulfilledQuantities, selectedLocations, selectedReason])
+
     useEffect(() => {
         if (returnReasonCalls.isSuccess) {
             setReasonsArray(returnReasonCalls?.data.config?.value?.reasons?.map((item) => ({ value: item, label: item })))
@@ -145,7 +166,16 @@ const PackModal: React.FC<Props> = ({
                                 isButtonClick ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800'
                             } text-white shadow-sm hover:shadow`}
                             disabled={isButtonClick}
-                            onClick={handleOk}
+                            onClick={() => {
+                                const hasMissingReason = validateReasons()
+
+                                if (hasMissingReason) {
+                                    notification.error({ message: 'Reason is Required' })
+                                    return
+                                }
+
+                                handleOk()
+                            }}
                         >
                             {isButtonClick ? (
                                 <>
@@ -189,7 +219,6 @@ const PackModal: React.FC<Props> = ({
                     <p className="text-lg font-semibold text-gray-700 mb-2">{modalContent}</p>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                        {/* Invoice Card */}
                         <div className="bg-gradient-to-br from-red-50 to-red-100 border border-red-200 rounded-xl p-4 shadow-sm">
                             <div className="flex items-center gap-3 mb-3">
                                 <div className="p-2 bg-red-100 rounded-lg">
@@ -204,8 +233,6 @@ const PackModal: React.FC<Props> = ({
                                 </div>
                             </div>
                         </div>
-
-                        {/* Amount Card */}
                         <div className="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl p-2 shadow-sm">
                             <div className="flex items-center gap-3 mb-3">
                                 <div className="p-2 bg-green-100 rounded-lg">
@@ -220,8 +247,6 @@ const PackModal: React.FC<Props> = ({
                                 </div>
                             </div>
                         </div>
-
-                        {/* Bags Count Card */}
                         <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-2 shadow-sm">
                             <div className="flex items-center gap-3 mb-3">
                                 <div className="p-2 bg-blue-100 rounded-lg">
@@ -240,7 +265,6 @@ const PackModal: React.FC<Props> = ({
                         </div>
                     </div>
                 </div>
-                {/* Error Message */}
                 {errorMessage && (
                     <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
                         <div className="flex items-center justify-center gap-2 text-red-700 font-semibold">
@@ -249,7 +273,6 @@ const PackModal: React.FC<Props> = ({
                         </div>
                     </div>
                 )}
-                {/* Products List */}
                 {product && product.length > 0 && (
                     <div className="space-y-4 overflow-y-auto pr-2">
                         {product?.map((pdts) => (
@@ -259,7 +282,6 @@ const PackModal: React.FC<Props> = ({
                             >
                                 <div className="p-5">
                                     <div className="flex flex-col lg:flex-row gap-6">
-                                        {/* Product Image */}
                                         <div className="lg:w-1/6">
                                             <div className="relative w-full h-48 lg:h-full rounded-lg overflow-hidden bg-gray-100">
                                                 <img
@@ -272,11 +294,8 @@ const PackModal: React.FC<Props> = ({
                                                 </div>
                                             </div>
                                         </div>
-
-                                        {/* Product Details */}
                                         <div className="lg:w-5/6">
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                                {/* Product Info */}
                                                 <div className="space-y-2">
                                                     <div className="flex items-center gap-2">
                                                         <FaTag className="text-gray-400" />
@@ -291,8 +310,6 @@ const PackModal: React.FC<Props> = ({
                                                         </span>
                                                     </div>
                                                 </div>
-
-                                                {/* Quantity Selection */}
                                                 {pdts?.location &&
                                                     (!pdts?.location_details ||
                                                         Object.keys(pdts.location_details).length === 0 ||
@@ -326,10 +343,7 @@ const PackModal: React.FC<Props> = ({
                                                             )}
                                                         </>
                                                     )}
-                                                {/* Here one for dropdown */}
                                             </div>
-
-                                            {/* Location Selection */}
                                             {pdts.location_details &&
                                                 Object.keys(pdts.location_details).length > 0 &&
                                                 Object.values(pdts.location_details).reduce((sum, qty) => sum + qty, 0) >=
@@ -339,8 +353,6 @@ const PackModal: React.FC<Props> = ({
                                                             <MdInventory className="text-blue-500 text-lg" />
                                                             <h4 className="font-semibold text-gray-800">Select Locations</h4>
                                                         </div>
-
-                                                        {/* Location Tags */}
                                                         <div className="flex flex-wrap gap-2 mb-4">
                                                             {Object.entries(pdts.location_details)?.map(([location, qty], index) => (
                                                                 <button
@@ -357,9 +369,6 @@ const PackModal: React.FC<Props> = ({
                                                                 </button>
                                                             ))}
                                                         </div>
-                                                        {/* Here One for locations */}
-
-                                                        {/* Selected Locations */}
                                                         {selectedLocations[pdts?.id] && (
                                                             <div className="mt-3">
                                                                 <div className="flex flex-wrap gap-2">
@@ -422,8 +431,6 @@ const PackModal: React.FC<Props> = ({
                                                             </button>
                                                         )}
                                                     </div>
-
-                                                    {/* Photo Previews */}
                                                     {storePhoto[pdts?.id]?.length > 0 && (
                                                         <div className="flex flex-wrap gap-3">
                                                             {storePhoto[pdts?.id]?.map((img, index) => (
