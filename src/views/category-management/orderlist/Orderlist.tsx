@@ -1,8 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { SetStateAction, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
+import Pagination from '@/components/ui/Pagination'
+import Select from '@/components/ui/Select'
 import moment from 'moment'
 import { CHANGE_DELIVERY_OPTIONS, pageSizeOptions, SEARCHOPTIONS, type DropdownStatus } from './commontypes'
 import { Button, Dropdown, Input, Spinner } from '@/components/ui'
@@ -15,12 +16,21 @@ import { notification, Spin } from 'antd'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 import RedMarkTable from '@/common/RedMarkTable'
 import { HiSearch } from 'react-icons/hi'
+import { Option } from '@/views/org-management/sellers/sellerCommon'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 import TabSelectOrder from './filter'
 import OrderlistMobile from './OrderlistMobile'
 import { generatePrintingData } from './orderListFunctions'
 import { useOrderListColumns } from './orderListUtils/OrderListColumns'
-import { handleDateChange, handleDownload, handleSearch, handleSearchWithIcon, handleSelect } from './orderListUtils/OrderListFunctions'
+import {
+    handleDateChange,
+    handleDownload,
+    handleSearch,
+    handleSearchWithIcon,
+    handleSelect,
+    onPaginationChange,
+    onSelectChange,
+} from './orderListUtils/OrderListFunctions'
 import { getStatusFilter } from './orderListUtils/OrderListUtils'
 import OrderReAssignModal from './orderListUtils/OrderReAssignModal'
 import { newOrderService } from '@/store/services/newOrderaService'
