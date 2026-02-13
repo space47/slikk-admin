@@ -13,9 +13,9 @@ export const BusinessDetails = [
     { label: 'Pf Declaration', name: 'pf_declaration', type: 'checkbox', isRequired: false, visible: true },
 ]
 export const PocDetails = [
-    { label: 'Vendor POC', name: 'poc', type: 'text', isRequired: false, visible: true },
-    { label: 'Vendor POC Email', name: 'poc_email', type: 'text', isRequired: false, visible: true },
-    { label: 'Vendor POC Contact', name: 'contact_number', type: 'number', isRequired: false, visible: true },
+    { label: 'Vendor POC', name: 'poc', type: 'text', isRequired: true, visible: true },
+    { label: 'Vendor POC Email', name: 'poc_email', type: 'text', isRequired: true, visible: true },
+    { label: 'Vendor POC Contact', name: 'contact_number', type: 'number', isRequired: true, visible: true },
     { label: 'Vendor POC Alternate Number', name: 'alternate_contact_number', type: 'number', isRequired: false, visible: true },
     { label: 'Finance Contact Name', name: 'finance_name', type: 'text', isRequired: false, visible: true },
     { label: 'Finance Contact Number', name: 'finance_contact_number', type: 'text', isRequired: false, visible: true },
@@ -23,11 +23,11 @@ export const PocDetails = [
 ]
 
 export const SellerBankData = [
-    { label: 'Bank Name', name: 'bank_name', type: 'text', isRequired: false, visible: true },
-    { label: 'Branch Name', name: 'branch_name', type: 'text', isRequired: false, visible: true },
-    { label: 'Account Holder Name', name: 'account_holder_name', type: 'text', isRequired: false, visible: true },
-    { label: 'Account Number', name: 'account_number', type: 'number', isRequired: false, visible: true },
-    { label: 'IFSC Code', name: 'ifsc', type: 'text', isRequired: false, visible: false },
+    { label: 'Bank Name', name: 'bank_name', type: 'text', isRequired: true, visible: true },
+    { label: 'Branch Name', name: 'branch_name', type: 'text', isRequired: true, visible: true },
+    { label: 'Account Holder Name', name: 'account_holder_name', type: 'text', isRequired: true, visible: true },
+    { label: 'Account Number', name: 'account_number', type: 'number', isRequired: true, visible: true },
+    { label: 'IFSC Code', name: 'ifsc', type: 'text', isRequired: true, visible: false },
 ]
 
 export const SellerWarehouseArray = [
@@ -47,12 +47,9 @@ export const SellerCommercialsArray = [
 ]
 
 export const SellerInternalArray = [
-    { label: 'Category Name', name: 'int_poc_name', type: 'text', isRequired: true, visible: true },
-    { label: 'Category Email', name: 'int_poc_email', type: 'text', isRequired: true, visible: true },
-    { label: 'Category Number', name: 'int_poc_number', type: 'text', isRequired: true, visible: true },
-    { label: 'Operations Name', name: 'int_ops_name', type: 'text', isRequired: true, visible: true },
-    { label: 'Operations Email', name: 'int_ops_email', type: 'text', isRequired: true, visible: true },
-    { label: 'Operations Number', name: 'int_ops_number', type: 'text', isRequired: true, visible: true },
+    { label: 'Finance Name', name: 'int_ops_name', type: 'text', isRequired: true, visible: true },
+    { label: 'Finance Email', name: 'int_ops_email', type: 'text', isRequired: true, visible: true },
+    { label: 'Finance Number', name: 'int_ops_number', type: 'text', isRequired: true, visible: true },
 ]
 export const SellerDeclarationArray = [
     { label: 'Authorized Person', name: 'authorized_person', type: 'text', isRequired: false, visible: true },
@@ -77,6 +74,7 @@ export const NOBOptions = () => {
         value: nob,
     }))
 }
+
 export const AccountTypeOptions = () => {
     return ['Savings', 'Current', 'Other'].map((nob) => ({
         label: nob,
@@ -148,4 +146,17 @@ export const FashionStyleOptions = [
     { label: 'Western', value: 'western' },
     { label: 'Beauty', value: 'beauty' },
     { label: 'Footwear', value: 'footwear' },
+]
+
+export const CategoryNameOptions = [
+    { label: 'Sachin', value: 'Sachin' },
+    { label: 'Tanmoy', value: 'Tanmoy' },
+]
+export const CategoryMailOptions = [
+    { label: 'sachin@slikk.club', value: 'sachin@slikk.club' },
+    { label: 'tanmoy@slikk.club', value: 'tanmoy@slikk.club' },
+]
+export const CategoryNumberOptions = [
+    { label: '7738384135', value: '7738384135' },
+    { label: '9999461816', value: '9999461816' },
 ]

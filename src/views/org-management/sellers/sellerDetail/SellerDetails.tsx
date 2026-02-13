@@ -33,7 +33,10 @@ const SellerDetails = () => {
     const [editingSection, setEditingSection] = useState<string | null>(null)
 
     const [vendorApprove, approveResponse] = vendorService.useVendorApprovalMutation()
-    const { data, isSuccess, isError, isLoading, error } = vendorService.useGetSingleVendorListQuery({ id: id as string }, { skip: !id })
+    const { data, isSuccess, isError, isLoading, error, refetch } = vendorService.useGetSingleVendorListQuery(
+        { id: id as string },
+        { skip: !id },
+    )
 
     useEffect(() => {
         if (isSuccess) setSellerData(data?.data as any)
@@ -43,6 +46,8 @@ const SellerDetails = () => {
     useEffect(() => {
         if (approveResponse?.isSuccess) {
             notification.success({ message: approveResponse?.data?.message || 'Successfully sent for approval' })
+            setConfirmModal(false)
+            refetch()
         }
         if (approveResponse?.isError) {
             const errorMessage = getApiErrorMessage(approveResponse?.error)
@@ -105,6 +110,7 @@ const SellerDetails = () => {
         try {
             const res = await axiosInstance.patch(`/merchant/company/${id}`, body)
             notification.success({ message: res?.data?.message || 'Details updated successfully' })
+            refetch()
             setEditingSection(null)
         } catch (error) {
             if (error instanceof AxiosError) {

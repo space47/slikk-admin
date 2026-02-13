@@ -12,6 +12,12 @@ const AddSeller = () => {
     const navigate = useNavigate()
     const [isSubmitting, setIsSubmitting] = useState(false)
 
+    const initialValue = {
+        int_ops_name: 'Dinesha',
+        int_ops_email: 'dinesha@slikk.club',
+        int_ops_number: '8892377371',
+    }
+
     const handleSubmit = async (values: any) => {
         setIsSubmitting(true)
         const formData = new FormData()
@@ -49,7 +55,7 @@ const AddSeller = () => {
     return (
         <div>
             <h3 className="text-xl font-bold">Add New Seller</h3>
-            <Formik enableReinitialize initialValues={{} as any} onSubmit={handleSubmit}>
+            <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                 {({ values }) => (
                     <Form className="xl:w-[90%] w-full p-5 ">
                         <SellerForm values={values} isSubmitting={isSubmitting} />
