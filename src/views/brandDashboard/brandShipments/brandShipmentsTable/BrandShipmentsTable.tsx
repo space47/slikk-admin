@@ -1,24 +1,15 @@
-import { Button, Pagination, Select } from '@/components/ui'
+import { Button, Input } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { setShipmentDetails, ShipmentDetailType, setCount, setPage, setPageSize } from '@/store/slices/shipemntsSlice/shipments.slice'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BrandShipmentsColumns } from '../brandShipmentsUtils/BrandShipmentColumns'
 import EasyTable from '@/common/EasyTable'
 import { USER_PROFILE_DATA } from '@/store/types/company.types'
-
-type Option = {
-    value: number
-    label: string
-}
-
-const pageSizeOptions = [
-    { value: 10, label: '10 / page' },
-    { value: 25, label: '25 / page' },
-    { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
-]
+import { shipmentService } from '@/store/services/shipmentService'
+import PageCommon from '@/common/PageCommon'
+import { Spin } from 'antd'
+import { FaPlus } from 'react-icons/fa'
 
 const BrandShipmentsTable = () => {
     const navigate = useNavigate()
@@ -26,66 +17,53 @@ const BrandShipmentsTable = () => {
     const [globalFilter, setGlobalFilter] = useState<string>('')
     const { shipmentDetails, page, pageSize, count } = useAppSelector<ShipmentDetailType>((state) => state.shipmentDetails)
     const selectedCompany = useAppSelector<USER_PROFILE_DATA>((store) => store.company)
+    const shipmentCall = shipmentService.useGetShipmentListQuery({
+        page,
+        pageSize,
+        shipment_id: globalFilter || '',
+    })
 
     useEffect(() => {
-        const fetchShipmentDetails = async () => {
-            try {
-                const filters = globalFilter ? `&shipment_id=${globalFilter}` : ''
-                const response = await axioisInstance.get(`/product-shipment?p=${page}&page_size=${pageSize}${filters}`)
-                const data = response?.data?.data?.results || []
-                const totalCount = response?.data?.data?.count || 0
-                dispatch(setShipmentDetails(data))
-                dispatch(setCount(totalCount))
-            } catch (error) {
-                console.error('Error fetching shipment details:', error)
-            }
+        if (shipmentCall.isSuccess) {
+            dispatch(setShipmentDetails(shipmentCall.data.data.results))
+            dispatch(setCount(shipmentCall.data.data.count))
         }
-
-        fetchShipmentDetails()
-    }, [dispatch, page, pageSize, globalFilter, selectedCompany])
+    }, [dispatch, shipmentCall.isSuccess, shipmentCall.data, selectedCompany])
 
     const columns = BrandShipmentsColumns()
 
     return (
-        <div className="flex flex-col gap-5">
-            <div className="flex justify-between">
+        <Spin spinning={shipmentCall.isFetching || shipmentCall.isLoading}>
+            <div className="flex flex-col gap-5">
+                <div className="flex justify-between">
+                    <div>
+                        <Input
+                            type="search"
+                            size="sm"
+                            placeholder="Search"
+                            value={globalFilter}
+                            onChange={(e) => setGlobalFilter(e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <Button variant="new" size="sm" icon={<FaPlus />} onClick={() => navigate(`/app/vendor/shipments/add`)}>
+                            Add New Shipments
+                        </Button>
+                    </div>
+                </div>
                 <div>
-                    <input type="text" placeholder="Search" value={globalFilter} onChange={(e) => setGlobalFilter(e.target.value)} />
+                    <EasyTable overflow columns={columns} mainData={shipmentDetails} page={page} pageSize={pageSize} />
                 </div>
-                <div onClick={() => navigate(`/app/vendor/shipments/add`)}>
-                    <Button variant="new">Add New Shipments</Button>
-                </div>
-            </div>
-            <div>
-                <EasyTable overflow columns={columns} mainData={shipmentDetails} page={page} pageSize={pageSize} />
-            </div>
-            <div className="flex flex-col md:flex-row items-center justify-between mt-4">
-                <Pagination
+                <PageCommon
+                    dispatch={dispatch}
+                    page={page}
                     pageSize={pageSize}
-                    currentPage={page}
-                    total={count}
-                    className="mb-4 md:mb-0"
-                    onChange={(e) => {
-                        dispatch(setPage(e))
-                    }}
+                    setPage={setPage}
+                    setPageSize={setPageSize}
+                    totalData={count}
                 />
-
-                <div className="min-w-[130px] flex gap-5">
-                    <Select<Option>
-                        size="sm"
-                        isSearchable={false}
-                        value={pageSizeOptions.find((option) => option.value === pageSize)}
-                        options={pageSizeOptions}
-                        onChange={(option) => {
-                            if (option) {
-                                dispatch(setPageSize(option.value))
-                                dispatch(setPage(1))
-                            }
-                        }}
-                    />
-                </div>
             </div>
-        </div>
+        </Spin>
     )
 }
 
