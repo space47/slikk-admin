@@ -32,7 +32,7 @@ export const BrandShipmentsColumns = () => {
                     return (
                         <a
                             href={`/app/vendor/shipments/details/${row?.original?.id}`}
-                            className="p-2 rounded-xl bg-gray-600 text-white flex items-center justify-center hover:bg-gray-400 cursor-pointer"
+                            className="p-2 w-auto min-w-[200px] rounded-xl bg-gray-600 text-white flex items-center justify-center hover:bg-gray-400 cursor-pointer"
                             target="_blank"
                             rel="noopener noreferrer"
                         >

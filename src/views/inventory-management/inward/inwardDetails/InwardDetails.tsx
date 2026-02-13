@@ -154,16 +154,22 @@ const InwardDetails = () => {
 
                             {data?.document_url ? (
                                 <>
-                                    <div className="docs flex flex-col">
-                                        {data.document_url?.split(',')?.map((item, key) => {
-                                            return (
-                                                <div className="cursor-pointer" onClick={() => handleUrl(item)} key={key}>
-                                                    <p className="cursor-pointer p-2 rounded-xl bg-blue-600 text-white">
-                                                        {data?.grn_number}_{key + 1}
-                                                    </p>
-                                                </div>
-                                            )
-                                        })}
+                                    <div className="docs flex flex-col gap-3 p-4 bg-gray-50 rounded-2xl shadow-sm">
+                                        <h5 className="text-sm font-semibold text-gray-700 mb-2">Document Urls</h5>
+
+                                        {data?.document_url?.split(',')?.map((item, key) => (
+                                            <div
+                                                key={key}
+                                                onClick={() => handleUrl(item)}
+                                                className="group flex items-center justify-between px-4 py-3 bg-white border border-gray-200 rounded-xl shadow-sm cursor-pointer transition-all duration-200 hover:shadow-md hover:border-blue-400 hover:bg-blue-50"
+                                            >
+                                                <span className="text-sm font-medium text-gray-800 group-hover:text-blue-600">
+                                                    {data?.grn_number}_{key + 1}
+                                                </span>
+
+                                                <span className="text-xs text-gray-400 group-hover:text-blue-500">View</span>
+                                            </div>
+                                        ))}
                                     </div>
                                 </>
                             ) : (
