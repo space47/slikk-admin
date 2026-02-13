@@ -9,7 +9,7 @@ import WarehouseSelect from '@/common/WarehouseSelect'
 const PoFormStepOne = () => {
     return (
         <FormContainer className="mt-8 grid grid-cols-2 gap-2">
-            <WarehouseSelect isSingle label="Select Vendor Warehouse" name="warehouse_id" customCss="xl:w-[700px] w-full" />
+            <WarehouseSelect isSingle label="Select Vendor Warehouse" name="warehouse_id" customCss="w-auto w-full" />
             <CommonSelect label="State Code" name="state_code" options={IndianStateCodes} />
             {PoFormFieldArray?.map((item, idx) => {
                 return (
