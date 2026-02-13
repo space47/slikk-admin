@@ -1,7 +1,10 @@
 import { FormContainer, FormItem, Input, Switcher } from '@/components/ui'
 import React from 'react'
-import { BasicSellerInformation } from '../sellerUtils/sellerFormCommon'
+import { BasicSellerInformation, FashionStyleOptions } from '../sellerUtils/sellerFormCommon'
 import { Field } from 'formik'
+import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
+
+import { handlePhoneInputValidation } from '../sellerUtils/sellerFunctions'
 
 const SellerStepOne = () => {
     return (
@@ -17,10 +20,12 @@ const SellerStepOne = () => {
                                 name={item?.name}
                                 placeholder={`Enter ${item?.label}`}
                                 component={item?.type === 'checkbox' ? Switcher : Input}
+                                {...(item?.name === 'head_contact' ? { onInput: handlePhoneInputValidation } : {})}
                             />
                         </FormItem>
                     )
                 })}
+                <CommonSelect asterisk name="fashion_style" label="Fashion Style" options={FashionStyleOptions} />
             </FormContainer>
         </div>
     )

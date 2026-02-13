@@ -3,8 +3,7 @@ export const BasicSellerInformation = [
     { label: 'Company Name', name: 'name', type: 'text', isRequired: true, visible: true },
     { label: 'Contact Person Name', name: 'head_name', type: 'text', isRequired: true, visible: true },
     { label: 'Email Address', name: 'head_email', type: 'text', isRequired: true, visible: true },
-    { label: 'Fashion Style', name: 'fashion_style', type: 'text', isRequired: true, visible: true },
-    { label: 'Phone Number', name: 'head_contact', type: 'number', isRequired: true, visible: true },
+    { label: 'Phone Number', name: 'head_contact', type: 'number', isRequired: true, visible: true, maxLength: 10 },
 ]
 export const BusinessDetails = [
     { label: 'PAN Number', name: 'pan_number', type: 'text', isRequired: false, visible: true },
@@ -48,12 +47,12 @@ export const SellerCommercialsArray = [
 ]
 
 export const SellerInternalArray = [
-    { label: 'Slikk POC -Category Name', name: 'int_poc_name', type: 'text', isRequired: true, visible: true },
-    { label: 'Slikk POC -Category Email', name: 'int_poc_email', type: 'text', isRequired: true, visible: true },
-    { label: 'Slikk POC -Category Number', name: 'int_poc_number', type: 'text', isRequired: true, visible: true },
-    { label: 'Slikk POC -Operations Name', name: 'int_ops_name', type: 'text', isRequired: true, visible: true },
-    { label: 'Slikk POC -Operations Email', name: 'int_ops_email', type: 'text', isRequired: true, visible: true },
-    { label: 'Slikk POC -Operations Number', name: 'int_ops_number', type: 'text', isRequired: true, visible: true },
+    { label: 'Category Name', name: 'int_poc_name', type: 'text', isRequired: true, visible: true },
+    { label: 'Category Email', name: 'int_poc_email', type: 'text', isRequired: true, visible: true },
+    { label: 'Category Number', name: 'int_poc_number', type: 'text', isRequired: true, visible: true },
+    { label: 'Operations Name', name: 'int_ops_name', type: 'text', isRequired: true, visible: true },
+    { label: 'Operations Email', name: 'int_ops_email', type: 'text', isRequired: true, visible: true },
+    { label: 'Operations Number', name: 'int_ops_number', type: 'text', isRequired: true, visible: true },
 ]
 export const SellerDeclarationArray = [
     { label: 'Authorized Person', name: 'authorized_person', type: 'text', isRequired: false, visible: true },
@@ -138,4 +137,15 @@ export const fileFields = [
     'msme_certificate',
     'commercial_approval_doc',
     'approved_onboarding_doc',
+]
+
+export const FashionStyleOptions = [
+    { label: 'Ethnic', value: 'ethnic' },
+    { label: 'Accessories', value: 'accessories' },
+    { label: 'Travel & Luggages', value: 'travel_luggages' },
+    { label: 'Home & Living', value: 'home_living' },
+    { label: 'Gift Set', value: 'gift_set' },
+    { label: 'Western', value: 'western' },
+    { label: 'Beauty', value: 'beauty' },
+    { label: 'Footwear', value: 'footwear' },
 ]

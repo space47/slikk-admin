@@ -2,8 +2,11 @@ import { FormContainer, FormItem, Input, Switcher } from '@/components/ui'
 import React from 'react'
 import { SellerInternalArray } from '../sellerUtils/sellerFormCommon'
 import { Field } from 'formik'
+import { handlePhoneInputValidation } from '../sellerUtils/sellerFunctions'
 
 const SellerInternal = () => {
+    const phoneFields = ['int_poc_number', 'int_ops_number']
+
     return (
         <div>
             <h4>POC Internal Details</h4>
@@ -17,6 +20,7 @@ const SellerInternal = () => {
                                 name={item?.name}
                                 placeholder={`Enter ${item?.label}`}
                                 component={item?.type === 'checkbox' ? Switcher : Input}
+                                {...(phoneFields.includes(item?.name ?? '') ? { onInput: handlePhoneInputValidation } : {})}
                             />
                         </FormItem>
                     )

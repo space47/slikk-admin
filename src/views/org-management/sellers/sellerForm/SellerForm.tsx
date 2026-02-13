@@ -14,9 +14,10 @@ import SellerDocsAndDeclaration from './SellerDocsAndDeclaration'
 
 interface props {
     values: any
+    isSubmitting: boolean
 }
 
-const SellerForm = ({ values }: props) => {
+const SellerForm = ({ values, isSubmitting }: props) => {
     const [currentStep, setCurrentStep] = useState(0)
     return (
         <FormContainer className="flex xl:flex-row md:flex-row flex-col gap-4 xl:gap-6">
@@ -74,7 +75,7 @@ const SellerForm = ({ values }: props) => {
                         </Button>
                     )}
                     {currentStep >= 8 && (
-                        <Button type="submit" variant="blue">
+                        <Button type="submit" variant="blue" loading={isSubmitting} disabled={isSubmitting}>
                             Send To Vendor
                         </Button>
                     )}

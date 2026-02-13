@@ -17,6 +17,7 @@ const EditSeller = () => {
     const { id } = useParams()
     const navigate = useNavigate()
     const [sellerData, setSellerData] = useState<any>()
+    const [isSubmitting, setIsSubmitting] = useState(false)
     const { data, isSuccess, isError, isLoading, error } = vendorService.useGetSingleVendorListQuery({ id: id as string }, { skip: !id })
 
     useEffect(() => {
@@ -85,6 +86,7 @@ const EditSeller = () => {
     }
 
     const handleSubmit = async (values: any) => {
+        setIsSubmitting(true)
         if (values.contact_number === values.alternate_contact_number) {
             notification.error({ message: 'Failure !! Alternate Mobile Number Should be different' })
             return
@@ -119,6 +121,8 @@ const EditSeller = () => {
             navigate(-1)
         } catch (error) {
             if (error instanceof AxiosError) errorMessage(error)
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
@@ -133,7 +137,7 @@ const EditSeller = () => {
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                 {({ values }) => (
                     <Form className="xl:w-[90%] w-full p-5 ">
-                        <SellerForm values={values} />
+                        <SellerForm values={values} isSubmitting={isSubmitting} />
                     </Form>
                 )}
             </Formik>

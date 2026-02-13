@@ -6,11 +6,14 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { errorMessage, successMessage } from '@/utils/responseMessages'
 import { AxiosError } from 'axios'
 import { fileFields, simpleFields } from '../sellerUtils/sellerFormCommon'
+import { useState } from 'react'
 
 const AddSeller = () => {
     const navigate = useNavigate()
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
     const handleSubmit = async (values: any) => {
+        setIsSubmitting(true)
         const formData = new FormData()
         const appendIfValid = (key: string, value: any) => {
             if (value !== undefined && value !== null && value !== '') {
@@ -38,6 +41,8 @@ const AddSeller = () => {
             navigate(-1)
         } catch (error) {
             if (error instanceof AxiosError) errorMessage(error)
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
@@ -47,7 +52,7 @@ const AddSeller = () => {
             <Formik enableReinitialize initialValues={{} as any} onSubmit={handleSubmit}>
                 {({ values }) => (
                     <Form className="xl:w-[90%] w-full p-5 ">
-                        <SellerForm values={values} />
+                        <SellerForm values={values} isSubmitting={isSubmitting} />
                     </Form>
                 )}
             </Formik>

@@ -12,6 +12,7 @@ interface SELECTPROPS {
     requireOnChange?: boolean
     onChange?: any
     isSearch?: boolean
+    asterisk?: boolean
 }
 
 const CommonSelect = ({
@@ -19,6 +20,7 @@ const CommonSelect = ({
     name,
     options,
     className,
+    asterisk = false,
     needClassName = false,
     requireOnChange = false,
     onChange,
@@ -34,7 +36,7 @@ const CommonSelect = ({
 
     return (
         <FormContainer>
-            <FormItem label={label || ''} className={needClassName ? className : 'col-span-1 w-full'}>
+            <FormItem label={label || ''} className={needClassName ? className : 'col-span-1 w-full'} asterisk={asterisk}>
                 <Field name={name}>
                     {({ field, form }: FieldProps<any>) => {
                         return requireOnChange ? (

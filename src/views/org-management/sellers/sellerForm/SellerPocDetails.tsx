@@ -2,8 +2,11 @@ import { FormContainer, FormItem, Input } from '@/components/ui'
 import { Field } from 'formik'
 import React from 'react'
 import { PocDetails } from '../sellerUtils/sellerFormCommon'
+import { handlePhoneInputValidation } from '../sellerUtils/sellerFunctions'
 
 const SellerPocDetails = () => {
+    const phoneFields = ['contact_number', 'alternate_contact_number', 'finance_contact_number']
+
     return (
         <div className="w-full">
             <h4>POC Details</h4>
@@ -12,7 +15,13 @@ const SellerPocDetails = () => {
                 {PocDetails?.map((item, idx) => {
                     return (
                         <FormItem key={idx} label={item?.label} asterisk={item?.isRequired}>
-                            <Field type={item?.type} name={item?.name} placeholder={`Enter ${item?.label}`} component={Input} />
+                            <Field
+                                type={item?.type}
+                                name={item?.name}
+                                placeholder={`Enter ${item?.label}`}
+                                component={Input}
+                                {...(phoneFields.includes(item?.name ?? '') ? { onInput: handlePhoneInputValidation } : {})}
+                            />
                         </FormItem>
                     )
                 })}
