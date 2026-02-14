@@ -401,7 +401,7 @@ const MultipleMap: React.FC<MultipleMapProps> = ({
         setDistanceBelowTentoFifteen(tenToFifteen)
         setDistanceBelowFifteenToThirty(fifteenToThirty)
         setDistanceAboveThirty(aboveThirty)
-
+        console.log('result')
         return result
     }, [latitudes, longitudes, amount, currLat, currLong, R])
 
