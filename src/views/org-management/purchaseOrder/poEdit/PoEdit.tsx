@@ -51,6 +51,7 @@ const PoEdit = () => {
         store: purchaseOrder?.store,
         warehouse_id: purchaseOrder?.warehouse_id,
         payment_mode: purchaseOrder?.payment_mode,
+        vendor_address: purchaseOrder?.vendor_address,
     }
 
     const handleSubmit = async (values: any) => {
@@ -69,6 +70,7 @@ const PoEdit = () => {
                 expected_delivery_date: values.expected_delivery_date,
                 po_nature: values.po_nature,
                 payment_mode: values?.payment_mode,
+                vendor_address: values?.vendor_address,
             }
 
             const formData = buildFormData(payload)

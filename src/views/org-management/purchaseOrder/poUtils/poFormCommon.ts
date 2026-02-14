@@ -2,8 +2,9 @@
 
 export const PoFormFieldArray = [
     { label: 'Vendor Billing Entity', type: 'text', name: 'order_billing_entity' },
-    { label: 'Vendor Billing Address(Bill-to)', type: 'text', name: 'order_billing_address' },
-    { label: 'Vendor Shipping Address(Ship-to)', type: 'text', name: 'order_shipping_address' },
+    { label: 'Vendor Address', type: 'text', name: 'vendor_address' },
+    { label: 'Order Billing Address(Bill-to)', type: 'text', name: 'order_billing_address' },
+    { label: 'Order Shipping Address(Ship-to)', type: 'text', name: 'order_shipping_address' },
     { label: 'Commercial Terms', type: 'text', name: 'commercial_terms' },
     { label: 'Payment Terms', type: 'text', name: 'payment_terms' },
     { label: 'Payment Mode', type: 'text', name: 'payment_mode' },

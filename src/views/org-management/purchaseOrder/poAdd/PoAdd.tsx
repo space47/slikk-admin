@@ -32,6 +32,7 @@ const PoAdd = () => {
                 po_nature: values.po_nature,
                 warehouse_id: values?.warehouse_id?.id,
                 payment_mode: values?.payment_mode,
+                vendor_address: values?.vendor_address,
             }
 
             const formData = buildFormData(payload)
