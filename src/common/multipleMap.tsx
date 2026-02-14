@@ -16,6 +16,7 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { companyStore } from '@/store/types/companyStore.types'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
+import { EOrderStatus } from '@/views/sales/OrderDetails/orderList.common'
 
 const DefaultIcon = L.icon({
     iconUrl: icon,
@@ -288,10 +289,11 @@ const MAP_STYLE_ARRAY = [
     { name: 'HeatMap', value: 'heat_map' },
 ]
 const STATUS_ARRAY = [
-    { name: 'ACCEPTED', value: 'ACCEPTED' },
-    { name: 'PACKED', value: 'PACKED' },
-    { name: 'DELIVERY_CREATED', value: 'DELIVERY_CREATED' },
-    { name: 'PACKED+DC', value: 'PACKED,DELIVERY_CREATED' },
+    { name: 'ACCEPTED', value: EOrderStatus.accepted },
+    { name: 'PACKED', value: EOrderStatus.packed },
+    { name: 'PICKING', value: EOrderStatus.picking },
+    { name: 'DELIVERY_CREATED', value: EOrderStatus.delivery_created },
+    { name: 'PACKED+DC', value: `${EOrderStatus.packed},${EOrderStatus.delivery_created}` },
 ]
 
 const MultipleMap: React.FC<MultipleMapProps> = ({
@@ -399,7 +401,7 @@ const MultipleMap: React.FC<MultipleMapProps> = ({
         setDistanceBelowTentoFifteen(tenToFifteen)
         setDistanceBelowFifteenToThirty(fifteenToThirty)
         setDistanceAboveThirty(aboveThirty)
-
+        console.log('result')
         return result
     }, [latitudes, longitudes, amount, currLat, currLong, R])
 
