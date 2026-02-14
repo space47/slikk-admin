@@ -99,6 +99,16 @@ export const buildQuantityData = (fulfilledQuantities: any) => {
     )
 }
 
+export const buildZeroBodyData = (orderItems: Order['order_items']) => {
+    return orderItems?.reduce(
+        (acc, item) => {
+            acc[item.id] = 0
+            return acc
+        },
+        {} as Record<string, number>,
+    )
+}
+
 export const hasZeroQuantity = (
     selectedLocations: { [productId: number]: { [location: string]: number } },
     fulfilledQuantities: { [key: number]: number },
@@ -171,25 +181,15 @@ export const usePackOrder = ({
             Object.assign(data, buildLocationData(selectedLocations))
         }
 
-        // if(Object.entries(selectedReasons).length){
-        //     // validation here
-
-        // }
-
         if (withoutLocation?.length) {
             Object.assign(data, buildQuantityData(fulfilledQuantities))
         }
 
         if (!Object.keys(data).length) {
-            notification.warning({
-                message: 'Please select at least one item with a valid quantity to proceed.',
-            })
-            setTriggerPackCall(false)
-            return null
+            Object.assign(data, buildZeroBodyData(mainData?.order_items))
         }
 
         const zeroQty = hasZeroQuantity(selectedLocations, fulfilledQuantities)
-
         const { required, fulfilled } = getTotalQuantities(mainData?.order_items, selectedLocations, fulfilledQuantities)
 
         return { zeroQty, required, fulfilled, data, selectedReasons }

@@ -21,7 +21,6 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [modalContent, setModalContent] = useState<string>()
     const [fulfilledQuantities, setFulfilledQuantities] = useState<{ [key: number]: number }>({})
-    const [errorText, setErrorText] = useState<string | null>(null)
     const [action, setAction] = useState('')
     const [triggerApiCall, setTriggerApiCall] = useState(false)
     const [triggerPackCall, setTriggerPackCall] = useState(false)
@@ -186,18 +185,6 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
         executeApi()
     }, [triggerPackCall])
 
-    const handleReject = () => {
-        const hasFulfilledQty = Object.values(fulfilledQuantities).some((item) => item > 0)
-        if (hasFulfilledQty) {
-            setTimeout(() => {
-                setErrorText('QUANTITY OF ITEMS SHOULD BE 0')
-            }, 2000)
-        } else {
-            setRejectModal(true)
-            setIsModalOpen(false)
-        }
-    }
-
     useEffect(() => {
         if (!cancelCall) return
         ;(async () => {
@@ -343,14 +330,13 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
                     }}
                     handleCancel={() => setIsModalOpen(false)}
                     modalContent={modalContent}
-                    handleReject={handleReject}
                     status={status}
                     invoice_id={invoice_id}
                     payment={mainData.payment}
                     product={mainData.order_items}
                     fulfilledQuantities={fulfilledQuantities}
                     handleSelectChange={handleSelectChange}
-                    errorMessage={errorText || undefined}
+                    errorMessage={'error in removing'}
                     isButtonClick={packResponse.isLoading}
                     bagsCount={bagsCount}
                     setBagsCount={setBagsCount}
