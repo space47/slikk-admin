@@ -6,6 +6,7 @@ export const PoFormFieldArray = [
     { label: 'Vendor Shipping Address(Ship-to)', type: 'text', name: 'order_shipping_address' },
     { label: 'Commercial Terms', type: 'text', name: 'commercial_terms' },
     { label: 'Payment Terms', type: 'text', name: 'payment_terms' },
+    { label: 'Payment Mode', type: 'text', name: 'payment_mode' },
     { label: 'special_terms', type: 'text', name: 'special_terms' },
     { label: 'Discount Sharing Applicable', type: 'checkbox', name: 'discount_sharing_applicable' },
 ]

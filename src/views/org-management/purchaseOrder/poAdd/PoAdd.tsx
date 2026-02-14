@@ -31,6 +31,7 @@ const PoAdd = () => {
                 expected_delivery_date: values.expected_delivery_date,
                 po_nature: values.po_nature,
                 warehouse_id: values?.warehouse_id?.id,
+                payment_mode: values?.payment_mode,
             }
 
             const formData = buildFormData(payload)
