@@ -50,7 +50,23 @@ const TemplateForm = ({ values }: Props) => {
                                         <textarea
                                             {...field}
                                             rows={18}
-                                            className="w-full border rounded-xl p-4 font-mono text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                                            className="
+    w-full
+    border border-gray-800
+    rounded-xl
+    p-4
+    font-mono
+    text-sm
+    bg-[#0d1117]
+    text-white
+    caret-white
+    placeholder-gray-500
+    shadow-inner
+    focus:outline-none
+    focus:ring-2
+    focus:ring-blue-600
+    transition
+"
                                             placeholder="<h1>Hello World</h1>"
                                         />
                                     )}
