@@ -2,7 +2,7 @@
 import RtkQueryService from '@/services/RtkQueryService'
 import { SellerTemplateData, SellerTemplateResponse } from '../types/sellerTemplate.types'
 
-export const vendorService = RtkQueryService.injectEndpoints({
+export const sellerTemplateService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
         getTemplateList: builder.query<SellerTemplateResponse, { page: number; pageSize: number; name: string }>({
             query: (params) => {
@@ -18,10 +18,10 @@ export const vendorService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        getSingleTemplateList: builder.query<{ status: string; messahe: SellerTemplateData }, { id: string | number }>({
+        getSingleTemplateList: builder.query<{ status: string; message: SellerTemplateData }, { id: string | number }>({
             query: (params) => {
                 const parameters: Record<string, string | string[] | number> = {}
-                if (params.id) parameters.company_id = params.id
+                if (params.id) parameters.id = params.id
                 return {
                     url: `/notification/email/template`,
                     method: 'GET',

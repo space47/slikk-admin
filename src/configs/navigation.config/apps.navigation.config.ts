@@ -534,10 +534,10 @@ const appsNavigationConfig: NavigationTree[] = [
                         subMenu: [],
                     },
                     {
-                        key: 'appsOrgManagement.sellerTemplates',
-                        path: `${APP_PREFIX_PATH}/sellerTemplates`,
+                        key: 'appsOrgManagement.sellerTemplate',
+                        path: `${APP_PREFIX_PATH}/sellerTemplate`,
                         title: 'Templates',
-                        translateKey: 'nav.appsOrgManagement.sellerTemplates',
+                        translateKey: 'nav.appsOrgManagement.sellerTemplate',
                         icon: '',
                         type: NAV_ITEM_TYPE_ITEM,
                         authority: [ADMIN, USER],

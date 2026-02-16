@@ -7,7 +7,7 @@ export interface SellerTemplateData {
 
 export interface SellerTemplateResponse {
     status: string
-    data: {
+    message: {
         count: number
         results: SellerTemplateData[]
     }
