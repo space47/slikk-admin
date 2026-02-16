@@ -83,6 +83,7 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
         }
         if (packResponse.isError) {
             notification.error({ message: (packResponse.error as any).data.message })
+            setTriggerPackCall(false)
             setTriggerApiCall(false)
         }
     }, [packResponse.isSuccess, packResponse.isError])
@@ -336,7 +337,6 @@ const Activity = ({ data = [], status, invoice_id, mainData, delivery_type, refe
                     product={mainData.order_items}
                     fulfilledQuantities={fulfilledQuantities}
                     handleSelectChange={handleSelectChange}
-                    errorMessage={'error in removing'}
                     isButtonClick={packResponse.isLoading}
                     bagsCount={bagsCount}
                     setBagsCount={setBagsCount}

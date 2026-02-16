@@ -16,6 +16,11 @@ type SelectCancelReasonProps = {
     selectedReason: Record<number, string>
     setSelectedReason: React.Dispatch<React.SetStateAction<Record<number, string>>>
 }
+// setSelectedReason((prev) => {
+//                         const updated = { ...prev }
+//                         delete updated[pdts.id]
+//                         return updated
+//                     })
 
 type Props = {
     isModalOpen: boolean
@@ -101,17 +106,45 @@ const PackModal: React.FC<Props> = ({
     const returnReasonCalls = returnOrderDataService.useReturnItemReasonsQuery({})
     const [reasonsArray, setReasonsArray] = useState<{ value: string; label: string }[]>([])
 
+    useEffect(() => {
+        if (!product) return
+        setSelectedReason((prev) => {
+            const updated = { ...prev }
+            product.forEach((pdts) => {
+                const orderedQty = Number(pdts.quantity)
+                const totalItemsInLocation = Object.entries(pdts?.location_details || {}).reduce((acc, [, value]) => acc + value, 0)
+                const isLocationDetailsAvailable = Object.entries(pdts?.location_details || {}).length > 0 && totalItemsInLocation > 0
+                if (!isLocationDetailsAvailable) {
+                    const fulfilledQty = Number(fulfilledQuantities[pdts.id] || 0)
+                    if (fulfilledQty >= orderedQty) {
+                        delete updated[pdts.id]
+                    }
+                }
+                if (isLocationDetailsAvailable && selectedLocations[pdts.id]) {
+                    const selectedQty = Object.values(selectedLocations[pdts.id] || {}).reduce((sum, qty) => sum + qty, 0)
+                    if (selectedQty >= orderedQty) {
+                        delete updated[pdts.id]
+                    }
+                }
+            })
+
+            return updated
+        })
+    }, [fulfilledQuantities, selectedLocations, product, setSelectedReason])
+
     const validateReasons = useCallback(() => {
         if (!product) return false
         for (const pdts of product) {
+            const totalItemsInLocation = Object.entries(pdts?.location_details || {}).reduce((acc, [, value]) => acc + value, 0)
+            const isLocationDetailsAvailable = Object.entries(pdts?.location_details).length > 0 && totalItemsInLocation > 0
             const orderedQty = Number(pdts.quantity)
-            if (!Object.entries(pdts?.location_details).length) {
+            if (!isLocationDetailsAvailable) {
                 const fulfilledQty = Number(fulfilledQuantities[pdts.id] || 0)
                 if (fulfilledQty < orderedQty && !selectedReason[pdts.id]) {
                     return true
                 }
             }
-            if (Object.entries(pdts?.location_details).length > 0) {
+            if (isLocationDetailsAvailable) {
                 if (selectedLocations[pdts.id]) {
                     const selectedQty = Object?.values(selectedLocations[pdts?.id])?.reduce((sum, qty) => sum + qty, 0)
                     if (selectedQty < orderedQty && !selectedReason[pdts.id]) {
