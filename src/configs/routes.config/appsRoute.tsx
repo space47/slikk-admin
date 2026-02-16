@@ -206,6 +206,28 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsOrgManagement.sellerTemplate',
+        path: `${APP_PREFIX_PATH}/sellerTemplate`,
+        component: lazy(() => import('@/views/org-management/sellerTemplates/sellerTemplateList/SellerTemplateList')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOrgManagement.sellerTemplate',
+        path: `${APP_PREFIX_PATH}/sellerTemplate/addNew`,
+        component: lazy(
+            () => import('@/views/org-management/sellerTemplates/templateAdd/TemplateAdd'), //p1
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOrgManagement.sellerTemplate',
+        path: `${APP_PREFIX_PATH}/sellerTemplate/:id`,
+        component: lazy(
+            () => import('@/views/org-management/sellerTemplates/templateEdit/TemplateEdit'), //p1
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsOrgManagement.po',
         path: `${APP_PREFIX_PATH}/po/:purchase_id`,
         component: lazy(

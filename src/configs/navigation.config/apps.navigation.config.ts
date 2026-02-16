@@ -534,6 +534,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         subMenu: [],
                     },
                     {
+                        key: 'appsOrgManagement.sellerTemplates',
+                        path: `${APP_PREFIX_PATH}/sellerTemplates`,
+                        title: 'Templates',
+                        translateKey: 'nav.appsOrgManagement.sellerTemplates',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
                         key: 'appsOrgManagement.stores',
                         path: `${APP_PREFIX_PATH}/stores`,
                         title: 'Fullfillment Center',
