@@ -25,7 +25,7 @@ const SellerStepOne = () => {
                         </FormItem>
                     )
                 })}
-                <CommonSelect asterisk name="fashion_style" label="Fashion Style" options={FashionStyleOptions} />
+                <CommonSelect asterisk name="segment" label="Fashion Style" options={FashionStyleOptions} />
             </FormContainer>
         </div>
     )

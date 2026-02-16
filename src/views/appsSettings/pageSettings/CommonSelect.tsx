@@ -13,6 +13,7 @@ interface SELECTPROPS {
     onChange?: any
     isSearch?: boolean
     asterisk?: boolean
+    isMulti?: boolean
 }
 
 const CommonSelect = ({
@@ -25,10 +26,10 @@ const CommonSelect = ({
     requireOnChange = false,
     onChange,
     isSearch = false,
+    isMulti = false,
 }: SELECTPROPS) => {
     const [searchTerm, setSearchTerm] = useState('')
 
-    // Filter options locally when isSearch is true
     const filteredOptions = useMemo(() => {
         if (!isSearch || !searchTerm.trim()) return options
         return options.filter((opt) => opt.label.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -39,30 +40,33 @@ const CommonSelect = ({
             <FormItem label={label || ''} className={needClassName ? className : 'col-span-1 w-full'} asterisk={asterisk}>
                 <Field name={name}>
                     {({ field, form }: FieldProps<any>) => {
-                        return requireOnChange ? (
+                        const selectedValue = isMulti
+                            ? filteredOptions.filter((option) => field.value?.includes(option.value))
+                            : filteredOptions.find((option) => option.value === field.value)
+
+                        return (
                             <Select
                                 isClearable
                                 isSearchable
+                                isMulti={isMulti} // ✅ important
                                 options={filteredOptions}
-                                value={filteredOptions.find((option) => option.value === field.value)}
-                                onChange={onChange}
-                                onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
-                            />
-                        ) : (
-                            <>
-                                <Select
-                                    isClearable
-                                    isSearchable
-                                    options={filteredOptions}
-                                    value={filteredOptions.find((option) => option.value === field.value)}
-                                    onChange={(option) => {
+                                value={selectedValue}
+                                onChange={(option: any) => {
+                                    if (requireOnChange && onChange) {
+                                        onChange(option)
+                                        return
+                                    }
+
+                                    if (isMulti) {
+                                        const values = option ? option.map((opt: any) => opt.value) : []
+                                        form.setFieldValue(field.name, values)
+                                    } else {
                                         const value = option ? option.value : ''
                                         form.setFieldValue(field.name, value)
-                                        console.log('FIELD.NAME', field.name, value)
-                                    }}
-                                    onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
-                                />
-                            </>
+                                    }
+                                }}
+                                onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+                            />
                         )
                     }}
                 </Field>

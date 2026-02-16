@@ -16,6 +16,9 @@ import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { AxiosError } from 'axios'
 import { Formik } from 'formik'
 import { FaDownload } from 'react-icons/fa'
+import { FashionStyleOptions } from '../sellerUtils/sellerFormCommon'
+import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
+import FormUploadFile from '@/common/FormUploadFile'
 
 const { Panel } = Collapse
 
@@ -41,7 +44,7 @@ const SellerDetails = () => {
     useEffect(() => {
         if (isSuccess) setSellerData(data?.data as any)
         if (isError) notification.error({ message: (error as any)?.data?.message })
-    }, [isSuccess, isError])
+    }, [isSuccess, isError, data?.data])
 
     useEffect(() => {
         if (approveResponse?.isSuccess) {
@@ -80,6 +83,58 @@ const SellerDetails = () => {
         { key: 'Warehouse Details', title: 'Warehouse Details', data: SellerWarehouseDetail },
     ]
 
+    const documentsList = [
+        {
+            label: 'PAN Card',
+            file: sellerData?.pan_copy,
+            key: 'pan',
+            name: 'pan_copy',
+            fieldName: 'panCopyFile',
+        },
+        {
+            label: 'Tan Card',
+            file: sellerData?.tan_copy,
+            key: 'tan',
+            name: 'tan_copy',
+            fieldName: 'tanCopyFile',
+        },
+        {
+            label: 'PF Declaration Doc',
+            file: sellerData?.pf_declaration_doc,
+            key: 'pf',
+            name: 'pf_declaration_doc',
+            fieldName: 'pd_doc_file',
+        },
+        {
+            label: 'Trade Mark Certificate',
+            file: sellerData?.trade_mark_certificate,
+            key: 'trade',
+            name: 'trade_mark_certificate',
+            fieldName: 'trade_mark_file',
+        },
+        {
+            label: 'GST Certificate',
+            file: sellerData?.gst_certificate,
+            key: 'gst',
+            name: 'gst_certificate',
+            fieldName: 'gstCertificateFile',
+        },
+        {
+            label: 'Cancelled Cheque',
+            file: sellerData?.cancelled_cheque,
+            key: 'cheque',
+            name: 'cancelled_cheque',
+            fieldName: 'cancelledChequeFile',
+        },
+        {
+            label: 'MSME Certificate',
+            file: sellerData?.msme_certificate,
+            key: 'msme',
+            name: 'msme_certificate',
+            fieldName: 'msmeCertificateFile',
+        },
+    ]
+
     if (isLoading) {
         return (
             <div className="flex justify-center items-center min-h-[50vh]">
@@ -104,12 +159,45 @@ const SellerDetails = () => {
     const handleSectionUpdate = async (values: Record<string, any>) => {
         const body = new FormData()
         Object.entries(values).forEach(([key, value]) => {
-            body.append(key, value as string)
+            if (value !== undefined && value !== null) {
+                body.append(key, value as string)
+            }
         })
 
         try {
             const res = await axiosInstance.patch(`/merchant/company/${id}`, body)
             notification.success({ message: res?.data?.message || 'Details updated successfully' })
+            refetch()
+            setEditingSection(null)
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                notification.error({ message: error.message })
+            }
+        }
+    }
+
+    const handleDocumentUpdate = async (values: Record<string, any>) => {
+        const body = new FormData()
+
+        const appendIfFile = (key: string, value: any) => {
+            if (value && Array.isArray(value) && value.length > 0 && value[0] instanceof File) {
+                body.append(key, value[0])
+            }
+        }
+
+        appendIfFile('pan_copy', values.pan_copy)
+        appendIfFile('gst_certificate', values.gst_certificate)
+        appendIfFile('cancelled_cheque', values.cancelled_cheque)
+        appendIfFile('msme_certificate', values.msme_certificate)
+        appendIfFile('tan_copy', values.tan_copy)
+        appendIfFile('pf_declaration_doc', values.pf_declaration_doc)
+        appendIfFile('trade_mark_certificate', values.trade_mark_certificate)
+
+        try {
+            const res = await axiosInstance.patch(`/merchant/company/${id}`, body)
+            notification.success({
+                message: res?.data?.message || 'Documents updated successfully',
+            })
             refetch()
             setEditingSection(null)
         } catch (error) {
@@ -151,7 +239,9 @@ const SellerDetails = () => {
     return (
         <div className="space-y-6 p-4">
             <div className="flex justify-between">
-                <h4>{sellerData?.registered_name}</h4>
+                <div className="space-y-1">
+                    <h2 className="text-xl font-bold text-gray-900">{sellerData?.registered_name || '--'}</h2>
+                </div>
                 <Button
                     variant={StatusVariant(sellerData ? sellerData?.status : '') as 'accept' | 'reject' | 'pending'}
                     size="sm"
@@ -161,9 +251,19 @@ const SellerDetails = () => {
                     {sellerData?.status}
                 </Button>
             </div>
-            <p>
-                code: {sellerData?.code} || createdAt: {sellerData?.create_date} || updatedAt: {sellerData?.update_date}
-            </p>
+            <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600 mt-2">
+                <span className="px-3 py-1 bg-gray-100 rounded-full">
+                    <span className="font-medium text-gray-800">Code:</span> {sellerData?.code || '--'}
+                </span>
+
+                <span className="px-3 py-1 bg-gray-100 rounded-full">
+                    <span className="font-medium text-gray-800">Created:</span> {sellerData?.create_date || '--'}
+                </span>
+
+                <span className="px-3 py-1 bg-gray-100 rounded-full">
+                    <span className="font-medium text-gray-800">Updated:</span> {sellerData?.update_date || '--'}
+                </span>
+            </div>
 
             {sellerData?.status?.toLowerCase() === 'approved' ? (
                 <>
@@ -178,15 +278,25 @@ const SellerDetails = () => {
                                     {({ handleChange, handleSubmit, values }) => (
                                         <form onSubmit={handleSubmit}>
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                                {BasicSellerInformationDetail.map((item, idx) => (
+                                                {BasicSellerInformationDetail?.map((item, idx) => (
                                                     <div key={idx} className="flex flex-col border-b border-gray-100 pb-2">
-                                                        <label className="text-sm font-medium text-gray-600">{item.label}</label>
-                                                        <input
-                                                            name={item.name}
-                                                            value={values[item.name] || ''}
-                                                            onChange={handleChange}
-                                                            className="border border-gray-300 rounded-md p-1 text-gray-800"
-                                                        />
+                                                        {item.name === 'segment' ? (
+                                                            <>
+                                                                <CommonSelect
+                                                                    isMulti
+                                                                    name="segment"
+                                                                    options={FashionStyleOptions}
+                                                                    label="Fashion Style"
+                                                                />
+                                                            </>
+                                                        ) : (
+                                                            <input
+                                                                name={item.name}
+                                                                value={values[item.name] || ''}
+                                                                onChange={handleChange}
+                                                                className="border border-gray-300 rounded-md p-1 text-gray-800"
+                                                            />
+                                                        )}
                                                     </div>
                                                 ))}
                                             </div>
@@ -216,7 +326,7 @@ const SellerDetails = () => {
                                             </div>
                                         ))}
                                     </div>
-                                    <Button variant="reject" size="sm" onClick={() => setEditingSection('basic')}>
+                                    <Button variant="reject" size="sm" onClick={() => setEditingSection('basic')} className="mt-3">
                                         Update
                                     </Button>
                                 </>
@@ -299,47 +409,147 @@ const SellerDetails = () => {
                                     </Panel>
                                 ),
                         )}
+
+                        {/* Documents & Verifications Section */}
                         <div className="mt-6">
                             <Card className="rounded-2xl border border-gray-200 shadow-sm bg-white p-5">
-                                <h2 className="text-lg font-semibold mb-4 text-gray-800 border-b pb-2">Documents & Verifications</h2>
-
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
-                                    {[
-                                        { label: 'PAN Card', file: sellerData?.pan_copy, key: 'pan' },
-                                        { label: 'GST Certificate', file: sellerData?.gst_certificate, key: 'gst' },
-                                        { label: 'Cancelled Cheque', file: sellerData?.cancelled_cheque, key: 'cheque' },
-                                        { label: 'MSME Certificate', file: sellerData?.msme_certificate, key: 'msme' },
-                                    ].map((doc) => (
-                                        <div
-                                            key={doc.key}
-                                            className="flex justify-between items-center border border-gray-100 bg-gray-50 hover:bg-gray-100 transition-all rounded-lg p-3 shadow-sm"
-                                        >
-                                            <div className="flex flex-col">
-                                                <span className="text-sm font-medium text-gray-700">{doc.label}</span>
-                                                <span className={`text-xs ${doc.file ? 'text-green-600' : 'text-red-500'}`}>
-                                                    {doc.file ? 'Uploaded' : 'Not Uploaded'}
-                                                </span>
-                                            </div>
-
-                                            {doc.file ? (
-                                                <Button
-                                                    variant="twoTone"
-                                                    color="green"
-                                                    size="sm"
-                                                    icon={<FaDownload />}
-                                                    onClick={() => handleDownload(`${doc.file}`, doc.label)}
-                                                    className="rounded-full"
-                                                >
-                                                    Download
-                                                </Button>
-                                            ) : (
-                                                <Button variant="twoTone" color="gray" size="sm" disabled className="rounded-full">
-                                                    N/A
-                                                </Button>
-                                            )}
+                                <div className="flex justify-between items-center border-b pb-2 mb-4">
+                                    <h2 className="text-lg font-semibold text-gray-800">Documents & Verifications</h2>
+                                    {editingSection === 'documents' ? (
+                                        <div className="flex gap-2">
+                                            <Button variant="twoTone" color="gray" size="sm" onClick={() => setEditingSection(null)}>
+                                                Cancel
+                                            </Button>
+                                            <Button variant="accept" size="sm" form="document-form">
+                                                Save Documents
+                                            </Button>
                                         </div>
-                                    ))}
+                                    ) : (
+                                        <Button variant="reject" size="sm" onClick={() => setEditingSection('documents')}>
+                                            Edit Documents
+                                        </Button>
+                                    )}
                                 </div>
+
+                                {editingSection === 'documents' ? (
+                                    <Formik
+                                        initialValues={{
+                                            pan_copy: sellerData?.pan_copy || '',
+                                            tan_copy: sellerData?.tan_copy || '',
+                                            pf_declaration_doc: sellerData?.pf_declaration_doc || '',
+                                            trade_mark_certificate: sellerData?.trade_mark_certificate || '',
+                                            gst_certificate: sellerData?.gst_certificate || '',
+                                            cancelled_cheque: sellerData?.cancelled_cheque || '',
+                                            msme_certificate: sellerData?.msme_certificate || '',
+                                            panCopyFile: [],
+                                            tanCopyFile: [],
+                                            pd_doc_file: [],
+                                            trade_mark_file: [],
+                                            gstCertificateFile: [],
+                                            cancelledChequeFile: [],
+                                            msmeCertificateFile: [],
+                                        }}
+                                        onSubmit={handleDocumentUpdate}
+                                    >
+                                        {({ values, handleSubmit }) => (
+                                            <form id="document-form" onSubmit={handleSubmit} className="space-y-4">
+                                                <FormUploadFile
+                                                    asterisk
+                                                    isEdit={true}
+                                                    label="Upload PAN Copy"
+                                                    fileList={values?.panCopyFile}
+                                                    name="pan_copy"
+                                                    existingFile={values?.pan_copy}
+                                                />
+                                                <FormUploadFile
+                                                    asterisk
+                                                    isEdit={true}
+                                                    label="Upload Tan Copy"
+                                                    fileList={values?.tanCopyFile}
+                                                    name="tan_copy"
+                                                    existingFile={values?.tan_copy}
+                                                />
+                                                <FormUploadFile
+                                                    asterisk
+                                                    isEdit={true}
+                                                    label="Pf Declaration Doc"
+                                                    fileList={values?.pd_doc_file}
+                                                    name="pf_declaration_doc"
+                                                    existingFile={values?.pf_declaration_doc}
+                                                />
+                                                <FormUploadFile
+                                                    asterisk
+                                                    isEdit={true}
+                                                    label="Upload Trade Mark File"
+                                                    fileList={values?.trade_mark_file}
+                                                    name="trade_mark_certificate"
+                                                    existingFile={values?.trade_mark_certificate}
+                                                />
+
+                                                <FormUploadFile
+                                                    asterisk
+                                                    isEdit={true}
+                                                    label="Upload GST Certificate"
+                                                    fileList={values?.gstCertificateFile}
+                                                    name="gst_certificate"
+                                                    existingFile={values?.gst_certificate}
+                                                />
+
+                                                <FormUploadFile
+                                                    asterisk
+                                                    isEdit={true}
+                                                    label="Upload Cancelled Cheque"
+                                                    fileList={values?.cancelledChequeFile}
+                                                    name="cancelled_cheque"
+                                                    existingFile={values?.cancelled_cheque}
+                                                />
+
+                                                <FormUploadFile
+                                                    asterisk
+                                                    isEdit={true}
+                                                    label="Upload MSME Certificate"
+                                                    fileList={values?.msmeCertificateFile}
+                                                    name="msme_certificate"
+                                                    existingFile={values?.msme_certificate}
+                                                />
+                                            </form>
+                                        )}
+                                    </Formik>
+                                ) : (
+                                    // View Mode - Show current documents with download buttons
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
+                                        {documentsList.map((doc) => (
+                                            <div
+                                                key={doc.key}
+                                                className="flex justify-between items-center border border-gray-100 bg-gray-50 hover:bg-gray-100 transition-all rounded-lg p-3 shadow-sm"
+                                            >
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm font-medium text-gray-700">{doc.label}</span>
+                                                    <span className={`text-xs ${doc.file ? 'text-green-600' : 'text-red-500'}`}>
+                                                        {doc.file ? 'Uploaded' : 'Not Uploaded'}
+                                                    </span>
+                                                </div>
+
+                                                {doc.file ? (
+                                                    <Button
+                                                        variant="twoTone"
+                                                        color="green"
+                                                        size="sm"
+                                                        icon={<FaDownload />}
+                                                        onClick={() => handleDownload(`${doc.file}`, doc.label)}
+                                                        className="rounded-full"
+                                                    >
+                                                        Download
+                                                    </Button>
+                                                ) : (
+                                                    <Button variant="twoTone" color="gray" size="sm" disabled className="rounded-full">
+                                                        N/A
+                                                    </Button>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </Card>
                         </div>
                     </Collapse>

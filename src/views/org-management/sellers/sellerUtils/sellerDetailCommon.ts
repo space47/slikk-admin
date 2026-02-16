@@ -8,6 +8,7 @@ export const SellerDetailCommon = ({ seller: sellerData }: any) => {
         { label: 'Vendor Code', name: 'vendor_code', value: sellerData?.vendor_code, visible: true },
         { label: 'Email Address', name: 'head_email', value: sellerData?.head_email, visible: true },
         { label: 'Phone Number', name: 'head_number', value: sellerData?.head_number, visible: true },
+        { label: 'Fashion Style', name: 'segment', value: sellerData?.segment, visible: true },
     ]
 
     const BusinessDetailsDetail = [
