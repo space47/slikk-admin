@@ -14,7 +14,6 @@ const TemplateForm = ({ values }: Props) => {
 
     return (
         <FormContainer>
-            {/* Top Fields */}
             <FormContainer className="grid xl:grid-cols-2 grid-cols-1 gap-3">
                 <FormItem label="Name">
                     <Field component={Input} placeholder="Enter Name" type="text" name="name" />
@@ -24,13 +23,9 @@ const TemplateForm = ({ values }: Props) => {
                     <Field component={Input} placeholder="Enter Email Subject" type="text" name="email_subject" />
                 </FormItem>
             </FormContainer>
-
-            {/* Email Builder Section */}
             <FormContainer className="mt-10 rounded-2xl bg-blue-50 p-6 shadow-sm border border-blue-100">
                 <FormItem label="Email Body (HTML)">
-                    {/* Top Controls */}
                     <div className="flex flex-wrap justify-between items-center gap-4 mb-4">
-                        {/* View Toggle */}
                         <div className="flex gap-2">
                             {(['split', 'editor', 'preview'] as ViewMode[]).map((mode) => (
                                 <button
@@ -62,8 +57,6 @@ const TemplateForm = ({ values }: Props) => {
                                 </Field>
                             </div>
                         )}
-
-                        {/* Live Preview */}
                         {(viewMode === 'split' || viewMode === 'preview') && (
                             <div className="flex flex-col">
                                 <label className="text-sm font-semibold text-gray-700 mb-2">Live Preview</label>
