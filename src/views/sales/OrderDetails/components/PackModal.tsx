@@ -16,11 +16,6 @@ type SelectCancelReasonProps = {
     selectedReason: Record<number, string>
     setSelectedReason: React.Dispatch<React.SetStateAction<Record<number, string>>>
 }
-// setSelectedReason((prev) => {
-//                         const updated = { ...prev }
-//                         delete updated[pdts.id]
-//                         return updated
-//                     })
 
 type Props = {
     isModalOpen: boolean
