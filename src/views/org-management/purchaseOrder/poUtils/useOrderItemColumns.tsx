@@ -12,54 +12,54 @@ export const useOrderItemColumns = ({ handleEditRow }: Props) => {
     return useMemo<ColumnDef<PurchaseOrderItem>[]>(() => {
         const baseColumns: ColumnDef<PurchaseOrderItem>[] = [
             {
-                header: 'vendor Sku',
-                accessorKey: 'vendor_sku',
-                cell: ({ row }) => <div>{row.original.vendor_sku || '-'}</div>,
-            },
-            {
-                header: 'Slikk Sku',
-                accessorKey: 'slikk_sku',
-                cell: ({ row }) => <div>{row.original.slikk_sku || '-'}</div>,
-            },
-            {
-                header: 'Item Name',
-                accessorKey: 'title',
-                cell: ({ row }) => <div>{row.original.title || '-'}</div>,
-            },
-            {
-                header: 'Category',
-                accessorKey: 'category',
-                cell: ({ row }) => <div>{row.original.category || '-'}</div>,
-            },
-            {
-                header: 'HSN',
-                accessorKey: 'hsn_code',
-                cell: ({ row }) => <div className="max-w-[250px]">{row.original.hsn_code || '-'}</div>,
+                header: 'Product',
+                accessorKey: 'product',
+                cell: ({ row }) => <div>{row.original.product || '-'}</div>,
             },
             {
                 header: 'Quantity',
                 accessorKey: 'quantity',
-                cell: ({ row }) => <div className="font-semibold text-blue-600">{row.original.quantity || '-'}</div>,
+                cell: ({ row }) => <div className="font-semibold text-blue-600">{row.original.quantity ?? 0}</div>,
             },
             {
-                header: 'Unit Price',
+                header: 'Available',
+                accessorKey: 'available_quantity',
+                cell: ({ row }) => <div>{row.original.available_quantity ?? 0}</div>,
+            },
+            {
+                header: 'Fulfilled',
+                accessorKey: 'fulfilled_quantity',
+                cell: ({ row }) => <div>{row.original.fulfilled_quantity ?? 0}</div>,
+            },
+            {
+                header: 'Pending',
+                accessorKey: 'pending_quantity',
+                cell: ({ row }) => <div>{row.original.pending_quantity ?? 0}</div>,
+            },
+            {
+                header: 'Supplier MRP',
+                accessorKey: 'supplier_mrp',
+                cell: ({ row }) => <div>₹ {row.original.supplier_mrp ?? '0.00'}</div>,
+            },
+            {
+                header: 'Item Value',
                 accessorKey: 'item_value',
-                cell: ({ row }) => <div>{row.original.item_value || '-'}</div>,
-            },
-            {
-                header: 'Tax Type',
-                accessorKey: 'tax_type',
-                cell: ({ row }) => <div>{row.original.tax_type || '-'}</div>,
+                cell: ({ row }) => <div>₹ {row.original.item_value ?? '0.00'}</div>,
             },
             {
                 header: 'Tax %',
                 accessorKey: 'tax_percentage',
-                cell: ({ row }) => <div>{row.original.tax_percentage || '-'}</div>,
+                cell: ({ row }) => <div>{row.original.tax_percentage ?? 0}%</div>,
             },
             {
-                header: 'Total Amount',
+                header: 'Tax Amount',
+                accessorKey: 'tax_amount',
+                cell: ({ row }) => <div>₹ {row.original.tax_amount ?? '0.00'}</div>,
+            },
+            {
+                header: 'Total Value',
                 accessorKey: 'total_value',
-                cell: ({ row }) => <div>₹ {row.original.total_value || '0.00'}</div>,
+                cell: ({ row }) => <div className="font-semibold">₹ {row.original.total_value ?? '0.00'}</div>,
             },
         ]
 

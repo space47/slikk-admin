@@ -10,10 +10,13 @@ import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { FormContainer } from '@/components/ui'
 import PoFormStepOne from '../poUtils/PoFormStepOne'
 import FormButton from '@/components/ui/Button/FormButton'
+import { useMemo } from 'react'
+import FormUploadFile from '@/common/FormUploadFile'
 
 const PoAdd = () => {
     const navigate = useNavigate()
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
+    const commercial_approval_doc = useMemo(() => selectedCompany?.commercial_approval_doc, [selectedCompany])
 
     const handleSubmit = async (values: any) => {
         try {
@@ -36,6 +39,9 @@ const PoAdd = () => {
             }
 
             const formData = buildFormData(payload)
+            if (!commercial_approval_doc && values?.commercial_terms?.length > 0) {
+                formData.append('commercial_terms', values.commercial_terms[0])
+            }
             const res = await axioisInstance.post(`/merchant/purchase/order`, formData)
             if (res?.data) {
                 navigate(`/app/po/orderItems/${res?.data?.data?.id}`)
@@ -50,10 +56,21 @@ const PoAdd = () => {
         <div>
             <h3 className="text-xl font-bold">Create Purchase Order</h3>
             <Formik enableReinitialize initialValues={{} as any} onSubmit={handleSubmit}>
-                {() => (
+                {({ values }) => (
                     <Form className=" w-full p-5 bg-gray-50 rounded-xl shadow-xl ">
                         <FormContainer>
                             <PoFormStepOne />
+                            {!commercial_approval_doc && (
+                                <>
+                                    <FormUploadFile
+                                        asterisk
+                                        label="Upload PAN Copy"
+                                        fileList={values?.commercialFile}
+                                        name="commercial_terms"
+                                        existingFile={values?.commercial_terms}
+                                    />
+                                </>
+                            )}
                             <FormButton value="Create" />
                         </FormContainer>
                     </Form>

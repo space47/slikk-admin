@@ -8,7 +8,7 @@ import { buildFormData } from '@/utils/formDataBuilder'
 import { Button, FormContainer, Spinner } from '@/components/ui'
 import PoFormStepOne from '../poUtils/PoFormStepOne'
 import { purchaseOrderService } from '@/store/services/purchaseOrderService'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { PurchaseOrderTable } from '@/store/types/po.types'
 import { getApiErrorMessage } from '@/constants/generateErrorMessage'
 import { notification } from 'antd'
@@ -17,6 +17,7 @@ import { FaArrowCircleRight } from 'react-icons/fa'
 import FormButton from '@/components/ui/Button/FormButton'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+import FormUploadFile from '@/common/FormUploadFile'
 
 const PoEdit = () => {
     const { purchase_id } = useParams()
@@ -26,6 +27,7 @@ const PoEdit = () => {
     const { data, isSuccess, isError, isLoading, isFetching, error } = purchaseOrderService.usePurchaseSingleOrdersListQuery({
         order_id: purchase_id,
     })
+    const commercial_approval_doc = useMemo(() => selectedCompany?.commercial_approval_doc, [selectedCompany])
 
     useEffect(() => {
         if (isSuccess) {
@@ -61,7 +63,6 @@ const PoEdit = () => {
                 order_billing_entity: values.order_billing_entity,
                 order_billing_address: values.order_billing_address,
                 order_shipping_address: values.order_shipping_address,
-                commercial_terms: values.commercial_terms,
                 payment_terms: values.payment_terms,
                 discount_sharing_applicable: values.discount_sharing_applicable,
                 special_terms: values.special_terms,
@@ -74,7 +75,9 @@ const PoEdit = () => {
             }
 
             const formData = buildFormData(payload)
-
+            if (!commercial_approval_doc && values?.commercial_terms?.length > 0) {
+                formData.append('commercial_terms', values.commercial_terms[0])
+            }
             const filteredBody = getChangedFormData(formData, initialValue)
 
             if (selectedCompany) {
@@ -113,10 +116,21 @@ const PoEdit = () => {
                     ))}
             </div>
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
-                {() => (
+                {({ values }) => (
                     <Form className=" w-full p-5 bg-gray-50 rounded-xl shadow-xl ">
                         <FormContainer>
                             <PoFormStepOne />
+                            {!commercial_approval_doc && (
+                                <>
+                                    <FormUploadFile
+                                        asterisk
+                                        label="Upload PAN Copy"
+                                        fileList={values?.commercialFile as any}
+                                        name="commercial_terms"
+                                        existingFile={values?.commercial_terms}
+                                    />
+                                </>
+                            )}
                             <FormButton value="Submit" />
                         </FormContainer>
                     </Form>

@@ -20,6 +20,7 @@ export type SINGLE_COMPANY_DATA = {
     create_date?: string
     update_date?: string
     code?: string
+    commercial_approval_doc?: string
 }
 
 export type USER_PROFILE_DATA = {
