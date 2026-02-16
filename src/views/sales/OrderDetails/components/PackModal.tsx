@@ -6,7 +6,6 @@ import { FaRupeeSign, FaCamera, FaTimes, FaTrashAlt, FaBoxOpen, FaReceipt, FaWal
 import { IoBagOutline } from 'react-icons/io5'
 import { MdPhotoCamera, MdInventory } from 'react-icons/md'
 import { Order } from '@/store/types/newOrderTypes'
-import { EOrderStatus } from '../orderList.common'
 import { returnOrderDataService } from '@/store/services/returnOrderService'
 
 const { Option } = Select
@@ -30,7 +29,6 @@ type Props = {
     fulfilledQuantities: { [key: number]: number }
     handleSelectChange: (id: number, value: string) => void
     errorMessage?: string
-    handleReject: () => void
     isButtonClick?: boolean
     bagsCount: string
     setBagsCount: (x: string) => void
@@ -80,14 +78,12 @@ const PackModal: React.FC<Props> = ({
     handleOk,
     handleCancel,
     modalContent,
-    status,
     invoice_id,
     payment,
     product,
     fulfilledQuantities,
     handleSelectChange,
     errorMessage,
-    handleReject,
     isButtonClick,
     bagsCount,
     setBagsCount,
@@ -105,19 +101,53 @@ const PackModal: React.FC<Props> = ({
     const returnReasonCalls = returnOrderDataService.useReturnItemReasonsQuery({})
     const [reasonsArray, setReasonsArray] = useState<{ value: string; label: string }[]>([])
 
+    useEffect(() => {
+        if (!product) return
+        setSelectedReason((prev) => {
+            const updated = { ...prev }
+            product.forEach((pdts) => {
+                const orderedQty = Number(pdts.quantity)
+                const totalItemsInLocation = Object.entries(pdts?.location_details || {}).reduce((acc, [, value]) => acc + value, 0)
+                const isLocationDetailsAvailable = Object.entries(pdts?.location_details || {}).length > 0 && totalItemsInLocation > 0
+                if (!isLocationDetailsAvailable) {
+                    const fulfilledQty = Number(fulfilledQuantities[pdts.id] || 0)
+                    if (fulfilledQty >= orderedQty) {
+                        delete updated[pdts.id]
+                    }
+                }
+                if (isLocationDetailsAvailable && selectedLocations[pdts.id]) {
+                    const selectedQty = Object.values(selectedLocations[pdts.id] || {}).reduce((sum, qty) => sum + qty, 0)
+                    if (selectedQty >= orderedQty) {
+                        delete updated[pdts.id]
+                    }
+                }
+            })
+
+            return updated
+        })
+    }, [fulfilledQuantities, selectedLocations, product, setSelectedReason])
+
     const validateReasons = useCallback(() => {
         if (!product) return false
         for (const pdts of product) {
+            const totalItemsInLocation = Object.entries(pdts?.location_details || {}).reduce((acc, [, value]) => acc + value, 0)
+            const isLocationDetailsAvailable = Object.entries(pdts?.location_details).length > 0 && totalItemsInLocation > 0
             const orderedQty = Number(pdts.quantity)
-            if (fulfilledQuantities[pdts.id] !== undefined) {
+            if (!isLocationDetailsAvailable) {
                 const fulfilledQty = Number(fulfilledQuantities[pdts.id] || 0)
                 if (fulfilledQty < orderedQty && !selectedReason[pdts.id]) {
                     return true
                 }
             }
-            if (selectedLocations[pdts.id]) {
-                const selectedQty = Object.values(selectedLocations[pdts.id]).reduce((sum, qty) => sum + qty, 0)
-                if (selectedQty < orderedQty && !selectedReason[pdts.id]) {
+            if (isLocationDetailsAvailable) {
+                if (selectedLocations[pdts.id]) {
+                    const selectedQty = Object?.values(selectedLocations[pdts?.id])?.reduce((sum, qty) => sum + qty, 0)
+                    if (selectedQty < orderedQty && !selectedReason[pdts.id]) {
+                        return true
+                    }
+                } else if (!selectedLocations[pdts.id] && selectedReason[pdts.id]) {
+                    return false
+                } else {
                     return true
                 }
             }
@@ -146,29 +176,13 @@ const PackModal: React.FC<Props> = ({
                     </div>
                     <div className="flex xl:flex-row gap-3 p-5 flex-col">
                         <button
-                            className="flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold transition-all duration-200 bg-gray-600 hover:bg-gray-700 active:bg-gray-800 text-white shadow-sm hover:shadow"
-                            onClick={status === EOrderStatus.accepted || status === EOrderStatus.picking ? handleReject : handleCancel}
-                        >
-                            {status === EOrderStatus.accepted || status === EOrderStatus.picking ? (
-                                <>
-                                    <FaTimes className="text-sm" />
-                                    REJECT ORDERS
-                                </>
-                            ) : (
-                                <>
-                                    <FaTimes className="text-sm" />
-                                    CANCEL
-                                </>
-                            )}
-                        </button>
-                        <button
                             className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold transition-all duration-200 ${
                                 isButtonClick ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800'
                             } text-white shadow-sm hover:shadow`}
                             disabled={isButtonClick}
                             onClick={() => {
                                 const hasMissingReason = validateReasons()
-
+                                console.log('has missing is', hasMissingReason)
                                 if (hasMissingReason) {
                                     notification.error({ message: 'Reason is Required' })
                                     return

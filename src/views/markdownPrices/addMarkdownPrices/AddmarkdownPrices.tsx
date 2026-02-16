@@ -23,6 +23,8 @@ const AddmarkdownPrices = () => {
             offer_value: values.offer_value ?? '',
             apply_on: values.apply_on ?? '',
             name: values.name ?? '',
+            slikk_offer_contribution: values.slikk_offer_contribution ?? '',
+            brand_offer_contribution: values.brand_offer_contribution ?? '',
         }
 
         Object.entries(fields).forEach(([key, value]) => {

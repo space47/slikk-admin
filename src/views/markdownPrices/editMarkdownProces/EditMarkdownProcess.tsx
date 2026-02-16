@@ -33,6 +33,8 @@ const EditMarkdownPrices = () => {
         discount_type: editMarkdownData?.discount_type,
         offer_value: editMarkdownData?.offer_value,
         apply_on: editMarkdownData?.apply_on,
+        slikk_offer_contribution: editMarkdownData?.slikk_offer_contribution ?? '',
+        brand_offer_contribution: editMarkdownData?.brand_offer_contribution ?? '',
     }
 
     useEffect(() => {
@@ -51,6 +53,8 @@ const EditMarkdownPrices = () => {
             offer_value: values.offer_value || '',
             apply_on: values.apply_on || '',
             name: values.name || '',
+            slikk_offer_contribution: values.slikk_offer_contribution ?? '',
+            brand_offer_contribution: values.brand_offer_contribution ?? '',
         }
 
         Object.entries(fields).forEach(([key, value]) => {
