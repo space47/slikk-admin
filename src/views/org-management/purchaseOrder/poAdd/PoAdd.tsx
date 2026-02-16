@@ -37,7 +37,9 @@ const PoAdd = () => {
 
             const formData = buildFormData(payload)
             const res = await axioisInstance.post(`/merchant/purchase/order`, formData)
-            navigate(`/app/po/orderItems/${res?.data?.id}`)
+            if (res?.data) {
+                navigate(`/app/po/orderItems/${res?.data?.data?.id}`)
+            }
             successMessage(res)
         } catch (error) {
             if (error instanceof AxiosError) errorMessage(error)
