@@ -28,7 +28,7 @@ const discountType_Array = [
 
 const MarkdownCommonForm = ({ values, setProductCsvFile, filterId, setFilterId, isEdit }: props) => {
     return (
-        <div className="">
+        <div>
             <FormContainer className="grid grid-cols-2 gap-4">
                 {FormArray.map((item, key) => {
                     return (

@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { markdownPriceTypes } from '../markdownCommon'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { FaEdit, FaFacebook } from 'react-icons/fa'
+import { FaEdit } from 'react-icons/fa'
 import moment from 'moment'
 import EasyTable from '@/common/EasyTable'
 import PageCommon from '@/common/PageCommon'
