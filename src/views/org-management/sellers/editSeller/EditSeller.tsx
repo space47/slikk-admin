@@ -101,7 +101,12 @@ const EditSeller = () => {
             }
         }
         simpleFields.forEach((key) => appendIfValid(key, values?.[key]))
-        fileFields.forEach((key) => appendIfValid(key, values?.[key]?.[0]))
+        fileFields.forEach((key) => {
+            const fileValue = values?.[key]?.[0]
+            if (fileValue instanceof File) {
+                formData.append(key, fileValue)
+            }
+        })
         const existingDetails = initialValue?.gst_details || []
         const updatedDetails = (values?.gst_details || []).map((warehouse: any, index: number) => {
             const existing = existingDetails[index] || {}
