@@ -5,6 +5,7 @@ import React from 'react'
 import { AccountTypeOptions, SellerBankData } from '../sellerUtils/sellerFormCommon'
 import FormUploadFile from '@/common/FormUploadFile'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
+import { handleMaxInputValidation } from '../sellerUtils/sellerFunctions'
 
 interface Props {
     values: any
@@ -12,6 +13,9 @@ interface Props {
 }
 
 const SellerBankDetails = ({ values, isEdit }: Props) => {
+    const inputHandlers: Record<string, (e: React.FormEvent<HTMLInputElement>) => void> = {
+        ifsc: (e) => handleMaxInputValidation(e, 11, false),
+    }
     return (
         <div className="space-y-8 w-full">
             <div className="border-b pb-4">
@@ -24,7 +28,13 @@ const SellerBankDetails = ({ values, isEdit }: Props) => {
             <FormContainer className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-5">
                 {SellerBankData?.map((item, idx) => (
                     <FormItem key={idx} label={item?.label} asterisk={item?.isRequired} className="flex flex-col space-y-1">
-                        <Field type={item?.type} name={item?.name} placeholder={`Enter ${item?.label}`} component={Input} />
+                        <Field
+                            type={item?.type}
+                            name={item?.name}
+                            placeholder={`Enter ${item?.label}`}
+                            component={Input}
+                            onInput={inputHandlers[item.name]}
+                        />
                     </FormItem>
                 ))}
                 <CommonSelect name="account_type" options={AccountTypeOptions()} label="Account Type" />

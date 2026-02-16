@@ -42,6 +42,7 @@ const SellerDocsAndDeclaration = ({ isEdit, values }: Props) => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormUploadFile
+                        asterisk
                         isEdit={isEdit}
                         label="Upload Commercial Approval Document"
                         fileList={values?.commercialApprovalFile}
@@ -49,6 +50,7 @@ const SellerDocsAndDeclaration = ({ isEdit, values }: Props) => {
                         existingFile={values?.commercial_approval_doc}
                     />
                     <FormUploadFile
+                        asterisk
                         isEdit={isEdit}
                         label="Upload Finalized & Approved Onboarding Document"
                         fileList={values?.approvedFile}

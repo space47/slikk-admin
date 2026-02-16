@@ -6,6 +6,7 @@ import { Field } from 'formik'
 import FormUploadFile from '@/common/FormUploadFile'
 import RichTextCommon from '@/common/RichTextCommon'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
+import { handleMaxInputValidation, handlePANandTANValidation } from '../sellerUtils/sellerFunctions'
 
 interface Props {
     values?: any
@@ -13,9 +14,14 @@ interface Props {
 }
 
 const SellerBusinessDetails = ({ isEdit, values }: Props) => {
+    const inputHandlers: Record<string, (e: React.FormEvent<HTMLInputElement>) => void> = {
+        tan_number: handlePANandTANValidation,
+        pan_number: handlePANandTANValidation,
+        gstin: (e) => handleMaxInputValidation(e, 15, false),
+        cin: (e) => handleMaxInputValidation(e, 21, false),
+    }
     return (
         <div className="space-y-8">
-            {/* Header */}
             <div className="border-b pb-4">
                 <h4 className="text-lg font-semibold text-gray-800">Business Details</h4>
                 <p className="text-sm text-gray-500 mt-1">
@@ -24,7 +30,6 @@ const SellerBusinessDetails = ({ isEdit, values }: Props) => {
                 </p>
             </div>
 
-            {/* Business Details */}
             <FormContainer className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {BusinessDetails?.map((item, idx) => (
                     <FormItem key={idx} label={item?.label} asterisk={item?.isRequired} className="flex flex-col space-y-1">
@@ -33,6 +38,7 @@ const SellerBusinessDetails = ({ isEdit, values }: Props) => {
                             name={item?.name}
                             placeholder={`Enter ${item?.label}`}
                             component={item?.type === 'checkbox' ? Switcher : Input}
+                            onInput={inputHandlers[item.name]}
                         />
                     </FormItem>
                 ))}
@@ -48,6 +54,7 @@ const SellerBusinessDetails = ({ isEdit, values }: Props) => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormUploadFile
+                        asterisk
                         isEdit={isEdit}
                         label="Upload PAN Copy"
                         fileList={values?.panCopyFile}
@@ -55,6 +62,7 @@ const SellerBusinessDetails = ({ isEdit, values }: Props) => {
                         existingFile={values?.pan_copy}
                     />
                     <FormUploadFile
+                        asterisk
                         isEdit={isEdit}
                         label="Upload TAN Copy"
                         fileList={values?.tanCopyFile}
@@ -62,6 +70,7 @@ const SellerBusinessDetails = ({ isEdit, values }: Props) => {
                         existingFile={values?.tan_copy}
                     />
                     <FormUploadFile
+                        asterisk
                         isEdit={isEdit}
                         label="PF Declaration Doc"
                         fileList={values?.pd_doc_file}
@@ -69,6 +78,7 @@ const SellerBusinessDetails = ({ isEdit, values }: Props) => {
                         existingFile={values?.pf_declaration_doc}
                     />
                     <FormUploadFile
+                        asterisk
                         isEdit={isEdit}
                         label="Trade Mark Certificate"
                         fileList={values?.trade_mark_file}

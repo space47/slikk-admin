@@ -11,9 +11,10 @@ interface Props {
     fileList: File[]
     isEdit?: boolean
     existingFile?: string | File | File[] | null
+    asterisk?: boolean
 }
 
-const FormUploadFile = ({ label, name, fileList, isEdit, existingFile }: Props) => {
+const FormUploadFile = ({ label, name, fileList, isEdit, existingFile, asterisk }: Props) => {
     const getFileUrl = (file: string | File): string | null => {
         if (typeof file === 'string') return file
         if (file instanceof File) return URL.createObjectURL(file)
@@ -77,7 +78,9 @@ const FormUploadFile = ({ label, name, fileList, isEdit, existingFile }: Props) 
 
     return (
         <FormContainer className="bg-gray-200 bg-opacity-40 flex flex-col items-center rounded-xl mb-2 p-4 overflow-auto scrollbar-hide">
-            <div className="font-semibold mb-2">{label}</div>
+            <div className="font-semibold mb-2">
+                {label} {asterisk && <span className="text-red-600">*</span>}
+            </div>
 
             <Field name={name}>
                 {({ form }: FieldProps) => {

@@ -6,11 +6,11 @@ export const BasicSellerInformation = [
     { label: 'Phone Number', name: 'head_contact', type: 'number', isRequired: true, visible: true, maxLength: 10 },
 ]
 export const BusinessDetails = [
-    { label: 'PAN Number', name: 'pan_number', type: 'text', isRequired: false, visible: true },
-    { label: 'TAN Number', name: 'tan_number', type: 'text', isRequired: false, visible: true },
-    { label: 'GSTIN', name: 'gstin', type: 'text', isRequired: false, visible: true },
-    { label: 'CIN', name: 'cin', type: 'text', isRequired: false, visible: true },
-    { label: 'Pf Declaration', name: 'pf_declaration', type: 'checkbox', isRequired: false, visible: true },
+    { label: 'PAN Number', name: 'pan_number', type: 'text', isRequired: true, visible: true },
+    { label: 'TAN Number', name: 'tan_number', type: 'text', isRequired: true, visible: true },
+    { label: 'GSTIN', name: 'gstin', type: 'text', isRequired: true, visible: true },
+    { label: 'CIN', name: 'cin', type: 'text', isRequired: true, visible: true },
+    { label: 'Pf Declaration', name: 'pf_declaration', type: 'checkbox', isRequired: true, visible: true },
 ]
 export const PocDetails = [
     { label: 'Vendor POC', name: 'poc', type: 'text', isRequired: true, visible: true },
