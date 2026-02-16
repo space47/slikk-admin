@@ -17,4 +17,6 @@ export type markdownPriceTypes = {
 export const FormArray = [
     { name: 'name', type: 'text', label: 'Name', placeholder: 'Enter Name' },
     { name: 'offer_value', type: 'number', label: 'Offer Value', placeholder: 'Enter Offer Values' },
+    { name: 'slikk_offer_contribution', type: 'number', label: 'Slikk Offer Contribution', placeholder: 'Enter Slikk Offer Contribution' },
+    { name: 'brand_offer_contribution', type: 'number', label: 'Brand Offer Contribution', placeholder: 'Enter Brand Offer Contribution' },
 ]
