@@ -54,6 +54,13 @@ const SellerBusinessDetails = ({ isEdit, values }: Props) => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormUploadFile
+                        isEdit={isEdit}
+                        label="Upload GST Certificate"
+                        fileList={values?.gstCopyFile}
+                        name="gst_certificate"
+                        existingFile={values?.gst_certificate}
+                    />
+                    <FormUploadFile
                         asterisk
                         isEdit={isEdit}
                         label="Upload PAN Copy"
@@ -62,7 +69,6 @@ const SellerBusinessDetails = ({ isEdit, values }: Props) => {
                         existingFile={values?.pan_copy}
                     />
                     <FormUploadFile
-                        asterisk
                         isEdit={isEdit}
                         label="Upload TAN Copy"
                         fileList={values?.tanCopyFile}
@@ -70,7 +76,6 @@ const SellerBusinessDetails = ({ isEdit, values }: Props) => {
                         existingFile={values?.tan_copy}
                     />
                     <FormUploadFile
-                        asterisk
                         isEdit={isEdit}
                         label="PF Declaration Doc"
                         fileList={values?.pd_doc_file}
@@ -78,7 +83,6 @@ const SellerBusinessDetails = ({ isEdit, values }: Props) => {
                         existingFile={values?.pf_declaration_doc}
                     />
                     <FormUploadFile
-                        asterisk
                         isEdit={isEdit}
                         label="Trade Mark Certificate"
                         fileList={values?.trade_mark_file}

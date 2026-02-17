@@ -1,16 +1,30 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Form, Formik } from 'formik'
+import { Field, FieldProps, Form, Formik } from 'formik'
 import { useNavigate } from 'react-router-dom'
 import SellerForm from '../sellerForm/SellerForm'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { errorMessage, successMessage } from '@/utils/responseMessages'
 import { AxiosError } from 'axios'
-import { fileFields, simpleFields } from '../sellerUtils/sellerFormCommon'
+import {
+    BasicExtra,
+    BasicSellerInformation,
+    fileFields,
+    NOBOptions,
+    SellerCommercialsArray,
+    simpleFields,
+} from '../sellerUtils/sellerFormCommon'
 import { useState } from 'react'
+import { Button, FormContainer, FormItem, Select } from '@/components/ui'
+import { Input } from 'antd'
+import { GrDocument } from 'react-icons/gr'
+import { SegmentOptions } from '@/constants/commonArray.constant'
+import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
+import { FcViewDetails } from 'react-icons/fc'
 
 const AddSeller = () => {
     const navigate = useNavigate()
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [isOther, setIsOther] = useState(false)
 
     const initialValue = {
         int_ops_name: 'Dinesha',
@@ -58,7 +72,127 @@ const AddSeller = () => {
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                 {({ values }) => (
                     <Form className="xl:w-[90%] w-full p-5 ">
-                        <SellerForm values={values} isSubmitting={isSubmitting} />
+                        {!isOther && (
+                            <FormContainer>
+                                <div className="bg-gradient-to-r  p-6 rounded-xl border-l-4 border-blue-500 shadow-lg mb-8">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <div className="p-2 bg-blue-100 rounded-lg">
+                                            <FcViewDetails className="text-2xl text-blue-600" />
+                                        </div>
+                                        <h4 className="text-xl font-bold text-gray-800">Seller Basic Details</h4>
+                                    </div>
+
+                                    <FormContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                                        {BasicSellerInformation.map((item, key) => {
+                                            return (
+                                                <FormItem key={key} label={item.label} className="w-full" asterisk={item.isRequired}>
+                                                    <div className="relative">
+                                                        <Field
+                                                            type={item.type}
+                                                            name={item?.name}
+                                                            placeholder={`Enter ${item.label}`}
+                                                            component={Input}
+                                                            className="pl-10"
+                                                        />
+                                                    </div>
+                                                </FormItem>
+                                            )
+                                        })}
+                                        {BasicExtra.map((item, key) => {
+                                            return (
+                                                <FormItem key={key} label={item.label} className="w-full" asterisk={item.isRequired}>
+                                                    <div className="relative">
+                                                        <Field
+                                                            type={item.type}
+                                                            name={item?.name}
+                                                            placeholder={`Enter ${item.label}`}
+                                                            component={Input}
+                                                            className="pl-10"
+                                                        />
+                                                    </div>
+                                                </FormItem>
+                                            )
+                                        })}
+                                    </FormContainer>
+                                </div>
+                                {/* Commercials */}
+                                <div className="bg-gradient-to-r  p-6 rounded-xl border-l-4 border-orange-500 shadow-lg mb-8">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <div className="p-2 bg-orange-100 rounded-lg">
+                                            <GrDocument className="text-2xl text-orange-600" />
+                                        </div>
+                                        <h4 className="text-xl font-bold text-gray-800">Commercials</h4>
+                                    </div>
+
+                                    <FormContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                                        {SellerCommercialsArray.map((item, key) => {
+                                            return (
+                                                <FormItem key={key} label={item.label} className="w-full" asterisk={item.isRequired}>
+                                                    <div className="relative">
+                                                        <Field
+                                                            type={item.type}
+                                                            name={item?.name}
+                                                            placeholder={`Enter ${item.label}`}
+                                                            component={Input}
+                                                            className="pl-10"
+                                                        />
+                                                    </div>
+                                                </FormItem>
+                                            )
+                                        })}
+                                        <FormItem asterisk label="Segment" className="col-span-1 w-full">
+                                            <Field name="segment">
+                                                {({ field, form }: FieldProps) => {
+                                                    const fieldValueArray = Array.isArray(field?.value)
+                                                        ? field?.value
+                                                        : field?.value?.split(',') || []
+                                                    const selectedOptions = fieldValueArray?.map((item: any) => {
+                                                        const selectedOption = SegmentOptions()?.find((options: any) => {
+                                                            return options?.label === item
+                                                        })
+                                                        return selectedOption
+                                                    })
+                                                    return (
+                                                        <Select
+                                                            isMulti
+                                                            isClearable
+                                                            className="w-full"
+                                                            options={SegmentOptions()}
+                                                            getOptionLabel={(option) => option?.label}
+                                                            getOptionValue={(option) => option?.value?.toString()}
+                                                            value={selectedOptions}
+                                                            onChange={(newVals) => {
+                                                                const selectedValues = newVals?.map((val: any) => val.value) || []
+                                                                form.setFieldValue(`segment`, selectedValues?.join(','))
+                                                            }}
+                                                        />
+                                                    )
+                                                }}
+                                            </Field>
+                                        </FormItem>
+                                        <CommonSelect name="business_nature" options={NOBOptions()} label="Nature of Business" />
+                                    </FormContainer>
+                                </div>
+                            </FormContainer>
+                        )}
+                        {isOther && <SellerForm isAdd values={values} isSubmitting={isSubmitting} />}
+                        <div className="flex justify-end mt-8 gap-4">
+                            <Button type="button" variant={isOther ? 'gray' : 'pending'} onClick={() => setIsOther((prev) => !prev)}>
+                                {isOther ? 'Go to basic Details' : 'Fill Other Data'}
+                            </Button>
+
+                            <div>
+                                {!isOther ? (
+                                    <>
+                                        <Button type="submit" variant="blue" loading={isSubmitting} disabled={isSubmitting}>
+                                            Send To Vendor
+                                        </Button>
+                                    </>
+                                ) : (
+                                    ''
+                                )}
+                            </div>
+                        </div>
                     </Form>
                 )}
             </Formik>

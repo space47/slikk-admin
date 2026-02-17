@@ -30,6 +30,9 @@ export const useSellerColumns = () => {
                         <p>
                             <span className="font-semibold">Name:</span> {row?.original?.name}
                         </p>
+                        <p>
+                            <span className="font-semibold">Code:</span> {row?.original?.code}
+                        </p>
                         <p className="line-clamp-2">
                             <span className="font-semibold">Address:</span> {row?.original?.address}
                         </p>

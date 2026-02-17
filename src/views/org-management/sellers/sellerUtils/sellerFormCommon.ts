@@ -1,10 +1,18 @@
 export const BasicSellerInformation = [
     { label: 'Vendor Business Name', name: 'registered_name', type: 'text', isRequired: true, visible: true },
+    { label: 'Seller Code', name: 'code', type: 'text', isRequired: true, visible: true },
     { label: 'Company Name', name: 'name', type: 'text', isRequired: true, visible: true },
     { label: 'Contact Person Name', name: 'head_name', type: 'text', isRequired: true, visible: true },
     { label: 'Email Address', name: 'head_email', type: 'text', isRequired: true, visible: true },
     { label: 'Phone Number', name: 'head_contact', type: 'number', isRequired: true, visible: true, maxLength: 10 },
 ]
+
+export const BasicExtra = [
+    { label: 'Vendor POC', name: 'poc', type: 'text', isRequired: true, visible: true },
+    { label: 'Vendor POC Email', name: 'poc_email', type: 'text', isRequired: true, visible: true },
+    { label: 'Vendor POC Contact', name: 'contact_number', type: 'number', isRequired: true, visible: true },
+]
+
 export const BusinessDetails = [
     { label: 'PAN Number', name: 'pan_number', type: 'text', isRequired: false, visible: true },
     { label: 'TAN Number', name: 'tan_number', type: 'text', isRequired: false, visible: true },
@@ -16,6 +24,12 @@ export const PocDetails = [
     { label: 'Vendor POC', name: 'poc', type: 'text', isRequired: true, visible: true },
     { label: 'Vendor POC Email', name: 'poc_email', type: 'text', isRequired: true, visible: true },
     { label: 'Vendor POC Contact', name: 'contact_number', type: 'number', isRequired: true, visible: true },
+    { label: 'Vendor POC Alternate Number', name: 'alternate_contact_number', type: 'number', isRequired: false, visible: true },
+    { label: 'Finance Contact Name', name: 'finance_name', type: 'text', isRequired: false, visible: true },
+    { label: 'Finance Contact Number', name: 'finance_contact_number', type: 'text', isRequired: false, visible: true },
+    { label: 'Finance Email', name: 'finance_email', type: 'text', isRequired: false, visible: true },
+]
+export const PocDetailsAdd = [
     { label: 'Vendor POC Alternate Number', name: 'alternate_contact_number', type: 'number', isRequired: false, visible: true },
     { label: 'Finance Contact Name', name: 'finance_name', type: 'text', isRequired: false, visible: true },
     { label: 'Finance Contact Number', name: 'finance_contact_number', type: 'text', isRequired: false, visible: true },
