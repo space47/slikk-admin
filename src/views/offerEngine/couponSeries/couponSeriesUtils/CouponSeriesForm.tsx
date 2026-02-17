@@ -215,7 +215,20 @@ const CouponSeriesForm = ({ values, setFieldValue, setFilterId, filterValue, set
                 {COUPON_SERIES_FORM.slice(5).map((item, key) => {
                     return item.type === 'date' ? (
                         <>
-                            <FullDateForm customCss="w-full" fieldname={item.name} label={item.label} name={item.name} />
+                            <FormItem label={item.label}>
+                                <Field name={item.name}>
+                                    {({ field, form }: FieldProps) => (
+                                        <DatePicker
+                                            placeholder=""
+                                            className={'w-full max-w-md'}
+                                            value={field.value ? dayjs(field.value, 'YYYY-MM-DD') : null}
+                                            onChange={(value) => {
+                                                form.setFieldValue(item.name, value ? value.format('YYYY-MM-DD') : '')
+                                            }}
+                                        />
+                                    )}
+                                </Field>
+                            </FormItem>
                         </>
                     ) : (
                         <FormItem key={key} label="" className={item.classname}>
