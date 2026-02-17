@@ -71,7 +71,6 @@ const PoEdit = () => {
                 expected_delivery_date: values.expected_delivery_date,
                 po_nature: values.po_nature,
                 payment_mode: values?.payment_mode,
-                vendor_address: values?.vendor_address,
             }
 
             const formData = buildFormData(payload)
@@ -125,7 +124,7 @@ const PoEdit = () => {
                                     <FormUploadFile
                                         asterisk
                                         label="Upload PAN Copy"
-                                        fileList={values?.commercialFile as any}
+                                        fileList={(values as any)?.commercialFile}
                                         name="commercial_terms"
                                         existingFile={values?.commercial_terms}
                                     />

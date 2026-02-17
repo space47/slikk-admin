@@ -2,7 +2,6 @@
 
 export const PoFormFieldArray = [
     { label: 'Vendor Billing Entity', type: 'text', name: 'order_billing_entity' },
-    { label: 'Vendor Address', type: 'text', name: 'vendor_address' },
     { label: 'Order Billing Address(Bill-to)', type: 'text', name: 'order_billing_address' },
     { label: 'Order Shipping Address(Ship-to)', type: 'text', name: 'order_shipping_address' },
     // { label: 'Commercial Terms', type: 'text', name: 'commercial_terms' },
@@ -12,21 +11,9 @@ export const PoFormFieldArray = [
     { label: 'Discount Sharing Applicable', type: 'checkbox', name: 'discount_sharing_applicable' },
 ]
 export const PoOrderItemsArray = [
-    { label: 'Order', type: 'number', name: 'order', is_required: false }, // FK
-    { label: 'Product', type: 'number', name: 'product', is_required: true }, // FK
-
+    { label: 'SKU', type: 'text', name: 'sku', is_required: true },
     { label: 'Supplier MRP', type: 'number', name: 'supplier_mrp', is_required: true },
-
     { label: 'Quantity', type: 'number', name: 'quantity', is_required: true },
-    { label: 'Available Quantity', type: 'number', name: 'available_quantity' },
-    { label: 'Fulfilled Quantity', type: 'number', name: 'fulfilled_quantity' },
-    { label: 'Pending Quantity', type: 'number', name: 'pending_quantity' },
-    { label: 'UOM', type: 'text', name: 'uom' },
-    { label: 'Stock Correction (%)', type: 'number', name: 'stock_correction_percentage' },
-    { label: 'Item Value', type: 'number', name: 'item_value' },
-    { label: 'Tax Percentage', type: 'number', name: 'tax_percentage' },
-    { label: 'Tax Amount', type: 'number', name: 'tax_amount' },
-    { label: 'Total Value', type: 'number', name: 'total_value' },
 ]
 
 export const IndianStateCodes = [

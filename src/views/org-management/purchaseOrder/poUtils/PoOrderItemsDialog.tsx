@@ -28,26 +28,9 @@ const PoOrderItemsDialog = ({ isOpen, setIsOpen, handleSubmit, edit, currentRow 
     }, [isSuccess, data])
 
     const initialValues = {
-        order: item?.order ?? 0,
-        product: item?.product ?? 0,
-
         supplier_mrp: item?.supplier_mrp ?? 0,
-
+        sku: item?.sku,
         quantity: item?.quantity ?? 0,
-        available_quantity: item?.available_quantity ?? 0,
-        fulfilled_quantity: item?.fulfilled_quantity ?? 0,
-        pending_quantity: item?.pending_quantity ?? 0,
-
-        uom: item?.uom ?? '',
-
-        stock_correction_percentage: item?.stock_correction_percentage ?? 0,
-
-        item_value: item?.item_value ?? 0,
-
-        tax_percentage: item?.tax_percentage ?? 0,
-        tax_amount: item?.tax_amount ?? 0,
-
-        total_value: item?.total_value ?? 0,
     }
 
     return (
