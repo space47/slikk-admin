@@ -768,16 +768,16 @@ const appsNavigationConfig: NavigationTree[] = [
                 type: NAV_ITEM_TYPE_COLLAPSE,
                 authority: [ADMIN, USER],
                 subMenu: [
-                    {
-                        key: 'appsCommuncication.groups',
-                        path: `${APP_PREFIX_PATH}/appsCommuncication/groups`,
-                        title: 'Groups',
-                        translateKey: 'nav.appsCommuncication.groups',
-                        icon: '',
-                        type: NAV_ITEM_TYPE_ITEM,
-                        authority: [ADMIN, USER],
-                        subMenu: [],
-                    },
+                    // {
+                    //     key: 'appsCommuncication.groups',
+                    //     path: `${APP_PREFIX_PATH}/appsCommuncication/groups`,
+                    //     title: 'Groups',
+                    //     translateKey: 'nav.appsCommuncication.groups',
+                    //     icon: '',
+                    //     type: NAV_ITEM_TYPE_ITEM,
+                    //     authority: [ADMIN, USER],
+                    //     subMenu: [],
+                    // },
                     {
                         key: 'appsCommuncication.cohorts',
                         path: `${APP_PREFIX_PATH}/appsCommuncication/cohorts`,
