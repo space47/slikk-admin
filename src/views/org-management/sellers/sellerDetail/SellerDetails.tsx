@@ -18,8 +18,8 @@ import { Formik } from 'formik'
 import { FaDownload } from 'react-icons/fa'
 import { FashionStyleOptions } from '../sellerUtils/sellerFormCommon'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
-import FormUploadFile from '@/common/FormUploadFile'
 import SellerDetailWarehouse from '../sellerUtils/SellerDetailWarehouse'
+import SellerDetailDocuments from '../sellerUtils/SellerDetailDocuments'
 
 const { Panel } = Collapse
 
@@ -27,10 +27,7 @@ const SellerDetails = () => {
     const { id } = useParams()
     const [sellerData, setSellerData] = useState<VendorDetails>()
     const [isCommentModal, setIsCommentModal] = useState(false)
-    const [dataForComment, setDataForComment] = useState<{ name: string; label: string }>({
-        name: '',
-        label: '',
-    })
+    const [dataForComment, setDataForComment] = useState<{ name: string; label: string }>({ name: '', label: '' })
     const [commentStructure, setCommentStructure] = useState<Record<string, string>>({})
     const [statusToProceed, setStatusToProceed] = useState<'approved' | 'rejected' | 'changes_requested' | ''>('')
     const [confirmModal, setConfirmModal] = useState(false)
@@ -54,93 +51,13 @@ const SellerDetails = () => {
             refetch()
         }
         if (approveResponse?.isError) {
-            const errorMessage = getApiErrorMessage(approveResponse?.error)
-            notification.error({ message: errorMessage || 'Failed to send for approval' })
+            notification.error({ message: getApiErrorMessage(approveResponse?.error) || 'Failed to send for approval' })
         }
     }, [approveResponse?.isSuccess, approveResponse?.isError])
 
-    const {
-        BasicSellerInformationDetail,
-        BusinessDetailsDetail,
-        PocDetailsDetail,
-        SellerBankDetail,
-        SellerCommercialsDetail,
-        SellerDeclarationDetail,
-        SellerInternalDetail,
-        SellerMsMeDetail,
-    } = useMemo(() => {
+    const { BasicSellerInformationDetail, sections, documentsList } = useMemo(() => {
         return SellerDetailCommon({ seller: sellerData })
     }, [sellerData])
-
-    const sections = [
-        { key: 'Business Details', title: 'Business Details', data: BusinessDetailsDetail },
-        { key: 'POC Details', title: 'POC Details', data: PocDetailsDetail },
-        { key: 'Bank Details', title: 'Bank Details', data: SellerBankDetail },
-        { key: 'Commercials', title: 'Commercials', data: SellerCommercialsDetail },
-        { key: 'Declaration', title: 'Declaration', data: SellerDeclarationDetail },
-        { key: 'Internal Details', title: 'Internal Details', data: SellerInternalDetail },
-        { key: 'MSME Details', title: 'MSME Details', data: SellerMsMeDetail },
-    ]
-
-    const documentsList = [
-        {
-            label: 'PAN Card',
-            file: sellerData?.pan_copy,
-            key: 'pan',
-            name: 'pan_copy',
-            fieldName: 'panCopyFile',
-        },
-        {
-            label: 'Tan Card',
-            file: sellerData?.tan_copy,
-            key: 'tan',
-            name: 'tan_copy',
-            fieldName: 'tanCopyFile',
-        },
-        {
-            label: 'PF Declaration Doc',
-            file: sellerData?.pf_declaration_doc,
-            key: 'pf',
-            name: 'pf_declaration_doc',
-            fieldName: 'pd_doc_file',
-        },
-        {
-            label: 'Trade Mark Certificate',
-            file: sellerData?.trade_mark_certificate,
-            key: 'trade',
-            name: 'trade_mark_certificate',
-            fieldName: 'trade_mark_file',
-        },
-        {
-            label: 'GST Certificate',
-            file: sellerData?.gst_certificate,
-            key: 'gst',
-            name: 'gst_certificate',
-            fieldName: 'gstCertificateFile',
-        },
-        {
-            label: 'Cancelled Cheque',
-            file: sellerData?.cancelled_cheque,
-            key: 'cheque',
-            name: 'cancelled_cheque',
-            fieldName: 'cancelledChequeFile',
-        },
-        {
-            label: 'MSME Certificate',
-            file: sellerData?.msme_certificate,
-            key: 'msme',
-            name: 'msme_certificate',
-            fieldName: 'msmeCertificateFile',
-        },
-    ]
-
-    if (isLoading) {
-        return (
-            <div className="flex justify-center items-center min-h-[50vh]">
-                <Spin size="large" />
-            </div>
-        )
-    }
 
     const handleComments = (name: string, label: string) => {
         setIsCommentModal(true)
@@ -174,38 +91,6 @@ const SellerDetails = () => {
             }
         }
     }
-
-    const handleDocumentUpdate = async (values: Record<string, any>) => {
-        const body = new FormData()
-
-        const appendIfFile = (key: string, value: any) => {
-            if (value && Array.isArray(value) && value.length > 0 && value[0] instanceof File) {
-                body.append(key, value[0])
-            }
-        }
-
-        appendIfFile('pan_copy', values.pan_copy)
-        appendIfFile('gst_certificate', values.gst_certificate)
-        appendIfFile('cancelled_cheque', values.cancelled_cheque)
-        appendIfFile('msme_certificate', values.msme_certificate)
-        appendIfFile('tan_copy', values.tan_copy)
-        appendIfFile('pf_declaration_doc', values.pf_declaration_doc)
-        appendIfFile('trade_mark_certificate', values.trade_mark_certificate)
-
-        try {
-            const res = await axiosInstance.patch(`/merchant/company/${id}`, body)
-            notification.success({
-                message: res?.data?.message || 'Documents updated successfully',
-            })
-            refetch()
-            setEditingSection(null)
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                notification.error({ message: error.message })
-            }
-        }
-    }
-
     const StatusVariant = (status: string) => {
         if (!status) return 'pending'
         const lower = status.toLowerCase()
@@ -236,7 +121,7 @@ const SellerDetails = () => {
     }
 
     return (
-        <div className="space-y-6 p-4">
+        <Spin className="space-y-6 p-4" spinning={isLoading}>
             <div className="flex justify-between">
                 <div className="space-y-1">
                     <h2 className="text-xl font-bold text-gray-900">{sellerData?.registered_name || '--'}</h2>
@@ -437,89 +322,12 @@ const SellerDetails = () => {
                                 </div>
 
                                 {editingSection === 'documents' ? (
-                                    <Formik
-                                        initialValues={{
-                                            pan_copy: sellerData?.pan_copy || '',
-                                            tan_copy: sellerData?.tan_copy || '',
-                                            pf_declaration_doc: sellerData?.pf_declaration_doc || '',
-                                            trade_mark_certificate: sellerData?.trade_mark_certificate || '',
-                                            gst_certificate: sellerData?.gst_certificate || '',
-                                            cancelled_cheque: sellerData?.cancelled_cheque || '',
-                                            msme_certificate: sellerData?.msme_certificate || '',
-                                            panCopyFile: [],
-                                            tanCopyFile: [],
-                                            pd_doc_file: [],
-                                            trade_mark_file: [],
-                                            gstCertificateFile: [],
-                                            cancelledChequeFile: [],
-                                            msmeCertificateFile: [],
-                                        }}
-                                        onSubmit={handleDocumentUpdate}
-                                    >
-                                        {({ values, handleSubmit }) => (
-                                            <form id="document-form" onSubmit={handleSubmit} className="space-y-4">
-                                                <FormUploadFile
-                                                    asterisk
-                                                    isEdit={true}
-                                                    label="Upload PAN Copy"
-                                                    fileList={values?.panCopyFile}
-                                                    name="pan_copy"
-                                                    existingFile={values?.pan_copy}
-                                                />
-                                                <FormUploadFile
-                                                    asterisk
-                                                    isEdit={true}
-                                                    label="Upload Tan Copy"
-                                                    fileList={values?.tanCopyFile}
-                                                    name="tan_copy"
-                                                    existingFile={values?.tan_copy}
-                                                />
-                                                <FormUploadFile
-                                                    asterisk
-                                                    isEdit={true}
-                                                    label="Pf Declaration Doc"
-                                                    fileList={values?.pd_doc_file}
-                                                    name="pf_declaration_doc"
-                                                    existingFile={values?.pf_declaration_doc}
-                                                />
-                                                <FormUploadFile
-                                                    asterisk
-                                                    isEdit={true}
-                                                    label="Upload Trade Mark File"
-                                                    fileList={values?.trade_mark_file}
-                                                    name="trade_mark_certificate"
-                                                    existingFile={values?.trade_mark_certificate}
-                                                />
-
-                                                <FormUploadFile
-                                                    asterisk
-                                                    isEdit={true}
-                                                    label="Upload GST Certificate"
-                                                    fileList={values?.gstCertificateFile}
-                                                    name="gst_certificate"
-                                                    existingFile={values?.gst_certificate}
-                                                />
-
-                                                <FormUploadFile
-                                                    asterisk
-                                                    isEdit={true}
-                                                    label="Upload Cancelled Cheque"
-                                                    fileList={values?.cancelledChequeFile}
-                                                    name="cancelled_cheque"
-                                                    existingFile={values?.cancelled_cheque}
-                                                />
-
-                                                <FormUploadFile
-                                                    asterisk
-                                                    isEdit={true}
-                                                    label="Upload MSME Certificate"
-                                                    fileList={values?.msmeCertificateFile}
-                                                    name="msme_certificate"
-                                                    existingFile={values?.msme_certificate}
-                                                />
-                                            </form>
-                                        )}
-                                    </Formik>
+                                    <SellerDetailDocuments
+                                        id={id as string}
+                                        refetch={refetch}
+                                        sellerData={sellerData}
+                                        setEditingSection={setEditingSection}
+                                    />
                                 ) : (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
                                         {documentsList.map((doc) => (
@@ -586,7 +394,7 @@ const SellerDetails = () => {
                 headingName="Confirmation to proceed Further"
                 onDialogOk={handleProceed}
             />
-        </div>
+        </Spin>
     )
 }
 

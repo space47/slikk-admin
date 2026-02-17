@@ -81,15 +81,78 @@ export const SellerDetailCommon = ({ seller: sellerData }: any) => {
         { label: 'Declaration Statement', name: 'declaration_statement', value: sellerData?.declaration_statement, visible: true },
     ]
 
+    const sections = [
+        { key: 'Business Details', title: 'Business Details', data: BusinessDetailsDetail },
+        { key: 'POC Details', title: 'POC Details', data: PocDetailsDetail },
+        { key: 'Bank Details', title: 'Bank Details', data: SellerBankDetail },
+        { key: 'Commercials', title: 'Commercials', data: SellerCommercialsDetail },
+        { key: 'Declaration', title: 'Declaration', data: SellerDeclarationDetail },
+        { key: 'Internal Details', title: 'Internal Details', data: SellerInternalDetail },
+        { key: 'MSME Details', title: 'MSME Details', data: SellerMsMeDetail },
+    ]
+
+    const documentsList = [
+        {
+            label: 'PAN Card',
+            file: sellerData?.pan_copy,
+            key: 'pan',
+            name: 'pan_copy',
+            fieldName: 'panCopyFile',
+        },
+        {
+            label: 'Tan Card',
+            file: sellerData?.tan_copy,
+            key: 'tan',
+            name: 'tan_copy',
+            fieldName: 'tanCopyFile',
+        },
+        {
+            label: 'PF Declaration Doc',
+            file: sellerData?.pf_declaration_doc,
+            key: 'pf',
+            name: 'pf_declaration_doc',
+            fieldName: 'pd_doc_file',
+        },
+        {
+            label: 'Trade Mark Certificate',
+            file: sellerData?.trade_mark_certificate,
+            key: 'trade',
+            name: 'trade_mark_certificate',
+            fieldName: 'trade_mark_file',
+        },
+        {
+            label: 'GST Certificate',
+            file: sellerData?.gst_certificate,
+            key: 'gst',
+            name: 'gst_certificate',
+            fieldName: 'gstCertificateFile',
+        },
+        {
+            label: 'Cancelled Cheque',
+            file: sellerData?.cancelled_cheque,
+            key: 'cheque',
+            name: 'cancelled_cheque',
+            fieldName: 'cancelledChequeFile',
+        },
+        {
+            label: 'MSME Certificate',
+            file: sellerData?.msme_certificate,
+            key: 'msme',
+            name: 'msme_certificate',
+            fieldName: 'msmeCertificateFile',
+        },
+    ]
+
     return {
         BasicSellerInformationDetail,
         BusinessDetailsDetail,
         PocDetailsDetail,
         SellerBankDetail,
-
+        sections,
         SellerMsMeDetail,
         SellerCommercialsDetail,
         SellerInternalDetail,
         SellerDeclarationDetail,
+        documentsList,
     }
 }

@@ -17,7 +17,7 @@ interface props {
     isSubmitting: boolean
     isAdd?: boolean
 }
-
+//TODO: Refactor this component
 const SellerForm = ({ values, isSubmitting, isAdd }: props) => {
     const [currentStep, setCurrentStep] = useState(0)
     return (
