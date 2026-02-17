@@ -8,7 +8,7 @@ import { buildFormData } from '@/utils/formDataBuilder'
 import { Button, FormContainer, Spinner } from '@/components/ui'
 import PoFormStepOne from '../poUtils/PoFormStepOne'
 import { purchaseOrderService } from '@/store/services/purchaseOrderService'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { PurchaseOrderTable } from '@/store/types/po.types'
 import { getApiErrorMessage } from '@/constants/generateErrorMessage'
 import { notification } from 'antd'
@@ -27,7 +27,7 @@ const PoEdit = () => {
     const { data, isSuccess, isError, isLoading, isFetching, error } = purchaseOrderService.usePurchaseSingleOrdersListQuery({
         order_id: purchase_id,
     })
-    const commercial_approval_doc = useMemo(() => selectedCompany?.commercial_approval_doc, [selectedCompany])
+    const commercial_approval_doc = selectedCompany?.commercial_approval_doc
 
     useEffect(() => {
         if (isSuccess) {
