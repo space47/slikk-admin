@@ -19,6 +19,7 @@ import { FaDownload } from 'react-icons/fa'
 import { FashionStyleOptions } from '../sellerUtils/sellerFormCommon'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 import FormUploadFile from '@/common/FormUploadFile'
+import SellerDetailWarehouse from '../sellerUtils/SellerDetailWarehouse'
 
 const { Panel } = Collapse
 
@@ -67,7 +68,6 @@ const SellerDetails = () => {
         SellerDeclarationDetail,
         SellerInternalDetail,
         SellerMsMeDetail,
-        SellerWarehouseDetail,
     } = useMemo(() => {
         return SellerDetailCommon({ seller: sellerData })
     }, [sellerData])
@@ -80,7 +80,6 @@ const SellerDetails = () => {
         { key: 'Declaration', title: 'Declaration', data: SellerDeclarationDetail },
         { key: 'Internal Details', title: 'Internal Details', data: SellerInternalDetail },
         { key: 'MSME Details', title: 'MSME Details', data: SellerMsMeDetail },
-        { key: 'Warehouse Details', title: 'Warehouse Details', data: SellerWarehouseDetail },
     ]
 
     const documentsList = [
@@ -409,8 +408,14 @@ const SellerDetails = () => {
                                     </Panel>
                                 ),
                         )}
+                        {/* warehouse */}
+                        <SellerDetailWarehouse
+                            refetch={refetch}
+                            editingSection={editingSection}
+                            sellerData={sellerData}
+                            setEditingSection={setEditingSection}
+                        />
 
-                        {/* Documents & Verifications Section */}
                         <div className="mt-6">
                             <Card className="rounded-2xl border border-gray-200 shadow-sm bg-white p-5">
                                 <div className="flex justify-between items-center border-b pb-2 mb-4">
@@ -516,7 +521,6 @@ const SellerDetails = () => {
                                         )}
                                     </Formik>
                                 ) : (
-                                    // View Mode - Show current documents with download buttons
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
                                         {documentsList.map((doc) => (
                                             <div

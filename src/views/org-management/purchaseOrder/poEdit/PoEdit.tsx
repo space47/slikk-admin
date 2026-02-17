@@ -105,9 +105,7 @@ const PoEdit = () => {
                     Go to Order Items
                 </Button>
             </div>
-            <h6>
-                {selectedCompany.name}and {commercial_approval_doc}
-            </h6>
+
             <div>
                 {isLoading ||
                     (isFetching && (
@@ -125,7 +123,7 @@ const PoEdit = () => {
                                 <>
                                     <FormUploadFile
                                         asterisk
-                                        label="Upload PAN Copy"
+                                        label="Upload Commercial Doc Copy"
                                         fileList={(values as any)?.commercialFile}
                                         name="commercial_terms"
                                         existingFile={values?.commercial_terms}

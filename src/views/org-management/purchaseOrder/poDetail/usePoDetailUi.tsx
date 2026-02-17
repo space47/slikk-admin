@@ -1,7 +1,7 @@
 import { Button, Card } from '@/components/ui'
 import { PurchaseOrderTable } from '@/store/types/po.types'
 import React from 'react'
-import { FaCheck, FaRegCommentDots } from 'react-icons/fa'
+import { FaCheck } from 'react-icons/fa'
 import { FiClock } from 'react-icons/fi'
 import { MdOutlineCancel, MdOutlineCheckCircle } from 'react-icons/md'
 
