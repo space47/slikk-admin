@@ -6,11 +6,11 @@ export const BasicSellerInformation = [
     { label: 'Phone Number', name: 'head_contact', type: 'number', isRequired: true, visible: true, maxLength: 10 },
 ]
 export const BusinessDetails = [
-    { label: 'PAN Number', name: 'pan_number', type: 'text', isRequired: true, visible: true },
-    { label: 'TAN Number', name: 'tan_number', type: 'text', isRequired: true, visible: true },
-    { label: 'GSTIN', name: 'gstin', type: 'text', isRequired: true, visible: true },
-    { label: 'CIN', name: 'cin', type: 'text', isRequired: true, visible: true },
-    { label: 'Pf Declaration', name: 'pf_declaration', type: 'checkbox', isRequired: true, visible: true },
+    { label: 'PAN Number', name: 'pan_number', type: 'text', isRequired: false, visible: true },
+    { label: 'TAN Number', name: 'tan_number', type: 'text', isRequired: false, visible: true },
+    { label: 'GSTIN', name: 'gstin', type: 'text', isRequired: false, visible: true },
+    { label: 'CIN', name: 'cin', type: 'text', isRequired: false, visible: true },
+    { label: 'Pf Declaration', name: 'pf_declaration', type: 'checkbox', isRequired: false, visible: true },
 ]
 export const PocDetails = [
     { label: 'Vendor POC', name: 'poc', type: 'text', isRequired: true, visible: true },
@@ -23,11 +23,11 @@ export const PocDetails = [
 ]
 
 export const SellerBankData = [
-    { label: 'Bank Name', name: 'bank_name', type: 'text', isRequired: true, visible: true },
-    { label: 'Branch Name', name: 'branch_name', type: 'text', isRequired: true, visible: true },
-    { label: 'Account Holder Name', name: 'account_holder_name', type: 'text', isRequired: true, visible: true },
-    { label: 'Account Number', name: 'account_number', type: 'number', isRequired: true, visible: true },
-    { label: 'IFSC Code', name: 'ifsc', type: 'text', isRequired: true, visible: false },
+    { label: 'Bank Name', name: 'bank_name', type: 'text', isRequired: false, visible: true },
+    { label: 'Branch Name', name: 'branch_name', type: 'text', isRequired: false, visible: true },
+    { label: 'Account Holder Name', name: 'account_holder_name', type: 'text', isRequired: false, visible: true },
+    { label: 'Account Number', name: 'account_number', type: 'number', isRequired: false, visible: true },
+    { label: 'IFSC Code', name: 'ifsc', type: 'text', isRequired: false, visible: false },
 ]
 
 export const SellerWarehouseArray = [

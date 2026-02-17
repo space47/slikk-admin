@@ -1,6 +1,6 @@
 import { FormContainer, FormItem, Input, Switcher } from '@/components/ui'
 import React from 'react'
-import { BasicSellerInformation, FashionStyleOptions } from '../sellerUtils/sellerFormCommon'
+import { BasicSellerInformation } from '../sellerUtils/sellerFormCommon'
 import { Field } from 'formik'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 
@@ -25,7 +25,7 @@ const SellerStepOne = () => {
                         </FormItem>
                     )
                 })}
-                <CommonSelect asterisk name="segment" label="Fashion Style" options={FashionStyleOptions} />
+                {/* <CommonSelect asterisk name="segment" label="Fashion Style" options={FashionStyleOptions} /> */}
             </FormContainer>
         </div>
     )

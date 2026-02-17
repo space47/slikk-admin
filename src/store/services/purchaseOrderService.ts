@@ -91,7 +91,7 @@ export const purchaseOrderService = RtkQueryService.injectEndpoints({
         verifyPo: builder.mutation<{ success: string; message: string }, { id: number; status: string }>({
             query: (params) => {
                 return {
-                    url: `/merchant/purchase/order/verify/${params?.id}`,
+                    url: `/merchant/purchase/order/status/${params?.id}`,
                     method: 'PATCH',
                     body: {
                         status: params?.status,
