@@ -44,9 +44,9 @@ export const usePoDetailUi = ({ purchaseDetail, handleApprove }: Props) => {
                 <Button variant="blue" size="sm" icon={<FaCheck />} onClick={handleApprove}>
                     Approve and Send to Vendor
                 </Button>
-                <Button variant="blue" size="sm" icon={<FaRegCommentDots />}>
+                {/* <Button variant="blue" size="sm" icon={<FaRegCommentDots />}>
                     Add Comments
-                </Button>
+                </Button> */}
             </div>
         )
     }
