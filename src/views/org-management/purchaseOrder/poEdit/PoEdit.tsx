@@ -105,7 +105,9 @@ const PoEdit = () => {
                     Go to Order Items
                 </Button>
             </div>
-
+            <h6>
+                {selectedCompany.name}and {commercial_approval_doc}
+            </h6>
             <div>
                 {isLoading ||
                     (isFetching && (
