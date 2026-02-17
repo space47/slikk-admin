@@ -45,7 +45,7 @@ export const sellerTemplateService = RtkQueryService.injectEndpoints({
             query: ({ id, ...rest }) => {
                 return {
                     url: `/notification/email/template/${id}`,
-                    method: 'POST',
+                    method: 'PATCH',
                     body: rest,
                 }
             },
