@@ -43,11 +43,11 @@ export const SellerDetailCommon = ({ seller: sellerData }: any) => {
         { label: 'Account Type', name: 'account_type', value: sellerData?.account_type, visible: true },
     ]
 
-    const SellerWarehouseDetail = [
-        { label: 'Warehouse Name', name: 'warehouse_name', value: sellerData?.warehouse_name, visible: true },
-        { label: 'GSTIN', name: 'gstin', value: sellerData?.gstin, visible: true },
-        { label: 'WareHouse Active', name: 'is_active', value: sellerData?.is_active, visible: true },
-    ]
+    // const SellerWarehouseDetail = [
+    //     { label: 'Warehouse Name', name: 'warehouse_name', value: sellerData?.warehouse_name, visible: true },
+    //     { label: 'GSTIN', name: 'gstin', value: sellerData?.gstin, visible: true },
+    //     { label: 'WareHouse Active', name: 'is_active', value: sellerData?.is_active, visible: true },
+    // ]
 
     const SellerMsMeDetail = [
         { label: 'MsMe Category', name: 'msme_category', value: sellerData?.msme_category, visible: true },
@@ -86,7 +86,7 @@ export const SellerDetailCommon = ({ seller: sellerData }: any) => {
         BusinessDetailsDetail,
         PocDetailsDetail,
         SellerBankDetail,
-        SellerWarehouseDetail,
+
         SellerMsMeDetail,
         SellerCommercialsDetail,
         SellerInternalDetail,

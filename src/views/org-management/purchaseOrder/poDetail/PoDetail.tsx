@@ -5,7 +5,7 @@ import { purchaseOrderService } from '@/store/services/purchaseOrderService'
 import { PurchaseOrderItem, PurchaseOrderTable } from '@/store/types/po.types'
 import { notification } from 'antd'
 import moment from 'moment'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useOrderItemColumns } from '../poUtils/useOrderItemColumns'
 import PageCommon from '@/common/PageCommon'
@@ -14,6 +14,8 @@ import { usePoDetailUi } from './usePoDetailUi'
 import DialogConfirm from '@/common/DialogConfirm'
 import { FaDownload } from 'react-icons/fa'
 import { usePoDetailFunction } from './usePoDetailFunction'
+import { IndianStateCodes } from '../poUtils/poFormCommon'
+import { FiClock, FiFileText } from 'react-icons/fi'
 
 const PoDetail = () => {
     const { purchase_id } = useParams()
@@ -36,7 +38,10 @@ const PoDetail = () => {
     } = purchaseOrderService.useOrderItemsQuery({ purchase_order_id: purchase_id as string, page, pageSize }, { skip: !purchase_id })
 
     const [isDownloading, setIsDownloading] = useState(false)
-
+    const StateFromId = useMemo(
+        () => IndianStateCodes?.find((item) => item.value?.toString() === purchaseDetail?.state_code)?.label,
+        [purchaseDetail],
+    )
     const [isApproveConfirm, setIsConfirmApprove] = useState(false)
     const [verifyPo, verifyResponse] = purchaseOrderService.useVerifyPoMutation()
 
@@ -71,7 +76,7 @@ const PoDetail = () => {
         }
     }, [verifyResponse.isSuccess, verifyResponse.isError])
 
-    const { ActivityBar, ButtonUI, OrderInformation, VendorInformation } = usePoDetailUi({
+    const { ActivityBar, ButtonUI, OrderInformation, statusConfig } = usePoDetailUi({
         purchaseDetail: purchaseDetail as PurchaseOrderTable,
         handleApprove,
     })
@@ -93,23 +98,37 @@ const PoDetail = () => {
     return (
         <div className="mt-5 flex flex-col gap-5">
             <div className="flex flex-col gap-4 xl:flex-row xl:justify-between">
-                <div className="flex flex-col gap-3">
-                    <div className="flex gap-2 items-center">
-                        <h5>PO-{purchaseDetail?.id}</h5>
-                        <span className="bg-gray-100 p-2 rounded-xl">{purchaseDetail?.status}</span>
+                <div className="bg-white border rounded-xl shadow-sm p-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-lg border border-blue-100">
+                                <FiFileText className="text-lg" />
+                                <span className="font-semibold tracking-wide">PO-{purchaseDetail?.id}</span>
+                            </div>
+                            <div
+                                className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-full border ${statusConfig.style}`}
+                            >
+                                {statusConfig.icon}
+                                {purchaseDetail?.status}
+                            </div>
+                        </div>
                     </div>
-                    <p>Created on {moment(purchaseDetail?.created_at).format('YYYY-MM-DD HH:mm:ss a')}</p>
+                    <div className="flex items-center gap-2 text-sm text-gray-500 mt-5">
+                        <FiClock />
+                        <span>
+                            Created on{' '}
+                            <span className="font-medium text-gray-700">
+                                {moment(purchaseDetail?.created_at).format('DD MMM YYYY, hh:mm A')}
+                            </span>
+                        </span>
+                    </div>
+                    {StateFromId && <div className="mt-1 border-t pt-4 text-sm text-gray-700">{StateFromId}</div>}
                 </div>
+
                 {WaitStatus && <div>{ButtonUI()}</div>}
-                <div>
-                    <Button variant="twoTone" color="yellow">
-                        Export Pdf
-                    </Button>
-                </div>
             </div>
             <div>{ActivityBar()}</div>
             <div className="flex xl:flex-row md:flex-row flex-col  gap-4 w-full items-stretch">
-                <div className="flex-1">{VendorInformation()}</div>
                 <div className="flex-1">{OrderInformation()}</div>
             </div>
             <Card className="p-2 shadow-xl">
