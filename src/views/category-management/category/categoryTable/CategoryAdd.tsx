@@ -31,7 +31,6 @@ const CategoryAdd = () => {
             name: values?.name || '',
             image: imageUpload,
             division: values?.division[0]?.id,
-            division_name: values?.division[0]?.name,
             is_active: values?.is_active,
             is_try_and_buy: values?.is_try_and_buy,
             gender: values?.gender || '',
