@@ -1,16 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import CommonFilterSelect from '@/common/ComonFilterSelect'
-import { Card, Input } from '@/components/ui'
+import { Card, Input, Spinner } from '@/components/ui'
 import { Form, Formik } from 'formik'
 import React, { useEffect, useMemo, useState } from 'react'
-import { FaCopy, FaSearch, FaFilter } from 'react-icons/fa'
+import { FaCopy, FaSearch, FaFilter, FaSync } from 'react-icons/fa'
 import { FilterDataType } from './filterListUtils/filterCommon'
 import moment from 'moment'
 import { notification } from 'antd'
+import { AxiosError } from 'axios'
+import { errorMessage, successMessage } from '@/utils/responseMessages'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 const FilterTable = () => {
     const [filterId, setFilterId] = useState<string | undefined>('')
     const [data, setData] = useState<FilterDataType | null>(null)
+    const [runningTask, setRunningTask] = useState(false)
     const [search, setSearch] = useState('')
 
     const handleCopy = (text: string) => {
@@ -43,15 +47,28 @@ const FilterTable = () => {
         }
     }, [data])
 
+    const handleTask = async () => {
+        setRunningTask(true)
+        try {
+            const body = {
+                task_name: 'refresh_filter_id_data',
+                filter_ids: data?.id?.toString() || '',
+            }
+            const res = await axioisInstance.post(`/backend/task/process`, body)
+            successMessage(res)
+        } catch (error) {
+            if (error instanceof AxiosError) errorMessage(error)
+        } finally {
+            setRunningTask(false)
+        }
+    }
+
     return (
         <div className="">
-            {/* Header */}
             <div className="mb-8">
                 <h1 className="text-2xl font-bold text-gray-800 mb-2">Filter Management</h1>
                 <p className="text-gray-600">Search and view filter configurations</p>
             </div>
-
-            {/* Search Section */}
             <div className="mb-6">
                 <div className="relative">
                     <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -64,8 +81,6 @@ const FilterTable = () => {
                 </div>
                 <p className="text-sm text-gray-500 mt-2">Enter a Filter ID or use the filter selector below to load details</p>
             </div>
-
-            {/* Filter Selection */}
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-100 shadow-sm mb-10">
                 <div className="flex items-center gap-2 mb-4">
                     <FaFilter className="text-blue-600 text-lg" />
@@ -95,7 +110,6 @@ const FilterTable = () => {
                     </div>
 
                     <div className="grid gap-4 text-sm">
-                        {/* Filter ID */}
                         <div className="flex items-center gap-3">
                             <span className="uppercase text-gray-500 w-32">Filter ID</span>
                             <span
@@ -105,15 +119,24 @@ const FilterTable = () => {
                                 {data.id}
                                 <FaCopy />
                             </span>
+                            <button className="flex gap-2 p-1 items-center bg-gray-600 text-white rounded-xl" onClick={handleTask}>
+                                {runningTask ? (
+                                    <Spinner size={10} color="white" />
+                                ) : (
+                                    <>
+                                        <FaSync /> Refresh
+                                    </>
+                                )}
+                            </button>
                         </div>
-
-                        {/* Created Date */}
                         <div className="flex items-center gap-3">
                             <span className="uppercase text-gray-500 w-32">Created At</span>
                             <span className="font-medium">{moment(data.created_date).format('YYYY-MM-DD hh:mm:ss A')}</span>
                         </div>
-
-                        {/* Search Data */}
+                        <div className="flex items-center gap-3">
+                            <span className="uppercase text-gray-500 w-38">Total Barcodes:</span>
+                            <span className="font-medium">{data?.barcodes?.length}</span>
+                        </div>
                         <div>
                             <span className="uppercase text-gray-500 block mb-2">Filters Selected</span>
 
@@ -128,8 +151,6 @@ const FilterTable = () => {
                     </div>
                 </Card>
             )}
-
-            {/* Empty State */}
             {!data && (
                 <div className="text-center py-16 border-2 border-dashed border-gray-200 rounded-2xl bg-gray-50">
                     <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
