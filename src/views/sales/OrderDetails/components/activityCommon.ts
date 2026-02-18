@@ -4,6 +4,7 @@ import { Order } from '@/store/types/newOrderTypes'
 export const LOGISTIC_PARTNER = [
     { value: 'porter', label: 'PORTER' },
     { value: 'slikk', label: 'SLIKK' },
+    { value: 'pico', label: 'PICO' },
 ]
 
 export type Payment = {
