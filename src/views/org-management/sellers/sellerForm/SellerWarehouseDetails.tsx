@@ -24,7 +24,7 @@ const DEFAULT_WAREHOUSE = {
     is_active: true,
 }
 
-const makeNewWarehouse = () => ({ ...DEFAULT_WAREHOUSE, _id: `w_${Date.now()}_${Math.floor(Math.random() * 10000)}` })
+const makeNewWarehouse = () => ({ ...DEFAULT_WAREHOUSE })
 
 const SellerWarehouseDetails = ({ isEdit }: Props) => {
     const formik = useFormikContext<any>()
