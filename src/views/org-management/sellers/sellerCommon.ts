@@ -83,6 +83,5 @@ export const SellerStepsAdd = [
     'Bank Details',
     'Warehouse & GST',
     'MSME Details',
-    'POC-(Slikk Internal)',
     'Docs and Declaration',
 ]

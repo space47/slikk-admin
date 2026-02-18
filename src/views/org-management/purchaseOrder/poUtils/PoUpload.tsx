@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { beforeUpload } from '@/common/beforeUpload'
-import { Dialog, FormItem, Switcher, Upload } from '@/components/ui'
+import { Dialog, FormItem, Upload } from '@/components/ui'
 import FormButton from '@/components/ui/Button/FormButton'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'

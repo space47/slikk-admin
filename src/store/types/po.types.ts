@@ -90,7 +90,6 @@ export type PurchaseOrderItem = {
     updated_at: string
     order: number
     tax_amount: number | string
-    product: any
 }
 
 export type PurchaseOrderItemSingleResponse = {

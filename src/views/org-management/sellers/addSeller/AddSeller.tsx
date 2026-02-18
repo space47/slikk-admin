@@ -8,14 +8,18 @@ import { AxiosError } from 'axios'
 import {
     BasicExtra,
     BasicSellerInformation,
+    CategoryMailOptions,
+    CategoryNameOptions,
+    CategoryNumberOptions,
     fileFields,
     NOBOptions,
     SellerCommercialsArray,
+    SellerInternalArray,
     simpleFields,
 } from '../sellerUtils/sellerFormCommon'
 import { useState } from 'react'
-import { Button, FormContainer, FormItem, Select } from '@/components/ui'
-import { Input } from 'antd'
+import { Button, FormContainer, FormItem, Input, Select, Switcher } from '@/components/ui'
+
 import { GrDocument } from 'react-icons/gr'
 import { SegmentOptions } from '@/constants/commonArray.constant'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
@@ -74,7 +78,7 @@ const AddSeller = () => {
                     <Form className="xl:w-[90%] w-full p-5 ">
                         {!isOther && (
                             <FormContainer>
-                                <div className="bg-gradient-to-r  p-6 rounded-xl border-l-4 border-blue-500 shadow-lg mb-8">
+                                <FormContainer className="bg-gradient-to-r  p-6 rounded-xl border-l-4 border-blue-500 shadow-lg mb-8">
                                     <div className="flex items-center gap-3 mb-6">
                                         <div className="p-2 bg-blue-100 rounded-lg">
                                             <FcViewDetails className="text-2xl text-blue-600" />
@@ -113,8 +117,25 @@ const AddSeller = () => {
                                                 </FormItem>
                                             )
                                         })}
+
+                                        <CommonSelect asterisk label="Head Name" name="int_poc_name" options={CategoryNameOptions} />
+                                        <CommonSelect asterisk label="Head Email" name="int_poc_name" options={CategoryMailOptions} />
+                                        <CommonSelect asterisk label="Head Number" name="int_poc_name" options={CategoryNumberOptions} />
+
+                                        {SellerInternalArray?.map((item, idx) => {
+                                            return (
+                                                <FormItem key={idx} label={item?.label} asterisk={item?.isRequired}>
+                                                    <Field
+                                                        type={item?.type}
+                                                        name={item?.name}
+                                                        placeholder={`Enter ${item?.label}`}
+                                                        component={item?.type === 'checkbox' ? Switcher : Input}
+                                                    />
+                                                </FormItem>
+                                            )
+                                        })}
                                     </FormContainer>
-                                </div>
+                                </FormContainer>
                                 {/* Commercials */}
                                 <div className="bg-gradient-to-r  p-6 rounded-xl border-l-4 border-orange-500 shadow-lg mb-8">
                                     <div className="flex items-center gap-3 mb-6">
@@ -170,7 +191,7 @@ const AddSeller = () => {
                                                 }}
                                             </Field>
                                         </FormItem>
-                                        <CommonSelect name="business_nature" options={NOBOptions()} label="Nature of Business" />
+                                        <CommonSelect asterisk name="business_nature" options={NOBOptions()} label="Nature of Business" />
                                     </FormContainer>
                                 </div>
                             </FormContainer>
