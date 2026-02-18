@@ -91,7 +91,6 @@ const CategoryEdit = () => {
             name: values?.name || '',
             image: imageUpload,
             division: Array.isArray(values.division) ? values?.division[0]?.id : values?.division || '',
-            division_name: Array.isArray(values.division) ? values?.division[0]?.name : values?.division_name || '',
             is_active: values?.is_active,
             is_try_and_buy: values?.is_try_and_buy,
             gender: values?.gender || '',
