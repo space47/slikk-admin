@@ -35,6 +35,7 @@ export type PurchaseOrderTable = {
     comment: string | null
     created_at: string
     updated_at: string
+    company_gst: string | number
 }
 
 export type PurchaseSingleData = {

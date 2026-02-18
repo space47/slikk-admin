@@ -51,7 +51,7 @@ const PoEdit = () => {
         expected_delivery_date: purchaseOrder?.expected_delivery_date,
         po_nature: purchaseOrder?.po_nature,
         store: purchaseOrder?.store,
-        warehouse_id: purchaseOrder?.warehouse_id,
+        company_gst: purchaseOrder?.company_gst,
         payment_mode: purchaseOrder?.payment_mode,
         vendor_address: purchaseOrder?.vendor_address,
     }
@@ -67,7 +67,7 @@ const PoEdit = () => {
                 discount_sharing_applicable: values.discount_sharing_applicable,
                 special_terms: values.special_terms,
                 state_code: values.state_code,
-                warehouse_id: values?.warehouse_id?.id,
+                company_gst: values?.company_gst?.id,
                 expected_delivery_date: values.expected_delivery_date,
                 po_nature: values.po_nature,
                 payment_mode: values?.payment_mode,

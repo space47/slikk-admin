@@ -10,7 +10,7 @@ import { DatePicker } from 'antd'
 const PoFormStepOne = () => {
     return (
         <FormContainer className="mt-8 grid grid-cols-2 gap-2">
-            <WarehouseSelect isSingle label="Select Vendor Warehouse" name="warehouse_id" customCss="w-auto w-full" />
+            <WarehouseSelect isSingle label="Select Vendor Warehouse" name="company_gst" customCss="col-span-1 w-full" />
             <CommonSelect label="State Code" name="state_code" options={IndianStateCodes} />
             {PoFormFieldArray?.map((item, idx) => {
                 return (

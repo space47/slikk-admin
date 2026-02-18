@@ -33,7 +33,7 @@ const PoAdd = () => {
                 state_code: values.state_code,
                 expected_delivery_date: values.expected_delivery_date,
                 po_nature: values.po_nature,
-                warehouse_id: values?.warehouse_id?.id,
+                company_gst: values?.company_gst?.id,
                 payment_mode: values?.payment_mode,
             }
 
