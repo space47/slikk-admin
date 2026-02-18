@@ -28,7 +28,7 @@ const PoOrderItems = () => {
     const [addOrderItems, addResponse] = purchaseOrderService.useCreateOrderItemsMutation()
     const [updateOrderItems, updateResponse] = purchaseOrderService.useUpdateOrderItemsMutation()
 
-    const { data, isSuccess, isError, error, refetch } = purchaseOrderService.useOrderItemsQuery(
+    const { data, isSuccess, isError, error, isFetching, refetch } = purchaseOrderService.useOrderItemsQuery(
         { purchase_order_id: purchase_id as string, page, pageSize },
         { skip: !purchase_id },
     )
@@ -94,7 +94,7 @@ const PoOrderItems = () => {
     return (
         <div>
             <div className="flex justify-between">
-                <div className="flex gap-2 items-center">
+                <div className="flex gap-2 flex-col items-start">
                     <h5>Line Items</h5>
                     <p>You can add items manually or upload excel</p>
                 </div>
@@ -110,10 +110,16 @@ const PoOrderItems = () => {
                 </div>
             </div>
 
-            <div className="mt-10">
-                <EasyTable noPage columns={columns} mainData={orderItems} />
-                <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={count} />
-            </div>
+            {orderItems.length > 0 && !isFetching ? (
+                <div className="mt-10">
+                    <EasyTable overflow noPage columns={columns} mainData={orderItems} />
+                    <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={count} />
+                </div>
+            ) : (
+                <>
+                    <NotFoundData />
+                </>
+            )}
 
             <PoOrderItemsDialog isOpen={addModal} setIsOpen={setAddModal} handleSubmit={handleAdd} />
 

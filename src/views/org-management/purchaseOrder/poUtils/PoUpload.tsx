@@ -78,9 +78,9 @@ const PoUpload = ({ isOpen, setIsOpen, purchase_id }: props) => {
                     <Formik initialValues={{ fileUpload: [] }} onSubmit={handleSubmit}>
                         {({ values }) => (
                             <Form className="space-y-6">
-                                <FormItem label="Is Catalog available">
+                                {/* <FormItem label="Is Catalog available">
                                     <Field type="checkbox" component={Switcher} name="is_catalog_available" />
-                                </FormItem>
+                                </FormItem> */}
                                 <FormItem label="Purchase Order File" className="w-full">
                                     <Field name="fileUpload">
                                         {({ form }: FieldProps<any>) => (
