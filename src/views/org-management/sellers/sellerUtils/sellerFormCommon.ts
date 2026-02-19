@@ -4,9 +4,9 @@ export const BasicSellerInformation = [
     { label: 'Vendor Business Name', name: SellerKeys.REGISTERED_NAME, type: 'text', isRequired: true, visible: true },
     { label: 'Seller Code', name: SellerKeys.CODE, type: 'text', isRequired: true, visible: true },
     { label: 'Company Name', name: SellerKeys.NAME, type: 'text', isRequired: true, visible: true },
-    { label: 'Contact Person Name', name: SellerKeys.HEAD_NAME, type: 'text', isRequired: true, visible: true },
-    { label: 'Email Address', name: SellerKeys.HEAD_EMAIL, type: 'text', isRequired: true, visible: true },
-    { label: 'Phone Number', name: SellerKeys.HEAD_CONTACT, type: 'number', isRequired: true, visible: true, maxLength: 10 },
+    { label: 'Head Person Name', name: SellerKeys.HEAD_NAME, type: 'text', isRequired: true, visible: true },
+    { label: 'Head Person Email Address', name: SellerKeys.HEAD_EMAIL, type: 'text', isRequired: true, visible: true },
+    { label: 'Head Person Phone Number', name: SellerKeys.HEAD_CONTACT, type: 'number', isRequired: true, visible: true, maxLength: 10 },
 ]
 
 export const BasicExtra = [

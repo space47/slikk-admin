@@ -6,6 +6,7 @@ import FormUploadFile from '@/common/FormUploadFile'
 import RichTextCommon from '@/common/RichTextCommon'
 import { FaTrash } from 'react-icons/fa'
 import { SellerKeys } from '../sellerCommon'
+import { handlePhoneInputValidation } from '../sellerUtils/sellerFunctions'
 
 interface Props {
     isEdit?: boolean
@@ -85,6 +86,9 @@ const SellerWarehouseDetails = ({ isEdit }: Props) => {
                                                                 name={`gst_details.${index}.${key}`}
                                                                 placeholder={`Enter ${label}`}
                                                                 component={isCheckbox ? Switcher : Input}
+                                                                {...(key === 'poc_contact_number' && {
+                                                                    onInput: handlePhoneInputValidation,
+                                                                })}
                                                             />
                                                         </FormItem>
                                                     )

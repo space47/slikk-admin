@@ -123,19 +123,19 @@ const AddSeller = () => {
 
                                         <CommonSelect
                                             asterisk
-                                            label="Head Name"
+                                            label="Internal Category Head Name"
                                             name={SellerKeys.INT_POC_NAME}
                                             options={CategoryNameOptions}
                                         />
                                         <CommonSelect
                                             asterisk
-                                            label="Head Email"
+                                            label="Internal Category Head Email"
                                             name={SellerKeys.INT_POC_EMAIL}
                                             options={CategoryMailOptions}
                                         />
                                         <CommonSelect
                                             asterisk
-                                            label="Head Number"
+                                            label="Internal Category Head Number"
                                             name={SellerKeys.INT_POC_CONTACT}
                                             options={CategoryNumberOptions}
                                         />
