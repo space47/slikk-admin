@@ -2,12 +2,16 @@
 import { ColumnDef } from '@tanstack/react-table'
 import React, { useMemo } from 'react'
 import { PurchaseOrderTable } from '@/store/types/po.types'
-import { FaEdit, FaFilePdf, FaPaperPlane, FaRegDotCircle } from 'react-icons/fa'
+import { FaEdit, FaFilePdf, FaRegDotCircle } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import { PoStatusColor } from './poFormCommon'
 import { MdOutlineGridView } from 'react-icons/md'
 
-export const usePoListColumns = () => {
+interface Props {
+    handleDownloadPdf: (x: number) => void
+}
+
+export const usePoListColumns = ({ handleDownloadPdf }: Props) => {
     const navigate = useNavigate()
 
     return useMemo<ColumnDef<PurchaseOrderTable>[]>(
@@ -111,7 +115,7 @@ export const usePoListColumns = () => {
                                         onClick={() => navigate(`/app/po/details/${row?.original?.id}`)}
                                     />
                                     <ActionButton icon={FaEdit} label="Edit" onClick={() => navigate(`/app/po/${row?.original?.id}`)} />
-                                    <ActionButton icon={FaPaperPlane} label="Send for Approval" />
+                                    {/* <ActionButton icon={FaPaperPlane} label="Send for Approval" /> */}
                                 </>
                             ) : (
                                 <>
@@ -120,7 +124,7 @@ export const usePoListColumns = () => {
                                         label="View Details"
                                         onClick={() => navigate(`/app/po/details/${row?.original?.id}`)}
                                     />
-                                    <ActionButton icon={FaFilePdf} label="View PDF" />
+                                    <ActionButton icon={FaFilePdf} onClick={() => handleDownloadPdf(row.original.id)} label="View PDF" />
                                 </>
                             )}
                         </div>

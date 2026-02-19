@@ -11,12 +11,13 @@ import { useOrderItemColumns } from './useOrderItemColumns'
 import EasyTable from '@/common/EasyTable'
 import PoOrderItemsDialog from './PoOrderItemsDialog'
 import PoUpload from './PoUpload'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 import PageCommon from '@/common/PageCommon'
 
 const PoOrderItems = () => {
     const { purchase_id } = useParams()
+    const navigate = useNavigate()
     const [orderItems, setOrderItems] = useState<PurchaseOrderItem[]>([])
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
@@ -106,6 +107,9 @@ const PoOrderItems = () => {
 
                     <Button variant="blue" size="sm" type="button" icon={<IoMdAdd />} onClick={() => setAddModal(true)}>
                         Add Item
+                    </Button>
+                    <Button variant="gray" size="sm" type="button" icon={<IoMdAdd />} onClick={() => navigate(`/app/poCatalogHistory`)}>
+                        View Catalog History
                     </Button>
                 </div>
             </div>

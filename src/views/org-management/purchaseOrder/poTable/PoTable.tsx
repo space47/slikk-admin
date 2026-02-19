@@ -24,6 +24,9 @@ import { useNavigate } from 'react-router-dom'
 import { MdOutlineFormatListNumbered } from 'react-icons/md'
 import { FaCheck, FaRupeeSign } from 'react-icons/fa'
 import { CgLock } from 'react-icons/cg'
+import { AxiosError } from 'axios'
+import { errorMessage } from '@/utils/responseMessages'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 const PoTable = () => {
     const dispatch = useAppDispatch()
@@ -157,7 +160,23 @@ const PoTable = () => {
         )
     }
 
-    const columns = usePoListColumns()
+    const handleDownloadPdf = async (x: number) => {
+        try {
+            const response = await axioisInstance.get(`/merchant/purchase/order/pdf/${x}`)
+            const pdfUrl = response.data?.data?.pdf_url
+            if (!pdfUrl) return
+            const link = document.createElement('a')
+            link.href = pdfUrl
+            link.setAttribute('download', `PO-${x}.pdf`)
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+        } catch (error) {
+            if (error instanceof AxiosError) errorMessage(error)
+        }
+    }
+
+    const columns = usePoListColumns({ handleDownloadPdf })
 
     if (isLoading) {
         return (

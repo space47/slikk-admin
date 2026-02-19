@@ -236,6 +236,14 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsOrgManagement.poCatalogHistory',
+        path: `${APP_PREFIX_PATH}/poCatalogHistory`,
+        component: lazy(
+            () => import('@/views/org-management/purchaseOrder/poUtils/PoCatalogHistory'), //p1
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsOrgManagement.po',
         path: `${APP_PREFIX_PATH}/po/details/:purchase_id`,
         component: lazy(

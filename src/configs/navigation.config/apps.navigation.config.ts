@@ -534,6 +534,17 @@ const appsNavigationConfig: NavigationTree[] = [
                         subMenu: [],
                     },
                     {
+                        key: 'appsOrgManagement.poCatalogHistory',
+                        path: `${APP_PREFIX_PATH}/poCatalogHistory`,
+                        title: 'PO Catalog History',
+                        translateKey: 'nav.appsOrgManagement.po',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+
+                    {
                         key: 'appsOrgManagement.sellerTemplate',
                         path: `${APP_PREFIX_PATH}/sellerTemplate`,
                         title: 'Templates',
