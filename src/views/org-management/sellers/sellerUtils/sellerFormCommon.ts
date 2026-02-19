@@ -61,9 +61,9 @@ export const SellerCommercialsArray = [
 ]
 
 export const SellerInternalArray = [
-    { label: 'Finance Name', name: 'int_ops_name', type: 'text', isRequired: true, visible: true },
-    { label: 'Finance Email', name: 'int_ops_email', type: 'text', isRequired: true, visible: true },
-    { label: 'Finance Number', name: 'int_ops_number', type: 'text', isRequired: true, visible: true },
+    { label: 'Finance Name', name: 'int_finance_name', type: 'text', isRequired: true, visible: true },
+    { label: 'Finance Email', name: 'int_finance_email', type: 'text', isRequired: true, visible: true },
+    { label: 'Finance Number', name: 'int_finance_contact_number', type: 'text', isRequired: true, visible: true },
 ]
 export const SellerDeclarationArray = [
     { label: 'Authorized Person', name: 'authorized_person', type: 'text', isRequired: false, visible: true },

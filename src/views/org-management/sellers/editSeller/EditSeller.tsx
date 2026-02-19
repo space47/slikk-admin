@@ -83,9 +83,9 @@ const EditSeller = () => {
         confirm: sellerData?.account_number || '',
         gst_details: sellerData?.gst_details || [],
         date: dayjs().format('YYYY-MM-DD HH:mm:ss a'),
-        int_ops_name: 'Dinesha',
-        int_ops_email: 'dinesha@slikk.club',
-        int_ops_number: '8892377371',
+        int_finance_name: 'Dinesha',
+        int_finance_email: 'dinesha@slikk.club',
+        int_finance_contact_number: '8892377371',
     }
 
     const handleSubmit = async (values: any) => {
