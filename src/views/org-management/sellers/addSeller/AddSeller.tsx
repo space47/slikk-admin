@@ -57,7 +57,9 @@ const AddSeller = () => {
             return { ...warehouse }
         })
 
-        appendIfValid('gst_details', JSON.stringify(updatedDetails))
+        if (isOther) {
+            appendIfValid('gst_details', JSON.stringify(updatedDetails))
+        }
 
         try {
             const res = await axioisInstance.post(`/merchant/company`, formData)
@@ -119,8 +121,8 @@ const AddSeller = () => {
                                         })}
 
                                         <CommonSelect asterisk label="Head Name" name="int_poc_name" options={CategoryNameOptions} />
-                                        <CommonSelect asterisk label="Head Email" name="int_poc_name" options={CategoryMailOptions} />
-                                        <CommonSelect asterisk label="Head Number" name="int_poc_name" options={CategoryNumberOptions} />
+                                        <CommonSelect asterisk label="Head Email" name="int_poc_email" options={CategoryMailOptions} />
+                                        <CommonSelect asterisk label="Head Number" name="int_poc_contact" options={CategoryNumberOptions} />
 
                                         {SellerInternalArray?.map((item, idx) => {
                                             return (
