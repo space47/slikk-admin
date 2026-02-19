@@ -116,7 +116,6 @@ export const simpleFields = [
     SellerKeys.PAN_NUMBER,
     SellerKeys.TAN_NUMBER,
     SellerKeys.CIN,
-    SellerKeys.ADDRESS,
     SellerKeys.CONTACT_NUMBER,
     SellerKeys.ALTERNATE_CONTACT_NUMBER,
     SellerKeys.POC_EMAIL,

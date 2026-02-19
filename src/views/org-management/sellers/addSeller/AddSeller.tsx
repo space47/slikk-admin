@@ -25,6 +25,7 @@ import { SegmentOptions } from '@/constants/commonArray.constant'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 import { FcViewDetails } from 'react-icons/fc'
 import { SellerKeys } from '../sellerCommon'
+import { textParser } from '@/common/textParser'
 
 const AddSeller = () => {
     const navigate = useNavigate()
@@ -40,6 +41,9 @@ const AddSeller = () => {
     const handleSubmit = async (values: any) => {
         setIsSubmitting(true)
         const formData = new FormData()
+        if (values.address) {
+            formData.append(SellerKeys.ADDRESS, textParser(values.address))
+        }
         const appendIfValid = (key: string, value: any) => {
             if (value !== undefined && value !== null && value !== '') {
                 formData.append(key, value)

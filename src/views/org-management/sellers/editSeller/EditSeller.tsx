@@ -12,6 +12,8 @@ import { errorMessage, successMessage } from '@/utils/responseMessages'
 import { getChangedFormData } from '@/utils/apiBodyUtility'
 import dayjs from 'dayjs'
 import { fileFields, simpleFields } from '../sellerUtils/sellerFormCommon'
+import { SellerKeys } from '../sellerCommon'
+import { textParser } from '@/common/textParser'
 
 const EditSeller = () => {
     const { id } = useParams()
@@ -95,6 +97,9 @@ const EditSeller = () => {
             return
         }
         const formData = new FormData()
+        if (values.address) {
+            formData.append(SellerKeys.ADDRESS, textParser(values.address))
+        }
         const appendIfValid = (key: string, value: any) => {
             if (value !== undefined && value !== null && value !== '') {
                 formData.append(key, value)
