@@ -26,12 +26,14 @@ import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 import { FcViewDetails } from 'react-icons/fc'
 import { SellerKeys } from '../sellerCommon'
 import { textParser } from '@/common/textParser'
+import { getProfileData } from '@/store/action/authAction'
+import { useAppDispatch } from '@/store'
 
 const AddSeller = () => {
     const navigate = useNavigate()
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isOther, setIsOther] = useState(false)
-
+    const dispatch = useAppDispatch()
     const initialValue = {
         int_finance_name: 'Dinesha',
         int_finance_email: 'dinesha@slikk.club',
@@ -69,6 +71,7 @@ const AddSeller = () => {
         try {
             const res = await axioisInstance.post(`/merchant/company`, formData)
             successMessage(res)
+            await dispatch(getProfileData())
             navigate(-1)
         } catch (error) {
             if (error instanceof AxiosError) errorMessage(error)

@@ -11,6 +11,11 @@ const Infor = () => {
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((state) => state.company.currCompany)
     const [brandSearch, setBrandSearch] = useState<string>('')
 
+    console.log(
+        'company list is',
+        companyList?.map((item) => item?.name),
+    )
+
     const dispatch = useAppDispatch()
 
     const onDropdownItemClick = (index: any) => {
@@ -22,16 +27,14 @@ const Infor = () => {
     }
 
     useEffect(() => {
-        fiteredData
+        fiteredData()
     }, [brandSearch])
 
     const handleOption = () => {
         console.log('object')
     }
 
-    if (!selectedCompany) {
-        return
-    }
+    if (!selectedCompany?.id) return null
 
     const fiteredData = () => {
         return companyList.filter((item) => item?.name?.toLowerCase().includes(brandSearch.toLowerCase()))
