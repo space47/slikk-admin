@@ -63,7 +63,7 @@ const PoAdd = () => {
                                 <>
                                     <FormUploadFile
                                         asterisk
-                                        label="Upload PAN Copy"
+                                        label="Upload Commercial Terms"
                                         fileList={values?.commercialFile}
                                         name="commercial_terms"
                                         existingFile={values?.commercial_terms}
