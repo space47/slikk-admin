@@ -1,9 +1,10 @@
 import { Button, Card } from '@/components/ui'
 import { PurchaseOrderTable } from '@/store/types/po.types'
 import React from 'react'
-import { FaCheck } from 'react-icons/fa'
+import { BiHash, BiMapPin, BiPhone } from 'react-icons/bi'
+import { FaCheck, FaUser, FaWarehouse } from 'react-icons/fa'
 import { FiClock } from 'react-icons/fi'
-import { MdOutlineCancel, MdOutlineCheckCircle } from 'react-icons/md'
+import { MdEmail, MdOutlineCancel, MdOutlineCheckCircle } from 'react-icons/md'
 
 interface Props {
     purchaseDetail: PurchaseOrderTable
@@ -75,6 +76,80 @@ export const usePoDetailUi = ({ purchaseDetail, handleApprove }: Props) => {
         )
     }
 
+    const DetailItem = ({ icon, label, value }: { icon: React.ReactNode; label: string; value: React.ReactNode }) => {
+        return (
+            <div className="flex gap-3">
+                <div className="mt-1 text-gray-400">{icon}</div>
+                <div>
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{label}</p>
+                    <div className="text-sm font-medium text-gray-800 mt-1">{value || '-'}</div>
+                </div>
+            </div>
+        )
+    }
+
+    const WarehouseData = () => {
+        const warehouseData = purchaseDetail?.gst_details
+
+        if (!warehouseData) return null
+
+        return (
+            <Card className="shadow-lg rounded-2xl p-6 bg-white border border-gray-100">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                        <h2 className="text-lg font-semibold text-gray-800">Warehouse Details</h2>
+                    </div>
+
+                    <span
+                        className={`px-3 py-1 text-xs font-medium rounded-full ${
+                            warehouseData?.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'
+                        }`}
+                    >
+                        {warehouseData?.is_active ? 'Active' : 'Inactive'}
+                    </span>
+                </div>
+
+                {/* Content Grid */}
+                <div className="grid md:grid-cols-2 gap-6">
+                    {/* Left Section */}
+                    <div className="space-y-4">
+                        <DetailItem icon={<FaWarehouse size={16} />} label="Warehouse Name" value={warehouseData?.warehouse_name} />
+
+                        <DetailItem icon={<BiHash size={16} />} label="GSTIN" value={warehouseData?.gstin} />
+
+                        <DetailItem
+                            icon={<BiMapPin size={16} />}
+                            label="Address"
+                            value={
+                                <div
+                                    className="text-sm text-gray-600 leading-relaxed"
+                                    dangerouslySetInnerHTML={{
+                                        __html: warehouseData?.warehouse_address,
+                                    }}
+                                />
+                            }
+                        />
+                    </div>
+
+                    {/* Right Section */}
+                    <div className="space-y-4">
+                        <DetailItem icon={<FaUser size={16} />} label="POC Name" value={warehouseData?.poc_name} />
+
+                        <DetailItem icon={<MdEmail size={16} />} label="POC Email" value={warehouseData?.poc_email} />
+
+                        <DetailItem icon={<BiPhone size={16} />} label="POC Contact" value={warehouseData?.poc_contact_number} />
+                    </div>
+                </div>
+
+                {/* Footer */}
+                <div className="mt-6 pt-4 border-t border-gray-100 text-xs text-gray-400">
+                    Last Updated: {new Date(warehouseData?.update_date).toLocaleString()}
+                </div>
+            </Card>
+        )
+    }
+
     const VendorInformation = () => {
         const VendorDataArray = [
             { label: 'Vendor Name', value: purchaseDetail?.brand_name },
@@ -119,5 +194,5 @@ export const usePoDetailUi = ({ purchaseDetail, handleApprove }: Props) => {
         )
     }
 
-    return { ButtonUI, ActivityBar, VendorInformation, OrderInformation, statusConfig }
+    return { ButtonUI, ActivityBar, VendorInformation, OrderInformation, statusConfig, WarehouseData }
 }

@@ -67,9 +67,8 @@ const UploadHistory = ({ type }: Props) => {
                     mainData={indentHistoryData}
                     columns={columns}
                 />
-                <div className="flex items-center justify-between mt-4">
-                    <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={totalData} />
-                </div>
+
+                <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={totalData} />
             </div>
         </Spin>
     )

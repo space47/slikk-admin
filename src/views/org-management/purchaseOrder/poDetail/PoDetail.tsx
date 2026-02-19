@@ -1,9 +1,9 @@
 import EasyTable from '@/common/EasyTable'
-import { Button, Card, Spinner } from '@/components/ui'
+import { Button, Card } from '@/components/ui'
 import { getApiErrorMessage } from '@/constants/generateErrorMessage'
 import { purchaseOrderService } from '@/store/services/purchaseOrderService'
 import { PurchaseOrderItem, PurchaseOrderTable } from '@/store/types/po.types'
-import { notification } from 'antd'
+import { notification, Spin } from 'antd'
 import moment from 'moment'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
@@ -16,6 +16,7 @@ import { FaDownload } from 'react-icons/fa'
 import { usePoDetailFunction } from './usePoDetailFunction'
 import { IndianStateCodes } from '../poUtils/poFormCommon'
 import { FiClock, FiFileText } from 'react-icons/fi'
+import NotFoundData from '@/views/pages/NotFound/Notfound'
 
 const PoDetail = () => {
     const { purchase_id } = useParams()
@@ -76,7 +77,7 @@ const PoDetail = () => {
         }
     }, [verifyResponse.isSuccess, verifyResponse.isError])
 
-    const { ActivityBar, ButtonUI, OrderInformation, statusConfig } = usePoDetailUi({
+    const { WarehouseData, ButtonUI, OrderInformation, statusConfig } = usePoDetailUi({
         purchaseDetail: purchaseDetail as PurchaseOrderTable,
         handleApprove,
     })
@@ -127,25 +128,27 @@ const PoDetail = () => {
 
                 {WaitStatus && <div>{ButtonUI()}</div>}
             </div>
-            <div>{ActivityBar()}</div>
+            <div>{WarehouseData()}</div>
             <div className="flex xl:flex-row md:flex-row flex-col  gap-4 w-full items-stretch">
                 <div className="flex-1">{OrderInformation()}</div>
             </div>
             <Card className="p-2 shadow-xl">
-                <div className="mt-2 mb-5 flex justify-between">
-                    <h4>Line Items</h4>
-                    <Button variant="blue" size="sm" icon={<FaDownload />} onClick={handleDownloadPo} loading={isDownloading}>
-                        Download
-                    </Button>
-                </div>
-                {itemsLoading ||
-                    (itemsFetching && (
-                        <div className="flex items-center justify-between">
-                            <Spinner size={30} />
+                {lineItems?.length && !isLoading ? (
+                    <Spin spinning={itemsLoading || itemsFetching}>
+                        <div className="mt-2 mb-5 flex justify-between">
+                            <h4>Line Items</h4>
+                            <Button variant="blue" size="sm" icon={<FaDownload />} onClick={handleDownloadPo} loading={isDownloading}>
+                                Download
+                            </Button>
                         </div>
-                    ))}
-                <EasyTable overflow columns={columns} mainData={lineItems} page={page} pageSize={pageSize} />
-                <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={count} />
+                        <EasyTable overflow columns={columns} mainData={lineItems} page={page} pageSize={pageSize} />
+                        <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={count} />
+                    </Spin>
+                ) : (
+                    <>
+                        <NotFoundData />
+                    </>
+                )}
                 {isApproveConfirm && (
                     <DialogConfirm
                         IsConfirm

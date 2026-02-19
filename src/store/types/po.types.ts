@@ -36,6 +36,20 @@ export type PurchaseOrderTable = {
     created_at: string
     updated_at: string
     company_gst: string | number
+    gst_details: {
+        company: number
+        create_date: string
+        gst_certificate: string
+        gstin: string
+        id: number
+        is_active: boolean
+        poc_contact_number: string
+        poc_email: string
+        poc_name: string
+        update_date: string
+        warehouse_address: string
+        warehouse_name: string
+    }
 }
 
 export type PurchaseSingleData = {
