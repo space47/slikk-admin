@@ -5,9 +5,9 @@ export const SellerDetailCommon = ({ seller: sellerData }: any) => {
         { label: 'Vendor Business Name', name: 'registered_name', value: sellerData?.registered_name, visible: true },
         { label: 'Company Name', name: 'name', value: sellerData?.name, visible: true },
         { label: 'Contact Person Name', name: 'head_name', value: sellerData?.head_name, visible: true },
-        { label: 'Vendor Code', name: 'code', value: sellerData?.vendor_code, visible: true },
+        { label: 'Vendor Code', name: 'code', value: sellerData?.code, visible: true },
         { label: 'Email Address', name: 'head_email', value: sellerData?.head_email, visible: true },
-        { label: 'Phone Number', name: 'head_contact', value: sellerData?.head_number, visible: true },
+        { label: 'Phone Number', name: 'head_contact', value: sellerData?.head_contact, visible: true },
         { label: 'Fashion Style', name: 'segment', value: sellerData?.segment, visible: true },
     ]
 
@@ -16,7 +16,7 @@ export const SellerDetailCommon = ({ seller: sellerData }: any) => {
         { label: 'TAN Number', name: 'tan_number', value: sellerData?.tan_number, visible: true },
         { label: 'CIN', name: 'cin', value: sellerData?.cin, visible: true },
         { label: 'Sole Proprietorship Type', name: 'sp_type', value: sellerData?.sp_type, visible: true },
-        { label: 'Pf Declaration', name: 'sp_type', value: sellerData?.sp_type, visible: true },
+        { label: 'Pf Declaration', name: 'pf_declaration', value: sellerData?.pf_declaration, visible: true },
     ]
 
     const PocDetailsDetail = [
@@ -59,16 +59,16 @@ export const SellerDetailCommon = ({ seller: sellerData }: any) => {
         {
             label: 'Handling Charges Per Sku',
             name: 'handling_charges_per_order',
-            value: sellerData?.handling_charges_per_sku,
+            value: sellerData?.handling_charges_per_order,
             visible: true,
         },
         {
             label: 'Warehouse Charge Per Sku',
             name: 'warehouse_charge_per_sku',
-            value: sellerData?.warehouse_charges_per_sku,
+            value: sellerData?.warehouse_charge_per_sku,
             visible: true,
         },
-        { label: 'Damages Per Sku', name: 'damages_per_sku', value: sellerData?.damages_charges_per_sku, visible: true },
+        { label: 'Damages Per Sku', name: 'damages_per_sku', value: sellerData?.damages_per_sku, visible: true },
         { label: 'Removal Fee Per Sku', name: 'removal_fee_per_sku', value: sellerData?.removal_fee_per_sku, visible: true },
         { label: 'Nature of Business', name: 'business_nature', value: sellerData?.business_nature, visible: true },
         { label: 'Settlement Days', name: 'settlement_days', value: sellerData?.settlement_days, visible: true },
@@ -78,7 +78,7 @@ export const SellerDetailCommon = ({ seller: sellerData }: any) => {
     const SellerInternalDetail = [
         { label: 'Slikk POC -Category Name', name: 'int_poc_name', value: sellerData?.int_poc_name, visible: true },
         { label: 'Slikk POC -Category Email', name: 'int_poc_email', value: sellerData?.int_poc_email, visible: true },
-        { label: 'Slikk POC -Category Number', name: 'int_poc_contact', value: sellerData?.int_poc_number, visible: true },
+        { label: 'Slikk POC -Category Number', name: 'int_poc_contact', value: sellerData?.int_poc_contact, visible: true },
     ]
 
     const SellerDeclarationDetail = [
