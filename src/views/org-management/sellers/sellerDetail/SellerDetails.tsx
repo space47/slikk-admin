@@ -20,6 +20,7 @@ import { FashionStyleOptions } from '../sellerUtils/sellerFormCommon'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 import SellerDetailWarehouse from '../sellerUtils/SellerDetailWarehouse'
 import SellerDetailDocuments from '../sellerUtils/SellerDetailDocuments'
+import { commonPresignedDownload } from '@/common/commonDownload'
 
 const { Panel } = Collapse
 
@@ -107,17 +108,8 @@ const SellerDetails = () => {
         return null
     }
 
-    const handleDownload = (fileUrl: string, fileName: string) => {
-        try {
-            const link = document.createElement('a')
-            link.href = fileUrl
-            link.download = fileName || 'document'
-            link.target = '_blank'
-            link.rel = 'noopener noreferrer'
-            link.click()
-        } catch (error) {
-            console.error('File download failed:', error)
-        }
+    const handleDownload = async (fileUrl: string, fileName: string) => {
+        await commonPresignedDownload(fileUrl, fileName)
     }
 
     return (
