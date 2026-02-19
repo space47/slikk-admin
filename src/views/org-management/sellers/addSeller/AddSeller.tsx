@@ -24,6 +24,7 @@ import { GrDocument } from 'react-icons/gr'
 import { SegmentOptions } from '@/constants/commonArray.constant'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 import { FcViewDetails } from 'react-icons/fc'
+import { SellerKeys } from '../sellerCommon'
 
 const AddSeller = () => {
     const navigate = useNavigate()
@@ -120,9 +121,24 @@ const AddSeller = () => {
                                             )
                                         })}
 
-                                        <CommonSelect asterisk label="Head Name" name="int_poc_name" options={CategoryNameOptions} />
-                                        <CommonSelect asterisk label="Head Email" name="int_poc_email" options={CategoryMailOptions} />
-                                        <CommonSelect asterisk label="Head Number" name="int_poc_contact" options={CategoryNumberOptions} />
+                                        <CommonSelect
+                                            asterisk
+                                            label="Head Name"
+                                            name={SellerKeys.INT_POC_NAME}
+                                            options={CategoryNameOptions}
+                                        />
+                                        <CommonSelect
+                                            asterisk
+                                            label="Head Email"
+                                            name={SellerKeys.INT_POC_EMAIL}
+                                            options={CategoryMailOptions}
+                                        />
+                                        <CommonSelect
+                                            asterisk
+                                            label="Head Number"
+                                            name={SellerKeys.INT_POC_CONTACT}
+                                            options={CategoryNumberOptions}
+                                        />
 
                                         {SellerInternalArray?.map((item, idx) => {
                                             return (
@@ -164,7 +180,7 @@ const AddSeller = () => {
                                             )
                                         })}
                                         <FormItem asterisk label="Segment" className="col-span-1 w-full">
-                                            <Field name="segment">
+                                            <Field name={SellerKeys.SEGMENT}>
                                                 {({ field, form }: FieldProps) => {
                                                     const fieldValueArray = Array.isArray(field?.value)
                                                         ? field?.value
@@ -186,14 +202,19 @@ const AddSeller = () => {
                                                             value={selectedOptions}
                                                             onChange={(newVals) => {
                                                                 const selectedValues = newVals?.map((val: any) => val.value) || []
-                                                                form.setFieldValue(`segment`, selectedValues?.join(','))
+                                                                form.setFieldValue(SellerKeys.SEGMENT, selectedValues?.join(','))
                                                             }}
                                                         />
                                                     )
                                                 }}
                                             </Field>
                                         </FormItem>
-                                        <CommonSelect asterisk name="business_nature" options={NOBOptions()} label="Nature of Business" />
+                                        <CommonSelect
+                                            asterisk
+                                            name={SellerKeys.BUSINESS_NATURE}
+                                            options={NOBOptions()}
+                                            label="Nature of Business"
+                                        />
                                     </FormContainer>
                                 </div>
                             </FormContainer>

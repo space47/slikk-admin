@@ -7,6 +7,7 @@ import FormUploadFile from '@/common/FormUploadFile'
 import RichTextCommon from '@/common/RichTextCommon'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 import { handleMaxInputValidation, handlePANandTANValidation } from '../sellerUtils/sellerFunctions'
+import { SellerKeys } from '../sellerCommon'
 
 interface Props {
     values?: any
@@ -57,7 +58,7 @@ const SellerBusinessDetails = ({ isEdit, values }: Props) => {
                         isEdit={isEdit}
                         label="Upload GST Certificate"
                         fileList={values?.gstCopyFile}
-                        name="gst_certificate"
+                        name={SellerKeys.GST_CERTIFICATE}
                         existingFile={values?.gst_certificate}
                     />
                     <FormUploadFile
@@ -65,28 +66,28 @@ const SellerBusinessDetails = ({ isEdit, values }: Props) => {
                         isEdit={isEdit}
                         label="Upload PAN Copy"
                         fileList={values?.panCopyFile}
-                        name="pan_copy"
+                        name={SellerKeys.PAN_COPY}
                         existingFile={values?.pan_copy}
                     />
                     <FormUploadFile
                         isEdit={isEdit}
                         label="Upload TAN Copy"
                         fileList={values?.tanCopyFile}
-                        name="tan_copy"
+                        name={SellerKeys.PAN_COPY}
                         existingFile={values?.tan_copy}
                     />
                     <FormUploadFile
                         isEdit={isEdit}
                         label="PF Declaration Doc"
                         fileList={values?.pd_doc_file}
-                        name="pf_declaration_doc"
+                        name={SellerKeys.PF_DECLARATION_DOC}
                         existingFile={values?.pf_declaration_doc}
                     />
                     <FormUploadFile
                         isEdit={isEdit}
                         label="Trade Mark Certificate"
                         fileList={values?.trade_mark_file}
-                        name="trade_mark_certificate"
+                        name={SellerKeys.TRADE_MARK_CERTIFICATE}
                         existingFile={values?.trade_mark_certificate}
                     />
                 </div>

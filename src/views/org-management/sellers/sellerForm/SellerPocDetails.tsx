@@ -3,13 +3,14 @@ import { Field } from 'formik'
 import React from 'react'
 import { PocDetails, PocDetailsAdd } from '../sellerUtils/sellerFormCommon'
 import { handlePhoneInputValidation } from '../sellerUtils/sellerFunctions'
+import { SellerKeys } from '../sellerCommon'
 
 interface Props {
     isAdd?: boolean
 }
 
 const SellerPocDetails = ({ isAdd }: Props) => {
-    const phoneFields = ['contact_number', 'alternate_contact_number', 'finance_contact_number']
+    const phoneFields = [SellerKeys.CONTACT_NUMBER, SellerKeys.ALTERNATE_CONTACT_NUMBER, SellerKeys.FINANCE_CONTACT_NUMBER]
     const fieldsData = isAdd ? PocDetailsAdd : PocDetails
 
     return (

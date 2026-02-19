@@ -6,6 +6,7 @@ import { Field } from 'formik'
 import FormUploadFile from '@/common/FormUploadFile'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 import { MSMEOptions, SellerMsMeArray } from '../sellerUtils/sellerFormCommon'
+import { SellerKeys } from '../sellerCommon'
 
 interface props {
     isEdit?: boolean
@@ -38,7 +39,7 @@ const SellerMsme = ({ isEdit, values }: props) => {
                 isEdit={isEdit}
                 label="Upload MSME Certificate"
                 fileList={values?.msmeCertificateFile}
-                name="msme_certificate"
+                name={SellerKeys.MSME_CERTIFICATE}
                 existingFile={values?.msme_certificate}
             />
         </div>

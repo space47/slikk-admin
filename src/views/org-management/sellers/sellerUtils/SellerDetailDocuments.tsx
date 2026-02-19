@@ -6,6 +6,7 @@ import { notification } from 'antd'
 import { AxiosError } from 'axios'
 import { Formik } from 'formik'
 import React from 'react'
+import { SellerKeys } from '../sellerCommon'
 
 interface Props {
     sellerData: VendorDetails
@@ -24,13 +25,13 @@ const SellerDetailDocuments: React.FC<Props> = ({ sellerData, refetch, setEditin
             }
         }
 
-        appendIfFile('pan_copy', values.pan_copy)
-        appendIfFile('gst_certificate', values.gst_certificate)
-        appendIfFile('cancelled_cheque', values.cancelled_cheque)
-        appendIfFile('msme_certificate', values.msme_certificate)
-        appendIfFile('tan_copy', values.tan_copy)
-        appendIfFile('pf_declaration_doc', values.pf_declaration_doc)
-        appendIfFile('trade_mark_certificate', values.trade_mark_certificate)
+        appendIfFile(SellerKeys.PAN_COPY, values.pan_copy)
+        appendIfFile(SellerKeys.GST_CERTIFICATE, values.gst_certificate)
+        appendIfFile(SellerKeys.CANCELLED_CHEQUE, values.cancelled_cheque)
+        appendIfFile(SellerKeys.MSME_CERTIFICATE, values.msme_certificate)
+        appendIfFile(SellerKeys.TAN_COPY, values.tan_copy)
+        appendIfFile(SellerKeys.PF_DECLARATION_DOC, values.pf_declaration_doc)
+        appendIfFile(SellerKeys.TRADE_MARK_CERTIFICATE, values.trade_mark_certificate)
 
         try {
             const res = await axioisInstance.patch(`/merchant/company/${id}`, body)
@@ -73,7 +74,7 @@ const SellerDetailDocuments: React.FC<Props> = ({ sellerData, refetch, setEditin
                         isEdit={true}
                         label="Upload PAN Copy"
                         fileList={values?.panCopyFile}
-                        name="pan_copy"
+                        name={SellerKeys.PAN_COPY}
                         existingFile={values?.pan_copy}
                     />
                     <FormUploadFile
@@ -81,7 +82,7 @@ const SellerDetailDocuments: React.FC<Props> = ({ sellerData, refetch, setEditin
                         isEdit={true}
                         label="Upload Tan Copy"
                         fileList={values?.tanCopyFile}
-                        name="tan_copy"
+                        name={SellerKeys.TAN_COPY}
                         existingFile={values?.tan_copy}
                     />
                     <FormUploadFile
@@ -89,7 +90,7 @@ const SellerDetailDocuments: React.FC<Props> = ({ sellerData, refetch, setEditin
                         isEdit={true}
                         label="Pf Declaration Doc"
                         fileList={values?.pd_doc_file}
-                        name="pf_declaration_doc"
+                        name={SellerKeys.PF_DECLARATION_DOC}
                         existingFile={values?.pf_declaration_doc}
                     />
                     <FormUploadFile
@@ -97,7 +98,7 @@ const SellerDetailDocuments: React.FC<Props> = ({ sellerData, refetch, setEditin
                         isEdit={true}
                         label="Upload Trade Mark File"
                         fileList={values?.trade_mark_file}
-                        name="trade_mark_certificate"
+                        name={SellerKeys.TRADE_MARK_CERTIFICATE}
                         existingFile={values?.trade_mark_certificate}
                     />
 
@@ -106,7 +107,7 @@ const SellerDetailDocuments: React.FC<Props> = ({ sellerData, refetch, setEditin
                         isEdit={true}
                         label="Upload GST Certificate"
                         fileList={values?.gstCertificateFile}
-                        name="gst_certificate"
+                        name={SellerKeys.GST_CERTIFICATE}
                         existingFile={values?.gst_certificate}
                     />
 
@@ -115,7 +116,7 @@ const SellerDetailDocuments: React.FC<Props> = ({ sellerData, refetch, setEditin
                         isEdit={true}
                         label="Upload Cancelled Cheque"
                         fileList={values?.cancelledChequeFile}
-                        name="cancelled_cheque"
+                        name={SellerKeys.CANCELLED_CHEQUE}
                         existingFile={values?.cancelled_cheque}
                     />
 
@@ -124,7 +125,7 @@ const SellerDetailDocuments: React.FC<Props> = ({ sellerData, refetch, setEditin
                         isEdit={true}
                         label="Upload MSME Certificate"
                         fileList={values?.msmeCertificateFile}
-                        name="msme_certificate"
+                        name={SellerKeys.MSME_CERTIFICATE}
                         existingFile={values?.msme_certificate}
                     />
                 </form>

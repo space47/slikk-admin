@@ -6,6 +6,7 @@ import { AccountTypeOptions, SellerBankData } from '../sellerUtils/sellerFormCom
 import FormUploadFile from '@/common/FormUploadFile'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 import { handleMaxInputValidation } from '../sellerUtils/sellerFunctions'
+import { SellerKeys } from '../sellerCommon'
 
 interface Props {
     values: any
@@ -47,7 +48,7 @@ const SellerBankDetails = ({ values, isEdit }: Props) => {
                         isEdit={isEdit}
                         label="Upload Cancelled Cheque"
                         fileList={values?.cancelledChequeFile}
-                        name="cancelled_cheque"
+                        name={SellerKeys.CANCELLED_CHEQUE}
                         existingFile={values?.cancelled_cheque}
                     />
                 </div>

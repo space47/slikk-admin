@@ -4,6 +4,7 @@ import { SellerDeclarationArray } from '../sellerUtils/sellerFormCommon'
 import { Field } from 'formik'
 import FormUploadFile from '@/common/FormUploadFile'
 import FullDateForm from '@/common/FullDateForm'
+import { SellerKeys } from '../sellerCommon'
 
 interface Props {
     values?: any
@@ -46,7 +47,7 @@ const SellerDocsAndDeclaration = ({ isEdit, values }: Props) => {
                         isEdit={isEdit}
                         label="Upload Commercial Approval Document"
                         fileList={values?.commercialApprovalFile}
-                        name="commercial_approval_doc"
+                        name={SellerKeys.COMMERCIAL_APPROVAL_DOC}
                         existingFile={values?.commercial_approval_doc}
                     />
                     <FormUploadFile
@@ -54,7 +55,7 @@ const SellerDocsAndDeclaration = ({ isEdit, values }: Props) => {
                         isEdit={isEdit}
                         label="Upload Finalized & Approved Onboarding Document"
                         fileList={values?.approvedFile}
-                        name="approved_onboarding_doc"
+                        name={SellerKeys.APPROVED_ONBOARDING_DOC}
                         existingFile={values?.approved_onboarding_doc}
                     />
                 </div>

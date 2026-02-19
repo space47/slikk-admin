@@ -5,6 +5,7 @@ import React from 'react'
 import FormUploadFile from '@/common/FormUploadFile'
 import RichTextCommon from '@/common/RichTextCommon'
 import { FaTrash } from 'react-icons/fa'
+import { SellerKeys } from '../sellerCommon'
 
 interface Props {
     isEdit?: boolean
@@ -35,7 +36,7 @@ const SellerWarehouseDetails = ({ isEdit }: Props) => {
             <h4 className="text-xl font-semibold mb-1">Warehouse Details</h4>
             <p className="text-gray-600 mb-4">Provide essential details about vendor entity. All fields marked with * are mandatory.</p>
 
-            <FieldArray name="gst_details">
+            <FieldArray name={SellerKeys.GST_DETAILS}>
                 {(arrayHelpers) => {
                     const { push, remove } = arrayHelpers
                     const list = gstDetailsLive
@@ -67,7 +68,7 @@ const SellerWarehouseDetails = ({ isEdit }: Props) => {
                                                 .filter(
                                                     ([key]) =>
                                                         !EXCLUDED_FIELDS.includes(key) &&
-                                                        key !== 'gst_certificate' &&
+                                                        key !== SellerKeys.GST_CERTIFICATE &&
                                                         key !== 'warehouse_address',
                                                 )
                                                 .map(([key, value], idx) => {

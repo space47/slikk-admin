@@ -4,6 +4,7 @@ import React from 'react'
 import { CategoryMailOptions, CategoryNameOptions, CategoryNumberOptions, SellerInternalArray } from '../sellerUtils/sellerFormCommon'
 import { Field } from 'formik'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
+import { SellerKeys } from '../sellerCommon'
 
 const SellerInternal = () => {
     return (
@@ -11,9 +12,9 @@ const SellerInternal = () => {
             <h4>POC Internal Details</h4>
             <p>Provide essential details about vendor entity. All field marked with * are mandatory</p>
             <FormContainer className="mt-8 grid grid-cols-2 gap-2">
-                <CommonSelect asterisk label="Head Name" name="int_poc_name" options={CategoryNameOptions} />
-                <CommonSelect asterisk label="Head Email" name="int_poc_name" options={CategoryMailOptions} />
-                <CommonSelect asterisk label="Head Number" name="int_poc_name" options={CategoryNumberOptions} />
+                <CommonSelect asterisk label="Head Name" name={SellerKeys.INT_POC_NAME} options={CategoryNameOptions} />
+                <CommonSelect asterisk label="Head Email" name={SellerKeys.INT_POC_EMAIL} options={CategoryMailOptions} />
+                <CommonSelect asterisk label="Head Number" name={SellerKeys.INT_POC_CONTACT} options={CategoryNumberOptions} />
 
                 {SellerInternalArray?.map((item, idx) => {
                     return (

@@ -4,6 +4,7 @@ import { Field, FieldProps } from 'formik'
 import { NOBOptions, SellerCommercialsArray } from '../sellerUtils/sellerFormCommon'
 import { SegmentOptions } from '@/constants/commonArray.constant'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
+import { SellerKeys } from '../sellerCommon'
 
 const SellerCommercials = () => {
     return (
@@ -50,7 +51,7 @@ const SellerCommercials = () => {
                     }}
                 </Field>
             </FormItem>
-            <CommonSelect name="business_nature" options={NOBOptions()} label="Nature of Business" />
+            <CommonSelect name={SellerKeys.BUSINESS_NATURE} options={NOBOptions()} label="Nature of Business" />
         </div>
     )
 }
