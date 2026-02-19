@@ -14,6 +14,7 @@ import PoUpload from './PoUpload'
 import { useNavigate, useParams } from 'react-router-dom'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 import PageCommon from '@/common/PageCommon'
+import { FaEye } from 'react-icons/fa'
 
 const PoOrderItems = () => {
     const { purchase_id } = useParams()
@@ -108,7 +109,7 @@ const PoOrderItems = () => {
                     <Button variant="blue" size="sm" type="button" icon={<IoMdAdd />} onClick={() => setAddModal(true)}>
                         Add Item
                     </Button>
-                    <Button variant="gray" size="sm" type="button" icon={<IoMdAdd />} onClick={() => navigate(`/app/poCatalogHistory`)}>
+                    <Button variant="gray" size="sm" type="button" icon={<FaEye />} onClick={() => navigate(`/app/poCatalogHistory`)}>
                         View Catalog History
                     </Button>
                 </div>
