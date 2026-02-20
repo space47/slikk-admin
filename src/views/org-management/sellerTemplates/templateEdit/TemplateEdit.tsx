@@ -4,10 +4,11 @@ import { useEffect, useMemo } from 'react'
 import { notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Spinner, Button } from '@/components/ui'
-import { SellerTemplateData } from '@/store/types/sellerTemplate.types'
-import { sellerTemplateService } from '@/store/services/sellerTemplateService'
+import { NotificationConfigData } from '@/store/types/sellerTemplate.types'
+import { notificationConfigService } from '@/store/services/sellerTemplateService'
 import TemplateForm from '../templateUtils/TemplateForm'
 import { getApiErrorMessage } from '@/constants/generateErrorMessage'
+import { getChangedValues } from '@/utils/apiBodyUtility'
 
 const TemplateEdit = () => {
     const { id } = useParams<{ id: string }>()
@@ -19,11 +20,11 @@ const TemplateEdit = () => {
             navigate(-1)
         }
     }, [id, navigate])
-    const { data, isLoading, isSuccess, isError, error } = sellerTemplateService.useGetSingleTemplateListQuery(
+    const { data, isLoading, isSuccess, isError, error } = notificationConfigService.useGetSingleNotificationDataQuery(
         { id: id as string },
         { skip: !id },
     )
-    const [updateTemplate, updateResponse] = sellerTemplateService.useUpdateTemplateMutation()
+    const [updateTemplate, updateResponse] = notificationConfigService.useUpdateTemplateMutation()
     useEffect(() => {
         if (isError) {
             notification.error({
@@ -33,9 +34,7 @@ const TemplateEdit = () => {
     }, [isError, error])
     useEffect(() => {
         if (updateResponse.isSuccess) {
-            notification.success({
-                message: 'Template updated successfully',
-            })
+            notification.success({ message: 'Template updated successfully' })
             navigate(-1)
         }
 
@@ -48,19 +47,28 @@ const TemplateEdit = () => {
 
     const initialValues = useMemo(
         () => ({
-            name: data?.message?.name ?? '',
-            email_subject: data?.message?.email_subject ?? '',
-            email_body: data?.message?.email_body ?? '',
+            event_name: data?.message?.event_name,
+            title: data?.message?.title ?? '',
+            message: data?.message?.message ?? '',
+            is_active: data?.message?.is_active,
         }),
         [data],
     )
 
-    const handleSubmit = async (values: SellerTemplateData) => {
+    const handleSubmit = async (values: NotificationConfigData) => {
+        const body = {
+            event_name: values.event_name?.trim() || '',
+            title: values.title?.trim() || '',
+            message: values.message?.trim() || '',
+            is_active: values?.is_active ?? false,
+        }
+
+        const changedValues = getChangedValues(initialValues, body)
+
         await updateTemplate({
             id: id as string,
-            name: values.name?.trim(),
-            email_body: values.email_body?.trim(),
-            email_subject: values.email_subject?.trim(),
+            notification_type: 'EMAIL',
+            ...changedValues,
         })
     }
 
@@ -79,7 +87,7 @@ const TemplateEdit = () => {
         <div>
             <h3 className="text-xl font-bold mb-4">Edit Template</h3>
 
-            <Formik enableReinitialize initialValues={initialValues as SellerTemplateData} onSubmit={handleSubmit}>
+            <Formik enableReinitialize initialValues={initialValues as NotificationConfigData} onSubmit={handleSubmit}>
                 {({ values, isSubmitting }) => (
                     <Form className="w-full p-5">
                         <TemplateForm values={values} />

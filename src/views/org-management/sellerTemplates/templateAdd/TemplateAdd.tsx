@@ -4,15 +4,15 @@ import { useEffect } from 'react'
 import { notification } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui'
-import { SellerTemplateData } from '@/store/types/sellerTemplate.types'
-import { sellerTemplateService } from '@/store/services/sellerTemplateService'
+import { NotificationConfigData } from '@/store/types/sellerTemplate.types'
+import { notificationConfigService } from '@/store/services/sellerTemplateService'
 import TemplateForm from '../templateUtils/TemplateForm'
 import { getApiErrorMessage } from '@/constants/generateErrorMessage'
 
 const TemplateAdd = () => {
     const navigate = useNavigate()
 
-    const [addTemplate, addResponse] = sellerTemplateService.useAddTemplateMutation()
+    const [addTemplate, addResponse] = notificationConfigService.useAddTemplateMutation()
 
     useEffect(() => {
         if (addResponse.isSuccess) {
@@ -29,17 +29,13 @@ const TemplateAdd = () => {
         }
     }, [addResponse.isSuccess, addResponse.isError, addResponse.error])
 
-    const initialValues = {
-        name: '',
-        email_subject: '',
-        email_body: '',
-    }
-
-    const handleSubmit = async (values: SellerTemplateData) => {
+    const handleSubmit = async (values: NotificationConfigData) => {
         await addTemplate({
-            name: values.name?.trim(),
-            email_body: values.email_body?.trim(),
-            email_subject: values.email_subject?.trim(),
+            event_name: values.event_name?.trim() || '',
+            title: values.title?.trim() || '',
+            message: values.message?.trim() || '',
+            is_active: values?.is_active ?? false,
+            notification_type: 'EMAIL',
         })
     }
 
@@ -47,7 +43,7 @@ const TemplateAdd = () => {
         <div>
             <h3 className="text-xl font-bold mb-4">Edit Template</h3>
 
-            <Formik enableReinitialize initialValues={initialValues as SellerTemplateData} onSubmit={handleSubmit}>
+            <Formik enableReinitialize initialValues={{} as NotificationConfigData} onSubmit={handleSubmit}>
                 {({ values, isSubmitting }) => (
                     <Form className="w-full p-5">
                         <TemplateForm values={values} />

@@ -1,4 +1,4 @@
-import { SellerTemplateData } from '@/store/types/sellerTemplate.types'
+import { NotificationConfigData } from '@/store/types/sellerTemplate.types'
 import { ColumnDef } from '@tanstack/react-table'
 import React, { useMemo } from 'react'
 import { FaEdit, FaEye } from 'react-icons/fa'
@@ -11,7 +11,7 @@ interface Props {
 export const useTemplateColumns = ({ handleViewTemplate }: Props) => {
     const navigate = useNavigate()
 
-    return useMemo<ColumnDef<SellerTemplateData>[]>(
+    return useMemo<ColumnDef<NotificationConfigData>[]>(
         () => [
             {
                 header: 'Edit',
@@ -28,24 +28,34 @@ export const useTemplateColumns = ({ handleViewTemplate }: Props) => {
             {
                 header: 'Name',
                 accessorKey: 'name',
-                cell: ({ row }) => <div>{row.original.name || '-'}</div>,
+                cell: ({ row }) => <div>{row.original.event_name || '-'}</div>,
             },
             {
-                header: 'Subject',
+                header: 'Title',
+                accessorKey: 'title',
+                cell: ({ row }) => <div>{row.original.title || '-'}</div>,
+            },
+            {
+                header: 'Notification Type',
                 accessorKey: 'email_subject',
-                cell: ({ row }) => <div className="font-semibold text-blue-600">{row.original.email_subject ?? '-'}</div>,
+                cell: ({ row }) => <div className="font-semibold text-blue-600">{row.original.notification_type ?? '-'}</div>,
             },
             {
-                header: 'Body',
-                accessorKey: 'email_body',
-                cell: ({ row }) => <div className="text-gray-700 line-clamp-3 max-w-md">{row.original.email_body || '-'}</div>,
+                header: 'Body Message',
+                accessorKey: 'message',
+                cell: ({ row }) => <div className="text-gray-700 line-clamp-3 max-w-md">{row.original.message || '-'}</div>,
+            },
+            {
+                header: 'Is Active',
+                accessorKey: 'is_active',
+                cell: ({ row }) => <div className="text-gray-700 line-clamp-3 max-w-md">{row.original.is_active ? 'YES' : 'NO'}</div>,
             },
             {
                 header: 'View',
                 accessorKey: 'id',
                 cell: ({ row }) => (
                     <span>
-                        <FaEye className="text-xl text-blue-500" onClick={() => handleViewTemplate(row?.original?.email_body)} />
+                        <FaEye className="text-xl text-blue-500" onClick={() => handleViewTemplate(row?.original?.message)} />
                     </span>
                 ),
             },

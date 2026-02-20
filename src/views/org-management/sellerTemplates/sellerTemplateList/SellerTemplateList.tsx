@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import EasyTable from '@/common/EasyTable'
 import PageCommon from '@/common/PageCommon'
 import { Button } from '@/components/ui'
-import { sellerTemplateService } from '@/store/services/sellerTemplateService'
-import { SellerTemplateData } from '@/store/types/sellerTemplate.types'
+import { notificationConfigService } from '@/store/services/sellerTemplateService'
+import { NotificationConfigData } from '@/store/types/sellerTemplate.types'
 import { useTemplateColumns } from '../templateUtils/useTemplateColumns'
 import { Spin, Empty, notification } from 'antd'
 import { getApiErrorMessage } from '@/constants/generateErrorMessage'
@@ -16,16 +16,17 @@ const SellerTemplateList = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
-    const [templateList, setTemplateList] = useState<SellerTemplateData[]>([])
+    const [templateList, setTemplateList] = useState<NotificationConfigData[]>([])
     const [currentHtml, setCurrentHtml] = useState('')
     const [preview, setPreview] = useState(false)
     const [count, setCount] = useState(0)
 
-    const templateApi = sellerTemplateService.useGetTemplateListQuery(
+    const templateApi = notificationConfigService.useGetTemplateListQuery(
         {
-            name: globalFilter || '',
+            event_name: globalFilter || '',
             page,
             pageSize,
+            notification_type: 'email',
         },
         {
             refetchOnMountOrArgChange: true,
@@ -33,9 +34,9 @@ const SellerTemplateList = () => {
     )
 
     useEffect(() => {
-        if (templateApi.isSuccess && templateApi.data?.message) {
-            setTemplateList(templateApi.data.message.results || [])
-            setCount(templateApi.data.message.count || 0)
+        if (templateApi.isSuccess && templateApi.data?.data) {
+            setTemplateList(templateApi.data.data.results || [])
+            setCount(templateApi.data.data.count || 0)
         }
 
         if (templateApi.isError) {

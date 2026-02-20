@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormContainer, FormItem, Input } from '@/components/ui'
+import { FormContainer, FormItem, Input, Switcher } from '@/components/ui'
 import { Field, FieldProps } from 'formik'
 import React, { useState } from 'react'
 
@@ -16,11 +16,14 @@ const TemplateForm = ({ values }: Props) => {
         <FormContainer>
             <FormContainer className="grid xl:grid-cols-2 grid-cols-1 gap-3">
                 <FormItem label="Name">
-                    <Field component={Input} placeholder="Enter Name" type="text" name="name" />
+                    <Field component={Input} placeholder="Enter Name" type="text" name="event_name" />
                 </FormItem>
 
-                <FormItem label="Email Subject">
-                    <Field component={Input} placeholder="Enter Email Subject" type="text" name="email_subject" />
+                <FormItem label="Title">
+                    <Field component={Input} placeholder="Enter Email Subject" type="text" name="title" />
+                </FormItem>
+                <FormItem label="Is Active">
+                    <Field component={Switcher} type="checkbox" name="is_active" />
                 </FormItem>
             </FormContainer>
             <FormContainer className="mt-10 rounded-2xl bg-blue-50 p-6 shadow-sm border border-blue-100">
@@ -45,7 +48,7 @@ const TemplateForm = ({ values }: Props) => {
                         {(viewMode === 'split' || viewMode === 'editor') && (
                             <div className="flex flex-col">
                                 <label className="text-sm font-semibold text-gray-700 mb-2">HTML Editor</label>
-                                <Field name="email_body">
+                                <Field name="message">
                                     {({ field }: FieldProps) => (
                                         <textarea
                                             {...field}
@@ -79,10 +82,10 @@ const TemplateForm = ({ values }: Props) => {
                                 <div
                                     className={`border rounded-xl p-4 min-h-[300px] bg-white overflow-auto transition-all duration-300 ${'w-full'}`}
                                 >
-                                    {values.email_body ? (
+                                    {values.message ? (
                                         <div
                                             dangerouslySetInnerHTML={{
-                                                __html: values.email_body,
+                                                __html: values.message,
                                             }}
                                         />
                                     ) : (

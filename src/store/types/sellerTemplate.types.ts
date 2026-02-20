@@ -1,14 +1,28 @@
-export interface SellerTemplateData {
+export interface NotificationConfigData {
+    create_date: string
+    event_name: string
     id: number
-    name: string
-    email_subject: string
-    email_body: string
+    is_active: boolean
+    message: string
+    notification_type: string
+    template_id: string
+    title: string
+    update_date: string
 }
 
-export interface SellerTemplateResponse {
+export interface NotificationConfigResponse {
     status: string
-    message: {
+    data: {
         count: number
-        results: SellerTemplateData[]
+        results: NotificationConfigData[]
     }
+}
+
+export interface NotificationUpdateBody {
+    id?: string
+    event_name?: string
+    message?: string
+    notification_type?: string
+    title?: string
+    is_active?: boolean
 }
