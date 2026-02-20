@@ -11,15 +11,16 @@ export const purchaseOrderService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
         purchaseOrdersList: builder.query<
             PurchaseOrderResponseType,
-            { company_id?: string | number; page: number; pageSize: number; status?: string; brand?: string }
+            { company_id?: string | number; page: number; pageSize: number; status?: string; brand?: string; order_id?: string | number }
         >({
             query: (params) => {
-                const parameters: Record<string, string | string[]> = {}
+                const parameters: Record<string, string | string[] | number> = {}
                 if (params.company_id) parameters.company_id = params.company_id?.toString()
                 if (params.page) parameters.p = params.page?.toString()
                 if (params.pageSize) parameters.page_size = params.pageSize?.toString()
                 if (params.status) parameters.status = params.status?.toString()
                 if (params.brand) parameters.brand = params.brand?.toString()
+                if (params.order_id) parameters.order_id = params.order_id
 
                 return {
                     url: `/merchant/purchase/order`,

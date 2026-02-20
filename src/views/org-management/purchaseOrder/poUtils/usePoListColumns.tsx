@@ -6,6 +6,8 @@ import { FaEdit, FaFilePdf, FaRegDotCircle } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import { PoStatusColor } from './poFormCommon'
 import { MdOutlineGridView } from 'react-icons/md'
+import { useAppSelector } from '@/store'
+import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 
 interface Props {
     handleDownloadPdf: (x: number) => void
@@ -13,6 +15,12 @@ interface Props {
 
 export const usePoListColumns = ({ handleDownloadPdf }: Props) => {
     const navigate = useNavigate()
+
+    const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
+
+    const findCompany = (companyId: number) => {
+        return companyList?.find((item) => item.id === companyId)?.name
+    }
 
     return useMemo<ColumnDef<PurchaseOrderTable>[]>(
         () => [
@@ -22,15 +30,24 @@ export const usePoListColumns = ({ handleDownloadPdf }: Props) => {
                 cell: ({ row }) => <div>{`PO-${row?.original?.id}`}</div>,
             },
             {
+                header: 'PO Nature',
+                accessorKey: 'po_nature',
+                cell: ({ row }) => <div>{row.original.po_nature || '-'}</div>,
+            },
+            {
                 header: 'Company Name',
                 accessorKey: 'company_name',
-                cell: ({ row }) => <div>{row.original.company_name || '-'}</div>,
+                cell: ({ row }) => <div>{findCompany(row.original.company) || '-'}</div>,
             },
-
             {
-                header: 'Brand Name',
-                accessorKey: 'brand_name',
-                cell: ({ row }) => <div>{row.original.brand_name || '-'}</div>,
+                header: 'Warehouse Name',
+                accessorKey: 'gst_details.warehouse_name',
+                cell: ({ row }) => <div>{row.original.gst_details.warehouse_name || '-'}</div>,
+            },
+            {
+                header: 'Warehouse Address',
+                accessorKey: 'gst_details.warehouse_address',
+                cell: ({ row }) => <div>{row.original.gst_details.warehouse_address || '-'}</div>,
             },
 
             {
@@ -38,32 +55,15 @@ export const usePoListColumns = ({ handleDownloadPdf }: Props) => {
                 accessorKey: 'business_model',
                 cell: ({ row }) => <div>{row.original.business_model || '-'}</div>,
             },
-
             {
-                header: 'Vendor GST No',
-                accessorKey: 'vendor_gst_no',
-                cell: ({ row }) => <div>{row.original.vendor_gst_no || '-'}</div>,
+                header: 'Billing Address',
+                accessorKey: 'order_billing_address',
+                cell: ({ row }) => <div className="max-w-[250px]">{row.original.order_billing_address || '-'}</div>,
             },
-
             {
-                header: 'Vendor Address',
-                accessorKey: 'vendor_address',
-                cell: ({ row }) => <div className="max-w-[250px]">{row.original.vendor_address || '-'}</div>,
-            },
-
-            {
-                header: 'Status',
-                accessorKey: 'status',
-                cell: ({ row }) => (
-                    <div
-                        className={`${PoStatusColor(row?.original?.status)} text-white p-2 flex gap-2 justify-center rounded-xl items-center`}
-                    >
-                        <span>
-                            <FaRegDotCircle className=" text-white" />
-                        </span>
-                        {row.original.status || '-'}
-                    </div>
-                ),
+                header: 'Shipping Address',
+                accessorKey: 'order_shipping_address',
+                cell: ({ row }) => <div className="max-w-[250px]">{row.original.order_shipping_address || '-'}</div>,
             },
 
             {
@@ -82,6 +82,21 @@ export const usePoListColumns = ({ handleDownloadPdf }: Props) => {
                 header: 'Payment Terms',
                 accessorKey: 'payment_terms',
                 cell: ({ row }) => <div>{row.original.payment_terms || '-'}</div>,
+            },
+
+            {
+                header: 'Status',
+                accessorKey: 'status',
+                cell: ({ row }) => (
+                    <div
+                        className={`${PoStatusColor(row?.original?.status)} text-white p-2 flex gap-2 justify-center rounded-xl items-center`}
+                    >
+                        <span>
+                            <FaRegDotCircle className=" text-white" />
+                        </span>
+                        {row.original.status || '-'}
+                    </div>
+                ),
             },
             {
                 header: 'Actions',

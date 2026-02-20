@@ -13,6 +13,7 @@ export interface PURCHASE_STATE {
     count: number
     page: number
     pageSize: number
+    poFilter: string
 }
 
 const initialState: PURCHASE_STATE = {
@@ -22,6 +23,7 @@ const initialState: PURCHASE_STATE = {
     count: 0,
     page: 1,
     pageSize: 10,
+    poFilter: '',
 }
 
 export const purchaseOrderSlice = createSlice({
@@ -37,6 +39,9 @@ export const purchaseOrderSlice = createSlice({
         setPoStatus: (state, action: PayloadAction<string>) => {
             state.poStatus = action.payload
         },
+        setPoFilter: (state, action: PayloadAction<string>) => {
+            state.poFilter = action.payload
+        },
         setCount: (state, action: PayloadAction<number>) => {
             state.count = action.payload
         },
@@ -48,5 +53,5 @@ export const purchaseOrderSlice = createSlice({
         },
     },
 })
-export const { setPoList, setCount, setPage, setPageSize, setPoStatus, setPoSummary } = purchaseOrderSlice.actions
+export const { setPoList, setCount, setPage, setPageSize, setPoStatus, setPoSummary, setPoFilter } = purchaseOrderSlice.actions
 export default purchaseOrderSlice.reducer

@@ -9,10 +9,11 @@ import {
     setPageSize,
     setPoStatus,
     setPoSummary,
+    setPoFilter,
 } from '@/store/slices/purchaseOrderSlice/purchaseOrder.slice'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { notification } from 'antd'
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { usePoListColumns } from '../poUtils/usePoListColumns'
 import EasyTable from '@/common/EasyTable'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
@@ -32,15 +33,15 @@ const PoTable = () => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
-    const [globalFilter, setGlobalFilter] = useState('')
-    const { count, page, pageSize, poList, poStatus, poSummary } = useAppSelector<PURCHASE_STATE>((state) => state.purchaseOrder)
-    const { debounceFilter } = useDebounceInput({ globalFilter, delay: 500 })
+    const { count, page, pageSize, poList, poStatus, poSummary, poFilter } = useAppSelector<PURCHASE_STATE>((state) => state.purchaseOrder)
+    const { debounceFilter } = useDebounceInput({ globalFilter: poFilter, delay: 500 })
 
     const queryParams = useMemo(() => {
         return {
             page,
             pageSize,
             company_id: selectedCompany?.id,
+            order_id: debounceFilter?.split('-')?.at(-1),
             ...(poStatus && poStatus !== 'All Status' && { status: poStatus }),
         }
     }, [page, pageSize, selectedCompany, debounceFilter, poStatus])
@@ -49,37 +50,20 @@ const PoTable = () => {
         skip: !selectedCompany?.id,
     })
 
-    const {
-        data: poSingleList,
-        isSuccess: poSingleSuccess,
-        isError: poSingleError,
-    } = purchaseOrderService.usePurchaseSingleOrdersListQuery(
-        {
-            order_id: debounceFilter?.split('-')?.at(-1),
-        },
-        { skip: !debounceFilter?.split('-')?.at(-1) },
-    )
-
     useEffect(() => {
-        if (globalFilter && poSingleSuccess && poSingleList?.data) {
-            dispatch(setPoList([poSingleList.data]))
-            dispatch(setPoSummary(null))
-            dispatch(setCount(1))
-            return
-        }
         if (isSuccess && data?.data) {
             dispatch(setPoList(data.data.results ?? []))
             dispatch(setPoSummary(data?.data?.summary))
             dispatch(setCount(data.data.count ?? 0))
         }
 
-        if (isError || poSingleError) {
+        if (isError) {
             const message = getApiErrorMessage(error)
             notification.error({
                 message: message || 'Failed to load purchase orders.',
             })
         }
-    }, [globalFilter, poSingleSuccess, poSingleList, poSingleError, isSuccess, isError, data, error, dispatch])
+    }, [poFilter, isSuccess, isError, data, error, dispatch])
 
     const InputUi = () => {
         return (
@@ -88,11 +72,11 @@ const PoTable = () => {
                     <div className="flex flex-col w-full xl:w-[70%] md:w-[70%]">
                         <label className="text-sm font-semibold text-gray-700 mb-1">Search </label>
                         <Input
-                            value={globalFilter}
+                            value={poFilter}
                             type="search"
                             placeholder="Search by PO Number"
                             className="rounded-lg"
-                            onChange={(e) => setGlobalFilter(e.target.value)}
+                            onChange={(e) => dispatch(setPoFilter(e.target.value))}
                         />
                     </div>
                     <div className="flex flex-col w-full xl:w-[50%] md:w-[50%]">
