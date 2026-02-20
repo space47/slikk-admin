@@ -173,22 +173,40 @@ export const usePoDetailUi = ({ purchaseDetail, handleApprove }: Props) => {
     }
     const OrderInformation = () => {
         const OrderDataArray = [
-            { label: 'Order Billing Address', value: purchaseDetail?.order_billing_address },
-            { label: 'Order Shipping Address', value: purchaseDetail?.order_shipping_address },
-            { label: 'Total Items', value: purchaseDetail?.total_count ?? 0 },
-            { label: 'Total Amount', value: purchaseDetail?.total_amount },
+            { label: 'Order Billing Address', value: purchaseDetail?.order_billing_address || '-' },
+            { label: 'Order Shipping Address', value: purchaseDetail?.order_shipping_address || '-' },
+            { label: 'Payment Mode', value: purchaseDetail?.payment_mode || '-' },
+            { label: 'Payment Summary', value: purchaseDetail?.payment_terms || '-' },
+            { label: 'PO Nature', value: purchaseDetail?.po_nature || '-' },
+            { label: 'Total Items', value: purchaseDetail?.total_count ?? 0, highlight: true },
+            {
+                label: 'Total Amount',
+                value: purchaseDetail?.total_amount ? `₹ ${Number(purchaseDetail.total_amount).toLocaleString('en-IN')}` : '₹ 0',
+                highlight: true,
+            },
         ]
 
         return (
-            <Card className="shadow-xl h-full">
-                <div>
-                    <h4>Order Summary</h4>
-                    {OrderDataArray?.map((item, key) => (
-                        <div key={key} className="flex h-full justify-between items-center py-1 gap-2 mt-5">
-                            <span className="text-gray-500 font-bold">{item?.label}:</span>
-                            <span className="text-gray-800 font-semibold">{item?.value || '-'}</span>
-                        </div>
-                    ))}
+            <Card className="shadow-lg rounded-2xl border border-gray-100 bg-white p-6 h-full">
+                <div className="flex flex-col gap-6">
+                    <div>
+                        <h4 className="text-lg font-semibold text-gray-800">Summary</h4>
+                    </div>
+                    <div className="flex flex-col divide-y divide-gray-100">
+                        {OrderDataArray.map((item, index) => (
+                            <div key={index} className="flex justify-between items-start py-4 gap-6">
+                                <span className="text-sm text-gray-500 font-medium">{item.label}</span>
+
+                                <span
+                                    className={`text-sm text-right break-words max-w-[60%] ${
+                                        item.highlight ? 'font-semibold text-gray-900 text-base' : 'font-medium text-gray-700'
+                                    }`}
+                                >
+                                    {item.value}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </Card>
         )

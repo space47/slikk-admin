@@ -78,6 +78,7 @@ export type PurchaseOrderItem = {
     id: number
     vendor_sku: string
     sku: string
+    name: string
     slikk_sku: string
     style_code: string
     category: string

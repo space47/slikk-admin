@@ -12,9 +12,14 @@ export const useOrderItemColumns = ({ handleEditRow }: Props) => {
     return useMemo<ColumnDef<PurchaseOrderItem>[]>(() => {
         const baseColumns: ColumnDef<PurchaseOrderItem>[] = [
             {
-                header: 'Product',
-                accessorKey: 'product',
-                cell: ({ row }) => <div>{row.original.product || '-'}</div>,
+                header: 'sku',
+                accessorKey: 'sku',
+                cell: ({ row }) => <div>{row.original.sku || '-'}</div>,
+            },
+            {
+                header: 'name',
+                accessorKey: 'name',
+                cell: ({ row }) => <div>{row.original.name || '-'}</div>,
             },
             {
                 header: 'Quantity',
