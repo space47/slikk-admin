@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Button, FormContainer, FormItem, Input, Select, Spinner } from '@/components/ui'
+import { Button, FormContainer, FormItem, Input, Select, Spinner, Switcher } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { Field, FieldProps, Form, Formik } from 'formik'
 import { useEffect, useState } from 'react'
@@ -81,6 +81,7 @@ const ReportAnalytics = () => {
     const [reportData, setReportData] = useState({
         name: '',
         value: '',
+        use_cache: true,
         required_fields: [{ key: '', value: '', dataType: 'String' }],
     })
 
@@ -92,6 +93,7 @@ const ReportAnalytics = () => {
             const formattedData = {
                 name: data?.name || '',
                 value: data?.value || '',
+                use_cache: true,
                 required_fields: Object.entries(data?.required_fields || {})
                     ?.reverse()
                     ?.map(([key, fullValue]) => {
@@ -131,11 +133,13 @@ const ReportAnalytics = () => {
     const [currentValues, setCurrentValues] = useState<any>()
 
     const fetchTable = async (values?: any) => {
+        console.log('val', values)
         let reportParameters = ''
         if (values?.required_fields) {
             reportParameters = values.required_fields
                 .map((field: { key: string; value: any; prefix?: string; suffix?: string; dataType?: string; position?: number }) => {
                     const { key, value = '', prefix = '', suffix = '', dataType } = field
+                    console.log('key is', key)
                     const val = encodeURIComponent(value)
                     if (dataType === 'MultiSelect' && Array.isArray(value)) {
                         if (value.length === 0 || value[0] === '') {
@@ -173,6 +177,9 @@ const ReportAnalytics = () => {
                 })
                 .filter(Boolean)
                 .join('&')
+        }
+        if (!values.use_cache) {
+            reportParameters += `&use_cache=false`
         }
 
         try {
