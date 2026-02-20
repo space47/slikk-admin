@@ -22,6 +22,7 @@ import { reportQueryArray } from '@/constants/commonArray.constant'
 import { FaMagic, FaFileCsv, FaExclamationTriangle, FaChartBar, FaTable, FaSearch, FaTimes } from 'react-icons/fa'
 import { HiSelector } from 'react-icons/hi'
 import { commonDownload } from '@/common/commonDownload'
+import { GrDatabase } from 'react-icons/gr'
 
 const ReportAnalytics = () => {
     const [storeName, setStoreName] = useState('')
@@ -311,35 +312,6 @@ const ReportAnalytics = () => {
                                                             )}
                                                         </Field>
                                                     </div>
-                                                    <div>
-                                                        <div className="flex items-center gap-2 mb-4 mt-10">
-                                                            <HiSelector className="text-indigo-500 text-xl" />
-                                                            <label className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                                                                Select Table
-                                                            </label>
-                                                        </div>
-                                                        <Field name="tables">
-                                                            {({ field, form }: FieldProps) => (
-                                                                <Select
-                                                                    isMulti
-                                                                    isClearable
-                                                                    placeholder={
-                                                                        <div className="flex items-center gap-2 text-gray-500">
-                                                                            <FaSearch className="text-sm" />
-                                                                            <span>Search Table</span>
-                                                                        </div>
-                                                                    }
-                                                                    options={subReportsStore}
-                                                                    value={subReportsStore?.find((option) => option.value === field.value)}
-                                                                    onChange={(option) => {
-                                                                        setSubReportName(option?.map((item) => item?.value).join(','))
-                                                                        setShowTable(false)
-                                                                    }}
-                                                                    className="w-full"
-                                                                />
-                                                            )}
-                                                        </Field>
-                                                    </div>
                                                 </div>
                                             ) : (
                                                 <div className="flex items-center gap-3">
@@ -405,6 +377,35 @@ const ReportAnalytics = () => {
                                 )}
                                 {!!storeName && (
                                     <div className="mt-6 animate-slideDown">
+                                        <div className="mt-2 mb-8">
+                                            <div className="flex items-center gap-2 mb-4 mt-10">
+                                                <GrDatabase className="text-indigo-500 text-xl" />
+                                                <label className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                                                    Select Table
+                                                </label>
+                                            </div>
+                                            <Field name="tables">
+                                                {({ field, form }: FieldProps) => (
+                                                    <Select
+                                                        isMulti
+                                                        isClearable
+                                                        placeholder={
+                                                            <div className="flex items-center gap-2 text-gray-500">
+                                                                <FaSearch className="text-sm" />
+                                                                <span>Search Table</span>
+                                                            </div>
+                                                        }
+                                                        options={subReportsStore}
+                                                        value={subReportsStore?.find((option) => option.value === field.value)}
+                                                        onChange={(option) => {
+                                                            setSubReportName(option?.map((item) => item?.value).join(','))
+                                                            setShowTable(false)
+                                                        }}
+                                                        className="w-full"
+                                                    />
+                                                )}
+                                            </Field>
+                                        </div>
                                         <ReportFields
                                             storeName={storeName}
                                             optionDataMap={optionDataMap}
