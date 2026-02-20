@@ -19,7 +19,7 @@ import { PRODUCTTYPE_STATE } from '@/store/types/productType.types'
 import ReportCustomQuery from './ReportCustomQuery'
 import { notification } from 'antd'
 import { reportQueryArray } from '@/constants/commonArray.constant'
-import { FaChartBar, FaSearch } from 'react-icons/fa'
+import { FaChartBar } from 'react-icons/fa'
 import { commonDownload } from '@/common/commonDownload'
 import { GrDatabase } from 'react-icons/gr'
 import { ReportUi } from './reportAnalysisComponents/ReportUi'
@@ -89,6 +89,8 @@ const ReportAnalytics = () => {
     })
 
     const fetchApi = async () => {
+        setSubReportStore([])
+        setSubReportName('')
         try {
             const response = await axioisInstance.get(`/query/config?name=${storeName}`)
             const dataxx = response?.data?.data?.results
@@ -303,23 +305,18 @@ const ReportAnalytics = () => {
                                                 </label>
                                             </div>
                                             <Field name="tables">
-                                                {({ field }: FieldProps) => (
+                                                {({ field, form }: FieldProps) => (
                                                     <Select
                                                         isMulti
                                                         isClearable
-                                                        placeholder={
-                                                            <div className="flex items-center gap-2 text-gray-500">
-                                                                <FaSearch className="text-sm" />
-                                                                <span>Search Table</span>
-                                                            </div>
-                                                        }
                                                         options={subReportsStore}
-                                                        value={subReportsStore?.find((option) => option.value === field.value)}
+                                                        value={subReportsStore.filter((option) => field.value?.includes(option.value))}
                                                         onChange={(option) => {
-                                                            setSubReportName(option?.map((item) => item?.value).join(','))
+                                                            const values = option?.map((item) => item.value) || []
+                                                            form.setFieldValue('tables', values)
+                                                            setSubReportName(values.join(','))
                                                             setShowTable(false)
                                                         }}
-                                                        className="w-full"
                                                     />
                                                 )}
                                             </Field>
