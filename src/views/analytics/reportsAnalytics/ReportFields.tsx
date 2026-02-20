@@ -225,6 +225,9 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
                                                                             placeholder=""
                                                                             className="w-full mt-2"
                                                                             value={field.value ? dayjs(field.value, 'YYYY-MM-DD') : null}
+                                                                            disabledDate={(current) =>
+                                                                                current && current.isAfter(dayjs().endOf('day'))
+                                                                            }
                                                                             onChange={(value) => {
                                                                                 form.setFieldValue(
                                                                                     field.name,
@@ -236,6 +239,7 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
                                                                 </Field>
                                                             )
                                                         }
+
                                                         return (
                                                             <Input
                                                                 type={dataType === 'Date' ? 'date' : 'text'}

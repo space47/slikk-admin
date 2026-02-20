@@ -105,7 +105,7 @@ const ReportAnalytics = () => {
                         if (key === 'start_date') {
                             transformedValue = moment().startOf('month').format('YYYY-MM-DD')
                         } else if (key === 'end_date') {
-                            transformedValue = moment().endOf('month').format('YYYY-MM-DD')
+                            transformedValue = moment().format('YYYY-MM-DD')
                         }
                         return {
                             position: position,
