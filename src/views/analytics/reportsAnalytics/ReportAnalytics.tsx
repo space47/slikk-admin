@@ -26,6 +26,8 @@ import { commonDownload } from '@/common/commonDownload'
 const ReportAnalytics = () => {
     const [storeName, setStoreName] = useState('')
     const [reportQueryNames, setReportQueryNames] = useState<{ label: string; value: string }[]>([])
+    const [subReportsStore, setSubReportStore] = useState<{ label: string; value: string }[]>([])
+    const [subReportName, setSubReportName] = useState('')
     const [dynamicReportTable, setDynamicReportTable] = useState<any[]>([])
     const [showTable, setShowTable] = useState(false)
     const [xAxisValue, setXAxisvalue] = useState('')
@@ -116,6 +118,12 @@ const ReportAnalytics = () => {
                     ?.sort((a, b) => a.position - b.position),
             }
             setReportData(formattedData)
+            setSubReportStore(
+                data?.value?.map((item: any) => ({
+                    label: item.name,
+                    value: item.name,
+                })),
+            )
         } catch (error: any) {
             if (error.response && error.response.status === 403) {
                 setAccessDenied(true)
@@ -124,6 +132,9 @@ const ReportAnalytics = () => {
             }
         }
     }
+
+    console.log('subReport data', subReportsStore)
+
     useEffect(() => {
         if (storeName) {
             fetchApi()
@@ -180,6 +191,9 @@ const ReportAnalytics = () => {
         }
         if (!values.use_cache) {
             reportParameters += `&use_cache=false`
+        }
+        if (subReportName) {
+            reportParameters += `&query_name=${subReportName}`
         }
 
         try {
@@ -247,6 +261,8 @@ const ReportAnalytics = () => {
         return <InnternalError />
     }
 
+    console.log('sub report name', subReportName)
+
     return (
         <div className="min-h-screen  dark:from-gray-900 dark:to-gray-800 p-2">
             <Formik enableReinitialize initialValues={reportData} onSubmit={handleSubmit}>
@@ -265,34 +281,65 @@ const ReportAnalytics = () => {
                                     <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
                                         <div className="flex-1">
                                             {!isCustomQuery ? (
-                                                <div className="space-y-3">
-                                                    <div className="flex items-center gap-2 mb-4">
-                                                        <HiSelector className="text-indigo-500 text-xl" />
-                                                        <label className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                                                            Select Target Page
-                                                        </label>
+                                                <div>
+                                                    <div className="space-y-3">
+                                                        <div className="flex items-center gap-2 mb-4">
+                                                            <HiSelector className="text-indigo-500 text-xl" />
+                                                            <label className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                                                                Select Report Name
+                                                            </label>
+                                                        </div>
+                                                        <Field name="target_page">
+                                                            {({ field, form }: FieldProps) => (
+                                                                <Select
+                                                                    isClearable
+                                                                    placeholder={
+                                                                        <div className="flex items-center gap-2 text-gray-500">
+                                                                            <FaSearch className="text-sm" />
+                                                                            <span>Search or select a page...</span>
+                                                                        </div>
+                                                                    }
+                                                                    options={reportQueryNames}
+                                                                    value={reportQueryNames?.find((option) => option.value === field.value)}
+                                                                    onChange={(option: any) => {
+                                                                        form.setFieldValue(field.name, option?.value)
+                                                                        setStoreName(option?.value)
+                                                                        setShowTable(false)
+                                                                    }}
+                                                                    className="w-full"
+                                                                />
+                                                            )}
+                                                        </Field>
                                                     </div>
-                                                    <Field name="target_page">
-                                                        {({ field, form }: FieldProps) => (
-                                                            <Select
-                                                                isClearable
-                                                                placeholder={
-                                                                    <div className="flex items-center gap-2 text-gray-500">
-                                                                        <FaSearch className="text-sm" />
-                                                                        <span>Search or select a page...</span>
-                                                                    </div>
-                                                                }
-                                                                options={reportQueryNames}
-                                                                value={reportQueryNames?.find((option) => option.value === field.value)}
-                                                                onChange={(option: any) => {
-                                                                    form.setFieldValue(field.name, option?.value)
-                                                                    setStoreName(option?.value)
-                                                                    setShowTable(false)
-                                                                }}
-                                                                className="w-full"
-                                                            />
-                                                        )}
-                                                    </Field>
+                                                    <div>
+                                                        <div className="flex items-center gap-2 mb-4 mt-10">
+                                                            <HiSelector className="text-indigo-500 text-xl" />
+                                                            <label className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                                                                Select Table
+                                                            </label>
+                                                        </div>
+                                                        <Field name="tables">
+                                                            {({ field, form }: FieldProps) => (
+                                                                <Select
+                                                                    isMulti
+                                                                    isClearable
+                                                                    placeholder={
+                                                                        <div className="flex items-center gap-2 text-gray-500">
+                                                                            <FaSearch className="text-sm" />
+                                                                            <span>Search Table</span>
+                                                                        </div>
+                                                                    }
+                                                                    options={subReportsStore}
+                                                                    value={subReportsStore?.find((option) => option.value === field.value)}
+                                                                    onChange={(option) => {
+                                                                        setSubReportName(option?.map((item) => item?.value).join(','))
+                                                                        setShowTable(false)
+                                                                    }}
+                                                                    className="w-full"
+                                                                />
+                                                            )}
+                                                        </Field>
+                                                    </div>
                                                 </div>
                                             ) : (
                                                 <div className="flex items-center gap-3">
