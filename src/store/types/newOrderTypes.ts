@@ -124,7 +124,7 @@ export interface Order {
     status: string
     device_type: string
     delivery_type: string
-
+    no_return_opted_in?: boolean
     amount: string
     tax: string
     delivery: string
@@ -132,8 +132,8 @@ export interface Order {
     loyalty_discount: string
     offer_discount: string
     points_discount: string
-    other_charges: number
-
+    other_charges: string
+    other_charges_data: Record<string, number | string | boolean>
     create_date: string
     update_date: string
     completion_date: string | null
