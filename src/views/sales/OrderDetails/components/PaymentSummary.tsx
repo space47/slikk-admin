@@ -96,8 +96,6 @@ const PaymentSummary = ({
                     <PaymentInfo label="Coupon Discount" value={mainData?.coupon_discount} otherValue={mainData?.coupon_code || ''} />
                 )}
                 {!!parseInt(mainData?.loyalty_discount) && <PaymentInfo label="Loyalty Discount" value={mainData?.loyalty_discount} />}
-                {!!parseInt(mainData?.other_charges) && <PaymentInfo label="Other Charges" value={mainData?.other_charges} />}
-                {mainData?.other_discounts && <PaymentInfo isNumber label="Other Charges" value={mainData?.other_discounts} />}
                 {!!Object.entries(mainData?.other_charges_data).length &&
                     Object.entries(mainData.other_charges_data).map(([key, value]) => (
                         <div key={key} className="flex justify-between mb-2">
