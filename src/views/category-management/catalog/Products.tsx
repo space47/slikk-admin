@@ -42,6 +42,8 @@ const Products = () => {
     const [showAddFrameDialog, setShowAddFrameDialog] = useState(false)
     const [showDrawer, setShowDrawer] = useState(false)
     const [showViewModal, setShowViewModal] = useState(false)
+    const [tableDrawer, setTableDrawer] = useState(false)
+    const [tableDataFilters, setTableDataFilters] = useState<Record<string, string>>({})
     const { productData, count, currentSelectedPage, page, pageSize, typeFetch, globalFilter } = useAppSelector<productRequiredType>(
         (state) => state.product,
     )
@@ -116,6 +118,12 @@ const Products = () => {
             {
                 label: 'Filter',
                 onClick: () => setShowDrawer(true),
+                icon: <FaFilter className="text-md" />,
+                className: `lg:flex ${baseBtnClass} bg-gray-700 hover:bg-gray-600`,
+            },
+            {
+                label: 'Table Filter',
+                onClick: () => setTableDrawer(true),
                 icon: <FaFilter className="text-md" />,
                 className: `lg:flex ${baseBtnClass} bg-gray-700 hover:bg-gray-600`,
             },
@@ -201,6 +209,17 @@ const Products = () => {
                 />
             )}
 
+            {showDrawer && (
+                <FilterProductCommon
+                    isRedux={true}
+                    brandList={brandList}
+                    setBrandList={setBrandList}
+                    setShowDrawer={setShowDrawer}
+                    showDrawer={showDrawer}
+                    setTypeFetch={setTypeFetch}
+                    typeFetch={typeFetch}
+                />
+            )}
             {showDrawer && (
                 <FilterProductCommon
                     isRedux={true}
