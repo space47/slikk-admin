@@ -11,9 +11,9 @@ import isEmpty from 'lodash/isEmpty'
 import { useParams } from 'react-router-dom'
 import moment from 'moment'
 import ReturnOrderDrawer from './components/ReturnOrderDrawer'
-import { FaDownload } from 'react-icons/fa'
+import { FaDotCircle, FaDownload } from 'react-icons/fa'
 import { EDeliveryType, EOrderStatus, scheduleSlots } from './orderList.common'
-import { Button } from '@/components/ui'
+import { Badge, Button } from '@/components/ui'
 import TrackModal from '@/views/slikkLogistics/taskTracking/TrackModal'
 import OrderPickerSummary from './components/OrderPickersummary'
 import OrderMap from './OrderMap'
@@ -255,6 +255,14 @@ const OrderDetails = () => {
                         <div className="mb-6">{OrderDetailUI(data)}</div>
                         <div className="flex gap-6 overflow-x-auto scrollbar-hide">
                             <div className="flex-1 space-y-6 min-w-[900px]">
+                                <div>
+                                    {data?.no_return_opted_in && (
+                                        <div className="animate-pulse inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-red-50 border border-red-200">
+                                            <FaDotCircle className="text-red-500 text-sm" />
+                                            <Badge className="text-sm font-medium tracking-wide" content="No Return Opted" />
+                                        </div>
+                                    )}
+                                </div>
                                 <div className="bg-white dark:bg-gray-900 shadow-sm border border-gray-100 dark:border-gray-800 rounded-2xl">
                                     <div className="p-5">
                                         <OrderProducts data={data.order_items || []} invoice_id={data.invoice_id} status={data.status} />
@@ -289,19 +297,9 @@ const OrderDetails = () => {
                                     <div className="bg-white dark:bg-gray-900 shadow-sm border border-gray-100 dark:border-gray-800 rounded-2xl">
                                         <div className="p-6">
                                             <PaymentSummary
-                                                data={data.payment}
-                                                tax={data.tax}
-                                                delivery={data.delivery}
-                                                amount={data.amount}
-                                                coupon_discount={data.coupon_discount}
-                                                loyalty_discount={data.loyalty_discount}
-                                                points_discount={data.points_discount}
                                                 handleMarkAsPaid={handlemarkAsPaid}
-                                                status={data.status}
                                                 mainData={data}
                                                 handlePODAction={handlePODAction}
-                                                order_id={data.order_id}
-                                                gateway_transaction_id={data?.payment?.gateway_transaction_id || 'N/A'}
                                             />
                                         </div>
                                     </div>
