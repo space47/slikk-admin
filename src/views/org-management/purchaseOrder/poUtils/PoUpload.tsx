@@ -12,9 +12,10 @@ interface props {
     isOpen: boolean
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
     purchase_id: string | number
+    refetch: any
 }
 
-const PoUpload = ({ isOpen, setIsOpen, purchase_id }: props) => {
+const PoUpload = ({ isOpen, setIsOpen, purchase_id, refetch }: props) => {
     const [fileList, setFileList] = useState<any>([])
     const [isSpinning, setIsSpinning] = useState(false)
 
@@ -36,6 +37,7 @@ const PoUpload = ({ isOpen, setIsOpen, purchase_id }: props) => {
                 message: res?.data?.data?.message || 'File uploaded successfully',
             })
             setIsOpen(false)
+            refetch()
         } catch (error) {
             if (error instanceof AxiosError) {
                 notification.error({

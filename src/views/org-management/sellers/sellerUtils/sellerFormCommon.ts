@@ -1,9 +1,9 @@
 import { SellerKeys } from '../sellerCommon'
 
 export const BasicSellerInformation = [
-    { label: 'Vendor Business Name', name: SellerKeys.REGISTERED_NAME, type: 'text', isRequired: true, visible: true },
-    { label: 'Seller Code', name: SellerKeys.CODE, type: 'text', isRequired: true, visible: true },
-    { label: 'Company Name', name: SellerKeys.NAME, type: 'text', isRequired: true, visible: true },
+    { label: 'Vendor Business Name (Trade Name)', name: SellerKeys.REGISTERED_NAME, type: 'text', isRequired: true, visible: true },
+    { label: 'Company Code (Internal Identifier)', name: SellerKeys.CODE, type: 'text', isRequired: true, visible: true },
+    { label: 'Registered Legal Name', name: SellerKeys.NAME, type: 'text', isRequired: true, visible: true },
     { label: 'Head Person Name', name: SellerKeys.HEAD_NAME, type: 'text', isRequired: true, visible: true },
     { label: 'Head Person Email Address', name: SellerKeys.HEAD_EMAIL, type: 'text', isRequired: true, visible: true },
     { label: 'Head Person Phone Number', name: SellerKeys.HEAD_CONTACT, type: 'number', isRequired: true, visible: true, maxLength: 10 },
@@ -59,12 +59,12 @@ export const SellerMsMeArray = [
 ]
 
 export const SellerCommercialsArray = [
-    { label: 'Revenue Share Percent', name: SellerKeys.REVENUE_SHARE, type: 'number', isRequired: true, visible: true },
+    { label: 'Revenue Share Percent (Gross of GST)', name: SellerKeys.REVENUE_SHARE, type: 'number', isRequired: true, visible: true },
     { label: 'Handling Charges Per Sku', name: SellerKeys.HANDLING_CHARGES_PER_ORDER, type: 'number', isRequired: true, visible: true },
     { label: 'Warehouse Charges Per Sku', name: SellerKeys.WAREHOUSE_CHARGE_PER_SKU, type: 'number', isRequired: true, visible: true },
     { label: 'Damages Per Sku', name: SellerKeys.DAMAGES_PER_SKU, type: 'number', isRequired: true, visible: true },
     { label: 'Removal Fee Per Sku', name: SellerKeys.REMOVAL_FEE_PER_SKU, type: 'number', isRequired: true, visible: true },
-    { label: 'Settlement Days', name: SellerKeys.SETTLEMENT_DAYS, type: 'number', isRequired: true, visible: true },
+    { label: 'Credit Period', name: SellerKeys.SETTLEMENT_DAYS, type: 'number', isRequired: true, visible: true },
     { label: 'Approved Payment Terms', name: SellerKeys.APPROVED_PAYMENT_TERM, type: 'text', isRequired: true, visible: true },
 ]
 

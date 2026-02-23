@@ -61,7 +61,7 @@ const SellerBeforeApproval = ({ commentStructure, handleComments, sellerData, se
             return (
                 <div className="space-y-5">
                     {value.map((item, idx) => {
-                        const exclude = ['id', 'company', 'create_date', 'update_date']
+                        const exclude = ['company', 'create_date', 'update_date']
                         return (
                             <Card key={idx} className="border border-gray-200 p-5 rounded-2xl bg-gray-50">
                                 <h3 className="font-semibold mb-3 text-gray-800">GST Detail {idx + 1}</h3>

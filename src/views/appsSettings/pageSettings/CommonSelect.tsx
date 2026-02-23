@@ -14,6 +14,7 @@ interface SELECTPROPS {
     isSearch?: boolean
     asterisk?: boolean
     isMulti?: boolean
+    isDisabled?: boolean
 }
 
 const CommonSelect = ({
@@ -27,6 +28,7 @@ const CommonSelect = ({
     onChange,
     isSearch = false,
     isMulti = false,
+    isDisabled = false,
 }: SELECTPROPS) => {
     const [searchTerm, setSearchTerm] = useState('')
 
@@ -46,6 +48,7 @@ const CommonSelect = ({
 
                         return (
                             <Select
+                                isDisabled={isDisabled}
                                 isClearable
                                 isSearchable
                                 isMulti={isMulti} // ✅ important

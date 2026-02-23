@@ -1,6 +1,7 @@
-import { useMemo, lazy, Suspense } from 'react'
+import { useMemo, useEffect, lazy, Suspense } from 'react'
 import Loading from '@/components/shared/Loading'
 import { useAppDispatch, useAppSelector } from '@/store'
+
 import {
     LAYOUT_TYPE_CLASSIC,
     LAYOUT_TYPE_MODERN,
@@ -9,12 +10,12 @@ import {
     LAYOUT_TYPE_DECKED,
     LAYOUT_TYPE_BLANK,
 } from '@/constants/theme.constant'
+
 import useAuth from '@/utils/hooks/useAuth'
 import useDirection from '@/utils/hooks/useDirection'
 import useLocale from '@/utils/hooks/useLocale'
+
 import { getUserProfileAPI } from '@/store/action/company.action'
-import { Button } from '../ui'
-import { logoutAction } from '@/store/action/authAction'
 import { getAllDivisionAPI } from '@/store/action/division.action'
 import { getAllCategoryAPI } from '@/store/action/category.action'
 import { getAllSubCategoryAPI } from '@/store/action/subcategory.action'
@@ -29,32 +30,46 @@ const layouts = {
     [LAYOUT_TYPE_BLANK]: lazy(() => import('./BlankLayout')),
 }
 
+const AuthLayout = lazy(() => import('./AuthLayout'))
+
 const Layout = () => {
+    const dispatch = useAppDispatch()
+
     const layoutType = useAppSelector((state) => state.theme.layout.type)
+    const company = useAppSelector((state) => state.company.currCompany)
 
     const { authenticated } = useAuth()
 
     useDirection()
-
     useLocale()
-    const dispatch = useAppDispatch()
-    const company = useAppSelector((state) => state.company.currCompany)
 
-    const AppLayout = useMemo(() => {
+    /* ---------------------------------- */
+    /* Fetch static master data on mount  */
+    /* ---------------------------------- */
+    useEffect(() => {
         dispatch(getAllDivisionAPI())
         dispatch(getAllCategoryAPI())
         dispatch(getAllSubCategoryAPI())
         dispatch(getAllProductTypeAPI())
+    }, [dispatch])
 
+    /* ---------------------------------- */
+    /* Fetch profile on every reload      */
+    /* ---------------------------------- */
+    useEffect(() => {
         if (authenticated) {
-            console.log('company', company)
-            if (!company?.id) {
-                dispatch(getUserProfileAPI())
-            }
+            dispatch(getUserProfileAPI())
+        }
+    }, [authenticated, dispatch])
 
+    /* ---------------------------------- */
+    /* Layout selection (pure memo)       */
+    /* ---------------------------------- */
+    const AppLayout = useMemo(() => {
+        if (authenticated) {
             return layouts[layoutType]
         }
-        return lazy(() => import('./AuthLayout'))
+        return AuthLayout
     }, [layoutType, authenticated])
 
     return (
@@ -65,7 +80,7 @@ const Layout = () => {
                 </div>
             }
         >
-            {company && <AppLayout />}
+            {authenticated ? <AppLayout /> : <AuthLayout />}
         </Suspense>
     )
 }

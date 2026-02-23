@@ -130,7 +130,7 @@ const PoOrderItems = () => {
 
             <PoOrderItemsDialog edit isOpen={editModal} setIsOpen={setEditModal} currentRow={currentRow} handleSubmit={handleEdit} />
 
-            {uploadModal && <PoUpload isOpen={uploadModal} setIsOpen={setUploadModal} purchase_id={purchase_id} />}
+            {uploadModal && <PoUpload refetch={refetch} isOpen={uploadModal} setIsOpen={setUploadModal} purchase_id={purchase_id} />}
         </div>
     )
 }

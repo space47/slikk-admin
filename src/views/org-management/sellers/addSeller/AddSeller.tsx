@@ -28,6 +28,7 @@ import { SellerKeys } from '../sellerCommon'
 import { textParser } from '@/common/textParser'
 import { getProfileData } from '@/store/action/authAction'
 import { useAppDispatch } from '@/store'
+import { handlePhoneInputValidation } from '../sellerUtils/sellerFunctions'
 
 const AddSeller = () => {
     const navigate = useNavigate()
@@ -80,6 +81,11 @@ const AddSeller = () => {
         }
     }
 
+    const inputHandlers: Record<string, (e: React.FormEvent<HTMLInputElement>) => void> = {
+        [SellerKeys.HEAD_CONTACT]: handlePhoneInputValidation,
+        [SellerKeys.CONTACT_NUMBER]: handlePhoneInputValidation,
+    }
+
     return (
         <div>
             <h3 className="text-xl font-bold">Add New Seller</h3>
@@ -107,6 +113,7 @@ const AddSeller = () => {
                                                             placeholder={`Enter ${item.label}`}
                                                             component={Input}
                                                             className="pl-10"
+                                                            onInput={inputHandlers[item.name]}
                                                         />
                                                     </div>
                                                 </FormItem>
@@ -186,7 +193,7 @@ const AddSeller = () => {
                                                 </FormItem>
                                             )
                                         })}
-                                        <FormItem asterisk label="Segment" className="col-span-1 w-full">
+                                        <FormItem asterisk label="Fashion Style" className="col-span-1 w-full">
                                             <Field name={SellerKeys.SEGMENT}>
                                                 {({ field, form }: FieldProps) => {
                                                     const fieldValueArray = Array.isArray(field?.value)
@@ -236,7 +243,7 @@ const AddSeller = () => {
                                 {!isOther ? (
                                     <>
                                         <Button type="submit" variant="blue" loading={isSubmitting} disabled={isSubmitting}>
-                                            Send To Vendor
+                                            Email To Vendor
                                         </Button>
                                     </>
                                 ) : (
