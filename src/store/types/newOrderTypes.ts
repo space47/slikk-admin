@@ -120,7 +120,7 @@ export interface Order {
     order_id: string
     invoice_id: string
     cart_id: number
-
+    other_discounts: number
     status: string
     device_type: string
     delivery_type: string
@@ -137,7 +137,7 @@ export interface Order {
     create_date: string
     update_date: string
     completion_date: string | null
-
+    other_discounts_data: Record<string, string | number | boolean>
     billing_address: string
     address_name: string
     area: string
