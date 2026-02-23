@@ -29,6 +29,7 @@ import AddFrameModal from './AddFrameModal'
 import FilterProductCommon from '@/common/FilterProductCommon'
 import PageCommon from '@/common/PageCommon'
 import { useDebounceInput } from '@/commonHooks/useDebounceInput'
+import ProductTableFilters from './ProductTableFilters'
 
 const Products = () => {
     const dispatch = useAppDispatch()
@@ -209,28 +210,23 @@ const Products = () => {
                 />
             )}
 
-            {showDrawer && (
-                <FilterProductCommon
-                    isRedux={true}
-                    brandList={brandList}
-                    setBrandList={setBrandList}
-                    setShowDrawer={setShowDrawer}
-                    showDrawer={showDrawer}
-                    setTypeFetch={setTypeFetch}
-                    typeFetch={typeFetch}
-                />
-            )}
-            {showDrawer && (
-                <FilterProductCommon
-                    isRedux={true}
-                    brandList={brandList}
-                    setBrandList={setBrandList}
-                    setShowDrawer={setShowDrawer}
-                    showDrawer={showDrawer}
-                    setTypeFetch={setTypeFetch}
-                    typeFetch={typeFetch}
-                />
-            )}
+            <FilterProductCommon
+                isRedux={true}
+                brandList={brandList}
+                setBrandList={setBrandList}
+                setShowDrawer={setShowDrawer}
+                showDrawer={showDrawer}
+                setTypeFetch={setTypeFetch}
+                typeFetch={typeFetch}
+            />
+
+            <ProductTableFilters
+                handleCloseDrawer={() => setTableDrawer(false)}
+                showDrawer={tableDrawer}
+                setTableDataFilters={setTableDataFilters}
+                tableDataFilters={tableDataFilters}
+            />
+
             {showFacebookDialog && (
                 <DialogConfirm
                     IsConfirm

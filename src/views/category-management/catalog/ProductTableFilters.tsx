@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { Drawer } from '@/components/ui'
+import { useEffect, useState } from 'react'
 
 interface PROPS {
     showDrawer: boolean
@@ -30,20 +31,33 @@ const TableData = [
 ]
 
 const ProductTableFilters = ({ showDrawer, handleCloseDrawer, tableDataFilters, setTableDataFilters }: PROPS) => {
+    const [lockScroll, setLockScroll] = useState(false)
+    const [storeValues, setStoreValues] = useState<string[]>([])
+
+    useEffect(() => {
+        if (showDrawer) {
+            console.log('called here')
+            setLockScroll(true)
+        } else {
+            console.log('became false')
+            setLockScroll(false)
+        }
+    }, [showDrawer])
+
     const handleDeliverySelect = (val: string) => {
         console.log(val)
     }
 
     return (
         <div>
-            <Drawer title="" isOpen={showDrawer} lockScroll={false} onRequestClose={handleCloseDrawer} onClose={handleCloseDrawer}>
+            <Drawer title="" isOpen={showDrawer} lockScroll={lockScroll} onRequestClose={handleCloseDrawer} onClose={handleCloseDrawer}>
                 <div className="flex flex-col mb-6">
                     <label htmlFor="" className="font-semibold text-lg mb-2">
                         SELECT DELIVERY TYPE
                     </label>
                     <div className="relative w-auto lg:w-auto bg-gray-100 dark:bg-gray-800 dark:text-white flex justify-center lg:justify-start">
                         <div className="w-full px-1 py-2 text-sm  text-black bg-gray-100 border dark:bg-gray-800 dark:text-white border-gray-300 rounded-md shadow-sm">
-                            <div className="h-auto overflow-y-auto max-h-80">
+                            <div className=" overflow-y-auto ">
                                 {TableData?.map((item, key) => (
                                     <div
                                         key={key}
