@@ -103,7 +103,7 @@ const EditNewGroups = () => {
 
             const requestBody = {
                 name: values.cohort_name,
-                ...(csvFile ? { user: Array.isArray(mobileNumbers) ? mobileNumbers : [] } : {}),
+                ...(csvFile ? { user: Array.isArray(mobileNumbers) ? mobileNumbers?.join(',') : '' } : {}),
                 rules: {
                     ...transformConditionsToRules(values.conditions),
                     ...(values.user ? { user: values.user?.split(',') } : {}),
