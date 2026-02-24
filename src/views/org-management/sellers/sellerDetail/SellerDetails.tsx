@@ -15,6 +15,7 @@ import SellerBeforeApproval from './SellerBeforeApproval'
 import { FaDownload } from 'react-icons/fa'
 import SellerDetailWarehouse from '../sellerUtils/SellerDetailWarehouse'
 import { commonPresignedDownload } from '@/common/commonDownload'
+import moment from 'moment'
 
 const SellerDetails = () => {
     const { id } = useParams()
@@ -114,12 +115,16 @@ const SellerDetails = () => {
 
                     <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r bg-gray-100 px-4 py-2 border border-amber-100 ">
                         <span className="text-xs font-semibold uppercase tracking-wider text-blue-600 ">Created</span>
-                        <span className="text-sm font-medium text-gray-900">{sellerData?.create_date || '--'}</span>
+                        <span className="text-sm font-medium text-gray-900">
+                            {moment(sellerData?.create_date).format('YYYY_MM_DD HH:mm:ss a') || '--'}
+                        </span>
                     </div>
 
                     <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r bg-gray-100 px-4 py-2 border border-amber-100">
                         <span className="text-xs font-semibold uppercase tracking-wider text-blue-600 ">Updated</span>
-                        <span className="text-sm font-medium text-gray-900">{sellerData?.update_date || '--'}</span>
+                        <span className="text-sm font-medium text-gray-900">
+                            {moment(sellerData?.update_date).format('YYYY_MM_DD HH:mm:ss a') || '--'}
+                        </span>
                     </div>
                 </div>
             </div>

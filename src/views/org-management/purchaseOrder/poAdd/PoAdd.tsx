@@ -18,6 +18,18 @@ const PoAdd = () => {
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const commercial_approval_doc = useMemo(() => selectedCompany?.commercial_approval_doc, [selectedCompany])
 
+    const VendorEntity = selectedCompany?.business_nature_company?.map((item) => ({
+        label: item?.company_name,
+        value: item.code,
+    }))
+
+    const initialValue = {
+        order_billing_entity: '',
+        order_billing_address: '',
+        order_shipping_address: '',
+        payment_terms: selectedCompany?.approved_payment_term,
+    }
+
     const handleSubmit = async (values: any) => {
         try {
             const payload = {
@@ -30,7 +42,6 @@ const PoAdd = () => {
                 payment_terms: values.payment_terms,
                 discount_sharing_applicable: values.discount_sharing_applicable,
                 special_terms: values.special_terms,
-                state_code: values.state_code,
                 expected_delivery_date: values.expected_delivery_date,
                 po_nature: values.po_nature,
                 company_gst: values?.company_gst?.id,
@@ -54,26 +65,34 @@ const PoAdd = () => {
     return (
         <div>
             <h3 className="text-xl font-bold">Create Purchase Order</h3>
-            <Formik enableReinitialize initialValues={{} as any} onSubmit={handleSubmit}>
-                {({ values }) => (
-                    <Form className=" w-full p-5 bg-gray-50 rounded-xl shadow-xl ">
-                        <FormContainer>
-                            <PoFormStepOne />
-                            {!commercial_approval_doc && (
-                                <>
-                                    <FormUploadFile
-                                        asterisk
-                                        label="Upload Commercial Terms"
-                                        fileList={values?.commercialFile}
-                                        name="commercial_terms"
-                                        existingFile={values?.commercial_terms}
-                                    />
-                                </>
-                            )}
-                            <FormButton value="Create" />
-                        </FormContainer>
-                    </Form>
-                )}
+            <Formik enableReinitialize initialValues={initialValue as any} onSubmit={handleSubmit}>
+                {({ values }) => {
+                    console.log(values?.company_gst)
+                    const wareHouseDetails = selectedCompany?.gst_details?.find((item) => item?.id === values.company_gst?.id)
+                    return (
+                        <Form className=" w-full p-5 bg-gray-50 rounded-xl shadow-xl ">
+                            <FormContainer>
+                                <PoFormStepOne
+                                    VendorEntity={VendorEntity}
+                                    wareHouseDetails={wareHouseDetails}
+                                    businessNatureCompany={selectedCompany?.business_nature_company || []}
+                                />
+                                {!commercial_approval_doc && (
+                                    <>
+                                        <FormUploadFile
+                                            asterisk
+                                            label="Upload Commercial Terms"
+                                            fileList={values?.commercialFile}
+                                            name="commercial_terms"
+                                            existingFile={values?.commercial_terms}
+                                        />
+                                    </>
+                                )}
+                                <FormButton value="Create" />
+                            </FormContainer>
+                        </Form>
+                    )
+                }}
             </Formik>
         </div>
     )

@@ -47,6 +47,7 @@ export type SINGLE_COMPANY_DATA = {
     commercial_approval_doc?: string
     business_nature_company: BUSINESS_NATURE[]
     gst_details: WAREHOUSE_DETAILS[]
+    approved_payment_term: string
 }
 
 export type USER_PROFILE_DATA = {
