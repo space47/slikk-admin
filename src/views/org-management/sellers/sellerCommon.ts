@@ -168,3 +168,11 @@ export enum SellerKeys {
     CREATE_DATE = 'create_date',
     UPDATE_DATE = 'update_date',
 }
+
+export enum SellerStatus {
+    APPROVED = 'approved',
+    REJECTED = 'rejected',
+    REJECT = 'reject',
+    PENDING = 'pending',
+    CHANGES_REQUESTED = 'changes_requested',
+}

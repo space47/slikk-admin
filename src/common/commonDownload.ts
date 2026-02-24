@@ -32,23 +32,17 @@ export const commonDownload = (response: any, label: string) => {
 export const commonPresignedDownload = async (fileUrl: string, fileName: string) => {
     try {
         const response = await axioisInstance.get(`file/presign?file_url=${encodeURIComponent(fileUrl)}`)
-        console.log('sss', response)
         const preSignedUrl = response.data.data
         await fetch(preSignedUrl)
             .then((res) => res.blob())
             .then((blob) => {
                 const url = URL.createObjectURL(blob)
-
                 const a = document.createElement('a')
                 a.href = url
                 a.download = `${fileName}.pdf`
-
                 document.body.appendChild(a)
-
                 a.click()
-
                 document.body.removeChild(a)
-
                 URL.revokeObjectURL(url)
             })
             .catch((err) => console.log(err))

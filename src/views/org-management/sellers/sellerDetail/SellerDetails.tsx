@@ -16,6 +16,7 @@ import { FaDownload } from 'react-icons/fa'
 import SellerDetailWarehouse from '../sellerUtils/SellerDetailWarehouse'
 import { commonPresignedDownload } from '@/common/commonDownload'
 import moment from 'moment'
+import { SellerStatus } from '../sellerCommon'
 
 const SellerDetails = () => {
     const { id } = useParams()
@@ -24,7 +25,7 @@ const SellerDetails = () => {
     const [isCommentModal, setIsCommentModal] = useState(false)
     const [dataForComment, setDataForComment] = useState<{ name: string; label: string }>({ name: '', label: '' })
     const [commentStructure, setCommentStructure] = useState<Record<string, string>>({})
-    const [statusToProceed, setStatusToProceed] = useState<'approved' | 'rejected' | 'changes_requested' | ''>('')
+    const [statusToProceed, setStatusToProceed] = useState<SellerStatus | ''>('')
     const [confirmModal, setConfirmModal] = useState(false)
 
     const [vendorApprove, approveResponse] = vendorService.useVendorApprovalMutation()
@@ -67,18 +68,18 @@ const SellerDetails = () => {
     }
 
     const StatusVariant = (status: string) => {
-        if (!status) return 'pending'
+        if (!status) return SellerStatus.PENDING
         const lower = status.toLowerCase()
-        if (lower === 'approved') return 'accept'
-        if (lower === 'rejected' || lower === 'reject') return 'reject'
-        return 'pending'
+        if (lower === SellerStatus.APPROVED) return 'accept'
+        if (lower === SellerStatus.REJECTED || lower === 'reject') return 'reject'
+        return SellerStatus.PENDING
     }
 
     const IconSelector = (status: string) => {
         if (!status) return null
         const lower = status.toLowerCase()
-        if (lower === 'approved') return <IoCheckmarkOutline />
-        if (lower === 'rejected' || lower === 'reject') return <MdCancel />
+        if (lower === SellerStatus.APPROVED) return <IoCheckmarkOutline />
+        if (lower === SellerStatus.REJECTED || lower === 'reject') return <MdCancel />
         return null
     }
 
@@ -135,7 +136,7 @@ const SellerDetails = () => {
                 </Button>
             </div>
 
-            {sellerData?.status?.toLowerCase() === 'approved' ? (
+            {sellerData?.status?.toLowerCase() === SellerStatus.APPROVED ? (
                 <div className="space-y-6">
                     <Card className="group overflow-hidden rounded-2xl border-0 bg-white shadow-md hover:shadow-xl transition-all duration-300">
                         <div className="relative p-6">
@@ -396,8 +397,8 @@ const SellerDetails = () => {
             <DialogConfirm
                 IsOpen={confirmModal}
                 setIsOpen={setConfirmModal}
-                IsConfirm={statusToProceed !== 'rejected'}
-                IsDelete={statusToProceed === 'rejected'}
+                IsConfirm={statusToProceed !== SellerStatus.REJECTED}
+                IsDelete={statusToProceed === SellerStatus.REJECTED}
                 headingName="Confirmation to proceed Further"
                 onDialogOk={handleProceed}
             />

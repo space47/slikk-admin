@@ -8,12 +8,13 @@ import { FaFilePdf, FaFileImage, FaFileWord, FaFileExcel } from 'react-icons/fa'
 import { IoIosSend } from 'react-icons/io'
 import { IoCheckmarkOutline, IoDocumentTextOutline } from 'react-icons/io5'
 import { MdCancel, MdOutlineInsertDriveFile } from 'react-icons/md'
+import { SellerStatus } from '../sellerCommon'
 
 interface Props {
     commentStructure: Record<string, string>
     handleComments: (name: string, label: string) => void
     sellerData: VendorDetails
-    setStatusToProceed: React.Dispatch<React.SetStateAction<'' | 'approved' | 'rejected' | 'changes_requested'>>
+    setStatusToProceed: React.Dispatch<React.SetStateAction<'' | SellerStatus>>
     setConfirmModal: React.Dispatch<React.SetStateAction<boolean>>
 }
 
@@ -262,7 +263,7 @@ const SellerBeforeApproval = ({ commentStructure, handleComments, sellerData, se
                         icon={<IoCheckmarkOutline className="text-lg" />}
                         className="w-full sm:w-auto shadow-sm hover:shadow-md transition-all bg-green-50 border-green-200 hover:bg-green-100 text-green-700"
                         onClick={() => {
-                            setStatusToProceed('approved')
+                            setStatusToProceed(SellerStatus.APPROVED)
                             setConfirmModal(true)
                         }}
                     >
@@ -275,7 +276,7 @@ const SellerBeforeApproval = ({ commentStructure, handleComments, sellerData, se
                         icon={<MdCancel className="text-lg" />}
                         className="w-full sm:w-auto shadow-sm hover:shadow-md transition-all bg-red-50 border-red-200 hover:bg-red-100 text-red-700"
                         onClick={() => {
-                            setStatusToProceed('rejected')
+                            setStatusToProceed(SellerStatus.REJECTED)
                             setConfirmModal(true)
                         }}
                     >
@@ -289,7 +290,7 @@ const SellerBeforeApproval = ({ commentStructure, handleComments, sellerData, se
                         icon={<IoIosSend className="text-lg" />}
                         className="w-full sm:w-auto shadow-sm hover:shadow-md transition-all bg-blue-50 border-blue-200 hover:bg-blue-100 text-blue-700"
                         onClick={() => {
-                            setStatusToProceed('changes_requested')
+                            setStatusToProceed(SellerStatus.CHANGES_REQUESTED)
                             setConfirmModal(true)
                         }}
                     >
