@@ -91,11 +91,11 @@ const PaymentSummary = ({
                 <PaymentInfo label="Amount" value={mainData?.amount} />
                 <PaymentType label="Mode" value={mainData?.payment?.mode} />
 
-                {!!parseInt(mainData?.delivery as string) && <PaymentInfo label="Delivery Charge" value={mainData?.delivery} />}
-                {!!parseInt(mainData?.coupon_code as string) && (
+                <PaymentInfo label="Delivery Charge" value={mainData?.delivery} />
+                {mainData?.coupon_discount !== '0.00' && (
                     <PaymentInfo label="Coupon Discount" value={mainData?.coupon_discount} otherValue={mainData?.coupon_code || ''} />
                 )}
-                {!!parseInt(mainData?.loyalty_discount) && <PaymentInfo label="Loyalty Discount" value={mainData?.loyalty_discount} />}
+                {mainData?.loyalty_discount !== '0.00' && <PaymentInfo label="Loyalty Discount" value={mainData?.loyalty_discount} />}
                 {!!Object.entries(mainData?.other_charges_data).length &&
                     Object.entries(mainData.other_charges_data).map(([key, value]) => (
                         <div key={key} className="flex justify-between mb-2">
@@ -111,7 +111,7 @@ const PaymentSummary = ({
                         </div>
                     ))}
 
-                {!!parseInt(mainData?.points_discount) && <PaymentInfo label="Points Discount" value={mainData?.points_discount} />}
+                {mainData?.points_discount !== '0.00' && <PaymentInfo label="Points Discount" value={mainData?.points_discount} />}
                 <PaymentType label="Time" value={moment(mainData?.payment?.transaction_time).format('MM/DD/YYYY hh:mm:ss a')} />
                 <PaymentInfo isNumber label="Tax" value={mainData?.tax} />
                 <PaymentType label="Id" value={mainData?.order_id} />
