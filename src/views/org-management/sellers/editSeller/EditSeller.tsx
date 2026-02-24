@@ -102,7 +102,6 @@ const EditSeller = () => {
     }
 
     const handleSubmit = async (values: any) => {
-        console.log('calues are', values)
         setIsSubmitting(true)
         if (values.contact_number === values.alternate_contact_number) {
             notification.error({ message: 'Failure !! Alternate Mobile Number Should be different' })

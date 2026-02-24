@@ -15,6 +15,13 @@ interface Props {
 const SellerCommercials = ({ values }: Props) => {
     const { configValues } = useAppSelector<VendorStateType>((state) => state.vendor)
 
+    const BusinessCompanyData = configValues?.value?.[values?.business_nature as 'SOR' | 'OR']?.map((item) => ({
+        label: item?.company_name,
+        value: item?.gstin,
+    }))
+
+    console.log(BusinessCompanyData)
+
     console.log('vsalalalavlalvaa', configValues)
     return (
         <div className="w-full">
@@ -23,6 +30,33 @@ const SellerCommercials = ({ values }: Props) => {
             <FormContainer className="mt-10">
                 <CommonSelect name={SellerKeys.BUSINESS_NATURE} options={NOBOptions()} label="Nature of Business" />
             </FormContainer>
+            <FormItem asterisk label="Business Company" className="col-span-1 w-full">
+                <Field name="business_nature_data">
+                    {({ field, form }: FieldProps) => {
+                        const fieldValueArray = Array.isArray(field?.value) ? field?.value : field?.value?.split(',') || []
+                        const selectedOptions = BusinessCompanyData?.filter((option: any) =>
+                            fieldValueArray.includes(option.value?.toString()),
+                        )
+
+                        return (
+                            <Select
+                                isMulti
+                                isClearable
+                                className="w-full"
+                                options={BusinessCompanyData}
+                                getOptionLabel={(option) => option?.label}
+                                getOptionValue={(option) => option?.value?.toString()}
+                                value={selectedOptions}
+                                onChange={(newVals: any) => {
+                                    const selectedValues = newVals?.map((val: any) => val.value?.toString()) || []
+
+                                    form.setFieldValue('business_nature_data', selectedValues.join(','))
+                                }}
+                            />
+                        )
+                    }}
+                </Field>
+            </FormItem>
             <FormContainer className="mt-8 grid grid-cols-2 gap-2">
                 {SellerCommercialsArray?.map((item, idx) => (
                     <FormItem key={idx} label={item?.label} asterisk={item?.isRequired} className="flex flex-col space-y-1">

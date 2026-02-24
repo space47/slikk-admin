@@ -38,7 +38,7 @@ const SellerForm = ({ values, isSubmitting, isAdd }: props) => {
         (props: any) => <SellerBankDetails isEdit={true} {...props} />,
         (props: any) => <SellerWarehouseDetails isEdit={true} {...props} />,
         (props: any) => <SellerMsme isEdit={true} {...props} />,
-        () => <SellerCommercials />,
+        () => <SellerCommercials values={values} />,
         () => <SellerInternal values={values} />,
         (props: any) => <SellerDocsAndDeclaration isEdit={true} {...props} />,
     ]

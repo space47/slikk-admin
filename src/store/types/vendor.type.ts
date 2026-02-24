@@ -129,7 +129,7 @@ export interface VendorResponseData {
 
 export interface BusinessNatureData {
     code: string
-    gtin: string
+    gstin: string
     bill_to: string
     ship_to: string
     company_name: string
@@ -147,8 +147,8 @@ export interface ConfigValues {
     id: number
     name: string
     value: {
-        or_company: BusinessNatureData[]
-        sor_company: BusinessNatureData[]
+        OR: BusinessNatureData[]
+        SOR: BusinessNatureData[]
         finance_team: TeamData[]
         category_team: Record<string, TeamData[]>
     }

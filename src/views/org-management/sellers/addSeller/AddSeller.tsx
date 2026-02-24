@@ -104,6 +104,11 @@ const AddSeller = () => {
                             acc[item] = configValues?.value?.category_team[item?.toUpperCase()] || []
                             return acc
                         }, {}) || {}
+
+                    const BusinessCompanyData = configValues?.value?.[values?.business_nature as 'SOR' | 'OR']?.map((item) => ({
+                        label: item?.company_name,
+                        value: item?.gstin,
+                    }))
                     return (
                         <Form className="xl:w-[90%] w-full p-5 ">
                             {!isOther && (
@@ -179,6 +184,42 @@ const AddSeller = () => {
                                         </div>
 
                                         <FormContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                                            <CommonSelect
+                                                asterisk
+                                                name={SellerKeys.BUSINESS_NATURE}
+                                                options={NOBOptions()}
+                                                label="Nature of Business"
+                                            />
+                                            <FormItem asterisk label="Business Company" className="col-span-1 w-full">
+                                                <Field name="business_nature_data">
+                                                    {({ field, form }: FieldProps) => {
+                                                        const fieldValueArray = Array.isArray(field?.value)
+                                                            ? field?.value
+                                                            : field?.value?.split(',') || []
+                                                        const selectedOptions = BusinessCompanyData?.filter((option: any) =>
+                                                            fieldValueArray.includes(option.value?.toString()),
+                                                        )
+
+                                                        return (
+                                                            <Select
+                                                                isMulti
+                                                                isClearable
+                                                                className="w-full"
+                                                                options={BusinessCompanyData}
+                                                                getOptionLabel={(option) => option?.label}
+                                                                getOptionValue={(option) => option?.value?.toString()}
+                                                                value={selectedOptions}
+                                                                onChange={(newVals: any) => {
+                                                                    const selectedValues =
+                                                                        newVals?.map((val: any) => val.value?.toString()) || []
+
+                                                                    form.setFieldValue('business_nature_data', selectedValues.join(','))
+                                                                }}
+                                                            />
+                                                        )
+                                                    }}
+                                                </Field>
+                                            </FormItem>
                                             {SellerCommercialsArray.map((item, key) => {
                                                 return (
                                                     <FormItem key={key} label={item.label} className="w-full" asterisk={item.isRequired}>
@@ -224,12 +265,6 @@ const AddSeller = () => {
                                                     }}
                                                 </Field>
                                             </FormItem>
-                                            <CommonSelect
-                                                asterisk
-                                                name={SellerKeys.BUSINESS_NATURE}
-                                                options={NOBOptions()}
-                                                label="Nature of Business"
-                                            />
                                         </FormContainer>
                                     </div>
                                     <div className="mt-10 space-y-6">
