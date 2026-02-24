@@ -78,7 +78,19 @@ const EditNewGroups = () => {
     const parseCSV = (file: File) => {
         Papa.parse(file, {
             complete: (result) => {
-                const extractedMobileNumbers = result.data.map((row: any) => row.mobile).filter(Boolean)
+                const extractedMobileNumbers = result.data
+                    .map((row: any) => {
+                        // Fix keys with extra spaces
+                        const cleanedRow: any = {}
+
+                        Object.keys(row).forEach((key) => {
+                            cleanedRow[key.trim()] = row[key]
+                        })
+
+                        return cleanedRow.mobile ? String(cleanedRow.mobile).trim().replace(/\s+/g, '') : ''
+                    })
+                    .filter(Boolean)
+
                 setMobileNumbers(extractedMobileNumbers)
             },
             header: true,
