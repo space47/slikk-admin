@@ -18,6 +18,7 @@ import FormButton from '@/components/ui/Button/FormButton'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import FormUploadFile from '@/common/FormUploadFile'
+import { PoField } from '../poUtils/poFormCommon'
 
 const PoEdit = () => {
     const { purchase_id } = useParams()
@@ -60,17 +61,16 @@ const PoEdit = () => {
         try {
             const payload = {
                 store: values.store,
-                order_billing_entity: values.order_billing_entity,
-                order_billing_address: values.order_billing_address,
-                order_shipping_address: values.order_shipping_address,
-                payment_terms: values.payment_terms,
-                discount_sharing_applicable: values.discount_sharing_applicable,
-                special_terms: values.special_terms,
-                state_code: values.state_code,
-                company_gst: values?.company_gst?.id,
-                expected_delivery_date: values.expected_delivery_date,
-                po_nature: values.po_nature,
-                payment_mode: values?.payment_mode,
+                [PoField.ORDER_BILLING_ENTITY]: values[PoField.ORDER_BILLING_ENTITY],
+                [PoField.ORDER_BILLING_ADDRESS]: values[PoField.ORDER_BILLING_ADDRESS],
+                [PoField.ORDER_SHIPPING_ADDRESS]: values[PoField.ORDER_SHIPPING_ADDRESS],
+                [PoField.PAYMENT_TERMS]: values[PoField.PAYMENT_TERMS],
+                [PoField.DISCOUNT_SHARING]: values[PoField.DISCOUNT_SHARING],
+                [PoField.SPECIAL_TERMS]: values[PoField.SPECIAL_TERMS],
+                [PoField.COMPANY_GST]: values[PoField.COMPANY_GST]?.id,
+                [PoField.EXPECTED_DELIVERY]: values[PoField.EXPECTED_DELIVERY],
+                [PoField.PO_NATURE]: values[PoField.PO_NATURE],
+                [PoField.PAYMENT_MODE]: values[PoField.PAYMENT_MODE],
             }
 
             const formData = buildFormData(payload)

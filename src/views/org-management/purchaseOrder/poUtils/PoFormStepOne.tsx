@@ -1,6 +1,6 @@
 import { Card, FormContainer, FormItem, Input, Select, Switcher } from '@/components/ui'
 import React from 'react'
-import { IndianStateCodes, PoFormFieldArray, PoNatureOption } from './poFormCommon'
+import { IndianStateCodes, PoField, PoFormFieldArray, PoNatureOption } from './poFormCommon'
 import { Field, FieldProps } from 'formik'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 import WarehouseSelect from '@/common/WarehouseSelect'
@@ -21,7 +21,7 @@ const PoFormStepOne = ({ VendorEntity, businessNatureCompany, wareHouseDetails }
     return (
         <div className="space-y-8">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                <WarehouseSelect isSingle label="Select Vendor Warehouse" name="company_gst" customCss="xl:w-[800px] w-auto" />
+                <WarehouseSelect isSingle label="Select Vendor Warehouse" name={PoField.COMPANY_GST} customCss="xl:w-[800px] w-auto" />
             </div>
             <Card>
                 <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">Warehouse Details</h3>
@@ -55,7 +55,7 @@ const PoFormStepOne = ({ VendorEntity, businessNatureCompany, wareHouseDetails }
                 <h2 className="text-base font-semibold text-gray-800 mb-6">Purchase Order Information</h2>
                 <FormContainer className="grid grid-cols-2 gap-x-6 gap-y-5">
                     <FormItem label="Vendor Billing Entity">
-                        <Field name="order_billing_entity">
+                        <Field name={PoField.ORDER_BILLING_ENTITY}>
                             {({ field, form }: FieldProps) => {
                                 const selectedValue = VendorEntity?.find((opt) => opt.value === field.value) || null
 
@@ -67,14 +67,17 @@ const PoFormStepOne = ({ VendorEntity, businessNatureCompany, wareHouseDetails }
                                         value={selectedValue}
                                         onChange={(option) => {
                                             const value = option ? option.value : ''
-                                            form.setFieldValue('order_billing_entity', value)
+                                            form.setFieldValue(PoField.ORDER_BILLING_ENTITY, value)
                                             const selectedCompanyData = businessNatureCompany.find((item) => item.code === value)
                                             if (selectedCompanyData) {
-                                                form.setFieldValue('order_billing_address', selectedCompanyData.bill_to?.trim() || '')
-                                                form.setFieldValue('order_shipping_address', selectedCompanyData.ship_to?.trim() || '')
+                                                form.setFieldValue(PoField.ORDER_BILLING_ADDRESS, selectedCompanyData.bill_to?.trim() || '')
+                                                form.setFieldValue(
+                                                    PoField.ORDER_SHIPPING_ADDRESS,
+                                                    selectedCompanyData.ship_to?.trim() || '',
+                                                )
                                             } else {
-                                                form.setFieldValue('order_billing_address', '')
-                                                form.setFieldValue('order_shipping_address', '')
+                                                form.setFieldValue(PoField.ORDER_BILLING_ADDRESS, '')
+                                                form.setFieldValue(PoField.ORDER_SHIPPING_ADDRESS, '')
                                             }
                                         }}
                                         onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
@@ -96,7 +99,7 @@ const PoFormStepOne = ({ VendorEntity, businessNatureCompany, wareHouseDetails }
                         )
                     })}
                     <FormItem label="Expected Delivery Date">
-                        <Field name="expected_delivery_date">
+                        <Field name={PoField.EXPECTED_DELIVERY}>
                             {({ field, form }: FieldProps) => {
                                 const dateValue = field.value ? dayjs(field.value) : null
 
@@ -113,7 +116,7 @@ const PoFormStepOne = ({ VendorEntity, businessNatureCompany, wareHouseDetails }
                             }}
                         </Field>
                     </FormItem>
-                    <CommonSelect label="Po Nature" name="po_nature" options={PoNatureOption()} />
+                    <CommonSelect label="Po Nature" name={PoField.PO_NATURE} options={PoNatureOption()} />
                 </FormContainer>
             </div>
         </div>

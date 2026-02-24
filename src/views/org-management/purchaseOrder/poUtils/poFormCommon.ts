@@ -1,13 +1,26 @@
-//TODO: Change the state code to dropdown
+export enum PoField {
+    ORDER_BILLING_ADDRESS = 'order_billing_address',
+    ORDER_BILLING_ENTITY = 'order_billing_entity',
+    ORDER_SHIPPING_ADDRESS = 'order_shipping_address',
+    PAYMENT_TERMS = 'payment_terms',
+    PAYMENT_MODE = 'payment_mode',
+    SPECIAL_TERMS = 'special_terms',
+    DISCOUNT_SHARING = 'discount_sharing_applicable',
+    COMMERCIAL_TERMS = 'commercial_terms',
+    COMPANY_GST = 'company_gst',
+    EXPECTED_DELIVERY = 'expected_delivery_date',
+    PO_NATURE = 'po_nature',
+}
 
 export const PoFormFieldArray = [
-    { label: 'Order Billing Address(Bill-to)', type: 'text', name: 'order_billing_address' },
-    { label: 'Order Shipping Address(Ship-to)', type: 'text', name: 'order_shipping_address' },
-    { label: 'Payment Terms', type: 'text', name: 'payment_terms' },
-    { label: 'Payment Mode', type: 'text', name: 'payment_mode' },
-    { label: 'special_terms', type: 'text', name: 'special_terms' },
-    { label: 'Discount Sharing Applicable', type: 'checkbox', name: 'discount_sharing_applicable' },
+    { label: 'Order Billing Address(Bill-to)', type: 'text', name: PoField.ORDER_BILLING_ADDRESS },
+    { label: 'Order Shipping Address(Ship-to)', type: 'text', name: PoField.ORDER_SHIPPING_ADDRESS },
+    { label: 'Payment Terms', type: 'text', name: PoField.PAYMENT_TERMS },
+    { label: 'Payment Mode', type: 'text', name: PoField.PAYMENT_MODE },
+    { label: 'special_terms', type: 'text', name: PoField.SPECIAL_TERMS },
+    { label: 'Discount Sharing Applicable', type: 'checkbox', name: PoField.DISCOUNT_SHARING },
 ]
+
 export const PoOrderItemsArray = [
     { label: 'SKU', type: 'text', name: 'sku', is_required: true },
     { label: 'Supplier MRP', type: 'number', name: 'supplier_mrp', is_required: true },

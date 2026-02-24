@@ -12,6 +12,7 @@ import PoFormStepOne from '../poUtils/PoFormStepOne'
 import FormButton from '@/components/ui/Button/FormButton'
 import { useMemo } from 'react'
 import FormUploadFile from '@/common/FormUploadFile'
+import { PoField } from '../poUtils/poFormCommon'
 
 const PoAdd = () => {
     const navigate = useNavigate()
@@ -24,10 +25,10 @@ const PoAdd = () => {
     }))
 
     const initialValue = {
-        order_billing_entity: '',
-        order_billing_address: '',
-        order_shipping_address: '',
-        payment_terms: selectedCompany?.approved_payment_term,
+        [PoField.ORDER_BILLING_ENTITY]: '',
+        [PoField.ORDER_SHIPPING_ADDRESS]: '',
+        [PoField.ORDER_BILLING_ADDRESS]: '',
+        [PoField.PAYMENT_TERMS]: selectedCompany?.approved_payment_term,
     }
 
     const handleSubmit = async (values: any) => {
@@ -35,22 +36,22 @@ const PoAdd = () => {
             const payload = {
                 store: values.store,
                 company: selectedCompany?.id,
-                order_billing_entity: values.order_billing_entity,
-                order_billing_address: values.order_billing_address,
-                order_shipping_address: values.order_shipping_address,
-                commercial_terms: values.commercial_terms,
-                payment_terms: values.payment_terms,
-                discount_sharing_applicable: values.discount_sharing_applicable,
-                special_terms: values.special_terms,
-                expected_delivery_date: values.expected_delivery_date,
-                po_nature: values.po_nature,
-                company_gst: values?.company_gst?.id,
-                payment_mode: values?.payment_mode,
+                [PoField.ORDER_BILLING_ENTITY]: values[PoField.ORDER_BILLING_ENTITY],
+                [PoField.ORDER_BILLING_ADDRESS]: values[PoField.ORDER_BILLING_ADDRESS],
+                [PoField.ORDER_SHIPPING_ADDRESS]: values[PoField.ORDER_SHIPPING_ADDRESS],
+                [PoField.COMMERCIAL_TERMS]: values[PoField.COMMERCIAL_TERMS],
+                [PoField.PAYMENT_TERMS]: values[PoField.PAYMENT_TERMS],
+                [PoField.DISCOUNT_SHARING]: values[PoField.DISCOUNT_SHARING],
+                [PoField.SPECIAL_TERMS]: values[PoField.SPECIAL_TERMS],
+                [PoField.EXPECTED_DELIVERY]: values[PoField.EXPECTED_DELIVERY],
+                [PoField.PO_NATURE]: values[PoField.PO_NATURE],
+                [PoField.COMPANY_GST]: values[PoField.COMPANY_GST],
+                [PoField.PAYMENT_MODE]: values[PoField.PAYMENT_MODE],
             }
 
             const formData = buildFormData(payload)
             if (!commercial_approval_doc && values?.commercial_terms?.length > 0) {
-                formData.append('commercial_terms', values.commercial_terms[0])
+                formData.append(PoField.COMMERCIAL_TERMS, values.commercial_terms[0])
             }
             const res = await axioisInstance.post(`/merchant/purchase/order`, formData)
             if (res?.data) {
@@ -67,7 +68,6 @@ const PoAdd = () => {
             <h3 className="text-xl font-bold">Create Purchase Order</h3>
             <Formik enableReinitialize initialValues={initialValue as any} onSubmit={handleSubmit}>
                 {({ values }) => {
-                    console.log(values?.company_gst)
                     const wareHouseDetails = selectedCompany?.gst_details?.find((item) => item?.id === values.company_gst?.id)
                     return (
                         <Form className=" w-full p-5 bg-gray-50 rounded-xl shadow-xl ">
@@ -83,7 +83,7 @@ const PoAdd = () => {
                                             asterisk
                                             label="Upload Commercial Terms"
                                             fileList={values?.commercialFile}
-                                            name="commercial_terms"
+                                            name={PoField.COMMERCIAL_TERMS}
                                             existingFile={values?.commercial_terms}
                                         />
                                     </>
