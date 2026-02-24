@@ -8,17 +8,13 @@ import { AxiosError } from 'axios'
 import {
     BasicExtra,
     BasicSellerInformation,
-    CategoryMailOptions,
-    CategoryNameOptions,
-    CategoryNumberOptions,
     fileFields,
     NOBOptions,
     SellerCommercialsArray,
-    SellerInternalArray,
     simpleFields,
 } from '../sellerUtils/sellerFormCommon'
-import { useState } from 'react'
-import { Button, FormContainer, FormItem, Input, Select, Switcher } from '@/components/ui'
+import { useEffect, useState } from 'react'
+import { Button, FormContainer, FormItem, Input, Select } from '@/components/ui'
 
 import { GrDocument } from 'react-icons/gr'
 import { SegmentOptions } from '@/constants/commonArray.constant'
@@ -27,19 +23,31 @@ import { FcViewDetails } from 'react-icons/fc'
 import { SellerKeys } from '../sellerCommon'
 import { textParser } from '@/common/textParser'
 import { getProfileData } from '@/store/action/authAction'
-import { useAppDispatch } from '@/store'
+import { useAppDispatch, useAppSelector } from '@/store'
 import { handlePhoneInputValidation } from '../sellerUtils/sellerFunctions'
+import { vendorService } from '@/store/services/vendorService'
+
+import { setConfigValues, VendorStateType } from '@/store/slices/vendorsSlice/vendors.slice'
+import { GetVendorConfigData } from '../sellerUtils/GetVendorConfigData'
 
 const AddSeller = () => {
     const navigate = useNavigate()
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isOther, setIsOther] = useState(false)
     const dispatch = useAppDispatch()
-    const initialValue = {
-        int_finance_name: 'Dinesha',
-        int_finance_email: 'dinesha@slikk.club',
-        int_finance_contact_number: '8892377371',
-    }
+    const vendorConfigApiCall = vendorService.useVendorOnboardingConfigurationQuery({})
+
+    const { configValues } = useAppSelector<VendorStateType>((state) => state.vendor)
+
+    const { financeEmail, financeName, financeNumbers } = GetVendorConfigData()
+
+    useEffect(() => {
+        if (vendorConfigApiCall.isSuccess) {
+            dispatch(setConfigValues(vendorConfigApiCall.data.config))
+        }
+    }, [vendorConfigApiCall.isSuccess, vendorConfigApiCall.data?.config])
+
+    const initialValue = {}
 
     const handleSubmit = async (values: any) => {
         setIsSubmitting(true)
@@ -89,170 +97,191 @@ const AddSeller = () => {
     return (
         <div>
             <h3 className="text-xl font-bold">Add New Seller</h3>
-            <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
-                {({ values }) => (
-                    <Form className="xl:w-[90%] w-full p-5 ">
-                        {!isOther && (
-                            <FormContainer>
-                                <FormContainer className="bg-gradient-to-r  p-6 rounded-xl border-l-4 border-blue-500 shadow-lg mb-8">
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <div className="p-2 bg-blue-100 rounded-lg">
-                                            <FcViewDetails className="text-2xl text-blue-600" />
+            <Formik enableReinitialize initialValues={initialValue as any} onSubmit={handleSubmit}>
+                {({ values }) => {
+                    const internalData =
+                        values?.segment?.split(',')?.reduce((acc: Record<string, any>, item: string) => {
+                            acc[item] = configValues?.value?.category_team[item?.toUpperCase()] || []
+                            return acc
+                        }, {}) || {}
+                    return (
+                        <Form className="xl:w-[90%] w-full p-5 ">
+                            {!isOther && (
+                                <FormContainer>
+                                    <FormContainer className="bg-gradient-to-r  p-6 rounded-xl border-l-4 border-blue-500 shadow-lg mb-8">
+                                        <div className="flex items-center gap-3 mb-6">
+                                            <div className="p-2 bg-blue-100 rounded-lg">
+                                                <FcViewDetails className="text-2xl text-blue-600" />
+                                            </div>
+                                            <h4 className="text-xl font-bold text-gray-800">Seller Basic Details</h4>
                                         </div>
-                                        <h4 className="text-xl font-bold text-gray-800">Seller Basic Details</h4>
-                                    </div>
 
-                                    <FormContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-                                        {BasicSellerInformation.map((item, key) => {
-                                            return (
-                                                <FormItem key={key} label={item.label} className="w-full" asterisk={item.isRequired}>
-                                                    <div className="relative">
-                                                        <Field
-                                                            type={item.type}
-                                                            name={item?.name}
-                                                            placeholder={`Enter ${item.label}`}
-                                                            component={Input}
-                                                            className="pl-10"
-                                                            onInput={inputHandlers[item.name]}
-                                                        />
-                                                    </div>
-                                                </FormItem>
-                                            )
-                                        })}
-                                        {BasicExtra.map((item, key) => {
-                                            return (
-                                                <FormItem key={key} label={item.label} className="w-full" asterisk={item.isRequired}>
-                                                    <div className="relative">
-                                                        <Field
-                                                            type={item.type}
-                                                            name={item?.name}
-                                                            placeholder={`Enter ${item.label}`}
-                                                            component={Input}
-                                                            className="pl-10"
-                                                        />
-                                                    </div>
-                                                </FormItem>
-                                            )
-                                        })}
+                                        <FormContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                                            {BasicSellerInformation.map((item, key) => {
+                                                return (
+                                                    <FormItem key={key} label={item.label} className="w-full" asterisk={item.isRequired}>
+                                                        <div className="relative">
+                                                            <Field
+                                                                type={item.type}
+                                                                name={item?.name}
+                                                                placeholder={`Enter ${item.label}`}
+                                                                component={Input}
+                                                                className="pl-10"
+                                                                onInput={inputHandlers[item.name]}
+                                                            />
+                                                        </div>
+                                                    </FormItem>
+                                                )
+                                            })}
+                                            {BasicExtra.map((item, key) => {
+                                                return (
+                                                    <FormItem key={key} label={item.label} className="w-full" asterisk={item.isRequired}>
+                                                        <div className="relative">
+                                                            <Field
+                                                                type={item.type}
+                                                                name={item?.name}
+                                                                placeholder={`Enter ${item.label}`}
+                                                                component={Input}
+                                                                className="pl-10"
+                                                            />
+                                                        </div>
+                                                    </FormItem>
+                                                )
+                                            })}
 
-                                        <CommonSelect
-                                            asterisk
-                                            label="Internal Category Head Name"
-                                            name={SellerKeys.INT_POC_NAME}
-                                            options={CategoryNameOptions}
-                                        />
-                                        <CommonSelect
-                                            asterisk
-                                            label="Internal Category Head Email"
-                                            name={SellerKeys.INT_POC_EMAIL}
-                                            options={CategoryMailOptions}
-                                        />
-                                        <CommonSelect
-                                            asterisk
-                                            label="Internal Category Head Number"
-                                            name={SellerKeys.INT_POC_CONTACT}
-                                            options={CategoryNumberOptions}
-                                        />
-
-                                        {SellerInternalArray?.map((item, idx) => {
-                                            return (
-                                                <FormItem key={idx} label={item?.label} asterisk={item?.isRequired}>
-                                                    <Field
-                                                        type={item?.type}
-                                                        name={item?.name}
-                                                        placeholder={`Enter ${item?.label}`}
-                                                        component={item?.type === 'checkbox' ? Switcher : Input}
-                                                    />
-                                                </FormItem>
-                                            )
-                                        })}
+                                            <CommonSelect
+                                                asterisk
+                                                label="Finance Name"
+                                                name={SellerKeys.INT_FINANCE_NAME}
+                                                options={financeName || []}
+                                            />
+                                            <CommonSelect
+                                                asterisk
+                                                label="Finance Email"
+                                                name={SellerKeys.INT_FINANCE_EMAIL}
+                                                options={financeEmail || []}
+                                            />
+                                            <CommonSelect
+                                                asterisk
+                                                label="Finance Contact Number"
+                                                name={SellerKeys.FINANCE_CONTACT_NUMBER}
+                                                options={financeNumbers || []}
+                                            />
+                                        </FormContainer>
                                     </FormContainer>
-                                </FormContainer>
-                                {/* Commercials */}
-                                <div className="bg-gradient-to-r  p-6 rounded-xl border-l-4 border-orange-500 shadow-lg mb-8">
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <div className="p-2 bg-orange-100 rounded-lg">
-                                            <GrDocument className="text-2xl text-orange-600" />
+                                    {/* Commercials */}
+                                    <div className="bg-gradient-to-r  p-6 rounded-xl border-l-4 border-orange-500 shadow-lg mb-8">
+                                        <div className="flex items-center gap-3 mb-6">
+                                            <div className="p-2 bg-orange-100 rounded-lg">
+                                                <GrDocument className="text-2xl text-orange-600" />
+                                            </div>
+                                            <h4 className="text-xl font-bold text-gray-800">Commercials</h4>
                                         </div>
-                                        <h4 className="text-xl font-bold text-gray-800">Commercials</h4>
-                                    </div>
 
-                                    <FormContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-                                        {SellerCommercialsArray.map((item, key) => {
-                                            return (
-                                                <FormItem key={key} label={item.label} className="w-full" asterisk={item.isRequired}>
-                                                    <div className="relative">
-                                                        <Field
-                                                            type={item.type}
-                                                            name={item?.name}
-                                                            placeholder={`Enter ${item.label}`}
-                                                            component={Input}
-                                                            className="pl-10"
-                                                        />
-                                                    </div>
-                                                </FormItem>
-                                            )
-                                        })}
-                                        <FormItem asterisk label="Fashion Style" className="col-span-1 w-full">
-                                            <Field name={SellerKeys.SEGMENT}>
-                                                {({ field, form }: FieldProps) => {
-                                                    const fieldValueArray = Array.isArray(field?.value)
-                                                        ? field?.value
-                                                        : field?.value?.split(',') || []
-                                                    const selectedOptions = fieldValueArray?.map((item: any) => {
-                                                        const selectedOption = SegmentOptions()?.find((options: any) => {
-                                                            return options?.label === item
+                                        <FormContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                                            {SellerCommercialsArray.map((item, key) => {
+                                                return (
+                                                    <FormItem key={key} label={item.label} className="w-full" asterisk={item.isRequired}>
+                                                        <div className="relative">
+                                                            <Field
+                                                                type={item.type}
+                                                                name={item?.name}
+                                                                placeholder={`Enter ${item.label}`}
+                                                                component={Input}
+                                                                className="pl-10"
+                                                            />
+                                                        </div>
+                                                    </FormItem>
+                                                )
+                                            })}
+                                            <FormItem asterisk label="Fashion Style" className="col-span-1 w-full">
+                                                <Field name={SellerKeys.SEGMENT}>
+                                                    {({ field, form }: FieldProps) => {
+                                                        const fieldValueArray = Array.isArray(field?.value)
+                                                            ? field?.value
+                                                            : field?.value?.split(',') || []
+                                                        const selectedOptions = fieldValueArray?.map((item: any) => {
+                                                            const selectedOption = SegmentOptions()?.find((options: any) => {
+                                                                return options?.label === item
+                                                            })
+                                                            return selectedOption
                                                         })
-                                                        return selectedOption
-                                                    })
-                                                    return (
-                                                        <Select
-                                                            isMulti
-                                                            isClearable
-                                                            className="w-full"
-                                                            options={SegmentOptions()}
-                                                            getOptionLabel={(option) => option?.label}
-                                                            getOptionValue={(option) => option?.value?.toString()}
-                                                            value={selectedOptions}
-                                                            onChange={(newVals) => {
-                                                                const selectedValues = newVals?.map((val: any) => val.value) || []
-                                                                form.setFieldValue(SellerKeys.SEGMENT, selectedValues?.join(','))
-                                                            }}
-                                                        />
-                                                    )
-                                                }}
-                                            </Field>
-                                        </FormItem>
-                                        <CommonSelect
-                                            asterisk
-                                            name={SellerKeys.BUSINESS_NATURE}
-                                            options={NOBOptions()}
-                                            label="Nature of Business"
-                                        />
-                                    </FormContainer>
-                                </div>
-                            </FormContainer>
-                        )}
-                        {isOther && <SellerForm isAdd values={values} isSubmitting={isSubmitting} />}
-                        <div className="flex justify-end mt-8 gap-4">
-                            <Button type="button" variant={isOther ? 'gray' : 'pending'} onClick={() => setIsOther((prev) => !prev)}>
-                                {isOther ? 'Go to basic Details' : 'Fill Other Data'}
-                            </Button>
+                                                        return (
+                                                            <Select
+                                                                isMulti
+                                                                isClearable
+                                                                className="w-full"
+                                                                options={SegmentOptions()}
+                                                                getOptionLabel={(option) => option?.label}
+                                                                getOptionValue={(option) => option?.value?.toString()}
+                                                                value={selectedOptions}
+                                                                onChange={(newVals) => {
+                                                                    const selectedValues = newVals?.map((val: any) => val.value) || []
+                                                                    form.setFieldValue(SellerKeys.SEGMENT, selectedValues?.join(','))
+                                                                }}
+                                                            />
+                                                        )
+                                                    }}
+                                                </Field>
+                                            </FormItem>
+                                            <CommonSelect
+                                                asterisk
+                                                name={SellerKeys.BUSINESS_NATURE}
+                                                options={NOBOptions()}
+                                                label="Nature of Business"
+                                            />
+                                        </FormContainer>
+                                    </div>
+                                    <div className="mt-10 space-y-6">
+                                        {Object.entries(internalData).map(([category, people]: any) => (
+                                            <div key={category} className="border rounded-xl p-4 bg-gray-50 shadow-sm">
+                                                <h5 className="text-lg font-semibold text-gray-800 mb-3">{category}</h5>
+                                                {people?.length > 0 ? (
+                                                    <div className="text-sm text-gray-700 space-y-2">
+                                                        <p>
+                                                            <span className="font-medium">Names:</span>{' '}
+                                                            {people.map((p: any) => p.name).join(', ')}
+                                                        </p>
 
-                            <div>
-                                {!isOther ? (
-                                    <>
-                                        <Button type="submit" variant="blue" loading={isSubmitting} disabled={isSubmitting}>
-                                            Email To Vendor
-                                        </Button>
-                                    </>
-                                ) : (
-                                    ''
-                                )}
+                                                        <p>
+                                                            <span className="font-medium">Numbers:</span>{' '}
+                                                            {people.map((p: any) => p.mobile).join(', ')}
+                                                        </p>
+
+                                                        <p>
+                                                            <span className="font-medium">Emails:</span>{' '}
+                                                            {people.map((p: any) => p.email).join(', ')}
+                                                        </p>
+                                                    </div>
+                                                ) : (
+                                                    <p className="text-sm text-gray-400">No team members available</p>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </FormContainer>
+                            )}
+                            {isOther && <SellerForm isAdd values={values} isSubmitting={isSubmitting} />}
+                            <div className="flex justify-end mt-8 gap-4">
+                                <Button type="button" variant={isOther ? 'gray' : 'pending'} onClick={() => setIsOther((prev) => !prev)}>
+                                    {isOther ? 'Go to basic Details' : 'Fill Other Data'}
+                                </Button>
+
+                                <div>
+                                    {!isOther ? (
+                                        <>
+                                            <Button type="submit" variant="blue" loading={isSubmitting} disabled={isSubmitting}>
+                                                Email To Vendor
+                                            </Button>
+                                        </>
+                                    ) : (
+                                        ''
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    </Form>
-                )}
+                        </Form>
+                    )
+                }}
             </Formik>
         </div>
     )

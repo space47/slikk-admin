@@ -35,13 +35,15 @@ const SellerMsme = ({ isEdit, values }: props) => {
                     )
                 })}
             </FormContainer>
-            <FormUploadFile
-                isEdit={isEdit}
-                label="Upload MSME Certificate"
-                fileList={values?.msmeCertificateFile}
-                name={SellerKeys.MSME_CERTIFICATE}
-                existingFile={values?.msme_certificate}
-            />
+            {values?.is_msme && (
+                <FormUploadFile
+                    isEdit={isEdit}
+                    label="Upload MSME Certificate"
+                    fileList={values?.msmeCertificateFile}
+                    name={SellerKeys.MSME_CERTIFICATE}
+                    existingFile={values?.msme_certificate}
+                />
+            )}
         </div>
     )
 }

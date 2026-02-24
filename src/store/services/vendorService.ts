@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import RtkQueryService from '@/services/RtkQueryService'
-import { VendorList, VendorResponseData } from '../types/vendor.type'
+import { ConfigValues, VendorList, VendorResponseData } from '../types/vendor.type'
 
 export const vendorService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
@@ -65,6 +65,17 @@ export const vendorService = RtkQueryService.injectEndpoints({
                     url: `/merchant/company/status`,
                     method: 'PATCH',
                     body,
+                }
+            },
+        }),
+        vendorOnboardingConfiguration: builder.query<{ config: ConfigValues }, { name?: string }>({
+            query: (params) => {
+                const parameters: Record<string, string | string[] | number> = {}
+                if (params.name) parameters.name = params.name
+                return {
+                    url: `/app/configuration?config_name=vendorOnboardingConfiguration`,
+                    method: 'GET',
+                    params: parameters,
                 }
             },
         }),

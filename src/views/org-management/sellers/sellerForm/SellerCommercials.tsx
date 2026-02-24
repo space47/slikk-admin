@@ -23,7 +23,7 @@ const SellerCommercials = () => {
                     </FormItem>
                 ))}
             </FormContainer>
-            <FormItem asterisk label="Segment" className="col-span-1 w-full">
+            <FormItem asterisk label="Fashion Style" className="col-span-1 w-full">
                 <Field name="segment">
                     {({ field, form }: FieldProps) => {
                         const fieldValueArray = Array.isArray(field?.value) ? field?.value : field?.value?.split(',') || []

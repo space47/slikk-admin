@@ -18,6 +18,7 @@ export interface VendorList {
     bank_name: string
     is_active: boolean
     settlement_days: number
+    provisional_discount: number
     revenue_share: number
     handling_charges_per_order: number
     warehouse_charge_per_sku: number
@@ -124,4 +125,32 @@ export interface VendorResponseData {
         count: number
         results: VendorList[]
     }
+}
+
+export interface BusinessNatureData {
+    code: string
+    gtin: string
+    bill_to: string
+    ship_to: string
+    company_name: string
+    company_legal_name: string
+    registered_address: string
+}
+
+export interface TeamData {
+    name: string
+    email: string
+    mobile: number
+}
+
+export interface ConfigValues {
+    id: number
+    name: string
+    value: {
+        or_company: BusinessNatureData[]
+        sor_company: BusinessNatureData[]
+        finance_team: TeamData[]
+        category_team: Record<string, TeamData[]>
+    }
+    is_active: boolean
 }

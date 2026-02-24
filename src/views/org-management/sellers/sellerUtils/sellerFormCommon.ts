@@ -64,7 +64,7 @@ export const SellerCommercialsArray = [
     { label: 'Warehouse Charges Per Sku', name: SellerKeys.WAREHOUSE_CHARGE_PER_SKU, type: 'number', isRequired: true, visible: true },
     { label: 'Damages Per Sku', name: SellerKeys.DAMAGES_PER_SKU, type: 'number', isRequired: true, visible: true },
     { label: 'Removal Fee Per Sku', name: SellerKeys.REMOVAL_FEE_PER_SKU, type: 'number', isRequired: true, visible: true },
-    { label: 'Credit Period', name: SellerKeys.SETTLEMENT_DAYS, type: 'number', isRequired: true, visible: true },
+    { label: 'Provisional Discount', name: SellerKeys.PROVISIONAL_DISCOUNT, type: 'number', isRequired: true, visible: true },
     { label: 'Approved Payment Terms', name: SellerKeys.APPROVED_PAYMENT_TERM, type: 'text', isRequired: true, visible: true },
 ]
 
@@ -136,7 +136,7 @@ export const simpleFields = [
     SellerKeys.BRANCH_NAME,
     SellerKeys.ACCOUNT_TYPE,
     SellerKeys.SEGMENT,
-    SellerKeys.SETTLEMENT_DAYS,
+    SellerKeys.PROVISIONAL_DISCOUNT,
     SellerKeys.REVENUE_SHARE,
     SellerKeys.HANDLING_CHARGES_PER_ORDER,
     SellerKeys.WAREHOUSE_CHARGE_PER_SKU,

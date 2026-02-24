@@ -1,4 +1,4 @@
-import { VendorList } from '@/store/types/vendor.type'
+import { ConfigValues, VendorList } from '@/store/types/vendor.type'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export interface VendorStateType {
@@ -6,6 +6,7 @@ export interface VendorStateType {
     count: number
     page: number
     pageSize: number
+    configValues: ConfigValues | null
 }
 
 const initialState: VendorStateType = {
@@ -13,6 +14,7 @@ const initialState: VendorStateType = {
     count: 0,
     page: 1,
     pageSize: 10,
+    configValues: null,
 }
 
 export const vendorSlice = createSlice({
@@ -32,9 +34,12 @@ export const vendorSlice = createSlice({
         setPageSize: (state, action: PayloadAction<number>) => {
             state.pageSize = action.payload
         },
+        setConfigValues: (state, action: PayloadAction<ConfigValues>) => {
+            state.configValues = action.payload
+        },
     },
 })
-export const { setVendorList, setCount, setPage, setPageSize } = vendorSlice.actions
+export const { setVendorList, setCount, setPage, setPageSize, setConfigValues } = vendorSlice.actions
 export default vendorSlice.reducer
 
 // export const rtvActions = vendorSlice.actions

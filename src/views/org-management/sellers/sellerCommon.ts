@@ -153,9 +153,10 @@ export enum SellerKeys {
     PF_DECLARATION_DOC = 'pf_declaration_doc',
 
     BUSINESS_NATURE = 'business_nature',
+    BUSINESS_NATURE_DATA = 'business_nature_data',
     AUTHORIZED_PERSON = 'authorized_person',
     SP_TYPE = 'sp_type',
-
+    PROVISIONAL_DISCOUNT = 'provisional_discount',
     COMMENTS = 'comments',
 
     DAMAGES_PER_SKU = 'damages_per_sku',
@@ -163,7 +164,6 @@ export enum SellerKeys {
     REMOVAL_FEE_PER_SKU = 'removal_fee_per_sku',
     WAREHOUSE_CHARGE_PER_SKU = 'warehouse_charge_per_sku',
     REVENUE_SHARE = 'revenue_share',
-    SETTLEMENT_DAYS = 'settlement_days',
 
     CREATE_DATE = 'create_date',
     UPDATE_DATE = 'update_date',

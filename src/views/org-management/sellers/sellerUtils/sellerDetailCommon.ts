@@ -72,7 +72,7 @@ export const SellerDetailCommon = ({ seller: sellerData }: any) => {
         { label: 'Damages Per Sku', name: SellerKeys.DAMAGES_PER_SKU, value: sellerData?.damages_per_sku, visible: true },
         { label: 'Removal Fee Per Sku', name: SellerKeys.REMOVAL_FEE_PER_SKU, value: sellerData?.removal_fee_per_sku, visible: true },
         { label: 'Nature of Business', name: SellerKeys.BUSINESS_NATURE, value: sellerData?.business_nature, visible: true },
-        { label: 'Settlement Days', name: SellerKeys.SETTLEMENT_DAYS, value: sellerData?.settlement_days, visible: true },
+        { label: 'Provisional Discount', name: SellerKeys.PROVISIONAL_DISCOUNT, value: sellerData?.provisional_discount, visible: true },
         {
             label: 'Approved Payment Terms',
             name: SellerKeys.APPROVED_PAYMENT_TERM,

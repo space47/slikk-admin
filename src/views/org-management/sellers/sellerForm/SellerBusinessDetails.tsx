@@ -55,6 +55,7 @@ const SellerBusinessDetails = ({ isEdit, values }: Props) => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormUploadFile
+                        asterisk
                         isEdit={isEdit}
                         label="Upload GST Certificate"
                         fileList={values?.gstCopyFile}

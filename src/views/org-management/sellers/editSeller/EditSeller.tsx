@@ -14,13 +14,24 @@ import dayjs from 'dayjs'
 import { fileFields, simpleFields } from '../sellerUtils/sellerFormCommon'
 import { SellerKeys } from '../sellerCommon'
 import { textParser } from '@/common/textParser'
+import { useAppDispatch } from '@/store'
+import { setConfigValues } from '@/store/slices/vendorsSlice/vendors.slice'
 
 const EditSeller = () => {
     const { id } = useParams()
+    const dispatch = useAppDispatch()
     const navigate = useNavigate()
     const [sellerData, setSellerData] = useState<any>()
     const [isSubmitting, setIsSubmitting] = useState(false)
     const { data, isSuccess, isError, isLoading, error } = vendorService.useGetSingleVendorListQuery({ id: id as string }, { skip: !id })
+
+    const vendorConfigApiCall = vendorService.useVendorOnboardingConfigurationQuery({})
+
+    useEffect(() => {
+        if (vendorConfigApiCall.isSuccess) {
+            dispatch(setConfigValues(vendorConfigApiCall.data.config))
+        }
+    }, [vendorConfigApiCall.isSuccess, vendorConfigApiCall.data?.config])
 
     useEffect(() => {
         if (isSuccess) setSellerData(data?.data)
@@ -59,7 +70,7 @@ const EditSeller = () => {
         account_type: sellerData?.account_type || '',
         cancelled_cheque: sellerData?.cancelled_cheque || null, // file
         segment: sellerData?.segment || '',
-        settlement_days: sellerData?.settlement_days || 0,
+        provisional_discount: sellerData?.provisional_discount || 0,
         revenue_share: sellerData?.revenue_share || 0,
         handling_charges_per_order: sellerData?.handling_charges_per_order || 0,
         warehouse_charge_per_sku: sellerData?.warehouse_charge_per_sku || 0,

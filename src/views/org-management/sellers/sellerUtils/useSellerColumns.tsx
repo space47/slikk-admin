@@ -134,7 +134,7 @@ export const useSellerColumns = () => {
                             <span className="font-semibold">Revenue Share:</span> {row?.original?.revenue_share}%
                         </p>
                         <p>
-                            <span className="font-semibold">Settlement:</span> {row?.original?.settlement_days} days
+                            <span className="font-semibold">Provisional Discount:</span> {row?.original?.provisional_discount} days
                         </p>
                     </div>
                 ),
