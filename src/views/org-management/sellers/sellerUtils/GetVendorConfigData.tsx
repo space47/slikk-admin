@@ -6,7 +6,7 @@ export const GetVendorConfigData = () => {
 
     const financeNumbers = configValues?.value?.finance_team?.map((item) => ({
         label: item.mobile,
-        value: item.mobile,
+        value: item.mobile?.toString(),
     }))
     const financeEmail = configValues?.value?.finance_team?.map((item) => ({
         label: item.email,

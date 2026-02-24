@@ -5,12 +5,24 @@ import { NOBOptions, SellerCommercialsArray } from '../sellerUtils/sellerFormCom
 import { SegmentOptions } from '@/constants/commonArray.constant'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 import { SellerKeys } from '../sellerCommon'
+import { useAppSelector } from '@/store'
+import { VendorStateType } from '@/store/slices/vendorsSlice/vendors.slice'
 
-const SellerCommercials = () => {
+interface Props {
+    values: any
+}
+
+const SellerCommercials = ({ values }: Props) => {
+    const { configValues } = useAppSelector<VendorStateType>((state) => state.vendor)
+
+    console.log('vsalalalavlalvaa', configValues)
     return (
         <div className="w-full">
             <h4>Slikk Commercial Details</h4>
             <p>Provide essential details about vendor entity. All field marked with * are mandatory</p>
+            <FormContainer className="mt-10">
+                <CommonSelect name={SellerKeys.BUSINESS_NATURE} options={NOBOptions()} label="Nature of Business" />
+            </FormContainer>
             <FormContainer className="mt-8 grid grid-cols-2 gap-2">
                 {SellerCommercialsArray?.map((item, idx) => (
                     <FormItem key={idx} label={item?.label} asterisk={item?.isRequired} className="flex flex-col space-y-1">
@@ -51,7 +63,6 @@ const SellerCommercials = () => {
                     }}
                 </Field>
             </FormItem>
-            <CommonSelect name={SellerKeys.BUSINESS_NATURE} options={NOBOptions()} label="Nature of Business" />
         </div>
     )
 }

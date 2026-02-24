@@ -57,7 +57,7 @@ const SellerInternal = ({ values }: Props) => {
                 <CommonSelect
                     asterisk
                     label="Finance Contact Number"
-                    name={SellerKeys.FINANCE_CONTACT_NUMBER}
+                    name={SellerKeys.INT_FINANCE_CONTACT_NUMBER}
                     options={financeNumbers || []}
                 />
             </FormContainer>

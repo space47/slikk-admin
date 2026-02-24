@@ -96,12 +96,13 @@ const EditSeller = () => {
         confirm: sellerData?.account_number || '',
         gst_details: sellerData?.gst_details || [],
         date: dayjs().format('YYYY-MM-DD HH:mm:ss a'),
-        int_finance_name: 'Dinesha',
-        int_finance_email: 'dinesha@slikk.club',
-        int_finance_contact_number: '8892377371',
+        int_finance_name: sellerData?.int_finance_name,
+        int_finance_email: sellerData?.int_finance_email,
+        int_finance_contact_number: sellerData?.int_finance_contact_number,
     }
 
     const handleSubmit = async (values: any) => {
+        console.log('calues are', values)
         setIsSubmitting(true)
         if (values.contact_number === values.alternate_contact_number) {
             notification.error({ message: 'Failure !! Alternate Mobile Number Should be different' })
