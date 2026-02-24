@@ -117,6 +117,7 @@ export interface VendorDetails {
     trade_mark_certificate: string | null
     update_date: string
     warehouse_charge_per_sku: number
+    business_nature_company: BusinessNatureData[]
 }
 
 export interface VendorResponseData {

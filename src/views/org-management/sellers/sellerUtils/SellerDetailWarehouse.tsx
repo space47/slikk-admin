@@ -1,25 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import FormUploadFile from '@/common/FormUploadFile'
+
 import { Button } from '@/components/ui'
 import { VendorDetails } from '@/store/types/vendor.type'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { errorMessage, successMessage } from '@/utils/responseMessages'
-import { Collapse } from 'antd'
-import { AxiosError } from 'axios'
-import { Formik } from 'formik'
 import React from 'react'
-import { FaDownload } from 'react-icons/fa'
+import { FaDownload, FaMapMarkerAlt, FaUser, FaEnvelope, FaPhone, FaBuilding, FaFilePdf } from 'react-icons/fa'
 
 interface Props {
     sellerData: VendorDetails
-    editingSection: string | null
-    setEditingSection: (x: string | null) => void
-    refetch: any
 }
 
-const { Panel } = Collapse
-
-const SellerDetailWarehouse: React.FC<Props> = ({ sellerData, editingSection, setEditingSection, refetch }) => {
+const SellerDetailWarehouse: React.FC<Props> = ({ sellerData }) => {
     const handleDownload = (fileUrl: string, fileName: string) => {
         try {
             const link = document.createElement('a')
@@ -33,216 +23,147 @@ const SellerDetailWarehouse: React.FC<Props> = ({ sellerData, editingSection, se
         }
     }
 
-    const handleWarehouse = async (values: any, warehouseId: number) => {
-        const formData = new FormData()
-        const existingDetails = sellerData?.gst_details || []
-        const updatedDetails = existingDetails.map((warehouse: any) => {
-            if (warehouse.id === warehouseId) {
-                const updatedWarehouse = {
-                    ...warehouse,
-                    warehouse_name: values.warehouse_name,
-                    warehouse_address: values.warehouse_address,
-                    gstin: values.gstin,
-                    poc_name: values.poc_name,
-                    poc_email: values.poc_email,
-                    poc_contact_number: values.poc_contact_number,
-                    is_active: values.is_active,
-                }
-                if (values?.gst_certificate?.[0] instanceof File) {
-                    const certKey = `cert_${warehouseId}`
-                    formData.append(certKey, values.gst_certificate[0])
-                    updatedWarehouse.gst_certificate = certKey
-                } else {
-                    updatedWarehouse.gst_certificate = warehouse.gst_certificate
-                }
-
-                return updatedWarehouse
-            }
-            return warehouse
-        })
-
-        formData.append('gst_details', JSON.stringify(updatedDetails))
-
-        try {
-            const res = await axioisInstance.patch(`/merchant/company/${sellerData.id}`, formData)
-            successMessage(res)
-            refetch()
-            setEditingSection(null)
-        } catch (error) {
-            if (error instanceof AxiosError) errorMessage(error)
-        }
+    if (!sellerData?.gst_details?.length) {
+        return (
+            <div className="rounded-2xl bg-white shadow-md p-8 text-center">
+                <div className="flex flex-col items-center gap-3">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
+                        <FaBuilding className="h-8 w-8 text-gray-400" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900">No Warehouse Details</h3>
+                    <p className="text-sm text-gray-500">This seller has not added any warehouse information yet.</p>
+                </div>
+            </div>
+        )
     }
 
     return (
-        <div>
-            <Collapse accordion bordered={false} className="bg-transparent space-y-2">
-                {sellerData?.gst_details?.map((warehouse, index) => {
-                    return (
-                        <Panel
-                            key={`warehouse-${warehouse.id}`}
-                            header={<span className="font-medium text-gray-800">#Warehouse {index + 1}</span>}
-                            className="border border-gray-200 rounded-xl bg-white shadow-sm"
-                        >
-                            {editingSection === `warehouse-${warehouse.id}` ? (
-                                <Formik
-                                    initialValues={{
-                                        warehouse_name: warehouse.warehouse_name || '',
-                                        warehouse_address: warehouse.warehouse_address || '',
-                                        gstin: warehouse.gstin || '',
-                                        poc_name: warehouse.poc_name || '',
-                                        poc_email: warehouse.poc_email || '',
-                                        poc_contact_number: warehouse.poc_contact_number || '',
-                                        is_active: warehouse.is_active ?? false,
-                                        gstCertificateCopy: [],
-                                    }}
-                                    onSubmit={(values) => handleWarehouse(values, warehouse.id)}
+        <div className="space-y-6">
+            {sellerData?.gst_details?.map((warehouse, index) => {
+                const isEven = index % 2 === 0
+                const gradientColor = isEven ? 'from-blue-500 via-indigo-500 to-purple-500' : 'from-emerald-500 via-teal-500 to-cyan-500'
+
+                return (
+                    <div
+                        key={`warehouse-${warehouse.id}`}
+                        className="group relative overflow-hidden rounded-2xl border-0 bg-white shadow-md hover:shadow-xl transition-all duration-300"
+                    >
+                        <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${gradientColor}`}></div>
+                        <div className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white px-6 py-4">
+                            <div className="flex items-center gap-3">
+                                <div
+                                    className={`flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br ${gradientColor} bg-opacity-10`}
                                 >
-                                    {({ handleChange, handleSubmit, values, setFieldValue }) => (
-                                        <form onSubmit={handleSubmit}>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                {Object.keys(values).map((key) => {
-                                                    if (key === 'gstCertificateCopy') return null
-                                                    if (key === 'gst_certificate') return null
-
-                                                    return (
-                                                        <div key={key} className="flex flex-col">
-                                                            <label className="text-sm font-medium text-gray-600 mb-1 capitalize">
-                                                                {key.replace(/_/g, ' ')}
-                                                            </label>
-                                                            {key === 'is_active' ? (
-                                                                <div className="flex items-center gap-3 mt-1">
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => setFieldValue('is_active', !values.is_active)}
-                                                                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition
-                                                                            ${values.is_active ? 'bg-green-500' : 'bg-gray-300'}
-                                                                        `}
-                                                                    >
-                                                                        <span
-                                                                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition
-                                                                                ${values.is_active ? 'translate-x-6' : 'translate-x-1'}
-                                                                            `}
-                                                                        />
-                                                                    </button>
-                                                                </div>
-                                                            ) : (
-                                                                <input
-                                                                    name={key}
-                                                                    value={(values as any)[key]}
-                                                                    onChange={handleChange}
-                                                                    className="border border-gray-300 rounded-lg px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                                                                />
-                                                            )}
-                                                        </div>
-                                                    )
-                                                })}
-
-                                                {/* Add FormUploadFile separately for GST certificate */}
-                                                <div className="flex flex-col col-span-1 sm:col-span-2">
-                                                    <label className="text-sm font-medium text-gray-600 mb-1">GST Certificate</label>
-                                                    <FormUploadFile
-                                                        asterisk
-                                                        isEdit={true}
-                                                        label="gst_certificate"
-                                                        fileList={values?.gstCertificateCopy}
-                                                        name="gst_certificate"
-                                                        existingFile={
-                                                            typeof warehouse.gst_certificate === 'string'
-                                                                ? warehouse.gst_certificate
-                                                                : undefined
-                                                        }
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            <div className="flex justify-end gap-2 mt-6">
-                                                <Button
-                                                    variant="twoTone"
-                                                    color="gray"
-                                                    type="button"
-                                                    onClick={() => setEditingSection(null)}
-                                                >
-                                                    Cancel
-                                                </Button>
-                                                <Button variant="accept" type="submit">
-                                                    Save Changes
-                                                </Button>
-                                            </div>
-                                        </form>
-                                    )}
-                                </Formik>
-                            ) : (
-                                <>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <FaBuilding className={`h-5 w-5 ${isEven ? 'text-blue-600' : 'text-emerald-600'}`} />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-semibold text-gray-900">
+                                        {warehouse.warehouse_name || `Warehouse ${index + 1}`}
+                                    </h3>
+                                    <p className="text-xs text-gray-500">Warehouse Details & GST Information</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="p-6">
+                            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                                <div className="rounded-xl bg-gray-50 p-4 hover:bg-gray-100/80 transition-colors duration-200">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <FaBuilding className="h-4 w-4 text-gray-500" />
+                                        <span className="text-xs font-medium uppercase tracking-wider text-gray-500">Warehouse Name</span>
+                                    </div>
+                                    <p className="text-base font-medium text-gray-900">{warehouse.warehouse_name || 'N/A'}</p>
+                                </div>
+                                <div className="rounded-xl bg-gray-50 p-4 hover:bg-gray-100/80 transition-colors duration-200 md:col-span-2">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <FaMapMarkerAlt className="h-4 w-4 text-gray-500" />
+                                        <span className="text-xs font-medium uppercase tracking-wider text-gray-500">
+                                            Warehouse Address
+                                        </span>
+                                    </div>
+                                    <p className="text-base font-medium text-gray-900">{warehouse.warehouse_address || 'N/A'}</p>
+                                </div>
+                                <div className="rounded-xl bg-gray-50 p-4 hover:bg-gray-100/80 transition-colors duration-200">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <FaFilePdf className="h-4 w-4 text-gray-500" />
+                                        <span className="text-xs font-medium uppercase tracking-wider text-gray-500">GSTIN</span>
+                                    </div>
+                                    <p className="text-base font-medium text-gray-900 font-mono">{warehouse.gstin || 'N/A'}</p>
+                                </div>
+                                <div className="rounded-xl bg-gray-50 p-4 hover:bg-gray-100/80 transition-colors duration-200">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <FaUser className="h-4 w-4 text-gray-500" />
+                                        <span className="text-xs font-medium uppercase tracking-wider text-gray-500">POC Name</span>
+                                    </div>
+                                    <p className="text-base font-medium text-gray-900">{warehouse.poc_name || 'N/A'}</p>
+                                </div>
+                                <div className="rounded-xl bg-gray-50 p-4 hover:bg-gray-100/80 transition-colors duration-200">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <FaEnvelope className="h-4 w-4 text-gray-500" />
+                                        <span className="text-xs font-medium uppercase tracking-wider text-gray-500">POC Email</span>
+                                    </div>
+                                    <p className="text-base font-medium text-gray-900">{warehouse.poc_email || 'N/A'}</p>
+                                </div>
+                                <div className="rounded-xl bg-gray-50 p-4 hover:bg-gray-100/80 transition-colors duration-200">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <FaPhone className="h-4 w-4 text-gray-500" />
+                                        <span className="text-xs font-medium uppercase tracking-wider text-gray-500">POC Contact</span>
+                                    </div>
+                                    <p className="text-base font-medium text-gray-900">{warehouse.poc_contact_number || 'N/A'}</p>
+                                </div>
+                            </div>
+                            <div className="mt-6 rounded-xl border border-gray-200 bg-gray-50/50 p-4">
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                    <div className="flex items-center gap-3">
+                                        <div
+                                            className={`flex h-12 w-12 items-center justify-center rounded-lg ${
+                                                warehouse.gst_certificate ? 'bg-green-100' : 'bg-gray-200'
+                                            }`}
+                                        >
+                                            <FaFilePdf
+                                                className={`h-6 w-6 ${warehouse.gst_certificate ? 'text-green-600' : 'text-gray-400'}`}
+                                            />
+                                        </div>
                                         <div>
-                                            <span className="font-semibold text-gray-700">Warehouse Name</span>
-                                            <p>{warehouse.warehouse_name || 'N/A'}</p>
+                                            <p className="font-medium text-gray-900">GST Certificate</p>
+                                            <p className={`text-sm ${warehouse.gst_certificate ? 'text-green-600' : 'text-red-500'}`}>
+                                                {warehouse.gst_certificate ? 'Uploaded & Verified' : 'Not Uploaded'}
+                                            </p>
                                         </div>
-
-                                        <div>
-                                            <span className="font-semibold text-gray-700">Warehouse Address</span>
-                                            <p>{warehouse.warehouse_address || 'N/A'}</p>
-                                        </div>
-
-                                        <div>
-                                            <span className="font-semibold text-gray-700">GSTIN</span>
-                                            <p>{warehouse.gstin || 'N/A'}</p>
-                                        </div>
-
-                                        <div>
-                                            <span className="font-semibold text-gray-700">POC Name</span>
-                                            <p>{warehouse.poc_name || 'N/A'}</p>
-                                        </div>
-
-                                        <div>
-                                            <span className="font-semibold text-gray-700">POC Email</span>
-                                            <p>{warehouse.poc_email || 'N/A'}</p>
-                                        </div>
-
-                                        <div>
-                                            <span className="font-semibold text-gray-700">POC Contact</span>
-                                            <p>{warehouse.poc_contact_number || 'N/A'}</p>
-                                        </div>
-
-                                        <div className="flex flex-col">
-                                            <span className="text-sm font-medium text-gray-700">GST Certificate</span>
-                                            <span className={`text-xs ${warehouse.gst_certificate ? 'text-green-600' : 'text-red-500'}`}>
-                                                {warehouse.gst_certificate ? 'Uploaded' : 'Not Uploaded'}
-                                            </span>
-                                        </div>
-
-                                        {warehouse.gst_certificate ? (
-                                            <Button
-                                                variant="twoTone"
-                                                color="green"
-                                                size="sm"
-                                                icon={<FaDownload />}
-                                                onClick={() => handleDownload(`${warehouse.gst_certificate}`, 'GST_Certificate')}
-                                                className="rounded-full"
-                                            >
-                                                Download
-                                            </Button>
-                                        ) : (
-                                            <Button variant="twoTone" color="gray" size="sm" disabled className="rounded-full">
-                                                N/A
-                                            </Button>
-                                        )}
                                     </div>
 
-                                    <Button
-                                        variant="reject"
-                                        size="sm"
-                                        className="mt-4"
-                                        onClick={() => setEditingSection(`warehouse-${warehouse.id}`)}
-                                    >
-                                        Update
-                                    </Button>
-                                </>
-                            )}
-                        </Panel>
-                    )
-                })}
-            </Collapse>
+                                    {warehouse.gst_certificate ? (
+                                        <Button
+                                            variant="twoTone"
+                                            color="green"
+                                            size="md"
+                                            icon={<FaDownload />}
+                                            onClick={() =>
+                                                handleDownload(
+                                                    `${warehouse.gst_certificate}`,
+                                                    `GST_Certificate_${warehouse.warehouse_name || 'Warehouse'}`,
+                                                )
+                                            }
+                                            className="rounded-full border-0 bg-green-50 px-6 hover:bg-green-100 hover:shadow-md transition-all duration-200"
+                                        >
+                                            Download Certificate
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            variant="twoTone"
+                                            color="gray"
+                                            size="md"
+                                            disabled
+                                            className="rounded-full border-0 bg-gray-100 text-gray-400 cursor-not-allowed px-6"
+                                        >
+                                            Certificate Unavailable
+                                        </Button>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )
+            })}
         </div>
     )
 }

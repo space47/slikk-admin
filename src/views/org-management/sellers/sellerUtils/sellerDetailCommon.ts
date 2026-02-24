@@ -81,6 +81,20 @@ export const SellerDetailCommon = ({ seller: sellerData }: any) => {
         },
     ]
 
+    // Create Business Nature Companies data if it exists
+    const SellerBusinessNatureCompaniesDetail =
+        sellerData?.business_nature_company?.length > 0
+            ? [
+                  {
+                      label: 'Business Nature Companies',
+                      name: 'business_nature_companies',
+                      value: sellerData.business_nature_company,
+                      visible: true,
+                      isArray: true,
+                  },
+              ]
+            : []
+
     const SellerInternalDetail = [
         { label: 'Slikk POC -Category Name', name: SellerKeys.INT_POC_NAME, value: sellerData?.int_poc_name, visible: true },
         { label: 'Slikk POC -Category Email', name: SellerKeys.INT_POC_EMAIL, value: sellerData?.int_poc_email, visible: true },
@@ -92,14 +106,26 @@ export const SellerDetailCommon = ({ seller: sellerData }: any) => {
         { label: 'Declaration Statement', name: SellerKeys.DECLARATION_STATEMENT, value: sellerData?.declaration_statement, visible: true },
     ]
 
+    // Create sections array with conditional Business Nature Companies section
     const sections = [
         { key: 'Business Details', title: 'Business Details', data: BusinessDetailsDetail },
         { key: 'POC Details', title: 'POC Details', data: PocDetailsDetail },
         { key: 'Bank Details', title: 'Bank Details', data: SellerBankDetail },
         { key: 'Commercials', title: 'Commercials', data: SellerCommercialsDetail },
-        { key: 'Declaration', title: 'Declaration', data: SellerDeclarationDetail },
+        // Add Business Nature Companies section only if data exists
+        ...(sellerData?.business_nature_company?.length > 0
+            ? [
+                  {
+                      key: 'Business Nature Companies',
+                      title: 'Business Nature Companies',
+                      data: SellerBusinessNatureCompaniesDetail,
+                      isArraySection: true,
+                  },
+              ]
+            : []),
         { key: 'Internal Details', title: 'Internal Details', data: SellerInternalDetail },
         { key: 'MSME Details', title: 'MSME Details', data: SellerMsMeDetail },
+        { key: 'Declaration', title: 'Declaration', data: SellerDeclarationDetail },
     ]
 
     const documentsList = [
@@ -164,6 +190,7 @@ export const SellerDetailCommon = ({ seller: sellerData }: any) => {
         SellerCommercialsDetail,
         SellerInternalDetail,
         SellerDeclarationDetail,
+        SellerBusinessNatureCompaniesDetail,
         documentsList,
     }
 }

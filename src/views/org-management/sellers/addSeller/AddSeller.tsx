@@ -191,7 +191,7 @@ const AddSeller = () => {
                                                 label="Nature of Business"
                                             />
                                             <FormItem asterisk label="Business Company" className="col-span-1 w-full">
-                                                <Field name="business_nature_data">
+                                                <Field name={SellerKeys.BUSINESS_NATURE_COMPANY}>
                                                     {({ field, form }: FieldProps) => {
                                                         const fieldValueArray = Array.isArray(field?.value)
                                                             ? field?.value
@@ -213,7 +213,10 @@ const AddSeller = () => {
                                                                     const selectedValues =
                                                                         newVals?.map((val: any) => val.value?.toString()) || []
 
-                                                                    form.setFieldValue('business_nature_data', selectedValues.join(','))
+                                                                    form.setFieldValue(
+                                                                        SellerKeys.BUSINESS_NATURE_COMPANY,
+                                                                        selectedValues.join(','),
+                                                                    )
                                                                 }}
                                                             />
                                                         )

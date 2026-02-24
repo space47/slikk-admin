@@ -126,7 +126,7 @@ export const simpleFields = [
     SellerKeys.INT_FINANCE_EMAIL,
     SellerKeys.INT_FINANCE_CONTACT_NUMBER,
     SellerKeys.IFSC,
-    SellerKeys.BUSINESS_NATURE_DATA,
+    SellerKeys.BUSINESS_NATURE_COMPANY,
     SellerKeys.BANK_NAME,
     SellerKeys.BRANCH_NAME,
     SellerKeys.ACCOUNT_TYPE,

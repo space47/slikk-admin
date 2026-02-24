@@ -153,7 +153,7 @@ export enum SellerKeys {
     PF_DECLARATION_DOC = 'pf_declaration_doc',
 
     BUSINESS_NATURE = 'business_nature',
-    BUSINESS_NATURE_DATA = 'business_nature_data',
+    BUSINESS_NATURE_COMPANY = 'business_nature_company',
     AUTHORIZED_PERSON = 'authorized_person',
     SP_TYPE = 'sp_type',
     PROVISIONAL_DISCOUNT = 'provisional_discount',

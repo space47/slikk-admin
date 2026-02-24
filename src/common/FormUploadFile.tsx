@@ -1,9 +1,10 @@
-import { FormContainer, FormItem, Upload } from '@/components/ui'
+import { Button, FormContainer, FormItem, Upload } from '@/components/ui'
 import { Field, FieldProps } from 'formik'
 import React, { useEffect } from 'react'
 import { MdCancel } from 'react-icons/md'
 import { beforeUpload } from './beforeUpload'
 import { BsFileEarmarkPdf } from 'react-icons/bs'
+import { IoCloudUploadOutline } from 'react-icons/io5'
 
 interface Props {
     label: string
@@ -77,7 +78,11 @@ const FormUploadFile = ({ label, name, fileList, isEdit, existingFile, asterisk 
     }, [existingFile])
 
     return (
-        <FormContainer className="bg-gray-200 bg-opacity-40 flex flex-col items-center rounded-xl mb-2 p-4 overflow-auto scrollbar-hide">
+        <FormContainer
+            className="border border-dotted border-blue-800 
+               focus:border-blue-500 focus:ring-2 focus:ring-blue-200 
+               transition-all duration-200 bg-opacity-40 flex flex-col items-center rounded-xl mb-2 p-4 overflow-auto scrollbar-hide"
+        >
             <div className="font-semibold mb-2">
                 {label} {asterisk && <span className="text-red-600">*</span>}
             </div>
@@ -105,13 +110,29 @@ const FormUploadFile = ({ label, name, fileList, isEdit, existingFile, asterisk 
 
                             <FormContainer className="mt-4 w-full flex justify-center">
                                 <FormItem label="">
+                                    {/* <Upload
+                                       
+                                    /> */}
                                     <Upload
                                         beforeUpload={beforeUpload}
                                         fileList={fileList}
-                                        className="flex justify-center"
                                         onChange={(files) => form.setFieldValue(name, files)}
                                         onFileRemove={(files) => form.setFieldValue(name, files)}
-                                    />
+                                    >
+                                        <div className=" text-center space-y-3">
+                                            <div className="text-6xl mb-4 flex justify-center">
+                                                <IoCloudUploadOutline />
+                                            </div>
+                                            <p className="font-semibold">
+                                                <span className="text-gray-800 dark:text-white">
+                                                    Drop your catalog file here or click to browse
+                                                </span>
+                                            </p>
+                                            <Button type="button" variant="blue" size="sm">
+                                                Choose File
+                                            </Button>
+                                        </div>
+                                    </Upload>
                                 </FormItem>
                             </FormContainer>
                         </>

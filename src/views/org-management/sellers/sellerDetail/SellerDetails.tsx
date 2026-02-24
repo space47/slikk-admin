@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useMemo, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { notification, Collapse, Empty, Spin } from 'antd'
+import { useNavigate, useParams } from 'react-router-dom'
+import { notification, Empty, Spin } from 'antd'
 import { Button, Card } from '@/components/ui'
 import { vendorService } from '@/store/services/vendorService'
 import { VendorDetails } from '@/store/types/vendor.type'
@@ -12,27 +12,19 @@ import SellerCommentsModal from './SellerCommentsModal'
 import DialogConfirm from '@/common/DialogConfirm'
 import { getApiErrorMessage } from '@/constants/generateErrorMessage'
 import SellerBeforeApproval from './SellerBeforeApproval'
-import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { AxiosError } from 'axios'
-import { Formik } from 'formik'
 import { FaDownload } from 'react-icons/fa'
-import { FashionStyleOptions } from '../sellerUtils/sellerFormCommon'
-import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 import SellerDetailWarehouse from '../sellerUtils/SellerDetailWarehouse'
-import SellerDetailDocuments from '../sellerUtils/SellerDetailDocuments'
 import { commonPresignedDownload } from '@/common/commonDownload'
-
-const { Panel } = Collapse
 
 const SellerDetails = () => {
     const { id } = useParams()
+    const navigate = useNavigate()
     const [sellerData, setSellerData] = useState<VendorDetails>()
     const [isCommentModal, setIsCommentModal] = useState(false)
     const [dataForComment, setDataForComment] = useState<{ name: string; label: string }>({ name: '', label: '' })
     const [commentStructure, setCommentStructure] = useState<Record<string, string>>({})
     const [statusToProceed, setStatusToProceed] = useState<'approved' | 'rejected' | 'changes_requested' | ''>('')
     const [confirmModal, setConfirmModal] = useState(false)
-    const [editingSection, setEditingSection] = useState<string | null>(null)
 
     const [vendorApprove, approveResponse] = vendorService.useVendorApprovalMutation()
     const { data, isSuccess, isError, isLoading, error, refetch } = vendorService.useGetSingleVendorListQuery(
@@ -73,25 +65,6 @@ const SellerDetails = () => {
         })
     }
 
-    const handleSectionUpdate = async (values: Record<string, any>) => {
-        const body = new FormData()
-        Object.entries(values).forEach(([key, value]) => {
-            if (value !== undefined && value !== null) {
-                body.append(key, value as string)
-            }
-        })
-
-        try {
-            const res = await axiosInstance.patch(`/merchant/company/${id}`, body)
-            notification.success({ message: res?.data?.message || 'Details updated successfully' })
-            refetch()
-            setEditingSection(null)
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                notification.error({ message: error.message })
-            }
-        }
-    }
     const StatusVariant = (status: string) => {
         if (!status) return 'pending'
         const lower = status.toLowerCase()
@@ -113,253 +86,289 @@ const SellerDetails = () => {
     }
 
     return (
-        <Spin className="space-y-6 p-4" spinning={isLoading}>
-            <div className="flex justify-between">
-                <div className="space-y-1">
-                    <h2 className="text-xl font-bold text-gray-900">{sellerData?.registered_name || '--'}</h2>
+        <Spin className="min-h-screen bg-gray-50 p-6" spinning={isLoading}>
+            <div className="mb-6 rounded-2xl bg-white/80 backdrop-blur-sm border border-gray-200/50 p-6 shadow-lg">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="space-y-1">
+                        <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+                            {sellerData?.registered_name || '--'}
+                        </h1>
+                        <p className="text-sm text-gray-500">Seller Profile Overview</p>
+                    </div>
+                    <Button
+                        variant={StatusVariant(sellerData ? sellerData?.status : '') as 'accept' | 'reject' | 'pending'}
+                        size="lg"
+                        className="rounded-full px-6 font-medium shadow-md hover:shadow-lg transition-all duration-200"
+                        icon={sellerData ? IconSelector(sellerData?.status) : null}
+                    >
+                        {sellerData?.status}
+                    </Button>
                 </div>
-                <Button
-                    variant={StatusVariant(sellerData ? sellerData?.status : '') as 'accept' | 'reject' | 'pending'}
-                    size="sm"
-                    className="rounded-[100px]"
-                    icon={sellerData ? IconSelector(sellerData?.status) : null}
-                >
-                    {sellerData?.status}
-                </Button>
+
+                {/* Metadata Pills with Gradient Backgrounds */}
+                <div className="mt-4 flex flex-wrap gap-3">
+                    <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r  bg-gray-100 px-4 py-2 border border-amber-100">
+                        <span className="text-xs font-semibold uppercase tracking-wider text-blue-600">Code</span>
+                        <span className="text-sm font-medium text-gray-900">{sellerData?.code || '--'}</span>
+                    </div>
+
+                    <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r bg-gray-100 px-4 py-2 border border-amber-100 ">
+                        <span className="text-xs font-semibold uppercase tracking-wider text-blue-600 ">Created</span>
+                        <span className="text-sm font-medium text-gray-900">{sellerData?.create_date || '--'}</span>
+                    </div>
+
+                    <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r bg-gray-100 px-4 py-2 border border-amber-100">
+                        <span className="text-xs font-semibold uppercase tracking-wider text-blue-600 ">Updated</span>
+                        <span className="text-sm font-medium text-gray-900">{sellerData?.update_date || '--'}</span>
+                    </div>
+                </div>
             </div>
-            <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600 mt-2">
-                <span className="px-3 py-1 bg-gray-100 rounded-full">
-                    <span className="font-medium text-gray-800">Code:</span> {sellerData?.code || '--'}
-                </span>
 
-                <span className="px-3 py-1 bg-gray-100 rounded-full">
-                    <span className="font-medium text-gray-800">Created:</span> {sellerData?.create_date || '--'}
-                </span>
-
-                <span className="px-3 py-1 bg-gray-100 rounded-full">
-                    <span className="font-medium text-gray-800">Updated:</span> {sellerData?.update_date || '--'}
-                </span>
+            <div className="flex justify-end">
+                <Button variant="twoTone" onClick={() => navigate(`/app/sellers/${id}`)}>
+                    Edit Details
+                </Button>
             </div>
 
             {sellerData?.status?.toLowerCase() === 'approved' ? (
-                <>
-                    <Card className="shadow-md rounded-2xl border border-gray-200 bg-white p-5">
-                        <h2 className="text-lg font-semibold mb-4 text-gray-800">Basic Information</h2>
-                        {BasicSellerInformationDetail?.length ? (
-                            editingSection === 'basic' ? (
-                                <Formik
-                                    initialValues={Object.fromEntries(BasicSellerInformationDetail.map((item) => [item.name, item.value]))}
-                                    onSubmit={handleSectionUpdate}
+                <div className="space-y-6">
+                    <Card className="group overflow-hidden rounded-2xl border-0 bg-white shadow-md hover:shadow-xl transition-all duration-300">
+                        <div className="relative p-6">
+                            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
+
+                            <h2 className="mb-6 text-lg font-semibold text-gray-800 flex items-center gap-2">
+                                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
+                                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                        />
+                                    </svg>
+                                </span>
+                                Basic Information
+                            </h2>
+
+                            {BasicSellerInformationDetail?.length ? (
+                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                                    {BasicSellerInformationDetail.map((item, idx) => (
+                                        <div
+                                            key={idx}
+                                            className="rounded-xl bg-gray-50 p-4 hover:bg-gray-100/80 transition-colors duration-200"
+                                        >
+                                            <span className="text-xs font-medium uppercase tracking-wider text-gray-500">{item.label}</span>
+                                            <p className="mt-1 text-base font-medium text-gray-900">{item.value || 'N/A'}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <Empty
+                                    description={<span className="text-gray-500">No data available</span>}
+                                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                                    className="py-12"
+                                />
+                            )}
+                        </div>
+                    </Card>
+
+                    {sections.map(
+                        (section, index) =>
+                            section.data && (
+                                <Card
+                                    key={index}
+                                    className="group overflow-hidden rounded-2xl border-0 bg-white shadow-md hover:shadow-xl transition-all duration-300"
                                 >
-                                    {({ handleChange, handleSubmit, values }) => (
-                                        <form onSubmit={handleSubmit}>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                                {BasicSellerInformationDetail?.map((item, idx) => (
-                                                    <div key={idx} className="flex flex-col border-b border-gray-100 pb-2">
-                                                        {item.name === 'segment' ? (
-                                                            <>
-                                                                <CommonSelect
-                                                                    isMulti
-                                                                    name="segment"
-                                                                    options={FashionStyleOptions}
-                                                                    label="Fashion Style"
-                                                                />
-                                                            </>
-                                                        ) : (
-                                                            <input
-                                                                name={item.name}
-                                                                value={values[item.name] || ''}
-                                                                onChange={handleChange}
-                                                                className="border border-gray-300 rounded-md p-1 text-gray-800"
-                                                            />
-                                                        )}
+                                    <div className="relative p-6">
+                                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500"></div>
+
+                                        <h2 className="mb-6 text-lg font-semibold text-gray-800">{section.title}</h2>
+
+                                        {section.isArraySection ? (
+                                            <div className="space-y-4">
+                                                {section.data[0]?.value?.map((company: any, companyIdx: number) => (
+                                                    <div
+                                                        key={companyIdx}
+                                                        className="rounded-xl bg-gray-50 p-4 hover:bg-gray-100/80 transition-colors duration-200"
+                                                    >
+                                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                            <div>
+                                                                <span className="text-xs font-medium uppercase tracking-wider text-gray-500">
+                                                                    Company Name
+                                                                </span>
+                                                                <p className="mt-1 text-base font-medium text-gray-900">
+                                                                    {company.company_name || 'N/A'}
+                                                                </p>
+                                                            </div>
+                                                            <div>
+                                                                <span className="text-xs font-medium uppercase tracking-wider text-gray-500">
+                                                                    Legal Name
+                                                                </span>
+                                                                <p className="mt-1 text-base font-medium text-gray-900">
+                                                                    {company.company_legal_name || 'N/A'}
+                                                                </p>
+                                                            </div>
+                                                            <div>
+                                                                <span className="text-xs font-medium uppercase tracking-wider text-gray-500">
+                                                                    GSTIN
+                                                                </span>
+                                                                <p className="mt-1 text-base font-medium text-gray-900">
+                                                                    {company.gstin || 'N/A'}
+                                                                </p>
+                                                            </div>
+                                                            <div>
+                                                                <span className="text-xs font-medium uppercase tracking-wider text-gray-500">
+                                                                    Code
+                                                                </span>
+                                                                <p className="mt-1 text-base font-medium text-gray-900">
+                                                                    {company.code || 'N/A'}
+                                                                </p>
+                                                            </div>
+                                                            <div className="col-span-2">
+                                                                <span className="text-xs font-medium uppercase tracking-wider text-gray-500">
+                                                                    Registered Address
+                                                                </span>
+                                                                <p className="mt-1 text-base font-medium text-gray-900">
+                                                                    {company.registered_address || 'N/A'}
+                                                                </p>
+                                                            </div>
+                                                            <div className="col-span-2">
+                                                                <span className="text-xs font-medium uppercase tracking-wider text-gray-500">
+                                                                    Bill To
+                                                                </span>
+                                                                <p className="mt-1 text-base font-medium text-gray-900">
+                                                                    {company.bill_to || 'N/A'}
+                                                                </p>
+                                                            </div>
+                                                            <div className="col-span-2">
+                                                                <span className="text-xs font-medium uppercase tracking-wider text-gray-500">
+                                                                    Ship To
+                                                                </span>
+                                                                <p className="mt-1 text-base font-medium text-gray-900">
+                                                                    {company.ship_to || 'N/A'}
+                                                                </p>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 ))}
                                             </div>
-                                            <div className="flex justify-end gap-2 mt-4">
-                                                <Button
-                                                    variant="twoTone"
-                                                    color="gray"
-                                                    type="button"
-                                                    onClick={() => setEditingSection(null)}
-                                                >
-                                                    Cancel
-                                                </Button>
-                                                <Button variant="accept" type="submit">
-                                                    Confirm
-                                                </Button>
-                                            </div>
-                                        </form>
-                                    )}
-                                </Formik>
-                            ) : (
-                                <>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                        {BasicSellerInformationDetail.map((item, idx) => (
-                                            <div key={idx} className="flex flex-col border-b border-gray-100 pb-2">
-                                                <span className="text-sm font-medium text-gray-600">{item.label}</span>
-                                                <span className="text-base text-gray-800">{item.value || 'N/A'}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <Button variant="reject" size="sm" onClick={() => setEditingSection('basic')} className="mt-3">
-                                        Update
-                                    </Button>
-                                </>
-                            )
-                        ) : (
-                            <Empty description="No data available" image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                        )}
-                    </Card>
-
-                    <Collapse accordion bordered={false} className="bg-transparent space-y-2">
-                        {sections.map(
-                            (section, index) =>
-                                section.data && (
-                                    <Panel
-                                        key={index}
-                                        header={<span className="font-medium text-gray-800">{section.title}</span>}
-                                        className="border border-gray-200 rounded-xl bg-white shadow-sm"
-                                    >
-                                        {editingSection === section.key ? (
-                                            <Formik
-                                                initialValues={Object.fromEntries(section.data.map((item) => [item.name, item.value]))}
-                                                onSubmit={handleSectionUpdate}
-                                            >
-                                                {({ handleChange, handleSubmit, values }) => (
-                                                    <form onSubmit={handleSubmit}>
-                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                                            {section.data.map((item, idx) => (
-                                                                <div key={idx} className="flex flex-col border-b border-gray-100 pb-2">
-                                                                    <label className="text-sm font-medium text-gray-600">
-                                                                        {item.label}
-                                                                    </label>
-                                                                    <input
-                                                                        name={item.name}
-                                                                        value={values[item.name] || ''}
-                                                                        onChange={handleChange}
-                                                                        className="border border-gray-300 rounded-md p-1 text-gray-800"
-                                                                    />
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                        <div className="flex justify-end gap-2 mt-4">
-                                                            <Button
-                                                                variant="twoTone"
-                                                                color="gray"
-                                                                type="button"
-                                                                onClick={() => setEditingSection(null)}
-                                                            >
-                                                                Cancel
-                                                            </Button>
-                                                            <Button variant="accept" type="submit">
-                                                                Confirm
-                                                            </Button>
-                                                        </div>
-                                                    </form>
-                                                )}
-                                            </Formik>
                                         ) : (
-                                            <>
-                                                {section.data.length ? (
-                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-2">
-                                                        {section.data.map((item, idx) => (
-                                                            <div key={idx} className="flex flex-col border-b border-gray-100 pb-2">
-                                                                <span className="font-bold text-gray-800"> {item.label}</span>
-                                                                <span className="text-base text-gray-800">{item.value || 'N/A'}</span>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                ) : (
-                                                    <Empty
-                                                        description="No data available"
-                                                        image={Empty.PRESENTED_IMAGE_SIMPLE}
-                                                        className="py-4"
-                                                    />
-                                                )}
-                                                <Button variant="reject" size="sm" onClick={() => setEditingSection(section.key)}>
-                                                    Update
-                                                </Button>
-                                            </>
-                                        )}
-                                    </Panel>
-                                ),
-                        )}
-                        {/* warehouse */}
-                        <SellerDetailWarehouse
-                            refetch={refetch}
-                            editingSection={editingSection}
-                            sellerData={sellerData}
-                            setEditingSection={setEditingSection}
-                        />
-
-                        <div className="mt-6">
-                            <Card className="rounded-2xl border border-gray-200 shadow-sm bg-white p-5">
-                                <div className="flex justify-between items-center border-b pb-2 mb-4">
-                                    <h2 className="text-lg font-semibold text-gray-800">Documents & Verifications</h2>
-                                    {editingSection === 'documents' ? (
-                                        <div className="flex gap-2">
-                                            <Button variant="twoTone" color="gray" size="sm" onClick={() => setEditingSection(null)}>
-                                                Cancel
-                                            </Button>
-                                            <Button variant="accept" size="sm" form="document-form">
-                                                Save Documents
-                                            </Button>
-                                        </div>
-                                    ) : (
-                                        <Button variant="reject" size="sm" onClick={() => setEditingSection('documents')}>
-                                            Edit Documents
-                                        </Button>
-                                    )}
-                                </div>
-
-                                {editingSection === 'documents' ? (
-                                    <SellerDetailDocuments
-                                        id={id as string}
-                                        refetch={refetch}
-                                        sellerData={sellerData}
-                                        setEditingSection={setEditingSection}
-                                    />
-                                ) : (
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
-                                        {documentsList.map((doc) => (
-                                            <div
-                                                key={doc.key}
-                                                className="flex justify-between items-center border border-gray-100 bg-gray-50 hover:bg-gray-100 transition-all rounded-lg p-3 shadow-sm"
-                                            >
-                                                <div className="flex flex-col">
-                                                    <span className="text-sm font-medium text-gray-700">{doc.label}</span>
-                                                    <span className={`text-xs ${doc.file ? 'text-green-600' : 'text-red-500'}`}>
-                                                        {doc.file ? 'Uploaded' : 'Not Uploaded'}
-                                                    </span>
-                                                </div>
-
-                                                {doc.file ? (
-                                                    <Button
-                                                        variant="twoTone"
-                                                        color="green"
-                                                        size="sm"
-                                                        icon={<FaDownload />}
-                                                        onClick={() => handleDownload(`${doc.file}`, doc.label)}
-                                                        className="rounded-full"
+                                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                                                {section.data.map((item, idx) => (
+                                                    <div
+                                                        key={idx}
+                                                        className="rounded-xl bg-gray-50 p-4 hover:bg-gray-100/80 transition-colors duration-200"
                                                     >
-                                                        Download
-                                                    </Button>
+                                                        <span className="text-xs font-medium uppercase tracking-wider text-gray-500">
+                                                            {item.label}
+                                                        </span>
+                                                        <p className="mt-1 text-base font-medium text-gray-900">{item.value || 'N/A'}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                </Card>
+                            ),
+                    )}
+
+                    <SellerDetailWarehouse sellerData={sellerData} />
+                    <Card className="rounded-2xl border-0 bg-white shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden">
+                        <div className="relative p-6">
+                            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500"></div>
+
+                            <h2 className="mb-6 text-lg font-semibold text-gray-800 flex items-center gap-2">
+                                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 text-amber-600">
+                                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                        />
+                                    </svg>
+                                </span>
+                                Documents & Verifications
+                            </h2>
+
+                            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                                {documentsList.map((doc) => (
+                                    <div
+                                        key={doc.key}
+                                        className="group flex items-center justify-between rounded-xl border border-gray-100 bg-gradient-to-r from-gray-50 to-white p-4 hover:border-gray-200 hover:shadow-md transition-all duration-200"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div
+                                                className={`flex h-10 w-10 items-center justify-center rounded-lg ${doc.file ? 'bg-green-100' : 'bg-gray-100'}`}
+                                            >
+                                                {doc.file ? (
+                                                    <svg
+                                                        className="h-5 w-5 text-green-600"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth={2}
+                                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                        />
+                                                    </svg>
                                                 ) : (
-                                                    <Button variant="twoTone" color="gray" size="sm" disabled className="rounded-full">
-                                                        N/A
-                                                    </Button>
+                                                    <svg
+                                                        className="h-5 w-5 text-gray-400"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth={2}
+                                                            d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+                                                        />
+                                                    </svg>
                                                 )}
                                             </div>
-                                        ))}
+                                            <div>
+                                                <p className="font-medium text-gray-900">{doc.label}</p>
+                                                <p className={`text-xs ${doc.file ? 'text-green-600' : 'text-red-500'}`}>
+                                                    {doc.file ? 'Uploaded & Verified' : 'Pending Upload'}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {doc.file ? (
+                                            <Button
+                                                variant="twoTone"
+                                                color="green"
+                                                size="md"
+                                                icon={<FaDownload />}
+                                                onClick={() => handleDownload(`${doc.file}`, doc.label)}
+                                                className="rounded-full border-0 bg-green-50 px-4 hover:bg-green-100 transition-all duration-200"
+                                            >
+                                                Download
+                                            </Button>
+                                        ) : (
+                                            <Button
+                                                variant="twoTone"
+                                                color="gray"
+                                                size="md"
+                                                disabled
+                                                className="rounded-full border-0 bg-gray-100 text-gray-400 cursor-not-allowed"
+                                            >
+                                                Unavailable
+                                            </Button>
+                                        )}
                                     </div>
-                                )}
-                            </Card>
+                                ))}
+                            </div>
                         </div>
-                    </Collapse>
-                </>
+                    </Card>
+                </div>
             ) : (
-                <>
+                <div className="rounded-2xl bg-white shadow-md p-6">
                     <SellerBeforeApproval
                         sellerData={sellerData as VendorDetails}
                         commentStructure={commentStructure}
@@ -367,9 +376,10 @@ const SellerDetails = () => {
                         setConfirmModal={setConfirmModal}
                         setStatusToProceed={setStatusToProceed}
                     />
-                </>
+                </div>
             )}
 
+            {/* Modals */}
             <SellerCommentsModal
                 isOpen={isCommentModal}
                 setIsOPen={setIsCommentModal}
