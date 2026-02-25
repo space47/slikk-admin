@@ -60,7 +60,6 @@ export type Product = Partial<{
     scenttopnotes: string
     scentheartnotes: string
     scentbasenotes: string
-    origincountry: string
     color_code_link: string
     careinstruction: string
     antiodour: string
