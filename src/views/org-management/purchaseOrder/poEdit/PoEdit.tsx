@@ -41,7 +41,7 @@ const PoEdit = () => {
 
     useEffect(() => {
         if (isSuccess) {
-            setPurchaseOrder(data?.data)
+            setPurchaseOrder((data?.data as any)?.results[0])
         }
         if (isError) {
             const errorMessage = getApiErrorMessage(error) || 'Failed to Load Data'
