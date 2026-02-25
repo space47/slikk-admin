@@ -18,7 +18,7 @@ export interface VendorList {
     bank_name: string
     is_active: boolean
     settlement_days: number
-    provisional_discount: number
+    provisional_discount_rate: number
     revenue_share: number
     handling_charges_per_order: number
     warehouse_charge_per_sku: number

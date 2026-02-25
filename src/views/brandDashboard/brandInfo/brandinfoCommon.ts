@@ -16,7 +16,7 @@ export type SELLERDETAILTYPES = {
     ifsc: string
     bank_name: string
     is_active: boolean
-    provisional_discount: number
+    provisional_discount_rate: number
     revenue_share: number
     handling_charges_per_order: number
     warehouse_charge_per_sku: number

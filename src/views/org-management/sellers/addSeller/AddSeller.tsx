@@ -50,7 +50,6 @@ const AddSeller = () => {
     const initialValue = {}
 
     const handleSubmit = async (values: any) => {
-        setIsSubmitting(true)
         const formData = new FormData()
         if (values.address) {
             formData.append(SellerKeys.ADDRESS, textParser(values.address))
@@ -78,6 +77,7 @@ const AddSeller = () => {
         }
 
         try {
+            setIsSubmitting(true)
             const res = await axioisInstance.post(`/merchant/company`, formData)
             successMessage(res)
             await dispatch(getProfileData())

@@ -156,7 +156,7 @@ export enum SellerKeys {
     BUSINESS_NATURE_COMPANY = 'business_nature_company',
     AUTHORIZED_PERSON = 'authorized_person',
     SP_TYPE = 'sp_type',
-    PROVISIONAL_DISCOUNT = 'provisional_discount',
+    PROVISIONAL_DISCOUNT = 'provisional_discount_rate',
     COMMENTS = 'comments',
 
     DAMAGES_PER_SKU = 'damages_per_sku',
