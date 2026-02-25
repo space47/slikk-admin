@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Card, FormContainer, FormItem, Input, Select, Switcher } from '@/components/ui'
 import React from 'react'
 import { IndianStateCodes, PoField, PoFormFieldArray, PoNatureOption } from './poFormCommon'
@@ -15,41 +16,44 @@ interface Props {
     }[]
     businessNatureCompany: BUSINESS_NATURE[]
     wareHouseDetails: WAREHOUSE_DETAILS | undefined
+    values: any
 }
 
-const PoFormStepOne = ({ VendorEntity, businessNatureCompany, wareHouseDetails }: Props) => {
+const PoFormStepOne = ({ VendorEntity, businessNatureCompany, wareHouseDetails, values }: Props) => {
     return (
         <div className="space-y-8">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <WarehouseSelect isSingle label="Select Vendor Warehouse" name={PoField.COMPANY_GST} customCss="xl:w-[800px] w-auto" />
             </div>
-            <Card>
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">Warehouse Details</h3>
+            {values[PoField.COMPANY_GST] && (
+                <Card>
+                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">Warehouse Details</h3>
 
-                <div className="grid grid-cols-3 gap-y-4 text-sm">
-                    <div>
-                        <p className="text-gray-400 text-xs mb-1">GSTIN</p>
-                        <p className="font-medium text-gray-800">{wareHouseDetails?.gstin || '—'}</p>
+                    <div className="grid grid-cols-3 gap-y-4 text-sm">
+                        <div>
+                            <p className="text-gray-400 text-xs mb-1">GSTIN</p>
+                            <p className="font-medium text-gray-800">{wareHouseDetails?.gstin || '—'}</p>
+                        </div>
+                        <div>
+                            <p className="text-gray-400 text-xs mb-1">STATE</p>
+                            <p className="font-medium text-gray-800">
+                                {IndianStateCodes?.find((item) => item?.value === wareHouseDetails?.gstin?.slice(0, 2))?.label || '-'}
+                            </p>
+                        </div>
+
+                        <div>
+                            <p className="text-gray-400 text-xs mb-1">Name</p>
+                            <p className="font-medium text-gray-800">{wareHouseDetails?.warehouse_name || '—'}</p>
+                        </div>
                     </div>
-                    <div>
-                        <p className="text-gray-400 text-xs mb-1">STATE</p>
-                        <p className="font-medium text-gray-800">
-                            {IndianStateCodes?.find((item) => item?.value === wareHouseDetails?.gstin?.slice(0, 2))?.label || '-'}
+                    <div className="col-span-2">
+                        <p className="text-gray-400 text-xs mb-1">Address</p>
+                        <p className="text-gray-700 text-sm leading-relaxed bg-gray-50 p-3 rounded-lg border border-gray-100">
+                            {wareHouseDetails?.warehouse_address || '—'}
                         </p>
                     </div>
-
-                    <div>
-                        <p className="text-gray-400 text-xs mb-1">Name</p>
-                        <p className="font-medium text-gray-800">{wareHouseDetails?.warehouse_name || '—'}</p>
-                    </div>
-                </div>
-                <div className="col-span-2">
-                    <p className="text-gray-400 text-xs mb-1">Address</p>
-                    <p className="text-gray-700 text-sm leading-relaxed bg-gray-50 p-3 rounded-lg border border-gray-100">
-                        {wareHouseDetails?.warehouse_address || '—'}
-                    </p>
-                </div>
-            </Card>
+                </Card>
+            )}
 
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <h2 className="text-base font-semibold text-gray-800 mb-6">Purchase Order Information</h2>

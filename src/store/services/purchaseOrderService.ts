@@ -29,10 +29,11 @@ export const purchaseOrderService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        purchaseSingleOrdersList: builder.query<PurchaseSingleData, { order_id?: string | number }>({
+        purchaseSingleOrdersList: builder.query<PurchaseSingleData, { order_id?: string | number; company_id?: string | number }>({
             query: (params) => {
                 const parameters: Record<string, string | string[]> = {}
                 if (params.order_id) parameters.order_id = params.order_id?.toString()
+                if (params.company_id) parameters.company_id = params.company_id?.toString()
 
                 return {
                     url: `/merchant/purchase/order`,

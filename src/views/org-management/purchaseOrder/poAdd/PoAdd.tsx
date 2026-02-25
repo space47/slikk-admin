@@ -76,6 +76,7 @@ const PoAdd = () => {
                                     VendorEntity={VendorEntity}
                                     wareHouseDetails={wareHouseDetails}
                                     businessNatureCompany={selectedCompany?.business_nature_company || []}
+                                    values={values}
                                 />
                                 {!commercial_approval_doc && (
                                     <>

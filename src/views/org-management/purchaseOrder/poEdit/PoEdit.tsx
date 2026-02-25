@@ -25,10 +25,19 @@ const PoEdit = () => {
     const navigate = useNavigate()
     const [purchaseOrder, setPurchaseOrder] = useState<PurchaseOrderTable>()
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
-    const { data, isSuccess, isError, isLoading, isFetching, error } = purchaseOrderService.usePurchaseSingleOrdersListQuery({
-        order_id: purchase_id,
-    })
+    const { data, isSuccess, isError, isLoading, isFetching, error } = purchaseOrderService.usePurchaseSingleOrdersListQuery(
+        {
+            order_id: purchase_id,
+            company_id: selectedCompany?.id,
+        },
+        { skip: !selectedCompany.id || !purchase_id },
+    )
     const commercial_approval_doc = selectedCompany?.commercial_approval_doc
+
+    const VendorEntity = selectedCompany?.business_nature_company?.map((item) => ({
+        label: item?.company_name,
+        value: item.code,
+    }))
 
     useEffect(() => {
         if (isSuccess) {
@@ -48,7 +57,6 @@ const PoEdit = () => {
         commercial_terms: purchaseOrder?.commercial_terms,
         payment_terms: purchaseOrder?.payment_terms,
         discount_sharing_applicable: purchaseOrder?.discount_sharing_applicable,
-        state_code: purchaseOrder?.state_code,
         expected_delivery_date: purchaseOrder?.expected_delivery_date,
         po_nature: purchaseOrder?.po_nature,
         store: purchaseOrder?.store,
@@ -115,25 +123,34 @@ const PoEdit = () => {
                     ))}
             </div>
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
-                {({ values }) => (
-                    <Form className=" w-full p-5 bg-gray-50 rounded-xl shadow-xl ">
-                        <FormContainer>
-                            <PoFormStepOne />
-                            {!commercial_approval_doc && (
-                                <>
-                                    <FormUploadFile
-                                        asterisk
-                                        label="Upload Commercial Doc Copy"
-                                        fileList={(values as any)?.commercialFile}
-                                        name="commercial_terms"
-                                        existingFile={values?.commercial_terms}
-                                    />
-                                </>
-                            )}
-                            <FormButton value="Submit" />
-                        </FormContainer>
-                    </Form>
-                )}
+                {({ values }) => {
+                    const companyGstValue = typeof values.company_gst === 'object' ? (values.company_gst as any)?.id : values?.company_gst
+                    const wareHouseDetails = selectedCompany?.gst_details?.find((item) => item?.id === companyGstValue)
+                    return (
+                        <Form className=" w-full p-5 bg-gray-50 rounded-xl shadow-xl ">
+                            <FormContainer>
+                                <PoFormStepOne
+                                    VendorEntity={VendorEntity}
+                                    wareHouseDetails={wareHouseDetails}
+                                    businessNatureCompany={selectedCompany?.business_nature_company || []}
+                                    values={values}
+                                />
+                                {!commercial_approval_doc && (
+                                    <>
+                                        <FormUploadFile
+                                            asterisk
+                                            label="Upload Commercial Doc Copy"
+                                            fileList={(values as any)?.commercialFile}
+                                            name="commercial_terms"
+                                            existingFile={values?.commercial_terms}
+                                        />
+                                    </>
+                                )}
+                                <FormButton value="Submit" />
+                            </FormContainer>
+                        </Form>
+                    )
+                }}
             </Formik>
         </div>
     )
