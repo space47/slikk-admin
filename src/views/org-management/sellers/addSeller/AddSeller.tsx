@@ -64,12 +64,24 @@ const AddSeller = () => {
         fileFields.forEach((key) => appendIfValid(key, values?.[key]?.[0]))
 
         const updatedDetails = (values?.gst_details || []).map((warehouse: any, index: number) => {
+            console.log('warehouse is', warehouse)
+            const cleanGstin = warehouse?.gstin?.replace(/\s+/g, '') || ''
+
             if (warehouse?.gst_certificate?.[0] instanceof File) {
                 const certKey = `cert${index + 1}`
                 formData.append(certKey, warehouse.gst_certificate[0])
-                return { ...warehouse, gst_certificate: certKey }
+
+                return {
+                    ...warehouse,
+                    gst_certificate: certKey,
+                    state_code: cleanGstin.slice(0, 2),
+                }
             }
-            return { ...warehouse }
+
+            return {
+                ...warehouse,
+                state_code: cleanGstin.slice(0, 2),
+            }
         })
 
         if (isOther) {

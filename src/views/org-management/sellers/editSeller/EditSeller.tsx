@@ -124,13 +124,24 @@ const EditSeller = () => {
         })
         const existingDetails = initialValue?.gst_details || []
         const updatedDetails = (values?.gst_details || []).map((warehouse: any, index: number) => {
-            const existing = existingDetails[index] || {}
+            console.log('warehouse is', warehouse)
+            const cleanGstin = warehouse?.gstin?.replace(/\s+/g, '') || ''
+
             if (warehouse?.gst_certificate?.[0] instanceof File) {
                 const certKey = `cert${index + 1}`
                 formData.append(certKey, warehouse.gst_certificate[0])
-                return { ...warehouse, gst_certificate: certKey }
+
+                return {
+                    ...warehouse,
+                    gst_certificate: certKey,
+                    state_code: cleanGstin.slice(0, 2),
+                }
             }
-            return { ...warehouse, gst_certificate: existing?.gst_certificate }
+
+            return {
+                ...warehouse,
+                state_code: cleanGstin.slice(0, 2),
+            }
         })
         const gstChanged = JSON.stringify(existingDetails) !== JSON.stringify(updatedDetails)
         if (gstChanged) {

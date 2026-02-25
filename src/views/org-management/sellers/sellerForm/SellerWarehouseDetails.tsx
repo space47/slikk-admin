@@ -70,7 +70,8 @@ const SellerWarehouseDetails = ({ isEdit }: Props) => {
                                                     ([key]) =>
                                                         !EXCLUDED_FIELDS.includes(key) &&
                                                         key !== SellerKeys.GST_CERTIFICATE &&
-                                                        key !== 'warehouse_address',
+                                                        key !== 'warehouse_address' &&
+                                                        key !== 'state_code',
                                                 )
                                                 .map(([key, value], idx) => {
                                                     const label = key
