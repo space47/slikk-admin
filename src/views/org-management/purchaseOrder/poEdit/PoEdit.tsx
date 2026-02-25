@@ -24,6 +24,7 @@ const PoEdit = () => {
     const { purchase_id } = useParams()
     const navigate = useNavigate()
     const [purchaseOrder, setPurchaseOrder] = useState<PurchaseOrderTable>()
+    const [stateCode, setStateCode] = useState('')
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const { data, isSuccess, isError, isLoading, isFetching, error } = purchaseOrderService.usePurchaseSingleOrdersListQuery(
         {
@@ -61,6 +62,7 @@ const PoEdit = () => {
         po_nature: purchaseOrder?.po_nature,
         store: purchaseOrder?.store,
         company_gst: purchaseOrder?.company_gst,
+        stateCode: stateCode,
         payment_mode: purchaseOrder?.payment_mode,
         vendor_address: purchaseOrder?.vendor_address,
     }
@@ -127,6 +129,7 @@ const PoEdit = () => {
                 {({ values }) => {
                     const companyGstValue = typeof values.company_gst === 'object' ? (values.company_gst as any)?.id : values?.company_gst
                     const wareHouseDetails = selectedCompany?.gst_details?.find((item) => item?.id === companyGstValue)
+                    setStateCode(wareHouseDetails?.gstin?.slice(0, 2) || '')
                     return (
                         <Form className=" w-full p-5 bg-gray-50 rounded-xl shadow-xl ">
                             <FormContainer>

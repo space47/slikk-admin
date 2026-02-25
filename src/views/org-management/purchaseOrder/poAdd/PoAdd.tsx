@@ -10,7 +10,7 @@ import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { FormContainer } from '@/components/ui'
 import PoFormStepOne from '../poUtils/PoFormStepOne'
 import FormButton from '@/components/ui/Button/FormButton'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import FormUploadFile from '@/common/FormUploadFile'
 import { PoField } from '../poUtils/poFormCommon'
 
@@ -18,6 +18,7 @@ const PoAdd = () => {
     const navigate = useNavigate()
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const commercial_approval_doc = useMemo(() => selectedCompany?.commercial_approval_doc, [selectedCompany])
+    const [stateCode, setStateCode] = useState('')
 
     const VendorEntity = selectedCompany?.business_nature_company?.map((item) => ({
         label: item?.company_name,
@@ -46,6 +47,7 @@ const PoAdd = () => {
                 special_terms: values[PoField.SPECIAL_TERMS],
                 expected_delivery_date: values[PoField.EXPECTED_DELIVERY],
                 po_nature: values[PoField.PO_NATURE],
+                state_code: stateCode,
                 company_gst: values[PoField.COMPANY_GST]?.id,
                 payment_mode: values[PoField.PAYMENT_MODE],
             }
@@ -70,6 +72,7 @@ const PoAdd = () => {
             <Formik enableReinitialize initialValues={initialValue as any} onSubmit={handleSubmit}>
                 {({ values }) => {
                     const wareHouseDetails = selectedCompany?.gst_details?.find((item) => item?.id === values.company_gst?.id)
+                    setStateCode(wareHouseDetails?.gstin?.slice(0, 2) || '')
                     return (
                         <Form className=" w-full p-5 bg-gray-50 rounded-xl shadow-xl ">
                             <FormContainer>
