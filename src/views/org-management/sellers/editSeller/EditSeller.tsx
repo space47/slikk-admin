@@ -135,6 +135,7 @@ const EditSeller = () => {
                     ...warehouse,
                     gst_certificate: certKey,
                     state_code: cleanGstin.slice(0, 2),
+                    address: textParser(warehouse.address),
                 }
             }
 
