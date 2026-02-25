@@ -146,6 +146,9 @@ export const simpleFields = [
     SellerKeys.AUTHORIZED_PERSON,
     SellerKeys.DECLARATION_STATEMENT,
     SellerKeys.NAME,
+    SellerKeys.FINANCE_EMAIL,
+    SellerKeys.FINANCE_CONTACT_NUMBER,
+    SellerKeys.FINANCE_NAME,
 ]
 
 export const fileFields = [

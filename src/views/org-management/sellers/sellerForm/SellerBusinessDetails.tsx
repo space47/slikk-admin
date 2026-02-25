@@ -74,7 +74,7 @@ const SellerBusinessDetails = ({ isEdit, values }: Props) => {
                         isEdit={isEdit}
                         label="Upload TAN Copy"
                         fileList={values?.tanCopyFile}
-                        name={SellerKeys.PAN_COPY}
+                        name={SellerKeys.TAN_COPY}
                         existingFile={values?.tan_copy}
                     />
                     <FormUploadFile
