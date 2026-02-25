@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormContainer, FormItem, Input, Select } from '@/components/ui'
+import { FormContainer, FormItem, Input, Select, Switcher } from '@/components/ui'
 import { SegmentOptions } from '@/constants/commonArray.constant'
 import { Field, FieldProps } from 'formik'
 import React, { Dispatch, SetStateAction } from 'react'
-import { DescriptionFields, PRODUCT_EDIT_COMMON, PRODUCT_EDIT_COMMON_DOWN } from '../ProductCommon'
+import { DescriptionFields, PRODUCT_BOOLEAN_VALUES, PRODUCT_EDIT_COMMON, PRODUCT_EDIT_COMMON_DOWN } from '../ProductCommon'
 import { RichTextEditor } from '@/components/shared'
 import ImageCommonProduct from '../ImageCommonProduct'
 import AddProductImages from '../AddProductImages'
@@ -115,17 +115,26 @@ const ProductFormCommon = ({
                 </FormItem>
             </FormContainer>
             <FormContainer className="mt-2">
-                <div className="grid xl:grid-cols-2 grid-cols-1 gap-4">
-                    {PRODUCT_EDIT_COMMON?.map((item, key) => (
-                        <FormItem key={key} label={item.label} className={item.classname}>
-                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
-                        </FormItem>
-                    ))}
-                    {PRODUCT_EDIT_COMMON_DOWN?.map((item, key) => (
-                        <FormItem key={key} label={item.label} className={item.classname}>
-                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={item.component} />
-                        </FormItem>
-                    ))}
+                <div>
+                    <div className="grid xl:grid-cols-2 grid-cols-1 gap-4">
+                        {PRODUCT_EDIT_COMMON?.map((item, key) => (
+                            <FormItem key={key} label={item.label} className={item.classname}>
+                                <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                            </FormItem>
+                        ))}
+                        {PRODUCT_EDIT_COMMON_DOWN?.map((item, key) => (
+                            <FormItem key={key} label={item.label} className={item.classname}>
+                                <Field type={item.type} name={item.name} placeholder={item.placeholder} component={item.component} />
+                            </FormItem>
+                        ))}
+                    </div>
+                    <div className="grid xl:grid-cols-7 grid-cols-1 gap-4">
+                        {PRODUCT_BOOLEAN_VALUES?.map((item, key) => (
+                            <FormItem key={key} label={item.label} className={item.classname}>
+                                <Field type={item.type} name={item.name} component={Switcher} />
+                            </FormItem>
+                        ))}
+                    </div>
                     {/* {initialValues?.description &&
                         Object.entries(initialValues?.description)?.map(([key]) => {
                             return (
