@@ -32,7 +32,7 @@ const SellerBeforeApproval = ({ commentStructure, handleComments, sellerData, se
 
     const parseFileList = (value: string) => {
         if (!value) return []
-        return value.split(',').map((file) => ({
+        return value?.split(',').map((file) => ({
             uid: file.trim(),
             name: file.trim().split('/').pop() || 'file',
             url: file.trim(),
@@ -40,7 +40,7 @@ const SellerBeforeApproval = ({ commentStructure, handleComments, sellerData, se
     }
 
     const getFileIcon = (filename: string) => {
-        const ext = filename.split('.').pop()?.toLowerCase()
+        const ext = filename?.split('.').pop()?.toLowerCase()
         if (ext === 'pdf') return <FaFilePdf className="text-red-500 text-xl" />
         if (['jpg', 'jpeg', 'png', 'gif', 'svg'].includes(ext || '')) return <FaFileImage className="text-blue-500 text-xl" />
         if (['doc', 'docx'].includes(ext || '')) return <FaFileWord className="text-blue-700 text-xl" />

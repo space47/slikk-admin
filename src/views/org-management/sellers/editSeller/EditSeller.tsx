@@ -79,7 +79,7 @@ const EditSeller = () => {
         approved_payment_term: sellerData?.approved_payment_term || '',
         business_nature: sellerData?.business_nature || '',
         sp_type: sellerData?.sp_type || '',
-        pf_declaration: sellerData?.pf_declaration || '',
+        pf_declaration: sellerData?.pf_declaration === 'true' || '',
         pf_declaration_doc: sellerData?.pf_declaration_doc || null, // file
         trade_mark_certificate: sellerData?.trade_mark_certificate || null, // file
         is_msme: sellerData?.is_msme || false,

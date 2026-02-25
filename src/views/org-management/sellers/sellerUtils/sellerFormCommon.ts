@@ -20,7 +20,13 @@ export const BusinessDetails = [
     { label: 'TAN Number', name: SellerKeys.TAN_NUMBER, type: 'text', isRequired: false, visible: true },
     { label: 'GSTIN', name: SellerKeys.GSTIN, type: 'text', isRequired: false, visible: true },
     { label: 'CIN', name: SellerKeys.CIN, type: 'text', isRequired: false, visible: true },
-    { label: 'Pf Declaration', name: SellerKeys.PF_DECLARATION, type: 'checkbox', isRequired: false, visible: true },
+    {
+        label: 'Pf Declaration',
+        name: SellerKeys.PF_DECLARATION,
+        type: 'checkbox',
+        isRequired: false,
+        visible: true,
+    },
 ]
 
 export const PocDetails = [
