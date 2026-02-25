@@ -41,8 +41,8 @@ const WarehouseSelect = ({ label, name, customCss, isSingle = false }: Props) =>
                                 return typeof value === 'object' && value !== null ? value.id : value
                             }
                             const selectedValue = isSingle
-                                ? warehouseList.find((option) => option.id == getFieldValueId(field.value))
-                                : warehouseList.filter((option) => field.value?.some((store: any) => getFieldValueId(store) == option.id))
+                                ? warehouseList?.find((option) => option.id == getFieldValueId(field.value))
+                                : warehouseList?.filter((option) => field.value?.some((store: any) => getFieldValueId(store) == option.id))
 
                             return (
                                 <div className="flex flex-col gap-1 w-full max-w-md">

@@ -32,21 +32,22 @@ const PoAdd = () => {
     }
 
     const handleSubmit = async (values: any) => {
+        console.log('clicked hjere', values)
         try {
             const payload = {
                 store: values.store,
                 company: selectedCompany?.id,
-                [PoField.ORDER_BILLING_ENTITY]: values[PoField.ORDER_BILLING_ENTITY],
-                [PoField.ORDER_BILLING_ADDRESS]: values[PoField.ORDER_BILLING_ADDRESS],
-                [PoField.ORDER_SHIPPING_ADDRESS]: values[PoField.ORDER_SHIPPING_ADDRESS],
-                [PoField.COMMERCIAL_TERMS]: values[PoField.COMMERCIAL_TERMS],
-                [PoField.PAYMENT_TERMS]: values[PoField.PAYMENT_TERMS],
-                [PoField.DISCOUNT_SHARING]: values[PoField.DISCOUNT_SHARING],
-                [PoField.SPECIAL_TERMS]: values[PoField.SPECIAL_TERMS],
-                [PoField.EXPECTED_DELIVERY]: values[PoField.EXPECTED_DELIVERY],
-                [PoField.PO_NATURE]: values[PoField.PO_NATURE],
-                [PoField.COMPANY_GST]: values[PoField.COMPANY_GST],
-                [PoField.PAYMENT_MODE]: values[PoField.PAYMENT_MODE],
+                order_billing_entity: values[PoField.ORDER_BILLING_ENTITY],
+                order_billing_address: values[PoField.ORDER_BILLING_ADDRESS],
+                order_shipping_address: values[PoField.ORDER_SHIPPING_ADDRESS],
+                commercial_terms: values[PoField.COMMERCIAL_TERMS],
+                payment_terms: values[PoField.PAYMENT_TERMS],
+                discount_sharing_applicable: values[PoField.DISCOUNT_SHARING],
+                special_terms: values[PoField.SPECIAL_TERMS],
+                expected_delivery_date: values[PoField.EXPECTED_DELIVERY],
+                po_nature: values[PoField.PO_NATURE],
+                company_gst: values[PoField.COMPANY_GST]?.id,
+                payment_mode: values[PoField.PAYMENT_MODE],
             }
 
             const formData = buildFormData(payload)
