@@ -64,7 +64,6 @@ const AddSeller = () => {
         fileFields.forEach((key) => appendIfValid(key, values?.[key]?.[0]))
 
         const updatedDetails = (values?.gst_details || []).map((warehouse: any, index: number) => {
-            console.log('warehouse is', warehouse)
             const cleanGstin = warehouse?.gstin?.replace(/\s+/g, '') || ''
 
             if (warehouse?.gst_certificate?.[0] instanceof File) {
@@ -82,6 +81,7 @@ const AddSeller = () => {
             return {
                 ...warehouse,
                 state_code: cleanGstin.slice(0, 2),
+                address: textParser(warehouse.address),
             }
         })
 
