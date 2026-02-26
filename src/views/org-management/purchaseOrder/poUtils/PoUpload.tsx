@@ -57,7 +57,7 @@ const PoUpload = ({ isOpen, setIsOpen, purchase_id, refetch }: props) => {
                     <div className="flex flex-col items-center justify-center space-y-4 mb-10">
                         <a
                             download
-                            href="https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/SampleFiles-Dashboard/RiderBulkUploadSample.csv"
+                            href="https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/SampleFiles-Dashboard/PO+-+Line+Items+Dummy+-+Sheet1.pdf"
                             className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all duration-200"
                         >
                             <svg
