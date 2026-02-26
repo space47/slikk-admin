@@ -61,6 +61,10 @@ const OrderDetails = () => {
         return data?.log?.some((item) => item?.status?.includes(EOrderStatus.packed)) && data?.utm_params?.ticket === true
     }, [data?.log, data?.utm_params])
 
+    const isLogisticWithTaskId = useMemo(() => {
+        return Object.entries(data?.logistic || {})?.length > 0 && data?.logistic?.task_id
+    }, [data?.logistic])
+
     const showReturnOrder = useMemo(() => {
         return (
             data?.status === EOrderStatus.completed &&
@@ -339,20 +343,19 @@ const OrderDetails = () => {
                                                 />
                                             )}
 
-                                            {data?.logistic?.partner === 'Slikk' && (
+                                            {isLogisticWithTaskId && (
                                                 <OrderMap
                                                     isRiderMoving={isRiderMoving}
                                                     task_id={data?.logistic?.task_id}
                                                     taskData={taskData}
                                                 />
                                             )}
-
-                                            {data?.logistic?.partner !== 'Slikk' && (
-                                                <iframe
-                                                    allowFullScreen
-                                                    src={data?.logistic?.tracking_url}
-                                                    className="w-full h-full border-none"
-                                                    title="Live Order Tracking"
+                                            {!isLogisticWithTaskId && (
+                                                <TwoPointMap
+                                                    lat={data?.logistic?.latitude}
+                                                    long={data?.logistic?.longitude}
+                                                    storeLat={data?.store.latitude}
+                                                    storeLong={data?.store.longitude}
                                                 />
                                             )}
                                         </div>

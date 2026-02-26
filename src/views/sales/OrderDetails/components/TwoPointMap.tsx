@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useRef, useState } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet'
 import L from 'leaflet'
@@ -104,8 +105,8 @@ const FullScreenMap = ({ mapCenter, storeLat, storeLong, lat, long, style = { he
 
 const TwoPointMap = ({ lat, long, storeLat, storeLong }: props) => {
     const [mapCenter, setMapCenter] = useState<[number, number] | null>(null)
-    const [waypoints, setWaypoints] = useState<[number, number][]>([])
-    // const { taskData } = useAppSelector<TASKDETAILS>((state) => state.taskData)
+
+    console.log('map center', storeLat, storeLong, lat, long, mapCenter)
 
     const [polyLine, setPolyLine] = useState('')
     const [sourceLatLong, setSourceLatLong] = useState<[number, number]>([0, 0])
@@ -146,21 +147,20 @@ const TwoPointMap = ({ lat, long, storeLat, storeLong }: props) => {
     }, [sourceLatLong, destinationLatLong])
 
     useEffect(() => {
-        if (lat && storeLat) {
-            const origin: [number, number] = [storeLat, storeLong]
+        if (storeLat) {
             const destination: [number, number] = [lat, long]
-            setMapCenter(origin)
-            setWaypoints([origin, destination])
-            setSourceLatLong(origin)
+            console.log('store lat', storeLat, storeLong)
+            setMapCenter([storeLat, storeLong])
+            setSourceLatLong([storeLat, storeLong])
             setDestinationLatLong(destination)
         }
     }, [lat, long, storeLat, storeLong])
 
     if (!mapCenter) {
-        return <p className="flex justify-between items-center h-screen">Loading map...</p>
+        return <p className="flex justify-between items-center h-screen">No Location Detected</p>
     }
 
-    const CurrentLocationButton = ({ setCenter }: { setCenter: React.Dispatch<React.SetStateAction<[number, number]>> }) => {
+    const CurrentLocationButton = () => {
         const map = useMap()
 
         const handleClick = () => {
@@ -208,7 +208,7 @@ const TwoPointMap = ({ lat, long, storeLat, storeLong }: props) => {
                     )}
 
                     <Polyline positions={decodedPolyline} color="blue" />
-                    <CurrentLocationButton setCenter={() => {}} />
+                    <CurrentLocationButton />
                     <FullScreenMap
                         mapCenter={mapCenter}
                         storeLat={storeLat}
