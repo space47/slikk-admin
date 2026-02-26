@@ -1,11 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormContainer } from '@/components/ui'
-import React from 'react'
-import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
-import { SellerKeys } from '../sellerCommon'
 import { useAppSelector } from '@/store'
 import { VendorStateType } from '@/store/slices/vendorsSlice/vendors.slice'
-import { GetVendorConfigData } from '../sellerUtils/GetVendorConfigData'
 
 interface Props {
     values: any
@@ -19,8 +14,6 @@ const SellerInternal = ({ values }: Props) => {
             acc[item] = configValues?.value?.category_team[item?.toUpperCase()] || []
             return acc
         }, {}) || {}
-
-    const { financeEmail, financeName, financeNumbers } = GetVendorConfigData()
 
     return (
         <div>
@@ -51,16 +44,6 @@ const SellerInternal = ({ values }: Props) => {
                     </div>
                 ))}
             </div>
-            <FormContainer className="mt-8 grid grid-cols-2 gap-2">
-                <CommonSelect asterisk label="Finance Name" name={SellerKeys.INT_FINANCE_NAME} options={financeName || []} />
-                <CommonSelect asterisk label="Finance Email" name={SellerKeys.INT_FINANCE_EMAIL} options={financeEmail || []} />
-                <CommonSelect
-                    asterisk
-                    label="Finance Contact Number"
-                    name={SellerKeys.INT_FINANCE_CONTACT_NUMBER}
-                    options={financeNumbers || []}
-                />
-            </FormContainer>
         </div>
     )
 }

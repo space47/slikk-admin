@@ -28,7 +28,6 @@ import { handlePhoneInputValidation } from '../sellerUtils/sellerFunctions'
 import { vendorService } from '@/store/services/vendorService'
 
 import { setConfigValues, VendorStateType } from '@/store/slices/vendorsSlice/vendors.slice'
-import { GetVendorConfigData } from '../sellerUtils/GetVendorConfigData'
 
 const AddSeller = () => {
     const navigate = useNavigate()
@@ -38,8 +37,6 @@ const AddSeller = () => {
     const vendorConfigApiCall = vendorService.useVendorOnboardingConfigurationQuery({})
 
     const { configValues } = useAppSelector<VendorStateType>((state) => state.vendor)
-
-    const { financeEmail, financeName, financeNumbers } = GetVendorConfigData()
 
     useEffect(() => {
         if (vendorConfigApiCall.isSuccess) {
@@ -166,25 +163,6 @@ const AddSeller = () => {
                                                     </FormItem>
                                                 )
                                             })}
-
-                                            <CommonSelect
-                                                asterisk
-                                                label="Finance Name"
-                                                name={SellerKeys.INT_FINANCE_NAME}
-                                                options={financeName || []}
-                                            />
-                                            <CommonSelect
-                                                asterisk
-                                                label="Finance Email"
-                                                name={SellerKeys.INT_FINANCE_EMAIL}
-                                                options={financeEmail || []}
-                                            />
-                                            <CommonSelect
-                                                asterisk
-                                                label="Finance Contact Number"
-                                                name={SellerKeys.INT_FINANCE_CONTACT_NUMBER}
-                                                options={financeNumbers || []}
-                                            />
                                         </FormContainer>
                                     </FormContainer>
                                     {/* Commercials */}

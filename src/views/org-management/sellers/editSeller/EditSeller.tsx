@@ -98,9 +98,6 @@ const EditSeller = () => {
             confirm: sellerData?.account_number || '',
             gst_details: sellerData?.gst_details || [],
             date: dayjs().format('YYYY-MM-DD HH:mm:ss a'),
-            int_finance_name: sellerData?.int_finance_name,
-            int_finance_email: sellerData?.int_finance_email,
-            int_finance_contact_number: sellerData?.int_finance_contact_number,
         }),
         [sellerData],
     )

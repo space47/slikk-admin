@@ -74,12 +74,6 @@ export const SellerCommercialsArray = [
     { label: 'Approved Payment Terms', name: SellerKeys.APPROVED_PAYMENT_TERM, type: 'text', isRequired: true, visible: true },
 ]
 
-export const SellerInternalArray = [
-    { label: 'Finance Name', name: SellerKeys.INT_FINANCE_NAME, type: 'text', isRequired: true, visible: true },
-    { label: 'Finance Email', name: SellerKeys.INT_FINANCE_EMAIL, type: 'text', isRequired: true, visible: true },
-    { label: 'Finance Number', name: SellerKeys.INT_FINANCE_CONTACT_NUMBER, type: 'text', isRequired: true, visible: true },
-]
-
 export const SellerDeclarationArray = [
     { label: 'Authorized Person', name: SellerKeys.AUTHORIZED_PERSON, type: 'text', isRequired: false, visible: true },
     { label: 'Declaration Statement', name: SellerKeys.DECLARATION_STATEMENT, type: 'text', isRequired: false, visible: true },
@@ -128,9 +122,6 @@ export const simpleFields = [
     SellerKeys.POC,
     SellerKeys.ACCOUNT_NUMBER,
     SellerKeys.ACCOUNT_HOLDER_NAME,
-    SellerKeys.INT_FINANCE_NAME,
-    SellerKeys.INT_FINANCE_EMAIL,
-    SellerKeys.INT_FINANCE_CONTACT_NUMBER,
     SellerKeys.IFSC,
     SellerKeys.BUSINESS_NATURE_COMPANY,
     SellerKeys.BANK_NAME,

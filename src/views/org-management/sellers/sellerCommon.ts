@@ -116,10 +116,6 @@ export enum SellerKeys {
     FINANCE_EMAIL = 'finance_email',
     FINANCE_CONTACT_NUMBER = 'finance_contact_number',
 
-    INT_FINANCE_NAME = 'int_finance_name',
-    INT_FINANCE_EMAIL = 'int_finance_email',
-    INT_FINANCE_CONTACT_NUMBER = 'int_finance_contact_number',
-
     BANK_NAME = 'bank_name',
     BRANCH_NAME = 'branch_name',
     ACCOUNT_HOLDER_NAME = 'account_holder_name',
