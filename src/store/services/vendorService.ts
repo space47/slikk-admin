@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import RtkQueryService from '@/services/RtkQueryService'
-import { ConfigValues, VendorList, VendorResponseData } from '../types/vendor.type'
+import { ConfigValues, VendorDetails, VendorResponseData } from '../types/vendor.type'
 
 export const vendorService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
@@ -18,7 +18,7 @@ export const vendorService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        getSingleVendorList: builder.query<{ status: string; data: VendorList }, { id: string | number }>({
+        getSingleVendorList: builder.query<{ status: string; data: VendorDetails }, { id: string | number }>({
             query: (params) => {
                 const parameters: Record<string, string | string[] | number> = {}
                 if (params.id) parameters.company_id = params.id

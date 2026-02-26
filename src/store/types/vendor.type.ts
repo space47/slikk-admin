@@ -1,48 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export interface VendorList {
-    id: number
-    registered_name: string
-    code: string
-    name: string
-    gstin: string
-    segment: string
-    cin: string
-    address: string
-    contact_number: string
-    alternate_contact_number: string
-    poc: string
-    poc_email: string
-    account_number: string
-    account_holder_name: string
-    ifsc: string
-    bank_name: string
-    is_active: boolean
-    settlement_days: number
-    provisional_discount_rate: number
-    revenue_share: number
-    handling_charges_per_order: number
-    warehouse_charge_per_sku: number
-    damages_per_sku: number
-    removal_fee_per_sku: number
-    create_date: string
-    update_date: string
-    gst_details: {
-        id: number
-        warehouse_address: string
-        warehouse_name: string
-        gstin: string
-        gst_certificate: string
-        poc_name: string
-        poc_email: string
-        poc_contact_number: string
-        is_active: boolean
-        create_date: string
-        update_date: string
-        company: number
-    }[]
-    status: string
-    comments: string
-}
+
+import { ApiResponse } from './generic.types'
 
 export interface VendorDetails {
     account_holder_name: string
@@ -118,15 +76,14 @@ export interface VendorDetails {
     update_date: string
     warehouse_charge_per_sku: number
     business_nature_company: BusinessNatureData[]
+    provisional_discount_rate: number
+    warehouse_name: string
+    int_finance_name: string
+    int_finance_email: string
+    int_finance_contact_number: string
 }
 
-export interface VendorResponseData {
-    status: string
-    data: {
-        count: number
-        results: VendorList[]
-    }
-}
+export type VendorResponseData = ApiResponse<VendorDetails>
 
 export interface BusinessNatureData {
     code: string

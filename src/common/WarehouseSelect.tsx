@@ -3,7 +3,7 @@ import { FormContainer, FormItem, Select } from '@/components/ui'
 import { useAppSelector } from '@/store'
 import { vendorService } from '@/store/services/vendorService'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
-import { VendorList } from '@/store/types/vendor.type'
+import { VendorDetails } from '@/store/types/vendor.type'
 import { Field, FieldProps } from 'formik'
 import React, { useEffect, useState } from 'react'
 
@@ -15,7 +15,7 @@ interface Props {
 }
 
 const WarehouseSelect = ({ label, name, customCss, isSingle = false }: Props) => {
-    const [warehouseList, setWarehouseList] = useState<VendorList['gst_details']>([])
+    const [warehouseList, setWarehouseList] = useState<VendorDetails['gst_details']>([])
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const { data, isError, isSuccess } = vendorService.useGetSingleVendorListQuery(
         { id: selectedCompany?.id },

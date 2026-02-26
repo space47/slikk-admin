@@ -3,12 +3,12 @@ import React, { useMemo } from 'react'
 import { FaEdit } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
-import { VendorList } from '@/store/types/vendor.type'
+import { VendorDetails } from '@/store/types/vendor.type'
 
 export const useSellerColumns = () => {
     const navigate = useNavigate()
 
-    return useMemo<ColumnDef<VendorList>[]>(
+    return useMemo<ColumnDef<VendorDetails>[]>(
         () => [
             {
                 header: 'Edit',
