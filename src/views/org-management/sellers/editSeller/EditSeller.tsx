@@ -99,6 +99,7 @@ const EditSeller = () => {
             gst_details: sellerData?.gst_details || [],
             date: dayjs().format('YYYY-MM-DD HH:mm:ss a'),
             declaration_statement: sellerData?.declaration_statement || '',
+            business_nature_company_details: sellerData?.business_nature_company_details || '',
         }),
         [sellerData],
     )

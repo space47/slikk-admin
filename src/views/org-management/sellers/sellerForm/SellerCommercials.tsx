@@ -31,9 +31,10 @@ const SellerCommercials = ({ values }: Props) => {
                 <CommonSelect name={SellerKeys.BUSINESS_NATURE} options={NOBOptions()} label="Nature of Business" />
             </FormContainer>
             <FormItem asterisk label="Business Company" className="col-span-1 w-full">
-                <Field name={SellerKeys.BUSINESS_NATURE_COMPANY}>
+                <Field name={SellerKeys.BUSINESS_NATURE_COMPANY_DETAILS}>
                     {({ field, form }: FieldProps) => {
-                        const fieldValueArray = Array.isArray(field?.value) ? field?.value : field?.value?.split(',') || []
+                        const fieldValueArray = Array.isArray(field?.value) ? field.value.map((item: any) => item?.gstin?.toString()) : []
+
                         const selectedOptions = BusinessCompanyData?.filter((option: any) =>
                             fieldValueArray.includes(option.value?.toString()),
                         )
