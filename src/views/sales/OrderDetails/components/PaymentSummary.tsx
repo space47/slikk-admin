@@ -96,15 +96,15 @@ const PaymentSummary = ({
                     <PaymentInfo label="Coupon Discount" value={mainData?.coupon_discount} otherValue={mainData?.coupon_code || ''} />
                 )}
                 {mainData?.loyalty_discount !== '0.00' && <PaymentInfo label="Loyalty Discount" value={mainData?.loyalty_discount} />}
-                {!!Object.entries(mainData?.other_charges_data).length &&
-                    Object.entries(mainData.other_charges_data).map(([key, value]) => (
+                {Object.entries(mainData?.other_charges_data || {}).length > 0 &&
+                    Object.entries(mainData?.other_charges_data || {})?.map(([key, value]) => (
                         <div key={key} className="flex justify-between mb-2">
                             {key}
                             <span className="font-semibold">Rs.{'' + value}</span>
                         </div>
                     ))}
-                {!!Object.entries(mainData?.other_discounts_data).length &&
-                    Object.entries(mainData.other_discounts_data).map(([key, value]) => (
+                {Object.entries(mainData?.other_discounts_data || {}).length > 0 &&
+                    Object.entries(mainData?.other_discounts_data || {})?.map(([key, value]) => (
                         <div key={key} className="flex justify-between mb-2">
                             {key}
                             <span className="font-semibold">Rs.{'' + value}</span>
