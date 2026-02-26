@@ -34,7 +34,6 @@ const SellerCommercials = ({ values }: Props) => {
                 <Field name={SellerKeys.BUSINESS_NATURE_COMPANY_DETAILS}>
                     {({ field, form }: FieldProps) => {
                         const fieldValueArray = Array.isArray(field?.value) ? field.value.map((item: any) => item?.gstin?.toString()) : []
-
                         const selectedOptions = BusinessCompanyData?.filter((option: any) =>
                             fieldValueArray.includes(option.value?.toString()),
                         )
