@@ -5,7 +5,7 @@ import { purchaseOrderService } from '@/store/services/purchaseOrderService'
 import { PurchaseOrderItem } from '@/store/types/po.types'
 import { notification } from 'antd'
 import React, { useEffect, useState } from 'react'
-import { FiUpload } from 'react-icons/fi'
+import { FiInbox, FiUpload } from 'react-icons/fi'
 import { IoMdAdd } from 'react-icons/io'
 import { useOrderItemColumns } from './useOrderItemColumns'
 import EasyTable from '@/common/EasyTable'
@@ -122,7 +122,21 @@ const PoOrderItems = () => {
                 </div>
             ) : (
                 <>
-                    <NotFoundData />
+                    <div className="mt-16 flex flex-col items-center justify-center border border-dashed border-gray-300 rounded-2xl p-12 bg-gray-50">
+                        <div className="bg-blue-50 p-4 rounded-full mb-4">
+                            <FiInbox className="text-red-500 text-3xl" />
+                        </div>
+
+                        <h3 className="text-lg font-semibold text-gray-800 mb-2">No Products Found</h3>
+
+                        <p className="text-sm text-gray-500 mb-6 text-center max-w-sm">
+                            You haven’t added any items yet. You can upload an Excel file or manually add items to this purchase order.
+                        </p>
+
+                        <Button variant="blue" size="sm" icon={<FiUpload />} onClick={() => setUploadModal(true)}>
+                            Upload Excel
+                        </Button>
+                    </div>
                 </>
             )}
 
