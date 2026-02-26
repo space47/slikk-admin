@@ -35,7 +35,7 @@ const PoEdit = () => {
     )
     const commercial_approval_doc = selectedCompany?.commercial_approval_doc
 
-    const VendorEntity = selectedCompany?.business_nature_company?.map((item) => ({
+    const VendorEntity = selectedCompany?.business_nature_company_details?.map((item) => ({
         label: item?.company_name,
         value: item.code,
     }))
@@ -136,7 +136,7 @@ const PoEdit = () => {
                                 <PoFormStepOne
                                     VendorEntity={VendorEntity}
                                     wareHouseDetails={wareHouseDetails}
-                                    businessNatureCompany={selectedCompany?.business_nature_company || []}
+                                    businessNatureCompany={selectedCompany?.business_nature_company_details || []}
                                     values={values}
                                 />
                                 {!commercial_approval_doc && (

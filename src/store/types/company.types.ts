@@ -45,7 +45,8 @@ export type SINGLE_COMPANY_DATA = {
     update_date?: string
     code?: string
     commercial_approval_doc?: string
-    business_nature_company: BUSINESS_NATURE[]
+    business_nature_company: string
+    business_nature_company_details: BUSINESS_NATURE[]
     gst_details: WAREHOUSE_DETAILS[]
     approved_payment_term: string
 }

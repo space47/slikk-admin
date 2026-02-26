@@ -88,12 +88,12 @@ export const SellerDetailCommon = ({ seller: sellerData }: any) => {
 
     // Create Business Nature Companies data if it exists
     const SellerBusinessNatureCompaniesDetail =
-        sellerData?.business_nature_company?.length > 0
+        sellerData?.business_nature_company_details?.length > 0
             ? [
                   {
                       label: 'Business Nature Companies',
-                      name: 'business_nature_companies',
-                      value: sellerData.business_nature_company,
+                      name: 'business_nature_company_details',
+                      value: sellerData.business_nature_company_details,
                       visible: true,
                       isArray: true,
                   },

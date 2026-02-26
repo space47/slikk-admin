@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import EasyTable from '@/common/EasyTable'
 import { Button, Card } from '@/components/ui'
 import { getApiErrorMessage } from '@/constants/generateErrorMessage'
@@ -17,6 +18,8 @@ import { usePoDetailFunction } from './usePoDetailFunction'
 import { IndianStateCodes } from '../poUtils/poFormCommon'
 import { FiClock, FiFileText } from 'react-icons/fi'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
+import { useAppSelector } from '@/store'
+import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 
 const PoDetail = () => {
     const { purchase_id } = useParams()
@@ -25,8 +28,10 @@ const PoDetail = () => {
     const [count, setCount] = useState(0)
     const [purchaseDetail, setPurchaseDetail] = useState<PurchaseOrderTable>()
     const [lineItems, setLineItems] = useState<PurchaseOrderItem[]>([])
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((state) => state.company.currCompany)
     const { data, isSuccess, isError, isLoading, error } = purchaseOrderService.usePurchaseSingleOrdersListQuery({
         order_id: purchase_id,
+        company_id: selectedCompany?.id,
     })
     const WaitStatus = purchaseDetail?.status?.toLowerCase() === 'created' || purchaseDetail?.status?.toLowerCase() === 'waiting_approval'
     const {
@@ -49,7 +54,7 @@ const PoDetail = () => {
     const { handleDownloadPo } = usePoDetailFunction({ id: Number(purchase_id), setIsDownloading })
 
     useEffect(() => {
-        if (isSuccess) setPurchaseDetail(data?.data)
+        if (isSuccess) setPurchaseDetail((data?.data as any)?.results[0])
         if (isError) {
             const message = getApiErrorMessage(error)
             notification.error({ message })

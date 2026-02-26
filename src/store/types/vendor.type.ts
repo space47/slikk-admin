@@ -75,7 +75,8 @@ export interface VendorDetails {
     trade_mark_certificate: string | null
     update_date: string
     warehouse_charge_per_sku: number
-    business_nature_company: BusinessNatureData[]
+    business_nature_company: string
+    business_nature_company_details: BusinessNatureData[]
     provisional_discount_rate: number
     warehouse_name: string
     int_finance_name: string

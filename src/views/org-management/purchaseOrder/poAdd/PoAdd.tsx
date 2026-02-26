@@ -20,7 +20,7 @@ const PoAdd = () => {
     const commercial_approval_doc = useMemo(() => selectedCompany?.commercial_approval_doc, [selectedCompany])
     const [stateCode, setStateCode] = useState('')
 
-    const VendorEntity = selectedCompany?.business_nature_company?.map((item) => ({
+    const VendorEntity = selectedCompany?.business_nature_company_details?.map((item) => ({
         label: item?.company_name,
         value: item.code,
     }))
@@ -79,7 +79,7 @@ const PoAdd = () => {
                                 <PoFormStepOne
                                     VendorEntity={VendorEntity}
                                     wareHouseDetails={wareHouseDetails}
-                                    businessNatureCompany={selectedCompany?.business_nature_company || []}
+                                    businessNatureCompany={selectedCompany?.business_nature_company_details || []}
                                     values={values}
                                 />
                                 {!commercial_approval_doc && (
