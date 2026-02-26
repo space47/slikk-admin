@@ -100,6 +100,30 @@ export const SellerDetailCommon = ({ seller: sellerData }: any) => {
               ]
             : []
 
+    // In SellerDetailCommon function, modify the gstDetailsData creation:
+
+    const gstDetailsData =
+        sellerData?.gst_details?.length > 0
+            ? [
+                  {
+                      label: 'Warehouse Details',
+                      name: 'gst_details',
+                      value: sellerData.gst_details.map((gst: any) => {
+                          // Create a new object without create_date and update_date
+                          const filteredGst = { ...gst }
+                          delete filteredGst.create_date
+                          delete filteredGst.update_date
+                          delete filteredGst.created_at
+                          delete filteredGst.id
+                          delete filteredGst.updated_at
+                          return filteredGst
+                      }),
+                      visible: true,
+                      isArray: true,
+                  },
+              ]
+            : []
+
     const SellerInternalDetail = [
         { label: 'Slikk POC -Category Name', name: SellerKeys.INT_POC_NAME, value: sellerData?.int_poc_name, visible: true },
         { label: 'Slikk POC -Category Email', name: SellerKeys.INT_POC_EMAIL, value: sellerData?.int_poc_email, visible: true },
@@ -128,7 +152,17 @@ export const SellerDetailCommon = ({ seller: sellerData }: any) => {
                   },
               ]
             : []),
-        { key: 'Internal Details', title: 'Internal Details', data: SellerInternalDetail },
+        ...(sellerData?.gst_details?.length > 0
+            ? [
+                  {
+                      key: 'Warehouse Details',
+                      title: 'Warehouse Details',
+                      data: gstDetailsData,
+                      isArraySection: true,
+                  },
+              ]
+            : []),
+        // { key: 'Internal Details', title: 'Internal Details', data: SellerInternalDetail },
         { key: 'MSME Details', title: 'MSME Details', data: SellerMsMeDetail },
         { key: 'Declaration', title: 'Declaration', data: SellerDeclarationDetail },
     ]

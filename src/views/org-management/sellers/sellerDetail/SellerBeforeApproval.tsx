@@ -1,14 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, Card, Tooltip } from '@/components/ui'
 import { VendorDetails } from '@/store/types/vendor.type'
-import { Empty, Badge } from 'antd'
-import React, { useMemo } from 'react'
-import { BiSolidCommentCheck, BiCommentAdd } from 'react-icons/bi'
-import { FaFilePdf, FaFileImage, FaFileWord, FaFileExcel } from 'react-icons/fa'
+import { Badge, Tabs } from 'antd'
+import React, { useMemo, useState } from 'react'
+import { BiSolidCommentCheck, BiCommentAdd, BiCommentDetail } from 'react-icons/bi'
+import { FaFilePdf, FaFileImage, FaFileWord, FaFileExcel, FaBuilding } from 'react-icons/fa'
 import { IoIosSend } from 'react-icons/io'
-import { IoCheckmarkOutline, IoDocumentTextOutline } from 'react-icons/io5'
-import { MdCancel, MdOutlineInsertDriveFile } from 'react-icons/md'
+import { IoCheckmarkOutline, IoDocumentTextOutline, IoBusinessOutline, IoReceiptOutline } from 'react-icons/io5'
+import { MdCancel, MdOutlineInsertDriveFile, MdOutlinePerson } from 'react-icons/md'
+import { HiOutlineDocumentText } from 'react-icons/hi'
+import { BsBank, BsCashCoin } from 'react-icons/bs'
+import { RiGovernmentLine } from 'react-icons/ri'
 import { SellerStatus } from '../sellerCommon'
+import { SellerDetailCommon } from '../sellerUtils/sellerDetailCommon'
+import CommonAccordion from '@/common/CommonAccordion'
 
 interface Props {
     commentStructure: Record<string, string>
@@ -19,16 +24,7 @@ interface Props {
 }
 
 const SellerBeforeApproval = ({ commentStructure, handleComments, sellerData, setStatusToProceed, setConfirmModal }: Props) => {
-    const isFileValue = (value: string): boolean => {
-        if (!value) return false
-        const fileExtensions = ['jpg', 'jpeg', 'png', 'pdf', 'csv', 'doc', 'docx', 'xls', 'xlsx']
-        return fileExtensions.some((ext) => value.toLowerCase().includes(`.${ext}`))
-    }
-
-    const isFileKey = (key: string): boolean => {
-        const keywords = ['copy', 'certificate', 'doc', 'image', 'photo', 'file', 'upload']
-        return keywords.some((word) => key.toLowerCase().includes(word))
-    }
+    const [activeTab, setActiveTab] = useState('basic')
 
     const parseFileList = (value: string) => {
         if (!value) return []
@@ -48,265 +44,306 @@ const SellerBeforeApproval = ({ commentStructure, handleComments, sellerData, se
         return <MdOutlineInsertDriveFile className="text-gray-500 text-xl" />
     }
 
-    const sellerFields = useMemo(() => {
-        if (!sellerData) return []
-        const ignoredKeys = ['comments', 'create_date', 'update_date', 'status', 'id']
-
-        return Object.keys(sellerData)
-            .filter((key) => !ignoredKeys.includes(key))
-            .map((key) => {
-                const value = (sellerData as any)[key]
-                const isFile = typeof value === 'string' && (isFileValue(value) || isFileKey(key))
-                const isObject = typeof value === 'object' && value !== null
-                const label = key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
-
-                return { label, name: key, value, isFile, isObject }
-            })
+    const { BasicSellerInformationDetail, documentsList, sections } = useMemo(() => {
+        return SellerDetailCommon({ seller: sellerData })
     }, [sellerData])
-
-    const renderValue = (field: any) => {
-        const { value, isFile, isObject } = field
-
-        if (Array.isArray(value)) {
-            return (
-                <div className="space-y-4">
-                    {value.map((item, idx) => {
-                        const exclude = ['company', 'create_date', 'update_date']
-                        return (
-                            <Card key={idx} className="border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
-                                <div className="bg-gradient-to-r from-gray-50 to-white px-4 py-3 border-b border-gray-100">
-                                    <h3 className="font-semibold text-gray-800 flex items-center gap-2">
-                                        <IoDocumentTextOutline className="text-blue-500" />
-                                        GST Detail {idx + 1}
-                                    </h3>
-                                </div>
-                                <div className="p-4">
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        {Object.keys(item)
-                                            .filter((key) => !exclude.includes(key))
-                                            .map((key) => {
-                                                const subValue = item[key]
-                                                const subLabel = key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
-                                                const isSubFile = isFileKey(key) || (typeof subValue === 'string' && isFileValue(subValue))
-
-                                                return (
-                                                    <div key={key} className="bg-white rounded-lg p-3 border border-gray-100">
-                                                        <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                            {subLabel}
-                                                        </span>
-                                                        {isSubFile ? (
-                                                            <div className="mt-1 flex items-center gap-2 flex-wrap">
-                                                                {getFileIcon(subValue)}
-                                                                <a
-                                                                    href={subValue}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    className="text-sm text-blue-600 hover:text-blue-800 hover:underline truncate max-w-[200px]"
-                                                                >
-                                                                    {subValue?.split('/')?.pop()}
-                                                                </a>
-                                                            </div>
-                                                        ) : (
-                                                            <p className="mt-1 text-gray-800 font-medium">{subValue ?? '-'}</p>
-                                                        )}
-                                                    </div>
-                                                )
-                                            })}
-                                    </div>
-                                </div>
-                            </Card>
-                        )
-                    })}
-                </div>
-            )
-        }
-
-        if (isFile) {
-            const files = parseFileList(value)
-            return (
-                <div className="flex flex-col gap-2">
-                    {files.map((f, idx) => (
-                        <div
-                            key={idx}
-                            className="flex items-center gap-2 bg-white rounded-lg p-2 border border-gray-100 hover:border-blue-200 transition-colors"
-                        >
-                            {getFileIcon(f.name || '')}
-                            <a
-                                href={f.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-600 hover:text-blue-800 hover:underline text-sm truncate flex-1"
-                            >
-                                {f.name}
-                            </a>
-                            <Badge count="DOC" style={{ backgroundColor: '#e6f7ff', color: '#1890ff' }} />
-                        </div>
-                    ))}
-                </div>
-            )
-        }
-
-        if (isObject) {
-            return (
-                <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                    <pre className="text-xs text-gray-700 whitespace-pre-wrap font-mono overflow-auto max-h-32">
-                        {JSON.stringify(value, null, 2)}
-                    </pre>
-                </div>
-            )
-        }
-
-        return <p className="text-gray-800 font-medium">{value ?? '-'}</p>
-    }
 
     const hasComments = Object.keys(commentStructure).length > 0
 
+    const hasFieldComment = (fieldName: string) => {
+        return commentStructure[fieldName] !== undefined
+    }
+    const renderFieldWithComment = (label: string, name: string, value: any, isFile?: boolean, isObject?: boolean) => {
+        const hasComment = hasFieldComment(name)
+
+        return (
+            <div
+                className={`relative group p-4 rounded-lg border transition-all ${
+                    hasComment ? 'bg-blue-50/50 border-blue-200 shadow-sm' : 'bg-gray-50 border-gray-100 hover:border-gray-200'
+                }`}
+            >
+                <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-2">
+                            <span className="text-gray-600 text-sm font-medium truncate">{label}</span>
+                            {hasComment && (
+                                <Badge count="!" className="shadow-sm flex-shrink-0" style={{ backgroundColor: '#faad14' }} size="small" />
+                            )}
+                        </div>
+                        {isFile ? (
+                            <div className="space-y-2 max-h-[200px] overflow-y-auto">
+                                {parseFileList(value).map((file: any) => (
+                                    <a
+                                        key={file.uid}
+                                        href={file.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-2 p-2 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-all group"
+                                    >
+                                        {getFileIcon(file.name)}
+                                        <span className="text-sm text-gray-700 flex-1 truncate">{file.name}</span>
+                                        <span className="text-xs text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                                            View
+                                        </span>
+                                    </a>
+                                ))}
+                            </div>
+                        ) : isObject ? (
+                            <pre className="text-sm text-gray-700 bg-white p-3 rounded-lg border border-gray-200 overflow-auto max-h-32 whitespace-pre-wrap break-words">
+                                {JSON.stringify(value, null, 2)}
+                            </pre>
+                        ) : (
+                            <p className="text-sm text-gray-900 font-medium bg-white p-2 rounded-lg border border-gray-200 break-words">
+                                {value?.toString() || '—'}
+                            </p>
+                        )}
+                    </div>
+
+                    <Tooltip title={hasComment ? 'Edit comment' : 'Add comment'}>
+                        <button
+                            onClick={() => handleComments(name, label)}
+                            className={`p-2 rounded-lg transition-all flex-shrink-0 ${
+                                hasComment
+                                    ? 'text-blue-600 bg-blue-100 hover:bg-blue-200'
+                                    : 'text-gray-400 bg-white hover:bg-gray-100 hover:text-gray-600'
+                            }`}
+                        >
+                            {hasComment ? <BiSolidCommentCheck className="text-lg" /> : <BiCommentAdd className="text-lg" />}
+                        </button>
+                    </Tooltip>
+                </div>
+                {hasComment && (
+                    <div className="mt-3 pt-3 border-t border-blue-200">
+                        <div className="flex items-start gap-2">
+                            <BiCommentDetail className="text-blue-500 mt-0.5 flex-shrink-0" />
+                            <div className="flex-1 min-w-0">
+                                <p className="text-xs font-medium text-blue-700 mb-1 break-words">
+                                    Changes required: {commentStructure[name]}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+        )
+    }
+
+    const renderSection = (title: string, data: any[], key: string) => {
+        return (
+            <div key={key} className="space-y-4 mt-7">
+                <div className="flex items-center gap-2 pb-2 border-b border-gray-200">
+                    <div className="w-1 h-6 bg-blue-500 rounded-full"></div>
+                    <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {data.map((item) => (
+                        <div key={item.name}>{renderFieldWithComment(item.label, item.name, item.value, item.isFile, item.isArray)}</div>
+                    ))}
+                </div>
+            </div>
+        )
+    }
+
+    const renderArraySection = (title: string, data: any[]) => {
+        return (
+            <div className="space-y-4 mt-10">
+                <div className="flex items-center gap-2 pb-2 border-b border-gray-200">
+                    <div className="w-1 h-6 bg-purple-500 rounded-full"></div>
+                    <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
+                </div>
+                <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
+                    {data.map((item: any, index: number) => (
+                        <Card key={index} className="border border-gray-200 shadow-sm">
+                            <CommonAccordion
+                                startClosed
+                                header={
+                                    <h4 className="font-medium text-gray-700 flex items-center gap-2">
+                                        <FaBuilding className="text-gray-400" />
+                                        {title === 'Warehouse Details' ? `Warehouse ${index + 1}` : `Company ${index + 1}`}
+                                    </h4>
+                                }
+                            >
+                                <div className="p-4 space-y-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[400px] overflow-y-auto p-1">
+                                        {Object.entries(item).map(([key, val]: [string, any]) => {
+                                            if (val === null || val === undefined || val === '') return null
+
+                                            const isGstCertificate = key.includes('gst_certificate')
+                                            const label = key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+                                            if (isGstCertificate) {
+                                                return (
+                                                    <div key={key} className="break-words col-span-1 md:col-span-2">
+                                                        {renderFieldWithComment('GST Certificate', `gst_certificate_${index}`, val, true)}
+                                                    </div>
+                                                )
+                                            }
+                                            return (
+                                                <div key={key} className="break-words">
+                                                    {renderFieldWithComment(label, `${title}_${index}_${key}`, val)}
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            </CommonAccordion>
+                        </Card>
+                    ))}
+                </div>
+            </div>
+        )
+    }
+    const tabItems = [
+        {
+            key: 'basic',
+            label: (
+                <span className="flex items-center gap-2 px-2">
+                    <IoBusinessOutline className="text-lg" />
+                    Basic Information
+                    {BasicSellerInformationDetail.some((item) => hasFieldComment(item.name)) && (
+                        <Badge count="!" size="small" className="ml-1" />
+                    )}
+                </span>
+            ),
+            children: <div className="space-y-6">{renderSection('Basic Information', BasicSellerInformationDetail, 'basic-section')}</div>,
+        },
+        ...sections.map((section) => ({
+            key: section.key,
+            label: (
+                <span className="flex items-center gap-2 px-2">
+                    {section.key === 'Business Details' && <RiGovernmentLine className="text-lg" />}
+                    {section.key === 'POC Details' && <MdOutlinePerson className="text-lg" />}
+                    {section.key === 'Bank Details' && <BsBank className="text-lg" />}
+                    {section.key === 'Commercials' && <BsCashCoin className="text-lg" />}
+                    {section.key === 'Internal Details' && <FaBuilding className="text-lg" />}
+                    {section.key === 'MSME Details' && <IoReceiptOutline className="text-lg" />}
+                    {section.key === 'Declaration' && <IoDocumentTextOutline className="text-lg" />}
+                    {![
+                        'Business Details',
+                        'POC Details',
+                        'Bank Details',
+                        'Commercials',
+                        'Internal Details',
+                        'MSME Details',
+                        'Declaration',
+                    ].includes(section.key) && <HiOutlineDocumentText className="text-lg" />}
+                    {section.title}
+                    {section.data?.some((item: any) => hasFieldComment(item.name)) && <Badge count="!" size="small" className="ml-1" />}
+                </span>
+            ),
+            children: section.isArraySection
+                ? renderArraySection(section.title, section.data[0]?.value || [])
+                : renderSection(section.title, section.data, section.key),
+        })),
+        {
+            key: 'documents',
+            label: (
+                <span className="flex items-center gap-2 px-2">
+                    <FaFilePdf className="text-lg" />
+                    Documents
+                    {documentsList.some((doc) => hasFieldComment(doc.name)) && <Badge count="!" size="small" className="ml-1" />}
+                </span>
+            ),
+            children: (
+                <div className="space-y-4">
+                    <div className="flex items-center gap-2 pb-2 border-b border-gray-200">
+                        <div className="w-1 h-6 bg-green-500 rounded-full"></div>
+                        <h3 className="text-lg font-semibold text-gray-800">Vendor Documents</h3>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[600px] overflow-y-auto p-1">
+                        {documentsList.map((doc) => (
+                            <div key={doc.key} className="break-words">
+                                {renderFieldWithComment(doc.label, doc.name, doc.file, true)}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            ),
+        },
+    ]
+
     return (
         <div className="space-y-6">
-            <Card className="shadow-sm rounded-xl border border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50 p-4">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <IoDocumentTextOutline className="text-blue-600 text-xl" />
-                        </div>
+            <Card className="shadow-sm rounded-xl border-0 bg-gradient-to-r bg-blue-50  overflow-hidden">
+                <div className="flex items-center justify-between p-6">
+                    <div className="flex items-center gap-4">
+                        <IoDocumentTextOutline className="text-3xl" />
+
                         <div>
-                            <h3 className="font-semibold text-gray-800">Vendor Review</h3>
-                            <p className="text-sm text-gray-600">Review and validate vendor information before approval</p>
+                            <h2 className="text-2xl font-bold mb-1">Vendor Review</h2>
+                            <p className="text-blue-900">Review and validate vendor information before approval</p>
                         </div>
                     </div>
                     {hasComments && (
-                        <Badge count={`${Object.keys(commentStructure).length} comment(s)`} style={{ backgroundColor: '#faad14' }} />
+                        <Badge.Ribbon
+                            text={`${Object.keys(commentStructure).length} Comment(s)`}
+                            color="gold"
+                            className="shadow-lg bg-green-600"
+                        >
+                            <div className="w-16 h-16"></div>
+                        </Badge.Ribbon>
                     )}
                 </div>
             </Card>
 
-            {/* Main Content */}
-            <Card className="shadow-lg rounded-2xl border border-gray-100 bg-white overflow-hidden">
-                <div className="bg-gradient-to-r from-gray-50 to-white px-6 py-4 border-b border-gray-200">
-                    <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-                        <span className="w-1 h-6 bg-blue-500 rounded-full"></span>
-                        Seller Information
-                    </h2>
-                </div>
-
+            {/* Main Content with Tabs */}
+            <Card className="shadow-sm rounded-xl border border-gray-100 bg-white overflow-hidden">
+                <Tabs
+                    activeKey={activeTab}
+                    onChange={setActiveTab}
+                    items={tabItems}
+                    tabBarStyle={{
+                        marginBottom: '0',
+                        background: '#f9fafb',
+                        borderBottom: '1px solid #e5e7eb',
+                    }}
+                    tabBarGutter={8}
+                    size="small"
+                />
+            </Card>
+            <Card className="shadow-sm rounded-xl border border-gray-100 bg-white">
                 <div className="p-6">
-                    {sellerFields.length ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {sellerFields.map((field, idx) => {
-                                const hasComment = commentStructure[field.name]
-                                return (
-                                    <div
-                                        key={idx}
-                                        className={`
-                                            group relative bg-white rounded-xl border transition-all duration-200
-                                            ${
-                                                hasComment
-                                                    ? 'border-blue-200 bg-blue-50/30 shadow-sm'
-                                                    : 'border-gray-200 hover:border-blue-200 hover:shadow-sm'
-                                            }
-                                        `}
-                                    >
-                                        {/* Header */}
-                                        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-                                            <div className="flex items-center gap-2">
-                                                <span className="font-medium text-gray-800 text-sm">{field.label}</span>
-                                                {hasComment && <Badge status="warning" />}
-                                            </div>
-                                            <Tooltip title={hasComment ? 'Edit comment' : 'Add comment'}>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleComments(field.name, field.label)}
-                                                    className={`
-                                                        p-1.5 rounded-full transition-all duration-200
-                                                        ${
-                                                            hasComment
-                                                                ? 'bg-blue-100 text-blue-600 hover:bg-blue-200'
-                                                                : 'bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700'
-                                                        }
-                                                    `}
-                                                >
-                                                    {hasComment ? (
-                                                        <BiSolidCommentCheck className="text-lg" />
-                                                    ) : (
-                                                        <BiCommentAdd className="text-lg" />
-                                                    )}
-                                                </button>
-                                            </Tooltip>
-                                        </div>
-                                        <div className="p-4">{renderValue(field)}</div>
-                                        {hasComment && (
-                                            <div className="mx-4 mb-4 p-2 bg-blue-50 rounded-lg border border-blue-100">
-                                                <p className="text-xs text-blue-700 line-clamp-2">
-                                                    <span className="font-semibold">Comment: </span>
-                                                    {commentStructure[field.name]}
-                                                </p>
-                                            </div>
-                                        )}
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    ) : (
-                        <div className="py-12">
-                            <Empty description="No vendor information available" image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                        </div>
-                    )}
-                </div>
-            </Card>
+                    <div className="flex flex-col sm:flex-row justify-end items-center gap-3">
+                        <Button
+                            variant="accept"
+                            size="lg"
+                            icon={<IoCheckmarkOutline className="text-lg" />}
+                            className="w-full sm:w-auto min-w-[140px] shadow-sm hover:shadow-md transition-all bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 border-0 text-white"
+                            onClick={() => {
+                                setStatusToProceed(SellerStatus.APPROVED)
+                                setConfirmModal(true)
+                            }}
+                        >
+                            Accept Vendor
+                        </Button>
 
-            {/* Action Buttons */}
-            <Card className="shadow-sm rounded-xl border border-gray-100 bg-white p-4">
-                <div className="flex flex-col sm:flex-row justify-end items-center gap-3">
-                    <Button
-                        variant="accept"
-                        size="lg"
-                        icon={<IoCheckmarkOutline className="text-lg" />}
-                        className="w-full sm:w-auto shadow-sm hover:shadow-md transition-all bg-green-50 border-green-200 hover:bg-green-100 text-green-700"
-                        onClick={() => {
-                            setStatusToProceed(SellerStatus.APPROVED)
-                            setConfirmModal(true)
-                        }}
-                    >
-                        Accept Vendor
-                    </Button>
+                        <Button
+                            variant="reject"
+                            size="lg"
+                            icon={<MdCancel className="text-lg" />}
+                            className="w-full sm:w-auto min-w-[140px] shadow-sm hover:shadow-md transition-all bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 border-0 text-white"
+                            onClick={() => {
+                                setStatusToProceed(SellerStatus.REJECTED)
+                                setConfirmModal(true)
+                            }}
+                        >
+                            Reject Vendor
+                        </Button>
 
-                    <Button
-                        variant="reject"
-                        size="lg"
-                        icon={<MdCancel className="text-lg" />}
-                        className="w-full sm:w-auto shadow-sm hover:shadow-md transition-all bg-red-50 border-red-200 hover:bg-red-100 text-red-700"
-                        onClick={() => {
-                            setStatusToProceed(SellerStatus.REJECTED)
-                            setConfirmModal(true)
-                        }}
-                    >
-                        Reject Vendor
-                    </Button>
-
-                    <Button
-                        variant="twoTone"
-                        color="blue"
-                        size="lg"
-                        icon={<IoIosSend className="text-lg" />}
-                        className="w-full sm:w-auto shadow-sm hover:shadow-md transition-all bg-blue-50 border-blue-200 hover:bg-blue-100 text-blue-700"
-                        onClick={() => {
-                            setStatusToProceed(SellerStatus.CHANGES_REQUESTED)
-                            setConfirmModal(true)
-                        }}
-                    >
-                        Request Changes
-                    </Button>
-                </div>
-
-                {/* Helper text */}
-                {hasComments && (
-                    <div className="mt-3 text-xs text-gray-500 text-center border-t border-gray-100 pt-3">
-                        <span className="inline-flex items-center gap-1">
-                            <BiSolidCommentCheck className="text-blue-500" />
-                            Fields with comments will be highlighted
-                        </span>
+                        <Button
+                            variant="twoTone"
+                            color="blue-600"
+                            size="lg"
+                            icon={<IoIosSend className="text-lg" />}
+                            className="w-full sm:w-auto min-w-[140px] shadow-sm hover:shadow-md transition-all bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 border-0 text-white"
+                            onClick={() => {
+                                setStatusToProceed(SellerStatus.CHANGES_REQUESTED)
+                                setConfirmModal(true)
+                            }}
+                        >
+                            Request Changes
+                        </Button>
                     </div>
-                )}
+                </div>
             </Card>
         </div>
     )
