@@ -37,7 +37,7 @@ export const deliveryAgency = RtkQueryService.injectEndpoints({
             query: (params) => {
                 return {
                     url: `/delivery_partner/${params.id}`,
-                    method: 'POST',
+                    method: 'PATCH',
                     body: {
                         ...params,
                     },
