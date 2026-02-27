@@ -57,8 +57,6 @@ const AppCoupons = () => {
             return { label: item?.campaign, value: item?.id }
         })
 
-    console.log('Formatted Data:', var1, seriesValue)
-
     const { coupon, count, page, pageSize } = useAppSelector<CoupunInitialStateType>((state) => state.coupon)
     const {
         data: couponsData,
@@ -66,6 +64,7 @@ const AppCoupons = () => {
         isLoading,
         isError,
         error,
+        refetch,
     } = couponService.useCouponQuery(
         {
             coupon_code: activateCodeButton ? activateCodeButton : undefined,
@@ -98,10 +97,10 @@ const AppCoupons = () => {
         error,
         isError,
     ])
-    const hanldeSearchFuntion = () => {
+    const handleSearchFunction = () => {
         setActivateMobileButton(mobileFilter)
     }
-    const hanldeSearchFuntionCode = () => {
+    const handleSearchFunctionCode = () => {
         setActivateCodeButton(couponCodeFilter)
     }
 
@@ -115,17 +114,18 @@ const AppCoupons = () => {
         setIsCouponReleaseModal(true)
     }
 
-    console.log('Selected Coupon Code:', seriesValue)
-
     const columns = CouponCoulumns({ handleDeleteCoupon, handleCouponRelease })
 
-    const hanldeDelete = async () => {
+    const handleDelete = async () => {
         const body = {
+            code: couponCode,
             is_active: false,
         }
         try {
-            const res = await axioisInstance.patch(`merchant/coupon?coupon_code=${couponCode}`, body)
-            notification.success({ message: res?.data?.data?.message })
+            const res = await axioisInstance.patch(`merchant/coupon`, body)
+            notification.success({ message: res?.data?.data?.message || 'Successfully deleted the coupon' })
+            setDeleteModal(false)
+            refetch()
         } catch (error) {
             if (error instanceof AxiosError) {
                 notification.error({ message: error?.message })
@@ -141,8 +141,6 @@ const AppCoupons = () => {
     if (isError && error && 'status' in error && error.status === 403) {
         return <AccessDenied />
     }
-
-    console.log('Search Input:', seriesValue)
 
     return (
         <div>
@@ -161,12 +159,12 @@ const AppCoupons = () => {
                                     placeholder="Enter mobile number"
                                     value={mobileFilter}
                                     className="w-full outline-none rounded-xl"
-                                    onKeyDown={(e) => e.key === 'Enter' && hanldeSearchFuntion()}
+                                    onKeyDown={(e) => e.key === 'Enter' && handleSearchFunction()}
                                     onChange={(e) => setMobileFilter(e.target.value)}
                                 />
                                 <button
                                     className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-3 rounded-lg transition-all"
-                                    onClick={hanldeSearchFuntion}
+                                    onClick={handleSearchFunction}
                                 >
                                     <FaSearch className=" text-xl" />
                                 </button>
@@ -181,12 +179,12 @@ const AppCoupons = () => {
                                     placeholder="Enter coupon code"
                                     value={couponCodeFilter}
                                     className="w-full outline-none rounded-xl"
-                                    onKeyDown={(e) => e.key === 'Enter' && hanldeSearchFuntionCode()}
+                                    onKeyDown={(e) => e.key === 'Enter' && handleSearchFunctionCode()}
                                     onChange={(e) => setCouponCodeFilter(e.target.value)}
                                 />
                                 <button
                                     className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-3 rounded-lg transition-all"
-                                    onClick={hanldeSearchFuntionCode}
+                                    onClick={handleSearchFunctionCode}
                                 >
                                     <FaSearch className=" text-xl " />
                                 </button>
@@ -255,7 +253,7 @@ const AppCoupons = () => {
                             IsOpen={deleteModal}
                             setIsOpen={setDeleteModal}
                             headingName="Delete Modal"
-                            onDialogOk={hanldeDelete}
+                            onDialogOk={handleDelete}
                         />
                     )}
                     {isCouponReleaseModal && (
