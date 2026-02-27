@@ -7,6 +7,7 @@ export interface VendorStateType {
     page: number
     pageSize: number
     configValues: ConfigValues | null
+    filterValue: string
 }
 
 const initialState: VendorStateType = {
@@ -15,6 +16,7 @@ const initialState: VendorStateType = {
     page: 1,
     pageSize: 10,
     configValues: null,
+    filterValue: '',
 }
 
 export const vendorSlice = createSlice({
@@ -37,9 +39,12 @@ export const vendorSlice = createSlice({
         setConfigValues: (state, action: PayloadAction<ConfigValues>) => {
             state.configValues = action.payload
         },
+        setFilterValue: (state, action: PayloadAction<string>) => {
+            state.filterValue = action.payload
+        },
     },
 })
-export const { setVendorList, setCount, setPage, setPageSize, setConfigValues } = vendorSlice.actions
+export const { setVendorList, setCount, setPage, setPageSize, setConfigValues, setFilterValue } = vendorSlice.actions
 export default vendorSlice.reducer
 
 // export const rtvActions = vendorSlice.actions

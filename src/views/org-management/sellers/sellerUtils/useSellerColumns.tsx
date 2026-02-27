@@ -28,6 +28,9 @@ export const useSellerColumns = () => {
                 cell: ({ row }) => (
                     <div className="max-w-[250px] space-y-1 truncate text-sm leading-tight">
                         <p>
+                            <span className="font-semibold">Vendor Id:</span> {row?.original?.id}
+                        </p>
+                        <p>
                             <span className="font-semibold">Name:</span> {row?.original?.name}
                         </p>
                         <p>
