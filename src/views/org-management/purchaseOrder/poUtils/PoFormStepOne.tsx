@@ -46,7 +46,7 @@ const PoFormStepOne = ({ VendorEntity, businessNatureCompany, wareHouseDetails, 
                             <p className="font-medium text-gray-800">{wareHouseDetails?.warehouse_name || '—'}</p>
                         </div>
                     </div>
-                    <div className="col-span-2">
+                    <div className="col-span-2 mt-2">
                         <p className="text-gray-400 text-xs mb-1">Address</p>
                         <p className="text-gray-700 text-sm leading-relaxed bg-gray-50 p-3 rounded-lg border border-gray-100">
                             {wareHouseDetails?.warehouse_address || '—'}
@@ -102,6 +102,7 @@ const PoFormStepOne = ({ VendorEntity, businessNatureCompany, wareHouseDetails, 
                             </FormItem>
                         )
                     })}
+                    <CommonSelect label="Po Nature" name={PoField.PO_NATURE} options={PoNatureOption()} />
                     <FormItem label="Expected Delivery Date">
                         <Field name={PoField.EXPECTED_DELIVERY}>
                             {({ field, form }: FieldProps) => {
@@ -113,14 +114,31 @@ const PoFormStepOne = ({ VendorEntity, businessNatureCompany, wareHouseDetails, 
                                         className="w-full rounded-lg"
                                         value={dateValue && dateValue.isValid() ? dateValue : null}
                                         onChange={(value) => {
-                                            form.setFieldValue('expected_delivery_date', value ? value.format('YYYY-MM-DD') : '')
+                                            form.setFieldValue(PoField.EXPECTED_DELIVERY, value ? value.format('YYYY-MM-DD') : '')
                                         }}
                                     />
                                 )
                             }}
                         </Field>
                     </FormItem>
-                    <CommonSelect label="Po Nature" name={PoField.PO_NATURE} options={PoNatureOption()} />
+                    <FormItem label="Expiry Date">
+                        <Field name={PoField.PO_EXPIRY_DATE}>
+                            {({ field, form }: FieldProps) => {
+                                const dateValue = field.value ? dayjs(field.value) : null
+
+                                return (
+                                    <DatePicker
+                                        placeholder="Select date"
+                                        className="w-full rounded-lg"
+                                        value={dateValue && dateValue.isValid() ? dateValue : null}
+                                        onChange={(value) => {
+                                            form.setFieldValue(PoField.PO_EXPIRY_DATE, value ? value.format('YYYY-MM-DD') : '')
+                                        }}
+                                    />
+                                )
+                            }}
+                        </Field>
+                    </FormItem>
                 </FormContainer>
             </div>
         </div>

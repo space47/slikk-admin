@@ -10,6 +10,7 @@ export enum PoField {
     COMPANY_GST = 'company_gst',
     EXPECTED_DELIVERY = 'expected_delivery_date',
     PO_NATURE = 'po_nature',
+    PO_EXPIRY_DATE = 'po_expiry_date',
 }
 
 export const PoFormFieldArray = [

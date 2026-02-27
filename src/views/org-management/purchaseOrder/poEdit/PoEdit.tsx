@@ -48,7 +48,7 @@ const PoEdit = () => {
             const errorMessage = getApiErrorMessage(error) || 'Failed to Load Data'
             notification.error({ message: errorMessage })
         }
-    }, [isSuccess, isError, error])
+    }, [isSuccess, isError, error, data?.data])
 
     const initialValue = {
         special_terms: purchaseOrder?.special_terms,
@@ -65,6 +65,7 @@ const PoEdit = () => {
         stateCode: stateCode,
         payment_mode: purchaseOrder?.payment_mode,
         vendor_address: purchaseOrder?.vendor_address,
+        po_expiry_date: purchaseOrder?.po_expiry_date,
     }
 
     const handleSubmit = async (values: any) => {
@@ -82,10 +83,11 @@ const PoEdit = () => {
                 expected_delivery_date: values[PoField.EXPECTED_DELIVERY],
                 po_nature: values[PoField.PO_NATURE],
                 payment_mode: values[PoField.PAYMENT_MODE],
+                po_expiry_date: values[PoField.PO_EXPIRY_DATE],
             }
 
             const formData = buildFormData(payload)
-            if (!commercial_approval_doc && values?.commercial_terms?.length > 0) {
+            if (!commercial_approval_doc && typeof values?.commercial_terms !== 'string' && values?.commercial_terms?.length > 0) {
                 formData.append('commercial_terms', values.commercial_terms[0])
             }
             const filteredBody = getChangedFormData(formData, initialValue)
@@ -94,7 +96,7 @@ const PoEdit = () => {
                 filteredBody.append('company', selectedCompany?.id?.toString())
             }
 
-            const res = await axioisInstance.patch(`/merchant/purchase/order`, filteredBody)
+            const res = await axioisInstance.patch(`/merchant/purchase/order/${purchase_id}`, filteredBody)
 
             successMessage(res)
         } catch (error) {

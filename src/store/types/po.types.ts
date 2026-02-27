@@ -36,6 +36,7 @@ export type PurchaseOrderTable = {
     created_at: string
     updated_at: string
     company_gst: string | number
+    po_expiry_date: string
     gst_details: {
         company: number
         create_date: string

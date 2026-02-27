@@ -29,11 +29,10 @@ const PoAdd = () => {
         [PoField.ORDER_BILLING_ENTITY]: '',
         [PoField.ORDER_SHIPPING_ADDRESS]: '',
         [PoField.ORDER_BILLING_ADDRESS]: '',
-        [PoField.PAYMENT_TERMS]: selectedCompany?.approved_payment_term,
+        [PoField.PAYMENT_TERMS]: selectedCompany?.approved_payment_term || '',
     }
 
     const handleSubmit = async (values: any) => {
-        console.log('clicked hjere', values)
         try {
             const payload = {
                 store: values.store,
@@ -50,6 +49,7 @@ const PoAdd = () => {
                 state_code: stateCode,
                 company_gst: values[PoField.COMPANY_GST]?.id,
                 payment_mode: values[PoField.PAYMENT_MODE],
+                po_expiry_date: values[PoField.PO_EXPIRY_DATE],
             }
 
             const formData = buildFormData(payload)
