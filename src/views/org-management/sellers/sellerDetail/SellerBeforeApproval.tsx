@@ -285,7 +285,6 @@ const SellerBeforeApproval = ({ commentStructure, handleComments, sellerData, se
                 </div>
             </Card>
 
-            {/* Main Content with Tabs */}
             <Card className="shadow-sm rounded-xl border border-gray-100 bg-white overflow-hidden">
                 <Tabs
                     activeKey={activeTab}

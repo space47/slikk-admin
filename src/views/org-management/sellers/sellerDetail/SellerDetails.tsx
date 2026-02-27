@@ -129,7 +129,6 @@ const SellerDetails = () => {
                     </div>
                 </div>
             </div>
-
             <div className="flex justify-end">
                 <Button variant="twoTone" onClick={() => navigate(`/app/sellers/${id}`)}>
                     Edit Details
@@ -384,7 +383,6 @@ const SellerDetails = () => {
                     />
                 </div>
             )}
-
             {/* Modals */}
             <SellerCommentsModal
                 isOpen={isCommentModal}
@@ -393,7 +391,6 @@ const SellerDetails = () => {
                 setCommentsStructure={setCommentStructure}
                 commentsStructure={commentStructure}
             />
-
             <DialogConfirm
                 IsOpen={confirmModal}
                 setIsOpen={setConfirmModal}
