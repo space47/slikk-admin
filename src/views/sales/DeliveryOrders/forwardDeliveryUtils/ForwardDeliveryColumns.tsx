@@ -174,7 +174,13 @@ export const ForwardDeliveryColumns = (
             {
                 header: 'Estimate Delivery Time',
                 accessorKey: 'eta_duration',
-                cell: ({ row }: any) => <div>{row?.original?.eta_duration ? `${row?.original?.eta_duration} mins` : 'N/A'}</div>,
+                cell: ({ row }: any) => {
+                    const etaData =
+                        typeof row?.original?.eta_duration === 'string'
+                            ? Number(row?.original?.eta_duration)
+                            : row?.original?.eta_duration || 0
+                    return <div>{row?.original?.eta_duration ? `${etaData?.toFixed(2)} mins` : 'N/A'}</div>
+                },
             },
             {
                 header: 'Delay Status',
