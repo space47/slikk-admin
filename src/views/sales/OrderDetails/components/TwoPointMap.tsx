@@ -14,6 +14,8 @@ interface props {
     long: number
     storeLat: number
     storeLong: number
+    runnerLat?: number
+    runnerLong?: number
 }
 
 const customIcon = (iconUrl: string) =>
@@ -30,6 +32,13 @@ const icons = {
     drop: customIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png'),
     runner: customIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png'),
 }
+
+const riderDivIcon = L.divIcon({
+    html: `<img src="/img/logo/riderOnline-logo.png" style="width: 28px; transform-origin: center center;" />`,
+    className: '',
+    iconSize: [30, 30],
+    iconAnchor: [15, 15],
+})
 
 const FullScreenMap = ({ mapCenter, storeLat, storeLong, lat, long, style = { height: '70vh', width: '100%' }, decodedPolyline }: any) => {
     const mapContainerRef = useRef<HTMLDivElement>(null)
@@ -103,7 +112,7 @@ const FullScreenMap = ({ mapCenter, storeLat, storeLong, lat, long, style = { he
     )
 }
 
-const TwoPointMap = ({ lat, long, storeLat, storeLong }: props) => {
+const TwoPointMap = ({ lat, long, storeLat, storeLong, runnerLat, runnerLong }: props) => {
     const [mapCenter, setMapCenter] = useState<[number, number] | null>(null)
 
     console.log('map center', storeLat, storeLong, lat, long, mapCenter)
@@ -199,7 +208,11 @@ const TwoPointMap = ({ lat, long, storeLat, storeLong }: props) => {
                             <Popup>Slikk</Popup>
                         </Marker>
                     )}
-
+                    {runnerLat && runnerLong && (
+                        <Marker position={[runnerLat, runnerLong]} icon={riderDivIcon}>
+                            <Popup>Runner</Popup>
+                        </Marker>
+                    )}
                     {/* Drop Marker */}
                     {lat && long && (
                         <Marker position={[lat, long]} icon={icons.drop}>

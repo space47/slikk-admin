@@ -61,8 +61,8 @@ const OrderDetails = () => {
         return data?.log?.some((item) => item?.status?.includes(EOrderStatus.packed)) && data?.utm_params?.ticket === true
     }, [data?.log, data?.utm_params])
 
-    const isLogisticWithTaskId = useMemo(() => {
-        return Object.entries(data?.logistic || {})?.length > 0 && data?.logistic?.task_id
+    const isRiderSlikk = useMemo(() => {
+        return Object.entries(data?.logistic || {})?.length > 0 && data?.logistic?.partner?.toLowerCase() === 'slikk'
     }, [data?.logistic])
 
     const showReturnOrder = useMemo(() => {
@@ -343,19 +343,21 @@ const OrderDetails = () => {
                                                 />
                                             )}
 
-                                            {isLogisticWithTaskId && (
+                                            {isRiderSlikk && (
                                                 <OrderMap
                                                     isRiderMoving={isRiderMoving}
                                                     task_id={data?.logistic?.task_id}
                                                     taskData={taskData}
                                                 />
                                             )}
-                                            {!isLogisticWithTaskId && (
+                                            {!isRiderSlikk && Object.entries(data?.logistic || {})?.length > 0 && (
                                                 <TwoPointMap
-                                                    lat={data?.logistic?.latitude}
-                                                    long={data?.logistic?.longitude}
-                                                    storeLat={data?.store.latitude}
-                                                    storeLong={data?.store.longitude}
+                                                    runnerLat={data?.logistic?.latitude}
+                                                    runnerLong={data?.logistic?.longitude}
+                                                    storeLat={data?.store?.latitude}
+                                                    storeLong={data?.store?.longitude}
+                                                    lat={data?.latitude}
+                                                    long={data?.longitude}
                                                 />
                                             )}
                                         </div>
