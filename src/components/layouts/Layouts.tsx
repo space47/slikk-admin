@@ -47,6 +47,12 @@ const Layout = () => {
     /* Fetch static master data on mount  */
     /* ---------------------------------- */
     useEffect(() => {
+        if (authenticated) {
+            dispatch(getUserProfileAPI())
+        }
+    }, [authenticated, dispatch])
+
+    useEffect(() => {
         dispatch(getAllDivisionAPI())
         dispatch(getAllCategoryAPI())
         dispatch(getAllSubCategoryAPI())
@@ -56,11 +62,6 @@ const Layout = () => {
     /* ---------------------------------- */
     /* Fetch profile on every reload      */
     /* ---------------------------------- */
-    useEffect(() => {
-        if (authenticated) {
-            dispatch(getUserProfileAPI())
-        }
-    }, [authenticated, dispatch])
 
     /* ---------------------------------- */
     /* Layout selection (pure memo)       */
