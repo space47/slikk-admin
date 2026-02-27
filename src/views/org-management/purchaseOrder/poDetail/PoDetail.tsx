@@ -182,17 +182,33 @@ const PoDetail = () => {
                     >
                         <div className="w-full max-w-md">
                             <FormItem label="Email Recipients">
-                                <div className="relative mt-2">
-                                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 pointer-events-none">
-                                        <FiMail className="h-5 w-5" />
-                                    </span>
+                                <div className="mt-4">
+                                    {/* Info Card */}
+                                    <div className="flex items-start gap-3 p-4 mb-3 rounded-2xl bg-blue-50 border border-blue-100">
+                                        <FiMail className=" text-2xl" />
 
-                                    <Input
-                                        value={emailValues}
-                                        placeholder="example@gmail.com"
-                                        className="pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                                        onChange={(e) => setEmailValues(e.target.value)}
-                                    />
+                                        <p className="text-sm text-blue-900 leading-relaxed">
+                                            By default, emails will be sent to the <span className="font-medium">Head</span> and
+                                            <span className="font-medium"> POC contact</span>. You can add additional recipients below if
+                                            required.
+                                        </p>
+                                    </div>
+
+                                    {/* Email Input */}
+                                    <div className="relative">
+                                        <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 pointer-events-none">
+                                            <FiMail className="h-5 w-5" />
+                                        </span>
+
+                                        <Input
+                                            value={emailValues}
+                                            placeholder="Enter additional email (comma separated)"
+                                            className="w-full pl-12 pr-4 py-3 rounded-2xl border border-gray-300 bg-white shadow-sm 
+                       focus:border-blue-500 focus:ring-4 focus:ring-blue-100 
+                       transition-all duration-200"
+                                            onChange={(e) => setEmailValues(e.target.value)}
+                                        />
+                                    </div>
                                 </div>
 
                                 <p className="text-xs text-gray-500 mt-1">Add multiple emails separated by commas.</p>
