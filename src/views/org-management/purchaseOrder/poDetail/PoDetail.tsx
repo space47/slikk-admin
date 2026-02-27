@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import EasyTable from '@/common/EasyTable'
-import { Button, Card } from '@/components/ui'
+import { Button, Card, FormItem, Input } from '@/components/ui'
 import { getApiErrorMessage } from '@/constants/generateErrorMessage'
 import { purchaseOrderService } from '@/store/services/purchaseOrderService'
 import { PurchaseOrderItem, PurchaseOrderTable } from '@/store/types/po.types'
@@ -16,10 +16,19 @@ import DialogConfirm from '@/common/DialogConfirm'
 import { FaDownload } from 'react-icons/fa'
 import { usePoDetailFunction } from './usePoDetailFunction'
 import { IndianStateCodes } from '../poUtils/poFormCommon'
-import { FiClock, FiFileText } from 'react-icons/fi'
+import { FiClock, FiFileText, FiMail } from 'react-icons/fi'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+import { isValidEmail } from '@/common/allTypesCommon'
+
+const trimmedValue = (value: string) => {
+    return value
+        .split(',')
+        .map((email) => email)
+        .filter(Boolean)
+        .join(',')
+}
 
 const PoDetail = () => {
     const { purchase_id } = useParams()
@@ -50,6 +59,7 @@ const PoDetail = () => {
     )
     const [isApproveConfirm, setIsConfirmApprove] = useState(false)
     const [verifyPo, verifyResponse] = purchaseOrderService.useVerifyPoMutation()
+    const [emailValues, setEmailValues] = useState('')
 
     const { handleDownloadPo } = usePoDetailFunction({ id: Number(purchase_id), setIsDownloading })
 
@@ -75,6 +85,7 @@ const PoDetail = () => {
     useEffect(() => {
         if (verifyResponse.isSuccess) {
             notification.success({ message: verifyResponse?.data?.message || 'Successfully Approved' })
+            setIsConfirmApprove(false)
         }
         if (verifyResponse.isError) {
             const message = getApiErrorMessage(verifyResponse.error) || 'Failed to Approve'
@@ -94,7 +105,13 @@ const PoDetail = () => {
     }
 
     function handleApproveConfirm() {
-        verifyPo({ id: Number(purchase_id), status: 'APPROVED' })
+        if (emailValues && !isValidEmail(emailValues)) {
+            notification.error({ message: 'please enter a valid email address' })
+            return
+        }
+
+        const body = { id: Number(purchase_id), status: 'APPROVED', ...(emailValues && { emails: trimmedValue(emailValues) }) }
+        verifyPo(body)
     }
 
     if (isLoading) {
@@ -162,7 +179,26 @@ const PoDetail = () => {
                         label="this action to approve the purchase Order"
                         closeDialog={() => setIsConfirmApprove(false)}
                         onDialogOk={handleApproveConfirm}
-                    />
+                    >
+                        <div className="w-full max-w-md">
+                            <FormItem label="Email Recipients">
+                                <div className="relative mt-2">
+                                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 pointer-events-none">
+                                        <FiMail className="h-5 w-5" />
+                                    </span>
+
+                                    <Input
+                                        value={emailValues}
+                                        placeholder="example@gmail.com"
+                                        className="pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                        onChange={(e) => setEmailValues(e.target.value)}
+                                    />
+                                </div>
+
+                                <p className="text-xs text-gray-500 mt-1">Add multiple emails separated by commas.</p>
+                            </FormItem>
+                        </div>
+                    </DialogConfirm>
                 )}
             </Card>
         </div>

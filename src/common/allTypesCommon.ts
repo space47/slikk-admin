@@ -65,3 +65,5 @@ export const escapeCsvValue = (value: any) => {
     const stringValue = String(value)
     return `"${stringValue.replace(/"/g, '""')}"`
 }
+
+export const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
