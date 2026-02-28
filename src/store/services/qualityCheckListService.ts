@@ -8,6 +8,7 @@ interface GetQualityCheckListTypes {
     grn_id?: any
     page?: number
     pageSize?: number
+    company_id?: string
 }
 
 export const qualityCheckService = RtkQueryService.injectEndpoints({
@@ -20,6 +21,7 @@ export const qualityCheckService = RtkQueryService.injectEndpoints({
                 if (params.grn_id) parameters.grn_id = params.grn_id.toString()
                 if (params.page) parameters.p = params.page.toString()
                 if (params.pageSize) parameters.page_size = params.pageSize.toString()
+                if (params.company_id) parameters.company_id = params.company_id.toString()
                 return {
                     url: `goods/qualitycheck`,
                     method: 'GET',
