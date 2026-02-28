@@ -171,7 +171,7 @@ const ReturnOrderDetails = () => {
                     </div>
                     {taskData?.event_logs?.length > 0 && (
                         <div className="mt-6">
-                            <OrdersRiderActivity eventLogs={taskData} />
+                            <OrdersRiderActivity taskData={taskData} />
                         </div>
                     )}
                 </div>

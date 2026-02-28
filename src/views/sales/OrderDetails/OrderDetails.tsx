@@ -28,6 +28,7 @@ import ItemConvertModal from './components/ItemConvertModal'
 import { Order } from '@/store/types/newOrderTypes'
 import { newOrderService } from '@/store/services/newOrderaService'
 import DialogConfirm from '@/common/DialogConfirm'
+import ForwardActivity from './components/ForwardActivity'
 
 const OrderDetails = () => {
     const { invoice_id } = useParams()
@@ -327,10 +328,17 @@ const OrderDetails = () => {
                                             />
                                         </div>
 
-                                        {data?.logistic && (
+                                        {data?.logistic && isRiderSlikk && (
                                             <div className="bg-white dark:bg-gray-900 shadow-sm border border-gray-100 dark:border-gray-800 rounded-2xl p-4 w-[240px]">
-                                                <OrdersRiderActivity eventLogs={taskData} />
+                                                <OrdersRiderActivity taskData={taskData} />
                                             </div>
+                                        )}
+                                        {data?.logistic && data?.logistic?.log && !isRiderSlikk ? (
+                                            <div className="bg-white dark:bg-gray-900 shadow-sm border border-gray-100 dark:border-gray-800 rounded-2xl p-4 w-[240px]">
+                                                <ForwardActivity logs={data?.logistic?.log} />
+                                            </div>
+                                        ) : (
+                                            <></>
                                         )}
                                     </div>
                                     <div className="flex-1 bg-white dark:bg-gray-900 shadow-sm border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden">
