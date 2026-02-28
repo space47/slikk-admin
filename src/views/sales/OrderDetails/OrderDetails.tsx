@@ -91,6 +91,7 @@ const OrderDetails = () => {
     const { data: taskData, refetch: refetchTask } = useFetchSingleData<TaskData>({
         url: query || '',
         pollingInterval: query ? 60000 : undefined,
+        skip: !isRiderSlikk,
     })
 
     const {
