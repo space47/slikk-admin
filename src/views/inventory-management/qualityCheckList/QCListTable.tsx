@@ -22,10 +22,16 @@ import ReduxDateRange from '@/common/ReduxDateRange'
 import { Spin } from 'antd'
 import { Card } from '@/components/ui'
 import { IoBagCheckSharp } from 'react-icons/io5'
+import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+
+//TODO: add company filter
 
 const QCListTable = () => {
     const dispatch = useAppDispatch()
     const [globalFilter, setGlobalFilter] = useState('')
+    const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
+
+    const [companyCode, setCompanyCode] = useState<string>('')
     const { qcDetails, count, from, page, pageSize, to } = useAppSelector<QcInitialStateTypes>((state) => state.qualityCheck)
     const { summary } = useAppSelector((state: { qualityCheck: QcInitialStateTypes }) => state.qualityCheck)
 
@@ -36,6 +42,7 @@ const QCListTable = () => {
             grn_id: globalFilter ?? '',
             page: page,
             pageSize: pageSize,
+            company_id: companyCode || '',
         },
         { refetchOnMountOrArgChange: true },
     )
@@ -102,17 +109,37 @@ const QCListTable = () => {
                         <p className="text-sm text-gray-500">View and manage all quality check data</p>
                     </span>
                 </div>
-                <div className="upper flex justify-between mb-5 items-center ">
-                    <div className="mb-4 mt-8">
-                        <input
-                            type="text"
-                            placeholder="Search GRN here...."
-                            value={globalFilter}
-                            className="p-2 border rounded"
-                            onChange={(e) => setGlobalFilter(e.target.value)}
-                        />
+                <div className="flex flex-wrap items-end justify-between gap-6 mb-6 mt-8">
+                    <div className="flex flex-wrap items-end gap-6">
+                        <div className="flex flex-col">
+                            <label className="text-sm font-semibold text-gray-600 mb-1">Search GRN</label>
+                            <input
+                                type="text"
+                                placeholder="Search GRN here..."
+                                value={globalFilter}
+                                onChange={(e) => setGlobalFilter(e.target.value)}
+                                className="h-11 px-4 w-64 border border-gray-300 rounded-lg shadow-sm 
+                           focus:outline-none focus:ring-2 focus:ring-blue-500 
+                           focus:border-blue-500 transition"
+                            />
+                        </div>
+                        <div className="flex flex-col w-80">
+                            <label className="text-sm font-semibold text-gray-600 mb-1">Select Company</label>
+                            <Select
+                                isClearable
+                                className="react-select-container w-full"
+                                classNamePrefix="react-select"
+                                options={companyList}
+                                getOptionLabel={(option) => option.name}
+                                getOptionValue={(option) => option.id?.toString()}
+                                onChange={(newVal) => setCompanyCode(newVal?.id?.toString() || '')}
+                            />
+                        </div>
                     </div>
-                    <div className="mb-4 ml-10">
+
+                    {/* Right Section - Date Range */}
+                    <div className="flex flex-col">
+                        <label className="text-sm font-semibold text-gray-600 mb-1 invisible">Date Range</label>
                         <ReduxDateRange id="qcChecklist" handleDateChange={handleDateChange} setFrom={setFrom} setTo={setTo} />
                     </div>
                 </div>
