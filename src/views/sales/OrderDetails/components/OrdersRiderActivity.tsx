@@ -5,10 +5,10 @@ import moment from 'moment'
 import React from 'react'
 
 interface props {
-    eventLogs: any
+    taskData: any
 }
 
-const OrdersRiderActivity = ({ eventLogs }: props) => {
+const OrdersRiderActivity = ({ taskData: eventLogs }: props) => {
     const events = eventLogs?.event_logs
 
     return (
