@@ -24,7 +24,7 @@ const ForwardActivity = ({ logs }: props) => {
                             }
                         >
                             <div className="font-bold text-md flex-wrap break-words">{activity?.status}</div>
-                            <div className="flex-wrap break-words">{moment(activity?.timestamp).format('DD-MM-YYYY hh:mm a')}</div>
+                            <div className="flex-wrap break-words">{moment(activity?.timeStamp).format('DD-MM-YYYY hh:mm a')}</div>
                             <div className="font-bold text-md flex-wrap break-words">Lat:{activity?.lat}</div>
                             <div className="font-bold text-md flex-wrap break-words">Long:{activity?.long}</div>
                             <div className="font-bold text-md flex-wrap break-words">{activity?.reason}</div>
