@@ -13,7 +13,7 @@ const EditMarkdownPrices = () => {
     const [editMarkdownData, setEditMarkdownData] = useState<Record<string, string | number | boolean>>()
     const [productCsvFile, setProductCsvFile] = useState<any>()
 
-    const fetchEditMarkdown = async () => {
+    const fetchEditMarkdown = async (name: string) => {
         try {
             const response = await axioisInstance.get(`/product/offer/pricing?id=${name}`)
             const data = response?.data?.data
@@ -23,8 +23,10 @@ const EditMarkdownPrices = () => {
         }
     }
     useEffect(() => {
-        fetchEditMarkdown()
-    }, [])
+        if (name) {
+            fetchEditMarkdown(name)
+        }
+    }, [name])
 
     const initialValue = {
         name: editMarkdownData?.name,
