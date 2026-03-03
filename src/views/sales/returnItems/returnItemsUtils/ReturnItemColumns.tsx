@@ -26,6 +26,16 @@ export const ReturnItemColumns = ({ handleOpenModal }: Props) => {
                 cell: ({ row }) => <div>{row.original.quantity}</div>,
             },
             {
+                header: 'Brand',
+                accessorKey: 'quantity',
+                cell: ({ row }) => <div>{row.original.brand}</div>,
+            },
+            {
+                header: 'company',
+                accessorKey: 'company',
+                cell: ({ row }) => <div>{row.original.company}</div>,
+            },
+            {
                 header: 'QC Passed',
                 accessorKey: 'qc_passed',
                 cell: ({ row }) => <div>{row.original.qc_passed}</div>,
