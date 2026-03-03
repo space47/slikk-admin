@@ -2,58 +2,6 @@ import Input from '@/components/ui/Input'
 
 export const COUPON_SERIES_FORM = [
     {
-        label: 'Campaign Name',
-        classname: 'col-span-1 w-full',
-        type: 'text',
-        name: 'campaign',
-        placeholder: 'Enter Campaign Name',
-        component: { Input },
-        status: 'campaign',
-    },
-    {
-        label: 'Prefix',
-        classname: 'col-span-1 w-full',
-        type: 'text',
-        name: 'prefix',
-        placeholder: 'Enter prefix for the coupon',
-        component: { Input },
-        status: 'prefix',
-    },
-
-    {
-        label: 'Value',
-        classname: 'col-span-1 w-full',
-        type: 'number',
-        max: 10,
-        min: 0,
-        name: 'value',
-        placeholder: 'Enter coupon value',
-        component: { Input },
-        status: 'value',
-    },
-    {
-        label: 'Min Cart Value',
-        classname: 'col-span-1 w-full',
-        type: 'number',
-        max: 10,
-        min: 0,
-        name: 'min_cart_value',
-        placeholder: 'Enter minimum cart value',
-        component: { Input },
-        status: 'min_cart_value',
-    },
-    {
-        label: 'Max Count',
-        classname: 'col-span-1 w-full',
-        type: 'number',
-        max: 10,
-        min: 0,
-        name: 'max_count',
-        placeholder: 'Enter maximum count',
-        component: { Input },
-        status: 'max_count',
-    },
-    {
         label: 'Maximum Discount',
         classname: 'col-span-1 w-full',
         type: 'number',
@@ -136,18 +84,6 @@ export const COUPON_SERIES_FORM = [
         placeholder: 'Enter Offer Text',
         component: { Input },
     },
-    {
-        label: 'Customer Registered Start',
-        classname: 'col-span-1 w-full',
-        type: 'date',
-        name: 'extra_attributes.user_filters.registration_date.from_date',
-    },
-    {
-        label: 'Customer Registered End',
-        classname: 'col-span-1 w-full',
-        type: 'date',
-        name: 'extra_attributes.user_filters.registration_date.to_date',
-    },
 
     {
         label: 'Max Groups',
@@ -181,6 +117,76 @@ export const COUPON_SERIES_FORM = [
         placeholder: 'Enter Y Discount Value',
         component: { Input },
     },
+    {
+        label: 'Customer Registered Start',
+        classname: 'col-span-1 w-full',
+        type: 'date',
+        name: 'extra_attributes.user_filters.registration_date.from_date',
+    },
+    {
+        label: 'Customer Registered End',
+        classname: 'col-span-1 w-full',
+        type: 'date',
+        name: 'extra_attributes.user_filters.registration_date.to_date',
+    },
+]
+
+export const COUPON_SERIES_BASIC = [
+    {
+        label: 'Campaign Name',
+        classname: 'col-span-1 w-full',
+        type: 'text',
+        name: 'campaign',
+        placeholder: 'Enter Campaign Name',
+        component: { Input },
+        status: 'campaign',
+    },
+    {
+        label: 'Prefix',
+        classname: 'col-span-1 w-full',
+        type: 'text',
+        name: 'prefix',
+        placeholder: 'Enter prefix for the coupon',
+        component: { Input },
+        status: 'prefix',
+    },
+
+    {
+        label: 'Value',
+        classname: 'col-span-1 w-full',
+        type: 'number',
+        max: 10,
+        min: 0,
+        name: 'value',
+        placeholder: 'Enter coupon value',
+        component: { Input },
+        status: 'value',
+    },
+    {
+        label: 'Min Cart Value',
+        classname: 'col-span-1 w-full',
+        type: 'number',
+        max: 10,
+        min: 0,
+        name: 'min_cart_value',
+        placeholder: 'Enter minimum cart value',
+        component: { Input },
+        status: 'min_cart_value',
+    },
+    {
+        label: 'Max Count',
+        classname: 'col-span-1 w-full',
+        type: 'number',
+        max: 10,
+        min: 0,
+        name: 'max_count',
+        placeholder: 'Enter maximum count',
+        component: { Input },
+        status: 'max_count',
+    },
+]
+
+export const COUPON_SERIES_CHECKBOX = [
     {
         label: 'Auto Apply',
         classname: 'col-span-1 w-full',
