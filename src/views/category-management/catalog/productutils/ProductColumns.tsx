@@ -9,6 +9,7 @@ import { GiResize } from 'react-icons/gi'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { Tooltip } from '@/components/ui'
+import { ProductTableField } from '../ProductCommon'
 
 interface props {
     handleOpenModal: (img: any) => void
@@ -149,16 +150,15 @@ export const useProductColumns = ({ handleOpenModal, handleViewProducts, current
                         accessorKey: 'filter_tags.colorfamily',
                         cell: ({ row }) => {
                             const value = resolveNestedValue(row.original, 'filter_tags.colorfamily')
-                            console.log('value is', value)
                             if (!value || !Array.isArray(value) || !value.length) return 'N/A'
                             return value.join(',')
                         },
                     }
                 }
-                if (tableVal === 'last_updated_by') {
+                if (tableVal === ProductTableField.LAST_UPDATED_BY) {
                     return {
                         header: 'Updated By',
-                        accessorKey: 'last_updated_by',
+                        accessorKey: ProductTableField.LAST_UPDATED_BY,
                         cell: (props) => {
                             return (
                                 <Tooltip title="Go to user">

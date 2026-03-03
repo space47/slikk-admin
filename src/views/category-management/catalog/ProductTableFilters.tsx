@@ -1,14 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { Drawer } from '@/components/ui'
 import { useAppDispatch } from '@/store'
 import { setCurrentTableSelected } from '@/store/slices/productData/productData.slice'
-import { useEffect, useState } from 'react'
 import { ProductTableField } from './ProductCommon'
 
 interface PROPS {
     showDrawer: boolean
-    handleCloseDrawer: any
+    setShowDrawer: React.Dispatch<React.SetStateAction<boolean>>
     currentTableSelected: string[]
 }
 
@@ -34,17 +31,8 @@ const TableData = [
     { label: 'updated by', value: ProductTableField.LAST_UPDATED_BY },
 ]
 
-const ProductTableFilters = ({ showDrawer, handleCloseDrawer, currentTableSelected }: PROPS) => {
+const ProductTableFilters = ({ showDrawer, setShowDrawer, currentTableSelected }: PROPS) => {
     const dispatch = useAppDispatch()
-    const [lockScroll, setLockScroll] = useState(false)
-
-    useEffect(() => {
-        if (showDrawer) {
-            setLockScroll(true)
-        } else {
-            setLockScroll(false)
-        }
-    }, [showDrawer])
 
     const handleDeliverySelect = (val: string) => {
         const isSelected = currentTableSelected.includes(val)
@@ -58,7 +46,13 @@ const ProductTableFilters = ({ showDrawer, handleCloseDrawer, currentTableSelect
 
     return (
         <div>
-            <Drawer title="" isOpen={showDrawer} lockScroll={lockScroll} onRequestClose={handleCloseDrawer} onClose={handleCloseDrawer}>
+            <Drawer
+                title=""
+                isOpen={showDrawer}
+                lockScroll={showDrawer}
+                onRequestClose={() => setShowDrawer(false)}
+                onClose={() => setShowDrawer(false)}
+            >
                 <div className="flex flex-col mb-6">
                     <label htmlFor="" className="font-semibold text-lg mb-2">
                         Select Column You want to display

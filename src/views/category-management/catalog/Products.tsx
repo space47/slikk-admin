@@ -214,11 +214,7 @@ const Products = () => {
                 typeFetch={typeFetch}
             />
 
-            <ProductTableFilters
-                handleCloseDrawer={() => setTableDrawer(false)}
-                showDrawer={tableDrawer}
-                currentTableSelected={currentTableSelected}
-            />
+            <ProductTableFilters setShowDrawer={setTableDrawer} showDrawer={tableDrawer} currentTableSelected={currentTableSelected} />
 
             {showFacebookDialog && (
                 <DialogConfirm
