@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormContainer } from '@/components/ui'
+import { Button, FormContainer } from '@/components/ui'
 import { Form, Formik } from 'formik'
 import React, { useEffect, useState } from 'react'
 import CouponSeriesForm from '../couponSeriesUtils/CouponSeriesForm'
@@ -8,6 +8,7 @@ import { handleimage } from '@/common/handleImage'
 import { notification } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import FormButton from '@/components/ui/Button/FormButton'
+import { CiShare1 } from 'react-icons/ci'
 
 const CouponSeriesAdd = () => {
     const navigate = useNavigate()
@@ -107,16 +108,18 @@ const CouponSeriesAdd = () => {
             >
                 {({ values, setFieldValue, resetForm }) => (
                     <Form className="w-full shadow-xl p-3 rounded-2xl ">
-                        <div className="flex gap-6 text-xl font-bold mb-10 items-center ">
-                            <span>Add New Coupon Series</span>
-                            <span
-                                className="cursor-pointer bg-red-800 text-white p-2 rounded-xl hover:bg-red-700"
+                        <div className="flex justify-between items-center mb-3">
+                            <h2 className="text-2xl font-semibold text-gray-800">Add New Coupon Series</h2>
+                        </div>
+                        <div className="mb-8">
+                            <Button
+                                variant="twoTone"
+                                icon={<CiShare1 />}
                                 onClick={() => navigate(`/app/appSettings/couponsGenerate/generateCoupons`)}
                             >
-                                Add Coupons
-                            </span>
+                                <span>Add Coupons</span>
+                            </Button>
                         </div>
-
                         <FormContainer className="">
                             <CouponSeriesForm
                                 setFilterId={setFilterId}

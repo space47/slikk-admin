@@ -13,6 +13,7 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification, Spin } from 'antd'
 import LoadingSpinner from '@/common/LoadingSpinner'
 import FormButton from '@/components/ui/Button/FormButton'
+import { CiShare1 } from 'react-icons/ci'
 
 const CouponSeriesEdit = () => {
     const { id } = useParams()
@@ -150,14 +151,17 @@ const CouponSeriesEdit = () => {
                 <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                     {({ values, setFieldValue, resetForm }) => (
                         <Form className="w-full shadow-xl p-3 rounded-xl ">
-                            <div className="flex gap-6 text-xl font-bold mb-10 items-center ">
-                                <span>Update Coupon Series</span>
-                                <span
-                                    className="cursor-pointer bg-red-800 text-white p-2 rounded-xl hover:bg-red-700"
+                            <div className="flex justify-between items-center mb-3">
+                                <h2 className="text-2xl font-semibold text-gray-800">Update Coupon Series</h2>
+                            </div>
+                            <div className="mb-8">
+                                <Button
+                                    variant="twoTone"
+                                    icon={<CiShare1 />}
                                     onClick={() => navigate(`/app/appSettings/couponsGenerate/generateCoupons`)}
                                 >
-                                    Add Coupons
-                                </span>
+                                    <span>Add Coupons</span>
+                                </Button>
                             </div>
                             <FormContainer className="">
                                 <CouponSeriesForm
