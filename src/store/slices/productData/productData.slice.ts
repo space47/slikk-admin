@@ -12,7 +12,9 @@ export interface productRequiredType {
         label: string
         value: string
     }
+    currentTableSelected: string[]
     globalFilter?: string
+    tableFilterStore?: string[]
 }
 
 const initialState: productRequiredType = {
@@ -22,6 +24,7 @@ const initialState: productRequiredType = {
     productData: [],
     typeFetch: '',
     currentSelectedPage: ProductFilterArray[0],
+    currentTableSelected: [],
 }
 
 const productSlice = createSlice({
@@ -39,6 +42,9 @@ const productSlice = createSlice({
             }>,
         ) => {
             state.currentSelectedPage = action.payload
+        },
+        setCurrentTableSelected: (state, action: PayloadAction<string[]>) => {
+            state.currentTableSelected = action.payload
         },
         setTypeFetch: (state, action: PayloadAction<string>) => {
             state.typeFetch = action.payload
@@ -59,6 +65,14 @@ const productSlice = createSlice({
     },
 })
 
-export const { setPage, setPageSize, setProductData, setTypeFetch, setCurrentSelectedPage, setGlobalFilter, setCount } =
-    productSlice.actions
+export const {
+    setPage,
+    setPageSize,
+    setProductData,
+    setTypeFetch,
+    setCurrentSelectedPage,
+    setGlobalFilter,
+    setCount,
+    setCurrentTableSelected,
+} = productSlice.actions
 export default productSlice.reducer
