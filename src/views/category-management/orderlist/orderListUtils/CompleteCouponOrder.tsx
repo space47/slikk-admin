@@ -61,7 +61,7 @@ const CompleteCouponOrder = ({ isOpen: isReAssign, setIsOpen: setIsReAssign, ref
                     <FiAlertTriangle className="mt-1 shrink-0" />
                     <span>
                         This action will mark <b>all orders</b> linked to the entered coupon code as completed. Please verify the coupon
-                        code before proceeding.
+                        code before proceeding. All the orders must be <b>PACKED</b> to mark as complete.
                     </span>
                 </div>
 
