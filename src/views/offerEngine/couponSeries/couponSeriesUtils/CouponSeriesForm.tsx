@@ -39,7 +39,15 @@ const CouponsType = () => {
     }))
 }
 
-const CouponSeriesForm = ({ values, setFieldValue, setFilterId, filterValue, setExcludeFilterId, excludeFilterValue }: CouponProps) => {
+const CouponSeriesForm = ({
+    values,
+    setFieldValue,
+    setFilterId,
+    filterValue,
+    setExcludeFilterId,
+    excludeFilterValue,
+    isEdit,
+}: CouponProps) => {
     return (
         <Form className="w-full">
             <FormContainer className="grid grid-cols-1 xl:grid-cols-2 gap-6">
@@ -206,10 +214,11 @@ const CouponSeriesForm = ({ values, setFieldValue, setFilterId, filterValue, set
                 <StoreSelectForm name="store" label="Store" />
 
                 <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <CommonFilterSelect isCsv isEdit filterId={filterValue} setFilterId={setFilterId} values={values} />
+                    <CommonFilterSelect isCsv isSku isEdit={isEdit} filterId={filterValue} setFilterId={setFilterId} values={values} />
                     <CommonFilterSelect
                         isCsv
-                        isEdit
+                        isSku
+                        isEdit={isEdit}
                         isExclude
                         filterId={excludeFilterValue}
                         setFilterId={setExcludeFilterId}
