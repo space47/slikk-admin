@@ -214,6 +214,8 @@ export interface ReturnData {
     inventory_sync_error: []
     last_updated_by: Record<string, string>
     sku: string
+    brand: string
+    company: string
     create_date: string
     update_date: string
     qc_field_data: {
