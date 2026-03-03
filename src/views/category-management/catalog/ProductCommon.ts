@@ -356,4 +356,5 @@ export enum ProductTableField {
     IS_TRY_AND_BUY = 'is_try_and_buy',
     IS_VOLUMETRIC = 'is_volumetric',
     LAST_UPDATED_BY = 'last_updated_by',
+    FILTER_COLOR_FAMILY = 'filter_tags.colorfamily',
 }

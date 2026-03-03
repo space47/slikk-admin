@@ -144,12 +144,12 @@ export const useProductColumns = ({ handleOpenModal, handleViewProducts, current
 
         const dynamicColumns: ColumnDef<Product>[] =
             currentTableSelected?.map((tableVal) => {
-                if (tableVal === 'color_family') {
+                if (tableVal === ProductTableField.COLOR_FAMILY) {
                     return {
                         header: 'COLOR Family',
-                        accessorKey: 'filter_tags.colorfamily',
+                        accessorKey: ProductTableField.FILTER_COLOR_FAMILY,
                         cell: ({ row }) => {
-                            const value = resolveNestedValue(row.original, 'filter_tags.colorfamily')
+                            const value = resolveNestedValue(row.original, ProductTableField.FILTER_COLOR_FAMILY)
                             if (!value || !Array.isArray(value) || !value.length) return 'N/A'
                             return value.join(',')
                         },
