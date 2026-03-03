@@ -4,7 +4,7 @@ import Button from '@/components/ui/Button'
 import { useNavigate } from 'react-router-dom'
 import { IoMdDownload } from 'react-icons/io'
 import ImageMODAL from '@/common/ImageModal'
-import { FaFacebook, FaFilter } from 'react-icons/fa'
+import { FaFacebook, FaFilter, FaPlus } from 'react-icons/fa'
 import EasyTable from '@/common/EasyTable'
 import { useAppDispatch, useAppSelector } from '@/store'
 import DialogConfirm from '@/common/DialogConfirm'
@@ -29,6 +29,7 @@ import AddFrameModal from './AddFrameModal'
 import FilterProductCommon from '@/common/FilterProductCommon'
 import PageCommon from '@/common/PageCommon'
 import { useDebounceInput } from '@/commonHooks/useDebounceInput'
+import ProductTableFilters from './ProductTableFilters'
 
 const Products = () => {
     const dispatch = useAppDispatch()
@@ -42,9 +43,9 @@ const Products = () => {
     const [showAddFrameDialog, setShowAddFrameDialog] = useState(false)
     const [showDrawer, setShowDrawer] = useState(false)
     const [showViewModal, setShowViewModal] = useState(false)
-    const { productData, count, currentSelectedPage, page, pageSize, typeFetch, globalFilter } = useAppSelector<productRequiredType>(
-        (state) => state.product,
-    )
+    const [tableDrawer, setTableDrawer] = useState(false)
+    const { productData, count, currentSelectedPage, page, pageSize, typeFetch, globalFilter, currentTableSelected } =
+        useAppSelector<productRequiredType>((state) => state.product)
     const { debounceFilter } = useDebounceInput({ globalFilter: globalFilter as string, delay: 500 })
     const { data, isSuccess, isLoading, isFetching } = productService.useProductDataQuery(
         {
@@ -81,7 +82,7 @@ const Products = () => {
         }
     }
 
-    const columns = useProductColumns({ handleOpenModal, handleViewProducts })
+    const columns = useProductColumns({ handleOpenModal, handleViewProducts, currentTableSelected })
 
     const renderProductButtons = () => {
         const baseBtnClass = 'flex items-center gap-2 px-3 py-2 rounded-lg text-white font-medium transition-colors'
@@ -90,11 +91,6 @@ const Products = () => {
                 label: 'Frame',
                 onClick: () => setShowAddFrameDialog(true),
                 className: `${baseBtnClass} bg-indigo-600 hover:bg-indigo-700`,
-            },
-            {
-                label: 'Randomize',
-                onClick: () => setShowRandomizeDialog(true),
-                className: `${baseBtnClass} bg-purple-700 hover:bg-purple-600`,
             },
             {
                 label: 'SiteMap',
@@ -120,7 +116,14 @@ const Products = () => {
                 className: `lg:flex ${baseBtnClass} bg-gray-700 hover:bg-gray-600`,
             },
             {
+                label: 'Column Filter',
+                onClick: () => setTableDrawer(true),
+                icon: <FaFilter className="text-md" />,
+                className: `lg:flex ${baseBtnClass} bg-gray-700 hover:bg-gray-600`,
+            },
+            {
                 label: 'Add',
+                icon: <FaPlus className="text-md" />,
                 onClick: () => navigate('/app/catalog/products/addNew'),
                 className: `${baseBtnClass} justify-center bg-black hover:bg-gray-800 w-full lg:w-auto px-4`,
             },
@@ -201,17 +204,18 @@ const Products = () => {
                 />
             )}
 
-            {showDrawer && (
-                <FilterProductCommon
-                    isRedux={true}
-                    brandList={brandList}
-                    setBrandList={setBrandList}
-                    setShowDrawer={setShowDrawer}
-                    showDrawer={showDrawer}
-                    setTypeFetch={setTypeFetch}
-                    typeFetch={typeFetch}
-                />
-            )}
+            <FilterProductCommon
+                isRedux={true}
+                brandList={brandList}
+                setBrandList={setBrandList}
+                setShowDrawer={setShowDrawer}
+                showDrawer={showDrawer}
+                setTypeFetch={setTypeFetch}
+                typeFetch={typeFetch}
+            />
+
+            <ProductTableFilters setShowDrawer={setTableDrawer} showDrawer={tableDrawer} currentTableSelected={currentTableSelected} />
+
             {showFacebookDialog && (
                 <DialogConfirm
                     IsConfirm
