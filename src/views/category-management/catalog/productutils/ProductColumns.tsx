@@ -149,6 +149,7 @@ export const useProductColumns = ({ handleOpenModal, handleViewProducts, current
                         accessorKey: 'filter_tags.colorfamily',
                         cell: ({ row }) => {
                             const value = resolveNestedValue(row.original, 'filter_tags.colorfamily')
+                            console.log('value is', value)
                             if (!value || !Array.isArray(value) || !value.length) return 'N/A'
                             return value.join(',')
                         },

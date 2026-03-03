@@ -335,3 +335,25 @@ export const enum EProductQr {
     BARCODE = 'barcode',
     SKID = 'skid',
 }
+
+export enum ProductTableField {
+    DIVISION = 'division',
+    CATEGORY = 'category',
+    SUB_CATEGORY = 'sub_category',
+    INVENTORY_COUNT = 'inventory_count',
+    COLOR = 'color',
+    COLOR_FAMILY = 'color_family',
+    SIZE = 'size',
+    OFFER_SP = 'offer_sp',
+    TAX_RATE = 'tax_rate',
+    VARIANT_TYPE = 'variant_type',
+    DISCOUNT = 'discount',
+    HSN = 'hsn',
+    IS_ACTIVE = 'is_active',
+    IS_EXCHANGEABLE = 'is_exchangeable',
+    IS_LOCKED = 'is_locked',
+    IS_RETURNABLE = 'is_returnable',
+    IS_TRY_AND_BUY = 'is_try_and_buy',
+    IS_VOLUMETRIC = 'is_volumetric',
+    LAST_UPDATED_BY = 'last_updated_by',
+}

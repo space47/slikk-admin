@@ -4,7 +4,7 @@ import Button from '@/components/ui/Button'
 import { useNavigate } from 'react-router-dom'
 import { IoMdDownload } from 'react-icons/io'
 import ImageMODAL from '@/common/ImageModal'
-import { FaFacebook, FaFilter } from 'react-icons/fa'
+import { FaFacebook, FaFilter, FaPlus } from 'react-icons/fa'
 import EasyTable from '@/common/EasyTable'
 import { useAppDispatch, useAppSelector } from '@/store'
 import DialogConfirm from '@/common/DialogConfirm'
@@ -93,11 +93,6 @@ const Products = () => {
                 className: `${baseBtnClass} bg-indigo-600 hover:bg-indigo-700`,
             },
             {
-                label: 'Randomize',
-                onClick: () => setShowRandomizeDialog(true),
-                className: `${baseBtnClass} bg-purple-700 hover:bg-purple-600`,
-            },
-            {
                 label: 'SiteMap',
                 onClick: () => handleGenerateSiteMap(),
                 className: `${baseBtnClass} bg-yellow-600 hover:bg-yellow-500`,
@@ -121,13 +116,14 @@ const Products = () => {
                 className: `lg:flex ${baseBtnClass} bg-gray-700 hover:bg-gray-600`,
             },
             {
-                label: 'Table Filter',
+                label: 'Column Filter',
                 onClick: () => setTableDrawer(true),
                 icon: <FaFilter className="text-md" />,
                 className: `lg:flex ${baseBtnClass} bg-gray-700 hover:bg-gray-600`,
             },
             {
                 label: 'Add',
+                icon: <FaPlus className="text-md" />,
                 onClick: () => navigate('/app/catalog/products/addNew'),
                 className: `${baseBtnClass} justify-center bg-black hover:bg-gray-800 w-full lg:w-auto px-4`,
             },
