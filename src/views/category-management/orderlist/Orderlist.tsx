@@ -6,7 +6,7 @@ import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import moment from 'moment'
 import { CHANGE_DELIVERY_OPTIONS, pageSizeOptions, SEARCHOPTIONS, type DropdownStatus } from './commontypes'
-import { Button, Dropdown, Input, Spinner } from '@/components/ui'
+import { Button, Dropdown, Input } from '@/components/ui'
 import { IoMdDownload } from 'react-icons/io'
 import FilterDialogOrder from './filterDialog/FilterDialog'
 import { CiFilter } from 'react-icons/ci'
@@ -35,6 +35,9 @@ import { getStatusFilter } from './orderListUtils/OrderListUtils'
 import OrderReAssignModal from './orderListUtils/OrderReAssignModal'
 import { newOrderService } from '@/store/services/newOrderaService'
 import { Order } from '@/store/types/newOrderTypes'
+import CompleteCouponOrder from './orderListUtils/CompleteCouponOrder'
+import { FiCheckCircle, FiClipboard } from 'react-icons/fi'
+import { MdAssignmentAdd } from 'react-icons/md'
 
 const OrderList = () => {
     const location = useLocation()
@@ -61,6 +64,7 @@ const OrderList = () => {
     const [isDownloading, setIsDownloading] = useState(false)
     const [numberStore, setNumberStore] = useState('')
     const [isReAssign, setIsReAssign] = useState(false)
+    const [isCompleteOrder, setIsCompleteOrder] = useState(false)
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
 
     const handleSelectTab = (value: string) => {
@@ -199,31 +203,51 @@ const OrderList = () => {
 
     return (
         <Spin spinning={ordersApiResponse.isLoading || ordersApiResponse.isFetching}>
+            <div className="mb-1 bg-gray-50">
+                <div className="flex items-center gap-3 mb-2">
+                    <div className="p-3 bg-gradient-to-r from-red-500 to-red-600 rounded-xl shadow-lg">
+                        <FiClipboard className="xl:text-2xl text-md text-white" />
+                    </div>
+                    <div>
+                        <h2 className="font-bold text-sm xl:text-[24px] text-gray-900 dark:text-white">Order Management</h2>
+                        <p className="text-gray-600 dark:text-gray-400 mt-1 text-md">View and Manage Slikk Forward Orders</p>
+                    </div>
+                </div>
+            </div>
             <div className="p-4 shadow-lg dark:bg-slate-800 rounded-xl">
                 <div className="overflow-x-auto scrollbar-hide">
-                    <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mb-10">
-                        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center order-2 lg:order-1 w-full lg:w-auto">
-                            <div className="flex items-center gap-2 bg-white dark:bg-gray-900 px-3 py-2 rounded-lg shadow-md w-full sm:w-auto">
-                                <Input
-                                    type="search"
-                                    name="search"
-                                    placeholder="Search here..."
-                                    value={searchInput}
-                                    className="w-full sm:w-[180px] xl:w-[250px] rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-1 focus:outline-none focus:ring focus:ring-blue-500"
-                                    onChange={(e) => setSearchInput(e.target.value)}
-                                    onKeyDown={(e: any) => {
-                                        if (e.key === 'Enter') {
-                                            e.preventDefault()
-                                            handleSearch(e, setSearchOnEnter)
-                                        }
-                                    }}
-                                />
-                                <div
-                                    className="bg-blue-500 hover:bg-blue-400 p-2 rounded-xl cursor-pointer"
-                                    onClick={() => handleSearchWithIcon(setSearchOnEnter, searchInput)}
-                                >
-                                    <HiSearch className="text-white text-xl" />
+                    <div className="flex flex-col mb-10 gap-6 bg-white dark:bg-gray-900 p-5 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-800 w-full">
+                        <div className="flex flex-col gap-3">
+                            <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Search For Orders and Other Filters</h2>
+
+                            <div className="flex flex-col xl:flex-row items-center gap-3 w-full">
+                                <div className="flex items-center gap-2 flex-1">
+                                    <Input
+                                        type="search"
+                                        name="search"
+                                        placeholder="Search by Order ID, Customer phone number, etc..."
+                                        value={searchInput}
+                                        className="w-full rounded-xl border border-gray-300 dark:border-gray-700 
+                               bg-gray-50 dark:bg-gray-800 
+                               px-4 py-2 text-sm
+                               focus:outline-none focus:ring-2 focus:ring-blue-500 
+                               transition-all duration-200"
+                                        onChange={(e) => setSearchInput(e.target.value)}
+                                        onKeyDown={(e: any) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault()
+                                                handleSearch(e, setSearchOnEnter)
+                                            }
+                                        }}
+                                    />
+                                    <div
+                                        className="bg-blue-500 hover:bg-blue-400 p-2 rounded-xl cursor-pointer"
+                                        onClick={() => handleSearchWithIcon(setSearchOnEnter, searchInput)}
+                                    >
+                                        <HiSearch className="text-white text-xl" />
+                                    </div>
                                 </div>
+
                                 <div className="bg-gray-100 dark:bg-blue-600 dark:text-white font-bold text-sm rounded-md">
                                     <Dropdown
                                         className="text-black bg-gray-200 font-bold"
@@ -239,27 +263,47 @@ const OrderList = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="flex flex-col gap-4 lg:flex-row items-center w-full lg:justify-end order-1 lg:order-2">
-                            <UltimateDatePicker
-                                from={from}
-                                setFrom={setFrom}
-                                to={to}
-                                setTo={setTo}
-                                handleDateChange={(e: [Date | null, Date | null] | null) => handleDateChange(e, setFrom, setTo)}
-                            />
-                            <div className="flex flex-row xl:mt-7   gap-3 items-center">
-                                <Button variant="new" size="sm" onClick={() => setIsReAssign(true)}>
+
+                        <div className="border-t border-gray-200 dark:border-gray-800" />
+
+                        <div className="flex flex-col xl:flex-row xl:justify-between gap-4">
+                            <div className="flex xl:flex-row flex-col gap-3 items-center">
+                                <Button variant="new" size="sm" icon={<FiCheckCircle />} onClick={() => setIsCompleteOrder(true)}>
+                                    Complete Coupon Order
+                                </Button>
+
+                                <Button variant="new" size="sm" icon={<MdAssignmentAdd />} onClick={() => setIsReAssign(true)}>
                                     Reassign
                                 </Button>
 
-                                <Button variant="new" size="sm" className="flex gap-2 items-center" onClick={() => setShowFilter(true)}>
-                                    <CiFilter className="text-xl font-bold" /> FILTER
+                                <Button
+                                    variant="new"
+                                    size="sm"
+                                    className="flex gap-2 items-center"
+                                    icon={<CiFilter />}
+                                    onClick={() => setShowFilter(true)}
+                                >
+                                    FILTER
                                 </Button>
                             </div>
-                            <div className="xl:mt-7">
-                                <button
+
+                            {/* Right Section */}
+                            <div className="flex gap-3 items-center justify-center">
+                                <UltimateDatePicker
+                                    from={from}
+                                    setFrom={setFrom}
+                                    to={to}
+                                    setTo={setTo}
+                                    customClass="border w-auto rounded-md h-auto font-bold bg-black text-white flex justify-center"
+                                    handleDateChange={(e: [Date | null, Date | null] | null) => handleDateChange(e, setFrom, setTo)}
+                                />
+
+                                <Button
                                     disabled={isDownloading}
-                                    className="bg-gray-700 hover:bg-gray-600 dark:bg-gray-500 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+                                    variant="new"
+                                    size="sm"
+                                    icon={<IoMdDownload />}
+                                    loading={isDownloading}
                                     onClick={() =>
                                         handleDownload(
                                             from,
@@ -273,15 +317,13 @@ const OrderList = () => {
                                         )
                                     }
                                 >
-                                    <IoMdDownload className="text-xl hidden md:block" />
-                                    <span className="flex gap-2 items-center">
-                                        EXPORT {isDownloading && <Spinner size={20} color="white" />}
-                                    </span>
-                                </button>
+                                    EXPORT
+                                </Button>
                             </div>
                         </div>
                     </div>
 
+                    {/* to */}
                     <TabSelectOrder
                         handleSelectTab={handleSelectTab}
                         tabSelect={tabSelect}
@@ -344,6 +386,7 @@ const OrderList = () => {
                 )}
                 {pendingSound && <PendingNotification shouldPlay={pendingSound} />}
                 {isReAssign && <OrderReAssignModal isReAssign={isReAssign} setIsReAssign={setIsReAssign} />}
+                <CompleteCouponOrder isOpen={isCompleteOrder} setIsOpen={setIsCompleteOrder} refetch={ordersApiResponse.refetch} />
             </div>
         </Spin>
     )
