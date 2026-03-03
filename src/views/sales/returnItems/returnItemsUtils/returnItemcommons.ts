@@ -15,6 +15,8 @@ export const enum RTLFilters {
     SKU = 'sku',
     BARCODE = 'barcode',
     SKID = 'skid',
+    BRAND = 'brand',
+    COMPANY_CODE = 'company_code',
 }
 
 export const RTLStatusArray = [
@@ -29,4 +31,6 @@ export const RTLFilterTypes = [
     { label: 'BARCODE', value: RTLFilters.BARCODE },
     { label: 'RETURN ORDER', value: RTLFilters.RETURN_ID },
     { label: 'ORDER', value: RTLFilters.ORDER_ID },
+    { label: 'BRAND', value: RTLFilters.BRAND },
+    { label: 'COMPANY', value: RTLFilters.COMPANY_CODE },
 ]
