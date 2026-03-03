@@ -10,7 +10,6 @@ import { CiCircleQuestion } from 'react-icons/ci'
 import dayjs from 'dayjs'
 import GetEvenNames from '@/common/GetEvenNames'
 import StoreSelectForm from '@/common/StoreSelectForm'
-import FullDateForm from '@/common/FullDateForm'
 
 interface CouponProps {
     values: any
@@ -207,8 +206,15 @@ const CouponSeriesForm = ({ values, setFieldValue, setFilterId, filterValue, set
                 <StoreSelectForm name="store" label="Store" />
 
                 <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <CommonFilterSelect filterId={filterValue} setFilterId={setFilterId} />
-                    <CommonFilterSelect isExclude filterId={excludeFilterValue} setFilterId={setExcludeFilterId} />
+                    <CommonFilterSelect isCsv isEdit filterId={filterValue} setFilterId={setFilterId} values={values} />
+                    <CommonFilterSelect
+                        isCsv
+                        isEdit
+                        isExclude
+                        filterId={excludeFilterValue}
+                        setFilterId={setExcludeFilterId}
+                        values={values}
+                    />
                 </div>
 
                 {/* Remaining Fields */}
