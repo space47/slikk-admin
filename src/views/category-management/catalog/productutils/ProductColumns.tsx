@@ -13,9 +13,10 @@ import { Tooltip } from '@/components/ui'
 interface props {
     handleOpenModal: (img: any) => void
     handleViewProducts: (row: any) => void
+    currentTableSelected: string[]
 }
 
-export const useProductColumns = ({ handleOpenModal, handleViewProducts }: props) => {
+export const useProductColumns = ({ handleOpenModal, handleViewProducts, currentTableSelected }: props) => {
     const navigate = useNavigate()
 
     const handleResize = async (barcode: string | undefined) => {
@@ -31,16 +32,13 @@ export const useProductColumns = ({ handleOpenModal, handleViewProducts }: props
         }
     }
 
-    return useMemo<ColumnDef<Product>[]>(
-        () => [
+    return useMemo<ColumnDef<Product>[]>(() => {
+        const baseColumns: ColumnDef<Product>[] = [
             {
                 header: 'Edit',
                 accessorKey: '',
                 cell: ({ row }) => (
                     <button className="border-none bg-none" onClick={() => navigate(`/app/catalog/products/${row.original.skid}`)}>
-                        {/* <a href={`/app/catalog/products/${row.original.barcode}`} target="_blank" rel="noreferrer">
-                            {' '}
-                            </a> */}
                         <FaEdit className="text-xl text-blue-600" />
                     </button>
                 ),
@@ -49,7 +47,7 @@ export const useProductColumns = ({ handleOpenModal, handleViewProducts }: props
                 header: 'View',
                 accessorKey: '',
                 cell: ({ row }) => (
-                    <button className="border-none bg-none" onClick={() => handleViewProducts(row?.original)}>
+                    <button className="border-none bg-none" onClick={() => handleViewProducts(row.original)}>
                         <FaEye className="text-xl text-yellow-500" />
                     </button>
                 ),
@@ -58,7 +56,7 @@ export const useProductColumns = ({ handleOpenModal, handleViewProducts }: props
                 header: 'Re-Size Image',
                 accessorKey: '',
                 cell: ({ row }) => (
-                    <button className="border-none bg-none" onClick={() => handleResize(row?.original?.barcode)}>
+                    <button className="border-none bg-none" onClick={() => handleResize(row.original?.barcode)}>
                         <GiResize className="text-xl text-green-500" />
                     </button>
                 ),
@@ -66,27 +64,22 @@ export const useProductColumns = ({ handleOpenModal, handleViewProducts }: props
             {
                 header: 'SKU',
                 accessorKey: 'sku',
-                cell: (info) => info.getValue(),
             },
             {
                 header: 'SKID',
                 accessorKey: 'skid',
-                cell: (info) => info.getValue(),
             },
             {
                 header: 'Barcode',
                 accessorKey: 'barcode',
-                cell: (info) => info.getValue(),
             },
             {
                 header: 'Product Name',
                 accessorKey: 'name',
-                cell: (info) => info.getValue(),
             },
             {
                 header: 'Brand',
                 accessorKey: 'brand',
-                cell: (info) => info.getValue(),
             },
             {
                 header: 'Image',
@@ -125,56 +118,10 @@ export const useProductColumns = ({ handleOpenModal, handleViewProducts }: props
             {
                 header: 'Price',
                 accessorKey: 'mrp',
-                cell: (info) => info.getValue(),
             },
             {
                 header: 'Selling Price',
                 accessorKey: 'sp',
-                cell: (info) => info.getValue(),
-            },
-
-            {
-                header: 'Division',
-                accessorKey: 'division',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Category',
-                accessorKey: 'category',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Sub Category',
-                accessorKey: 'sub_category',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Stocks',
-                accessorKey: 'inventory_count',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'COLOR',
-                accessorKey: 'color',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'COLOR Family',
-                accessorKey: 'filter_tags.colorfamily',
-                cell: ({ getValue }: any) => {
-                    return (
-                        <div>
-                            {getValue()
-                                ?.map((item: any) => item)
-                                .join(',') ?? 'N/A'}
-                        </div>
-                    )
-                },
-            },
-            {
-                header: 'SIZE',
-                accessorKey: 'size',
-                cell: (info) => info.getValue(),
             },
             {
                 header: 'Create Date',
@@ -190,25 +137,63 @@ export const useProductColumns = ({ handleOpenModal, handleViewProducts }: props
                     return <div>{moment(info.getValue() as string).format('YYYY-MM-DD HH:mm:ss')}</div>
                 },
             },
-            {
-                header: 'Updated By',
-                accessorKey: 'last_updated_by',
-                cell: (props) => {
-                    return (
-                        <Tooltip title="Go to user">
-                            <a
-                                href={`/app/customerAnalytics/${props?.row?.original?.last_updated_by}`}
-                                className="cursor-pointer hover:text-green-500"
-                                target="_blank"
-                                rel="noreferrer"
-                            >
-                                {props?.row?.original?.last_updated_by}
-                            </a>
-                        </Tooltip>
-                    )
-                },
-            },
-        ],
-        [],
-    )
+        ]
+
+        const resolveNestedValue = (obj: any, path: string) => path.split('.').reduce((acc, key) => acc?.[key], obj)
+
+        const dynamicColumns: ColumnDef<Product>[] =
+            currentTableSelected?.map((tableVal) => {
+                if (tableVal === 'color_family') {
+                    return {
+                        header: 'COLOR Family',
+                        accessorKey: 'filter_tags.colorfamily',
+                        cell: ({ row }) => {
+                            const value = resolveNestedValue(row.original, 'filter_tags.colorfamily')
+                            if (!value || !Array.isArray(value) || !value.length) return 'N/A'
+                            return value.join(',')
+                        },
+                    }
+                }
+                if (tableVal === 'last_updated_by') {
+                    return {
+                        header: 'Updated By',
+                        accessorKey: 'last_updated_by',
+                        cell: (props) => {
+                            return (
+                                <Tooltip title="Go to user">
+                                    <a
+                                        href={`/app/customerAnalytics/${props?.row?.original?.last_updated_by}`}
+                                        className="cursor-pointer hover:text-green-500"
+                                        target="_blank"
+                                        rel="noreferrer"
+                                    >
+                                        {props?.row?.original?.last_updated_by || 'User Not found'}
+                                    </a>
+                                </Tooltip>
+                            )
+                        },
+                    }
+                }
+
+                return {
+                    header: tableVal.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase()),
+
+                    accessorKey: tableVal,
+
+                    cell: ({ row }) => {
+                        const value = resolveNestedValue(row.original, tableVal)
+
+                        if (value === null || value === undefined) return 'N/A'
+
+                        if (Array.isArray(value)) {
+                            return value.length ? value.join(', ') : 'N/A'
+                        }
+
+                        return value
+                    },
+                }
+            }) ?? []
+
+        return [...baseColumns, ...dynamicColumns]
+    }, [currentTableSelected, navigate, handleViewProducts])
 }

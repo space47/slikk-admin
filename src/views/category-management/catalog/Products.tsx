@@ -44,10 +44,8 @@ const Products = () => {
     const [showDrawer, setShowDrawer] = useState(false)
     const [showViewModal, setShowViewModal] = useState(false)
     const [tableDrawer, setTableDrawer] = useState(false)
-    const [tableDataFilters, setTableDataFilters] = useState<Record<string, string>>({})
-    const { productData, count, currentSelectedPage, page, pageSize, typeFetch, globalFilter } = useAppSelector<productRequiredType>(
-        (state) => state.product,
-    )
+    const { productData, count, currentSelectedPage, page, pageSize, typeFetch, globalFilter, currentTableSelected } =
+        useAppSelector<productRequiredType>((state) => state.product)
     const { debounceFilter } = useDebounceInput({ globalFilter: globalFilter as string, delay: 500 })
     const { data, isSuccess, isLoading, isFetching } = productService.useProductDataQuery(
         {
@@ -84,7 +82,7 @@ const Products = () => {
         }
     }
 
-    const columns = useProductColumns({ handleOpenModal, handleViewProducts })
+    const columns = useProductColumns({ handleOpenModal, handleViewProducts, currentTableSelected })
 
     const renderProductButtons = () => {
         const baseBtnClass = 'flex items-center gap-2 px-3 py-2 rounded-lg text-white font-medium transition-colors'
@@ -223,8 +221,7 @@ const Products = () => {
             <ProductTableFilters
                 handleCloseDrawer={() => setTableDrawer(false)}
                 showDrawer={tableDrawer}
-                setTableDataFilters={setTableDataFilters}
-                tableDataFilters={tableDataFilters}
+                currentTableSelected={currentTableSelected}
             />
 
             {showFacebookDialog && (

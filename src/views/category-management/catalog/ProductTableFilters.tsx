@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { Drawer } from '@/components/ui'
+import { useAppDispatch } from '@/store'
+import { setCurrentTableSelected } from '@/store/slices/productData/productData.slice'
 import { useEffect, useState } from 'react'
 
 interface PROPS {
     showDrawer: boolean
     handleCloseDrawer: any
-    tableDataFilters: Record<string, string>
-    setTableDataFilters: React.Dispatch<React.SetStateAction<Record<string, string>>>
+    currentTableSelected: string[]
 }
 
 const TableData = [
@@ -16,6 +17,7 @@ const TableData = [
     { label: 'Sub Category', value: 'sub_category' },
     { label: 'Stocks', value: 'inventory_count' },
     { label: 'Color', value: 'color' },
+    { label: 'Color Family', value: 'color_family' },
     { label: 'Size', value: 'size' },
     { label: 'Offer Price', value: 'offer_sp' },
     { label: 'Tax', value: 'tax_rate' },
@@ -28,11 +30,12 @@ const TableData = [
     { label: 'Returnable', value: 'is_returnable' },
     { label: 'Try & Buy', value: 'is_try_and_buy' },
     { label: 'Volumetric', value: 'is_volumetric' },
+    { label: 'updated by', value: 'last_updated_by' },
 ]
 
-const ProductTableFilters = ({ showDrawer, handleCloseDrawer, tableDataFilters, setTableDataFilters }: PROPS) => {
+const ProductTableFilters = ({ showDrawer, handleCloseDrawer, currentTableSelected }: PROPS) => {
+    const dispatch = useAppDispatch()
     const [lockScroll, setLockScroll] = useState(false)
-    const [storeValues, setStoreValues] = useState<string[]>([])
 
     useEffect(() => {
         if (showDrawer) {
@@ -45,7 +48,13 @@ const ProductTableFilters = ({ showDrawer, handleCloseDrawer, tableDataFilters, 
     }, [showDrawer])
 
     const handleDeliverySelect = (val: string) => {
-        console.log(val)
+        const isSelected = currentTableSelected.includes(val)
+
+        if (isSelected) {
+            dispatch(setCurrentTableSelected(currentTableSelected.filter((item) => item !== val)))
+        } else {
+            dispatch(setCurrentTableSelected([...currentTableSelected, val]))
+        }
     }
 
     return (
@@ -62,12 +71,12 @@ const ProductTableFilters = ({ showDrawer, handleCloseDrawer, tableDataFilters, 
                                     <div
                                         key={key}
                                         className={`flex items-center px-2 py-2 text-black hover:bg-gray-100 cursor-pointer dark:bg-gray-800 dark:text-white ${
-                                            tableDataFilters?.value?.includes(item.value) ? 'bg-gray-200' : ''
+                                            currentTableSelected.includes(item.value) ? 'bg-gray-200' : ''
                                         }`}
                                     >
                                         <input
                                             type="checkbox"
-                                            checked={tableDataFilters?.value?.includes(item.value)}
+                                            checked={currentTableSelected.includes(item.value)}
                                             onChange={() => handleDeliverySelect(item.value)}
                                             className="mr-2"
                                         />
