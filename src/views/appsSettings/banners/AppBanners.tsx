@@ -181,7 +181,6 @@ const AppBanners = () => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-900 dark:to-slate-800 p-4 md:p-6">
             <div className="max-w-[1920px] mx-auto">
-                {/* Header Section */}
                 <div className="mb-8">
                     <div className="flex items-center gap-3 mb-2">
                         <div className="p-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-lg">
@@ -271,8 +270,6 @@ const AppBanners = () => {
                                     }}
                                 />
                             </div>
-
-                            {/* Section Select */}
                             <div className="space-y-2">
                                 <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                                     <FaLayerGroup className="text-purple-500" />
