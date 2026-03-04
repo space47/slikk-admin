@@ -6,6 +6,7 @@ import { FaExclamationCircle, FaMapMarkedAlt } from 'react-icons/fa'
 import { Dropdown, Tooltip } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { IoMdRefresh } from 'react-icons/io'
+import { OrderColumns } from './OrderListUtils'
 
 interface columnProps {
     generatePrintingData: any
@@ -15,6 +16,7 @@ interface columnProps {
     deliveryChangeType: any
     CHANGE_DELIVERY_OPTIONS: any
     handleSyncDistance: any
+    currentSelectedTable: string[]
 }
 
 export const useOrderListColumns = ({
@@ -25,9 +27,10 @@ export const useOrderListColumns = ({
     deliveryChangeType,
     CHANGE_DELIVERY_OPTIONS,
     handleSyncDistance,
+    currentSelectedTable,
 }: columnProps) => {
-    return useMemo(
-        () => [
+    return useMemo(() => {
+        const baseColumns = [
             {
                 header: 'Printer',
                 accessorKey: 'invoice_id',
@@ -121,7 +124,24 @@ export const useOrderListColumns = ({
                     )
                 },
             },
-            { header: 'Payment Status', accessorKey: 'payment.status' },
+            {
+                header: 'Status',
+                accessorKey: 'status',
+                cell: ({ row }: any) => {
+                    const statuses = row?.original?.status
+                    return (
+                        <div>
+                            {statuses === 'PENDING' || statuses === 'CANCELLED' ? (
+                                <span className="text-red-700 font-semibold bg-red-100 p-2 rounded-md">{statuses}</span>
+                            ) : statuses === 'COMPLETED' ? (
+                                <span className="font-semibold text-green-700 bg-green-100 p-2 rounded-lg">{statuses}</span>
+                            ) : (
+                                <span className="text-yellow-700 bg-yellow-100 p-2 rounded-lg font-semibold">{statuses}</span>
+                            )}
+                        </div>
+                    )
+                },
+            },
             { header: 'Payment Mode', accessorKey: 'payment.mode' },
             {
                 header: 'Distance',
@@ -147,71 +167,11 @@ export const useOrderListColumns = ({
                     )
                 },
             },
-            {
-                header: 'Delay Status',
-                accessorKey: 'logistic.is_delayed',
-                cell: ({ row }: any) => {
-                    return <>{row?.original?.logistic?.is_delayed ? 'delayed' : 'On Time'}</>
-                },
-            },
-            {
-                header: 'Total Time Taken',
-                accessorKey: 'logistic.total_time',
-                cell: ({ row }: any) => {
-                    return (
-                        <>
-                            {row?.original?.logistic?.total_time
-                                ? `${Number(row?.original?.logistic?.total_time)?.toFixed(2)} mins`
-                                : 'N/A'}
-                        </>
-                    )
-                },
-            },
-            {
-                header: 'Delay Time',
-                accessorKey: 'logistic.is_delayed',
-                cell: ({ row }: any) => {
-                    const timeTaken =
-                        typeof row?.original?.logistic?.total_time === 'string'
-                            ? Number(row?.original?.logistic?.total_time)
-                            : row?.original?.logistic?.total_time || 0
-                    const timeEstimate =
-                        typeof row?.original?.eta_duration === 'string'
-                            ? Number(row?.original?.eta_duration)
-                            : row?.original?.eta_duration || 0
 
-                    const difference = timeTaken - timeEstimate
-
-                    return <>{difference >= 0 ? `${difference?.toFixed(2)} mins` : '0 mins'}</>
-                },
-            },
-            {
-                header: 'ETA DropOff Time',
-                accessorKey: 'logistic.eta_dropoff_time',
-                cell: ({ row }: any) => (
-                    <div>
-                        {row?.original?.logistic?.eta_dropoff_time
-                            ? moment(row?.original?.logistic?.eta_dropoff_time).format('YYYY-MM-DD hh:mm:ss a')
-                            : 'N/A'}
-                    </div>
-                ),
-            },
-
-            {
-                header: 'Estimate Delivery Time',
-                accessorKey: 'eta_duration',
-                cell: ({ row }: any) => {
-                    const val =
-                        typeof row?.original?.eta_duration === 'number'
-                            ? row?.original?.eta_duration?.toFixed(2)
-                            : Number(row?.original?.eta_duration).toFixed(2)
-                    return <div>{row?.original?.eta_duration ? `${val} mins` : 'N/A'}</div>
-                },
-            },
             { header: 'Total Items', accessorKey: 'order_items_count' },
             { header: 'Order Count', accessorKey: 'user_order_count' },
-            { header: 'Device Type', accessorKey: 'device_type' },
-            { header: 'Customer Name', accessorKey: 'user.name' },
+            // { header: 'Device Type', accessorKey: 'device_type' },
+            // { header: 'Customer Name', accessorKey: 'user.name' },
             {
                 header: 'Delivery Type',
                 accessorKey: 'delivery_type',
@@ -241,15 +201,6 @@ export const useOrderListColumns = ({
                 },
             },
             {
-                header: 'Area/Pincode',
-                accessorKey: 'area',
-                cell: ({ row }: any) => (
-                    <div>
-                        {row?.original?.area}/{row?.original?.pincode}
-                    </div>
-                ),
-            },
-            {
                 header: 'Customer Address',
                 accessorKey: 'location_url',
                 cell: ({ getValue }: any) => (
@@ -260,33 +211,124 @@ export const useOrderListColumns = ({
                     </a>
                 ),
             },
-            {
-                header: 'Status',
-                accessorKey: 'status',
-                cell: ({ row }: any) => {
-                    const statuses = row?.original?.status
-                    return (
-                        <div>
-                            {statuses === 'PENDING' || statuses === 'CANCELLED' ? (
-                                <span className="text-red-700 font-semibold bg-red-100 p-2 rounded-md">{statuses}</span>
-                            ) : statuses === 'COMPLETED' ? (
-                                <span className="font-semibold text-green-700 bg-green-100 p-2 rounded-lg">{statuses}</span>
-                            ) : (
-                                <span className="text-yellow-700 bg-yellow-100 p-2 rounded-lg font-semibold">{statuses}</span>
-                            )}
-                        </div>
-                    )
-                },
-            },
-            { header: 'Picker Name', accessorKey: 'picker.name' },
+
+            // { header: 'Picker Name', accessorKey: 'picker.name' },
 
             { header: 'Order Total', accessorKey: 'payment.amount' },
-            {
-                header: 'Last Update',
-                accessorKey: 'update_date',
-                cell: ({ getValue }: any) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
-            },
-        ],
-        [],
-    )
+        ]
+
+        const resolveNestedValue = (obj: any, path: string) => path.split('.').reduce((acc, key) => acc?.[key], obj)
+
+        const dynamicColumns =
+            currentSelectedTable?.map((tableVal) => {
+                if (tableVal === OrderColumns.DELAY_STATUS) {
+                    return {
+                        header: 'Delay Status',
+                        accessorKey: 'logistic.is_delayed',
+                        cell: ({ row }: any) => {
+                            return <>{row?.original?.logistic?.is_delayed ? 'delayed' : 'On Time'}</>
+                        },
+                    }
+                }
+                if (tableVal === OrderColumns.TOTAL_TIME_TAKEN) {
+                    return {
+                        header: 'Total Time Taken',
+                        accessorKey: 'logistic.total_time',
+                        cell: ({ row }: any) => {
+                            return (
+                                <>
+                                    {row?.original?.logistic?.total_time
+                                        ? `${Number(row?.original?.logistic?.total_time)?.toFixed(2)} mins`
+                                        : 'N/A'}
+                                </>
+                            )
+                        },
+                    }
+                }
+                if (tableVal === OrderColumns.DELAY_TIME) {
+                    return {
+                        header: 'Delay Time',
+                        accessorKey: 'logistic.is_delayed',
+                        cell: ({ row }: any) => {
+                            const timeTaken =
+                                typeof row?.original?.logistic?.total_time === 'string'
+                                    ? Number(row?.original?.logistic?.total_time)
+                                    : row?.original?.logistic?.total_time || 0
+                            const timeEstimate =
+                                typeof row?.original?.eta_duration === 'string'
+                                    ? Number(row?.original?.eta_duration)
+                                    : row?.original?.eta_duration || 0
+
+                            const difference = timeTaken - timeEstimate
+
+                            return <>{difference >= 0 ? `${difference?.toFixed(2)} mins` : '0 mins'}</>
+                        },
+                    }
+                }
+                if (tableVal === OrderColumns.ETA_DROP_OFF) {
+                    return {
+                        header: 'ETA DropOff Time',
+                        accessorKey: 'logistic.eta_dropoff_time',
+                        cell: ({ row }: any) => (
+                            <div>
+                                {row?.original?.logistic?.eta_dropoff_time
+                                    ? moment(row?.original?.logistic?.eta_dropoff_time).format('YYYY-MM-DD hh:mm:ss a')
+                                    : 'N/A'}
+                            </div>
+                        ),
+                    }
+                }
+                if (tableVal === OrderColumns.ESTIMATE_DELIVERY) {
+                    return {
+                        header: 'Estimate Delivery Time',
+                        accessorKey: 'eta_duration',
+                        cell: ({ row }: any) => {
+                            const val =
+                                typeof row?.original?.eta_duration === 'number'
+                                    ? row?.original?.eta_duration?.toFixed(2)
+                                    : Number(row?.original?.eta_duration).toFixed(2)
+                            return <div>{row?.original?.eta_duration ? `${val} mins` : 'N/A'}</div>
+                        },
+                    }
+                }
+                if (tableVal === OrderColumns.AREA) {
+                    return {
+                        header: 'Area/Pincode',
+                        accessorKey: 'area',
+                        cell: ({ row }: any) => (
+                            <div>
+                                {row?.original?.area}/{row?.original?.pincode}
+                            </div>
+                        ),
+                    }
+                }
+                if (tableVal === OrderColumns.UPDATE_DATE) {
+                    return {
+                        header: 'Last Update',
+                        accessorKey: 'update_date',
+                        cell: ({ getValue }: any) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
+                    }
+                }
+
+                return {
+                    header: tableVal.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase()),
+
+                    accessorKey: tableVal,
+
+                    cell: ({ row }: any) => {
+                        const value = resolveNestedValue(row.original, tableVal)
+
+                        if (value === null || value === undefined) return 'N/A'
+
+                        if (Array.isArray(value)) {
+                            return value.length ? value.join(', ') : 'N/A'
+                        }
+
+                        return value
+                    },
+                }
+            }) ?? []
+
+        return [...baseColumns, ...dynamicColumns]
+    }, [currentSelectedTable])
 }

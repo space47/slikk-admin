@@ -29,3 +29,18 @@ export const getStatusFilter = (tabSelect: string) => {
             return ''
     }
 }
+
+export enum OrderColumns {
+    AREA = 'area',
+    COUPON_CODE = 'coupon_code',
+    PAYMENT_STATUS = 'payment.status',
+    DELAY_STATUS = 'is_delayed',
+    TOTAL_TIME_TAKEN = 'total_time',
+    DELAY_TIME = 'delayed_time',
+    ETA_DROP_OFF = 'eta_dropoff_time',
+    ESTIMATE_DELIVERY = 'eta_duration',
+    DEVICE_TYPE = 'device_type',
+    CUSTOMER_NAME = 'user.name',
+    PICKER_NAME = 'picker.name',
+    UPDATE_DATE = 'update_date',
+}

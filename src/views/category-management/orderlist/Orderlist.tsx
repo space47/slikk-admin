@@ -38,6 +38,7 @@ import { Order } from '@/store/types/newOrderTypes'
 import CompleteCouponOrder from './orderListUtils/CompleteCouponOrder'
 import { FiCheckCircle, FiClipboard } from 'react-icons/fi'
 import { MdAssignmentAdd } from 'react-icons/md'
+import OrderColumnFilter from './orderListUtils/OrderColumnFilter'
 
 const OrderList = () => {
     const location = useLocation()
@@ -64,6 +65,8 @@ const OrderList = () => {
     const [isDownloading, setIsDownloading] = useState(false)
     const [numberStore, setNumberStore] = useState('')
     const [isReAssign, setIsReAssign] = useState(false)
+    const [currentSelectedTable, setCurrentSelectedTable] = useState<string[]>([])
+    const [columnFilter, setColumnFilter] = useState(false)
     const [isCompleteOrder, setIsCompleteOrder] = useState(false)
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
 
@@ -199,6 +202,7 @@ const OrderList = () => {
         deliveryChangeType,
         CHANGE_DELIVERY_OPTIONS,
         handleSyncDistance,
+        currentSelectedTable,
     })
 
     return (
@@ -283,7 +287,16 @@ const OrderList = () => {
                                     icon={<CiFilter />}
                                     onClick={() => setShowFilter(true)}
                                 >
-                                    FILTER
+                                    Filters
+                                </Button>
+                                <Button
+                                    variant="new"
+                                    size="sm"
+                                    className="flex gap-2 items-center"
+                                    icon={<CiFilter />}
+                                    onClick={() => setColumnFilter(true)}
+                                >
+                                    Column FILTER
                                 </Button>
                             </div>
 
@@ -387,6 +400,12 @@ const OrderList = () => {
                 {pendingSound && <PendingNotification shouldPlay={pendingSound} />}
                 {isReAssign && <OrderReAssignModal isReAssign={isReAssign} setIsReAssign={setIsReAssign} />}
                 <CompleteCouponOrder isOpen={isCompleteOrder} setIsOpen={setIsCompleteOrder} refetch={ordersApiResponse.refetch} />
+                <OrderColumnFilter
+                    setShowDrawer={setColumnFilter}
+                    showDrawer={columnFilter}
+                    currentTableSelected={currentSelectedTable}
+                    setCurrentSelectedTable={setCurrentSelectedTable}
+                />
             </div>
         </Spin>
     )
