@@ -4,9 +4,9 @@ import { useLocation } from 'react-router-dom'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import moment from 'moment'
-import { Button, Dropdown, Input, Tooltip } from '@/components/ui'
+import { Button, Dropdown, Input } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { IoMdDownload } from 'react-icons/io'
+import { IoMdDownload, IoMdReturnRight } from 'react-icons/io'
 import FilterReturnOrder from './filter/FilterReturnOrder'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
@@ -23,6 +23,7 @@ import { FaMapMarkedAlt } from 'react-icons/fa'
 import { AxiosError } from 'axios'
 import { errorMessage, successMessage } from '@/utils/responseMessages'
 import ReturnOrderZoneMap from './returnOrderUtils/ReturnOrderZoneMap'
+import { CiFilter } from 'react-icons/ci'
 
 const ReturnOrders = () => {
     const location = useLocation()
@@ -132,111 +133,157 @@ const ReturnOrders = () => {
 
     const handleShowMap = async () => {
         setShowMap((prev) => !prev)
+        if (!showMap) {
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: 'smooth',
+            })
+        }
     }
 
-    return (
-        <div className="bg-gray-50 dark:bg-slate-800 rounded-xl p-4">
-            <div className="flex flex-col xl:flex-row justify-between lg:flex-row lg:justify-between mb-10 items-center gap-3">
-                <div className="flex  xl:gap-2  xl:flex-row  flex-col gap-3 order-2 xl:order-none md:order-none ">
-                    <div className="flex items-center gap-2 bg-white dark:bg-gray-900 px-3 py-2 rounded-lg shadow-md">
-                        <Input
-                            type="search"
-                            name="search"
-                            placeholder="Search here..."
-                            value={searchInput}
-                            className="w-[160px] xl:w-[250px] rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-1 focus:outline-none focus:ring focus:ring-blue-500"
-                            onChange={(e) => setSearchInput(e.target.value)}
-                            onKeyDown={(e: any) => {
-                                if (e.key === 'Enter') {
-                                    e.preventDefault()
-                                    handleSearch(e, setSearchOnEnter)
-                                }
-                            }}
-                        />
-                        <div className="bg-blue-500 hover:bg-blue-400 p-2 rounded-xl cursor-pointer">
-                            <HiSearch
-                                className="text-white  dark:text-gray-400 text-xl"
-                                onClick={() => handleSearchWithIcon(setSearchOnEnter, searchInput)}
+    const filtersAndSearchUI = () => {
+        return (
+            <div className="flex flex-col mb-10 gap-6 bg-white dark:bg-gray-900 p-5 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-800 w-full">
+                <div className="flex flex-col gap-3">
+                    <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Search For Return Orders and Other Filters</h2>
+
+                    <div className="flex flex-col xl:flex-row items-center gap-3 w-full">
+                        <div className="flex items-center gap-2 flex-1">
+                            <Input
+                                type="search"
+                                name="search"
+                                placeholder="Search by Return Order ID, Customer phone number, etc..."
+                                value={searchInput}
+                                className="w-full rounded-xl border border-gray-300 dark:border-gray-700 
+                                   bg-gray-50 dark:bg-gray-800 
+                                   px-4 py-2 text-sm
+                                   focus:outline-none focus:ring-2 focus:ring-blue-500 
+                                   transition-all duration-200"
+                                onChange={(e) => setSearchInput(e.target.value)}
+                                onKeyDown={(e: any) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault()
+                                        handleSearch(e, setSearchOnEnter)
+                                    }
+                                }}
                             />
-                        </div>
-                        <div className="flex justify-center xl:justify-normal">
-                            <div className="bg-gray-100 xl:mt-1  items-center flex justify-center font-bold  xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
-                                <Dropdown
-                                    className=" text-xl text-black bg-gray-200 font-bold  "
-                                    title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
-                                    onSelect={(e) => handleSelect(e, setCurrentSelectedPage)}
-                                >
-                                    {SEARCHOPTIONS?.map((item, key) => {
-                                        return (
-                                            <DropdownItem key={key} eventKey={item.value}>
-                                                <span>{item.label}</span>
-                                            </DropdownItem>
-                                        )
-                                    })}
-                                </Dropdown>
+                            <div
+                                className="bg-blue-500 hover:bg-blue-400 p-2 rounded-xl cursor-pointer"
+                                onClick={() => handleSearchWithIcon(setSearchOnEnter, searchInput)}
+                            >
+                                <HiSearch
+                                    className="text-white  dark:text-gray-400 text-xl"
+                                    onClick={() => handleSearchWithIcon(setSearchOnEnter, searchInput)}
+                                />
                             </div>
+                        </div>
+
+                        <div className="bg-gray-100 dark:bg-blue-600 dark:text-white font-bold text-sm rounded-md">
+                            <Dropdown
+                                className=" text-xl text-black bg-gray-200 font-bold  "
+                                title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
+                                onSelect={(e) => handleSelect(e, setCurrentSelectedPage)}
+                            >
+                                {SEARCHOPTIONS?.map((item, key) => {
+                                    return (
+                                        <DropdownItem key={key} eventKey={item.value}>
+                                            <span>{item.label}</span>
+                                        </DropdownItem>
+                                    )
+                                })}
+                            </Dropdown>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex gap-4">
-                    <div className="flex flex-col md:flex-row items-center  xl:gap-6 justify-center  ">
-                        <div>
-                            <Tooltip title="Zone Map">
-                                <button onClick={handleShowMap}>
-                                    {showMap ? (
-                                        <FaMapMarkedAlt className="text-4xl text-red-700 " />
-                                    ) : (
-                                        <FaMapMarkedAlt className="text-4xl text-green-600 " />
-                                    )}
-                                </button>
-                            </Tooltip>
-                        </div>
-                        <div>
-                            <Button
-                                variant="new"
-                                size="sm"
-                                onClick={() =>
-                                    handleDownload(
-                                        tabSelect,
-                                        dropdownStatus,
-                                        deliveryType,
-                                        currentSelectedPage,
-                                        searchInput,
-                                        from,
-                                        To_Date,
-                                        setIsDownloading,
-                                    )
-                                }
-                                disabled={isDownloading}
-                                loading={isDownloading}
-                                icon={<IoMdDownload />}
-                            >
-                                EXPORT
-                            </Button>
-                        </div>
+                <div className="border-t border-gray-200 dark:border-gray-800" />
+
+                <div className="flex flex-col xl:flex-row xl:justify-between gap-4">
+                    <div className="flex xl:flex-row flex-col gap-3 items-center">
+                        <Button
+                            variant="new"
+                            size="sm"
+                            icon={showMap ? <FaMapMarkedAlt className=" text-red-700 " /> : <FaMapMarkedAlt className=" text-green-600 " />}
+                            onClick={handleShowMap}
+                        >
+                            {showMap ? 'Close Zone Map' : 'Show Zone Map'}
+                        </Button>
+
+                        <Button
+                            variant="new"
+                            size="sm"
+                            className="mt-1"
+                            disabled={taskProcess}
+                            loading={taskProcess}
+                            onClick={activateTask}
+                        >
+                            Activate Task To Rider
+                        </Button>
+
+                        <Button
+                            variant="new"
+                            size="sm"
+                            className="flex gap-2 items-center"
+                            icon={<CiFilter />}
+                            onClick={() => setShowFilter(true)}
+                        >
+                            Filters
+                        </Button>
                     </div>
-                    <Button variant="new" size="sm" className="mt-1" disabled={taskProcess} loading={taskProcess} onClick={activateTask}>
-                        Activate Task To Rider
-                    </Button>
 
-                    <UltimateDatePicker
-                        customClass="border w-auto rounded-md h-auto font-bold  bg-black text-white flex justify-center"
-                        from={from}
-                        setFrom={setFrom}
-                        to={to}
-                        setTo={setTo}
-                        handleDateChange={handleDateChange}
-                    />
+                    {/* Right Section */}
+                    <div className="flex gap-3 items-center justify-center">
+                        <UltimateDatePicker
+                            from={from}
+                            setFrom={setFrom}
+                            to={to}
+                            setTo={setTo}
+                            customClass="border w-auto rounded-md h-auto font-bold bg-black text-white flex justify-center"
+                            handleDateChange={handleDateChange}
+                        />
 
-                    <div className="">
-                        <Button variant="new" size="sm" className=" xl:mt-1 xl:flex gap-2" onClick={() => setShowFilter(true)}>
-                            FILTER
+                        <Button
+                            variant="new"
+                            size="sm"
+                            onClick={() =>
+                                handleDownload(
+                                    tabSelect,
+                                    dropdownStatus,
+                                    deliveryType,
+                                    currentSelectedPage,
+                                    searchInput,
+                                    from,
+                                    To_Date,
+                                    setIsDownloading,
+                                )
+                            }
+                            disabled={isDownloading}
+                            loading={isDownloading}
+                            icon={<IoMdDownload />}
+                        >
+                            EXPORT
                         </Button>
                     </div>
                 </div>
             </div>
+        )
+    }
 
+    return (
+        <div className="bg-gray-50 dark:bg-slate-800 rounded-xl p-4">
+            <div className="mb-1 bg-gray-50">
+                <div className="flex items-center gap-3 mb-2">
+                    <div className="p-3 bg-gradient-to-r from-red-500 to-red-600 rounded-xl shadow-lg">
+                        <IoMdReturnRight className="xl:text-2xl text-md text-white" />
+                    </div>
+                    <div>
+                        <h2 className="font-bold text-sm xl:text-[24px] text-gray-900 dark:text-white">Return Order Management</h2>
+                        <p className="text-gray-600 dark:text-gray-400 mt-1 text-md">View and Manage Slikk Return Orders</p>
+                    </div>
+                </div>
+            </div>
+            <div className="flex flex-col xl:flex-row justify-between lg:flex-row lg:justify-between mb-10 items-center gap-3"></div>
+            {filtersAndSearchUI()}
             <br />
             <ReturnOrderTabs
                 handleSelectTab={handleSelectTab}
