@@ -2,10 +2,8 @@
 import { SetStateAction, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
-import Pagination from '@/components/ui/Pagination'
-import Select from '@/components/ui/Select'
 import moment from 'moment'
-import { CHANGE_DELIVERY_OPTIONS, pageSizeOptions, SEARCHOPTIONS, type DropdownStatus } from './commontypes'
+import { CHANGE_DELIVERY_OPTIONS, SEARCHOPTIONS, type DropdownStatus } from './commontypes'
 import { Button, Dropdown, Input } from '@/components/ui'
 import { IoMdDownload } from 'react-icons/io'
 import FilterDialogOrder from './filterDialog/FilterDialog'
@@ -16,21 +14,12 @@ import { notification, Spin } from 'antd'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 import RedMarkTable from '@/common/RedMarkTable'
 import { HiSearch } from 'react-icons/hi'
-import { Option } from '@/views/org-management/sellers/sellerCommon'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 import TabSelectOrder from './filter'
 import OrderlistMobile from './OrderlistMobile'
 import { generatePrintingData } from './orderListFunctions'
 import { useOrderListColumns } from './orderListUtils/OrderListColumns'
-import {
-    handleDateChange,
-    handleDownload,
-    handleSearch,
-    handleSearchWithIcon,
-    handleSelect,
-    onPaginationChange,
-    onSelectChange,
-} from './orderListUtils/OrderListFunctions'
+import { handleDateChange, handleDownload, handleSearch, handleSearchWithIcon, handleSelect } from './orderListUtils/OrderListFunctions'
 import { getStatusFilter } from './orderListUtils/OrderListUtils'
 import OrderReAssignModal from './orderListUtils/OrderReAssignModal'
 import { newOrderService } from '@/store/services/newOrderaService'
@@ -38,6 +27,8 @@ import { Order } from '@/store/types/newOrderTypes'
 import CompleteCouponOrder from './orderListUtils/CompleteCouponOrder'
 import { FiCheckCircle, FiClipboard } from 'react-icons/fi'
 import { MdAssignmentAdd } from 'react-icons/md'
+import OrderColumnFilter from './orderListUtils/OrderColumnFilter'
+import PageCommon from '@/common/PageCommon'
 
 const OrderList = () => {
     const location = useLocation()
@@ -64,6 +55,8 @@ const OrderList = () => {
     const [isDownloading, setIsDownloading] = useState(false)
     const [numberStore, setNumberStore] = useState('')
     const [isReAssign, setIsReAssign] = useState(false)
+    const [currentSelectedTable, setCurrentSelectedTable] = useState<string[]>([])
+    const [columnFilter, setColumnFilter] = useState(false)
     const [isCompleteOrder, setIsCompleteOrder] = useState(false)
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
 
@@ -199,7 +192,128 @@ const OrderList = () => {
         deliveryChangeType,
         CHANGE_DELIVERY_OPTIONS,
         handleSyncDistance,
+        currentSelectedTable,
     })
+
+    const filtersAndSearchUI = () => {
+        return (
+            <div className="flex flex-col mb-10 gap-6 bg-white dark:bg-gray-900 p-5 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-800 w-full">
+                <div className="flex flex-col gap-3">
+                    <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Search For Orders and Other Filters</h2>
+
+                    <div className="flex flex-col xl:flex-row items-center gap-3 w-full">
+                        <div className="flex items-center gap-2 flex-1">
+                            <Input
+                                type="search"
+                                name="search"
+                                placeholder="Search by Order ID, Customer phone number, etc..."
+                                value={searchInput}
+                                className="w-full rounded-xl border border-gray-300 dark:border-gray-700 
+                               bg-gray-50 dark:bg-gray-800 
+                               px-4 py-2 text-sm
+                               focus:outline-none focus:ring-2 focus:ring-blue-500 
+                               transition-all duration-200"
+                                onChange={(e) => setSearchInput(e.target.value)}
+                                onKeyDown={(e: any) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault()
+                                        handleSearch(e, setSearchOnEnter)
+                                    }
+                                }}
+                            />
+                            <div
+                                className="bg-blue-500 hover:bg-blue-400 p-2 rounded-xl cursor-pointer"
+                                onClick={() => handleSearchWithIcon(setSearchOnEnter, searchInput)}
+                            >
+                                <HiSearch className="text-white text-xl" />
+                            </div>
+                        </div>
+
+                        <div className="bg-gray-100 dark:bg-blue-600 dark:text-white font-bold text-sm rounded-md">
+                            <Dropdown
+                                className="text-black bg-gray-200 font-bold"
+                                title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
+                                onSelect={(e) => handleSelect(e, setCurrentSelectedPage)}
+                            >
+                                {SEARCHOPTIONS?.map((item, key) => (
+                                    <DropdownItem key={key} eventKey={item.value}>
+                                        <span>{item.label}</span>
+                                    </DropdownItem>
+                                ))}
+                            </Dropdown>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="border-t border-gray-200 dark:border-gray-800" />
+
+                <div className="flex flex-col xl:flex-row xl:justify-between gap-4">
+                    <div className="flex xl:flex-row flex-col gap-3 items-center">
+                        <Button variant="new" size="sm" icon={<FiCheckCircle />} onClick={() => setIsCompleteOrder(true)}>
+                            Complete Coupon Order
+                        </Button>
+
+                        <Button variant="new" size="sm" icon={<MdAssignmentAdd />} onClick={() => setIsReAssign(true)}>
+                            Reassign
+                        </Button>
+
+                        <Button
+                            variant="new"
+                            size="sm"
+                            className="flex gap-2 items-center"
+                            icon={<CiFilter />}
+                            onClick={() => setShowFilter(true)}
+                        >
+                            Filters
+                        </Button>
+                        <Button
+                            variant="new"
+                            size="sm"
+                            className="flex gap-2 items-center"
+                            icon={<CiFilter />}
+                            onClick={() => setColumnFilter(true)}
+                        >
+                            Column Filters
+                        </Button>
+                    </div>
+
+                    {/* Right Section */}
+                    <div className="flex gap-3 items-center justify-center">
+                        <UltimateDatePicker
+                            from={from}
+                            setFrom={setFrom}
+                            to={to}
+                            setTo={setTo}
+                            customClass="border w-auto rounded-md h-auto font-bold bg-black text-white flex justify-center"
+                            handleDateChange={(e: [Date | null, Date | null] | null) => handleDateChange(e, setFrom, setTo)}
+                        />
+
+                        <Button
+                            disabled={isDownloading}
+                            variant="new"
+                            size="sm"
+                            icon={<IoMdDownload />}
+                            loading={isDownloading}
+                            onClick={() =>
+                                handleDownload(
+                                    from,
+                                    to,
+                                    dropdownStatus,
+                                    deliveryType,
+                                    paymentType,
+                                    currentSelectedPage,
+                                    searchInput,
+                                    setIsDownloading,
+                                )
+                            }
+                        >
+                            EXPORT
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <Spin spinning={ordersApiResponse.isLoading || ordersApiResponse.isFetching}>
@@ -216,114 +330,7 @@ const OrderList = () => {
             </div>
             <div className="p-4 shadow-lg dark:bg-slate-800 rounded-xl">
                 <div className="overflow-x-auto scrollbar-hide">
-                    <div className="flex flex-col mb-10 gap-6 bg-white dark:bg-gray-900 p-5 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-800 w-full">
-                        <div className="flex flex-col gap-3">
-                            <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Search For Orders and Other Filters</h2>
-
-                            <div className="flex flex-col xl:flex-row items-center gap-3 w-full">
-                                <div className="flex items-center gap-2 flex-1">
-                                    <Input
-                                        type="search"
-                                        name="search"
-                                        placeholder="Search by Order ID, Customer phone number, etc..."
-                                        value={searchInput}
-                                        className="w-full rounded-xl border border-gray-300 dark:border-gray-700 
-                               bg-gray-50 dark:bg-gray-800 
-                               px-4 py-2 text-sm
-                               focus:outline-none focus:ring-2 focus:ring-blue-500 
-                               transition-all duration-200"
-                                        onChange={(e) => setSearchInput(e.target.value)}
-                                        onKeyDown={(e: any) => {
-                                            if (e.key === 'Enter') {
-                                                e.preventDefault()
-                                                handleSearch(e, setSearchOnEnter)
-                                            }
-                                        }}
-                                    />
-                                    <div
-                                        className="bg-blue-500 hover:bg-blue-400 p-2 rounded-xl cursor-pointer"
-                                        onClick={() => handleSearchWithIcon(setSearchOnEnter, searchInput)}
-                                    >
-                                        <HiSearch className="text-white text-xl" />
-                                    </div>
-                                </div>
-
-                                <div className="bg-gray-100 dark:bg-blue-600 dark:text-white font-bold text-sm rounded-md">
-                                    <Dropdown
-                                        className="text-black bg-gray-200 font-bold"
-                                        title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
-                                        onSelect={(e) => handleSelect(e, setCurrentSelectedPage)}
-                                    >
-                                        {SEARCHOPTIONS?.map((item, key) => (
-                                            <DropdownItem key={key} eventKey={item.value}>
-                                                <span>{item.label}</span>
-                                            </DropdownItem>
-                                        ))}
-                                    </Dropdown>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="border-t border-gray-200 dark:border-gray-800" />
-
-                        <div className="flex flex-col xl:flex-row xl:justify-between gap-4">
-                            <div className="flex xl:flex-row flex-col gap-3 items-center">
-                                <Button variant="new" size="sm" icon={<FiCheckCircle />} onClick={() => setIsCompleteOrder(true)}>
-                                    Complete Coupon Order
-                                </Button>
-
-                                <Button variant="new" size="sm" icon={<MdAssignmentAdd />} onClick={() => setIsReAssign(true)}>
-                                    Reassign
-                                </Button>
-
-                                <Button
-                                    variant="new"
-                                    size="sm"
-                                    className="flex gap-2 items-center"
-                                    icon={<CiFilter />}
-                                    onClick={() => setShowFilter(true)}
-                                >
-                                    FILTER
-                                </Button>
-                            </div>
-
-                            {/* Right Section */}
-                            <div className="flex gap-3 items-center justify-center">
-                                <UltimateDatePicker
-                                    from={from}
-                                    setFrom={setFrom}
-                                    to={to}
-                                    setTo={setTo}
-                                    customClass="border w-auto rounded-md h-auto font-bold bg-black text-white flex justify-center"
-                                    handleDateChange={(e: [Date | null, Date | null] | null) => handleDateChange(e, setFrom, setTo)}
-                                />
-
-                                <Button
-                                    disabled={isDownloading}
-                                    variant="new"
-                                    size="sm"
-                                    icon={<IoMdDownload />}
-                                    loading={isDownloading}
-                                    onClick={() =>
-                                        handleDownload(
-                                            from,
-                                            to,
-                                            dropdownStatus,
-                                            deliveryType,
-                                            paymentType,
-                                            currentSelectedPage,
-                                            searchInput,
-                                            setIsDownloading,
-                                        )
-                                    }
-                                >
-                                    EXPORT
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* to */}
+                    {filtersAndSearchUI()}
                     <TabSelectOrder
                         handleSelectTab={handleSelectTab}
                         tabSelect={tabSelect}
@@ -347,28 +354,11 @@ const OrderList = () => {
                         <OrderlistMobile orders={orders} handleNumberClick={handleNumberClick} handleSyncDistance={handleSyncDistance} />
                     </div>
                 </div>
-                <div className="flex flex-col md:flex-row items-center justify-between mt-4">
-                    {numberClick !== true && (
-                        <Pagination
-                            pageSize={pageSize}
-                            currentPage={page}
-                            total={totalData}
-                            className="mb-4 md:mb-0"
-                            onChange={(e) => onPaginationChange(e, setPage)}
-                        />
-                    )}
-                    <div className="min-w-[130px] flex gap-5">
-                        {numberClick !== true && orders.length !== 0 && (
-                            <Select<Option>
-                                size="sm"
-                                isSearchable={false}
-                                value={pageSizeOptions.find((option) => option.value === pageSize)}
-                                options={pageSizeOptions}
-                                onChange={(option) => onSelectChange(option?.value, setPageSize, setPage)}
-                            />
-                        )}
-                    </div>
-                </div>
+
+                {numberClick !== true && (
+                    <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={totalData} />
+                )}
+
                 {showFilter && (
                     <FilterDialogOrder
                         showFilter={showFilter}
@@ -387,6 +377,12 @@ const OrderList = () => {
                 {pendingSound && <PendingNotification shouldPlay={pendingSound} />}
                 {isReAssign && <OrderReAssignModal isReAssign={isReAssign} setIsReAssign={setIsReAssign} />}
                 <CompleteCouponOrder isOpen={isCompleteOrder} setIsOpen={setIsCompleteOrder} refetch={ordersApiResponse.refetch} />
+                <OrderColumnFilter
+                    setShowDrawer={setColumnFilter}
+                    showDrawer={columnFilter}
+                    currentTableSelected={currentSelectedTable}
+                    setCurrentSelectedTable={setCurrentSelectedTable}
+                />
             </div>
         </Spin>
     )
