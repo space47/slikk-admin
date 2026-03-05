@@ -69,6 +69,7 @@ const SendNotification = () => {
                     ...(excludeFilterId ? [`filterId_exclude_${excludeFilterId}`] : []),
                 ].filter((filter) => filter),
                 target_page: targetPage,
+                ...(val.key ? { key: val.key } : {}),
                 page_title: encodeURIComponent(val?.page_title) ?? '',
                 sub_page: val?.sub ?? '',
             },
