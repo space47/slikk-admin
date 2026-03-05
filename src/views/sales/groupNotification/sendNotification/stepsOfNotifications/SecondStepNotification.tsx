@@ -96,6 +96,11 @@ const SecondStepNotification = ({ values, setFilterId, filterId, excludeFilterId
                         <Field type="text" name="sub" component={Input} placeholder="Enter target Sub Page" />
                     </FormItem>
                 )}
+                {values?.target_page?.toLowerCase() === 'product' && (
+                    <FormItem label="Enter target page Key">
+                        <Field type="text" name="key" component={Input} placeholder="Enter target Page key" />
+                    </FormItem>
+                )}
 
                 <div>
                     <FormItem label="Is Custom" className="w-full xl:w-2/3">
