@@ -61,18 +61,27 @@ const EditReportQuery = () => {
                             use_case: item?.extra_attributes?.use_case || '',
                         },
                     })) || [],
-                required_fields: data?.results[0]?.required_fields,
-                // required_fields: Object.entries(data?.results[0]?.required_fields || {}).map(([key, fullValue]) => {
-                //     const [position, dataType, value, prefix = '', suffix = ''] = fullValue
-                //     return {
-                //         position,
-                //         key,
-                //         value: Array.isArray(value) ? value.join(', ') : value,
-                //         dataType: dataType || 'String',
-                //         prefix,
-                //         suffix,
-                //     }
-                // }),
+                required_fields:
+                    typeof data?.results?.[0]?.required_fields === 'object' && !Array.isArray(data?.results?.[0]?.required_fields)
+                        ? Object.entries(data?.results?.[0]?.required_fields || {})
+                              .map(([key, fullValue]) => {
+                                  if (!Array.isArray(fullValue)) return null
+
+                                  const [position, dataType, value, prefix = '', suffix = ''] = fullValue
+
+                                  return {
+                                      position,
+                                      key,
+                                      value: Array.isArray(value) ? value.join(', ') : value,
+                                      dataType: dataType || 'String',
+                                      prefix,
+                                      suffix,
+                                  }
+                              })
+                              .filter(Boolean)
+                        : data?.results?.[0]?.required_fields,
+
+                // required_fields: data?.results[0]?.required_fields,
             }
 
             setReportData(formattedData)
