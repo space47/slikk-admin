@@ -43,4 +43,5 @@ export enum OrderColumns {
     CUSTOMER_NAME = 'user.name',
     PICKER_NAME = 'picker.name',
     UPDATE_DATE = 'update_date',
+    PRINTER = 'printer',
 }

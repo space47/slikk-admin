@@ -1,4 +1,4 @@
-import { Drawer } from '@/components/ui'
+import { Button, Drawer } from '@/components/ui'
 import { OrderColumns } from './OrderListUtils'
 
 interface PROPS {
@@ -9,6 +9,7 @@ interface PROPS {
 }
 
 const TableData = [
+    { label: 'PRINTER', value: OrderColumns.PRINTER },
     { label: 'PAYMENT STATUS', value: OrderColumns.PAYMENT_STATUS },
     { label: 'COUPON CODE', value: OrderColumns.COUPON_CODE },
     { label: 'DELAY STATUS', value: OrderColumns.DELAY_STATUS },
@@ -68,6 +69,11 @@ const OrderColumnFilter = ({ showDrawer, setShowDrawer, currentTableSelected, se
                                 ))}
                             </div>
                         </div>
+                    </div>
+                    <div className="flex justify-center items-center mt-10">
+                        <Button variant="blue" type="button" onClick={() => setShowDrawer(false)}>
+                            Apply
+                        </Button>
                     </div>
                 </div>
             </Drawer>

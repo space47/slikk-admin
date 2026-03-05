@@ -32,26 +32,6 @@ export const useOrderListColumns = ({
     return useMemo(() => {
         const baseColumns = [
             {
-                header: 'Printer',
-                accessorKey: 'invoice_id',
-                cell: ({ row }: any) => (
-                    <div className="flex items-center justify-center">
-                        <BsFillPrinterFill
-                            className="text-xl text-blue-500 cursor-pointer"
-                            onClick={() =>
-                                generatePrintingData(
-                                    row?.original?.invoice_id,
-                                    row?.original?.payment?.mode,
-                                    row?.original?.payment?.status,
-                                    row?.original?.order_items_count,
-                                    row?.original?.payment?.amount,
-                                )
-                            }
-                        />
-                    </div>
-                ),
-            },
-            {
                 header: 'Invoice Id',
                 accessorKey: 'invoice_id',
                 cell: ({ getValue, row }: any) => {
@@ -214,7 +194,13 @@ export const useOrderListColumns = ({
 
             // { header: 'Picker Name', accessorKey: 'picker.name' },
 
-            { header: 'Order Total', accessorKey: 'payment.amount' },
+            {
+                header: 'Order Total',
+                accessorKey: 'payment.amount',
+                cell: ({ row }: any) => {
+                    return <>{`Rs.${row?.original?.payment.amount}`}</>
+                },
+            },
         ]
 
         const resolveNestedValue = (obj: any, path: string) => path.split('.').reduce((acc, key) => acc?.[key], obj)
@@ -307,6 +293,29 @@ export const useOrderListColumns = ({
                         header: 'Last Update',
                         accessorKey: 'update_date',
                         cell: ({ getValue }: any) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
+                    }
+                }
+
+                if (tableVal === OrderColumns.PRINTER) {
+                    return {
+                        header: 'Printer',
+                        accessorKey: 'invoice_id',
+                        cell: ({ row }: any) => (
+                            <div className="flex items-center justify-center">
+                                <BsFillPrinterFill
+                                    className="text-xl text-blue-500 cursor-pointer"
+                                    onClick={() =>
+                                        generatePrintingData(
+                                            row?.original?.invoice_id,
+                                            row?.original?.payment?.mode,
+                                            row?.original?.payment?.status,
+                                            row?.original?.order_items_count,
+                                            row?.original?.payment?.amount,
+                                        )
+                                    }
+                                />
+                            </div>
+                        ),
                     }
                 }
 

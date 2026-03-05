@@ -73,15 +73,6 @@ export const handleDeliveryChange = (selectedValue: any, row: any, setDeliveryCh
     deliveryChangeAPI(selectedValue, row)
 }
 
-export const onPaginationChange = (page: number, setPage: (x: number) => void) => {
-    setPage(page)
-}
-
-export const onSelectChange = (value: number | undefined, setPageSize: (x: number) => void, setPage: (x: number) => void) => {
-    setPage(1)
-    setPageSize(Number(value))
-}
-
 export const handleSelect = (value: any, setCurrentSelectedPage: any) => {
     const selected = SEARCHOPTIONS.find((item) => item.value === value)
     if (selected) {
