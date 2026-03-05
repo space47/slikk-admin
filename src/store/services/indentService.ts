@@ -56,5 +56,23 @@ export const indentService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
+        indentItemsDownload: builder.query<Blob, { id: string; is_picked: string; paramKey: string; paramValue?: string }>({
+            query: (params) => {
+                const parameters: Record<string, string | number> = {
+                    download: 'true',
+                }
+
+                if (params.id) parameters.id = params.id.toString()
+                if (params.is_picked) parameters.is_picked = params.is_picked.toString()
+                if (params.paramValue) parameters[params.paramKey] = params.paramValue
+
+                return {
+                    url: `return/inward/picker`,
+                    method: 'GET',
+                    params: parameters,
+                    responseHandler: (response) => response.blob(), // ✅ for file
+                }
+            },
+        }),
     }),
 })
