@@ -44,7 +44,7 @@ export const processField = (field: any): string | null => {
 
                 return `'${transformedValue}'`
             })
-            fieldQuery = `${key}= IN (${formattedValues.join(',')})`
+            fieldQuery = `${key}=(${formattedValues.join(',')})`
         } else {
             let transformedValue = !['Date', 'Number', 'Boolean'].includes(dataType!)
                 ? `${prefix.toUpperCase()}${val.toString().toUpperCase()}${suffix.toUpperCase()}`

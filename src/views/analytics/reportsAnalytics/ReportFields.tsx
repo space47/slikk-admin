@@ -42,7 +42,7 @@ const FieldRenderer = ({
     companyList,
     depth = 0,
 }: FieldRendererProps) => {
-    const [isExpanded, setIsExpanded] = useState(true)
+    const [isExpanded, setIsExpanded] = useState(false)
     const fieldPath = parentIndex ? `${parentIndex}.subFields[${index}]` : `required_fields[${index}]`
 
     return (

@@ -62,6 +62,17 @@ const EditReportQuery = () => {
                         },
                     })) || [],
                 required_fields: data?.results[0]?.required_fields,
+                // required_fields: Object.entries(data?.results[0]?.required_fields || {}).map(([key, fullValue]) => {
+                //     const [position, dataType, value, prefix = '', suffix = ''] = fullValue
+                //     return {
+                //         position,
+                //         key,
+                //         value: Array.isArray(value) ? value.join(', ') : value,
+                //         dataType: dataType || 'String',
+                //         prefix,
+                //         suffix,
+                //     }
+                // }),
             }
 
             setReportData(formattedData)
