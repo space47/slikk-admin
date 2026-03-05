@@ -61,19 +61,18 @@ const EditReportQuery = () => {
                             use_case: item?.extra_attributes?.use_case || '',
                         },
                     })) || [],
-                // value: [],
-
-                required_fields: Object.entries(data?.results[0]?.required_fields || {}).map(([key, fullValue]) => {
-                    const [position, dataType, value, prefix = '', suffix = ''] = fullValue
-                    return {
-                        position,
-                        key,
-                        value: Array.isArray(value) ? value.join(', ') : value,
-                        dataType: dataType || 'String',
-                        prefix,
-                        suffix,
-                    }
-                }),
+                required_fields: data?.results[0]?.required_fields,
+                // required_fields: Object.entries(data?.results[0]?.required_fields || {}).map(([key, fullValue]) => {
+                //     const [position, dataType, value, prefix = '', suffix = ''] = fullValue
+                //     return {
+                //         position,
+                //         key,
+                //         value: Array.isArray(value) ? value.join(', ') : value,
+                //         dataType: dataType || 'String',
+                //         prefix,
+                //         suffix,
+                //     }
+                // }),
             }
 
             setReportData(formattedData)
@@ -87,23 +86,6 @@ const EditReportQuery = () => {
     }, [id])
 
     const handleSubmit = async (values: any) => {
-        console.log('start')
-        const formattedRequiredFields = values.required_fields.reduce((result: any, item: any) => {
-            if (item.key) {
-                let valueArray: [number | undefined, string, string | string[], string, string]
-                if (item.dataType === 'MultiSelect') {
-                    const multiSelectValues = item.value.split(',').map((val: string) => val.trim())
-                    valueArray = [item?.position, item.dataType, multiSelectValues, item.prefix || '', item.suffix || '']
-                } else {
-                    const value = item.value.trim()
-                    valueArray = [item?.position, item.dataType, value, item.prefix || '', item.suffix || '']
-                }
-                result[item.key] = valueArray
-            }
-            return result
-        }, {})
-
-        console.log('ok the final stage', values.value)
         const updatedValues = values.value.map((item: any) => {
             const parser = new DOMParser()
             const htmlDoc = parser.parseFromString(item.query, 'text/html')
@@ -126,7 +108,7 @@ const EditReportQuery = () => {
         const body = {
             ...values,
             value: updatedValues,
-            required_fields: formattedRequiredFields,
+            required_fields: values.required_fields,
         }
 
         try {
