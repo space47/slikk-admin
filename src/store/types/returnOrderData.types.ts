@@ -13,6 +13,8 @@ export type LocationReturnType = {
     }
 }
 
+export type ReturnOrderQuery = Record<string, string | number | boolean | undefined | any>
+
 export interface ReturnOrderResponse {
     data: ReturnOrder
     status: string
