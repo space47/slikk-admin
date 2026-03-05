@@ -45,6 +45,29 @@ const FieldRenderer = ({
     const [isExpanded, setIsExpanded] = useState(false)
     const fieldPath = parentIndex ? `${parentIndex}.subFields[${index}]` : `required_fields[${index}]`
 
+    if (item.dataType === 'filter' && !isExpanded) {
+        return (
+            <div className="space-y-4">
+                <h2 className="text-lg font-semibold text-gray-800 tracking-wide">Filter Fields</h2>
+                <div
+                    className={`inline-block ${getBorderColor(depth)} border rounded-xl hover:shadow-md transition-all duration-200 cursor-pointer bg-blue-200 bg-transparent`}
+                    style={{ marginLeft: `${depth * 20}px`, width: '320px' }}
+                    onClick={() => setIsExpanded(true)}
+                >
+                    <div className="flex items-center justify-between p-3 group">
+                        <div className="flex items-center gap-3">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-white/60 group-hover:bg-white/80 transition">
+                                <MdOutlineKeyboardArrowRight className="w-4 h-4 text-blue-700 group-hover:translate-x-1 transition-transform duration-200" />
+                            </div>
+                            <span className="text-sm font-semibold text-blue-900">{item.key || 'Unnamed Filter'}</span>
+                        </div>
+                        <span className="text-xs font-medium text-blue-800 bg-white px-2.5 py-1 rounded-md shadow-sm">Configure</span>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className="space-y-3">
             <div
@@ -65,174 +88,185 @@ const FieldRenderer = ({
                             />
                         </div>
                     </div>
-                    <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            {depth === 0 ? 'Data Type' : 'Sub Field Type'}
-                        </label>
-                        <Field name={`${fieldPath}.dataType`}>
-                            {({ field, form }: FieldProps) => (
-                                <Select
-                                    isDisabled
-                                    className="w-full"
-                                    placeholder="Select type"
-                                    options={reportQueryArray}
-                                    value={reportQueryArray.find((option) => option.value === field.value)}
-                                    classNamePrefix="react-select"
-                                    onChange={(option) => form.setFieldValue(field.name, option?.value)}
-                                />
-                            )}
-                        </Field>
-                    </div>
-                    <div className="md:col-span-7">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">{depth === 0 ? 'Value' : 'Sub Field Value'}</label>
-                        <Field name={`${fieldPath}.value`}>
-                            {({ field, form }: FieldProps) => {
-                                const { dataType, key } = item
-                                const options = optionDataMap[key]
-                                if (dataType === 'Select' && options) {
-                                    const selectedOption = options.find(
-                                        (option: any) => option.name?.toLowerCase() === field.value?.toLowerCase(),
-                                    )
-                                    return (
-                                        <div className="w-full">
+
+                    {/* Data Type - hidden for Filter type since it's already determined */}
+                    {item.dataType !== 'Filter' && (
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                {depth === 0 ? 'Data Type' : 'Sub Field Type'}
+                            </label>
+                            <Field name={`${fieldPath}.dataType`}>
+                                {({ field, form }: FieldProps) => (
+                                    <Select
+                                        isDisabled
+                                        className="w-full"
+                                        placeholder="Select type"
+                                        options={reportQueryArray}
+                                        value={reportQueryArray.find((option) => option.value === field.value)}
+                                        classNamePrefix="react-select"
+                                        onChange={(option) => form.setFieldValue(field.name, option?.value)}
+                                    />
+                                )}
+                            </Field>
+                        </div>
+                    )}
+
+                    {/* Value - hidden for Filter type */}
+                    {item.dataType !== 'Filter' && (
+                        <div className="md:col-span-7">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                {depth === 0 ? 'Value' : 'Sub Field Value'}
+                            </label>
+                            <Field name={`${fieldPath}.value`}>
+                                {({ field, form }: FieldProps) => {
+                                    const { dataType, key } = item
+                                    const options = optionDataMap[key]
+
+                                    if (dataType === 'Select' && options) {
+                                        const selectedOption = options.find(
+                                            (option: any) => option.name?.toLowerCase() === field.value?.toLowerCase(),
+                                        )
+                                        return (
+                                            <div className="w-full">
+                                                <Select
+                                                    isClearable
+                                                    className="w-full"
+                                                    {...field}
+                                                    options={options}
+                                                    getOptionLabel={(option) => option?.name}
+                                                    getOptionValue={(option) => option?.id?.toString()}
+                                                    value={selectedOption || null}
+                                                    classNamePrefix="react-select"
+                                                    onChange={(newVal) => {
+                                                        form.setFieldValue(`${fieldPath}.value`, newVal?.name)
+                                                    }}
+                                                />
+                                                {showInfo && (
+                                                    <p className="mt-2 text-sm text-amber-600 bg-amber-50 px-3 py-1 rounded">
+                                                        Leave empty to select all
+                                                    </p>
+                                                )}
+                                            </div>
+                                        )
+                                    }
+
+                                    if (dataType === 'Select' && key === 'store_code') {
+                                        return (
                                             <Select
                                                 isClearable
                                                 className="w-full"
-                                                {...field}
+                                                options={storeResults}
+                                                getOptionLabel={(option) => option?.code}
+                                                getOptionValue={(option) => option?.code}
+                                                classNamePrefix="react-select"
+                                                placeholder="Select store"
+                                                onChange={(newVal) => {
+                                                    form.setFieldValue(`${fieldPath}.value`, newVal?.code)
+                                                }}
+                                            />
+                                        )
+                                    }
+
+                                    if (dataType === 'Select' && key === 'company_code') {
+                                        const selectedCompany = companyList.find(
+                                            (option) => option?.code?.toString() === field.value?.toString(),
+                                        )
+
+                                        return (
+                                            <Select
+                                                className="w-full"
+                                                options={companyList}
+                                                getOptionLabel={(option) => option.name}
+                                                getOptionValue={(option) => option?.code?.toString() ?? ''}
+                                                value={selectedCompany || null}
+                                                placeholder="Select company"
+                                                classNamePrefix="react-select"
+                                                onChange={(newVal: any) => {
+                                                    form.setFieldValue(`${fieldPath}.value`, newVal?.code ?? '')
+                                                }}
+                                            />
+                                        )
+                                    }
+
+                                    if (dataType === 'Select' && key === 'fashion_style') {
+                                        return (
+                                            <Select
+                                                isClearable
+                                                className="w-full"
+                                                options={FashionList}
+                                                getOptionLabel={(option) => option.name}
+                                                getOptionValue={(option) => option.value}
+                                                placeholder="Select fashion style"
+                                                classNamePrefix="react-select"
+                                                onChange={(newVal) => {
+                                                    form.setFieldValue(`${fieldPath}.value`, newVal?.value)
+                                                }}
+                                            />
+                                        )
+                                    }
+
+                                    if (dataType === 'MultiSelect' && options) {
+                                        const fieldValueArray = Array.isArray(field?.value) ? field?.value : field?.value?.split(',') || []
+
+                                        const selectedOptions = fieldValueArray
+                                            .map((item: any) => {
+                                                const selectedOption = options?.find((options: any) => {
+                                                    return options?.name.toLowerCase() === item.toLowerCase()
+                                                })
+                                                return selectedOption
+                                            })
+                                            .filter(Boolean)
+
+                                        return (
+                                            <Select
+                                                isMulti
+                                                isClearable
+                                                className="w-full"
                                                 options={options}
                                                 getOptionLabel={(option) => option?.name}
                                                 getOptionValue={(option) => option?.id?.toString()}
-                                                value={selectedOption || null}
+                                                value={selectedOptions}
+                                                placeholder="Select multiple options"
                                                 classNamePrefix="react-select"
-                                                onChange={(newVal) => {
-                                                    form.setFieldValue(`${fieldPath}.value`, newVal?.name)
+                                                onChange={(newVals) => {
+                                                    const selectedValues = newVals?.map((val: any) => val.name) || []
+                                                    form.setFieldValue(`${fieldPath}.value`, selectedValues)
                                                 }}
                                             />
-                                            {showInfo && (
-                                                <p className="mt-2 text-sm text-amber-600 bg-amber-50 px-3 py-1 rounded">
-                                                    Leave empty to select all
-                                                </p>
-                                            )}
-                                        </div>
-                                    )
-                                }
+                                        )
+                                    }
 
-                                if (dataType === 'Select' && key === 'store_code') {
+                                    if (dataType === 'Date') {
+                                        return (
+                                            <Field name={field.name}>
+                                                {({ field, form }: FieldProps) => (
+                                                    <DatePicker
+                                                        placeholder=""
+                                                        className="w-full mt-2"
+                                                        value={field.value ? dayjs(field.value, 'YYYY-MM-DD') : null}
+                                                        disabledDate={(current) => current && current.isAfter(dayjs().endOf('day'))}
+                                                        onChange={(value) => {
+                                                            form.setFieldValue(field.name, value ? value.format('YYYY-MM-DD') : '')
+                                                        }}
+                                                    />
+                                                )}
+                                            </Field>
+                                        )
+                                    }
+
                                     return (
-                                        <Select
-                                            isClearable
+                                        <Input
+                                            type={dataType === 'Date' ? 'date' : 'text'}
+                                            placeholder={dataType === 'Date' ? 'Select date' : 'Enter value'}
+                                            {...field}
                                             className="w-full"
-                                            options={storeResults}
-                                            getOptionLabel={(option) => option?.code}
-                                            getOptionValue={(option) => option?.code}
-                                            classNamePrefix="react-select"
-                                            placeholder="Select store"
-                                            onChange={(newVal) => {
-                                                form.setFieldValue(`${fieldPath}.value`, newVal?.code)
-                                            }}
                                         />
                                     )
-                                }
-
-                                if (dataType === 'Select' && key === 'company_code') {
-                                    const selectedCompany = companyList.find(
-                                        (option) => option?.code?.toString() === field.value?.toString(),
-                                    )
-
-                                    return (
-                                        <Select
-                                            className="w-full"
-                                            options={companyList}
-                                            getOptionLabel={(option) => option.name}
-                                            getOptionValue={(option) => option?.code?.toString() ?? ''}
-                                            value={selectedCompany || null}
-                                            placeholder="Select company"
-                                            classNamePrefix="react-select"
-                                            onChange={(newVal: any) => {
-                                                form.setFieldValue(`${fieldPath}.value`, newVal?.code ?? '')
-                                            }}
-                                        />
-                                    )
-                                }
-
-                                if (dataType === 'Select' && key === 'fashion_style') {
-                                    return (
-                                        <Select
-                                            isClearable
-                                            className="w-full"
-                                            options={FashionList}
-                                            getOptionLabel={(option) => option.name}
-                                            getOptionValue={(option) => option.value}
-                                            placeholder="Select fashion style"
-                                            classNamePrefix="react-select"
-                                            onChange={(newVal) => {
-                                                form.setFieldValue(`${fieldPath}.value`, newVal?.value)
-                                            }}
-                                        />
-                                    )
-                                }
-
-                                if (dataType === 'MultiSelect' && options) {
-                                    const fieldValueArray = Array.isArray(field?.value) ? field?.value : field?.value?.split(',') || []
-
-                                    const selectedOptions = fieldValueArray
-                                        .map((item: any) => {
-                                            const selectedOption = options?.find((options: any) => {
-                                                return options?.name.toLowerCase() === item.toLowerCase()
-                                            })
-                                            return selectedOption
-                                        })
-                                        .filter(Boolean)
-
-                                    return (
-                                        <Select
-                                            isMulti
-                                            isClearable
-                                            className="w-full"
-                                            options={options}
-                                            getOptionLabel={(option) => option?.name}
-                                            getOptionValue={(option) => option?.id?.toString()}
-                                            value={selectedOptions}
-                                            placeholder="Select multiple options"
-                                            classNamePrefix="react-select"
-                                            onChange={(newVals) => {
-                                                const selectedValues = newVals?.map((val: any) => val.name) || []
-                                                form.setFieldValue(`${fieldPath}.value`, selectedValues)
-                                            }}
-                                        />
-                                    )
-                                }
-
-                                if (dataType === 'Date') {
-                                    return (
-                                        <Field name={field.name}>
-                                            {({ field, form }: FieldProps) => (
-                                                <DatePicker
-                                                    placeholder=""
-                                                    className="w-full mt-2"
-                                                    value={field.value ? dayjs(field.value, 'YYYY-MM-DD') : null}
-                                                    disabledDate={(current) => current && current.isAfter(dayjs().endOf('day'))}
-                                                    onChange={(value) => {
-                                                        form.setFieldValue(field.name, value ? value.format('YYYY-MM-DD') : '')
-                                                    }}
-                                                />
-                                            )}
-                                        </Field>
-                                    )
-                                }
-
-                                return (
-                                    <Input
-                                        type={dataType === 'Date' ? 'date' : 'text'}
-                                        placeholder={dataType === 'Date' ? 'Select date' : 'Enter value'}
-                                        {...field}
-                                        className="w-full"
-                                    />
-                                )
-                            }}
-                        </Field>
-                    </div>
-                    {item.subFields && item.subFields.length > 0 && (
+                                }}
+                            </Field>
+                        </div>
+                    )}
+                    {item.dataType !== 'Filter' && item.subFields && item.subFields.length > 0 && (
                         <div className="md:col-span-1 flex justify-end items-center">
                             <button
                                 type="button"
@@ -249,6 +283,7 @@ const FieldRenderer = ({
                     )}
                 </div>
             </div>
+
             {item.subFields && item.subFields.length > 0 && isExpanded && (
                 <div className="space-y-3 mt-2">
                     {item.subFields.map((subField: any, subIndex: number) => (
