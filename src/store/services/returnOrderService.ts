@@ -5,11 +5,21 @@ import {
     ReturnData,
     ReturnItemConfigurationResponse,
     ReturnManagementResponse,
+    ReturnOrderListResponseType,
+    ReturnOrderQueryParams,
     ReturnOrderResponse,
 } from '../types/returnOrderData.types'
 
 export const returnOrderDataService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
+        getNewReturnOrders: builder.query<ReturnOrderListResponseType, ReturnOrderQueryParams>({
+            query: (params) => ({
+                url: '/merchant/return_orders',
+                method: 'GET',
+                params,
+            }),
+            keepUnusedDataFor: 0,
+        }),
         returnOrderLocation: builder.query<{ success: string; data: LocationReturnType[] }, { from?: string; to?: string }>({
             query: (params) => {
                 const parameters: Record<string, string | string[]> = {}
