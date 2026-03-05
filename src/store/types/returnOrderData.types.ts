@@ -1,4 +1,5 @@
 import { RTLActions } from '@/views/sales/returnItems/returnItemsUtils/returnItemcommons'
+import { ApiResponse } from './generic.types'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type LocationReturnType = {
@@ -13,7 +14,7 @@ export type LocationReturnType = {
     }
 }
 
-export type ReturnOrderQuery = Record<string, string | number | boolean | undefined | any>
+export type ReturnOrderQueryParams = Record<string, string | number | boolean | undefined | any>
 
 export interface ReturnOrderResponse {
     data: ReturnOrder
@@ -62,6 +63,16 @@ export interface StatusLog {
     status: string
     timestamp: string
     RIDER?: string
+}
+
+// export type ReturnOrderListResponseType = ApiResponse<ReturnOrder>
+
+export type ReturnOrderListResponseType = {
+    status: string
+    data: {
+        count: number
+        results: ReturnOrder[]
+    }
 }
 
 // Order types

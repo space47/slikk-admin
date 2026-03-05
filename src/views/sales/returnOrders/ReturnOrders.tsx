@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import moment from 'moment'
-import { Button, Dropdown, Input, Tooltip } from '@/components/ui'
+import { Button, Dropdown, Input } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { IoMdDownload, IoMdReturnRight } from 'react-icons/io'
 import FilterReturnOrder from './filter/FilterReturnOrder'
@@ -133,6 +133,12 @@ const ReturnOrders = () => {
 
     const handleShowMap = async () => {
         setShowMap((prev) => !prev)
+        if (!showMap) {
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: 'smooth',
+            })
+        }
     }
 
     const filtersAndSearchUI = () => {
@@ -194,17 +200,15 @@ const ReturnOrders = () => {
 
                 <div className="flex flex-col xl:flex-row xl:justify-between gap-4">
                     <div className="flex xl:flex-row flex-col gap-3 items-center">
-                        <div>
-                            <Tooltip title="Zone Map">
-                                <button onClick={handleShowMap}>
-                                    {showMap ? (
-                                        <FaMapMarkedAlt className="text-4xl text-red-700 " />
-                                    ) : (
-                                        <FaMapMarkedAlt className="text-4xl text-green-600 " />
-                                    )}
-                                </button>
-                            </Tooltip>
-                        </div>
+                        <Button
+                            variant="new"
+                            size="sm"
+                            icon={showMap ? <FaMapMarkedAlt className=" text-red-700 " /> : <FaMapMarkedAlt className=" text-green-600 " />}
+                            onClick={handleShowMap}
+                        >
+                            {showMap ? 'Close Zone Map' : 'Show Zone Map'}
+                        </Button>
+
                         <Button
                             variant="new"
                             size="sm"
