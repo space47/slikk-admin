@@ -30,6 +30,13 @@ export const processField = (field: any): string | null => {
     let fieldQuery = ''
 
     if (subFields && Array.isArray(subFields) && subFields.length > 0) {
+        // check if all subfield values are empty
+        const noSubFieldValue = subFields.every((sub: any) => sub.value === undefined || sub.value === null || sub.value === '')
+
+        if (dataType === 'filter' && noSubFieldValue) {
+            return `${key}=`
+        }
+
         let replacedValue = value || ''
 
         subFields.forEach((sub: any) => {
@@ -37,7 +44,7 @@ export const processField = (field: any): string | null => {
             replacedValue = replacedValue.replace(`{${sub.key}}`, subVal)
         })
 
-        fieldQuery = `${key}=${encodeURIComponent(replacedValue || '')}`
+        fieldQuery = `${key}=${encodeURIComponent(replacedValue)}`
         return fieldQuery
     }
 
