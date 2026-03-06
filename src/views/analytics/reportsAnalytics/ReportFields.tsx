@@ -9,7 +9,7 @@ import { DatePicker } from 'antd'
 import dayjs from 'dayjs'
 import { Field, FieldArray, FieldProps } from 'formik'
 import React, { useEffect, useState } from 'react'
-import { MdOutlineKeyboardArrowDown, MdOutlineKeyboardArrowRight } from 'react-icons/md'
+import { MdOutlineKeyboardArrowRight } from 'react-icons/md'
 import { getBgColor, getBorderColor } from './reportAnalyticsUtils'
 
 interface ReportFieldsProps {
