@@ -61,7 +61,7 @@ const FieldRenderer = ({
                             </div>
                             <span className="text-sm font-semibold text-blue-900">{item.key || 'Unnamed Filter'}</span>
                         </div>
-                        <span className="text-xs font-medium text-blue-800 bg-white px-2.5 py-1 rounded-md shadow-sm">Configure</span>
+                        <span className="text-xs font-medium text-blue-800 bg-white px-2.5 py-1 rounded-md shadow-sm">set Filters</span>
                     </div>
                 </div>
             </div>
@@ -112,7 +112,7 @@ const FieldRenderer = ({
                     )}
 
                     {/* Value - hidden for Filter type */}
-                    {item.dataType !== 'Filter' && (
+                    {item.dataType !== 'filter' && (
                         <div className="md:col-span-7">
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 {depth === 0 ? 'Value' : 'Sub Field Value'}
@@ -266,22 +266,20 @@ const FieldRenderer = ({
                             </Field>
                         </div>
                     )}
-                    {item.dataType !== 'Filter' && item.subFields && item.subFields.length > 0 && (
-                        <div className="md:col-span-1 flex justify-end items-center">
-                            <button
-                                type="button"
-                                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                                onClick={() => setIsExpanded(!isExpanded)}
-                            >
-                                {isExpanded ? (
-                                    <MdOutlineKeyboardArrowDown className="w-5 h-5 text-gray-600" />
-                                ) : (
-                                    <MdOutlineKeyboardArrowRight className="w-5 h-5 text-gray-600" />
-                                )}
-                            </button>
-                        </div>
-                    )}
                 </div>
+                {item.dataType !== 'Filter' && item.subFields && item.subFields.length > 0 && (
+                    <div className="md:col-span-1 flex justify-end items-center">
+                        <Button
+                            type="button"
+                            size="sm"
+                            variant={isExpanded ? 'reject' : 'blue'}
+                            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                            onClick={() => setIsExpanded(!isExpanded)}
+                        >
+                            {isExpanded ? 'Remove Filter' : 'Set Filters'}
+                        </Button>
+                    </div>
+                )}
             </div>
 
             {item.subFields && item.subFields.length > 0 && isExpanded && (

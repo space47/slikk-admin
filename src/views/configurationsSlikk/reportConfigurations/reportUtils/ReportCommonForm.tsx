@@ -103,14 +103,14 @@ const DynamicField = ({ name, values, remove, reportQueryNames }: DynamicFieldPr
                                 {({ field, form }: any) => {
                                     const dataType = form.values?.[name]?.[index]?.dataType
 
-                                    return dataType !== 'filter' ? (
+                                    return (
                                         <Input
                                             {...field}
                                             type={dataType === 'Date' ? 'date' : 'text'}
                                             placeholder={dataType === 'Date' ? 'Select date' : 'Enter value'}
                                             className="bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
                                         />
-                                    ) : null
+                                    )
                                 }}
                             </Field>
                         </div>
