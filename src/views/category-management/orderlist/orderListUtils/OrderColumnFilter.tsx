@@ -1,5 +1,6 @@
 import { Button, Drawer } from '@/components/ui'
 import { OrderColumns } from './OrderListUtils'
+import { useEffect } from 'react'
 
 interface PROPS {
     showDrawer: boolean
@@ -24,15 +25,39 @@ const TableData = [
     { label: 'LAST UPDATED', value: OrderColumns.UPDATE_DATE },
 ]
 
+const STORAGE_KEY = 'order_table_columns'
+
 const OrderColumnFilter = ({ showDrawer, setShowDrawer, currentTableSelected, setCurrentSelectedTable }: PROPS) => {
+    useEffect(() => {
+        const savedColumns = localStorage.getItem(STORAGE_KEY)
+        if (savedColumns) {
+            try {
+                const parsedColumns = JSON.parse(savedColumns)
+                if (Array.isArray(parsedColumns)) {
+                    setCurrentSelectedTable(parsedColumns)
+                }
+            } catch (error) {
+                console.error('Error parsing saved columns:', error)
+            }
+        }
+    }, [setCurrentSelectedTable])
+
     const handleColumnSelect = (val: string) => {
         const isSelected = currentTableSelected.includes(val)
+        let newSelection: string[]
 
         if (isSelected) {
-            setCurrentSelectedTable(currentTableSelected.filter((item) => item !== val))
+            newSelection = currentTableSelected.filter((item) => item !== val)
         } else {
-            setCurrentSelectedTable([...currentTableSelected, val])
+            newSelection = [...currentTableSelected, val]
         }
+
+        setCurrentSelectedTable(newSelection)
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(newSelection))
+    }
+
+    const handleApply = () => {
+        setShowDrawer(false)
     }
 
     return (
@@ -61,8 +86,8 @@ const OrderColumnFilter = ({ showDrawer, setShowDrawer, currentTableSelected, se
                                         <input
                                             type="checkbox"
                                             checked={currentTableSelected.includes(item.value)}
-                                            onChange={() => handleColumnSelect(item.value)}
                                             className="mr-2"
+                                            onChange={() => handleColumnSelect(item.value)}
                                         />
                                         <span>{item.label}</span>
                                     </div>
@@ -71,7 +96,7 @@ const OrderColumnFilter = ({ showDrawer, setShowDrawer, currentTableSelected, se
                         </div>
                     </div>
                     <div className="flex justify-center items-center mt-10">
-                        <Button variant="blue" type="button" onClick={() => setShowDrawer(false)}>
+                        <Button variant="blue" type="button" onClick={handleApply}>
                             Apply
                         </Button>
                     </div>
