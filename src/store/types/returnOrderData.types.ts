@@ -35,6 +35,7 @@ export interface ReturnOrder {
     order: Order
     waybill_no: string | null
     packet_ids: string[]
+    delivery_otp?: string
     pickup_schedule_date: string | null
     pickup_schedule_slot: number
     reschedule_count: number
