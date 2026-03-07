@@ -139,6 +139,7 @@ const ReturnOrderDetails = () => {
                             returnDetails={returnDetails as ReturnOrder}
                             returnOrderItems={returnDetails?.return_order_items || []}
                             refetch={returnApi.refetch}
+                            deliveryOtp={returnDetails?.delivery_otp}
                         />
 
                         <div>
