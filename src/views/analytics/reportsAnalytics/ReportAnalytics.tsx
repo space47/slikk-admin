@@ -24,6 +24,8 @@ import { commonDownload } from '@/common/commonDownload'
 import { GrDatabase } from 'react-icons/gr'
 import { ReportUi } from './reportAnalysisComponents/ReportUi'
 import { processField } from './reportAnalyticsUtils'
+import { errorMessage } from '@/utils/responseMessages'
+import { AxiosError } from 'axios'
 
 const ReportAnalytics = () => {
     const [storeName, setStoreName] = useState('')
@@ -201,15 +203,10 @@ const ReportAnalytics = () => {
         }
     }
     const handleSubmit = async (values: any) => {
-        setCurrentValues(values)
+        const processedQueries = values.required_fields.map((field: any) => processField(field)).filter(Boolean)
+        setCurrentValues(processedQueries.join('&'))
         fetchTable(values)
     }
-
-    useEffect(() => {
-        if (currentValues) {
-            fetchTable(currentValues)
-        }
-    }, [])
 
     const handleSelect = (value: string) => {
         setSelectedOption(value)
@@ -217,20 +214,14 @@ const ReportAnalytics = () => {
 
     const handleDownloadCsv = async (queryName: any) => {
         notification.info({ message: 'Download ing Progress' })
-        let reportParameters = ''
-        if (currentValues?.required_fields) {
-            reportParameters = currentValues.required_fields
-                .map((field: { key: string; value: string }) => `${field.key}=${field.value}`)
-                .join('&')
-        }
         try {
             const response = await axioisInstance.get(
-                `/query/execute/${storeName}?${reportParameters}&download=true&query_name=${queryName}`,
+                `/query/execute/${storeName}?${currentValues}&download=true&query_name=${queryName}`,
                 { responseType: 'blob' },
             )
             commonDownload(response, `${queryName}.csv`)
         } catch (error) {
-            console.log(error)
+            if (error instanceof AxiosError) errorMessage(error)
         }
     }
 
