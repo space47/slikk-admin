@@ -14,6 +14,7 @@ const reportQueryNames = [
     { label: 'Number', value: 'Number' },
     { label: 'String', value: 'String' },
     { label: 'Boolean', value: 'Boolean' },
+    { label: 'Filter', value: 'filter' },
     { label: 'Select', value: 'Select' },
     { label: 'MulltiSelect', value: 'MultiSelect' },
 ]
@@ -21,6 +22,149 @@ const reportQueryNames = [
 interface Props {
     values: any
     resetForm: any
+}
+
+const createDefaultField = () => ({
+    position: '',
+    key: '',
+    value: '',
+    dataType: 'String',
+    prefix: '',
+    suffix: '',
+    subFields: [],
+})
+
+interface DynamicFieldProps {
+    name: string
+    values: any[]
+    remove: (index: number) => void
+    reportQueryNames: any[]
+}
+
+const DynamicField = ({ name, values, remove, reportQueryNames }: DynamicFieldProps) => {
+    return (
+        <>
+            {values?.map((item, index) => (
+                <div
+                    key={index}
+                    className="bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-300"
+                >
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
+                                <span className="text-white font-bold text-sm">{index + 1}</span>
+                            </div>
+                            <span className="font-medium text-gray-700">Field #{index + 1}</span>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => remove(index)}
+                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+                        >
+                            <MdCancel className="text-xl" />
+                        </button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-8 gap-3">
+                        <div className="md:col-span-2">
+                            <Field
+                                name={`${name}[${index}].position`}
+                                component={Input}
+                                type="number"
+                                placeholder="Position"
+                                className="bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
+                            />
+                        </div>
+
+                        <div className="md:col-span-3">
+                            <Field
+                                name={`${name}[${index}].key`}
+                                component={Input}
+                                placeholder="Field Key"
+                                className="bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
+                            />
+                        </div>
+
+                        <div className="md:col-span-2">
+                            <Field name={`${name}[${index}].dataType`}>
+                                {({ field, form }: any) => (
+                                    <Select
+                                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
+                                        placeholder="Data Type"
+                                        options={reportQueryNames}
+                                        value={reportQueryNames.find((option) => option.value === field.value)}
+                                        onChange={(option) => form.setFieldValue(field.name, option?.value)}
+                                    />
+                                )}
+                            </Field>
+                        </div>
+
+                        <div className="md:col-span-3">
+                            <Field name={`${name}[${index}].value`}>
+                                {({ field, form }: any) => {
+                                    const dataType = form.values?.[name]?.[index]?.dataType
+
+                                    return (
+                                        <Input
+                                            {...field}
+                                            type={dataType === 'Date' ? 'date' : 'text'}
+                                            placeholder={dataType === 'Date' ? 'Select date' : 'Enter value'}
+                                            className="bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
+                                        />
+                                    )
+                                }}
+                            </Field>
+                        </div>
+
+                        <div className="flex gap-2">
+                            <Field
+                                name={`${name}[${index}].prefix`}
+                                component={Input}
+                                placeholder="Prefix"
+                                className="bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
+                            />
+                            <Field
+                                name={`${name}[${index}].suffix`}
+                                component={Input}
+                                placeholder="Suffix"
+                                className="bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
+                            />
+                        </div>
+                    </div>
+
+                    <FieldArray name={`${name}[${index}].subFields`}>
+                        {({ push, remove: removeSub }) => {
+                            const subFields = item?.subFields || []
+
+                            return (
+                                item?.dataType === 'filter' && (
+                                    <div className="mt-4 ml-8 border-l-2 border-emerald-200 pl-4">
+                                        <div className="flex items-center justify-between mb-3">
+                                            <h4 className="text-sm font-medium text-gray-600">Sub Fields</h4>
+
+                                            <button
+                                                type="button"
+                                                onClick={() => push(createDefaultField())}
+                                                className="flex items-center gap-1 px-2 py-1 text-xs border border-dashed border-emerald-300 rounded-md hover:border-emerald-500 hover:bg-emerald-50/30 text-emerald-600 hover:text-emerald-700 transition-all duration-200"
+                                            >
+                                                <IoIosAddCircle className="text-sm" />
+                                                <span>Add Sub Field</span>
+                                            </button>
+                                        </div>
+                                        <DynamicField
+                                            name={`${name}[${index}].subFields`}
+                                            values={subFields}
+                                            remove={removeSub}
+                                            reportQueryNames={reportQueryNames}
+                                        />
+                                    </div>
+                                )
+                            )
+                        }}
+                    </FieldArray>
+                </div>
+            ))}
+        </>
+    )
 }
 
 const ReportCommonForm = ({ resetForm, values }: Props) => {
@@ -55,6 +199,7 @@ const ReportCommonForm = ({ resetForm, values }: Props) => {
                         </FormItem>
                     </div>
                 </div>
+
                 <div className="mb-10">
                     <div className="mb-6 pb-4 border-b border-gray-100">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -68,6 +213,7 @@ const ReportCommonForm = ({ resetForm, values }: Props) => {
                             </div>
                         </div>
                     </div>
+
                     <FormItem label="Query List" labelClass="!justify-start" className="col-span-1 w-full">
                         <FieldArray name="value">
                             {({ push, remove }) => (
@@ -96,6 +242,7 @@ const ReportCommonForm = ({ resetForm, values }: Props) => {
                                                     <MdCancel className="text-2xl" />
                                                 </button>
                                             </div>
+
                                             <div className="space-y-6">
                                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                                     <FormItem label="Name" className="md:col-span-1">
@@ -106,6 +253,7 @@ const ReportCommonForm = ({ resetForm, values }: Props) => {
                                                             className="bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
                                                         />
                                                     </FormItem>
+
                                                     <FormItem label="Display Name" className="md:col-span-1">
                                                         <Field
                                                             name={`value[${index}].display_name`}
@@ -114,6 +262,7 @@ const ReportCommonForm = ({ resetForm, values }: Props) => {
                                                             className="bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
                                                         />
                                                     </FormItem>
+
                                                     <FormItem label="Position" className="md:col-span-1">
                                                         <Field
                                                             name={`value[${index}].position`}
@@ -124,11 +273,13 @@ const ReportCommonForm = ({ resetForm, values }: Props) => {
                                                         />
                                                     </FormItem>
                                                 </div>
-                                                <div className="grid grid-cols-1  gap-4">
+
+                                                <div className="grid grid-cols-1 gap-4">
                                                     <RichTextCommon
                                                         label="Logic behind this query"
                                                         name={`value[${index}].extra_attributes.logic`}
                                                     />
+
                                                     <FormItem label="Use Case for this query">
                                                         <Field
                                                             name={`value[${index}].extra_attributes.use_case`}
@@ -139,6 +290,7 @@ const ReportCommonForm = ({ resetForm, values }: Props) => {
                                                         />
                                                     </FormItem>
                                                 </div>
+
                                                 {ExtraAttributes.length > 0 && (
                                                     <div className="bg-gray-50/50 rounded-xl p-4">
                                                         <h6 className="font-medium text-gray-700 mb-4">Additional Settings</h6>
@@ -157,6 +309,7 @@ const ReportCommonForm = ({ resetForm, values }: Props) => {
                                                         </div>
                                                     </div>
                                                 )}
+
                                                 <FormItem label="Query">
                                                     <div className="relative">
                                                         <Field name={`value[${index}].query`}>
@@ -173,6 +326,7 @@ const ReportCommonForm = ({ resetForm, values }: Props) => {
                                             </div>
                                         </div>
                                     ))}
+
                                     <Button
                                         variant="new"
                                         type="button"
@@ -194,6 +348,7 @@ const ReportCommonForm = ({ resetForm, values }: Props) => {
                         </FieldArray>
                     </FormItem>
                 </div>
+
                 <div className="mb-10">
                     <div className="mb-6 pb-4 border-b border-gray-100">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -212,106 +367,16 @@ const ReportCommonForm = ({ resetForm, values }: Props) => {
                         <FieldArray name="required_fields">
                             {({ push, remove }) => (
                                 <div className="space-y-4">
-                                    {values.required_fields?.map((item, index) => (
-                                        <div
-                                            key={index}
-                                            className="bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-300"
-                                        >
-                                            <div className="flex items-center justify-between mb-4">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
-                                                        <span className="text-white font-bold text-sm">{index + 1}</span>
-                                                    </div>
-                                                    <span className="font-medium text-gray-700">Field #{index + 1}</span>
-                                                </div>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => remove(index)}
-                                                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
-                                                    title="Remove field"
-                                                >
-                                                    <MdCancel className="text-xl" />
-                                                </button>
-                                            </div>
+                                    <DynamicField
+                                        name="required_fields"
+                                        values={values.required_fields}
+                                        remove={remove}
+                                        reportQueryNames={reportQueryNames}
+                                    />
 
-                                            <div className="grid grid-cols-1 md:grid-cols-8 gap-3">
-                                                <div className="md:col-span-2">
-                                                    <Field
-                                                        name={`required_fields[${index}].position`}
-                                                        placeholder="Position"
-                                                        component={Input}
-                                                        type="number"
-                                                        className="bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
-                                                    />
-                                                </div>
-                                                <div className="md:col-span-3">
-                                                    <Field
-                                                        name={`required_fields[${index}].key`}
-                                                        placeholder="Field Key"
-                                                        component={Input}
-                                                        className="bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
-                                                    />
-                                                </div>
-                                                <div className="md:col-span-2">
-                                                    <Field name={`required_fields[${index}].dataType`}>
-                                                        {({ field, form }: any) => (
-                                                            <Select
-                                                                className="border-gray-300 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
-                                                                placeholder="Data Type"
-                                                                options={reportQueryNames}
-                                                                value={reportQueryNames.find((option) => option.value === field.value)}
-                                                                onChange={(option) => form.setFieldValue(field.name, option?.value)}
-                                                            />
-                                                        )}
-                                                    </Field>
-                                                </div>
-                                                <div className="md:col-span-3">
-                                                    <Field name={`required_fields[${index}].value`}>
-                                                        {({ field }: any) => {
-                                                            const dataType = values.required_fields[index].dataType
-                                                            return (
-                                                                <Input
-                                                                    type={dataType === 'Date' ? 'date' : 'text'}
-                                                                    placeholder={dataType === 'Date' ? 'Select date' : 'Enter value'}
-                                                                    {...field}
-                                                                    className="bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
-                                                                />
-                                                            )
-                                                        }}
-                                                    </Field>
-                                                </div>
-
-                                                <div className="flex gap-2">
-                                                    <Field
-                                                        name={`required_fields[${index}].prefix`}
-                                                        placeholder="Prefix"
-                                                        component={Input}
-                                                        className="bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
-                                                    />
-                                                    <Field
-                                                        name={`required_fields[${index}].suffix`}
-                                                        placeholder="Suffix"
-                                                        component={Input}
-                                                        className="bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-
-                                    {/* Add Field Button */}
                                     <button
                                         type="button"
-                                        onClick={() =>
-                                            push({
-                                                position: '',
-                                                key: '',
-                                                value: '',
-                                                dataType: 'String',
-                                                prefix: '',
-                                                suffix: '',
-                                            })
-                                        }
+                                        onClick={() => push(createDefaultField())}
                                         className="flex items-center justify-center gap-2 p-3 border border-dashed border-gray-300 rounded-lg hover:border-emerald-500 hover:bg-emerald-50/30 text-emerald-600 hover:text-emerald-700 transition-all duration-200 w-full md:w-auto"
                                     >
                                         <IoIosAddCircle className="text-xl" />
