@@ -55,13 +55,13 @@ const RtvDetails = () => {
             setRtvProductsData(data?.data?.results || [])
             setCount(data?.data?.count)
         }
-    }, [isSuccess, data])
+    }, [isSuccess, data?.data])
 
     useEffect(() => {
         if (rtvSuccess) {
             setRtvData(rtv?.data as any)
         }
-    }, [rtvSuccess, rtv])
+    }, [rtvSuccess, rtv?.data])
 
     useEffect(() => {
         if (pickerResponse?.isSuccess) {
@@ -105,14 +105,15 @@ const RtvDetails = () => {
             refetch()
         }
         if (statusUpdateResponse?.isError) {
-            if (statusUpdateResponse.originalArgs?.data.action === 'processed') {
+            if (statusUpdateResponse.originalArgs?.data.action === ERtvDetail.processed) {
+                const resultData = (statusUpdateResponse?.error as any)?.data?.data
                 Modal.confirm({
-                    title: 'Confirm  Close Rtv',
-                    content: `${(statusUpdateResponse?.error as any)?.data?.message || 'Are you sure you want to close the rtv'}`,
+                    title: `${(statusUpdateResponse?.error as any)?.data?.message || 'Close the rtv'}`,
+                    content: `Are you sure you close rtv with total Items ${resultData?.total_items_sum || '0'}, Total Picked:${resultData?.items_picked_sum || '0'} and total GDN Sum: ${resultData?.gdn_items_sum || '0'} `,
                     okText: 'Yes',
                     cancelText: 'No',
                     onOk: () => {
-                        const body = { action: 'processed', force_update: true }
+                        const body = { action: ERtvDetail.processed, force_update: true }
                         updateStatus({ rtv_id: rtvData?.id as number, data: body })
                     },
                 })
@@ -280,7 +281,7 @@ const RtvDetails = () => {
                                 {gdnResponse?.isLoading ? <Spinner size={20} /> : 'Sync to GDN'}
                             </Button>
 
-                            <Button size="sm" variant="new" onClick={() => setIsStatusConformation(ERtvDetail.close_rtv)}>
+                            <Button size="sm" variant="new" onClick={() => setIsStatusConformation(ERtvDetail.processed)}>
                                 Close RTV
                             </Button>
 
@@ -358,7 +359,7 @@ const RtvDetails = () => {
                     onDialogOk={handleStatus}
                 />
             )}
-            {isStatusConformation === ERtvDetail.close_rtv && (
+            {isStatusConformation === ERtvDetail.processed && (
                 <DialogConfirm
                     isProceed
                     label="Are you sure you want to close this rtv"

@@ -128,54 +128,65 @@ const InwardDetails = () => {
             <Loading loading={inwardSingleApiCall.isLoading}>
                 {!isEmpty(data) && (
                     <>
-                        <div className="mb-8 p-6 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-200 shadow-sm">
-                            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
-                                <div>
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
-                                            <span className="font-semibold text-sm">GRN</span>
+                        <div className="flex justify-between">
+                            <div className="mb-8 p-6 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-200 shadow-sm">
+                                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+                                    <div>
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                                                <span className="font-semibold text-sm">GRN</span>
+                                            </div>
+                                            <h1 className="text-2xl font-bold text-gray-800">#{data.grn_number}</h1>
+                                            <Button
+                                                variant="blue"
+                                                size="sm"
+                                                icon={<FaDownload />}
+                                                loading={downloadLoading}
+                                                onClick={() => handleRegenerateGrn(data.document_number)}
+                                            ></Button>
                                         </div>
-                                        <h1 className="text-2xl font-bold text-gray-800">#{data.grn_number}</h1>
-                                        <Button
-                                            variant="blue"
-                                            size="sm"
-                                            icon={<FaDownload />}
-                                            loading={downloadLoading}
-                                            onClick={() => handleRegenerateGrn(data.document_number)}
-                                        ></Button>
-                                    </div>
 
-                                    <div className="flex items-center gap-2 text-gray-600">
-                                        <HiOutlineCalendar className="text-lg mr-2" />
-                                        <span className="font-medium">{moment(data.document_date).format('MMM DD, YYYY hh:mm A')}</span>
+                                        <div className="flex items-center gap-2 text-gray-600">
+                                            <HiOutlineCalendar className="text-lg mr-2" />
+                                            <span className="font-medium">{moment(data.document_date).format('MMM DD, YYYY hh:mm A')}</span>
+                                        </div>
                                     </div>
                                 </div>
+
+                                {data?.document_url ? (
+                                    <>
+                                        <div className="docs flex flex-col gap-3 p-4 bg-gray-50 rounded-2xl shadow-sm">
+                                            <h5 className="text-sm font-semibold text-gray-700 mb-2">Document Urls</h5>
+
+                                            {data?.document_url?.split(',')?.map((item, key) => (
+                                                <div
+                                                    key={key}
+                                                    onClick={() => handleUrl(item)}
+                                                    className="group flex items-center justify-between px-4 py-3 bg-white border border-gray-200 rounded-xl shadow-sm cursor-pointer transition-all duration-200 hover:shadow-md hover:border-blue-400 hover:bg-blue-50"
+                                                >
+                                                    <span className="text-sm font-medium text-gray-800 group-hover:text-blue-600">
+                                                        {data?.grn_number}_{key + 1}
+                                                    </span>
+
+                                                    <span className="text-xs text-gray-400 group-hover:text-blue-500">View</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>No document url</>
+                                )}
                             </div>
-
-                            {data?.document_url ? (
-                                <>
-                                    <div className="docs flex flex-col gap-3 p-4 bg-gray-50 rounded-2xl shadow-sm">
-                                        <h5 className="text-sm font-semibold text-gray-700 mb-2">Document Urls</h5>
-
-                                        {data?.document_url?.split(',')?.map((item, key) => (
-                                            <div
-                                                key={key}
-                                                onClick={() => handleUrl(item)}
-                                                className="group flex items-center justify-between px-4 py-3 bg-white border border-gray-200 rounded-xl shadow-sm cursor-pointer transition-all duration-200 hover:shadow-md hover:border-blue-400 hover:bg-blue-50"
-                                            >
-                                                <span className="text-sm font-medium text-gray-800 group-hover:text-blue-600">
-                                                    {data?.grn_number}_{key + 1}
-                                                </span>
-
-                                                <span className="text-xs text-gray-400 group-hover:text-blue-500">View</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </>
-                            ) : (
-                                <>No document url</>
-                            )}
+                            <div>
+                                <div
+                                    className={`flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold shadow-sm transition-all duration-300 bg-yellow-600`}
+                                >
+                                    <span className="w-2.5 h-2.5 rounded-full bg-white/80 animate-pulse"></span>
+                                    <span className="capitalize text-white tracking-wide">{data?.status}</span>
+                                </div>
+                            </div>
                         </div>
+
                         <div className="mb-8">
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                 <div className="lg:col-span-1">

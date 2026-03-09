@@ -16,7 +16,7 @@ interface Props {
 const RtvEditModal = ({ isOPen, rtvData, setIsOpen, refetch }: Props) => {
     const [quantityAccepted, setQuantityAccepted] = useState<number | ''>('')
     const [quantityRequired, setQuantityRequired] = useState<number | ''>('')
-    const [updateRtv, updateResponse] = rtvService.useUpdateRtvProductsMutation()
+    const [updateRtv, updateResponse] = rtvService.useUpdateRtvItemsMutation()
 
     useEffect(() => {
         if (updateResponse?.isSuccess) {
@@ -46,7 +46,7 @@ const RtvEditModal = ({ isOPen, rtvData, setIsOpen, refetch }: Props) => {
         }
         const filteredBody = filterEmptyValues(body)
 
-        updateRtv({ ...filteredBody })
+        updateRtv(filteredBody)
     }
 
     return (

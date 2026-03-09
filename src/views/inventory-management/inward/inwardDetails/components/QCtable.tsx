@@ -13,7 +13,7 @@ import { inwardService } from '@/store/services/inwardService'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 import { FaDownload, FaSync, FaTrash } from 'react-icons/fa'
 import DialogConfirm from '@/common/DialogConfirm'
-import { Modal } from 'antd'
+import { Modal, notification } from 'antd'
 import { errorMessage, successMessage } from '@/utils/responseMessages'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { AxiosError } from 'axios'
@@ -45,6 +45,7 @@ const QCtable = ({
     const { grn_id } = useParams()
     const [grnItems, setGrnItems] = useState<GRNItemDetails[]>([])
     const [deleteSpinner, setDeleteSpinner] = useState(false)
+    const [closeSpinner, setCloseSpinner] = useState(false)
     const [closeGrn, setCloseGrn] = useState(false)
     const [isDeleteGrn, setIsDeleteGrn] = useState(false)
     const [count, setCount] = useState(0)
@@ -84,15 +85,19 @@ const QCtable = ({
         }
     }
     const handleClose = async (id: number) => {
+        if (!data?.document_url) {
+            notification.error({ message: 'document url is required' })
+            return
+        }
         try {
-            setDeleteSpinner(true)
+            setCloseSpinner(true)
             const body = {
                 action: 'completed',
                 grn_id: id,
             }
             const res = await axioisInstance.patch(`goods/received/${data?.company}/detail`, body)
             successMessage(res)
-            setIsDeleteGrn(false)
+            setCloseGrn(false)
             return res?.data?.data
         } catch (error) {
             if (error instanceof AxiosError) {
@@ -101,7 +106,7 @@ const QCtable = ({
                 return { error: errMsg }
             }
         } finally {
-            setDeleteSpinner(false)
+            setCloseSpinner(false)
         }
     }
 
@@ -285,7 +290,7 @@ const QCtable = ({
                                                     variant="reject"
                                                     size="sm"
                                                     icon={<FaTrash className="w-4 h-4" />}
-                                                    loading={deleteSpinner}
+                                                    loading={closeSpinner}
                                                     onClick={() => setCloseGrn(true)}
                                                 >
                                                     Close Grn

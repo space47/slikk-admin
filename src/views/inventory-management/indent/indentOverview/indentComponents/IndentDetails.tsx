@@ -138,7 +138,6 @@ const IndentDetails = () => {
         <div className=" bg-gray-50 min-h-screen">
             <div className="">
                 <div className="bg-white rounded-xl shadow-lg border border-gray-200">
-                    {/* Header */}
                     <div className="p-6 border-b border-gray-200">
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                             <div>
@@ -173,11 +172,8 @@ const IndentDetails = () => {
                             </div>
                         </div>
                     </div>
-
-                    {/* Store Details */}
                     <div className="p-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                            {/* Source Store */}
                             <div className="bg-gray-50 p-5 rounded-xl border border-gray-200">
                                 <div className="flex items-center gap-2 mb-3">
                                     <FaStore className="text-blue-500" />
@@ -217,8 +213,6 @@ const IndentDetails = () => {
                                 )}
                             </div>
                         </div>
-
-                        {/* Notes */}
                         <div className="bg-gray-50 p-5 rounded-xl border border-gray-200 mb-6">
                             <div className="flex items-center gap-2 mb-3">
                                 <FaClipboardList className="text-purple-500" />
@@ -226,8 +220,6 @@ const IndentDetails = () => {
                             </div>
                             <p className="text-sm text-gray-600">{data?.notes || 'No notes available.'}</p>
                         </div>
-
-                        {/* Picker Details */}
                         <div className="mb-6">
                             {data?.picker_items && data?.picker_items.length > 0 && (
                                 <div>
@@ -249,7 +241,7 @@ const IndentDetails = () => {
                                     No Store Assigned
                                 </div>
                             )}
-                            {data?.status !== 'approved' && (
+                            {!['approved', 'fulfilled'].includes(data?.status as string) && (
                                 <>
                                     <Button
                                         variant={data?.status === 'created' ? 'accept' : 'pending'}
@@ -279,16 +271,18 @@ const IndentDetails = () => {
                             >
                                 Sync To GDN
                             </Button>
-                            <Button
-                                variant="reject"
-                                size="sm"
-                                icon={<IoCheckmarkDoneCircle />}
-                                loading={isSyncing}
-                                disabled={isSyncing}
-                                onClick={() => setIsStatusConformation('fulfilled')}
-                            >
-                                Close Indent
-                            </Button>
+                            {data?.status !== 'fulfilled' && (
+                                <Button
+                                    variant="reject"
+                                    size="sm"
+                                    icon={<IoCheckmarkDoneCircle />}
+                                    loading={isSyncing}
+                                    disabled={isSyncing}
+                                    onClick={() => setIsStatusConformation('fulfilled')}
+                                >
+                                    Close Indent
+                                </Button>
+                            )}
                         </div>
                         <div className="w-full mb-6">
                             <Tabs defaultValue="active" className="flex flex-col" value={tabValue} onChange={(value) => setTabValue(value)}>
@@ -305,12 +299,6 @@ const IndentDetails = () => {
                                     >
                                         Completed
                                     </TabNav>
-                                    {/* <TabNav
-                                        value="true"
-                                        className="px-4 py-2 text-gray-600 hover:text-blue-600 hover:border-blue-500 border-b-2 border-transparent data-[state=active]:text-blue-600 data-[state=active]:border-blue-600 transition-colors duration-200"
-                                    >
-                                        Force Completed
-                                    </TabNav> */}
                                 </TabList>
                             </Tabs>
                         </div>
