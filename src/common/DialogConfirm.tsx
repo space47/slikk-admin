@@ -3,7 +3,7 @@ import Button from '@/components/ui/Button'
 import Dialog from '@/components/ui/Dialog'
 import { FiAlertTriangle, FiTrash2 } from 'react-icons/fi'
 
-interface ConfirmationDialogProps {
+interface ConfirmationDialogProps extends React.PropsWithChildren {
     IsOpen: boolean
     setIsOpen?: (value: React.SetStateAction<boolean>) => void
     onDialogOk: any
@@ -27,6 +27,7 @@ const DialogConfirm = ({
     closeDialog,
     label,
     isProceed,
+    children,
 }: ConfirmationDialogProps) => {
     const onDialogClose = () => {
         if (checkBox) {
@@ -68,7 +69,7 @@ const DialogConfirm = ({
                             {isProceed && <p className="mt-1 text-sm text-gray-600">{label}</p>}
                         </div>
                     </div>
-
+                    {children && <div className="px-1">{children}</div>}
                     {/* Footer */}
                     <div className="flex justify-end gap-3 border-t pt-4">
                         <Button variant="default" onClick={closeDialog ?? onDialogClose}>
