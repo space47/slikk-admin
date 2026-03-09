@@ -15,13 +15,14 @@ import { useIndentFunctions } from '../../indentUtils/useIndentFunctions'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import TabList from '@/components/ui/Tabs/TabList'
 import { useDebounceInput } from '@/commonHooks/useDebounceInput'
-import { FaStore, FaClipboardList, FaSync, FaCheckCircle, FaExclamationTriangle, FaTimesCircle } from 'react-icons/fa'
+import { FaStore, FaClipboardList, FaSync, FaCheckCircle, FaExclamationTriangle, FaTimesCircle, FaDownload } from 'react-icons/fa'
 import { BsFillPatchCheckFill, BsBoxSeam } from 'react-icons/bs'
 import { HiOutlineDocumentText } from 'react-icons/hi'
 import { MdOutlineInventory } from 'react-icons/md'
-import { Select } from 'antd'
+import { notification, Select } from 'antd'
 import PageCommon from '@/common/PageCommon'
 import { IoCheckmarkDoneCircle } from 'react-icons/io5'
+import moment from 'moment'
 
 const IndentDetails = () => {
     const { id } = useParams()
@@ -60,6 +61,8 @@ const IndentDetails = () => {
         paramValue: debounceFilter || '',
     })
 
+    const [indentItemsDownload, indentDownloadResponse] = indentService.useLazyIndentItemsDownloadQuery()
+
     useEffect(() => {
         if (isSuccess) {
             setData(detailResponseData?.data || null)
@@ -75,6 +78,30 @@ const IndentDetails = () => {
             setIndentItems([])
         }
     }, [indentItemsData.isSuccess, indentItemsData.isError, indentItemsData])
+
+    useEffect(() => {
+        if (indentDownloadResponse.isSuccess) {
+            const url = window.URL.createObjectURL(indentDownloadResponse.data)
+            const link = document.createElement('a')
+            link.href = url
+            link.setAttribute('download', `Indent_Items-${moment().format('YYYY-MM-DD HH:mm:ss a')}.csv`)
+            document.body.appendChild(link)
+            link.click()
+            link.remove()
+        }
+        if (indentDownloadResponse.isError) {
+            notification.error({ message: 'Failed to download' })
+        }
+    }, [indentDownloadResponse.isSuccess, indentDownloadResponse.isError])
+
+    const handleDownload = () => {
+        indentItemsDownload({
+            id: id as string,
+            is_picked: tabValue,
+            paramKey: dropdownValue?.value || '',
+            paramValue: debounceFilter || '',
+        })
+    }
 
     const handleUpdate = (row: IndentItem) => {
         setIsEditModal(true)
@@ -339,14 +366,26 @@ const IndentDetails = () => {
                                 <div className="mb-6">
                                     <div className="flex justify-between mb-4">
                                         <h4 className="text-lg font-semibold text-gray-800 mb-3">Items Details</h4>
-                                        <Tooltip title="Refresh table data">
+                                        <div className="flex items-center gap-2">
                                             <Button
-                                                variant="gray"
+                                                variant="new"
                                                 size="sm"
-                                                icon={<FaSync />}
-                                                onClick={() => indentItemsData.refetch()}
-                                            ></Button>
-                                        </Tooltip>
+                                                icon={<FaDownload />}
+                                                loading={indentDownloadResponse.isLoading}
+                                                disabled={indentDownloadResponse.isLoading}
+                                                onClick={handleDownload}
+                                            >
+                                                Download
+                                            </Button>
+                                            <Tooltip title="Refresh table data">
+                                                <Button
+                                                    variant="gray"
+                                                    size="sm"
+                                                    icon={<FaSync />}
+                                                    onClick={() => indentItemsData.refetch()}
+                                                ></Button>
+                                            </Tooltip>
+                                        </div>
                                     </div>
                                     <EasyTable overflow noPage mainData={indentItems} columns={columns} />
                                 </div>
