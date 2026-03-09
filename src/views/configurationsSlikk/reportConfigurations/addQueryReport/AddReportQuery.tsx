@@ -26,24 +26,7 @@ const AddReportQuery = () => {
     }
 
     const handleSubmit = async (values: any) => {
-        console.log('Submitting form...', values)
-
         try {
-            const formattedRequiredFields = values.required_fields.reduce((result: any, item: any) => {
-                if (item.key) {
-                    let valueArray: [number | undefined, string, string | string[], string, string]
-                    if (item.dataType === 'MultiSelect') {
-                        const multiSelectValues = item.value.split(',').map((val: string) => val.trim())
-                        valueArray = [item?.position, item.dataType, multiSelectValues, item.prefix || '', item.suffix || '']
-                    } else {
-                        const value = item.value.trim()
-                        valueArray = [item?.position, item.dataType, value, item.prefix || '', item.suffix || '']
-                    }
-                    result[item.key] = valueArray
-                }
-                return result
-            }, {})
-
             const updatedValues = values.value.map((item: any, index: number) => {
                 if (!item.query) {
                     throw new Error(`Missing query for value at index ${index}`)
@@ -69,7 +52,7 @@ const AddReportQuery = () => {
             const body = {
                 ...values,
                 value: updatedValues,
-                required_fields: formattedRequiredFields,
+                required_fields: values.required_fields,
             }
 
             console.log('API payload:', body)
