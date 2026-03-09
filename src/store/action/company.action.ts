@@ -1,24 +1,47 @@
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { SINGLE_COMPANY_DATA, companyRequest, companyRequestSuccess } from '../types/company.types'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { SINGLE_COMPANY_DATA, companyRequest } from '../types/company.types'
 import axios from 'axios'
+import store from '../storeSetup'
+
+const hasValidCompany = (company: any): boolean => {
+    if (!company) return false
+
+    if (Array.isArray(company)) {
+        return company.length > 0
+    }
+
+    if (typeof company === 'object') {
+        return Object.keys(company).length > 0
+    }
+
+    if (typeof company === 'string') {
+        return company.trim().length > 0
+    }
+
+    return false
+}
 
 export const getUserProfileAPI = () => async (dispatch: any) => {
     try {
-        dispatch({
-            type: companyRequest,
-        })
+        dispatch({ type: companyRequest })
 
         const response = await axios.get('dashboard/user/profile')
+        const data = response?.data?.data
 
         dispatch({
             type: 'companyRequestSuccess',
-            payload: {
-                ...response?.data?.data,
-            },
+            payload: { ...data },
         })
 
-        if (response?.data?.data?.company?.length > 0) {
-            dispatch(setDefaultCompanyId(response?.data?.data?.company[0]))
+        const currentCompany = store.getState().company.currCompany
+
+        const isCompanyPresent = hasValidCompany(currentCompany)
+        console.log('is there current company', isCompanyPresent)
+        const companyList = data?.company || []
+
+        if (!isCompanyPresent) {
+            dispatch(setDefaultCompanyId(companyList[0]))
         }
     } catch (err) {
         dispatch({
