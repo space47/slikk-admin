@@ -175,6 +175,83 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsOrgManagement.sellers',
+        path: `${APP_PREFIX_PATH}/sellers/details/:id`,
+        component: lazy(() => import('@/views/org-management/sellers/sellerDetail/SellerDetails')),
+        authority: [ADMIN, USER],
+    },
+
+    {
+        key: 'appsOrgManagement.po',
+        path: `${APP_PREFIX_PATH}/po`,
+        component: lazy(
+            () => import('@/views/org-management/purchaseOrder/poTable/PoTable'), //p1
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOrgManagement.po',
+        path: `${APP_PREFIX_PATH}/po/addNew`,
+        component: lazy(
+            () => import('@/views/org-management/purchaseOrder/poAdd/PoAdd'), //p1
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOrgManagement.po',
+        path: `${APP_PREFIX_PATH}/po/orderItems/:purchase_id`,
+        component: lazy(
+            () => import('@/views/org-management/purchaseOrder/poUtils/PoOrderItems'), //p1
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOrgManagement.sellerTemplate',
+        path: `${APP_PREFIX_PATH}/sellerTemplate`,
+        component: lazy(() => import('@/views/org-management/sellerTemplates/sellerTemplateList/SellerTemplateList')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOrgManagement.sellerTemplate',
+        path: `${APP_PREFIX_PATH}/sellerTemplate/addNew`,
+        component: lazy(
+            () => import('@/views/org-management/sellerTemplates/templateAdd/TemplateAdd'), //p1
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOrgManagement.sellerTemplate',
+        path: `${APP_PREFIX_PATH}/sellerTemplate/:id`,
+        component: lazy(
+            () => import('@/views/org-management/sellerTemplates/templateEdit/TemplateEdit'), //p1
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOrgManagement.po',
+        path: `${APP_PREFIX_PATH}/po/:purchase_id`,
+        component: lazy(
+            () => import('@/views/org-management/purchaseOrder/poEdit/PoEdit'), //p1
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOrgManagement.poCatalogHistory',
+        path: `${APP_PREFIX_PATH}/poCatalogHistory`,
+        component: lazy(
+            () => import('@/views/org-management/purchaseOrder/poUtils/PoCatalogHistory'), //p1
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOrgManagement.po',
+        path: `${APP_PREFIX_PATH}/po/details/:purchase_id`,
+        component: lazy(
+            () => import('@/views/org-management/purchaseOrder/poDetail/PoDetail'), //p1
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsOrgManagement.stores',
         path: `${APP_PREFIX_PATH}/stores`,
         component: lazy(() => import('@/views/org-management/stores/Stores')),

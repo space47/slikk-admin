@@ -53,7 +53,7 @@ const CommonMultiSelect = ({
                               })
                             : fieldValueArray?.map((item: any) => {
                                   const selectedOption = options?.find((options) => {
-                                      return options?.name.toLowerCase() === item.toLowerCase()
+                                      return options?.name?.toLowerCase() === item?.toLowerCase()
                                   })
                                   return selectedOption
                               })

@@ -3,43 +3,41 @@ import Dropdown from '@/components/ui/Dropdown'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { setDefaultCompanyId } from '@/store/action/company.action'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
-import type { SyntheticEvent } from 'react'
-import { useEffect, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 const Infor = () => {
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((state) => state.company.currCompany)
+
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA | null>((state) => state.company.currCompany)
+
     const [brandSearch, setBrandSearch] = useState<string>('')
 
     const dispatch = useAppDispatch()
 
-    const onDropdownItemClick = (index: any) => {
-        dispatch(setDefaultCompanyId(companyList?.find((item) => item.id === parseInt(index))))
+    const onDropdownItemClick = (id: number) => {
+        const company = companyList?.find((item) => item.id === id)
+        if (company) {
+            dispatch(setDefaultCompanyId(company))
+        }
     }
-
-    const onDropdownClick = (e: SyntheticEvent) => {
-        console.log('Dropdown Clicked', e)
-    }
-
-    useEffect(() => {
-        fiteredData
-    }, [brandSearch])
 
     const handleOption = () => {
         console.log('object')
     }
 
-    if (!selectedCompany) {
-        return
-    }
+    const filteredData = useMemo(() => {
+        if (!companyList?.length) return []
 
-    const fiteredData = () => {
-        return companyList.filter((item) => item?.name?.toLowerCase().includes(brandSearch.toLowerCase()))
-    }
+        return companyList
+            .filter((item) => item?.name?.toLowerCase().includes(brandSearch.toLowerCase()))
+            .sort((a, b) => a?.name.localeCompare(b?.name))
+    }, [companyList, brandSearch])
+
+    if (!selectedCompany?.id) return null
 
     return (
         <div className="text-[14px] max-h-[140px] xl:text-[18px]  font-bold">
-            <Dropdown key={selectedCompany.id} title={` ${selectedCompany.name || '🚫..No Data'}`} onClick={onDropdownClick}>
+            <Dropdown key={selectedCompany.id} title={` ${selectedCompany.name || '🚫..No Data'}`}>
                 <div className="mb-5 mt-2 flex items-center">
                     <input
                         className="flex items-center rounded-xl"
@@ -50,7 +48,7 @@ const Infor = () => {
                     />
                 </div>
                 <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide xl:h-[600px] xl:overflow-y-scroll font-bold ">
-                    {fiteredData()
+                    {filteredData
                         .sort((a, b) => a?.name.localeCompare(b?.name))
                         .map((item) => (
                             <Dropdown.Item key={item?.id} eventKey={item?.id?.toString()} onSelect={() => onDropdownItemClick(item?.id)}>

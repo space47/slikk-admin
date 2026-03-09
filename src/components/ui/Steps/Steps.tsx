@@ -12,6 +12,7 @@ export interface StepsProps extends CommonProps {
     onChange?: (index: number) => void
     status?: StepStatus
     vertical?: boolean
+    isNoStepsNumber?: boolean
 }
 
 const Steps = forwardRef<HTMLDivElement, StepsProps>((props, ref) => {

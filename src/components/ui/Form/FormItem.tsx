@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { forwardRef } from 'react'
 import classNames from 'classnames'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -13,7 +14,7 @@ export interface FormItemProps extends CommonProps {
     extra?: string | ReactNode
     htmlFor?: string
     invalid?: boolean | ''
-    label?: string
+    label?: string | any
     labelClass?: string
     labelWidth?: string | number
     layout?: TypeAttributes.FormLayout
