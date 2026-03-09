@@ -20,9 +20,10 @@ interface Props {
     returnOrderItems: ReturnOrder['return_order_items']
     returnDetails: ReturnOrder
     refetch: any
+    deliveryOtp?: string
 }
 
-const RefundActivity: React.FC<Props> = ({ returnDetails, returnOrderItems, refetch }) => {
+const RefundActivity: React.FC<Props> = ({ returnDetails, returnOrderItems, refetch, deliveryOtp }) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isCompleting, setIsCompleting] = useState(false)
     const [action, setAction] = useState('')
@@ -103,6 +104,15 @@ const RefundActivity: React.FC<Props> = ({ returnDetails, returnOrderItems, refe
     return (
         <Card className="mb-10 flex flex-col">
             <h5 className="mb-4">Activity</h5>
+            {!!deliveryOtp && (
+                <div className="flex items-center gap-3 p-1 mb-8 bg-gray-50 border border-gray-200 rounded-lg w-fit">
+                    <span className="text-sm font-medium text-gray-600">Delivery OTP</span>
+
+                    <span className="px-4 py-1 text-sm font-semibold tracking-widest text-white bg-green-500 rounded-md">
+                        {deliveryOtp}
+                    </span>
+                </div>
+            )}
             {returnDetails?.status === 'ACCEPTED' && (
                 <div>
                     The Status is <span className="text-red-500 font-bold">{returnDetails?.status}</span> and cannot be processed further

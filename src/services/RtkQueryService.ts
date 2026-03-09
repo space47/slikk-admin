@@ -27,6 +27,9 @@ const customBaseQuery: typeof baseQuery = async (args, api, extraOptions) => {
         'gdn_number',
         'goods/dispatch',
         'goods/received',
+        'merchant/purchase/order',
+        'merchant/purchase/orderitem',
+        'merchant/purchase/bulkupload/orderitem',
     ]
     const method = (modifiedArgs.method || 'GET').toUpperCase()
 
