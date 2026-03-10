@@ -32,7 +32,7 @@ const InwardDetails = () => {
     const [downloadLoading, setDownloading] = useState(false)
     const inwardSingleApiCall = inwardService.useInwardSingleDetailsQuery({ grn_id: grn_id }, { skip: !grn_id })
     const [syncGrn, syncResponse] = inwardService.useSyncGrnMutation()
-    const [presignUrl, presignResponse] = inwardService.useLazyPreSignUrlQuery()
+    const [presignUrl] = inwardService.useLazyPreSignUrlQuery()
 
     useEffect(() => {
         if (inwardSingleApiCall.isSuccess) {
@@ -49,13 +49,21 @@ const InwardDetails = () => {
         if (syncResponse.isError) notification.error({ message: (syncResponse.error as any)?.data?.message || 'Failed to Sync Grn' })
     }, [syncResponse.isError, syncResponse.isSuccess])
 
-    useEffect(() => {
-        if (presignResponse.isSuccess) {
-            const val = presignResponse.data?.data
+    const syncGRN = async () => {
+        const body = { company: selectedCompany.id, grn_number: data?.grn_number }
+        syncGrn(body)
+        setShowSyncModal(false)
+    }
+
+    const handleDownload = async (file_url: string) => {
+        try {
+            const res = await presignUrl({ file_url }).unwrap()
+
+            const val = res?.data
             if (val) {
                 const link = document.createElement('a')
                 link.href = val
-                link.download = `${presignResponse.originalArgs?.file_url}`
+                link.download = file_url
                 link.target = '_blank'
                 document.body.appendChild(link)
                 link.click()
@@ -63,18 +71,11 @@ const InwardDetails = () => {
             } else {
                 console.error('No file URL returned from API')
             }
+        } catch (error: any) {
+            notification.error({
+                message: error?.data?.message || 'Failed to Sync Grn',
+            })
         }
-        if (presignResponse.isError) notification.error({ message: (presignResponse.error as any)?.data?.message || 'Failed to Sync Grn' })
-    }, [presignResponse.isError, presignResponse.isSuccess])
-
-    const syncGRN = async () => {
-        const body = { company: selectedCompany.id, grn_number: data?.grn_number }
-        syncGrn(body)
-        setShowSyncModal(false)
-    }
-
-    const handleUrl = async (document_url: string) => {
-        presignUrl({ file_url: document_url })
     }
 
     const handleRegenerateGrn = async (doc_number: string) => {
@@ -160,7 +161,7 @@ const InwardDetails = () => {
                                         {data?.document_url?.split(',')?.map((item, key) => (
                                             <div
                                                 key={key}
-                                                onClick={() => handleUrl(item)}
+                                                onClick={() => handleDownload(item)}
                                                 className="group flex items-center justify-between px-4 py-3 bg-white border border-gray-200 rounded-xl shadow-sm cursor-pointer transition-all duration-200 hover:shadow-md hover:border-blue-400 hover:bg-blue-50"
                                             >
                                                 <span className="text-sm font-medium text-gray-800 group-hover:text-blue-600">
