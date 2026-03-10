@@ -42,7 +42,6 @@ const PoAdd = () => {
                 order_shipping_address: values[PoField.ORDER_SHIPPING_ADDRESS],
                 commercial_terms: values[PoField.COMMERCIAL_TERMS],
                 payment_terms: values[PoField.PAYMENT_TERMS],
-                discount_sharing_applicable: values[PoField.DISCOUNT_SHARING],
                 special_terms: values[PoField.SPECIAL_TERMS],
                 expected_delivery_date: values[PoField.EXPECTED_DELIVERY],
                 po_nature: values[PoField.PO_NATURE],
