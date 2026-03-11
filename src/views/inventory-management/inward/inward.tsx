@@ -18,6 +18,8 @@ import { inwardService } from '@/store/services/inwardService'
 import { notification, Spin } from 'antd'
 import PageCommon from '@/common/PageCommon'
 import { FaPlus } from 'react-icons/fa'
+import { InwardFilterSearch } from './inwardCommon'
+import { useDebounceInput } from '@/commonHooks/useDebounceInput'
 
 const PaginationTable = () => {
     const navigate = useNavigate()
@@ -29,15 +31,18 @@ const PaginationTable = () => {
     const [globalFilter, setGlobalFilter] = useState<any>('')
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
     const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
+    const [inwardFilterStore, setInwardFilterStore] = useState('grn_number_search')
     const [companyCode, setCompanyCode] = useState<any>()
     const [storeCode, setStoreCode] = useState<any[]>([])
     const [activeTab, setActiveTab] = useState('tab2')
+    const { debounceFilter } = useDebounceInput({ globalFilter: globalFilter, delay: 500 })
     const inwardApiCall = inwardService.useInwardDataGetQuery(
         {
             id: selectedCompany.id,
             company: companyCode || '',
             store_id: storeCode?.join(',') || '',
-            document_number: globalFilter || '',
+            search_type: inwardFilterStore || '',
+            search_value: debounceFilter || '',
             page,
             pageSize,
         },
@@ -89,18 +94,39 @@ const PaginationTable = () => {
 
                 {activeTab === 'tab2' && (
                     <>
-                        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-10 mt-10">
-                            <div className="flex flex-col lg:flex-row gap-6 w-full">
-                                <div className="flex flex-col w-full max-w-xs">
-                                    <label className="font-semibold text-gray-700 mb-1">Search</label>
-                                    <input
-                                        type="search"
-                                        value={globalFilter}
-                                        placeholder="Search by document No."
-                                        className="rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setGlobalFilter(e.target.value)}
-                                    />
+                        <div className="p-1 shadow-lg rounded-lg">
+                            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-10 mt-10">
+                                <div className="flex flex-col lg:flex-row gap-6 w-full">
+                                    <div className="flex flex-col w-full">
+                                        <label className="font-semibold text-gray-700 mb-1">Search</label>
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="search"
+                                                value={globalFilter}
+                                                placeholder="Search"
+                                                className="rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setGlobalFilter(e.target.value)}
+                                            />
+                                            <Select
+                                                isClearable
+                                                classNamePrefix="react-select"
+                                                options={InwardFilterSearch}
+                                                defaultValue={InwardFilterSearch[0]}
+                                                getOptionLabel={(option) => option.label}
+                                                getOptionValue={(option) => option.value}
+                                                onChange={(newVal) => setInwardFilterStore(newVal?.value as string)}
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
+                                <div>
+                                    <Button variant="new" size="sm" icon={<FaPlus />} onClick={() => navigate('/app/goods/received/form')}>
+                                        ADD GRN
+                                    </Button>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-2 items-center mb-2">
                                 <div className="flex flex-col w-full max-w-xs">
                                     <label className="font-semibold text-gray-700 mb-1">Select Company</label>
                                     <Select
@@ -127,15 +153,12 @@ const PaginationTable = () => {
                                     />
                                 </div>
                             </div>
-                            <div>
-                                <Button variant="new" size="sm" icon={<FaPlus />} onClick={() => navigate('/app/goods/received/form')}>
-                                    ADD GRN
-                                </Button>
-                            </div>
                         </div>
 
-                        <EasyTable mainData={inwardData} columns={columns} page={page} pageSize={pageSize} />
-                        <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={count} />
+                        <div className="mt-4">
+                            <EasyTable mainData={inwardData} columns={columns} page={page} pageSize={pageSize} />
+                            <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={count} />
+                        </div>
                     </>
                 )}
             </div>

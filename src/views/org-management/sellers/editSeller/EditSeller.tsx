@@ -136,14 +136,14 @@ const EditSeller = () => {
                     ...warehouse,
                     gst_certificate: certKey,
                     state_code: cleanGstin.slice(0, 2),
-                    address: textParser(warehouse.address),
+                    warehouse_address: textParser(warehouse.warehouse_address),
                 }
             }
 
             return {
                 ...warehouse,
                 state_code: cleanGstin.slice(0, 2),
-                address: textParser(warehouse.address),
+                warehouse_address: textParser(warehouse.warehouse_address),
             }
         })
         const gstChanged = JSON.stringify(existingDetails) !== JSON.stringify(updatedDetails)

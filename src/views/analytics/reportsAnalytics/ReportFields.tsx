@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, FormContainer, FormItem, Input, Select, Switcher } from '@/components/ui'
+import { Button, FormContainer, FormItem, Input, Select } from '@/components/ui'
 import { FashionList } from '@/constants/commonArray.constant'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
@@ -350,12 +350,6 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
                             </div>
                         )}
                     </FieldArray>
-
-                    <FormContainer className="mt-10">
-                        <FormItem label="Use Cache">
-                            <Field type="checkbox" name="use_cache" component={Switcher} />
-                        </FormItem>
-                    </FormContainer>
 
                     {storeName && (
                         <div className="mt-8 pt-6 border-t border-gray-200">

@@ -197,6 +197,15 @@ const ReportCommonForm = ({ resetForm, values }: Props) => {
                                 className="bg-gray-50 border-gray-300 focus:border-blue-500 focus:ring-blue-500/30 rounded-lg transition-all duration-200 hover:bg-white"
                             />
                         </FormItem>
+                        <FormItem label="Cache Time (in seconds)" className="col-span-1">
+                            <Field
+                                type="number"
+                                name="cache_config.cache_time_seconds"
+                                placeholder="Enter cache time for this report"
+                                component={Input}
+                                className="bg-gray-50 border-gray-300 focus:border-blue-500 focus:ring-blue-500/30 rounded-lg transition-all duration-200 hover:bg-white"
+                            />
+                        </FormItem>
                     </div>
                 </div>
 

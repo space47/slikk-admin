@@ -76,7 +76,6 @@ const PoEdit = () => {
                 order_billing_address: values[PoField.ORDER_BILLING_ADDRESS],
                 order_shipping_address: values[PoField.ORDER_SHIPPING_ADDRESS],
                 payment_terms: values[PoField.PAYMENT_TERMS],
-                discount_sharing_applicable: values[PoField.DISCOUNT_SHARING],
                 special_terms: values[PoField.SPECIAL_TERMS],
                 company_gst:
                     typeof values[PoField?.COMPANY_GST] === 'object' ? values[PoField?.COMPANY_GST]?.id : values[PoField?.COMPANY_GST],

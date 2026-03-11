@@ -71,14 +71,14 @@ const AddSeller = () => {
                     ...warehouse,
                     gst_certificate: certKey,
                     state_code: cleanGstin.slice(0, 2),
-                    address: textParser(warehouse.address),
+                    warehouse_address: textParser(warehouse.warehouse_address),
                 }
             }
 
             return {
                 ...warehouse,
                 state_code: cleanGstin.slice(0, 2),
-                address: textParser(warehouse.address),
+                warehouse_address: textParser(warehouse.warehouse_address),
             }
         })
 
@@ -117,7 +117,7 @@ const AddSeller = () => {
 
                     const BusinessCompanyData = configValues?.value?.[values?.business_nature as 'SOR' | 'OR']?.map((item) => ({
                         label: item?.company_name,
-                        value: item?.gstin,
+                        value: item?.code,
                     }))
                     return (
                         <Form className="xl:w-[90%] w-full p-5 ">

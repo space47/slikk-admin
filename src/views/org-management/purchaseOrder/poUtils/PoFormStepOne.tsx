@@ -130,6 +130,7 @@ const PoFormStepOne = ({ VendorEntity, businessNatureCompany, wareHouseDetails, 
                                     <DatePicker
                                         placeholder="Select date"
                                         className="w-full rounded-lg"
+                                        disabledDate={(current) => current && current.isAfter(dayjs().add(30, 'day').endOf('day'))}
                                         value={dateValue && dateValue.isValid() ? dateValue : null}
                                         onChange={(value) => {
                                             form.setFieldValue(PoField.PO_EXPIRY_DATE, value ? value.format('YYYY-MM-DD') : '')
