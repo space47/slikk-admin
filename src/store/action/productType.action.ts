@@ -9,9 +9,9 @@ export const getAllProductTypeAPI =
 
         if (storeCodes) params.store_codes = storeCodes
         if (searchName) params.name = encodeURIComponent(searchName)
-        if (division) params.division = encodeURIComponent(division)
-        if (category) params.category = encodeURIComponent(category)
-        if (subCategory) params.sub_category = encodeURIComponent(subCategory)
+        if (division) params.division = division
+        if (category) params.category = category
+        if (subCategory) params.sub_category = subCategory
 
         try {
             dispatch({

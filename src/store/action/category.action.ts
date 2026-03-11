@@ -7,7 +7,7 @@ export const getAllCategoryAPI = (storeCodes?: string | string[], searchName?: s
 
     if (storeCodes) params.store_codes = storeCodes
     if (searchName) params.name = encodeURIComponent(searchName)
-    if (division) params.division = encodeURIComponent(division)
+    if (division) params.division = division
 
     try {
         dispatch({
