@@ -2,13 +2,13 @@
 import EasyTable from '@/common/EasyTable'
 import { rtvService } from '@/store/services/rtvService'
 import { RTV_DATA_DETAILS, Rtv_Products } from '@/store/types/rtv.types'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useRtvProductsColumn } from '../../rtvUtils/useRtvProductsColumns'
 import PageCommon from '@/common/PageCommon'
 import { Button, Input, Spinner, Tabs, Tooltip } from '@/components/ui'
 import RtvAssignPicker from './RtvAssignPickers'
-import { notification } from 'antd'
+import { Modal, notification } from 'antd'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
@@ -40,7 +40,7 @@ const RtvDetails = () => {
         is_picked: tabValue,
         sku: debounceFilter || '',
     })
-    const { data: rtv, isSuccess: rtvSuccess } = rtvService.useRtvDataQuery({ rtv_id: rtv_number })
+    const { data: rtv, isSuccess: rtvSuccess, refetch: dataRefetch } = rtvService.useRtvDataQuery({ rtv_id: rtv_number })
     const [assignPicker, pickerResponse] = rtvService.useAssignRtvPickerMutation()
     const [createGdn, gdnResponse] = rtvService.useCreateGdnFromRtvMutation()
     const [currentRtvData, setCurrentRtvData] = useState<Rtv_Products>()
@@ -48,24 +48,27 @@ const RtvDetails = () => {
     const [updateRtv, updateResponse] = rtvService.useUpdateRtvMutation()
     const [updateStatus, statusUpdateResponse] = rtvService.useUpdateRtvStatusMutation()
 
+    const hasSyncedQuantity = useMemo(() => rtvProductsData?.some((item) => item.synced_quantity > 0), [rtvProductsData])
+
     useEffect(() => {
         if (isSuccess) {
             setRtvProductsData(data?.data?.results || [])
             setCount(data?.data?.count)
         }
-    }, [isSuccess, data])
+    }, [isSuccess, data?.data])
 
     useEffect(() => {
         if (rtvSuccess) {
             setRtvData(rtv?.data as any)
         }
-    }, [rtvSuccess, rtv])
+    }, [rtvSuccess, rtv?.data])
 
     useEffect(() => {
         if (pickerResponse?.isSuccess) {
             notification.success({ message: pickerResponse?.data?.message || 'Successfully Assigned' })
             setIsPickerModal(false)
             refetch()
+            dataRefetch()
         }
         if (pickerResponse?.isError) {
             notification.error({ message: (pickerResponse?.error as any)?.data?.message || 'Failed to Assign' })
@@ -75,6 +78,8 @@ const RtvDetails = () => {
     useEffect(() => {
         if (gdnResponse?.isSuccess) {
             notification.success({ message: gdnResponse?.data?.message || 'Successfully Created Gdn' })
+            dataRefetch()
+            refetch()
         }
         if (gdnResponse?.isError) {
             notification.error({ message: (gdnResponse?.error as any)?.data?.message || 'Failed to create Gdn' })
@@ -84,6 +89,8 @@ const RtvDetails = () => {
     useEffect(() => {
         if (updateResponse?.isSuccess) {
             notification.success({ message: updateResponse?.data?.message || 'Successfully Updated Rtv Number' })
+            dataRefetch()
+            refetch()
         }
         if (updateResponse?.isError) {
             notification.error({ message: (updateResponse?.error as any)?.data?.message || 'Failed to Update Rtv Number' })
@@ -94,9 +101,23 @@ const RtvDetails = () => {
         if (statusUpdateResponse?.isSuccess) {
             notification.success({ message: statusUpdateResponse?.data?.message || 'Successfully Updated Rtv Number Status' })
             setIsStatusConformation('')
+            dataRefetch()
             refetch()
         }
         if (statusUpdateResponse?.isError) {
+            if (statusUpdateResponse.originalArgs?.data.action === ERtvDetail.processed) {
+                const resultData = (statusUpdateResponse?.error as any)?.data?.data
+                Modal.confirm({
+                    title: `${(statusUpdateResponse?.error as any)?.data?.message || 'Close the rtv'}`,
+                    content: `Are you sure you close rtv with total Items ${resultData?.total_items_sum || '0'}, Total Picked:${resultData?.items_picked_sum || '0'} and total GDN Sum: ${resultData?.gdn_items_sum || '0'} `,
+                    okText: 'Yes',
+                    cancelText: 'No',
+                    onOk: () => {
+                        const body = { action: ERtvDetail.processed, force_update: true }
+                        updateStatus({ rtv_id: rtvData?.id as number, data: body })
+                    },
+                })
+            }
             notification.error({ message: (statusUpdateResponse?.error as any)?.data?.message || 'Failed to Update Rtv Number Status' })
         }
     }, [statusUpdateResponse.isSuccess, statusUpdateResponse.isError])
@@ -216,23 +237,12 @@ const RtvDetails = () => {
             <div className="flex justify-between items-center">
                 <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">RTV Product List</h2>
                 <div className="flex gap-3">
-                    <Button
-                        size="sm"
-                        variant="twoTone"
-                        onClick={() => setIsPickerModal(true)}
-                        className="bg-blue-50 dark:bg-blue-900 text-blue-600 dark:text-blue-200 hover:bg-blue-100"
-                    >
-                        Add Picker
-                    </Button>
-                    {data?.status !== ERtvDetail.approved && (
+                    {rtvData?.status === 'draft' && (
                         <>
-                            <Button
-                                variant={data?.status === ERtvDetail.created ? 'accept' : 'pending'}
-                                size="sm"
-                                onClick={() => setIsStatusConformation(ERtvDetail.created)}
-                            >
+                            <Button variant="accept" size="sm" onClick={() => setIsStatusConformation(ERtvDetail.created)}>
                                 Create
                             </Button>
+
                             <Button
                                 variant="reject"
                                 size="sm"
@@ -243,9 +253,43 @@ const RtvDetails = () => {
                             </Button>
                         </>
                     )}
-                    <Button size="sm" variant="twoTone" onClick={handleCreateGDN}>
-                        {gdnResponse?.isLoading ? <Spinner size={20} color="blue" /> : 'Create GDN from RTV'}
-                    </Button>
+                    {rtvData?.status === 'created' && (
+                        <>
+                            <Button size="sm" variant="twoTone" onClick={() => setIsPickerModal(true)}>
+                                Add Picker
+                            </Button>
+
+                            <Button size="sm" variant="twoTone" onClick={handleCreateGDN}>
+                                {gdnResponse?.isLoading ? <Spinner size={20} /> : 'Sync to GDN'}
+                            </Button>
+
+                            {!hasSyncedQuantity && (
+                                <Button
+                                    variant="reject"
+                                    size="sm"
+                                    icon={<FaTimesCircle />}
+                                    onClick={() => setIsStatusConformation(ERtvDetail.rejected)}
+                                >
+                                    Reject
+                                </Button>
+                            )}
+                        </>
+                    )}
+                    {rtvData?.status === 'approved' && (
+                        <>
+                            <Button size="sm" variant="twoTone" onClick={handleCreateGDN}>
+                                {gdnResponse?.isLoading ? <Spinner size={20} /> : 'Sync to GDN'}
+                            </Button>
+
+                            <Button size="sm" variant="new" onClick={() => setIsStatusConformation(ERtvDetail.processed)}>
+                                Close RTV
+                            </Button>
+
+                            <Button size="sm" variant="twoTone" onClick={() => setIsPickerModal(true)}>
+                                Add Picker
+                            </Button>
+                        </>
+                    )}
                 </div>
             </div>
             {isError && <NotFoundData />}
@@ -310,6 +354,16 @@ const RtvDetails = () => {
                     isProceed
                     label="Are you sure you want to change the status of this RTV"
                     headingName="Change Status"
+                    IsOpen={!!isStatusConformation}
+                    closeDialog={() => setIsStatusConformation('')}
+                    onDialogOk={handleStatus}
+                />
+            )}
+            {isStatusConformation === ERtvDetail.processed && (
+                <DialogConfirm
+                    isProceed
+                    label="Are you sure you want to close this rtv"
+                    headingName="Close rtv"
                     IsOpen={!!isStatusConformation}
                     closeDialog={() => setIsStatusConformation('')}
                     onDialogOk={handleStatus}

@@ -1,14 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react'
-import { FaDownload, FaSync, FaTrash } from 'react-icons/fa'
+import { FaSync } from 'react-icons/fa'
 import QCtable from './QCtable'
 import { Modal } from 'antd'
 import SkuUpdate from './SkuUpdate'
-import { Button, Select } from '@/components/ui'
-import { AxiosError } from 'axios'
-import { errorMessage, successMessage } from '@/utils/responseMessages'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import DialogConfirm from '@/common/DialogConfirm'
 
 interface props {
     handleSyncClick: any
@@ -21,10 +16,6 @@ interface props {
     handleRegenerateGrn: (doc_number: string) => Promise<void>
     regenerateLoading: boolean
 }
-const options = [
-    { label: 'PDF', value: 'pdf' },
-    { label: 'CSV', value: 'csv' },
-]
 
 const QcTabs = ({
     data,
@@ -38,49 +29,9 @@ const QcTabs = ({
     regenerateLoading,
 }: props) => {
     const [tabSelect, setTabSelect] = useState('quality_checklist')
-    const [deleteSpinner, setDeleteSpinner] = useState(false)
-    const [isDeleteGrn, setIsDeleteGrn] = useState(false)
 
     const handleSelectTab = (value: string) => {
         setTabSelect(value)
-    }
-
-    const deleteGrn = async (isForce: string, id: number) => {
-        try {
-            setDeleteSpinner(true)
-            const res = await axioisInstance.delete(`/goods/received/${id}`, {
-                data: { confirm_delete: isForce },
-            })
-            successMessage(res)
-            setIsDeleteGrn(false)
-            return res?.data?.data
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                errorMessage(error)
-                const errMsg = error?.response?.data?.message || error?.message
-                return { error: errMsg }
-            }
-        } finally {
-            setDeleteSpinner(false)
-        }
-    }
-
-    const handleDelete = async (id: number) => {
-        const res = await deleteGrn('false', id)
-        if (res && !res.error) return
-        if (res?.error?.toLowerCase() === 'please confirm delete by setting confirm_delete to true') {
-            Modal.confirm({
-                title: 'Confirm Force Delete',
-                content: 'Are you sure you want to force delete this GRN?',
-                okText: 'Yes',
-                cancelText: 'No',
-                onOk: async () => {
-                    await deleteGrn('true', id)
-                },
-            })
-        } else if (res?.error) {
-            errorMessage(res.error)
-        }
     }
 
     return (
@@ -117,70 +68,14 @@ const QcTabs = ({
             </div>
             <div className="container mx-auto px-6 py-8">
                 {tabSelect === 'quality_checklist' && (
-                    <div className="space-y-6">
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                                <div>
-                                    <h2 className="text-2xl font-bold text-gray-800">Quality Checklist</h2>
-                                    <p className="text-gray-600 mt-1">Manage and review your quality inspection details</p>
-                                </div>
-
-                                <div className="flex flex-wrap gap-3">
-                                    <div className="w-full sm:w-auto">
-                                        <Select
-                                            isClearable
-                                            size="sm"
-                                            isSearchable={false}
-                                            options={options}
-                                            className="min-w-[180px]"
-                                            placeholder="Filter Download by..."
-                                            classNamePrefix="custom-select"
-                                            onChange={(e) => setSelectValue(e?.value)}
-                                        />
-                                    </div>
-                                    <div className="flex flex-wrap gap-3">
-                                        <Button
-                                            variant="new"
-                                            size="sm"
-                                            icon={<FaDownload className="w-4 h-4" />}
-                                            loading={regenerateLoading}
-                                            disabled={regenerateLoading}
-                                            onClick={() => handleRegenerateGrn(data.document_number)}
-                                        >
-                                            Export
-                                        </Button>
-                                        <Button
-                                            variant="accept"
-                                            size="sm"
-                                            icon={<FaSync className="w-4 h-4" />}
-                                            loading={isSyncing}
-                                            onClick={() => handleSyncClick(data.grn_number)}
-                                        >
-                                            Sync GRN
-                                        </Button>
-
-                                        <Button
-                                            variant="reject"
-                                            size="sm"
-                                            icon={<FaTrash className="w-4 h-4" />}
-                                            loading={deleteSpinner}
-                                            onClick={() => setIsDeleteGrn(true)}
-                                        >
-                                            Delete GRN
-                                        </Button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 ">
-                            <div className="p-6 border-b border-gray-200">
-                                <h3 className="text-lg font-semibold text-gray-800">Quality Inspection Details</h3>
-                            </div>
-                            <div className="p-1">
-                                <QCtable />
-                            </div>
-                        </div>
-                    </div>
+                    <QCtable
+                        handleRegenerateGrn={handleRegenerateGrn}
+                        handleSyncClick={handleSyncClick}
+                        isSyncing={isSyncing}
+                        regenerateLoading={regenerateLoading}
+                        setSelectValue={setSelectValue}
+                        data={data}
+                    />
                 )}
 
                 {tabSelect === 'sku_select' && (
@@ -238,17 +133,6 @@ const QcTabs = ({
                         </div>
                     </div>
                 </div>
-            )}
-            {isDeleteGrn && (
-                <DialogConfirm
-                    IsDelete
-                    IsOpen={isDeleteGrn}
-                    closeDialog={() => setIsDeleteGrn(false)}
-                    headingName="Delete Grn"
-                    setIsOpen={setIsDeleteGrn}
-                    label="Grn"
-                    onDialogOk={() => handleDelete(data?.id)}
-                />
             )}
         </div>
     )
