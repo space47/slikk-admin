@@ -4,7 +4,7 @@ import Input from '@/components/ui/Input'
 import type { ColumnDef } from '@tanstack/react-table'
 import EasyTable from '@/common/EasyTable'
 import { grn_quality_check } from './QCTableCommon'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useDebounceInput } from '@/commonHooks/useDebounceInput'
 import PageCommon from '@/common/PageCommon'
 import { Spinner, Button, Select } from '@/components/ui'
@@ -43,6 +43,7 @@ const QCtable = ({
     isSyncing,
 }: Props) => {
     const { grn_id } = useParams()
+    const navigate = useNavigate()
     const [grnItems, setGrnItems] = useState<GRNItemDetails[]>([])
     const [deleteSpinner, setDeleteSpinner] = useState(false)
     const [closeSpinner, setCloseSpinner] = useState(false)
@@ -98,6 +99,7 @@ const QCtable = ({
             const res = await axioisInstance.patch(`goods/received/${data?.company}/detail`, body)
             successMessage(res)
             setCloseGrn(false)
+            navigate(0)
             return res?.data?.data
         } catch (error) {
             if (error instanceof AxiosError) {
