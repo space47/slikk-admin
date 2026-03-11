@@ -27,6 +27,17 @@ const AddReportQuery = () => {
     }
 
     const handleSubmit = async (values: any) => {
+        const isCacheEnableForAField = values?.value?.filter((item: Record<string, any>) => item?.enable_cache) || []
+
+        const configForFieldsCached = isCacheEnableForAField.reduce(
+            (acc: Record<string, { enable: boolean }>, item: Record<string, any>) => {
+                if (item?.name) {
+                    acc[item.name] = { enable: true }
+                }
+                return acc
+            },
+            {},
+        )
         try {
             const updatedValues = values.value.map((item: any, index: number) => {
                 if (!item.query) {
@@ -56,6 +67,7 @@ const AddReportQuery = () => {
                 required_fields: values.required_fields,
                 cache_config: {
                     cache_time_seconds: values.cache_config.cache_time_seconds,
+                    ...configForFieldsCached,
                 },
             }
             const response = await axioisInstance.post(`/query/config`, body)

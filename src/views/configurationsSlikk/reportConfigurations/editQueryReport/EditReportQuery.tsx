@@ -51,6 +51,7 @@ const EditReportQuery = () => {
                         name: item.name,
                         display_name: item.display_name,
                         position: item.position,
+                        enable_cache: data?.results[0]?.cache_config?.[item.name]?.enable ?? false,
                         query: item.query,
                         extra_attributes: {
                             is_graph: item.extra_attributes?.is_graph || false,
@@ -96,6 +97,18 @@ const EditReportQuery = () => {
     }, [id])
 
     const handleSubmit = async (values: any) => {
+        const isCacheEnableForAField = values?.value?.filter((item: Record<string, any>) => item?.enable_cache) || []
+
+        const configForFieldsCached = isCacheEnableForAField.reduce(
+            (acc: Record<string, { enable: boolean }>, item: Record<string, any>) => {
+                if (item?.name) {
+                    acc[item.name] = { enable: true }
+                }
+                return acc
+            },
+            {},
+        )
+
         const updatedValues = values.value.map((item: any) => {
             const parser = new DOMParser()
             const htmlDoc = parser.parseFromString(item.query, 'text/html')
@@ -121,6 +134,7 @@ const EditReportQuery = () => {
             required_fields: values.required_fields,
             cache_config: {
                 cache_time_seconds: values.cache_config.cache_time_seconds,
+                ...configForFieldsCached,
             },
         }
 

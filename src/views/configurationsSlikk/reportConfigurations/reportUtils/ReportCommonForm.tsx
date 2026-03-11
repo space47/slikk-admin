@@ -345,6 +345,7 @@ const ReportCommonForm = ({ resetForm, values }: Props) => {
                                                 display_name: '',
                                                 position: 0,
                                                 is_graph: false,
+                                                enable_cache: false,
                                                 query: '',
                                             })
                                         }
