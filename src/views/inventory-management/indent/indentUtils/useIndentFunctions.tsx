@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { IndentDetailsTypes } from '@/store/types/indent.types'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { notification } from 'antd'
+import { Modal, notification } from 'antd'
 import { AxiosError } from 'axios'
 import React from 'react'
 
@@ -44,28 +45,62 @@ export const useIndentFunctions = ({
         }
     }
 
+    const updateIndentStatus = async (body: any) => {
+        const response = await axioisInstance.patch('/indent', body)
+        notification.success({ message: response?.data?.data?.message || 'Status updated successfully' })
+        setIsStatusConformation('')
+        refetch()
+    }
+
     const handleStatus = async () => {
-        let action = data?.status === 'created' ? 'status_approved' : 'status_created'
-        if (isStatusConformation === 'reject') {
-            action = 'status_rejected'
+        const actionMap: Record<string, string> = {
+            reject: 'status_rejected',
+            fulfilled: 'status_fulfilled',
         }
-        if (isStatusConformation === 'fulfilled') {
-            action = 'status_fulfilled'
-        }
+
+        const action = actionMap[isStatusConformation] || (data?.status === 'created' ? 'status_approved' : 'status_created')
+
         const body = {
             action,
             indent_number: data?.intent_number,
         }
+
         try {
-            const response = await axioisInstance.patch('/indent', body)
-            notification.success({ message: response?.data?.data?.message || 'Status updated successfully' })
-            setIsStatusConformation('')
-            refetch()
+            await updateIndentStatus(body)
         } catch (error) {
-            if (error instanceof AxiosError) {
-                notification.error({ message: error?.response?.data?.message || 'Error updating status' })
+            const axiosError = error as AxiosError<any>
+
+            if (isStatusConformation !== 'fulfilled') {
+                notification.error({
+                    message: axiosError?.response?.data?.message || 'Error updating status',
+                })
+                return
             }
-            console.error('Error updating status:', error)
+
+            const errData = axiosError?.response?.data?.data
+
+            Modal.confirm({
+                title: axiosError?.response?.data?.message || 'Close the RTV',
+                content: `Are you sure you want to close Indent with Total Items ${errData?.total_items_sum || '0'}, Total Picked ${
+                    errData?.items_picked_sum || '0'
+                }, and Total GDN Sum ${errData?.gdn_items_sum || '0'}?`,
+                okText: 'Yes',
+                cancelText: 'No',
+                onOk: async () => {
+                    try {
+                        await updateIndentStatus({
+                            ...body,
+                            force_update: true,
+                        })
+                    } catch (err) {
+                        const forceError = err as AxiosError<any>
+
+                        notification.error({
+                            message: forceError?.response?.data?.message || 'Error updating status',
+                        })
+                    }
+                },
+            })
         }
     }
 

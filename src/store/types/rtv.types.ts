@@ -105,5 +105,5 @@ export type Rtv_Product_Params = {
 
 export type Rtv_status_request = {
     rtv_id: string | number
-    data: Record<string, string>
+    data: Record<string, string | boolean>
 }

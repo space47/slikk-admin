@@ -40,4 +40,5 @@ export enum ERtvDetail {
     rejected = 'rejected',
     assign_picker = 'assign_picker',
     add_rtv_number = 'add_rtv_number',
+    processed = 'processed',
 }
