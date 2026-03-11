@@ -19,6 +19,7 @@ export const rtvService = RtkQueryService.injectEndpoints({
                     url: `/rtv`,
                     method: 'GET',
                     params: parameters,
+                    cache: 'no-cache',
                 }
             },
         }),
@@ -56,6 +57,15 @@ export const rtvService = RtkQueryService.injectEndpoints({
             query: ({ id, ...body }) => {
                 return {
                     url: `/rtv/${id}`,
+                    method: 'PATCH',
+                    body,
+                }
+            },
+        }),
+        updateRtvItems: builder.mutation<{ status: string; message: string }, Record<string, any>>({
+            query: ({ ...body }) => {
+                return {
+                    url: `/rtv-products`,
                     method: 'PATCH',
                     body,
                 }

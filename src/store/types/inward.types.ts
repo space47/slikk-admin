@@ -35,6 +35,7 @@ export type GRNDetails = {
     gdn_number: string
     gdn_id: number
     indent_id: number
+    status?: string
     indent_number: string
 }
 
