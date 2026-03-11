@@ -133,3 +133,7 @@ export const InwardDetailSearchOptions = [
     { label: 'Sku', value: 'sku' },
     { label: 'Barcode', value: 'barcode' },
 ]
+export const InwardFilterSearch = [
+    { label: 'Grn Number', value: 'grn_number_search' },
+    { label: 'Document Number', value: 'document_number' },
+]

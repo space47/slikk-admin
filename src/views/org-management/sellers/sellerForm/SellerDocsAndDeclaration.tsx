@@ -45,7 +45,7 @@ const SellerDocsAndDeclaration = ({ isEdit, values }: Props) => {
                     <FormUploadFile
                         asterisk
                         isEdit={isEdit}
-                        label="Upload Commercial Approval Document"
+                        label="Upload CTA Document"
                         fileList={values?.commercialApprovalFile}
                         name={SellerKeys.COMMERCIAL_APPROVAL_DOC}
                         existingFile={values?.commercial_approval_doc}

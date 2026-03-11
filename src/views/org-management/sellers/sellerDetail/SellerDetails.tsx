@@ -12,7 +12,7 @@ import SellerCommentsModal from './SellerCommentsModal'
 import DialogConfirm from '@/common/DialogConfirm'
 import { getApiErrorMessage } from '@/constants/generateErrorMessage'
 import SellerBeforeApproval from './SellerBeforeApproval'
-import { FaDownload } from 'react-icons/fa'
+import { FaDotCircle, FaDownload } from 'react-icons/fa'
 import SellerDetailWarehouse from '../sellerUtils/SellerDetailWarehouse'
 import { commonPresignedDownload } from '@/common/commonDownload'
 import moment from 'moment'
@@ -70,9 +70,9 @@ const SellerDetails = () => {
     const StatusVariant = (status: string) => {
         if (!status) return SellerStatus.PENDING
         const lower = status.toLowerCase()
-        if (lower === SellerStatus.APPROVED) return 'accept'
-        if (lower === SellerStatus.REJECTED || lower === 'reject') return 'reject'
-        return SellerStatus.PENDING
+        if (lower === SellerStatus.APPROVED) return 'green'
+        if (lower === SellerStatus.REJECTED || lower === 'reject') return 'red'
+        return 'orange'
     }
 
     const IconSelector = (status: string) => {
@@ -80,7 +80,7 @@ const SellerDetails = () => {
         const lower = status.toLowerCase()
         if (lower === SellerStatus.APPROVED) return <IoCheckmarkOutline />
         if (lower === SellerStatus.REJECTED || lower === 'reject') return <MdCancel />
-        return null
+        return <FaDotCircle className="animate-pulse" />
     }
 
     const handleDownload = async (fileUrl: string, fileName: string) => {
@@ -97,14 +97,14 @@ const SellerDetails = () => {
                         </h1>
                         <p className="text-sm text-gray-500">Seller Profile Overview</p>
                     </div>
-                    <Button
-                        variant={StatusVariant(sellerData ? sellerData?.status : '') as 'accept' | 'reject' | 'pending'}
-                        size="lg"
-                        className="rounded-full px-6 font-medium shadow-md hover:shadow-lg transition-all duration-200"
-                        icon={sellerData ? IconSelector(sellerData?.status) : null}
+                    <div
+                        className={`bg-${StatusVariant(sellerData?.status as string)}-500  text-white rounded-xl p-2 font-medium shadow-md hover:shadow-lg transition-all duration-200`}
                     >
-                        {sellerData?.status}
-                    </Button>
+                        <div className="flex items-center gap-2 ">
+                            <span>{IconSelector(sellerData?.status as string)}</span>
+                            <span className="font-md">{sellerData?.status}</span>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Metadata Pills with Gradient Backgrounds */}

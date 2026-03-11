@@ -17,12 +17,9 @@ const SellerCommercials = ({ values }: Props) => {
 
     const BusinessCompanyData = configValues?.value?.[values?.business_nature as 'SOR' | 'OR']?.map((item) => ({
         label: item?.company_name,
-        value: item?.gstin,
+        value: item?.code,
     }))
 
-    console.log(BusinessCompanyData)
-
-    console.log('vsalalalavlalvaa', configValues)
     return (
         <div className="w-full">
             <h4>Slikk Commercial Details</h4>

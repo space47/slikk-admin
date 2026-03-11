@@ -19,7 +19,6 @@ export const PoFormFieldArray = [
     { label: 'Payment Terms', type: 'text', name: PoField.PAYMENT_TERMS },
     { label: 'Payment Mode', type: 'text', name: PoField.PAYMENT_MODE },
     { label: 'special_terms', type: 'text', name: PoField.SPECIAL_TERMS },
-    { label: 'Discount Sharing Applicable', type: 'checkbox', name: PoField.DISCOUNT_SHARING },
 ]
 
 export const PoOrderItemsArray = [

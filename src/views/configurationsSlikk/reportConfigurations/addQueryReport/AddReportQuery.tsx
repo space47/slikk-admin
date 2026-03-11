@@ -3,9 +3,10 @@ import { Formik } from 'formik'
 import { useNavigate } from 'react-router-dom'
 import { IoIosAddCircle } from 'react-icons/io'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { notification } from 'antd'
 import ReportCommonForm from '../reportUtils/ReportCommonForm'
 import { textParser } from '@/common/textParser'
+import { AxiosError } from 'axios'
+import { errorMessage, successMessage } from '@/utils/responseMessages'
 
 const AddReportQuery = () => {
     const navigate = useNavigate()
@@ -53,21 +54,14 @@ const AddReportQuery = () => {
                 ...values,
                 value: updatedValues,
                 required_fields: values.required_fields,
+                cache_config: {
+                    cache_time_seconds: values.cache_config.cache_time_seconds,
+                },
             }
-
-            console.log('API payload:', body)
-
             const response = await axioisInstance.post(`/query/config`, body)
-
-            notification.success({
-                message: response?.data?.message || 'Successfully added query',
-            })
-            console.log('API response:', response)
-        } catch (error: any) {
-            console.error('Error during API call:', error.message || error)
-            notification.error({
-                message: error?.response?.data?.message || 'Failed to add query',
-            })
+            successMessage(response)
+        } catch (error) {
+            if (error instanceof AxiosError) errorMessage(error)
         }
     }
 
