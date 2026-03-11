@@ -45,6 +45,7 @@ const EditReportQuery = () => {
             const formattedData = {
                 name: data?.results[0]?.name || '',
                 display_name: data?.results[0]?.display_name || '',
+                cache_config: data?.results[0]?.cache_config,
                 value:
                     data?.results[0]?.value.map((item: any) => ({
                         name: item.name,
@@ -118,6 +119,9 @@ const EditReportQuery = () => {
             ...values,
             value: updatedValues,
             required_fields: values.required_fields,
+            cache_config: {
+                cache_time_seconds: values.cache_config.cache_time_seconds,
+            },
         }
 
         try {

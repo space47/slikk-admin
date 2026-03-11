@@ -63,7 +63,7 @@ const ReportAnalytics = () => {
             )
             setShowSpinner(false)
         } catch (error) {
-            console.log(error)
+            if (error instanceof AxiosError) errorMessage(error)
         }
     }
 
@@ -87,7 +87,7 @@ const ReportAnalytics = () => {
     const [reportData, setReportData] = useState({
         name: '',
         value: '',
-        use_cache: true,
+
         required_fields: [{ key: '', value: '', dataType: 'String' }],
     })
 
@@ -139,7 +139,6 @@ const ReportAnalytics = () => {
             const formattedData = {
                 name: data?.name || '',
                 value: data?.value || '',
-                use_cache: true,
                 required_fields: requiredFields,
             }
 
@@ -163,6 +162,10 @@ const ReportAnalytics = () => {
     const [currentValues, setCurrentValues] = useState<any>()
 
     const fetchTable = async (values?: any) => {
+        if (!subReportName) {
+            notification.info({ message: 'Table should be selected to generate a particular report' })
+            return
+        }
         let reportParameters = ''
 
         if (values?.required_fields && Array.isArray(values.required_fields)) {
@@ -170,9 +173,6 @@ const ReportAnalytics = () => {
             reportParameters = processedQueries.join('&')
         }
 
-        if (!values.use_cache) {
-            reportParameters += reportParameters ? '&use_cache=false' : 'use_cache=false'
-        }
         if (subReportName) {
             reportParameters += reportParameters ? `&query_name=${subReportName}` : `query_name=${subReportName}`
         }
@@ -197,7 +197,6 @@ const ReportAnalytics = () => {
             }
             setShowTable(false)
             setErrorQuery(error?.response?.data?.message)
-            console.log(error?.response?.data?.error_query)
         } finally {
             setShowSpinner(false)
         }
