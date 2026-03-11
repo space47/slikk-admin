@@ -1,44 +1,32 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { FormContainer, FormItem, Input, Select, Spinner } from '@/components/ui'
+
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { ReportQueryData } from '@/views/configurationsSlikk/reportConfigurations/reportCommon'
-import { Field, FieldProps, Form, Formik } from 'formik'
+import { Form, Formik } from 'formik'
 import { useEffect, useState } from 'react'
 import { DIVISION_STATE } from '@/store/types/division.types'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { CATEGORY_STATE } from '@/store/types/category.types'
 import { BRAND_STATE } from '@/store/types/brand.types'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
-// import SalesReportGraphInput from './SalesReportGraphInput'
 import AccessDenied from '@/views/pages/AccessDenied'
 import InnternalError from '@/views/pages/InternalServerError/InternalError'
-import SalesReportFields from './components/SalesReportFields'
 import moment from 'moment'
-import BadRequest from '@/views/pages/BadRequest/BadRequest'
-import SalesReportGraphInput from './components/SalesReportGraphInput'
-import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
-import { CiNoWaitingSign } from 'react-icons/ci'
-
-const reportQueryArray = [
-    { label: 'Date', value: 'Date' },
-    { label: 'Number', value: 'Number' },
-    { label: 'String', value: 'String' },
-    { label: 'Boolean', value: 'Boolean' },
-    { label: 'Select', value: 'Select' },
-    { label: 'MultiSelect', value: 'MultiSelect' },
-]
+import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
+import { PRODUCTTYPE_STATE } from '@/store/types/productType.types'
+import { notification } from 'antd'
+import { reportQueryArray } from '@/constants/commonArray.constant'
+import { FaChartBar, FaExclamationTriangle } from 'react-icons/fa'
+import { commonDownload } from '@/common/commonDownload'
+import { errorMessage } from '@/utils/responseMessages'
+import { AxiosError } from 'axios'
+import ReportGraphInput from '@/views/analytics/reportsAnalytics/ReportGraphInput'
+import ReportFields from '@/views/analytics/reportsAnalytics/ReportFields'
+import { processField } from '@/views/analytics/reportsAnalytics/reportAnalyticsUtils'
 
 const SalesOverview = () => {
-    const [reportQueryData, setReportQueryData] = useState<ReportQueryData[]>([])
-    const [storeName, setStoreName] = useState('')
-    const [reportQueryNames, setReportQueryNames] = useState<{ label: string; value: string }[]>([])
-    const [showDataBelow, setShowDataBelow] = useState(false)
-    const [dynamicReportTable, setDynamicReportTable] = useState([])
+    const [storeName] = useState('Top_Performers')
+    const [dynamicReportTable, setDynamicReportTable] = useState<any[]>([])
     const [showTable, setShowTable] = useState(false)
-    const [page, setPage] = useState(1)
-    const [pageSize, setPageSize] = useState(10)
-    const [totalount, setTotalCount] = useState(0)
     const [xAxisValue, setXAxisvalue] = useState('')
     const [yAxisValue, setYAxisvalue] = useState('')
     const [yAxisValue2, setYAxisvalue2] = useState('')
@@ -46,164 +34,117 @@ const SalesOverview = () => {
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
+    const subCategoryData = useAppSelector<SUBCATEGORY_STATE>((state) => state.subCategory)
+    const productTypeData = useAppSelector<PRODUCTTYPE_STATE>((state) => state.product_type)
     const [selectedOption, setSelectedOption] = useState('line')
     const [accessDenied, setAccessDenied] = useState(false)
     const [badRequest, setBadRequest] = useState(false)
     const [serverError, setServerError] = useState(false)
-    const [reportValue, setReportValue] = useState()
-    const [showEmptyData, setShowEmptyData] = useState(false)
-    const fetchReportApi = async () => {
-        try {
-            setShowSpinner(true)
-            const response = await axioisInstance.get(`/query/config`)
-            const data = response?.data?.data
-            setReportQueryData(data?.results)
-            setReportQueryNames(
-                data?.results?.map((item: any) => ({
-                    label: item.name,
-                    value: item.name,
-                })),
-            )
-            setShowSpinner(false)
-        } catch (error) {
-            console.log(error)
-        }
-    }
 
     const dispatch = useAppDispatch()
     useEffect(() => {
         dispatch(getAllBrandsAPI())
     }, [])
 
-    useEffect(() => {
-        fetchReportApi()
-    }, [])
-
     const optionDataMap: { [key: string]: any } = {
-        brand: brands.brands,
-        category: category.categories,
-        division: divisions.divisions,
+        brand: brands?.brands,
+        category: category?.categories,
+        division: divisions?.divisions,
+        subcategory: subCategoryData?.subcategories,
+        productType: productTypeData?.product_types,
     }
 
     const [reportData, setReportData] = useState({
         name: '',
         value: '',
+
         required_fields: [{ key: '', value: '', dataType: 'String' }],
     })
 
     const fetchApi = async () => {
         try {
-            const response = await axioisInstance.get(`/query/config?name=Top_Performers`)
-            const data = response?.data?.data
-            const formattedData = {
-                name: data?.results[0]?.name || '',
-                value: data?.results[0]?.value || '',
-                required_fields: Object.entries(data?.results[0]?.required_fields || {})
-                    .reverse()
-                    .map(([key, fullValue]) => {
-                        const [dataType, valueArray, prefix, suffix] = fullValue || []
-                        console.log('Prefix', prefix)
+            const response = await axioisInstance.get(`/query/config?name=${storeName}`)
+            const dataFromResponse = response?.data?.data?.results
+            const data = dataFromResponse?.find((item: any) => item?.name.toLowerCase() === storeName?.toLowerCase())
+            let requiredFields = data?.required_fields || []
+            if (Array.isArray(requiredFields)) {
+                requiredFields = requiredFields.map((field) => {
+                    let value = field.value
+                    if (field.key === 'start_date' && !value) {
+                        value = moment().startOf('month').format('YYYY-MM-DD')
+                    } else if (field.key === 'end_date' && !value) {
+                        value = moment().format('YYYY-MM-DD')
+                    }
 
+                    return { ...field, value: value }
+                })
+            } else {
+                requiredFields = Object.entries(requiredFields || {})
+                    ?.reverse()
+                    ?.map(([key, fullValue]) => {
+                        const [position, dataType, valueArray, prefix, suffix] = Array.isArray(fullValue) ? fullValue : []
                         let transformedValue = valueArray
-
                         if (key === 'start_date') {
                             transformedValue = moment().startOf('month').format('YYYY-MM-DD')
                         } else if (key === 'end_date') {
-                            transformedValue = moment().endOf('month').format('YYYY-MM-DD')
+                            transformedValue = moment().format('YYYY-MM-DD')
                         }
-
                         return {
+                            position: position,
                             key,
                             value: transformedValue,
                             prefix: prefix || '',
                             suffix: suffix || '',
                             dataType: dataType || 'String',
                         }
-                    }),
+                    })
             }
+
+            if (requiredFields.length > 0 && requiredFields[0]?.position !== undefined) {
+                requiredFields.sort((a: any, b: any) => a.position - b.position)
+            }
+
+            const formattedData = {
+                name: data?.name || '',
+                value: data?.value || '',
+                required_fields: requiredFields,
+            }
+
             setReportData(formattedData)
-            setReportValue(formattedData?.value)
-            setShowDataBelow(true)
         } catch (error: any) {
             if (error.response && error.response.status === 403) {
                 setAccessDenied(true)
             } else if (error.response && error.response.status === 500) {
                 setServerError(true)
             }
-            console.log(error)
         }
     }
-    useEffect(() => {
-        fetchApi()
-    }, [])
 
-    console.log('reportValue', reportValue)
+    useEffect(() => {
+        if (storeName) {
+            fetchApi()
+        }
+    }, [storeName])
 
     const [currentValues, setCurrentValues] = useState<any>()
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((state) => state.company.currCompany)
 
     const fetchTable = async (values?: any) => {
         let reportParameters = ''
-        if (values?.required_fields) {
-            reportParameters = values.required_fields
-                .map((field: { key: string; value: any; prefix?: string; suffix?: string; dataType?: string }) => {
-                    const { key, value, prefix = '', suffix = '', dataType } = field
 
-                    const actualValue = key === 'brand' ? selectedCompany?.name : value
-
-                    if (dataType === 'MultiSelect' && Array.isArray(actualValue)) {
-                        console.log('value for multiselect ', actualValue)
-                        if (actualValue.length === 0 || actualValue[0] === '') {
-                            return `${key}= NOT IN ('')`
-                        }
-
-                        const formattedValues = actualValue.map((item: any) => {
-                            const transformedValue = item
-                                ? !['Date', 'Number', 'Boolean'].includes(dataType!)
-                                    ? `${prefix.toUpperCase()}${item.toString().toUpperCase()}${suffix.toUpperCase()}`
-                                    : `${prefix.toUpperCase()}${item}${suffix.toUpperCase()}`
-                                : ''
-
-                            return `'${transformedValue}'`
-                        })
-
-                        return `${key}= IN (${formattedValues.join(',')})`
-                    }
-
-                    if (actualValue === undefined || actualValue === null || actualValue === '') {
-                        return null
-                    }
-
-                    const transformedValue = !['Date', 'Number', 'Boolean'].includes(dataType!)
-                        ? `${prefix.toUpperCase()}${actualValue.toString().toUpperCase()}${suffix.toUpperCase()}`
-                        : `${prefix.toUpperCase()}${actualValue}${suffix.toUpperCase()}`
-
-                    console.log('Transformed Value', transformedValue)
-
-                    return `${key}=${transformedValue}`
-                })
-                .filter(Boolean)
-                .join('&')
+        if (values?.required_fields && Array.isArray(values.required_fields)) {
+            const processedQueries = values.required_fields.map((field: any) => processField(field)).filter(Boolean)
+            reportParameters = processedQueries.join('&')
         }
 
-        console.log('object required for', reportParameters)
-
         try {
+            setBadRequest(false)
             setShowSpinner(true)
-            const response = await axioisInstance.get(`/query/execute/Top_Performers${storeName}?${reportParameters}`)
+            const response = await axioisInstance.get(`/query/execute/${storeName}?${reportParameters}`)
             const data = response?.data?.data
-
             const tab = Object.keys(data).map((key) => {
-                return {
-                    key,
-                    data: data[key],
-                }
+                return { key, data: data[key] }
             })
-
-            const isEmptyData = Object.values(data).every((item) => item.data.length === 0)
-            setShowEmptyData(isEmptyData)
             setDynamicReportTable(tab)
-            setTotalCount(tab.length)
             setShowTable(true)
         } catch (error: any) {
             if (error.response && error.response.status === 403) {
@@ -213,24 +154,15 @@ const SalesOverview = () => {
             } else if (error.response && error.response.status === 400) {
                 setBadRequest(true)
             }
-            console.log(error)
+            setShowTable(false)
         } finally {
             setShowSpinner(false)
         }
     }
     const handleSubmit = async (values: any) => {
-        setCurrentValues(values)
+        const processedQueries = values.required_fields.map((field: any) => processField(field)).filter(Boolean)
+        setCurrentValues(processedQueries.join('&'))
         fetchTable(values)
-    }
-
-    useEffect(() => {
-        if (currentValues) {
-            fetchTable(currentValues)
-        }
-    }, [page, pageSize])
-
-    const onPaginationChange = (page: number) => {
-        setPage(page)
     }
 
     const handleSelect = (value: string) => {
@@ -238,33 +170,18 @@ const SalesOverview = () => {
     }
 
     const handleDownloadCsv = async (queryName: any) => {
-        let reportParameters = ''
-        if (currentValues?.required_fields) {
-            reportParameters = currentValues.required_fields
-                .map((field: { key: string; value: string }) => `${field.key}=${field.value}`)
-                .join('&')
-        }
+        notification.info({ message: 'Download ing Progress' })
         try {
             const response = await axioisInstance.get(
-                `/query/execute/Top_Performers${storeName}?${reportParameters}&download=true&query_name=${queryName}`,
-                {
-                    responseType: 'blob',
-                },
+                `/query/execute/${storeName}?${currentValues}&download=true&query_name=${queryName}`,
+                { responseType: 'blob' },
             )
-
-            const blob = new Blob([response.data], { type: 'text/csv' })
-            const url = window.URL.createObjectURL(blob)
-            const link = document.createElement('a')
-            link.href = url
-            link.download = `${queryName}.csv`
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
-            window.URL.revokeObjectURL(url)
+            commonDownload(response, `${queryName}.csv`)
         } catch (error) {
-            console.log(error)
+            if (error instanceof AxiosError) errorMessage(error)
         }
     }
+
     if (accessDenied) {
         return <AccessDenied />
     }
@@ -272,75 +189,82 @@ const SalesOverview = () => {
         return <InnternalError />
     }
 
-    console.log('Bad', badRequest)
-
     return (
-        <div className="shadow-xl p-4 rounded-xl">
+        <div className="min-h-screen  dark:from-gray-900 dark:to-gray-800 p-2">
             <Formik enableReinitialize initialValues={reportData} onSubmit={handleSubmit}>
-                {({ values, resetForm, setFieldValue }) => (
-                    <Form className="w-7/9 p-6  bg-white  rounded-lg">
-                        <FormContainer>
-                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6"></div>
-                        </FormContainer>
-
-                        {showDataBelow && (
-                            <div className="mt-6">
-                                <SalesReportFields
+                {({ values }) => (
+                    <Form className="w-full  ">
+                        <div className="bg-white p-2 dark:bg-gray-800 rounded-2xl shadow-2xl  border border-gray-200 dark:border-gray-700">
+                            <div className="">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <FaChartBar className=" text-2xl text-purple-500" />
+                                    <h1 className="text-2xl font-bold ">Top Performers</h1>
+                                </div>
+                                <p className="">Top Performers detailed reports with custom queries and visualization</p>
+                            </div>
+                            <div className="p-6">
+                                <ReportFields
                                     storeName={storeName}
                                     optionDataMap={optionDataMap}
                                     values={values.required_fields}
                                     reportQueryArray={reportQueryArray}
                                 />
                             </div>
-                        )}
+                        </div>
                     </Form>
                 )}
             </Formik>
-            <br />
 
             {badRequest && (
-                <>
-                    <div className="flex justify-center text-red-700 font-bold text-xl">
-                        You have Passed wrong value or the data do not exist
+                <div className="mt-6 mx-auto ">
+                    <div className="bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 border-l-4 border-red-500 rounded-xl p-5 shadow-lg">
+                        <div className="flex items-center gap-3">
+                            <div className="p-3 bg-red-100 dark:bg-red-800/30 rounded-lg">
+                                <FaExclamationTriangle className="text-red-600 dark:text-red-400 text-xl" />
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-red-700 dark:text-red-300 text-lg">Error Generating Report</h3>
+                            </div>
+                        </div>
                     </div>
-                </>
+                </div>
             )}
 
             {showSpinner && (
-                <div className="text-xl h-auto flex items-center justify-center">
-                    <Spinner size={40} />
+                <div className="mt-10 max-w-7xl mx-auto">
+                    <div className="flex flex-col items-center justify-center p-12 bg-white dark:bg-gray-800 rounded-2xl shadow-xl">
+                        <div className="relative">
+                            <div className="w-20 h-20 border-4 border-indigo-200 dark:border-indigo-800 rounded-full"></div>
+                            <div className="absolute top-0 left-0 w-20 h-20 border-4 border-indigo-500 dark:border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
+                        </div>
+                        <p className="mt-6 text-lg font-semibold text-gray-700 dark:text-gray-300">Generating Top Performers Data...</p>
+                        <p className="text-gray-500 dark:text-gray-400 mt-2">Please wait a moment</p>
+                    </div>
                 </div>
             )}
 
-            {showEmptyData && !showSpinner ? (
-                <div className="flex justify-center items-center h-auto text-xl text-red-500 font-bold mt-10">
-                    <div className="flex flex-col gap-2 justify-center items-center">
-                        <CiNoWaitingSign className="text-3xl font-bold text-red-600" />
-                        OOPS......... No data available to Show
+            {showTable && (
+                <div className="mt-8 ">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-700">
+                        <div className="p-6">
+                            <div className="p-6">
+                                <ReportGraphInput
+                                    dynamicReportTable={dynamicReportTable}
+                                    xAxisValue={xAxisValue}
+                                    yAxisValue={yAxisValue}
+                                    yAxisValue2={yAxisValue2}
+                                    selectedOption={selectedOption}
+                                    setXAxisvalue={setXAxisvalue}
+                                    setYAxisvalue={setYAxisvalue}
+                                    setYAxisvalue2={setYAxisvalue2}
+                                    handleSelect={handleSelect}
+                                    handleDownloadCsv={handleDownloadCsv}
+                                    showSpinner={showSpinner}
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
-            ) : showTable && !showSpinner ? (
-                <SalesReportGraphInput
-                    dynamicReportTable={dynamicReportTable}
-                    xAxisValue={xAxisValue}
-                    yAxisValue={yAxisValue}
-                    yAxisValue2={yAxisValue2}
-                    selectedOption={selectedOption}
-                    setXAxisvalue={setXAxisvalue}
-                    setYAxisvalue={setYAxisvalue}
-                    setYAxisvalue2={setYAxisvalue2}
-                    handleSelect={handleSelect}
-                    handleDownloadCsv={handleDownloadCsv}
-                    page={page}
-                    pageSize={pageSize}
-                    onPaginationChange={onPaginationChange}
-                    setPage={setPage}
-                    setPageSize={setPageSize}
-                    totalount={totalount}
-                    showSpinner={showSpinner}
-                />
-            ) : (
-                ''
             )}
         </div>
     )
