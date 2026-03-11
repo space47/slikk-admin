@@ -6,11 +6,12 @@ import React from 'react'
 interface props {
     label: string
     name: string
+    isRequired?: boolean
 }
 
-const RichTextCommon = ({ label, name }: props) => {
+const RichTextCommon = ({ label, name, isRequired }: props) => {
     return (
-        <FormItem label={label} labelClass="!justify-start" className="w-full">
+        <FormItem label={label} labelClass="!justify-start" className="w-full" asterisk={isRequired}>
             <Field name={name}>
                 {({ field, form }: FieldProps) => (
                     <RichTextEditor

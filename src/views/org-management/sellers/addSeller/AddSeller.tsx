@@ -1,159 +1,316 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormItem, FormContainer } from '@/components/ui/Form'
-import Input from '@/components/ui/Input'
-import Button from '@/components/ui/Button'
-import Select from '@/components/ui/Select'
-import { Field, Form, Formik, FieldProps } from 'formik' // Add FieldProps here
-import { notification } from 'antd'
+import { Field, FieldProps, Form, Formik } from 'formik'
 import { useNavigate } from 'react-router-dom'
+import SellerForm from '../sellerForm/SellerForm'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { SELLING_FORM, POC_FORM, ACCOUNT_FORM } from './addCommon'
-import { SellerFormTypes } from '../sellerCommon'
-import { SegmentOptions } from '@/constants/commonArray.constant'
+import { errorMessage, successMessage } from '@/utils/responseMessages'
+import { AxiosError } from 'axios'
+import {
+    BasicExtra,
+    BasicSellerInformation,
+    fileFields,
+    NOBOptions,
+    SellerCommercialsArray,
+    simpleFields,
+} from '../sellerUtils/sellerFormCommon'
+import { useEffect, useState } from 'react'
+import { Button, FormContainer, FormItem, Input, Select } from '@/components/ui'
 
-const initialValue: SellerFormTypes = {
-    account_holder_name: '',
-    account_number: '',
-    address: '',
-    alternate_contact_number: '',
-    bank_name: '',
-    cin: '',
-    contact_number: '',
-    create_date: '',
-    damages_per_sku: 0,
-    gstin: '',
-    handling_charges_per_order: 0,
-    id: 0,
-    ifsc: '',
-    confirm: '',
-    is_active: false,
-    name: '',
-    poc: '',
-    poc_email: '',
-    registered_name: '',
-    removal_fee_per_sku: 0,
-    revenue_share: 0,
-    segment: '',
-    settlement_days: 0,
-    update_date: '',
-    warehouse_charge_per_sku: 0,
-}
+import { GrDocument } from 'react-icons/gr'
+import { SegmentOptions } from '@/constants/commonArray.constant'
+import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
+import { FcViewDetails } from 'react-icons/fc'
+import { SellerKeys } from '../sellerCommon'
+import { textParser } from '@/common/textParser'
+import { getProfileData } from '@/store/action/authAction'
+import { useAppDispatch, useAppSelector } from '@/store'
+import { handlePhoneInputValidation } from '../sellerUtils/sellerFunctions'
+import { vendorService } from '@/store/services/vendorService'
+
+import { setConfigValues, VendorStateType } from '@/store/slices/vendorsSlice/vendors.slice'
 
 const AddSeller = () => {
     const navigate = useNavigate()
-    const handleSubmit = async (values: SellerFormTypes) => {
-        if (values.account_number !== values.confirm) {
-            notification.error({ message: 'Failure!! Account number does not match' })
-            return
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [isOther, setIsOther] = useState(false)
+    const dispatch = useAppDispatch()
+    const vendorConfigApiCall = vendorService.useVendorOnboardingConfigurationQuery({})
+
+    const { configValues } = useAppSelector<VendorStateType>((state) => state.vendor)
+
+    useEffect(() => {
+        if (vendorConfigApiCall.isSuccess) {
+            dispatch(setConfigValues(vendorConfigApiCall.data.config))
         }
-        if (values.contact_number === values.alternate_contact_number) {
-            notification.error({ message: 'Failure !! Alternate Mobile Number Should be different' })
-            return
+    }, [vendorConfigApiCall.isSuccess, vendorConfigApiCall.data?.config])
+
+    const initialValue = {}
+
+    const handleSubmit = async (values: any) => {
+        const formData = new FormData()
+        if (values.address) {
+            formData.append(SellerKeys.ADDRESS, textParser(values.address))
+        }
+        const appendIfValid = (key: string, value: any) => {
+            if (value !== undefined && value !== null && value !== '') {
+                formData.append(key, value)
+            }
         }
 
-        const { confirm, ...filteredValues } = values
-        console.log(confirm)
-        const formData = {
-            ...filteredValues,
-            handling_charges_per_order: Number(values.handling_charges_per_order),
+        simpleFields.forEach((key) => appendIfValid(key, values?.[key]))
+        fileFields.forEach((key) => appendIfValid(key, values?.[key]?.[0]))
+
+        const updatedDetails = (values?.gst_details || []).map((warehouse: any, index: number) => {
+            const cleanGstin = warehouse?.gstin?.replace(/\s+/g, '') || ''
+
+            if (warehouse?.gst_certificate?.[0] instanceof File) {
+                const certKey = `cert${index + 1}`
+                formData.append(certKey, warehouse.gst_certificate[0])
+
+                return {
+                    ...warehouse,
+                    gst_certificate: certKey,
+                    state_code: cleanGstin.slice(0, 2),
+                    warehouse_address: textParser(warehouse.warehouse_address),
+                }
+            }
+
+            return {
+                ...warehouse,
+                state_code: cleanGstin.slice(0, 2),
+                warehouse_address: textParser(warehouse.warehouse_address),
+            }
+        })
+
+        if (isOther) {
+            appendIfValid('gst_details', JSON.stringify(updatedDetails))
         }
 
         try {
-            const response = await axioisInstance.post('merchant/company', formData)
-            notification.success({
-                message: 'Success',
-                description: response?.data?.message || 'Seller created Successfully',
-            })
-            navigate('/app/sellers')
-        } catch (error: any) {
-            console.error('Error submitting form:', error)
-            notification.error({
-                message: 'Failure',
-                description: error?.response?.data?.message || 'Seller not created',
-            })
+            setIsSubmitting(true)
+            const res = await axioisInstance.post(`/merchant/company`, formData)
+            successMessage(res)
+            await dispatch(getProfileData())
+            navigate(-1)
+        } catch (error) {
+            if (error instanceof AxiosError) errorMessage(error)
+        } finally {
+            setIsSubmitting(false)
         }
+    }
+
+    const inputHandlers: Record<string, (e: React.FormEvent<HTMLInputElement>) => void> = {
+        [SellerKeys.HEAD_CONTACT]: handlePhoneInputValidation,
+        [SellerKeys.CONTACT_NUMBER]: handlePhoneInputValidation,
     }
 
     return (
         <div>
-            <h3 className="text-xl font-bold">Add Seller</h3>
-            <Formik
-                enableReinitialize
-                initialValues={initialValue}
-                // validationSchema={validationSchema}
-                onSubmit={handleSubmit}
-            >
-                {({ resetForm }) => (
-                    <Form className="xl:w-[90%] w-full p-5 shadow-xl rounded-xl">
-                        <FormContainer>
-                            <FormContainer className="grid grid-cols-2 gap-10">
-                                {SELLING_FORM.map((item, key) => (
-                                    <FormItem key={key} label={item.label} className={item.classname}>
-                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
-                                    </FormItem>
-                                ))}
+            <h3 className="text-xl font-bold">Add New Seller</h3>
+            <Formik enableReinitialize initialValues={initialValue as any} onSubmit={handleSubmit}>
+                {({ values }) => {
+                    const internalData =
+                        values?.segment?.split(',')?.reduce((acc: Record<string, any>, item: string) => {
+                            acc[item] = configValues?.value?.category_team[item?.toUpperCase()] || []
+                            return acc
+                        }, {}) || {}
 
-                                <FormItem asterisk label="Segment" className="col-span-1 w-full">
-                                    <Field name="segment">
-                                        {({ field, form }: FieldProps) => {
-                                            const fieldValueArray = Array.isArray(field?.value) ? field?.value : field?.value.split(',')
-                                            const selectedOptions = fieldValueArray.map((item: any) => {
-                                                const selectedOption = SegmentOptions()?.find((options: any) => {
-                                                    return options?.label === item
-                                                })
-                                                return selectedOption
-                                            })
-                                            return (
-                                                <Select
-                                                    isMulti
-                                                    isClearable
-                                                    className="w-full"
-                                                    options={SegmentOptions()}
-                                                    getOptionLabel={(option) => option?.label}
-                                                    getOptionValue={(option) => option?.value?.toString()}
-                                                    value={selectedOptions}
-                                                    onChange={(newVals) => {
-                                                        const selectedValues = newVals?.map((val: any) => val.value) || []
-                                                        form.setFieldValue(`segment`, selectedValues?.join(','))
+                    const BusinessCompanyData = configValues?.value?.[values?.business_nature as 'SOR' | 'OR']?.map((item) => ({
+                        label: item?.company_name,
+                        value: item?.code,
+                    }))
+                    return (
+                        <Form className="xl:w-[90%] w-full p-5 ">
+                            {!isOther && (
+                                <FormContainer>
+                                    <FormContainer className="bg-gradient-to-r  p-6 rounded-xl border-l-4 border-blue-500 shadow-lg mb-8">
+                                        <div className="flex items-center gap-3 mb-6">
+                                            <div className="p-2 bg-blue-100 rounded-lg">
+                                                <FcViewDetails className="text-2xl text-blue-600" />
+                                            </div>
+                                            <h4 className="text-xl font-bold text-gray-800">Seller Basic Details</h4>
+                                        </div>
+
+                                        <FormContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                                            {BasicSellerInformation.map((item, key) => {
+                                                return (
+                                                    <FormItem key={key} label={item.label} className="w-full" asterisk={item.isRequired}>
+                                                        <div className="relative">
+                                                            <Field
+                                                                type={item.type}
+                                                                name={item?.name}
+                                                                placeholder={`Enter ${item.label}`}
+                                                                component={Input}
+                                                                className="pl-10"
+                                                                onInput={inputHandlers[item.name]}
+                                                            />
+                                                        </div>
+                                                    </FormItem>
+                                                )
+                                            })}
+                                            {BasicExtra.map((item, key) => {
+                                                return (
+                                                    <FormItem key={key} label={item.label} className="w-full" asterisk={item.isRequired}>
+                                                        <div className="relative">
+                                                            <Field
+                                                                type={item.type}
+                                                                name={item?.name}
+                                                                placeholder={`Enter ${item.label}`}
+                                                                component={Input}
+                                                                className="pl-10"
+                                                            />
+                                                        </div>
+                                                    </FormItem>
+                                                )
+                                            })}
+                                        </FormContainer>
+                                    </FormContainer>
+                                    {/* Commercials */}
+                                    <div className="bg-gradient-to-r  p-6 rounded-xl border-l-4 border-orange-500 shadow-lg mb-8">
+                                        <div className="flex items-center gap-3 mb-6">
+                                            <div className="p-2 bg-orange-100 rounded-lg">
+                                                <GrDocument className="text-2xl text-orange-600" />
+                                            </div>
+                                            <h4 className="text-xl font-bold text-gray-800">Commercials</h4>
+                                        </div>
+
+                                        <FormContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                                            <CommonSelect
+                                                asterisk
+                                                name={SellerKeys.BUSINESS_NATURE}
+                                                options={NOBOptions()}
+                                                label="Nature of Business"
+                                            />
+                                            <FormItem asterisk label="Business Company" className="col-span-1 w-full">
+                                                <Field name={SellerKeys.BUSINESS_NATURE_COMPANY}>
+                                                    {({ field, form }: FieldProps) => {
+                                                        const fieldValueArray = Array.isArray(field?.value)
+                                                            ? field?.value
+                                                            : field?.value?.split(',') || []
+                                                        const selectedOptions = BusinessCompanyData?.filter((option: any) =>
+                                                            fieldValueArray.includes(option.value?.toString()),
+                                                        )
+
+                                                        return (
+                                                            <Select
+                                                                isMulti
+                                                                isClearable
+                                                                className="w-full"
+                                                                options={BusinessCompanyData}
+                                                                getOptionLabel={(option) => option?.label}
+                                                                getOptionValue={(option) => option?.value?.toString()}
+                                                                value={selectedOptions}
+                                                                onChange={(newVals: any) => {
+                                                                    const selectedValues =
+                                                                        newVals?.map((val: any) => val.value?.toString()) || []
+
+                                                                    form.setFieldValue(
+                                                                        SellerKeys.BUSINESS_NATURE_COMPANY,
+                                                                        selectedValues.join(','),
+                                                                    )
+                                                                }}
+                                                            />
+                                                        )
                                                     }}
-                                                />
-                                            )
-                                        }}
-                                    </Field>
-                                </FormItem>
-                            </FormContainer>
-                            <br />
-                            <h5 className="mb-3 text-gray-600 text-xl">POC Details</h5>
-                            <FormContainer className="grid grid-cols-2 gap-10 ">
-                                {POC_FORM.map((item, key) => (
-                                    <FormItem asterisk key={key} label={item.label} className={item.classname}>
-                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
-                                    </FormItem>
-                                ))}
-                            </FormContainer>
+                                                </Field>
+                                            </FormItem>
+                                            {SellerCommercialsArray.map((item, key) => {
+                                                return (
+                                                    <FormItem key={key} label={item.label} className="w-full" asterisk={item.isRequired}>
+                                                        <div className="relative">
+                                                            <Field
+                                                                type={item.type}
+                                                                name={item?.name}
+                                                                placeholder={`Enter ${item.label}`}
+                                                                component={Input}
+                                                                className="pl-10"
+                                                            />
+                                                        </div>
+                                                    </FormItem>
+                                                )
+                                            })}
+                                            <FormItem asterisk label="Fashion Style" className="col-span-1 w-full">
+                                                <Field name={SellerKeys.SEGMENT}>
+                                                    {({ field, form }: FieldProps) => {
+                                                        const fieldValueArray = Array.isArray(field?.value)
+                                                            ? field?.value
+                                                            : field?.value?.split(',') || []
+                                                        const selectedOptions = fieldValueArray?.map((item: any) => {
+                                                            const selectedOption = SegmentOptions()?.find((options: any) => {
+                                                                return options?.label === item
+                                                            })
+                                                            return selectedOption
+                                                        })
+                                                        return (
+                                                            <Select
+                                                                isMulti
+                                                                isClearable
+                                                                className="w-full"
+                                                                options={SegmentOptions()}
+                                                                getOptionLabel={(option) => option?.label}
+                                                                getOptionValue={(option) => option?.value?.toString()}
+                                                                value={selectedOptions}
+                                                                onChange={(newVals) => {
+                                                                    const selectedValues = newVals?.map((val: any) => val.value) || []
+                                                                    form.setFieldValue(SellerKeys.SEGMENT, selectedValues?.join(','))
+                                                                }}
+                                                            />
+                                                        )
+                                                    }}
+                                                </Field>
+                                            </FormItem>
+                                        </FormContainer>
+                                    </div>
+                                    <div className="mt-10 space-y-6">
+                                        {Object.entries(internalData).map(([category, people]: any) => (
+                                            <div key={category} className="border rounded-xl p-4 bg-gray-50 shadow-sm">
+                                                <h5 className="text-lg font-semibold text-gray-800 mb-3">{category}</h5>
+                                                {people?.length > 0 ? (
+                                                    <div className="text-sm text-gray-700 space-y-2">
+                                                        <p>
+                                                            <span className="font-medium">Names:</span>{' '}
+                                                            {people.map((p: any) => p.name).join(', ')}
+                                                        </p>
 
-                            {/* ------------------------------------------------------------------------------------------------ */}
-                            <br />
-                            <h5 className="mb-3 text-gray-600 text-xl">Account Details</h5>
-                            <FormContainer className="grid grid-cols-2 gap-10 ">
-                                {ACCOUNT_FORM.map((item, key) => (
-                                    <FormItem key={key} label={item.label} className={item.classname}>
-                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
-                                    </FormItem>
-                                ))}
-                            </FormContainer>
+                                                        <p>
+                                                            <span className="font-medium">Numbers:</span>{' '}
+                                                            {people.map((p: any) => p.mobile).join(', ')}
+                                                        </p>
 
-                            <FormContainer className="flex justify-end mt-5">
-                                <Button type="reset" className="mr-2 bg-gray-600" onClick={() => resetForm()}>
-                                    Reset
+                                                        <p>
+                                                            <span className="font-medium">Emails:</span>{' '}
+                                                            {people.map((p: any) => p.email).join(', ')}
+                                                        </p>
+                                                    </div>
+                                                ) : (
+                                                    <p className="text-sm text-gray-400">No team members available</p>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </FormContainer>
+                            )}
+                            {isOther && <SellerForm isAdd values={values} isSubmitting={isSubmitting} />}
+                            <div className="flex justify-end mt-8 gap-4">
+                                <Button type="button" variant={isOther ? 'gray' : 'pending'} onClick={() => setIsOther((prev) => !prev)}>
+                                    {isOther ? 'Go to basic Details' : 'Fill Other Data'}
                                 </Button>
-                                <Button variant="solid" type="submit" className=" text-white">
-                                    Submit
-                                </Button>
-                            </FormContainer>
-                        </FormContainer>
-                    </Form>
-                )}
+
+                                <div>
+                                    {!isOther ? (
+                                        <>
+                                            <Button type="submit" variant="blue" loading={isSubmitting} disabled={isSubmitting}>
+                                                Email To Vendor
+                                            </Button>
+                                        </>
+                                    ) : (
+                                        ''
+                                    )}
+                                </div>
+                            </div>
+                        </Form>
+                    )
+                }}
             </Formik>
         </div>
     )

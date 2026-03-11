@@ -23,6 +23,9 @@ import { FaChartBar } from 'react-icons/fa'
 import { commonDownload } from '@/common/commonDownload'
 import { GrDatabase } from 'react-icons/gr'
 import { ReportUi } from './reportAnalysisComponents/ReportUi'
+import { processField } from './reportAnalyticsUtils'
+import { errorMessage } from '@/utils/responseMessages'
+import { AxiosError } from 'axios'
 
 const ReportAnalytics = () => {
     const [storeName, setStoreName] = useState('')
@@ -60,7 +63,7 @@ const ReportAnalytics = () => {
             )
             setShowSpinner(false)
         } catch (error) {
-            console.log(error)
+            if (error instanceof AxiosError) errorMessage(error)
         }
     }
 
@@ -84,7 +87,7 @@ const ReportAnalytics = () => {
     const [reportData, setReportData] = useState({
         name: '',
         value: '',
-        use_cache: true,
+
         required_fields: [{ key: '', value: '', dataType: 'String' }],
     })
 
@@ -93,13 +96,22 @@ const ReportAnalytics = () => {
         setSubReportName('')
         try {
             const response = await axioisInstance.get(`/query/config?name=${storeName}`)
-            const dataxx = response?.data?.data?.results
-            const data = dataxx?.find((item: any) => item?.name.toLowerCase() === storeName?.toLowerCase())
-            const formattedData = {
-                name: data?.name || '',
-                value: data?.value || '',
-                use_cache: true,
-                required_fields: Object.entries(data?.required_fields || {})
+            const dataFromResponse = response?.data?.data?.results
+            const data = dataFromResponse?.find((item: any) => item?.name.toLowerCase() === storeName?.toLowerCase())
+            let requiredFields = data?.required_fields || []
+            if (Array.isArray(requiredFields)) {
+                requiredFields = requiredFields.map((field) => {
+                    let value = field.value
+                    if (field.key === 'start_date' && !value) {
+                        value = moment().startOf('month').format('YYYY-MM-DD')
+                    } else if (field.key === 'end_date' && !value) {
+                        value = moment().format('YYYY-MM-DD')
+                    }
+
+                    return { ...field, value: value }
+                })
+            } else {
+                requiredFields = Object.entries(requiredFields || {})
                     ?.reverse()
                     ?.map(([key, fullValue]) => {
                         const [position, dataType, valueArray, prefix, suffix] = Array.isArray(fullValue) ? fullValue : []
@@ -118,15 +130,20 @@ const ReportAnalytics = () => {
                             dataType: dataType || 'String',
                         }
                     })
-                    ?.sort((a, b) => a.position - b.position),
             }
+
+            if (requiredFields.length > 0 && requiredFields[0]?.position !== undefined) {
+                requiredFields.sort((a: any, b: any) => a.position - b.position)
+            }
+
+            const formattedData = {
+                name: data?.name || '',
+                value: data?.value || '',
+                required_fields: requiredFields,
+            }
+
             setReportData(formattedData)
-            setSubReportStore(
-                data?.value?.map((item: any) => ({
-                    label: item.name,
-                    value: item.name,
-                })),
-            )
+            setSubReportStore(data?.value?.map((item: any) => ({ label: item.name, value: item.name })))
         } catch (error: any) {
             if (error.response && error.response.status === 403) {
                 setAccessDenied(true)
@@ -145,55 +162,19 @@ const ReportAnalytics = () => {
     const [currentValues, setCurrentValues] = useState<any>()
 
     const fetchTable = async (values?: any) => {
+        if (!subReportName) {
+            notification.info({ message: 'Table should be selected to generate a particular report' })
+            return
+        }
         let reportParameters = ''
-        if (values?.required_fields) {
-            reportParameters = values.required_fields
-                .map((field: { key: string; value: any; prefix?: string; suffix?: string; dataType?: string; position?: number }) => {
-                    const { key, value = '', prefix = '', suffix = '', dataType } = field
-                    console.log('key is', key)
-                    const val = encodeURIComponent(value)
-                    if (dataType === 'MultiSelect' && Array.isArray(value)) {
-                        if (value.length === 0 || value[0] === '') {
-                            return `${key}= NOT IN ('')`
-                        }
 
-                        const formattedValues = value.map((item: any) => {
-                            const itemsEncoded = encodeURIComponent(item)
-                            const transformedValue = item
-                                ? !['Date', 'Number', 'Boolean'].includes(dataType!)
-                                    ? `${prefix.toUpperCase()}${itemsEncoded.toString().toUpperCase()}${suffix.toUpperCase()}`
-                                    : `${prefix.toUpperCase()}${itemsEncoded}${suffix.toUpperCase()}`
-                                : ''
-
-                            return `'${transformedValue}'`
-                        })
-
-                        return `${key}= IN (${formattedValues.join(',')})`
-                    }
-
-                    if (value === undefined || value === null || value === '') {
-                        return `${key}=`
-                    }
-
-                    let transformedValue = !['Date', 'Number', 'Boolean'].includes(dataType!)
-                        ? `${prefix.toUpperCase()}${val.toString().toUpperCase()}${suffix.toUpperCase()}`
-                        : `${prefix.toUpperCase()}${val}${suffix.toUpperCase()}`
-
-                    if (key === 'store_code' || key === 'fashion_style') {
-                        transformedValue = !['Date', 'Number', 'Boolean'].includes(dataType!)
-                            ? `${prefix}${val.toString()}${suffix}`
-                            : `${prefix}${val}${suffix}`
-                    }
-                    return `${key}=${transformedValue}`
-                })
-                .filter(Boolean)
-                .join('&')
+        if (values?.required_fields && Array.isArray(values.required_fields)) {
+            const processedQueries = values.required_fields.map((field: any) => processField(field)).filter(Boolean)
+            reportParameters = processedQueries.join('&')
         }
-        if (!values.use_cache) {
-            reportParameters += `&use_cache=false`
-        }
+
         if (subReportName) {
-            reportParameters += `&query_name=${subReportName}`
+            reportParameters += reportParameters ? `&query_name=${subReportName}` : `query_name=${subReportName}`
         }
 
         try {
@@ -216,21 +197,15 @@ const ReportAnalytics = () => {
             }
             setShowTable(false)
             setErrorQuery(error?.response?.data?.message)
-            console.log(error?.response?.data?.error_query)
         } finally {
             setShowSpinner(false)
         }
     }
     const handleSubmit = async (values: any) => {
-        setCurrentValues(values)
+        const processedQueries = values.required_fields.map((field: any) => processField(field)).filter(Boolean)
+        setCurrentValues(processedQueries.join('&'))
         fetchTable(values)
     }
-
-    useEffect(() => {
-        if (currentValues) {
-            fetchTable(currentValues)
-        }
-    }, [])
 
     const handleSelect = (value: string) => {
         setSelectedOption(value)
@@ -238,20 +213,14 @@ const ReportAnalytics = () => {
 
     const handleDownloadCsv = async (queryName: any) => {
         notification.info({ message: 'Download ing Progress' })
-        let reportParameters = ''
-        if (currentValues?.required_fields) {
-            reportParameters = currentValues.required_fields
-                .map((field: { key: string; value: string }) => `${field.key}=${field.value}`)
-                .join('&')
-        }
         try {
             const response = await axioisInstance.get(
-                `/query/execute/${storeName}?${reportParameters}&download=true&query_name=${queryName}`,
+                `/query/execute/${storeName}?${currentValues}&download=true&query_name=${queryName}`,
                 { responseType: 'blob' },
             )
             commonDownload(response, `${queryName}.csv`)
         } catch (error) {
-            console.log(error)
+            if (error instanceof AxiosError) errorMessage(error)
         }
     }
 

@@ -8,7 +8,9 @@ export const inwardService = RtkQueryService.injectEndpoints({
         inwardDataGet: builder.query<GrnResponseType, InwardParamType>({
             query: (params) => {
                 const parameters: Record<string, string | string[] | number> = {}
-                if (params.document_number) parameters.document_number = params.document_number
+                if (params.search_type && params.search_value) {
+                    parameters[params.search_type] = params.search_value
+                }
                 if (params.company) parameters.company_code = params.company
                 if (params.page) parameters.p = params.page.toString()
                 if (params.pageSize) parameters.page_size = params.pageSize.toString()

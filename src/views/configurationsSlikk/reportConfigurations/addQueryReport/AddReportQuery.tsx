@@ -3,9 +3,10 @@ import { Formik } from 'formik'
 import { useNavigate } from 'react-router-dom'
 import { IoIosAddCircle } from 'react-icons/io'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { notification } from 'antd'
 import ReportCommonForm from '../reportUtils/ReportCommonForm'
 import { textParser } from '@/common/textParser'
+import { AxiosError } from 'axios'
+import { errorMessage, successMessage } from '@/utils/responseMessages'
 
 const AddReportQuery = () => {
     const navigate = useNavigate()
@@ -26,24 +27,18 @@ const AddReportQuery = () => {
     }
 
     const handleSubmit = async (values: any) => {
-        console.log('Submitting form...', values)
+        const isCacheEnableForAField = values?.value?.filter((item: Record<string, any>) => item?.enable_cache) || []
 
-        try {
-            const formattedRequiredFields = values.required_fields.reduce((result: any, item: any) => {
-                if (item.key) {
-                    let valueArray: [number | undefined, string, string | string[], string, string]
-                    if (item.dataType === 'MultiSelect') {
-                        const multiSelectValues = item.value.split(',').map((val: string) => val.trim())
-                        valueArray = [item?.position, item.dataType, multiSelectValues, item.prefix || '', item.suffix || '']
-                    } else {
-                        const value = item.value.trim()
-                        valueArray = [item?.position, item.dataType, value, item.prefix || '', item.suffix || '']
-                    }
-                    result[item.key] = valueArray
+        const configForFieldsCached = isCacheEnableForAField.reduce(
+            (acc: Record<string, { enable: boolean }>, item: Record<string, any>) => {
+                if (item?.name) {
+                    acc[item.name] = { enable: true }
                 }
-                return result
-            }, {})
-
+                return acc
+            },
+            {},
+        )
+        try {
             const updatedValues = values.value.map((item: any, index: number) => {
                 if (!item.query) {
                     throw new Error(`Missing query for value at index ${index}`)
@@ -69,22 +64,16 @@ const AddReportQuery = () => {
             const body = {
                 ...values,
                 value: updatedValues,
-                required_fields: formattedRequiredFields,
+                required_fields: values.required_fields,
+                cache_config: {
+                    cache_time_seconds: values.cache_config.cache_time_seconds,
+                    ...configForFieldsCached,
+                },
             }
-
-            console.log('API payload:', body)
-
             const response = await axioisInstance.post(`/query/config`, body)
-
-            notification.success({
-                message: response?.data?.message || 'Successfully added query',
-            })
-            console.log('API response:', response)
-        } catch (error: any) {
-            console.error('Error during API call:', error.message || error)
-            notification.error({
-                message: error?.response?.data?.message || 'Failed to add query',
-            })
+            successMessage(response)
+        } catch (error) {
+            if (error instanceof AxiosError) errorMessage(error)
         }
     }
 

@@ -1,206 +1,181 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormItem, FormContainer } from '@/components/ui/Form'
-import Input from '@/components/ui/Input'
-import Button from '@/components/ui/Button'
-import Select from '@/components/ui/Select'
-import { Field, Form, Formik, FieldProps } from 'formik' // Add FieldProps here
-import { useEffect, useState } from 'react'
+import { Form, Formik } from 'formik'
+import { useEffect, useMemo, useState } from 'react'
 import { notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
+import SellerForm from '../sellerForm/SellerForm'
+import { vendorService } from '@/store/services/vendorService'
+import { Spinner } from '@/components/ui'
+import { AxiosError } from 'axios'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { SELLING_FORM, POC_FORM, ACCOUNT_FORM } from './editCommon'
-import AccessDenied from '@/views/pages/AccessDenied'
-import { SellerFormTypes } from '../sellerCommon'
-
-const SegmentOptions = () => {
-    return ['Fashion', 'Footwear', 'Beauty & Personal Care', 'Home Decor', 'Accessories', 'Travel and Luggages'].map((segment) => ({
-        label: segment,
-        value: segment,
-    }))
-}
+import { errorMessage, successMessage } from '@/utils/responseMessages'
+import { getChangedFormData } from '@/utils/apiBodyUtility'
+import dayjs from 'dayjs'
+import { fileFields, simpleFields } from '../sellerUtils/sellerFormCommon'
+import { SellerKeys } from '../sellerCommon'
+import { textParser } from '@/common/textParser'
+import { useAppDispatch } from '@/store'
+import { setConfigValues } from '@/store/slices/vendorsSlice/vendors.slice'
+import { VendorDetails } from '@/store/types/vendor.type'
 
 const EditSeller = () => {
-    const [sellerData, setSellerData] = useState<SellerFormTypes>()
-    const [accessDenied, setAccessDenied] = useState(false)
-    const navigate = useNavigate()
-
     const { id } = useParams()
+    const dispatch = useAppDispatch()
+    const navigate = useNavigate()
+    const [sellerData, setSellerData] = useState<VendorDetails>()
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const { data, isSuccess, isError, isLoading, error } = vendorService.useGetSingleVendorListQuery({ id: id as string }, { skip: !id })
 
-    const fetchsellerData = async () => {
-        try {
-            const response = await axioisInstance.get(`merchant/company?company_id=${id}`)
-            const data = response.data.data
-            console.log('ssdssdsd', data)
-            setSellerData(data)
-        } catch (error: any) {
-            if (error.response && error.response.status === 403) {
-                setAccessDenied(true)
-            }
-            console.log(error)
-        }
-    }
+    const vendorConfigApiCall = vendorService.useVendorOnboardingConfigurationQuery({})
 
     useEffect(() => {
-        fetchsellerData()
-    }, [id])
-
-    const initialValue: SellerFormTypes = {
-        account_holder_name: sellerData?.account_holder_name || '',
-        account_number: sellerData?.account_number || '',
-        address: sellerData?.address || '',
-        alternate_contact_number: sellerData?.alternate_contact_number || '',
-        bank_name: sellerData?.bank_name || '',
-        cin: sellerData?.cin || '',
-        contact_number: sellerData?.contact_number || '',
-        create_date: sellerData?.create_date || '',
-        damages_per_sku: sellerData?.damages_per_sku || 0,
-        gstin: sellerData?.gstin || '',
-        handling_charges_per_order: sellerData?.handling_charges_per_order || 0,
-        id: sellerData?.id || 0,
-        ifsc: sellerData?.ifsc || '',
-        is_active: sellerData?.is_active || false,
-        confirm: sellerData?.account_number || '',
-        name: sellerData?.name || '',
-        poc: sellerData?.poc || '',
-        poc_email: sellerData?.poc_email || '',
-        registered_name: sellerData?.registered_name || '',
-        removal_fee_per_sku: sellerData?.removal_fee_per_sku || 0,
-        revenue_share: sellerData?.revenue_share || 0,
-        segment: sellerData?.segment || '',
-        settlement_days: sellerData?.settlement_days || 0,
-        update_date: sellerData?.update_date || '',
-        warehouse_charge_per_sku: sellerData?.warehouse_charge_per_sku || 0,
-        code: sellerData?.code || '',
-    }
-
-    const handleSubmit = async (values: SellerFormTypes) => {
-        console.log('handleSubmit')
-
-        if (values.account_number !== values.confirm) {
-            notification.error({
-                message: 'Failure',
-                description: 'Account number does not match',
-            })
-            return
+        if (vendorConfigApiCall.isSuccess) {
+            dispatch(setConfigValues(vendorConfigApiCall.data.config))
         }
+    }, [vendorConfigApiCall.isSuccess, vendorConfigApiCall.data?.config])
+
+    useEffect(() => {
+        if (isSuccess) setSellerData(data?.data)
+        if (isError) {
+            notification.error({ message: (error as any)?.data?.message })
+        }
+    }, [isSuccess, isError])
+
+    const initialValue = useMemo(
+        () => ({
+            registered_name: sellerData?.registered_name || '',
+            is_active: sellerData?.is_active || false,
+            code: sellerData?.code || '',
+            head_name: sellerData?.head_name || '',
+            head_contact: sellerData?.head_contact || '',
+            head_email: sellerData?.head_email || '',
+            gst_certificate: sellerData?.gst_certificate || null, // file
+            gstin: sellerData?.gstin || '',
+            pan_copy: sellerData?.pan_copy || null, // file
+            pan_number: sellerData?.pan_number || '',
+            tan_number: sellerData?.tan_number || '',
+            tan_copy: sellerData?.tan_copy || null, // file
+            cin: sellerData?.cin || '',
+            address: sellerData?.address || '',
+            contact_number: sellerData?.contact_number || '',
+            alternate_contact_number: sellerData?.alternate_contact_number || '',
+            poc_email: sellerData?.poc_email || '',
+            poc: sellerData?.poc || '',
+            finance_name: sellerData?.finance_name || '',
+            finance_email: sellerData?.finance_email || '',
+            finance_contact_number: sellerData?.finance_contact_number || '',
+            account_number: sellerData?.account_number || '',
+            account_holder_name: sellerData?.account_holder_name || '',
+            ifsc: sellerData?.ifsc || '',
+            bank_name: sellerData?.bank_name || '',
+            branch_name: sellerData?.branch_name || '',
+            account_type: sellerData?.account_type || '',
+            cancelled_cheque: sellerData?.cancelled_cheque || null, // file
+            segment: sellerData?.segment || '',
+            provisional_discount_rate: sellerData?.provisional_discount_rate || 0,
+            revenue_share: sellerData?.revenue_share || 0,
+            handling_charges_per_order: sellerData?.handling_charges_per_order || 0,
+            warehouse_charge_per_sku: sellerData?.warehouse_charge_per_sku || 0,
+            damages_per_sku: sellerData?.damages_per_sku || 0,
+            removal_fee_per_sku: sellerData?.removal_fee_per_sku || 0,
+            approved_payment_term: sellerData?.approved_payment_term || '',
+            business_nature: sellerData?.business_nature || '',
+            sp_type: sellerData?.sp_type || '',
+            pf_declaration: sellerData?.pf_declaration === 'true' || '',
+            pf_declaration_doc: sellerData?.pf_declaration_doc || null, // file
+            trade_mark_certificate: sellerData?.trade_mark_certificate || null, // file
+            is_msme: sellerData?.is_msme || false,
+            msme_category: sellerData?.msme_category || '',
+            msme_certificate: sellerData?.msme_certificate || null, // file
+            commercial_approval_doc: sellerData?.commercial_approval_doc || null, // file
+            approved_onboarding_doc: sellerData?.approved_onboarding_doc || null, // file
+            warehouse_name: sellerData?.warehouse_name || '',
+            authorized_person: sellerData?.authorized_person || '',
+            name: sellerData?.name || '',
+            create_date: sellerData?.create_date || '',
+            update_date: sellerData?.update_date || '',
+            id: sellerData?.id || 0,
+            confirm: sellerData?.account_number || '',
+            gst_details: sellerData?.gst_details || [],
+            date: dayjs().format('YYYY-MM-DD HH:mm:ss a'),
+            declaration_statement: sellerData?.declaration_statement || '',
+            business_nature_company_details: sellerData?.business_nature_company_details || '',
+        }),
+        [sellerData],
+    )
+
+    const handleSubmit = async (values: any) => {
         if (values.contact_number === values.alternate_contact_number) {
-            notification.error({
-                message: 'Failure',
-                description: 'Alternate Mobile Number Should be different',
-            })
+            notification.error({ message: 'Failure !! Alternate Mobile Number Should be different' })
             return
         }
-
-        const { confirm, ...filteredValues } = values
-        console.log(confirm)
-
-        const formData = {
-            ...filteredValues,
-            handling_charges_per_order: Number(values.handling_charges_per_order),
+        const formData = new FormData()
+        if (values.address) {
+            formData.append(SellerKeys.ADDRESS, textParser(values.address))
         }
+        const appendIfValid = (key: string, value: any) => {
+            if (value !== undefined && value !== null && value !== '') {
+                formData.append(key, value)
+            }
+        }
+        simpleFields.forEach((key) => appendIfValid(key, values?.[key]))
+        fileFields.forEach((key) => {
+            const fileValue = values?.[key]?.[0]
+            if (fileValue instanceof File) {
+                formData.append(key, fileValue)
+            }
+        })
+        const existingDetails = initialValue?.gst_details || []
+        const updatedDetails = (values?.gst_details || []).map((warehouse: any, index: number) => {
+            const cleanGstin = warehouse?.gstin?.replace(/\s+/g, '') || ''
+            if (warehouse?.gst_certificate?.[0] instanceof File) {
+                const certKey = `cert${index + 1}`
+                formData.append(certKey, warehouse.gst_certificate[0])
 
-        console.log('formData', formData)
+                return {
+                    ...warehouse,
+                    gst_certificate: certKey,
+                    state_code: cleanGstin.slice(0, 2),
+                    warehouse_address: textParser(warehouse.warehouse_address),
+                }
+            }
+
+            return {
+                ...warehouse,
+                state_code: cleanGstin.slice(0, 2),
+                warehouse_address: textParser(warehouse.warehouse_address),
+            }
+        })
+        const gstChanged = JSON.stringify(existingDetails) !== JSON.stringify(updatedDetails)
+        if (gstChanged) {
+            appendIfValid('gst_details', JSON.stringify(updatedDetails))
+        }
+        const changedValue = getChangedFormData(formData, initialValue)
 
         try {
-            const response = await axioisInstance.patch(`merchant/company/${id}`, formData)
-
-            console.log(response)
-            notification.success({
-                message: 'Success',
-                description: response?.data?.message || 'Seller created Successfully',
-            })
-            navigate('/app/sellers')
-        } catch (error: any) {
-            console.error('Error submitting form:', error)
-            notification.error({
-                message: 'Failure',
-                description: error?.response?.data?.message || 'Seller not created',
-            })
+            setIsSubmitting(true)
+            const res = await axioisInstance.patch(`/merchant/company/${id}`, changedValue)
+            successMessage(res)
+            navigate(-1)
+        } catch (error) {
+            if (error instanceof AxiosError) errorMessage(error)
+        } finally {
+            setIsSubmitting(false)
         }
-    }
-
-    if (accessDenied) {
-        return <AccessDenied />
     }
 
     return (
         <div>
-            <h3 className="text-xl font-bold">Edit Seller</h3>
-            <Formik
-                enableReinitialize
-                initialValues={initialValue}
-                // validationSchema={validationSchema}
-                onSubmit={handleSubmit}
-            >
-                {({ resetForm }) => (
-                    <Form className="xl:w-[90%] w-full p-5 shadow-xl rounded-xl">
-                        <FormContainer>
-                            <FormContainer className="grid grid-cols-2 gap-10">
-                                {SELLING_FORM.map((item, key) => (
-                                    <FormItem key={key} label={item.label} className={item.classname}>
-                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
-                                    </FormItem>
-                                ))}
-
-                                <FormItem asterisk label="Segment" className="col-span-1 w-full">
-                                    <Field name="segment">
-                                        {({ field, form }: FieldProps) => {
-                                            const fieldValueArray = Array.isArray(field?.value) ? field?.value : field?.value.split(',')
-                                            const selectedOptions = fieldValueArray.map((item: any) => {
-                                                const selectedOption = SegmentOptions()?.find((options: any) => {
-                                                    return options?.label === item
-                                                })
-                                                return selectedOption
-                                            })
-                                            return (
-                                                <Select
-                                                    isMulti
-                                                    isClearable
-                                                    className="w-full"
-                                                    options={SegmentOptions()}
-                                                    getOptionLabel={(option) => option?.label}
-                                                    getOptionValue={(option) => option?.value?.toString()}
-                                                    value={selectedOptions}
-                                                    onChange={(newVals) => {
-                                                        const selectedValues = newVals?.map((val: any) => val.value) || []
-                                                        form.setFieldValue(`segment`, selectedValues?.join(','))
-                                                    }}
-                                                />
-                                            )
-                                        }}
-                                    </Field>
-                                </FormItem>
-                            </FormContainer>
-                            <br />
-                            <h5 className="mb-3 text-gray-600 text-xl">POC Details</h5>
-                            <FormContainer className="grid grid-cols-2 gap-10 ">
-                                {POC_FORM.map((item, key) => (
-                                    <FormItem asterisk key={key} label={item.label} className={item.classname}>
-                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
-                                    </FormItem>
-                                ))}
-                            </FormContainer>
-
-                            {/* ------------------------------------------------------------------------------------------------ */}
-                            <br />
-                            <h5 className="mb-3 text-gray-600 text-xl">Account Details</h5>
-                            <FormContainer className="grid grid-cols-2 gap-10 ">
-                                {ACCOUNT_FORM.map((item, key) => (
-                                    <FormItem key={key} label={item.label} className={item.classname}>
-                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
-                                    </FormItem>
-                                ))}
-                            </FormContainer>
-
-                            <FormContainer className="flex justify-end mt-5">
-                                <Button type="reset" className="mr-2" onClick={() => resetForm()}>
-                                    Reset
-                                </Button>
-                                <Button variant="solid" type="submit" className="bg-blue-500 text-white">
-                                    Submit
-                                </Button>
-                            </FormContainer>
-                        </FormContainer>
+            <h3 className="text-xl font-bold">Onboarding Process</h3>
+            {isLoading && (
+                <div className="flex items-center justify-center mt-10">
+                    <Spinner size={30} />
+                </div>
+            )}
+            <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
+                {({ values }) => (
+                    <Form className="xl:w-[90%] w-full p-5 ">
+                        <SellerForm values={values} isSubmitting={isSubmitting} />
                     </Form>
                 )}
             </Formik>

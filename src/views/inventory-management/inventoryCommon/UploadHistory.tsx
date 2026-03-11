@@ -9,6 +9,7 @@ import PageCommon from '@/common/PageCommon'
 import UltimateDateFilter from '@/common/UltimateDateFilter'
 import moment from 'moment'
 import { Spin } from 'antd'
+import NotFoundData from '@/views/pages/NotFound/Notfound'
 
 interface Props {
     type: string
@@ -28,7 +29,7 @@ const UploadHistory = ({ type }: Props) => {
         return `bulkupload/history?type=${type}&p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}`
     }, [page, pageSize, type, from, To_Date])
 
-    const { data: indentHistoryData, responseStatus, totalData, loading } = useFetchApi<IndentHistoryData>({ url: query, initialData: [] })
+    const { data: historyData, responseStatus, totalData, loading } = useFetchApi<IndentHistoryData>({ url: query, initialData: [] })
     const [globalFilter, setGlobalFilter] = useState<string>('')
     const columns = HistoryColumns()
 
@@ -45,30 +46,38 @@ const UploadHistory = ({ type }: Props) => {
 
     return (
         <Spin spinning={loading}>
-            <div className="flex justify-between mb-8">
-                <div className="">
-                    <input
-                        placeholder="Search here..."
-                        value={globalFilter || ''}
-                        className="p-2 border rounded-md"
-                        onChange={(e) => setGlobalFilter(e.target.value)}
-                    />
+            <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+                    <div className="w-full md:w-72">
+                        <input
+                            placeholder="Search..."
+                            value={globalFilter || ''}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            onChange={(e) => setGlobalFilter(e.target.value)}
+                        />
+                    </div>
+                    <div className="flex justify-start md:justify-end">
+                        <UltimateDateFilter from={from} to={to} setFrom={setFrom} setTo={setTo} handleDateChange={handleDateChange} />
+                    </div>
                 </div>
-                <div className="mr-10">
-                    <UltimateDateFilter from={from} to={to} setFrom={setFrom} setTo={setTo} handleDateChange={handleDateChange} />
-                </div>
-            </div>
-            <div>
-                <EasyTable
-                    overflow
-                    filterValue={globalFilter}
-                    page={page}
-                    pageSize={pageSize}
-                    mainData={indentHistoryData}
-                    columns={columns}
-                />
-                <div className="flex items-center justify-between mt-4">
-                    <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={totalData} />
+                <div className="border rounded-lg overflow-hidden">
+                    {historyData?.length ? (
+                        <>
+                            <EasyTable
+                                overflow
+                                filterValue={globalFilter}
+                                page={page}
+                                pageSize={pageSize}
+                                mainData={historyData}
+                                columns={columns}
+                            />
+                            <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={totalData} />
+                        </>
+                    ) : (
+                        <div className="py-16 flex justify-center">
+                            <NotFoundData />
+                        </div>
+                    )}
                 </div>
             </div>
         </Spin>

@@ -45,11 +45,13 @@ const EditReportQuery = () => {
             const formattedData = {
                 name: data?.results[0]?.name || '',
                 display_name: data?.results[0]?.display_name || '',
+                cache_config: data?.results[0]?.cache_config,
                 value:
                     data?.results[0]?.value.map((item: any) => ({
                         name: item.name,
                         display_name: item.display_name,
                         position: item.position,
+                        enable_cache: data?.results[0]?.cache_config?.[item.name]?.enable ?? false,
                         query: item.query,
                         extra_attributes: {
                             is_graph: item.extra_attributes?.is_graph || false,
@@ -61,19 +63,27 @@ const EditReportQuery = () => {
                             use_case: item?.extra_attributes?.use_case || '',
                         },
                     })) || [],
-                // value: [],
+                required_fields:
+                    typeof data?.results?.[0]?.required_fields === 'object' && !Array.isArray(data?.results?.[0]?.required_fields)
+                        ? Object.entries(data?.results?.[0]?.required_fields || {})
+                              .map(([key, fullValue]) => {
+                                  if (!Array.isArray(fullValue)) return null
 
-                required_fields: Object.entries(data?.results[0]?.required_fields || {}).map(([key, fullValue]) => {
-                    const [position, dataType, value, prefix = '', suffix = ''] = fullValue
-                    return {
-                        position,
-                        key,
-                        value: Array.isArray(value) ? value.join(', ') : value,
-                        dataType: dataType || 'String',
-                        prefix,
-                        suffix,
-                    }
-                }),
+                                  const [position, dataType, value, prefix = '', suffix = ''] = fullValue
+
+                                  return {
+                                      position,
+                                      key,
+                                      value: Array.isArray(value) ? value.join(', ') : value,
+                                      dataType: dataType || 'String',
+                                      prefix,
+                                      suffix,
+                                  }
+                              })
+                              .filter(Boolean)
+                        : data?.results?.[0]?.required_fields,
+
+                // required_fields: data?.results[0]?.required_fields,
             }
 
             setReportData(formattedData)
@@ -87,23 +97,18 @@ const EditReportQuery = () => {
     }, [id])
 
     const handleSubmit = async (values: any) => {
-        console.log('start')
-        const formattedRequiredFields = values.required_fields.reduce((result: any, item: any) => {
-            if (item.key) {
-                let valueArray: [number | undefined, string, string | string[], string, string]
-                if (item.dataType === 'MultiSelect') {
-                    const multiSelectValues = item.value.split(',').map((val: string) => val.trim())
-                    valueArray = [item?.position, item.dataType, multiSelectValues, item.prefix || '', item.suffix || '']
-                } else {
-                    const value = item.value.trim()
-                    valueArray = [item?.position, item.dataType, value, item.prefix || '', item.suffix || '']
-                }
-                result[item.key] = valueArray
-            }
-            return result
-        }, {})
+        const isCacheEnableForAField = values?.value?.filter((item: Record<string, any>) => item?.enable_cache) || []
 
-        console.log('ok the final stage', values.value)
+        const configForFieldsCached = isCacheEnableForAField.reduce(
+            (acc: Record<string, { enable: boolean }>, item: Record<string, any>) => {
+                if (item?.name) {
+                    acc[item.name] = { enable: true }
+                }
+                return acc
+            },
+            {},
+        )
+
         const updatedValues = values.value.map((item: any) => {
             const parser = new DOMParser()
             const htmlDoc = parser.parseFromString(item.query, 'text/html')
@@ -126,7 +131,11 @@ const EditReportQuery = () => {
         const body = {
             ...values,
             value: updatedValues,
-            required_fields: formattedRequiredFields,
+            required_fields: values.required_fields,
+            cache_config: {
+                cache_time_seconds: values.cache_config.cache_time_seconds,
+                ...configForFieldsCached,
+            },
         }
 
         try {

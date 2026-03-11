@@ -3,6 +3,7 @@ import SalesGraphComponent from './reportGraph/SalesGraphComponent'
 import { Dropdown, Select } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import SalesReportTable from './SalesReportTable'
+import { BiBarChart, BiLineChart, BiPieChart } from 'react-icons/bi'
 
 const GRAPHARRAY = [
     { label: 'Line', value: 'line' },
@@ -23,11 +24,6 @@ interface ReportGraphComponentProps {
     selectedOption: any
     handleSelect: any
     handleDownloadCsv: any
-    page: any
-    pageSize: any
-    onPaginationChange: any
-    setPage: any
-    setPageSize: any
     totalount: any
     showSpinner?: any
 }
@@ -43,11 +39,6 @@ const SalesReportGraphInput = ({
     setYAxisvalue,
     handleSelect,
     handleDownloadCsv,
-    page,
-    pageSize,
-    onPaginationChange,
-    setPage,
-    setPageSize,
     totalount,
     showSpinner,
 }: ReportGraphComponentProps) => {
@@ -77,78 +68,97 @@ const SalesReportGraphInput = ({
     }
 
     return (
-        <div className="flex flex-wrap justify-around">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 p-4 md:p-6">
             {dynamicReportTable.map((table, index) => (
-                <div key={index} className="mt-8 flex flex-col gap-24">
-                    <SalesReportTable
-                        showSpinner={showSpinner}
-                        tableData={table?.data?.data}
-                        keyName={table?.data?.display_name}
-                        page={page}
-                        tableName={table?.data?.name}
-                        pageSize={pageSize}
-                        onPaginationChange={onPaginationChange}
-                        orderCount={totalount}
-                        setPage={setPage}
-                        setPageSize={setPageSize}
-                        handleDownloadCsv={handleDownloadCsv}
-                    />
+                <div
+                    key={index}
+                    className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden group"
+                >
+                    {/* Table Section */}
+                    <div className="">
+                        <SalesReportTable
+                            showSpinner={showSpinner}
+                            tableData={table?.data?.data}
+                            keyName={table?.data?.display_name}
+                            tableName={table?.data?.name}
+                            orderCount={totalount}
+                            handleDownloadCsv={handleDownloadCsv}
+                        />
+                    </div>
 
+                    {/* Graph Section */}
                     {table?.data?.extra_attributes?.is_graph && (
-                        <div>
-                            <div className="flex gap-3">
-                                <div className="flex flex-col gap-2">
-                                    <label>X-Axis ({table.key})</label>
-                                    <Select
-                                        className="w-[300px]"
-                                        placeholder={`Select X-Axis for ${table.key}`}
-                                        defaultValue={
-                                            table?.data?.extra_attributes?.x_axis
-                                                ? {
-                                                      label: table?.data?.extra_attributes?.x_axis,
-                                                      value: table?.data?.extra_attributes?.x_axis,
-                                                  }
-                                                : xAxisValue[table.key]
-                                                  ? {
-                                                        label: xAxisValue[table.key],
-                                                        value: xAxisValue[table.key],
-                                                    }
-                                                  : null
-                                        }
-                                        options={Options(table?.data)}
-                                        onChange={(option) => handleAxisValue('x', option, table)}
-                                    />
-                                </div>
-
-                                <div className="flex flex-col gap-2">
-                                    <label>Y-Axis ({table.key})</label>
-                                    <Select
-                                        className="w-[300px]"
-                                        placeholder={`Select Y-Axis for ${table.key}`}
-                                        defaultValue={
-                                            table?.data?.extra_attributes?.y_axis
-                                                ? {
-                                                      label: table?.data?.extra_attributes?.y_axis,
-                                                      value: table?.data?.extra_attributes?.y_axis,
-                                                  }
-                                                : yAxisValue[table.key]
-                                                  ? {
-                                                        label: yAxisValue[table.key],
-                                                        value: yAxisValue[table.key],
-                                                    }
-                                                  : null
-                                        }
-                                        options={Options(table?.data)}
-                                        onChange={(option) => handleAxisValue('y', option, table)}
-                                    />
-                                </div>
-
-                                {selectedOption === 'composite' && (
-                                    <div className="flex flex-col gap-2">
-                                        <label>Y-Axis 2 ({table.key})</label>
+                        <div className="border-t border-gray-100 bg-gradient-to-br from-gray-50/50 to-white">
+                            {/* Axis Controls */}
+                            <div className="p-4 md:p-6 space-y-5">
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                    {/* X-Axis */}
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-semibold text-gray-600 uppercase tracking-wider flex items-center gap-1.5">
+                                            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></div>
+                                            X-Axis
+                                            <span className="text-gray-400 font-normal text-[10px]">({table.key})</span>
+                                        </label>
                                         <Select
-                                            className="w-[300px]"
-                                            placeholder={`Select Y-Axis 2 for ${table.key}`}
+                                            className="w-full"
+                                            placeholder={`Select X-Axis`}
+                                            defaultValue={
+                                                table?.data?.extra_attributes?.x_axis
+                                                    ? {
+                                                          label: table?.data?.extra_attributes?.x_axis,
+                                                          value: table?.data?.extra_attributes?.x_axis,
+                                                      }
+                                                    : xAxisValue[table.key]
+                                                      ? {
+                                                            label: xAxisValue[table.key],
+                                                            value: xAxisValue[table.key],
+                                                        }
+                                                      : null
+                                            }
+                                            options={Options(table?.data)}
+                                            onChange={(option) => handleAxisValue('x', option, table)}
+                                        />
+                                    </div>
+
+                                    {/* Y-Axis */}
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-semibold text-gray-600 uppercase tracking-wider flex items-center gap-1.5">
+                                            <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
+                                            Y-Axis
+                                            <span className="text-gray-400 font-normal text-[10px]">({table.key})</span>
+                                        </label>
+                                        <Select
+                                            className="w-full"
+                                            placeholder={`Select Y-Axis`}
+                                            defaultValue={
+                                                table?.data?.extra_attributes?.y_axis
+                                                    ? {
+                                                          label: table?.data?.extra_attributes?.y_axis,
+                                                          value: table?.data?.extra_attributes?.y_axis,
+                                                      }
+                                                    : yAxisValue[table.key]
+                                                      ? {
+                                                            label: yAxisValue[table.key],
+                                                            value: yAxisValue[table.key],
+                                                        }
+                                                      : null
+                                            }
+                                            options={Options(table?.data)}
+                                            onChange={(option) => handleAxisValue('y', option, table)}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Y-Axis 2 (Composite) */}
+                                {selectedOption === 'composite' && (
+                                    <div className="space-y-2 animate-fadeIn">
+                                        <label className="text-xs font-semibold text-gray-600 uppercase tracking-wider flex items-center gap-1.5">
+                                            <div className="w-1.5 h-1.5 bg-purple-500 rounded-full animate-pulse"></div>
+                                            Y-Axis 2<span className="text-gray-400 font-normal text-[10px]">({table.key})</span>
+                                        </label>
+                                        <Select
+                                            className="w-full"
+                                            placeholder={`Select Secondary Y-Axis`}
                                             value={
                                                 yAxisValue2[table.key]
                                                     ? {
@@ -162,38 +172,54 @@ const SalesReportGraphInput = ({
                                         />
                                     </div>
                                 )}
-                            </div>
 
-                            <div className="flex justify-end items-center mb-7 mr-10">
-                                <div className="bg-black text-white w-auto rounded-[8px] xl:mr-7 items-center flex justify-center text-xl">
-                                    <Dropdown
-                                        className="text-xl text-white bg-white font-bold border-2 border-blue-600"
-                                        title={selectedOption}
-                                        onSelect={(value) => handleSelect(value.toString())}
-                                    >
-                                        {GRAPHARRAY.map((item) => (
-                                            <DropdownItem key={item.value} eventKey={item.value}>
-                                                <span>{item.label}</span>
-                                            </DropdownItem>
-                                        ))}
-                                    </Dropdown>
+                                {/* Graph Type Selector */}
+                                <div className="flex items-center justify-end pt-2">
+                                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-1 flex items-center">
+                                        <Dropdown
+                                            className="min-w-[140px]"
+                                            title={selectedOption}
+                                            onSelect={(value) => handleSelect(value.toString())}
+                                        >
+                                            {GRAPHARRAY.map((item) => (
+                                                <DropdownItem
+                                                    key={item.value}
+                                                    eventKey={item.value}
+                                                    className="px-4 py-2.5 text-sm hover:bg-gray-50 cursor-pointer transition-colors duration-150"
+                                                >
+                                                    <span className="flex items-center gap-2">
+                                                        {item.value === 'bar' && <BiBarChart className="w-4 h-4 text-blue-500" />}
+                                                        {item.value === 'line' && <BiLineChart className="w-4 h-4 text-emerald-500" />}
+                                                        {item.value === 'composite' && <BiBarChart className="w-4 h-4 text-purple-500" />}
+                                                        {item.value === 'pie' && <BiPieChart className="w-4 h-4 text-amber-500" />}
+                                                        <span className="capitalize">{item.label}</span>
+                                                    </span>
+                                                </DropdownItem>
+                                            ))}
+                                        </Dropdown>
+                                    </div>
                                 </div>
                             </div>
 
-                            <SalesGraphComponent
-                                key={`${table.key}-${index}`}
-                                keyData={table?.data}
-                                selectedOption={selectedOption}
-                                xAxisValue={xAxisValue}
-                                yAxisValue={yAxisValue}
-                                yAxisValue2={yAxisValue2}
-                                setXAxisValue={setXAxisvalue}
-                                setYAxisValue={setYAxisvalue}
-                                setYAxisValue2={setYAxisvalue2}
-                                graphType={table?.data?.extra_attributes?.graphType}
-                                xAxisResponse={table?.data?.extra_attributes?.x_axis}
-                                yAxisResponse={table?.data?.extra_attributes?.y_axis}
-                            />
+                            {/* Graph Component */}
+                            <div className="px-4 md:px-6 pb-6">
+                                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition-shadow duration-300">
+                                    <SalesGraphComponent
+                                        key={`${table.key}-${index}`}
+                                        keyData={table?.data}
+                                        selectedOption={selectedOption}
+                                        xAxisValue={xAxisValue}
+                                        yAxisValue={yAxisValue}
+                                        yAxisValue2={yAxisValue2}
+                                        setXAxisValue={setXAxisvalue}
+                                        setYAxisValue={setYAxisvalue}
+                                        setYAxisValue2={setYAxisvalue2}
+                                        graphType={table?.data?.extra_attributes?.graphType}
+                                        xAxisResponse={table?.data?.extra_attributes?.x_axis}
+                                        yAxisResponse={table?.data?.extra_attributes?.y_axis}
+                                    />
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>

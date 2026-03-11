@@ -75,6 +75,7 @@ export const SegmentOptions = () => {
 export const reportQueryArray = [
     { label: 'Date', value: 'Date' },
     { label: 'Number', value: 'Number' },
+    { label: 'Filter', value: 'filter' },
     { label: 'String', value: 'String' },
     { label: 'Boolean', value: 'Boolean' },
     { label: 'Select', value: 'Select' },

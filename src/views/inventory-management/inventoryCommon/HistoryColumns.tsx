@@ -39,7 +39,7 @@ export const HistoryColumns = () => {
 
                         const a = document.createElement('a')
                         a.href = url
-                        a.download = `Indent-fail-${moment().format('YYYY-MM-DD HH-mm-ss a')}`
+                        a.download = `Fail-${moment().format('YYYY-MM-DD HH-mm-ss a')}`
 
                         document.body.appendChild(a)
                         a.click()
@@ -72,7 +72,7 @@ export const HistoryColumns = () => {
                         const url = URL.createObjectURL(utf8Blob)
                         const a = document.createElement('a')
                         a.href = url
-                        a.download = `Indent-pass-${moment().format('YYYY-MM-DD HH-mm-ss a')}`
+                        a.download = `Pass-${moment().format('YYYY-MM-DD HH-mm-ss a')}`
                         document.body.appendChild(a)
                         a.click()
                         document.body.removeChild(a)

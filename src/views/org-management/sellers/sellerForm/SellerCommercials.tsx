@@ -1,0 +1,101 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { FormContainer, FormItem, Input, Select, Switcher } from '@/components/ui'
+import { Field, FieldProps } from 'formik'
+import { NOBOptions, SellerCommercialsArray } from '../sellerUtils/sellerFormCommon'
+import { SegmentOptions } from '@/constants/commonArray.constant'
+import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
+import { SellerKeys } from '../sellerCommon'
+import { useAppSelector } from '@/store'
+import { VendorStateType } from '@/store/slices/vendorsSlice/vendors.slice'
+
+interface Props {
+    values: any
+}
+
+const SellerCommercials = ({ values }: Props) => {
+    const { configValues } = useAppSelector<VendorStateType>((state) => state.vendor)
+
+    const BusinessCompanyData = configValues?.value?.[values?.business_nature as 'SOR' | 'OR']?.map((item) => ({
+        label: item?.company_name,
+        value: item?.code,
+    }))
+
+    return (
+        <div className="w-full">
+            <h4>Slikk Commercial Details</h4>
+            <p>Provide essential details about vendor entity. All field marked with * are mandatory</p>
+            <FormContainer className="mt-10">
+                <CommonSelect name={SellerKeys.BUSINESS_NATURE} options={NOBOptions()} label="Nature of Business" />
+            </FormContainer>
+            <FormItem asterisk label="Business Company" className="col-span-1 w-full">
+                <Field name={SellerKeys.BUSINESS_NATURE_COMPANY_DETAILS}>
+                    {({ field, form }: FieldProps) => {
+                        const fieldValueArray = Array.isArray(field?.value) ? field.value.map((item: any) => item?.gstin?.toString()) : []
+                        const selectedOptions = BusinessCompanyData?.filter((option: any) =>
+                            fieldValueArray.includes(option.value?.toString()),
+                        )
+
+                        return (
+                            <Select
+                                isMulti
+                                isClearable
+                                className="w-full"
+                                options={BusinessCompanyData}
+                                getOptionLabel={(option) => option?.label}
+                                getOptionValue={(option) => option?.value?.toString()}
+                                value={selectedOptions}
+                                onChange={(newVals: any) => {
+                                    const selectedValues = newVals?.map((val: any) => val.value?.toString()) || []
+
+                                    form.setFieldValue(SellerKeys.BUSINESS_NATURE_COMPANY, selectedValues.join(','))
+                                }}
+                            />
+                        )
+                    }}
+                </Field>
+            </FormItem>
+            <FormContainer className="mt-8 grid grid-cols-2 gap-2">
+                {SellerCommercialsArray?.map((item, idx) => (
+                    <FormItem key={idx} label={item?.label} asterisk={item?.isRequired} className="flex flex-col space-y-1">
+                        <Field
+                            type={item?.type}
+                            name={item?.name}
+                            placeholder={`Enter ${item?.label}`}
+                            component={item?.type === 'checkbox' ? Switcher : Input}
+                        />
+                    </FormItem>
+                ))}
+            </FormContainer>
+            <FormItem asterisk label="Fashion Style" className="col-span-1 w-full">
+                <Field name="segment">
+                    {({ field, form }: FieldProps) => {
+                        const fieldValueArray = Array.isArray(field?.value) ? field?.value : field?.value?.split(',') || []
+                        const selectedOptions = fieldValueArray?.map((item: any) => {
+                            const selectedOption = SegmentOptions()?.find((options: any) => {
+                                return options?.label === item
+                            })
+                            return selectedOption
+                        })
+                        return (
+                            <Select
+                                isMulti
+                                isClearable
+                                className="w-full"
+                                options={SegmentOptions()}
+                                getOptionLabel={(option) => option?.label}
+                                getOptionValue={(option) => option?.value?.toString()}
+                                value={selectedOptions}
+                                onChange={(newVals) => {
+                                    const selectedValues = newVals?.map((val: any) => val.value) || []
+                                    form.setFieldValue(`segment`, selectedValues?.join(','))
+                                }}
+                            />
+                        )
+                    }}
+                </Field>
+            </FormItem>
+        </div>
+    )
+}
+
+export default SellerCommercials

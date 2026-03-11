@@ -8,3 +8,9 @@ export interface ApiResponse<T> {
     status: string
     message?: string
 }
+
+export interface ApiDataResponse<T> {
+    status: string
+    message: string
+    data: T[]
+}

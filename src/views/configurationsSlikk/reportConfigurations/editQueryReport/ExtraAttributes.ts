@@ -25,4 +25,10 @@ export const ExtraAttributes = [
         type: 'checkbox',
         component: Checkbox,
     },
+    {
+        name: 'enable_cache',
+        label: 'Enable Cache',
+        type: 'checkbox',
+        component: Checkbox,
+    },
 ]

@@ -41,7 +41,8 @@ export type GRNDetails = {
 
 export type InwardParamType = {
     id: number
-    document_number: string
+    search_type: string
+    search_value: string
     company: string
     store_id: string
     page: number
