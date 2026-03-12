@@ -48,7 +48,7 @@ export const processField = (field: any): string | null => {
                     subVal = ''
                 } else {
                     const formattedValues = subVal.map((item: any) => {
-                        const encoded = encodeURIComponent(item ?? '')
+                        const encoded = item ?? ''
                         return `'${encoded.toUpperCase()}'`
                     })
                     subVal = `(${formattedValues.join(',')})`
@@ -72,7 +72,7 @@ export const processField = (field: any): string | null => {
         }
 
         const formattedValues = normalizedValue.map((item: any) => {
-            const itemsEncoded = encodeURIComponent(item ?? '')
+            const itemsEncoded = item ?? ''
             return `'${itemsEncoded.toUpperCase()}'`
         })
 
