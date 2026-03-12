@@ -20,6 +20,8 @@ import CommonAccordion from '@/common/CommonAccordion'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 import { deliveryAgency } from '@/store/services/deliveryAgencyService'
 import FormButton from '@/components/ui/Button/FormButton'
+import RiderKyc from './RiderKyc'
+import { handleimage } from '@/common/handleImage'
 
 const AddRider = () => {
     const dispatch = useAppDispatch()
@@ -104,6 +106,13 @@ const AddRider = () => {
                 store: riderProfile[0]?.store?.map((item: any) => item?.id)?.join(','),
                 rider_zone: riderProfile[0]?.zone,
                 delivery_type: riderProfile[0]?.delivery_type,
+                aadharImage: riderProfile[0]?.kyc_data?.aadhar,
+                panImage: riderProfile[0]?.kyc_data?.pan,
+                dlImage: riderProfile[0]?.kyc_data?.driving_license,
+                bank_details: riderProfile[0]?.bank_details,
+                pan_number: riderProfile[0]?.pan_number,
+                aadhar_number: riderProfile[0]?.aadhar_number,
+                driving_license_number: riderProfile[0]?.driving_license_number,
             }
         }
         return {
@@ -137,11 +146,36 @@ const AddRider = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [riderAddResponse.isSuccess, riderEditResponse.isSuccess, riderAddResponse.isError, riderEditResponse.isError])
 
-    const handleSubmit = (values: RiderAddTypes) => {
-        console.log('store', values?.store)
+    const uploadIfNew = async (file: any, initialFile: any) => {
+        if (file === initialFile) {
+            return initialFile
+        }
+        if (!file) {
+            return null
+        }
+        if (file) {
+            return await handleimage('rider_kyc', file)
+        }
+
+        return file
+    }
+
+    const handleSubmit = async (values: RiderAddTypes) => {
+        console.log('store', values)
         if (!values?.mobile) {
             notification.error({ message: 'Mobile is required' })
         }
+
+        const [aadharResult, panResult, dlResult] = await Promise.allSettled([
+            uploadIfNew(values?.aadharImage, initialValue?.aadharImage),
+            uploadIfNew(values?.panImage, initialValue?.panImage),
+            uploadIfNew(values?.dlImage, initialValue?.dlImage),
+        ])
+
+        const aadharImage = aadharResult.status === 'fulfilled' ? aadharResult.value : initialValue?.aadharImage
+        const panImage = panResult.status === 'fulfilled' ? panResult.value : initialValue?.panImage
+        const dlImage = dlResult.status === 'fulfilled' ? dlResult.value : initialValue?.dlImage
+
         if (values?.mobile) {
             const payload = {
                 mobile: values?.mobile,
@@ -158,11 +192,24 @@ const AddRider = () => {
                 rider_delivery_type: values?.rider_delivery_type || 'standard',
                 zone: values?.rider_zone || '',
                 delivery_type: values?.delivery_type,
+                kyc_data: {
+                    aadhar: aadharImage,
+                    pan: panImage,
+                    driving_license: dlImage,
+                },
+                bank_details: {
+                    account_number: values?.bank_details?.account_number,
+                    ifsc: values?.bank_details?.ifsc,
+                    bank_name: values?.bank_details?.bank_name,
+                },
+                aadhar_number: values?.aadhar_number,
+                pan_number: values?.pan_number,
+                driving_license_number: values?.driving_license_number,
             }
             if (isAddRider) {
-                ridersAdd(payload)
+                ridersAdd(payload as any)
             } else {
-                editRiders(payload)
+                editRiders(payload as any)
             }
         }
     }
@@ -185,7 +232,7 @@ const AddRider = () => {
 
     return (
         <div>
-            <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
+            <Formik enableReinitialize initialValues={initialValue as any} onSubmit={handleSubmit}>
                 {({ values, setFieldValue }) => (
                     <Form className="w-full mx-auto p-6 bg-gray-50 rounded-xl shadow-lg">
                         <FormContainer className="bg-white rounded-xl shadow-md p-6">
@@ -359,9 +406,19 @@ const AddRider = () => {
                                 </FormItem>
                             </div>
 
+                            <div className="pl-4 border-l-4 border-purple-500 bg-gray-50 rounded-lg p-6 mb-7">
+                                <CommonAccordion startClosed header={<h3 className="text-lg font-bold text-red-700 mb-6">Rider KYC</h3>}>
+                                    {/*  */}
+                                    <RiderKyc isEdit={!isAddRider} values={values} />
+                                </CommonAccordion>
+                            </div>
+
                             {/* ================= Location ================= */}
                             <div className="pl-4 border-l-4 border-red-500 bg-gray-50 rounded-lg p-6">
-                                <CommonAccordion header={<h3 className="text-lg font-bold text-red-700 mb-6">Rider Location</h3>}>
+                                <CommonAccordion
+                                    startClosed
+                                    header={<h3 className="text-lg font-bold text-red-700 mb-6">Rider Location</h3>}
+                                >
                                     <div className="grid grid-cols-2 gap-4 mb-6">
                                         <Input
                                             name="lat"
