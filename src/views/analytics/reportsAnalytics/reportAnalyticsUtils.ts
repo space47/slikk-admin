@@ -30,17 +30,33 @@ export const processField = (field: any): string | null => {
     let fieldQuery = ''
 
     if (subFields && Array.isArray(subFields) && subFields.length > 0) {
-        // check if all subfield values are empty
-        const noSubFieldValue = subFields.every((sub: any) => sub.value === undefined || sub.value === null || sub.value === '')
+        const noSubFieldValue = subFields.every(
+            (sub: any) =>
+                sub.value === undefined || sub.value === null || sub.value === '' || (Array.isArray(sub.value) && sub.value.length === 0),
+        )
 
         if (dataType === 'filter' && noSubFieldValue) {
             return `${key}=`
         }
-
-        let replacedValue = value || ''
+        let replacedValue = value
 
         subFields.forEach((sub: any) => {
-            const subVal = sub.value ?? ''
+            let subVal: any = sub.value
+
+            if (sub.dataType === 'MultiSelect') {
+                if (!Array.isArray(subVal) || subVal.length === 0) {
+                    subVal = ''
+                } else {
+                    const formattedValues = subVal.map((item: any) => {
+                        const encoded = encodeURIComponent(item ?? '')
+                        return `'${encoded.toUpperCase()}'`
+                    })
+                    subVal = `(${formattedValues.join(',')})`
+                }
+            } else {
+                subVal = subVal ? encodeURIComponent(subVal) : ''
+            }
+
             replacedValue = replacedValue.replace(`{${sub.key}}`, subVal)
         })
 
@@ -57,14 +73,7 @@ export const processField = (field: any): string | null => {
 
         const formattedValues = normalizedValue.map((item: any) => {
             const itemsEncoded = encodeURIComponent(item ?? '')
-
-            const transformedValue = item
-                ? !['Date', 'Number', 'Boolean'].includes(dataType!)
-                    ? `${prefix.toUpperCase()}${itemsEncoded.toUpperCase()}${suffix.toUpperCase()}`
-                    : `${prefix.toUpperCase()}${itemsEncoded}${suffix.toUpperCase()}`
-                : ''
-
-            return `'${transformedValue}'`
+            return `'${itemsEncoded.toUpperCase()}'`
         })
 
         fieldQuery = `${key}=(${formattedValues.join(',')})`
