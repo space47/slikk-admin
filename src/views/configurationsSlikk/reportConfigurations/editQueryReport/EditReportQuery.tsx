@@ -110,12 +110,9 @@ const EditReportQuery = () => {
         )
 
         const updatedValues = values.value.map((item: any) => {
-            const parser = new DOMParser()
-            const htmlDoc = parser.parseFromString(item.query, 'text/html')
-            const plainTextValue = htmlDoc.body.textContent || ''
             return {
                 ...item,
-                query: plainTextValue,
+                query: textParser(item.query),
                 extra_attributes: {
                     is_graph: item?.extra_attributes?.is_graph,
                     x_axis: item?.extra_attributes?.x_axis,
