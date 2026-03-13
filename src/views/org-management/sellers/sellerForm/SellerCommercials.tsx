@@ -28,19 +28,20 @@ const SellerCommercials = ({ values }: Props) => {
                 <CommonSelect name={SellerKeys.BUSINESS_NATURE} options={NOBOptions()} label="Nature of Business" />
             </FormContainer>
             <FormItem asterisk label="Business Company" className="col-span-1 w-full">
-                <Field name={SellerKeys.BUSINESS_NATURE_COMPANY_DETAILS}>
+                <Field name={SellerKeys.BUSINESS_NATURE_COMPANY}>
                     {({ field, form }: FieldProps) => {
-                        const fieldValueArray = Array.isArray(field?.value) ? field.value.map((item: any) => item?.gstin?.toString()) : []
-                        const selectedOptions = BusinessCompanyData?.filter((option: any) =>
-                            fieldValueArray.includes(option.value?.toString()),
-                        )
+                        // safely convert stored string -> array
+                        const fieldValueArray = typeof field?.value === 'string' ? field.value.split(',') : []
+
+                        const selectedOptions =
+                            BusinessCompanyData?.filter((option: any) => fieldValueArray.includes(option.value?.toString())) || []
 
                         return (
                             <Select
                                 isMulti
                                 isClearable
                                 className="w-full"
-                                options={BusinessCompanyData}
+                                options={BusinessCompanyData || []}
                                 getOptionLabel={(option) => option?.label}
                                 getOptionValue={(option) => option?.value?.toString()}
                                 value={selectedOptions}

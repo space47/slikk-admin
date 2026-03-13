@@ -100,11 +100,14 @@ const EditSeller = () => {
             date: dayjs().format('YYYY-MM-DD HH:mm:ss a'),
             declaration_statement: sellerData?.declaration_statement || '',
             business_nature_company_details: sellerData?.business_nature_company_details || '',
+            business_nature_company: sellerData?.business_nature_company_details?.map((item) => item.code)?.join(',') || '',
         }),
         [sellerData],
     )
 
     const handleSubmit = async (values: any) => {
+        console.log('values', values)
+
         if (values.contact_number === values.alternate_contact_number) {
             notification.error({ message: 'Failure !! Alternate Mobile Number Should be different' })
             return
@@ -119,6 +122,7 @@ const EditSeller = () => {
             }
         }
         simpleFields.forEach((key) => appendIfValid(key, values?.[key]))
+
         fileFields.forEach((key) => {
             const fileValue = values?.[key]?.[0]
             if (fileValue instanceof File) {
