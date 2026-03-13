@@ -178,7 +178,7 @@ const ReportCommonForm = ({ resetForm, values }: Props) => {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <FormItem label="Unique Report Name" className="col-span-1">
+                        <FormItem label="Unique Report Name" className="col-span-1" asterisk>
                             <Field
                                 type="text"
                                 name="name"
@@ -188,7 +188,7 @@ const ReportCommonForm = ({ resetForm, values }: Props) => {
                             />
                         </FormItem>
 
-                        <FormItem label="Report Display Name" className="col-span-1">
+                        <FormItem label="Report Display Name" className="col-span-1" asterisk>
                             <Field
                                 type="text"
                                 name="display_name"
@@ -197,7 +197,7 @@ const ReportCommonForm = ({ resetForm, values }: Props) => {
                                 className="bg-gray-50 border-gray-300 focus:border-blue-500 focus:ring-blue-500/30 rounded-lg transition-all duration-200 hover:bg-white"
                             />
                         </FormItem>
-                        <FormItem label="Cache Time (in seconds)" className="col-span-1">
+                        <FormItem label="Cache Time (in seconds)" className="col-span-1" asterisk>
                             <Field
                                 type="number"
                                 name="cache_config.cache_time_seconds"
@@ -254,7 +254,7 @@ const ReportCommonForm = ({ resetForm, values }: Props) => {
 
                                             <div className="space-y-6">
                                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                    <FormItem label="Name" className="md:col-span-1">
+                                                    <FormItem label="Name" className="md:col-span-1" asterisk>
                                                         <Field
                                                             name={`value[${index}].name`}
                                                             placeholder="Enter query name"
@@ -263,7 +263,7 @@ const ReportCommonForm = ({ resetForm, values }: Props) => {
                                                         />
                                                     </FormItem>
 
-                                                    <FormItem label="Display Name" className="md:col-span-1">
+                                                    <FormItem label="Display Name" className="md:col-span-1" asterisk>
                                                         <Field
                                                             name={`value[${index}].display_name`}
                                                             placeholder="Enter display name"
