@@ -43,12 +43,10 @@ const AddReportQuery = () => {
                 if (!item.query) {
                     throw new Error(`Missing query for value at index ${index}`)
                 }
-                const parser = new DOMParser()
-                const htmlDoc = parser.parseFromString(item.query, 'text/html')
-                const plainTextValue = htmlDoc.body.textContent || ''
+
                 return {
                     ...item,
-                    query: plainTextValue.trim(),
+                    query: textParser(item.query),
                     extra_attributes: {
                         is_graph: item.extra_attributes?.is_graph || false,
                         x_axis: item.extra_attributes?.x_axis || null,
