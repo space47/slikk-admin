@@ -6,7 +6,7 @@ import { Product } from './sellerCommon'
 import { useSellerColumns } from './sellerUtils/useSellerColumns'
 import { Button, Input, Spinner } from '@/components/ui'
 import { FaDownload, FaPlus } from 'react-icons/fa'
-import { notification } from 'antd'
+import { notification, Select } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { AxiosError } from 'axios'
 import { escapeCsvValue, handleDownloadCsv } from '@/common/allTypesCommon'
@@ -17,6 +17,13 @@ import { vendorService } from '@/store/services/vendorService'
 import PageCommon from '@/common/PageCommon'
 import { useDebounceInput } from '@/commonHooks/useDebounceInput'
 import { FaShop } from 'react-icons/fa6'
+import NotFoundData from '@/views/pages/NotFound/Notfound'
+import { getApiErrorMessage } from '@/constants/generateErrorMessage'
+
+const SellerSearchType = [
+    { label: 'Name', value: 'name' },
+    { label: 'Code', value: 'code' },
+]
 
 const Seller = () => {
     const navigate = useNavigate()
@@ -24,10 +31,12 @@ const Seller = () => {
     const [isDownloading, setIsDownloading] = useState(false)
     const { count, page, pageSize, vendorList, filterValue } = useAppSelector<VendorStateType>((state) => state.vendor)
     const { debounceFilter } = useDebounceInput({ globalFilter: filterValue, delay: 500 })
-    const { data, isLoading, isError, isSuccess, error } = vendorService.useGetVendorListQuery(
+    const [searchType, setSearchType] = useState('name')
+    const { data, isLoading, isError, isSuccess, error, isFetching } = vendorService.useGetVendorListQuery(
         {
             page,
-            name: debounceFilter,
+            name: searchType === 'name' ? debounceFilter : '',
+            code: searchType === 'code' ? debounceFilter : '',
             pageSize,
         },
         { refetchOnMountOrArgChange: true },
@@ -42,7 +51,8 @@ const Seller = () => {
             if (error && 'status' in error && error?.status === 403) {
                 notification.error({ message: 'Access Denied' })
             } else {
-                notification.error({ message: 'Error in fetching data' })
+                const errorMessage = getApiErrorMessage(error)
+                notification.error({ message: errorMessage || 'Failed to load' })
             }
         }
     }, [dispatch, isSuccess, data?.data])
@@ -96,15 +106,28 @@ const Seller = () => {
                 </div>
             </div>
             <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center mb-7">
-                <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center order-2 lg:order-1 w-full lg:w-auto">
-                    <div className="flex items-center gap-2 bg-white dark:bg-gray-900 px-3 py-2 rounded-lg shadow-md w-full sm:w-auto">
-                        <Input
-                            type="search"
-                            placeholder="Search here..."
-                            value={filterValue}
-                            className="pl-10 w-full p-4 border border-gray-300 dark:border-slate-600 rounded-xl bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 focus:ring-3 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition-all"
-                            onChange={(e) => dispatch(setFilterValue(e.target.value))}
-                        />
+                <div>
+                    <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center order-2 lg:order-1 w-full lg:w-auto">
+                        <div className="flex items-center gap-2 bg-white dark:bg-gray-900 px-3 py-2 rounded-lg shadow-md w-full sm:w-auto">
+                            <Input
+                                type="search"
+                                placeholder="Search here..."
+                                value={filterValue}
+                                className=" w-full p-4 border border-gray-300 dark:border-slate-600 rounded-xl bg-gray-50 dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 focus:ring-3 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition-all"
+                                onChange={(e) => dispatch(setFilterValue(e.target.value))}
+                            />
+                        </div>
+                        <div>
+                            <Select
+                                className="w-auto"
+                                value={searchType}
+                                placeholder="Select Search Type"
+                                options={SellerSearchType}
+                                onChange={(value) => {
+                                    setSearchType(value)
+                                }}
+                            />
+                        </div>
                     </div>
                 </div>
                 <div className="flex items-end gap-2 justify-end mb-4 order-first xl:order-1">
@@ -122,13 +145,25 @@ const Seller = () => {
                     </Button>
                 </div>
             </div>
-            {isLoading && (
-                <div className="flex items-center justify-center">
+            {(isLoading || isFetching) && (
+                <div className="flex items-center justify-center mt-2 mb-8">
                     <Spinner size={30} />
                 </div>
             )}
-            <EasyTable mainData={vendorList} columns={columns} page={page} pageSize={pageSize} />
-            <PageCommon dispatch={dispatch} page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={count} />
+            {isError && <NotFoundData />}
+            {vendorList && vendorList?.length > 0 && !isError && (
+                <>
+                    <EasyTable mainData={vendorList} columns={columns} page={page} pageSize={pageSize} />
+                    <PageCommon
+                        dispatch={dispatch}
+                        page={page}
+                        pageSize={pageSize}
+                        setPage={setPage}
+                        setPageSize={setPageSize}
+                        totalData={count}
+                    />
+                </>
+            )}
         </div>
     )
 }
