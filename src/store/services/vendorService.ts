@@ -4,12 +4,13 @@ import { ConfigValues, VendorDetails, VendorResponseData } from '../types/vendor
 
 export const vendorService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
-        getVendorList: builder.query<VendorResponseData, { page: number; pageSize: number; name: string }>({
+        getVendorList: builder.query<VendorResponseData, { page: number; pageSize: number; name: string; code: string }>({
             query: (params) => {
                 const parameters: Record<string, string | string[] | number> = {}
                 if (params.page) parameters.p = params.page
                 if (params.pageSize) parameters.page_size = params.pageSize
                 if (params.name) parameters.name = params.name
+                if (params.code) parameters.code = params.code
 
                 return {
                     url: `merchant/company`,
