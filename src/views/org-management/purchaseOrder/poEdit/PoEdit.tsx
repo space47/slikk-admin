@@ -35,6 +35,11 @@ const PoEdit = () => {
     )
     const commercial_approval_doc = selectedCompany?.commercial_approval_doc
 
+    const VendorEntity = selectedCompany?.business_nature_company_details?.map((item) => ({
+        label: item?.company_name,
+        value: item.code,
+    }))
+
     useEffect(() => {
         if (isSuccess) {
             setPurchaseOrder((data?.data as any)?.results[0])
@@ -97,11 +102,6 @@ const PoEdit = () => {
             if (error instanceof AxiosError) errorMessage(error)
         }
     }
-
-    const VendorEntity = selectedCompany?.business_nature_company_details?.map((item) => ({
-        label: item?.company_name,
-        value: item.code,
-    }))
 
     return (
         <div>
