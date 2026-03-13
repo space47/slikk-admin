@@ -19,6 +19,14 @@ export type RiderAddTypes = {
     rider_delivery_type?: string
     rider_zone?: number
     delivery_type?: string
+    kyc_data?: Record<string, string>
+    bank_details?: Record<string, string>
+    pan_number?: string
+    aadhar_number?: string
+    driving_license_number?: string
+    aadharImage: File[]
+    panImage: File[]
+    dlImage: File[]
 }
 
 type UserType = {
@@ -174,6 +182,9 @@ export interface RiderProfileData {
     store: any
     zone?: number
     delivery_type?: string
+    pan_number?: string
+    aadhar_number?: string
+    driving_license_number?: string
 }
 
 export type RiderProfileResponseType = {
