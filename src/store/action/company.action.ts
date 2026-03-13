@@ -28,14 +28,14 @@ export const getUserProfileAPI = () => async (dispatch: any) => {
 
         const response = await axios.get('dashboard/user/profile')
         const data = response?.data?.data
-
+        console.log('hurray')
         dispatch({
             type: 'companyRequestSuccess',
             payload: { ...data },
         })
 
         const currentCompany = store.getState().company.currCompany
-
+        console.log('curreent company', currentCompany)
         const isCompanyPresent = hasValidCompany(currentCompany)
         console.log('is there current company', isCompanyPresent)
         const companyList = data?.company || []

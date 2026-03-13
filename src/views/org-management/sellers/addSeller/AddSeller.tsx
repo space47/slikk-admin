@@ -13,7 +13,7 @@ import {
     SellerCommercialsArray,
     simpleFields,
 } from '../sellerUtils/sellerFormCommon'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Button, FormContainer, FormItem, Input, Select } from '@/components/ui'
 
 import { GrDocument } from 'react-icons/gr'
@@ -26,11 +26,12 @@ import { getProfileData } from '@/store/action/authAction'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { handlePhoneInputValidation } from '../sellerUtils/sellerFunctions'
 import { vendorService } from '@/store/services/vendorService'
-
 import { setConfigValues, VendorStateType } from '@/store/slices/vendorsSlice/vendors.slice'
+import { Spin } from 'antd'
 
 const AddSeller = () => {
     const navigate = useNavigate()
+    const submittingRef = useRef(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isOther, setIsOther] = useState(false)
     const dispatch = useAppDispatch()
@@ -42,11 +43,13 @@ const AddSeller = () => {
         if (vendorConfigApiCall.isSuccess) {
             dispatch(setConfigValues(vendorConfigApiCall.data.config))
         }
-    }, [vendorConfigApiCall.isSuccess, vendorConfigApiCall.data?.config])
+    }, [vendorConfigApiCall.isSuccess, vendorConfigApiCall.data?.config, dispatch])
 
     const initialValue = {}
 
     const handleSubmit = async (values: any) => {
+        if (submittingRef.current) return
+        submittingRef.current = true
         const formData = new FormData()
         if (values.address) {
             formData.append(SellerKeys.ADDRESS, textParser(values.address))
@@ -96,6 +99,7 @@ const AddSeller = () => {
             if (error instanceof AxiosError) errorMessage(error)
         } finally {
             setIsSubmitting(false)
+            submittingRef.current = false
         }
     }
 
@@ -105,7 +109,7 @@ const AddSeller = () => {
     }
 
     return (
-        <div>
+        <Spin spinning={isSubmitting}>
             <h3 className="text-xl font-bold">Add New Seller</h3>
             <Formik enableReinitialize initialValues={initialValue as any} onSubmit={handleSubmit}>
                 {({ values }) => {
@@ -312,7 +316,7 @@ const AddSeller = () => {
                     )
                 }}
             </Formik>
-        </div>
+        </Spin>
     )
 }
 
