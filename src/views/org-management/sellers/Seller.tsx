@@ -32,7 +32,7 @@ const Seller = () => {
     const { count, page, pageSize, vendorList, filterValue } = useAppSelector<VendorStateType>((state) => state.vendor)
     const { debounceFilter } = useDebounceInput({ globalFilter: filterValue, delay: 500 })
     const [searchType, setSearchType] = useState('name')
-    const { data, isLoading, isError, isSuccess, error } = vendorService.useGetVendorListQuery(
+    const { data, isLoading, isError, isSuccess, error, isFetching } = vendorService.useGetVendorListQuery(
         {
             page,
             name: searchType === 'name' ? debounceFilter : '',
@@ -145,8 +145,8 @@ const Seller = () => {
                     </Button>
                 </div>
             </div>
-            {isLoading && (
-                <div className="flex items-center justify-center">
+            {(isLoading || isFetching) && (
+                <div className="flex items-center justify-center mt-2 mb-8">
                     <Spinner size={30} />
                 </div>
             )}
