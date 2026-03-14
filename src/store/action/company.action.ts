@@ -37,8 +37,12 @@ export const getUserProfileAPI = () => async (dispatch: any) => {
         const currentCompany = store.getState().company.currCompany
 
         const isCompanyPresent = hasValidCompany(currentCompany)
-        console.log('is there current company', isCompanyPresent)
         const companyList = data?.company || []
+
+        if (isCompanyPresent) {
+            const findCurrentCompany = companyList?.find((item: Record<string, string | number>) => item.id === currentCompany.id)
+            dispatch(setDefaultCompanyId(findCurrentCompany))
+        }
 
         if (!isCompanyPresent) {
             dispatch(setDefaultCompanyId(companyList[0]))
