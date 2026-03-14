@@ -14,11 +14,9 @@ import dayjs from 'dayjs'
 import { fileFields, simpleFields } from '../sellerUtils/sellerFormCommon'
 import { SellerKeys } from '../sellerCommon'
 import { textParser } from '@/common/textParser'
-import store, { useAppDispatch } from '@/store'
+import { useAppDispatch } from '@/store'
 import { setConfigValues } from '@/store/slices/vendorsSlice/vendors.slice'
 import { VendorDetails } from '@/store/types/vendor.type'
-import { getProfileData } from '@/store/action/authAction'
-import { setDefaultCompanyId } from '@/store/action/company.action'
 
 const EditSeller = () => {
     const { id } = useParams()
@@ -162,13 +160,6 @@ const EditSeller = () => {
             setIsSubmitting(true)
             const res = await axioisInstance.patch(`/merchant/company/${id}`, changedValue)
             successMessage(res)
-            await dispatch(getProfileData())
-            const state = store.getState()
-            const companies = state.company.company
-
-            const updatedCompany = companies.find((c: any) => c.id === id)
-
-            dispatch(setDefaultCompanyId(updatedCompany))
             navigate(-1)
         } catch (error) {
             if (error instanceof AxiosError) errorMessage(error)

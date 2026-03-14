@@ -28,17 +28,21 @@ export const getUserProfileAPI = () => async (dispatch: any) => {
 
         const response = await axios.get('dashboard/user/profile')
         const data = response?.data?.data
-        console.log('hurray')
+
         dispatch({
             type: 'companyRequestSuccess',
             payload: { ...data },
         })
 
         const currentCompany = store.getState().company.currCompany
-        console.log('curreent company', currentCompany)
+
         const isCompanyPresent = hasValidCompany(currentCompany)
-        console.log('is there current company', isCompanyPresent)
         const companyList = data?.company || []
+
+        if (isCompanyPresent) {
+            const findCurrentCompany = companyList?.find((item: Record<string, string | number>) => item.id === currentCompany.id)
+            dispatch(setDefaultCompanyId(findCurrentCompany))
+        }
 
         if (!isCompanyPresent) {
             dispatch(setDefaultCompanyId(companyList[0]))
