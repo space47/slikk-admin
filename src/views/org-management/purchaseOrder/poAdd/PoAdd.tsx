@@ -49,6 +49,7 @@ const PoAdd = () => {
                 company_gst: values[PoField.COMPANY_GST]?.id,
                 payment_mode: values[PoField.PAYMENT_MODE],
                 po_expiry_date: values[PoField.PO_EXPIRY_DATE],
+                discount_sharing_applicable: 'true',
             }
 
             const formData = buildFormData(payload)
@@ -70,7 +71,8 @@ const PoAdd = () => {
             <h3 className="text-xl font-bold">Create Purchase Order</h3>
             <Formik enableReinitialize initialValues={initialValue as any} onSubmit={handleSubmit}>
                 {({ values }) => {
-                    const wareHouseDetails = selectedCompany?.gst_details?.find((item) => item?.id === values.company_gst?.id)
+                    const idCheck = typeof values.company_gst === 'string' ? values?.company_gst : values.company_gst?.id
+                    const wareHouseDetails = selectedCompany?.gst_details?.find((item) => item?.id === idCheck)
                     setStateCode(wareHouseDetails?.gstin?.slice(0, 2) || '')
                     return (
                         <Form className=" w-full p-5 bg-gray-50 rounded-xl shadow-xl ">

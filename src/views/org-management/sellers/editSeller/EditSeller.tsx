@@ -28,7 +28,10 @@ const EditSeller = () => {
     const navigate = useNavigate()
     const [sellerData, setSellerData] = useState<VendorDetails>()
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const { data, isSuccess, isError, isLoading, error } = vendorService.useGetSingleVendorListQuery({ id: id as string }, { skip: !id })
+    const { data, isSuccess, isError, isLoading, error, refetch } = vendorService.useGetSingleVendorListQuery(
+        { id: id as string },
+        { skip: !id },
+    )
 
     const vendorConfigApiCall = vendorService.useVendorOnboardingConfigurationQuery({})
 
@@ -189,7 +192,7 @@ const EditSeller = () => {
             setIsSubmitting(true)
 
             const res = await axioisInstance.patch(`/merchant/company/${id}`, changedValue)
-
+            refetch()
             successMessage(res)
             navigate(-1)
         } catch (error) {
