@@ -89,6 +89,10 @@ const AddSeller = () => {
             appendIfValid('gst_details', JSON.stringify(updatedDetails))
         }
 
+        if (values.int_poc_details && values.int_poc_details?.length > 0) {
+            appendIfValid('int_poc_details', JSON.stringify(values?.int_poc_details?.map((item: Record<string, string>) => item.value)))
+        }
+
         try {
             setIsSubmitting(true)
             const res = await axioisInstance.post(`/merchant/company`, formData)
@@ -123,6 +127,14 @@ const AddSeller = () => {
                         label: item?.company_name,
                         value: item?.code,
                     }))
+
+                    const internalPOC = Object.entries(internalData).flatMap(([category, people]: any) =>
+                        people.map((person: any) => ({
+                            label: `${person.name} (${category})`,
+                            value: person,
+                        })),
+                    )
+
                     return (
                         <Form className="xl:w-[90%] w-full p-5 ">
                             {!isOther && (
@@ -263,32 +275,67 @@ const AddSeller = () => {
                                                     }}
                                                 </Field>
                                             </FormItem>
+                                            <FormItem asterisk label="Select POC" className="col-span-1 w-full">
+                                                <Field name={'int_poc_details'}>
+                                                    {({ field, form }: FieldProps) => {
+                                                        const selectedOptions = field?.value || []
+
+                                                        return (
+                                                            <Select
+                                                                isMulti
+                                                                isClearable
+                                                                className="w-full"
+                                                                options={internalPOC}
+                                                                getOptionLabel={(option: any) => option.label}
+                                                                getOptionValue={(option: any) => option.value.email}
+                                                                value={selectedOptions}
+                                                                onChange={(newVals: any) => {
+                                                                    form.setFieldValue('int_poc_details', newVals || [])
+                                                                }}
+                                                            />
+                                                        )
+                                                    }}
+                                                </Field>
+                                            </FormItem>
                                         </FormContainer>
                                     </div>
                                     <div className="mt-10 space-y-6">
                                         {Object.entries(internalData).map(([category, people]: any) => (
-                                            <div key={category} className="border rounded-xl p-4 bg-gray-50 shadow-sm">
-                                                <h5 className="text-lg font-semibold text-gray-800 mb-3">{category}</h5>
-                                                {people?.length > 0 ? (
-                                                    <div className="text-sm text-gray-700 space-y-2">
-                                                        <p>
-                                                            <span className="font-medium">Names:</span>{' '}
-                                                            {people.map((p: any) => p.name).join(', ')}
-                                                        </p>
+                                            <div key={category} className="border rounded-xl bg-white shadow-sm overflow-hidden">
+                                                <div className="px-5 py-3 bg-gray-100 border-b">
+                                                    <h5 className="text-lg font-semibold text-gray-800">{category}</h5>
+                                                </div>
+                                                <div className="p-4">
+                                                    {people?.length > 0 ? (
+                                                        <div className="divide-y">
+                                                            {people.map((person: any, index: number) => (
+                                                                <div
+                                                                    key={index}
+                                                                    className="py-2 grid grid-cols-1 md:grid-cols-3 gap-1 text-sm"
+                                                                >
+                                                                    <div>
+                                                                        <p className="text-blue-500 text-xs">Name</p>
+                                                                        <p className="font-medium text-gray-800">{person.name}</p>
+                                                                    </div>
 
-                                                        <p>
-                                                            <span className="font-medium">Numbers:</span>{' '}
-                                                            {people.map((p: any) => p.mobile).join(', ')}
-                                                        </p>
+                                                                    <div>
+                                                                        <p className="text-blue-500 text-xs">Mobile</p>
+                                                                        <p className="font-medium text-gray-800">{person.mobile}</p>
+                                                                    </div>
 
-                                                        <p>
-                                                            <span className="font-medium">Emails:</span>{' '}
-                                                            {people.map((p: any) => p.email).join(', ')}
-                                                        </p>
-                                                    </div>
-                                                ) : (
-                                                    <p className="text-sm text-gray-400">No team members available</p>
-                                                )}
+                                                                    <div>
+                                                                        <p className="text-blue-500 text-xs">Email</p>
+                                                                        <p className="font-medium text-gray-800 break-all">
+                                                                            {person.email}
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    ) : (
+                                                        <p className="text-sm text-gray-400">No team members available</p>
+                                                    )}
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
