@@ -18,13 +18,20 @@ import { useAppDispatch } from '@/store'
 import { setConfigValues } from '@/store/slices/vendorsSlice/vendors.slice'
 import { VendorDetails } from '@/store/types/vendor.type'
 
+const nullCheck = (value: string) => {
+    return !['null', 'undefined', ''].includes(value)
+}
+
 const EditSeller = () => {
     const { id } = useParams()
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
     const [sellerData, setSellerData] = useState<VendorDetails>()
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const { data, isSuccess, isError, isLoading, error } = vendorService.useGetSingleVendorListQuery({ id: id as string }, { skip: !id })
+    const { data, isSuccess, isError, isLoading, error, refetch } = vendorService.useGetSingleVendorListQuery(
+        { id: id as string },
+        { skip: !id },
+    )
 
     const vendorConfigApiCall = vendorService.useVendorOnboardingConfigurationQuery({})
 
@@ -49,12 +56,12 @@ const EditSeller = () => {
             head_name: sellerData?.head_name || '',
             head_contact: sellerData?.head_contact || '',
             head_email: sellerData?.head_email || '',
-            gst_certificate: sellerData?.gst_certificate || null, // file
+            gst_certificate: nullCheck(sellerData?.gst_certificate ?? '') ? sellerData?.gst_certificate : null, // file
             gstin: sellerData?.gstin || '',
-            pan_copy: sellerData?.pan_copy || null, // file
+            pan_copy: nullCheck(sellerData?.pan_copy ?? '') ? sellerData?.pan_copy : null, // file
             pan_number: sellerData?.pan_number || '',
             tan_number: sellerData?.tan_number || '',
-            tan_copy: sellerData?.tan_copy || null, // file
+            tan_copy: nullCheck(sellerData?.tan_copy ?? '') ? sellerData?.tan_copy : null, // file
             cin: sellerData?.cin || '',
             address: sellerData?.address || '',
             contact_number: sellerData?.contact_number || '',
@@ -70,7 +77,7 @@ const EditSeller = () => {
             bank_name: sellerData?.bank_name || '',
             branch_name: sellerData?.branch_name || '',
             account_type: sellerData?.account_type || '',
-            cancelled_cheque: sellerData?.cancelled_cheque || null, // file
+            cancelled_cheque: nullCheck(sellerData?.cancelled_cheque ?? '') ? sellerData?.cancelled_cheque : null, // file
             segment: sellerData?.segment || '',
             provisional_discount_rate: sellerData?.provisional_discount_rate || 0,
             revenue_share: sellerData?.revenue_share || 0,
@@ -82,13 +89,13 @@ const EditSeller = () => {
             business_nature: sellerData?.business_nature || '',
             sp_type: sellerData?.sp_type || '',
             pf_declaration: sellerData?.pf_declaration === 'true' || '',
-            pf_declaration_doc: sellerData?.pf_declaration_doc || null, // file
-            trade_mark_certificate: sellerData?.trade_mark_certificate || null, // file
+            pf_declaration_doc: nullCheck(sellerData?.pf_declaration_doc ?? '') ? sellerData?.pf_declaration_doc : null, // file
+            trade_mark_certificate: nullCheck(sellerData?.trade_mark_certificate ?? '') ? sellerData?.trade_mark_certificate : null, // file
             is_msme: sellerData?.is_msme || false,
             msme_category: sellerData?.msme_category || '',
-            msme_certificate: sellerData?.msme_certificate || null, // file
-            commercial_approval_doc: sellerData?.commercial_approval_doc || null, // file
-            approved_onboarding_doc: sellerData?.approved_onboarding_doc || null, // file
+            msme_certificate: nullCheck(sellerData?.msme_certificate ?? '') ? sellerData?.msme_certificate : null, // file
+            commercial_approval_doc: nullCheck(sellerData?.commercial_approval_doc ?? '') ? sellerData?.commercial_approval_doc : null, // file
+            approved_onboarding_doc: nullCheck(sellerData?.approved_onboarding_doc ?? '') ? sellerData?.approved_onboarding_doc : null, // file
             warehouse_name: sellerData?.warehouse_name || '',
             authorized_person: sellerData?.authorized_person || '',
             name: sellerData?.name || '',
@@ -101,6 +108,7 @@ const EditSeller = () => {
             declaration_statement: sellerData?.declaration_statement || '',
             business_nature_company_details: sellerData?.business_nature_company_details || '',
             business_nature_company: sellerData?.business_nature_company_details?.map((item) => item.code)?.join(',') || '',
+            int_poc_details: sellerData?.int_poc_details ? JSON.parse((sellerData?.int_poc_details as string) || '') : '',
         }),
         [sellerData],
     )
@@ -174,13 +182,17 @@ const EditSeller = () => {
             formData.append('gst_details', JSON.stringify(updatedDetails))
         }
 
+        if (values.int_poc_details && values.int_poc_details?.length > 0) {
+            formData.append('int_poc_details', JSON.stringify(values?.int_poc_details))
+        }
+
         const changedValue = getChangedFormData(formData, initialValue)
 
         try {
             setIsSubmitting(true)
 
             const res = await axioisInstance.patch(`/merchant/company/${id}`, changedValue)
-
+            refetch()
             successMessage(res)
             navigate(-1)
         } catch (error) {
