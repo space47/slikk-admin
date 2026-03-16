@@ -174,6 +174,10 @@ const EditSeller = () => {
             formData.append('gst_details', JSON.stringify(updatedDetails))
         }
 
+        if (values.int_poc_details && values.int_poc_details?.length > 0) {
+            formData.append('int_poc_details', JSON.stringify(values?.int_poc_details))
+        }
+
         const changedValue = getChangedFormData(formData, initialValue)
 
         try {

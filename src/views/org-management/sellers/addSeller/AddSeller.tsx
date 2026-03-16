@@ -15,7 +15,6 @@ import {
 } from '../sellerUtils/sellerFormCommon'
 import { useEffect, useRef, useState } from 'react'
 import { Button, FormContainer, FormItem, Input, Select } from '@/components/ui'
-
 import { GrDocument } from 'react-icons/gr'
 import { SegmentOptions } from '@/constants/commonArray.constant'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
@@ -90,7 +89,7 @@ const AddSeller = () => {
         }
 
         if (values.int_poc_details && values.int_poc_details?.length > 0) {
-            appendIfValid('int_poc_details', JSON.stringify(values?.int_poc_details?.map((item: Record<string, string>) => item.value)))
+            appendIfValid('int_poc_details', JSON.stringify(values?.int_poc_details))
         }
 
         try {
@@ -174,6 +173,7 @@ const AddSeller = () => {
                                                                 placeholder={`Enter ${item.label}`}
                                                                 component={Input}
                                                                 className="pl-10"
+                                                                onInput={inputHandlers[item.name]}
                                                             />
                                                         </div>
                                                     </FormItem>
@@ -181,7 +181,7 @@ const AddSeller = () => {
                                             })}
                                         </FormContainer>
                                     </FormContainer>
-                                    {/* Commercials */}
+
                                     <div className="bg-gradient-to-r  p-6 rounded-xl border-l-4 border-orange-500 shadow-lg mb-8">
                                         <div className="flex items-center gap-3 mb-6">
                                             <div className="p-2 bg-orange-100 rounded-lg">
@@ -278,7 +278,10 @@ const AddSeller = () => {
                                             <FormItem asterisk label="Select POC" className="col-span-1 w-full">
                                                 <Field name={'int_poc_details'}>
                                                     {({ field, form }: FieldProps) => {
-                                                        const selectedOptions = field?.value || []
+                                                        const selectedOptions =
+                                                            internalPOC?.filter((option: any) =>
+                                                                field?.value?.some((val: any) => val.email === option.value.email),
+                                                            ) || []
 
                                                         return (
                                                             <Select
@@ -290,7 +293,9 @@ const AddSeller = () => {
                                                                 getOptionValue={(option: any) => option.value.email}
                                                                 value={selectedOptions}
                                                                 onChange={(newVals: any) => {
-                                                                    form.setFieldValue('int_poc_details', newVals || [])
+                                                                    const valuesOnly = newVals?.map((val: any) => val.value) || []
+
+                                                                    form.setFieldValue('int_poc_details', valuesOnly)
                                                                 }}
                                                             />
                                                         )
@@ -300,44 +305,52 @@ const AddSeller = () => {
                                         </FormContainer>
                                     </div>
                                     <div className="mt-10 space-y-6">
-                                        {Object.entries(internalData).map(([category, people]: any) => (
-                                            <div key={category} className="border rounded-xl bg-white shadow-sm overflow-hidden">
-                                                <div className="px-5 py-3 bg-gray-100 border-b">
-                                                    <h5 className="text-lg font-semibold text-gray-800">{category}</h5>
-                                                </div>
-                                                <div className="p-4">
-                                                    {people?.length > 0 ? (
-                                                        <div className="divide-y">
-                                                            {people.map((person: any, index: number) => (
-                                                                <div
-                                                                    key={index}
-                                                                    className="py-2 grid grid-cols-1 md:grid-cols-3 gap-1 text-sm"
-                                                                >
-                                                                    <div>
-                                                                        <p className="text-blue-500 text-xs">Name</p>
-                                                                        <p className="font-medium text-gray-800">{person.name}</p>
-                                                                    </div>
+                                        {Object.entries(internalData).map(([category, people]: any) => {
+                                            const filteredPeople = people.filter((person: any) =>
+                                                values?.int_poc_details?.some((selected: any) => selected.email === person.email),
+                                            )
 
-                                                                    <div>
-                                                                        <p className="text-blue-500 text-xs">Mobile</p>
-                                                                        <p className="font-medium text-gray-800">{person.mobile}</p>
-                                                                    </div>
+                                            if (filteredPeople.length === 0) return null
 
-                                                                    <div>
-                                                                        <p className="text-blue-500 text-xs">Email</p>
-                                                                        <p className="font-medium text-gray-800 break-all">
-                                                                            {person.email}
-                                                                        </p>
+                                            return (
+                                                <div key={category} className="border rounded-xl bg-white shadow-sm overflow-hidden">
+                                                    <div className="px-5 py-3 bg-gray-100 border-b">
+                                                        <h5 className="text-lg font-semibold text-gray-800">{category}</h5>
+                                                    </div>
+                                                    <div className="p-4">
+                                                        {filteredPeople?.length > 0 ? (
+                                                            <div className="divide-y">
+                                                                {filteredPeople.map((person: any, index: number) => (
+                                                                    <div
+                                                                        key={index}
+                                                                        className="py-2 grid grid-cols-1 md:grid-cols-3 gap-1 text-sm"
+                                                                    >
+                                                                        <div>
+                                                                            <p className="text-blue-500 text-xs">Name</p>
+                                                                            <p className="font-medium text-gray-800">{person.name}</p>
+                                                                        </div>
+
+                                                                        <div>
+                                                                            <p className="text-blue-500 text-xs">Mobile</p>
+                                                                            <p className="font-medium text-gray-800">{person.mobile}</p>
+                                                                        </div>
+
+                                                                        <div>
+                                                                            <p className="text-blue-500 text-xs">Email</p>
+                                                                            <p className="font-medium text-gray-800 break-all">
+                                                                                {person.email}
+                                                                            </p>
+                                                                        </div>
                                                                     </div>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    ) : (
-                                                        <p className="text-sm text-gray-400">No team members available</p>
-                                                    )}
+                                                                ))}
+                                                            </div>
+                                                        ) : (
+                                                            <p className="text-sm text-gray-400">No team members available</p>
+                                                        )}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ))}
+                                            )
+                                        })}
                                     </div>
                                 </FormContainer>
                             )}
