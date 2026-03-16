@@ -3,6 +3,7 @@ import { FormItem, Select } from '@/components/ui'
 import { useAppSelector } from '@/store'
 import { VendorStateType } from '@/store/slices/vendorsSlice/vendors.slice'
 import { Field, FieldProps } from 'formik'
+import { SellerKeys } from '../sellerCommon'
 
 interface Props {
     values: any
@@ -31,7 +32,7 @@ const SellerInternal = ({ values }: Props) => {
 
             <div className="mt-10 space-y-6">
                 <FormItem asterisk label="Select POC" className="col-span-1 w-full">
-                    <Field name={'int_poc_details'}>
+                    <Field name={SellerKeys.INT_POC_DETAILS}>
                         {({ field, form }: FieldProps) => {
                             const selectedOptions =
                                 internalPOC?.filter((option: any) => field?.value?.some((val: any) => val.email === option.value.email)) ||
@@ -49,7 +50,7 @@ const SellerInternal = ({ values }: Props) => {
                                     onChange={(newVals: any) => {
                                         const valuesOnly = newVals?.map((val: any) => val.value) || []
 
-                                        form.setFieldValue('int_poc_details', valuesOnly)
+                                        form.setFieldValue(SellerKeys.INT_POC_DETAILS, valuesOnly)
                                     }}
                                 />
                             )

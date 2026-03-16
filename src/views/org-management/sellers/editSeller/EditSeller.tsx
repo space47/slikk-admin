@@ -17,6 +17,7 @@ import { textParser } from '@/common/textParser'
 import { useAppDispatch } from '@/store'
 import { setConfigValues } from '@/store/slices/vendorsSlice/vendors.slice'
 import { VendorDetails } from '@/store/types/vendor.type'
+import { getApiErrorMessage } from '@/constants/generateErrorMessage'
 
 const nullCheck = (value: string) => {
     return !['null', 'undefined', ''].includes(value)
@@ -44,7 +45,8 @@ const EditSeller = () => {
     useEffect(() => {
         if (isSuccess) setSellerData(data?.data)
         if (isError) {
-            notification.error({ message: (error as any)?.data?.message })
+            const errorMessage = getApiErrorMessage(error)
+            notification.error({ message: errorMessage || 'Failed to load data from server' })
         }
     }, [isSuccess, isError])
 
@@ -115,9 +117,7 @@ const EditSeller = () => {
 
     const handleSubmit = async (values: any) => {
         if (values.contact_number === values.alternate_contact_number) {
-            notification.error({
-                message: 'Failure !! Alternate Mobile Number Should be different',
-            })
+            notification.error({ message: 'Failure !! Alternate Mobile Number Should be different' })
             return
         }
 
@@ -141,7 +141,6 @@ const EditSeller = () => {
         fileFields.forEach((key) => {
             const newFile = values?.[key]?.[0]
             const oldFile = (initialValue as any)?.[key]
-
             if (newFile instanceof File) {
                 formData.append(key, newFile)
                 return
@@ -183,7 +182,7 @@ const EditSeller = () => {
         }
 
         if (values.int_poc_details && values.int_poc_details?.length > 0) {
-            formData.append('int_poc_details', JSON.stringify(values?.int_poc_details))
+            formData.append(SellerKeys.INT_POC_DETAILS, JSON.stringify(values?.int_poc_details))
         }
 
         const changedValue = getChangedFormData(formData, initialValue)

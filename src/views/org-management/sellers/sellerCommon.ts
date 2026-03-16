@@ -96,7 +96,7 @@ export enum SellerKeys {
     STATUS = 'status',
     IS_ACTIVE = 'is_active',
     IS_MSME = 'is_msme',
-
+    INT_POC_DETAILS = 'int_poc_details',
     ADDRESS = 'address',
 
     CONTACT_NUMBER = 'contact_number',

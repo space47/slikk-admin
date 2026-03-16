@@ -89,7 +89,7 @@ const AddSeller = () => {
         }
 
         if (values.int_poc_details && values.int_poc_details?.length > 0) {
-            appendIfValid('int_poc_details', JSON.stringify(values?.int_poc_details))
+            appendIfValid(SellerKeys.INT_POC_DETAILS, JSON.stringify(values?.int_poc_details))
         }
 
         try {
@@ -276,7 +276,7 @@ const AddSeller = () => {
                                                 </Field>
                                             </FormItem>
                                             <FormItem asterisk label="Select POC" className="col-span-1 w-full">
-                                                <Field name={'int_poc_details'}>
+                                                <Field name={SellerKeys.INT_POC_DETAILS}>
                                                     {({ field, form }: FieldProps) => {
                                                         const selectedOptions =
                                                             internalPOC?.filter((option: any) =>
@@ -295,7 +295,7 @@ const AddSeller = () => {
                                                                 onChange={(newVals: any) => {
                                                                     const valuesOnly = newVals?.map((val: any) => val.value) || []
 
-                                                                    form.setFieldValue('int_poc_details', valuesOnly)
+                                                                    form.setFieldValue(SellerKeys.INT_POC_DETAILS, valuesOnly)
                                                                 }}
                                                             />
                                                         )
