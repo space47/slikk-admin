@@ -106,34 +106,51 @@ const EditSeller = () => {
     )
 
     const handleSubmit = async (values: any) => {
-        console.log('values', values)
-
         if (values.contact_number === values.alternate_contact_number) {
-            notification.error({ message: 'Failure !! Alternate Mobile Number Should be different' })
+            notification.error({
+                message: 'Failure !! Alternate Mobile Number Should be different',
+            })
             return
         }
+
         const formData = new FormData()
-        if (values.address) {
-            formData.append(SellerKeys.ADDRESS, textParser(values.address))
-        }
-        const appendIfValid = (key: string, value: any) => {
-            if (value !== undefined && value !== null && value !== '') {
-                formData.append(key, value)
+
+        const appendIfChanged = (key: string, newValue: any, oldValue: any) => {
+            if ((newValue === undefined || newValue === null || newValue === '') && oldValue) {
+                formData.append(key, 'null')
+                return
+            }
+            if (newValue !== oldValue && newValue !== undefined && newValue !== '') {
+                formData.append(key, newValue)
             }
         }
-        simpleFields.forEach((key) => appendIfValid(key, values?.[key]))
+
+        appendIfChanged(SellerKeys.ADDRESS, values.address ? textParser(values.address) : null, initialValue?.address)
+        simpleFields.forEach((key) => {
+            appendIfChanged(key, values?.[key], (initialValue as any)?.[key])
+        })
 
         fileFields.forEach((key) => {
-            const fileValue = values?.[key]?.[0]
-            if (fileValue instanceof File) {
-                formData.append(key, fileValue)
+            const newFile = values?.[key]?.[0]
+            const oldFile = (initialValue as any)?.[key]
+
+            if (newFile instanceof File) {
+                formData.append(key, newFile)
+                return
+            }
+
+            if (!newFile && oldFile) {
+                formData.append(key, 'null')
             }
         })
         const existingDetails = initialValue?.gst_details || []
+
         const updatedDetails = (values?.gst_details || []).map((warehouse: any, index: number) => {
             const cleanGstin = warehouse?.gstin?.replace(/\s+/g, '') || ''
+
             if (warehouse?.gst_certificate?.[0] instanceof File) {
                 const certKey = `cert${index + 1}`
+
                 formData.append(certKey, warehouse.gst_certificate[0])
 
                 return {
@@ -150,15 +167,20 @@ const EditSeller = () => {
                 warehouse_address: textParser(warehouse.warehouse_address),
             }
         })
+
         const gstChanged = JSON.stringify(existingDetails) !== JSON.stringify(updatedDetails)
+
         if (gstChanged) {
-            appendIfValid('gst_details', JSON.stringify(updatedDetails))
+            formData.append('gst_details', JSON.stringify(updatedDetails))
         }
+
         const changedValue = getChangedFormData(formData, initialValue)
 
         try {
             setIsSubmitting(true)
+
             const res = await axioisInstance.patch(`/merchant/company/${id}`, changedValue)
+
             successMessage(res)
             navigate(-1)
         } catch (error) {
