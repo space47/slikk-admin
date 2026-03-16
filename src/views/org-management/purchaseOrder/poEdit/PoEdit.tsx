@@ -57,7 +57,7 @@ const PoEdit = () => {
         order_shipping_address: purchaseOrder?.order_shipping_address,
         commercial_terms: purchaseOrder?.commercial_terms,
         payment_terms: purchaseOrder?.payment_terms,
-        discount_sharing_applicable: purchaseOrder?.discount_sharing_applicable,
+        discount_sharing_applicable: 'true',
         expected_delivery_date: purchaseOrder?.expected_delivery_date,
         po_nature: purchaseOrder?.po_nature,
         store: purchaseOrder?.store,
@@ -69,6 +69,9 @@ const PoEdit = () => {
     }
 
     const handleSubmit = async (values: any) => {
+        const idCheck = typeof values.company_gst === 'string' ? values?.company_gst : values.company_gst?.id
+        const wareHouseDetails = selectedCompany?.gst_details?.find((item) => item?.id === idCheck)
+
         try {
             const payload = {
                 store: values.store,
@@ -83,6 +86,8 @@ const PoEdit = () => {
                 po_nature: values[PoField.PO_NATURE],
                 payment_mode: values[PoField.PAYMENT_MODE],
                 po_expiry_date: values[PoField.PO_EXPIRY_DATE],
+                state_code: wareHouseDetails?.gstin?.slice(0, 2) || '',
+                discount_sharing_applicable: 'yes',
             }
 
             const formData = buildFormData(payload)
