@@ -17,6 +17,7 @@ export interface VendorDetails {
     cancelled_cheque: string | null
     cin: string | null
     code: string
+    int_poc_details: string
     comments: Record<string, string> | null
     commercial_approval_doc: string | null
     contact_number: string
