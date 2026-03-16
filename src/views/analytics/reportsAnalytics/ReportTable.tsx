@@ -134,7 +134,7 @@ const ReportTable = ({ tableData, keyName, tableName, handleDownloadCsv, extra_a
 
             {/* Table Container */}
             <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
-                <div className="max-h-[500px] overflow-y-auto overflow-x-auto">
+                <div className="max-h-[680px] overflow-y-auto overflow-x-auto">
                     {/* Sticky header table */}
                     <table className="w-full text-sm">
                         <thead className="sticky top-0 bg-gray-100 z-10 shadow-sm">
