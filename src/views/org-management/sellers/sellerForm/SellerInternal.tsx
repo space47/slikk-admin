@@ -3,6 +3,7 @@ import { FormItem, Select } from '@/components/ui'
 import { useAppSelector } from '@/store'
 import { VendorStateType } from '@/store/slices/vendorsSlice/vendors.slice'
 import { Field, FieldProps } from 'formik'
+import { SellerKeys } from '../sellerCommon'
 
 interface Props {
     values: any
@@ -31,11 +32,12 @@ const SellerInternal = ({ values }: Props) => {
 
             <div className="mt-10 space-y-6">
                 <FormItem asterisk label="Select POC" className="col-span-1 w-full">
-                    <Field name={'int_poc_details'}>
+                    <Field name={SellerKeys.INT_POC_DETAILS}>
                         {({ field, form }: FieldProps) => {
+                            const fieldValue = Array.isArray(field?.value) ? field.value : []
+
                             const selectedOptions =
-                                internalPOC?.filter((option: any) => field?.value?.some((val: any) => val.email === option.value.email)) ||
-                                []
+                                internalPOC?.filter((option: any) => fieldValue.some((val: any) => val.email === option.value.email)) || []
 
                             return (
                                 <Select
@@ -47,9 +49,9 @@ const SellerInternal = ({ values }: Props) => {
                                     getOptionValue={(option: any) => option.value.email}
                                     value={selectedOptions}
                                     onChange={(newVals: any) => {
-                                        const valuesOnly = newVals?.map((val: any) => val.value) || []
+                                        const valuesOnly = Array.isArray(newVals) ? newVals.map((val: any) => val.value) : []
 
-                                        form.setFieldValue('int_poc_details', valuesOnly)
+                                        form.setFieldValue(SellerKeys.INT_POC_DETAILS, valuesOnly)
                                     }}
                                 />
                             )
@@ -58,10 +60,11 @@ const SellerInternal = ({ values }: Props) => {
                 </FormItem>
 
                 {Object.entries(internalData).map(([category, people]: any) => {
-                    const filteredPeople = people.filter((person: any) =>
-                        values?.int_poc_details?.some((selected: any) => selected.email === person.email),
-                    )
+                    const selectedPOC = Array.isArray(values?.int_poc_details) ? values.int_poc_details : []
 
+                    const filteredPeople = people.filter((person: any) =>
+                        selectedPOC.some((selected: any) => selected.email === person.email),
+                    )
                     if (filteredPeople.length === 0) return null
 
                     return (

@@ -18,6 +18,7 @@ import { useDebounceInput } from '@/commonHooks/useDebounceInput'
 import { DEBOUNCE_DELAY } from '../../riderDetails/RiderDetailsCommon'
 import DialogConfirm from '@/common/DialogConfirm'
 import StoreSelectComponent from '@/common/StoreSelectComponent'
+import NotFoundData from '@/views/pages/NotFound/Notfound'
 
 const PickerBoard = () => {
     const dispatch = useAppDispatch()
@@ -189,9 +190,13 @@ const PickerBoard = () => {
             </div>
 
             {/* Table */}
-            <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-md">
-                <EasyTable noPage overflow mainData={pickerBoardData} columns={columns} />
-            </div>
+            {storeId ? (
+                <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-md">
+                    <EasyTable noPage overflow mainData={pickerBoardData} columns={columns} />
+                </div>
+            ) : (
+                <NotFoundData text="Store ID Is Required to display the data for the pickers" />
+            )}
 
             {/* Modals */}
 
