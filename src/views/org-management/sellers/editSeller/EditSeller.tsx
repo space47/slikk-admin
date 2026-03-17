@@ -110,7 +110,10 @@ const EditSeller = () => {
             declaration_statement: sellerData?.declaration_statement || '',
             business_nature_company_details: sellerData?.business_nature_company_details || '',
             business_nature_company: sellerData?.business_nature_company_details?.map((item) => item.code)?.join(',') || '',
-            int_poc_details: sellerData?.int_poc_details ? JSON.parse((sellerData?.int_poc_details as string) || '') : '',
+            int_poc_details:
+                sellerData?.int_poc_details && typeof sellerData?.int_poc_details === 'string'
+                    ? JSON.parse((sellerData?.int_poc_details as string) || '' || '')
+                    : '',
         }),
         [sellerData],
     )

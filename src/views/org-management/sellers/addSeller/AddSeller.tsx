@@ -306,8 +306,10 @@ const AddSeller = () => {
                                     </div>
                                     <div className="mt-10 space-y-6">
                                         {Object.entries(internalData).map(([category, people]: any) => {
+                                            const selectedPOC = Array.isArray(values?.int_poc_details) ? values.int_poc_details : []
+
                                             const filteredPeople = people.filter((person: any) =>
-                                                values?.int_poc_details?.some((selected: any) => selected.email === person.email),
+                                                selectedPOC.some((selected: any) => selected.email === person.email),
                                             )
 
                                             if (filteredPeople.length === 0) return null
