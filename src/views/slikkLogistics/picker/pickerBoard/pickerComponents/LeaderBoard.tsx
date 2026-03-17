@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import EasyTable from '@/common/EasyTable'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
+import { Spin } from 'antd'
 import moment from 'moment'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 type UserPickupDetails = {
     name: string
@@ -22,32 +23,18 @@ const LeaderBoardTable = () => {
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
     const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
 
-    const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
+    const To_Date = useMemo(() => moment(to).add(1, 'days').format('YYYY-MM-DD'), [to])
 
-    const fetchLeaderBoardData = async () => {
-        try {
-            const response = await axioisInstance.get(`/picker/orders?from=${from}&to=${To_Date}`)
-            const data = response?.data?.data
+    const query = useMemo(() => `/picker/orders?from=${from}&to=${To_Date}`, [from, To_Date])
 
-            const sortedData = data?.sort((a, b) => b.picked - a.picked)
-
-            setLeaderBoardData(sortedData)
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
-    console.log(leaderBoardData)
+    const { data, loading } = useFetchSingleData<UserPickupDetails[]>({ url: query, pollingInterval: 60000 })
 
     useEffect(() => {
-        fetchLeaderBoardData()
-
-        const interval = setInterval(() => {
-            fetchLeaderBoardData()
-        }, 60000)
-
-        return () => clearInterval(interval)
-    }, [from, to])
+        if (data) {
+            const sortedData = [...data].sort((a, b) => b.picked - a.picked)
+            setLeaderBoardData(sortedData)
+        }
+    }, [data])
 
     const columns = [
         {
@@ -112,21 +99,23 @@ const LeaderBoardTable = () => {
     }
 
     return (
-        <div className="bg-gray-50 min-h-screen p-2 sm:px-8 dark:bg-gray-800">
-            <div className="flex xl:justify-end xl:mb-10 mb-7 justify-between">
-                <UltimateDatePicker from={from} setFrom={setFrom} to={to} setTo={setTo} handleDateChange={handleDateChange} />
-            </div>
-            <div className=" mx-auto bg-white rounded-2xl shadow-lg  p-6 border border-gray-200 dark:bg-gray-800 dark:text-white">
-                <div className="flex justify-center mb-8">
-                    <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 dark:text-yellow-400 via-pink-500 to-red-500 p-4 rounded-lg shadow-md dark:shadow-white tracking-wide">
-                        Leader Board 🚀
-                    </h1>
+        <Spin spinning={loading}>
+            <div className="bg-gray-50 min-h-screen p-2 sm:px-8 dark:bg-gray-800">
+                <div className="flex xl:justify-end xl:mb-10 mb-7 justify-between">
+                    <UltimateDatePicker from={from} setFrom={setFrom} to={to} setTo={setTo} handleDateChange={handleDateChange} />
                 </div>
-                <div className="overflow-x-auto">
-                    <EasyTable overflow mainData={leaderBoardData} columns={columns} />
+                <div className=" mx-auto bg-white rounded-2xl shadow-lg  p-6 border border-gray-200 dark:bg-gray-800 dark:text-white">
+                    <div className="flex justify-center mb-8">
+                        <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 dark:text-yellow-400 via-pink-500 to-red-500 p-4 rounded-lg shadow-md dark:shadow-white tracking-wide">
+                            Leader Board 🚀
+                        </h1>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <EasyTable overflow mainData={leaderBoardData} columns={columns} />
+                    </div>
                 </div>
             </div>
-        </div>
+        </Spin>
     )
 }
 
