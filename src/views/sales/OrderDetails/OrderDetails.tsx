@@ -29,6 +29,7 @@ import { Order } from '@/store/types/newOrderTypes'
 import { newOrderService } from '@/store/services/newOrderaService'
 import DialogConfirm from '@/common/DialogConfirm'
 import ForwardActivity from './components/ForwardActivity'
+import { RiMotorbikeFill } from 'react-icons/ri'
 
 const OrderDetails = () => {
     const { invoice_id } = useParams()
@@ -269,6 +270,18 @@ const OrderDetails = () => {
                                         </div>
                                     )}
                                 </div>
+                                {data?.eta_dropoff && (
+                                    <div className="flex">
+                                        <div className="flex items-center gap-3 bg-amber-200 rounded-full  shadow-md hover:shadow-lg border-gray-200">
+                                            <div>
+                                                <img src="/img/gif/deliveryBike.gif" className="h-11 w-16 object-cover " alt="bike" />
+                                            </div>
+                                            <span className="text-lg font-semibold text-gray-700 px-1">
+                                                {data?.eta_dropoff} <span className="text-sm text-gray-500 font-normal">mins</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                )}
                                 <div className="bg-white dark:bg-gray-900 shadow-sm border border-gray-100 dark:border-gray-800 rounded-2xl">
                                     <div className="p-5">
                                         <OrderProducts data={data.order_items || []} invoice_id={data.invoice_id} status={data.status} />
