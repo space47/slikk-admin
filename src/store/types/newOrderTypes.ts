@@ -155,7 +155,7 @@ export interface Order {
     estimate_delivery_time: string
     eta_dropoff_time: string
     current_eta_dropoff: string
-
+    eta_dropoff: string
     is_gift_wrap: boolean
     is_returnable: boolean
     is_exchangeable: boolean
