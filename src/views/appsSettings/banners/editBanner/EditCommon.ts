@@ -32,6 +32,15 @@ export const BANNER_FIELDS_TYPE = [
         status: 'section_heading',
     },
     {
+        label: 'Hide Sections',
+        classname: 'col-span-1 w-full',
+        type: 'checkbox',
+        name: 'extra_attributes.hide_sections',
+        placeholder: 'Place your Section Heading',
+        component: { Checkbox },
+        status: 'extra_attributes.hide_sections',
+    },
+    {
         label: 'Parent Banner',
         classname: 'col-span-1 w-full',
         type: 'text',

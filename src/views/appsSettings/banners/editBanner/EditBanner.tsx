@@ -3,7 +3,7 @@ import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import { Field, Form, Formik, ErrorMessage, FieldProps, FormikErrors } from 'formik'
 import { useEffect, useMemo, useState } from 'react'
-import { notification } from 'antd'
+import { notification, Spin } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
 import { BANNER_FIELDS_TYPE, getInitialBannerValue } from './EditCommon'
 import { BANNER_MODEL } from '../BannerCommon'
@@ -73,7 +73,7 @@ const EditBanner = () => {
         return `banners?banner_id=${id}`
     }, [id])
 
-    const { data: bannerData } = useFetchSingleData<any>({ url: query })
+    const { data: bannerData, loading } = useFetchSingleData<any>({ url: query })
     const toArray = (value: string | undefined): string[] => (value ? [value] : [])
     const { data: SubPageNames } = pageSettingsService.useSubPageNamesQuery({ pageName: selectedPage })
 
@@ -195,7 +195,7 @@ const EditBanner = () => {
     }
 
     return (
-        <div>
+        <Spin spinning={loading}>
             <h3 className="mb-5 from-neutral-900">Edit Banner</h3>
             <Formik
                 enableReinitialize
@@ -408,7 +408,7 @@ const EditBanner = () => {
                     </Form>
                 )}
             </Formik>
-        </div>
+        </Spin>
     )
 }
 

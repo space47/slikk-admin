@@ -246,6 +246,7 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                     lottie_mobile: mobileLottieUpload ?? '',
                     filter_id_exclude: banner?.extra_attributes?.filter_id_exclude || '',
                     show_subscription_popup: banner?.show_subscription_popup || false,
+                    hide_sections: banner?.hide_sections || false,
                 },
                 image_web_file: null,
                 image_mobile_file: null,
