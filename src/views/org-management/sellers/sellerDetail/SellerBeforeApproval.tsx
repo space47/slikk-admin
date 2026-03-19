@@ -14,6 +14,7 @@ import { RiGovernmentLine } from 'react-icons/ri'
 import { SellerStatus } from '../sellerCommon'
 import { SellerDetailCommon } from '../sellerUtils/sellerDetailCommon'
 import CommonAccordion from '@/common/CommonAccordion'
+import { commonPresignedDownload } from '@/common/commonDownload'
 
 interface Props {
     commentStructure: Record<string, string>
@@ -72,20 +73,20 @@ const SellerBeforeApproval = ({ commentStructure, handleComments, sellerData, se
                         </div>
                         {isFile ? (
                             <div className="space-y-2 max-h-[200px] overflow-y-auto">
-                                {parseFileList(value).map((file: any) => (
-                                    <a
-                                        key={file.uid}
-                                        href={file.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
+                                {parseFileList(value).map((file: any, key) => (
+                                    <div
+                                        key={key}
                                         className="flex items-center gap-2 p-2 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-all group"
+                                        onClick={() => {
+                                            commonPresignedDownload(file?.url, file.name)
+                                        }}
                                     >
                                         {getFileIcon(file.name)}
                                         <span className="text-sm text-gray-700 flex-1 truncate">{file.name}</span>
                                         <span className="text-xs text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                                             View
                                         </span>
-                                    </a>
+                                    </div>
                                 ))}
                             </div>
                         ) : isObject ? (
