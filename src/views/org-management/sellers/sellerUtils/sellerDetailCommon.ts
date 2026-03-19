@@ -217,6 +217,20 @@ export const SellerDetailCommon = ({ seller: sellerData }: any) => {
             name: SellerKeys.MSME_CERTIFICATE,
             fieldName: 'msmeCertificateFile',
         },
+        {
+            label: 'CTA Document',
+            file: sellerData?.commercial_approval_doc,
+            key: 'msme',
+            name: SellerKeys.COMMERCIAL_APPROVAL_DOC,
+            fieldName: 'ctaFile',
+        },
+        {
+            label: 'Approved OnBoarding doc',
+            file: sellerData?.approved_onboarding_doc,
+            key: 'msme',
+            name: SellerKeys.APPROVED_ONBOARDING_DOC,
+            fieldName: 'approvedOnBoardingFile',
+        },
     ]
 
     return {

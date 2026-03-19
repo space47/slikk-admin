@@ -16,9 +16,9 @@ export const BasicExtra = [
 ]
 
 export const BusinessDetails = [
-    { label: 'PAN Number', name: SellerKeys.PAN_NUMBER, type: 'text', isRequired: false, visible: true },
+    { label: 'PAN Number', name: SellerKeys.PAN_NUMBER, type: 'text', isRequired: true, visible: true },
     { label: 'TAN Number', name: SellerKeys.TAN_NUMBER, type: 'text', isRequired: false, visible: true },
-    { label: 'GSTIN', name: SellerKeys.GSTIN, type: 'text', isRequired: false, visible: true },
+    { label: 'GSTIN', name: SellerKeys.GSTIN, type: 'text', isRequired: true, visible: true },
     { label: 'CIN', name: SellerKeys.CIN, type: 'text', isRequired: false, visible: true },
     {
         label: 'Pf Declaration',
