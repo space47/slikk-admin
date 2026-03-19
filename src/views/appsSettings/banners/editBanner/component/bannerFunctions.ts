@@ -155,6 +155,7 @@ export const bannerBodyFile = (
             lottie_mobile: mobileLottieUpload || values?.extra_attributes?.lottie_mobile || '',
             filter_id_exclude: excludeFilterId || '',
             show_subscription_popup: values?.show_subscription_popup || false,
+            hide_sections: values?.extra_attributes.hide_sections || false,
         },
         footer: values?.footer || '',
         from_date: values?.from_date || '',
