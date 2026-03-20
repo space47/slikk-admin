@@ -21,6 +21,7 @@ import { useDebounceInput } from '@/commonHooks/useDebounceInput'
 import PageCommon from '@/common/PageCommon'
 import { GiRolledCloth } from 'react-icons/gi'
 import { FaFile, FaCopy, FaLayerGroup, FaSitemap, FaEdit, FaPlus } from 'react-icons/fa'
+import BulkDuplicate from './BulkDuplicate'
 
 const AppBanners = () => {
     const navigate = useNavigate()
@@ -39,6 +40,7 @@ const AppBanners = () => {
     const [showBulkEditModal, setShowBulkEditModal] = useState(false)
     const [updatedPosition, setUpdatedPosition] = useState<{ [key: number]: number }>({})
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
+    const [showDuplicate, setShowDuplicate] = useState(false)
     const { debounceFilter } = useDebounceInput({ globalFilter, delay: 500 })
 
     const DivisionArray =
@@ -204,6 +206,11 @@ const AppBanners = () => {
                                             Bulk Edit ({bannerIdStore.length})
                                         </Button>
                                     )}
+                                    {bannerIdStore.length > 0 && (
+                                        <Button variant="new" size="sm" icon={<FaCopy />} onClick={() => setShowDuplicate(true)}>
+                                            Bulk Duplicate ({bannerIdStore.length})
+                                        </Button>
+                                    )}
                                 </div>
 
                                 <Button
@@ -338,6 +345,14 @@ const AppBanners = () => {
                         pageState={currentSelectedPage?.name}
                         dialogIsOpen={showBulkEditModal}
                         setIsOpen={setShowBulkEditModal}
+                        bannerIdStore={bannerIdStore}
+                    />
+                )}
+                {showDuplicate && (
+                    <BulkDuplicate
+                        pageState={currentSelectedPage?.name}
+                        dialogIsOpen={showDuplicate}
+                        setIsOpen={setShowDuplicate}
                         bannerIdStore={bannerIdStore}
                     />
                 )}
