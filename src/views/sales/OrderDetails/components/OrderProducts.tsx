@@ -31,6 +31,7 @@ const ProductColumn = ({ row, status }: productProps) => {
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularROwImage] = useState('')
     const [qrCode, setQrCode] = useState('')
+    const [activeTab, setActiveTab] = useState<'sku' | 'url'>('sku')
     const headerLink = import.meta.env.VITE_WEBSITE_URL
 
     const segregatedNames = (value: string) => {
@@ -99,14 +100,52 @@ const ProductColumn = ({ row, status }: productProps) => {
                 />
             )}
             {qrCode && (
-                <>
-                    <Dialog isOpen={!!qrCode} onClose={() => setQrCode('')} width={600}>
-                        <div className="bg-gray-100 mt-5 flex items-center justify-center dark:bg-gray-800 p-4 rounded-xl shadow-sm">
-                            <QRCode value={row?.sku ?? ''} size={200} />
+                <Dialog isOpen={!!qrCode} onClose={() => setQrCode('')} width={600}>
+                    <div className="p-4">
+                        <div className="flex gap-2 mb-4 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
+                            <button
+                                onClick={() => setActiveTab('sku')}
+                                className={`flex-1 py-2 text-sm font-bold rounded-md transition ${
+                                    activeTab === 'sku'
+                                        ? 'bg-green-400 dark:bg-gray-700 shadow text-white dark:text-white'
+                                        : 'text-gray-500'
+                                }`}
+                            >
+                                SKU
+                            </button>
+
+                            <button
+                                onClick={() => setActiveTab('url')}
+                                className={`flex-1 py-2 text-sm font-bold rounded-md transition ${
+                                    activeTab === 'url'
+                                        ? 'bg-green-400 dark:bg-gray-700 shadow text-white dark:text-white'
+                                        : 'text-gray-500'
+                                }`}
+                            >
+                                Product URL
+                            </button>
                         </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-300 font-medium mt-10">sku: {row?.sku}</p>
-                    </Dialog>
-                </>
+                        <div className="bg-gray-100 dark:bg-gray-800 flex items-center justify-center p-6 rounded-xl shadow-sm">
+                            {activeTab === 'sku' ? (
+                                <QRCode value={row?.sku ?? ''} size={200} />
+                            ) : (
+                                <QRCode
+                                    value={
+                                        `${headerLink}/${segregatedNames(row.category || '')}/${segregatedNames(row.sub_category || '')}/${segregatedNames(row.brand || '')}/${segregatedNames(row.name || '')}/${row.barcode}` ||
+                                        ''
+                                    }
+                                    size={200}
+                                />
+                            )}
+                        </div>
+
+                        <p className="text-sm text-gray-600 dark:text-gray-300 font-medium mt-6 text-center break-all">
+                            {activeTab === 'sku'
+                                ? row?.sku
+                                : `${headerLink}/${segregatedNames(row.category || '')}/${segregatedNames(row.sub_category || '')}/${segregatedNames(row.brand || '')}/${segregatedNames(row.name || '')}/${row.barcode}`}
+                        </p>
+                    </div>
+                </Dialog>
             )}
         </div>
     )
