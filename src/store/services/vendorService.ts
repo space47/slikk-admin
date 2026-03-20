@@ -19,6 +19,22 @@ export const vendorService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
+        vendorsDownload: builder.query<Blob, { name: string; code: string }>({
+            query: (params) => {
+                const parameters: Record<string, string | number> = {
+                    download: 'true',
+                }
+                if (params.name) parameters.name = params.name
+                if (params.code) parameters.code = params.code
+
+                return {
+                    url: `merchant/company`,
+                    method: 'GET',
+                    params: parameters,
+                    responseHandler: (response) => response.blob(), // ✅ for file
+                }
+            },
+        }),
         getSingleVendorList: builder.query<{ status: string; data: VendorDetails }, { id: string | number }>({
             query: (params) => {
                 const parameters: Record<string, string | string[] | number> = {}

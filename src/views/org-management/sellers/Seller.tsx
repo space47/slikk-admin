@@ -2,15 +2,10 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import EasyTable from '@/common/EasyTable'
-import { Product } from './sellerCommon'
 import { useSellerColumns } from './sellerUtils/useSellerColumns'
 import { Button, Input, Spinner } from '@/components/ui'
 import { FaDownload, FaPlus } from 'react-icons/fa'
 import { notification, Select } from 'antd'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { AxiosError } from 'axios'
-import { escapeCsvValue, handleDownloadCsv } from '@/common/allTypesCommon'
-import { ColumnDef } from '@tanstack/react-table'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { setVendorList, VendorStateType, setCount, setPage, setPageSize, setFilterValue } from '@/store/slices/vendorsSlice/vendors.slice'
 import { vendorService } from '@/store/services/vendorService'
@@ -19,6 +14,7 @@ import { useDebounceInput } from '@/commonHooks/useDebounceInput'
 import { FaShop } from 'react-icons/fa6'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 import { getApiErrorMessage } from '@/constants/generateErrorMessage'
+import moment from 'moment'
 
 const SellerSearchType = [
     { label: 'Name', value: 'name' },
@@ -28,7 +24,6 @@ const SellerSearchType = [
 const Seller = () => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
-    const [isDownloading, setIsDownloading] = useState(false)
     const { count, page, pageSize, vendorList, filterValue } = useAppSelector<VendorStateType>((state) => state.vendor)
     const { debounceFilter } = useDebounceInput({ globalFilter: filterValue, delay: 500 })
     const [searchType, setSearchType] = useState('name')
@@ -41,6 +36,8 @@ const Seller = () => {
         },
         { refetchOnMountOrArgChange: true },
     )
+
+    const [sellersDownload, sellersDownloadResponse] = vendorService.useLazyVendorsDownloadQuery()
 
     useEffect(() => {
         if (isSuccess) {
@@ -59,37 +56,26 @@ const Seller = () => {
 
     const columns = useSellerColumns()
 
-    const convertToCSV = (data: Product[], columns: ColumnDef<Product>[]) => {
-        const filteredColumns = columns?.filter((item) => item.header !== 'Edit')
-
-        const header = filteredColumns.map((col) => escapeCsvValue(col.header)).join(',')
-
-        const rows = data
-            .map((row: any) => {
-                return filteredColumns.map((col: any) => escapeCsvValue(row[col.accessorKey])).join(',')
-            })
-            .join('\n')
-
-        return `${header}\n${rows}`
-    }
+    useEffect(() => {
+        if (sellersDownloadResponse.isSuccess) {
+            const url = window.URL.createObjectURL(sellersDownloadResponse.data)
+            const link = document.createElement('a')
+            link.href = url
+            link.setAttribute('download', `sellers-${moment().format('YYYY-MM-DD HH:mm:ss a')}.csv`)
+            document.body.appendChild(link)
+            link.click()
+            link.remove()
+        }
+        if (sellersDownloadResponse.isError) {
+            notification.error({ message: 'Failed to download' })
+        }
+    }, [sellersDownloadResponse.isSuccess, sellersDownloadResponse.isError, sellersDownloadResponse.data])
 
     const handleDownload = async () => {
-        setIsDownloading(true)
-        notification.info({ message: 'Download in process' })
-        let userData = []
-        try {
-            const filterData = filterValue ? `&name=${filterValue}` : ''
-            const response = await axioisInstance.get(`merchant/company?download=true&p=1&page_size=1000${filterData}`)
-            userData = response.data?.data?.results
-            handleDownloadCsv(userData, columns, convertToCSV, 'Sellers.csv')
-            notification.success({ message: 'Download complete' })
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                notification.error({ message: error?.response?.data?.message || error?.message || 'Error downloading CSV' })
-            }
-        } finally {
-            setIsDownloading(false)
-        }
+        sellersDownload({
+            name: searchType === 'name' ? debounceFilter : '',
+            code: searchType === 'code' ? debounceFilter : '',
+        })
     }
 
     return (
@@ -135,7 +121,8 @@ const Seller = () => {
                         size="sm"
                         variant="new"
                         icon={<FaDownload className="text-lg" />}
-                        loading={isDownloading}
+                        loading={sellersDownloadResponse.isLoading}
+                        disabled={sellersDownloadResponse.isLoading}
                         onClick={() => handleDownload()}
                     >
                         Export
