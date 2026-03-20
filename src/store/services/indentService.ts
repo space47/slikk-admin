@@ -67,7 +67,7 @@ export const indentService = RtkQueryService.injectEndpoints({
                 if (params.paramValue) parameters[params.paramKey] = params.paramValue
 
                 return {
-                    url: `return/inward/picker`,
+                    url: `/indent-note-item`,
                     method: 'GET',
                     params: parameters,
                     responseHandler: (response) => response.blob(), // ✅ for file
