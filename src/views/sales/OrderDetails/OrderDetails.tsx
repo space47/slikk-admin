@@ -29,7 +29,6 @@ import { Order } from '@/store/types/newOrderTypes'
 import { newOrderService } from '@/store/services/newOrderaService'
 import DialogConfirm from '@/common/DialogConfirm'
 import ForwardActivity from './components/ForwardActivity'
-import { RiMotorbikeFill } from 'react-icons/ri'
 
 const OrderDetails = () => {
     const { invoice_id } = useParams()
@@ -62,6 +61,10 @@ const OrderDetails = () => {
     const showTicket = useMemo(() => {
         return data?.log?.some((item) => item?.status?.includes(EOrderStatus.packed)) && data?.utm_params?.ticket === true
     }, [data?.log, data?.utm_params])
+
+    const etaDropOffValue = useMemo(() => {
+        return typeof data?.eta_dropoff === 'string' ? Number(data?.eta_dropoff) : data?.eta_dropoff
+    }, [data?.eta_dropoff])
 
     const isRiderSlikk = useMemo(() => {
         return Object.entries(data?.logistic || {})?.length > 0 && data?.logistic?.partner?.toLowerCase() === 'slikk'
@@ -270,14 +273,15 @@ const OrderDetails = () => {
                                         </div>
                                     )}
                                 </div>
-                                {data?.eta_dropoff && (
+                                {!!data?.eta_dropoff && (
                                     <div className="flex">
                                         <div className="flex items-center gap-3 bg-amber-200 rounded-full  shadow-md hover:shadow-lg border-gray-200">
                                             <div>
                                                 <img src="/img/gif/deliveryBike.gif" className="h-11 w-16 object-cover " alt="bike" />
                                             </div>
-                                            <span className="text-lg font-semibold text-gray-700 px-1">
-                                                {data?.eta_dropoff} <span className="text-sm text-gray-500 font-normal">mins</span>
+                                            <span className="text-lg flex gap-2 items-center font-semibold text-gray-700 px-1">
+                                                {etaDropOffValue?.toFixed(2)}
+                                                <span className="text-sm text-gray-500 font-normal">mins</span>
                                             </span>
                                         </div>
                                     </div>
