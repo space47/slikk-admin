@@ -25,6 +25,7 @@ export type CommonOrderProduct = Partial<{
     name: string
     color: string
     size: string
+    skid: string
     product_type: string
     image: string
     sp: string | undefined | number

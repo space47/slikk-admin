@@ -3,7 +3,7 @@ import AdaptableCard from '@/components/shared/AdaptableCard'
 import Table from '@/components/ui/Table'
 import { useReactTable, getCoreRowModel, flexRender, createColumnHelper } from '@tanstack/react-table'
 import { NumericFormat } from 'react-number-format'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import ImageMODAL from '@/common/ImageModal'
 import ReplaceDrawer from './ReplaceDrawer'
 import { Button, Dialog } from '@/components/ui'
@@ -34,9 +34,9 @@ const ProductColumn = ({ row, status }: productProps) => {
     const [activeTab, setActiveTab] = useState<'sku' | 'url'>('sku')
     const headerLink = import.meta.env.VITE_WEBSITE_URL
 
-    const segregatedNames = (value: string) => {
-        return encodeURIComponent(value?.replace(/\s+/g, '-'))
-    }
+    const productUrlLink = useMemo(() => {
+        return `${headerLink}/product/${row?.skid || row?.barcode}`
+    }, [row])
 
     const handleImageView = (img: string) => {
         setParticularROwImage(img)
@@ -71,12 +71,7 @@ const ProductColumn = ({ row, status }: productProps) => {
                 <div className="mb-2 text-[18px] font-bold ">
                     Product Name:
                     <h4 className="font-light text-[14px] flex-wrap">
-                        <a
-                            href={`${headerLink}/${segregatedNames(row.category || '')}/${segregatedNames(row.sub_category || '')}/${segregatedNames(row.brand || '')}/${segregatedNames(row.name || '')}/${row.barcode}`}
-                            className="hover:text-blue-500 hover:underline"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
+                        <a href={productUrlLink} className="hover:text-blue-500 hover:underline" target="_blank" rel="noopener noreferrer">
                             {row.name}
                         </a>
                     </h4>
@@ -129,20 +124,12 @@ const ProductColumn = ({ row, status }: productProps) => {
                             {activeTab === 'sku' ? (
                                 <QRCode value={row?.sku ?? ''} size={200} />
                             ) : (
-                                <QRCode
-                                    value={
-                                        `${headerLink}/${segregatedNames(row.category || '')}/${segregatedNames(row.sub_category || '')}/${segregatedNames(row.brand || '')}/${segregatedNames(row.name || '')}/${row.barcode}` ||
-                                        ''
-                                    }
-                                    size={200}
-                                />
+                                <QRCode value={productUrlLink || ''} size={200} />
                             )}
                         </div>
 
                         <p className="text-sm text-gray-600 dark:text-gray-300 font-medium mt-6 text-center break-all">
-                            {activeTab === 'sku'
-                                ? row?.sku
-                                : `${headerLink}/${segregatedNames(row.category || '')}/${segregatedNames(row.sub_category || '')}/${segregatedNames(row.brand || '')}/${segregatedNames(row.name || '')}/${row.barcode}`}
+                            {activeTab === 'sku' ? row?.sku : productUrlLink}
                         </p>
                     </div>
                 </Dialog>
