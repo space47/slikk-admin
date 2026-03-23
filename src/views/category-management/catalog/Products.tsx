@@ -12,7 +12,7 @@ import { Dropdown, Input, Spinner } from '@/components/ui'
 import { ProductTypes, ProductFilterArray } from './ProductCommon'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { useProductColumns } from './productutils/ProductColumns'
-import { handleDownload, handleFacebookSync, handleGenerateSiteMap, handleRandomize } from './productutils/productApiCalls'
+import { handleFacebookSync, handleGenerateSiteMap, handleRandomize } from './productutils/productApiCalls'
 import ProductViewModal from './ProductViewModal'
 import { productService } from '@/store/services/productService'
 import {
@@ -30,6 +30,7 @@ import FilterProductCommon from '@/common/FilterProductCommon'
 import PageCommon from '@/common/PageCommon'
 import { useDebounceInput } from '@/commonHooks/useDebounceInput'
 import ProductTableFilters from './ProductTableFilters'
+import ProductDownload from './productutils/ProductDownload'
 
 const Products = () => {
     const dispatch = useAppDispatch()
@@ -43,6 +44,7 @@ const Products = () => {
     const [showAddFrameDialog, setShowAddFrameDialog] = useState(false)
     const [showDrawer, setShowDrawer] = useState(false)
     const [showViewModal, setShowViewModal] = useState(false)
+    const [showDownload, setShowDownload] = useState(false)
     const [tableDrawer, setTableDrawer] = useState(false)
     const { productData, count, currentSelectedPage, page, pageSize, typeFetch, globalFilter, currentTableSelected } =
         useAppSelector<productRequiredType>((state) => state.product)
@@ -105,7 +107,7 @@ const Products = () => {
             },
             {
                 label: 'Export',
-                onClick: () => handleDownload(currentSelectedPage, globalFilter!, typeFetch),
+                onClick: () => setShowDownload(true),
                 icon: <IoMdDownload className="text-lg" />,
                 className: `lg:flex ${baseBtnClass} bg-green-500 hover:bg-green-400`,
             },
@@ -236,6 +238,13 @@ const Products = () => {
             )}
             {showViewModal && <ProductViewModal row={rowData as ProductTypes} isOpen={showViewModal} setIsOpen={setShowViewModal} />}
             {showAddFrameDialog && <AddFrameModal isOpen={showAddFrameDialog} setIsOpen={setShowAddFrameDialog} />}
+            <ProductDownload
+                isOpen={showDownload}
+                setIsOpen={setShowDownload}
+                currentSelectedPage={currentSelectedPage}
+                globalFilter={globalFilter!}
+                typeFetch={typeFetch}
+            />
         </div>
     )
 }
