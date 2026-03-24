@@ -20,7 +20,7 @@ const formatDate = (date?: string | null) => {
     return formatted.isValid() ? formatted.format('DD-MM-YYYY') : 'N/A'
 }
 
-const BrandShipmentDetails: React.FC = () => {
+const BrandShipmentDetails = () => {
     const { id } = useParams<{ id: string }>()
     const [shipmentDetails, setShipmentDetails] = useState<ShipmentData | null>(null)
     const [showAddCsv, setShowAddCsv] = useState(false)
