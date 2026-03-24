@@ -50,6 +50,7 @@ const ReturnOrders = () => {
     const handleSelectTab = (value: string) => {
         setShowNumberLoading(true)
         setTabSelect(value)
+        setPage(1)
     }
 
     const fetchOrders = async () => {
