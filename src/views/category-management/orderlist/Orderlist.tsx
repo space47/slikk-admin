@@ -62,6 +62,7 @@ const OrderList = () => {
 
     const handleSelectTab = (value: string) => {
         setTabSelect(value)
+        setPage(1)
     }
 
     const noFilterFunc = () => {
