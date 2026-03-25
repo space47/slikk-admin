@@ -1,44 +1,56 @@
-import React, { useState, useEffect } from 'react'
-import { Button, FormItem, Input, Spinner, Checkbox } from '@/components/ui'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useState, useEffect, useMemo } from 'react'
+import { Button, FormItem, Input, Spinner } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import { AxiosError } from 'axios'
 import { Field, Form, Formik } from 'formik'
 import CommonImageUpload from '@/common/CommonImageUpload'
 import { beforeUpload } from '@/common/beforeUpload'
-import { handleimage } from '@/common/handleImage'
 import { generatePreviewCanvas, TemplateConfig } from './generatePreviewCanvas'
 import { useNavigate } from 'react-router-dom'
+import debounce from 'lodash/debounce'
+import { FrameFields } from './frameCommon'
 
 const hexToRgbTuple = (hex: string) => {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-    return result
-        ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)]
-        : [0, 0, 0]
+    return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : [0, 0, 0]
 }
 
-const AutoPreviewRenderer = ({ values, setPreviewImage, setIsLoading }: any) => {
-    useEffect(() => {
-        const renderPreview = async () => {
-            if (values.image_1?.length && values.image_2?.length) {
-                // To avoid blocking the UI thread abruptly, we lightly debounce
-                setIsLoading(true)
-                try {
-                    const dataUrl = await generatePreviewCanvas(values)
-                    setPreviewImage(dataUrl)
-                } catch (e) {
-                    console.log('Debounced preview error', e)
-                } finally {
-                    setIsLoading(false)
-                }
-            } else {
-                setPreviewImage(null)
-            }
-        }
+interface AutoPreviewProps {
+    values: TemplateConfig
+    setPreviewImage: React.Dispatch<React.SetStateAction<string | null>>
+    setIsLoading: (x: boolean) => void
+}
 
-        const timer = setTimeout(renderPreview, 300) // 300ms debounce buffer
-        return () => clearTimeout(timer)
-    }, [values, setPreviewImage, setIsLoading])
+const AutoPreviewRenderer = ({ values, setPreviewImage, setIsLoading }: AutoPreviewProps) => {
+    const debouncedRenderPreview = useMemo(
+        () =>
+            debounce(async (vals) => {
+                if (vals.image_1?.length && vals.image_2?.length) {
+                    setIsLoading(true)
+                    try {
+                        const dataUrl = await generatePreviewCanvas(vals)
+                        setPreviewImage(dataUrl)
+                    } catch (e) {
+                        console.log('Debounced preview error', e)
+                    } finally {
+                        setIsLoading(false)
+                    }
+                } else {
+                    setPreviewImage(null)
+                }
+            }, 500),
+        [setPreviewImage, setIsLoading],
+    )
+
+    useEffect(() => {
+        debouncedRenderPreview(values)
+
+        return () => {
+            debouncedRenderPreview.cancel()
+        }
+    }, [values, debouncedRenderPreview])
 
     return null
 }
@@ -91,7 +103,7 @@ const FrameTemplatePage = () => {
             message: 'Saving Template',
             description: 'Saving your template parameters...',
         })
-        
+
         const payload = {
             name: values.template_name,
             description: values.description || '',
@@ -119,7 +131,7 @@ const FrameTemplatePage = () => {
 
         try {
             const res = await axioisInstance.post('/product/frame-style-templates/', payload)
-            
+
             notification.success({
                 message: 'Success',
                 description: res?.data?.message || 'Template configuration saved successfully.',
@@ -150,10 +162,16 @@ const FrameTemplatePage = () => {
                         <AutoPreviewRenderer values={values} setPreviewImage={setPreviewImage} setIsLoading={setIsLoading} />
                         {/* LEFT COLUMN: Config */}
                         <div className="w-full xl:w-5/12 space-y-8 bg-white p-6 rounded-2xl shadow-xl border border-gray-100">
-                            
                             {/* Template Name + Description */}
                             <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 space-y-3">
-                                <FormItem label={<span>Template Name <span className="text-red-500">*</span></span>} className="mb-0">
+                                <FormItem
+                                    label={
+                                        <span>
+                                            Template Name <span className="text-red-500">*</span>
+                                        </span>
+                                    }
+                                    className="mb-0"
+                                >
                                     <Field name="template_name" type="text" placeholder="e.g. Big Billion Days" as={Input} />
                                 </FormItem>
                                 <FormItem label="Description" className="mb-0">
@@ -164,7 +182,7 @@ const FrameTemplatePage = () => {
                             {/* Images */}
                             <div className="p-4 bg-blue-50/50 rounded-xl border border-blue-100">
                                 <h3 className="font-semibold text-blue-900 border-b border-blue-200 pb-2 mb-4">Required Images</h3>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 gap-4">
                                     <CommonImageUpload
                                         label="Frame"
                                         beforeUpload={beforeUpload}
@@ -183,71 +201,45 @@ const FrameTemplatePage = () => {
                             </div>
 
                             {/* Safe Zone */}
-                            <div>
-                                <h3 className="text-sm font-semibold text-gray-700 mb-3 tracking-wide uppercase">Safe Zone Ratios</h3>
-                                <div className="grid grid-cols-4 gap-3">
-                                    <FormItem label="Left %"><Field name="safe_zone_left" type="number" min="0" max="100" step="any" as={Input} /></FormItem>
-                                    <FormItem label="Right %"><Field name="safe_zone_right" type="number" min="0" max="100" step="any" as={Input} /></FormItem>
-                                    <FormItem label="Top %"><Field name="safe_zone_top" type="number" min="0" max="100" step="any" as={Input} /></FormItem>
-                                    <FormItem label="Bottom %"><Field name="safe_zone_bottom" type="number" min="0" max="100" step="any" as={Input} /></FormItem>
-                                </div>
-                            </div>
+                            {FrameFields.map((section) => (
+                                <div key={section.title} className={section.wrapperClass || ''}>
+                                    <h3 className="text-sm font-semibold text-gray-700 mb-3 tracking-wide uppercase">{section.title}</h3>
 
-                            {/* SP */}
-                            <div>
-                                <h3 className="text-sm font-semibold text-gray-700 mb-3 tracking-wide uppercase">Selling Price Typography</h3>
-                                <div className="grid grid-cols-5 gap-3">
-                                    <FormItem label="X %"><Field name="sp_x" type="number" min="0" max="100" step="any" as={Input} /></FormItem>
-                                    <FormItem label="Y %"><Field name="sp_y" type="number" min="0" max="100" step="any" as={Input} /></FormItem>
-                                    <FormItem label="Size"><Field name="sp_font_size" type="number" min="1" step="any" as={Input} /></FormItem>
-                                    <FormItem label="Color"><Field name="sp_color" type="color" className="w-full h-10 p-1 cursor-pointer" as={Input} /></FormItem>
-                                    <FormItem label="Thick"><Field name="sp_thickness" type="number" min="0" step="any" as={Input} /></FormItem>
+                                    <div className={`grid ${section.grid} gap-3`}>
+                                        {section.fields.map((field: any) => (
+                                            <FormItem key={field.name} label={field.label}>
+                                                {field.type === 'select' ? (
+                                                    <Field
+                                                        name={field.name}
+                                                        as="select"
+                                                        className="w-full border border-gray-300 rounded px-2 py-2"
+                                                    >
+                                                        {field.options?.map((opt: any) => (
+                                                            <option key={opt.value} value={opt.value}>
+                                                                {opt.label}
+                                                            </option>
+                                                        ))}
+                                                    </Field>
+                                                ) : field.type === 'checkbox' ? (
+                                                    <Field name={field.name} type="checkbox" className="mt-2 w-5 h-5 cursor-pointer" />
+                                                ) : (
+                                                    <Field
+                                                        name={field.name}
+                                                        type={field.type}
+                                                        min={field.min}
+                                                        max={field.max}
+                                                        step="any"
+                                                        as={Input}
+                                                        className={field.type === 'color' ? 'w-full h-10 p-1 cursor-pointer' : ''}
+                                                    />
+                                                )}
+                                            </FormItem>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-
-                            {/* MRP */}
-                            <div>
-                                <h3 className="text-sm font-semibold text-gray-700 mb-3 tracking-wide uppercase">MRP Typography</h3>
-                                <div className="grid grid-cols-5 gap-3">
-                                    <FormItem label="X %"><Field name="mrp_x" type="number" min="0" max="100" step="any" as={Input} /></FormItem>
-                                    <FormItem label="Y %"><Field name="mrp_y" type="number" min="0" max="100" step="any" as={Input} /></FormItem>
-                                    <FormItem label="Size"><Field name="mrp_font_size" type="number" min="1" step="any" as={Input} /></FormItem>
-                                    <FormItem label="Color"><Field name="mrp_color" type="color" className="w-full h-10 p-1 cursor-pointer" as={Input} /></FormItem>
-                                    <FormItem label="Thick"><Field name="mrp_thickness" type="number" min="0" step="any" as={Input} /></FormItem>
-                                </div>
-                            </div>
-
-                            {/* Slash */}
-                            <div>
-                                <h3 className="text-sm font-semibold text-gray-700 mb-3 tracking-wide uppercase">MRP Strike-Through</h3>
-                                <div className="grid grid-cols-3 gap-3">
-                                    <FormItem label="Orientation">
-                                        <Field name="slash_orientation" as="select" className="w-full border border-gray-300 rounded px-2 py-2">
-                                            <option value="diagonal">diagonal</option>
-                                            <option value="horizontal">horizontal</option>
-                                        </Field>
-                                    </FormItem>
-                                    <FormItem label="Color"><Field name="slash_color" type="color" className="w-full h-10 p-1 cursor-pointer" as={Input} /></FormItem>
-                                    <FormItem label="Thickness"><Field name="slash_thickness" type="number" min="0" step="any" as={Input} /></FormItem>
-
-                                    <FormItem label="Length Scale"><Field name="slash_length_scale" type="number" min="0.1" step="any" as={Input} /></FormItem>
-                                    <FormItem label="X offset %"><Field name="slash_x" type="number" step="any" as={Input} /></FormItem>
-                                    <FormItem label="Y offset %"><Field name="slash_y" type="number" step="any" as={Input} /></FormItem>
-                                </div>
-                            </div>
-
-                            {/* Preview Sample Texts */}
-                            <div className="bg-gray-100 p-4 rounded-xl border border-gray-200">
-                                <h3 className="text-sm font-semibold text-gray-700 mb-3">Live Preview Text Injection</h3>
-                                <div className="grid grid-cols-3 gap-3">
-                                    <FormItem label="Show Tags"><Field name="is_price_tag_required" type="checkbox" className="mt-2 w-5 h-5 cursor-pointer" /></FormItem>
-                                    <FormItem label="Selling Price"><Field name="selling_price" type="text" as={Input} /></FormItem>
-                                    <FormItem label="MRP"><Field name="mrp_price" type="text" as={Input} /></FormItem>
-                                </div>
-                            </div>
+                            ))}
                         </div>
 
-                        {/* RIGHT COLUMN: Preview */}
                         <div className="w-full xl:w-7/12 flex flex-col gap-4">
                             <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-100 flex-1 flex flex-col items-center">
                                 <div className="w-full flex justify-between items-center mb-4">
@@ -260,16 +252,22 @@ const FrameTemplatePage = () => {
                                             <p>Processing browser canvas...</p>
                                         </div>
                                     ) : previewImage ? (
-                                        <img src={previewImage} alt="Generated Template" className="max-w-[90%] max-h-[700px] shadow-lg rounded object-contain border border-gray-200" />
+                                        <img
+                                            src={previewImage}
+                                            alt="Generated Template"
+                                            className="max-w-[90%] max-h-[700px] shadow-lg rounded object-contain border border-gray-200"
+                                        />
                                     ) : (
                                         <div className="flex flex-col items-center text-gray-400 p-10 text-center max-w-sm">
                                             <h4 className="text-lg font-medium text-gray-600 mb-2">Awaiting Render</h4>
-                                            <p className="text-sm">Ensure you have uploaded both the Frame and the Product image to compile a preview layout.</p>
+                                            <p className="text-sm">
+                                                Ensure you have uploaded both the Frame and the Product image to compile a preview layout.
+                                            </p>
                                         </div>
                                     )}
                                 </div>
                             </div>
-                            
+
                             <Button
                                 type="button"
                                 variant="solid"
