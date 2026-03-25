@@ -29,7 +29,6 @@ export const rtvService = RtkQueryService.injectEndpoints({
                 if (params.page) parameters.p = params.page
                 if (params.pageSize) parameters.page_size = params.pageSize
                 if (params.is_picked) parameters.is_picked = params.is_picked
-                if (params.is_picked) parameters.is_picked = params.is_picked
                 if (params.rtv_number) parameters.rtv_number = params.rtv_number
                 if (params.rtv_id) parameters.rtv_id = params.rtv_id
                 if (params.sku) parameters.sku = params.sku
@@ -40,6 +39,24 @@ export const rtvService = RtkQueryService.injectEndpoints({
                     url: `/rtv-products`,
                     method: 'GET',
                     params: parameters,
+                }
+            },
+        }),
+        rtvProductsDownload: builder.query<Blob, Rtv_Product_Params>({
+            query: (params) => {
+                const parameters: Record<string, string | number> = { download: 'true' }
+                if (params.page) parameters.p = params.page
+                if (params.pageSize) parameters.page_size = params.pageSize
+                if (params.is_picked) parameters.is_picked = params.is_picked
+                if (params.rtv_number) parameters.rtv_number = params.rtv_number
+                if (params.rtv_id) parameters.rtv_id = params.rtv_id
+                if (params.sku) parameters.sku = params.sku
+
+                return {
+                    url: `/rtv-products`,
+                    method: 'GET',
+                    params: parameters,
+                    responseHandler: (response) => response.blob(),
                 }
             },
         }),

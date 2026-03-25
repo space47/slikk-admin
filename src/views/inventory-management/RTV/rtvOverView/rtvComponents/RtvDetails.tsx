@@ -14,11 +14,13 @@ import TabNav from '@/components/ui/Tabs/TabNav'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 import { useDebounceInput } from '@/commonHooks/useDebounceInput'
 import RtvEditModal from './RtvEditModal'
-import { FaCheckCircle, FaExclamationTriangle, FaSync, FaTimesCircle } from 'react-icons/fa'
+import { FaCheckCircle, FaDownload, FaExclamationTriangle, FaSync, FaTimesCircle } from 'react-icons/fa'
 import DialogConfirm from '@/common/DialogConfirm'
 import { textParser } from '@/common/textParser'
 import { ERtvDetail } from '../../rtvUtils/rtv.types'
 import { BsFillPatchCheckFill } from 'react-icons/bs'
+import moment from 'moment'
+import { commonDownloadFromRtk } from '@/common/commonDownload'
 
 const RtvDetails = () => {
     const { rtv_number } = useParams()
@@ -47,6 +49,7 @@ const RtvDetails = () => {
     const [showEditModal, setShowEditModal] = useState(false)
     const [updateRtv, updateResponse] = rtvService.useUpdateRtvMutation()
     const [updateStatus, statusUpdateResponse] = rtvService.useUpdateRtvStatusMutation()
+    const [downloadRtvItems, downloadResponse] = rtvService.useLazyRtvProductsDownloadQuery()
 
     const hasSyncedQuantity = useMemo(() => rtvProductsData?.some((item) => item.synced_quantity > 0), [rtvProductsData])
 
@@ -96,6 +99,15 @@ const RtvDetails = () => {
             notification.error({ message: (updateResponse?.error as any)?.data?.message || 'Failed to Update Rtv Number' })
         }
     }, [updateResponse.isSuccess, updateResponse.isError])
+
+    useEffect(() => {
+        if (downloadResponse.isSuccess && downloadResponse?.data) {
+            commonDownloadFromRtk(downloadResponse.data, `${rtvData?.rtv_number}-${moment().format('YYYY-MM-DD HH:mm:ss a')}.csv`)
+        }
+        if (downloadResponse.isError) {
+            notification.error({ message: 'Failed to download' })
+        }
+    }, [downloadResponse.isSuccess, downloadResponse.isError, downloadResponse.data])
 
     useEffect(() => {
         if (statusUpdateResponse?.isSuccess) {
@@ -162,6 +174,16 @@ const RtvDetails = () => {
     const handleStatus = async () => {
         const body = { action: isStatusConformation }
         updateStatus({ rtv_id: rtvData?.id as number, data: body })
+    }
+
+    const handleDownload = () => {
+        downloadRtvItems({
+            rtv_id: rtv_number,
+            page,
+            pageSize,
+            is_picked: tabValue,
+            sku: debounceFilter || '',
+        })
     }
 
     return (
@@ -311,9 +333,21 @@ const RtvDetails = () => {
 
                     <div className="flex justify-between mb-4">
                         <h4 className="text-lg font-semibold text-gray-800 mb-3">RTV Items Details</h4>
-                        <Tooltip title="Refresh table data">
-                            <Button variant="gray" size="sm" icon={<FaSync />} onClick={() => refetch()}></Button>
-                        </Tooltip>
+                        <div className="flex items-center gap-2">
+                            <Button
+                                variant="gray"
+                                size="sm"
+                                icon={<FaDownload />}
+                                loading={downloadResponse.isLoading}
+                                disabled={downloadResponse.isLoading}
+                                onClick={handleDownload}
+                            >
+                                Download
+                            </Button>
+                            <Tooltip title="Refresh table data">
+                                <Button variant="gray" size="sm" icon={<FaSync />} onClick={() => refetch()}></Button>
+                            </Tooltip>
+                        </div>
                     </div>
                     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-md overflow-hidden transition-all hover:shadow-lg">
                         <EasyTable overflow columns={columns} mainData={rtvProductsData} page={page} pageSize={pageSize} />

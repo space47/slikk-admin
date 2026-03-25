@@ -364,7 +364,7 @@ const BulkDuplicate = ({ dialogIsOpen, setIsOpen, bannerIdStore, pageState, subP
                                         type="submit"
                                         className="rounded-xl px-6 py-2 shadow-md hover:shadow-lg hover:scale-105 transition"
                                     >
-                                        Assign
+                                        Duplicate
                                     </Button>
                                 </div>
                             </Form>
