@@ -20,6 +20,7 @@ import { textParser } from '@/common/textParser'
 import { ERtvDetail } from '../../rtvUtils/rtv.types'
 import { BsFillPatchCheckFill } from 'react-icons/bs'
 import moment from 'moment'
+import { commonDownloadFromRtk } from '@/common/commonDownload'
 
 const RtvDetails = () => {
     const { rtv_number } = useParams()
@@ -100,14 +101,8 @@ const RtvDetails = () => {
     }, [updateResponse.isSuccess, updateResponse.isError])
 
     useEffect(() => {
-        if (downloadResponse.isSuccess) {
-            const url = window.URL.createObjectURL(downloadResponse.data)
-            const link = document.createElement('a')
-            link.href = url
-            link.setAttribute('download', `${rtvData?.rtv_number}-${moment().format('YYYY-MM-DD HH:mm:ss a')}.csv`)
-            document.body.appendChild(link)
-            link.click()
-            link.remove()
+        if (downloadResponse.isSuccess && downloadResponse?.data) {
+            commonDownloadFromRtk(downloadResponse.data, `${rtvData?.rtv_number}-${moment().format('YYYY-MM-DD HH:mm:ss a')}.csv`)
         }
         if (downloadResponse.isError) {
             notification.error({ message: 'Failed to download' })

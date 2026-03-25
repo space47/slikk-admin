@@ -23,6 +23,7 @@ import { notification, Select } from 'antd'
 import PageCommon from '@/common/PageCommon'
 import { IoCheckmarkDoneCircle } from 'react-icons/io5'
 import moment from 'moment'
+import { commonDownloadFromRtk } from '@/common/commonDownload'
 
 const IndentDetails = () => {
     const { id } = useParams()
@@ -81,13 +82,7 @@ const IndentDetails = () => {
 
     useEffect(() => {
         if (indentDownloadResponse.isSuccess) {
-            const url = window.URL.createObjectURL(indentDownloadResponse.data)
-            const link = document.createElement('a')
-            link.href = url
-            link.setAttribute('download', `Indent_Items-${moment().format('YYYY-MM-DD HH:mm:ss a')}.csv`)
-            document.body.appendChild(link)
-            link.click()
-            link.remove()
+            commonDownloadFromRtk(indentDownloadResponse.data, `Indent_Items-${moment().format('YYYY-MM-DD HH:mm:ss a')}.csv`)
         }
         if (indentDownloadResponse.isError) {
             notification.error({ message: 'Failed to download' })
