@@ -334,7 +334,14 @@ const RtvDetails = () => {
                     <div className="flex justify-between mb-4">
                         <h4 className="text-lg font-semibold text-gray-800 mb-3">RTV Items Details</h4>
                         <div className="flex items-center gap-2">
-                            <Button variant="gray" size="sm" icon={<FaDownload />} onClick={handleDownload}>
+                            <Button
+                                variant="gray"
+                                size="sm"
+                                icon={<FaDownload />}
+                                loading={downloadResponse.isLoading}
+                                disabled={downloadResponse.isLoading}
+                                onClick={handleDownload}
+                            >
                                 Download
                             </Button>
                             <Tooltip title="Refresh table data">
