@@ -45,7 +45,6 @@ const MasterShipmentTable = () => {
         company_code: selectedCompany?.currCompany?.code as string,
     })
 
-    // ✅ Handle success
     useEffect(() => {
         if (shipmentCall.isSuccess) {
             dispatch(setMasterShipmentDetails(shipmentCall?.data?.data?.results || []))
@@ -74,7 +73,7 @@ const MasterShipmentTable = () => {
                     </div>
 
                     {/* Add Button */}
-                    <Button variant="solid" size="sm" icon={<FaPlus />} onClick={() => navigate(`/app/vendor/shipments/add`)}>
+                    <Button variant="solid" size="sm" icon={<FaPlus />} onClick={() => navigate(`/app/masterShipments/add`)}>
                         Add Shipment
                     </Button>
                 </div>

@@ -13,9 +13,10 @@ import CommonAccordion from '@/common/CommonAccordion'
 interface Props {
     values: any
     isEdit?: boolean
+    noBulk?: boolean
 }
 
-const BrandShipmentForm: React.FC<Props> = ({ values, isEdit }) => {
+const BrandShipmentForm: React.FC<Props> = ({ values, isEdit, noBulk = false }) => {
     return (
         <>
             <div className="shadow-xl p-3 rounded-2xl border-l-4 border-blue-600">
@@ -104,17 +105,21 @@ const BrandShipmentForm: React.FC<Props> = ({ values, isEdit }) => {
                             )
                         })}
                     </FormContainer>
-                    <div className="flex  justify-between mb-2">
-                        <h5>Upload Shipment Items File</h5>
-                        <a
-                            className="p-2 rounded-xl bg-green-500 hover:bg-green-600 text-white no-underline"
-                            href="https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/shipment+items/sample_shipment_items.csv"
-                        >
-                            Download Sample File
-                        </a>
-                    </div>
+                    {!noBulk && (
+                        <>
+                            <div className="flex  justify-between mb-2">
+                                <h5>Upload Shipment Items File</h5>
+                                <a
+                                    className="p-2 rounded-xl bg-green-500 hover:bg-green-600 text-white no-underline"
+                                    href="https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/shipment+items/sample_shipment_items.csv"
+                                >
+                                    Download Sample File
+                                </a>
+                            </div>
 
-                    <FormUploadFile fileList={values.csvArray} label="" name="csvArray" isEdit={isEdit} existingFile={''} />
+                            <FormUploadFile fileList={values.csvArray} label="" name="csvArray" isEdit={isEdit} existingFile={''} />
+                        </>
+                    )}
                 </CommonAccordion>
             </div>
         </>

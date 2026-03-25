@@ -315,6 +315,12 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsVendorManagement.masterShipments',
+        path: `${APP_PREFIX_PATH}/masterShipments/add`,
+        component: lazy(() => import('@/views/inventory-management/masterShipment/add/AddMasterShipment')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsVendorManagement.masterShipments/details',
         path: `${APP_PREFIX_PATH}/masterShipments/:id`,
         component: lazy(() => import('@/views/inventory-management/masterShipment/details/MasterShipmentDetails')),
