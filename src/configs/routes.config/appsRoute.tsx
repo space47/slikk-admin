@@ -466,6 +466,12 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsCategory.frameTemplate',
+        path: `${APP_PREFIX_PATH}/catalog/frame-template`,
+        component: lazy(() => import('@/views/category-management/catalog/FrameTemplatePage')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsCategory.products',
         path: `${APP_PREFIX_PATH}/catalog/products/addNew`,
         component: lazy(() => import('@/views/category-management/catalog/Addnew')),
