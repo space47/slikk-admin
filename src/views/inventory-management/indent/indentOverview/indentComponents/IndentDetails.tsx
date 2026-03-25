@@ -87,7 +87,7 @@ const IndentDetails = () => {
         if (indentDownloadResponse.isError) {
             notification.error({ message: 'Failed to download' })
         }
-    }, [indentDownloadResponse.isSuccess, indentDownloadResponse.isError])
+    }, [indentDownloadResponse.isSuccess, indentDownloadResponse.isError, indentDownloadResponse.data])
 
     const handleDownload = () => {
         indentItemsDownload({
