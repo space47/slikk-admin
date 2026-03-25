@@ -212,7 +212,7 @@ const ReportAnalytics = () => {
     }
 
     const handleDownloadCsv = async (queryName: any) => {
-        notification.info({ message: 'Download ing Progress' })
+        notification.info({ message: 'Download in Progress' })
         try {
             const response = await axioisInstance.get(
                 `/query/execute/${storeName}?${currentValues}&download=true&query_name=${queryName}`,
