@@ -90,6 +90,11 @@ const Products = () => {
         const baseBtnClass = 'flex items-center gap-2 px-3 py-2 rounded-lg text-white font-medium transition-colors'
         const buttonsArray = [
             {
+                label: 'Frame Template',
+                onClick: () => navigate('/app/catalog/frame-template'),
+                className: `${baseBtnClass} bg-indigo-600 hover:bg-indigo-700`,
+            },
+            {
                 label: 'Frame',
                 onClick: () => setShowAddFrameDialog(true),
                 className: `${baseBtnClass} bg-indigo-600 hover:bg-indigo-700`,
