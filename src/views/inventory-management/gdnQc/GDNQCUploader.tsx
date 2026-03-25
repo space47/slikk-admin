@@ -12,6 +12,7 @@ const GDNQCUploader = () => {
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const [file, setFile] = useState(null)
     const [isSingle, setIsSingle] = useState(false)
+    const [loader, setLoader] = useState(false)
 
     const onFileUpload = (fileList: any) => {
         console.log('File uploaded:', fileList[0])
@@ -46,6 +47,7 @@ const GDNQCUploader = () => {
         }
 
         try {
+            setLoader(true)
             const response = await axioisInstance(config)
             console.log('File uploaded successfully:', JSON.stringify(response.data))
 
@@ -60,6 +62,8 @@ const GDNQCUploader = () => {
                 message: 'failure',
                 description: 'File upload failed',
             })
+        } finally {
+            setLoader(false)
         }
     }
 
@@ -78,7 +82,7 @@ const GDNQCUploader = () => {
                 </div>
             </Upload>
             <div className="flex flex-row w-full space-x-[3%] items-center justify-center">
-                <Button onClick={handleSave} variant="twoTone">
+                <Button onClick={handleSave} variant="twoTone" size="sm" loading={loader} disabled={loader}>
                     Save
                 </Button>
                 <div className="flex flex-col gap-2 items-center">
