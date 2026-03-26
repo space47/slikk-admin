@@ -21,7 +21,7 @@ const ChildShipmentSelect: React.FC<Props> = ({ setShipmentId, shipmentId }) => 
         page: 1,
         pageSize: 100,
         shipment_id: '',
-        // available_for_master: true,
+        available_for_master: true,
     })
 
     const { data, isSuccess } = shipmentService.useGetShipmentListQuery(queryParams)
