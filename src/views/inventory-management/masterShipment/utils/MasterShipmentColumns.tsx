@@ -17,7 +17,7 @@ export const MasterShipmentColumns = () => {
                         <div>
                             <button
                                 className="flex items-center justify-center bg-none border-none"
-                                onClick={() => navigate(`/app/vendor/shipments/update/${row?.original?.id}`)}
+                                onClick={() => navigate(`/app/masterShipments/update/${row?.original?.id}`)}
                             >
                                 <FaEdit className="text-xl text-blue-500" />
                             </button>

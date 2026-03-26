@@ -79,7 +79,7 @@ const ChildShipmentSelect: React.FC<Props> = ({ setShipmentId, shipmentId }) => 
 
                             setSelectedOptionsState(selectedArray)
                             setShipmentId(ids)
-                            form.setFieldValue('child_shipments', ids)
+                            form.setFieldValue('child_shipment', ids)
                         }}
                         onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
                     />
