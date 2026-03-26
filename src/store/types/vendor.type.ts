@@ -78,7 +78,6 @@ export interface VendorDetails {
     warehouse_charge_per_sku: number
     business_nature_company: string
     business_nature_company_details: BusinessNatureData[]
-    provisional_discount_rate: number
     warehouse_name: string
     int_finance_name: string
     int_finance_email: string
