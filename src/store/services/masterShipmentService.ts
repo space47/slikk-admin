@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import RtkQueryService from '@/services/RtkQueryService'
 import { MasterShipmentResponseType, Shipment, ShipmentLineItemsResponse } from '../types/masterShipment.types'
 
@@ -43,7 +44,7 @@ export const masterShipmentService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        masterShipmentLineItemsDownload: builder.query<Blob, { id: string; regenerate: boolean; download_type: string }>({
+        masterShipmentLineItemsDownload: builder.query<any, { id: string; regenerate: boolean; download_type: string }>({
             query: (params) => {
                 const parameters: Record<string, string | number | boolean> = {
                     download: 'true',
@@ -57,7 +58,15 @@ export const masterShipmentService = RtkQueryService.injectEndpoints({
                     url: `/shipments/master/items`,
                     method: 'GET',
                     params: parameters,
-                    responseHandler: (response) => response.blob(), // ✅ for file
+                    responseHandler: async (response) => {
+                        const contentType = response.headers.get('content-type')
+
+                        if (contentType?.includes('application/json')) {
+                            return response.json()
+                        }
+
+                        return response.blob()
+                    },
                 }
             },
         }),

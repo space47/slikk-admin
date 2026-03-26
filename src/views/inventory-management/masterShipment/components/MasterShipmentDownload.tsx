@@ -32,20 +32,42 @@ const MasterShipmentDownload: React.FC<Props> = ({ isOpen, setIsOpen, id, shipme
 
     useEffect(() => {
         if (downloadResponse.isSuccess) {
-            const url = window.URL.createObjectURL(downloadResponse.data)
-            const link = document.createElement('a')
-            link.href = url
-            link.setAttribute('download', `${shipment_number}-LineItems.${downloadType?.value}`)
-            document.body.appendChild(link)
-            link.click()
-            link.remove()
+            if (downloadType?.value === 'csv') {
+                const blob = downloadResponse.data as Blob
+                const url = window.URL.createObjectURL(blob)
+
+                const link = document.createElement('a')
+                link.href = url
+                link.setAttribute('download', `${shipment_number}-LineItems.csv`)
+
+                document.body.appendChild(link)
+                link.click()
+                link.remove()
+
+                URL.revokeObjectURL(url)
+                setIsOpen(false)
+            } else {
+                const url = downloadResponse?.data?.data?.[0]
+
+                if (url) {
+                    const link = document.createElement('a')
+                    link.href = url
+                    link.setAttribute('download', `${shipment_number}-LineItems.pdf`)
+
+                    document.body.appendChild(link)
+                    link.click()
+                    link.remove()
+
+                    setIsOpen(false)
+                }
+            }
         }
 
         if (downloadResponse.isError) {
             const errorMessage = getApiErrorMessage(downloadResponse.error)
             notification.error({ message: errorMessage })
         }
-    }, [downloadResponse.isSuccess, downloadResponse.isError])
+    }, [downloadResponse.isSuccess, downloadResponse.isError, downloadResponse.data])
 
     const handleRegenerate = () => {
         Modal.confirm({
@@ -109,7 +131,7 @@ const MasterShipmentDownload: React.FC<Props> = ({ isOpen, setIsOpen, id, shipme
                         size="sm"
                         className="w-1/2 shadow-md hover:shadow-lg hover:scale-[1.02] transition-all"
                         icon={<FaDownload className="text-sm" />}
-                        loading={downloadResponse.isLoading}
+                        loading={downloadResponse.isLoading && !downloadResponse.originalArgs?.regenerate}
                         onClick={() => handleDownload(false)}
                     >
                         Download
