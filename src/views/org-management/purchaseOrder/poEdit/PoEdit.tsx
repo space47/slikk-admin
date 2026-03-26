@@ -156,7 +156,18 @@ const PoEdit = () => {
                                         />
                                     </>
                                 )}
-                                <FormButton value="Submit" />
+                                <div className="flex items-center justify-end mt-8">
+                                    <Button
+                                        variant="twoTone"
+                                        color="blue"
+                                        type="button"
+                                        onClick={() => navigate(`/app/po/orderItems/${purchase_id}`)}
+                                        icon={<FaArrowCircleRight />}
+                                    >
+                                        Go to Order Items
+                                    </Button>
+                                    <FormButton value="Submit" />
+                                </div>
                             </FormContainer>
                         </Form>
                     )

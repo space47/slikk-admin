@@ -10,7 +10,7 @@ import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 
 interface Props {
-    handleDownloadPdf: (x: number) => void
+    handleDownloadPdf: (x: PurchaseOrderTable) => void
 }
 
 export const usePoListColumns = ({ handleDownloadPdf }: Props) => {
@@ -130,7 +130,7 @@ export const usePoListColumns = ({ handleDownloadPdf }: Props) => {
                                         onClick={() => navigate(`/app/po/details/${row?.original?.id}`)}
                                     />
 
-                                    <ActionButton icon={FaFilePdf} onClick={() => handleDownloadPdf(row.original.id)} label="View PDF" />
+                                    <ActionButton icon={FaFilePdf} onClick={() => handleDownloadPdf(row.original)} label="View PDF" />
                                     <ActionButton icon={FaEdit} label="Edit" onClick={() => navigate(`/app/po/${row?.original?.id}`)} />
                                     {/* <ActionButton icon={FaPaperPlane} label="Send for Approval" /> */}
                                 </>
@@ -141,7 +141,7 @@ export const usePoListColumns = ({ handleDownloadPdf }: Props) => {
                                         label="View Details"
                                         onClick={() => navigate(`/app/po/details/${row?.original?.id}`)}
                                     />
-                                    <ActionButton icon={FaFilePdf} onClick={() => handleDownloadPdf(row.original.id)} label="View PDF" />
+                                    <ActionButton icon={FaFilePdf} onClick={() => handleDownloadPdf(row.original)} label="View PDF" />
                                 </>
                             )}
                         </div>
