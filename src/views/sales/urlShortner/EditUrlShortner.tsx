@@ -90,6 +90,7 @@ const EditUrlShortner = () => {
             page_title: values?.page_title,
             banner_id: values?.banners && values.banners[0]?.id,
             is_banner: values?.is_banner,
+            product_code: values?.product_code,
         }
         const filters = [
             ...(values.filters || []),
@@ -114,9 +115,10 @@ const EditUrlShortner = () => {
         let filterSelect = values?.select_filter ? `&filters=${filters}` : `&${noSelectFilters}` || ''
         if (values?.is_custom) utmFilters = noSelectFilters ? `?${noSelectFilters}` : ''
         if (values?.is_custom) filterSelect = values?.select_filter ? `?filters=${filters}` : `?${noSelectFilters}` || ''
-        const { page_title, rest } = values
+        const { page_title, product_code, rest } = values
         let pageTitle = ''
         if (page_title && values?.target_page === 'products') pageTitle = `/${values?.page_title}`
+        if (product_code && values?.target_page === 'product') pageTitle = `/${values?.product_code}`
         let target_page = ''
         if (values?.target_page) target_page = `/${values?.target_page}`
         let appOnly = ''

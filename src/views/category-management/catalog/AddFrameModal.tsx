@@ -143,6 +143,7 @@ const AddFrameModal = ({ isOpen, setIsOpen }: props) => {
                                                 <Button
                                                     variant="blue"
                                                     size="sm"
+                                                    type="button"
                                                     icon={<FaPlus />}
                                                     onClick={() => navigate('/app/catalog/frame-template')}
                                                 >
