@@ -24,19 +24,6 @@ const MasterShipmentsEdit = () => {
     const [childShipmentId, setChildShipmentId] = useState<number[]>([])
     const [showSpinner, setShowSpinner] = useState(false)
     const masterShipmentCall = masterShipmentService.useMasterShipmentDetailsQuery({ id: id as string }, { skip: !id })
-    // useEffect(() => {
-    //     const fetchShipmentDetails = async () => {
-    //         try {
-    //             const response = await axioisInstance.get(`/product-shipment?id=${id}`)
-    //             const data = response?.data?.data?.results || []
-    //             setShipmentData(data[0])
-    //         } catch (error) {
-    //             console.error('Error fetching shipment details:', error)
-    //         }
-    //     }
-
-    //     fetchShipmentDetails()
-    // }, [id])
 
     useEffect(() => {
         if (masterShipmentCall.isSuccess) {
@@ -46,11 +33,10 @@ const MasterShipmentsEdit = () => {
             const errorMessageText = getApiErrorMessage(masterShipmentCall.error) || 'Failed to load data'
             notification.error({ message: errorMessageText })
         }
-    }, [masterShipmentCall.isSuccess, masterShipmentCall.isError])
+    }, [masterShipmentCall.isSuccess, masterShipmentCall.isError, masterShipmentCall?.data?.data, masterShipmentCall.error])
 
     const initialValue = {
         company: selectedCompany?.currCompany?.id,
-        // store: shipmentData?.store,
         shipment_id: shipmentData?.shipment_id,
         name: shipmentData?.name,
         origin_address: shipmentData?.origin_address,

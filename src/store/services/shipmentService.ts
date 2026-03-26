@@ -4,12 +4,16 @@ import { ShipmentDownloadResponse, ShipmentResponse } from '../types/shipment.ty
 
 export const shipmentService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
-        getShipmentList: builder.query<ShipmentResponse, { shipment_id?: string; page?: number; pageSize?: number }>({
+        getShipmentList: builder.query<
+            ShipmentResponse,
+            { shipment_id?: string; page?: number; pageSize?: number; available_for_master?: boolean }
+        >({
             query: (params) => {
                 const parameters: Record<string, string | number | boolean> = {}
                 if (params.shipment_id) parameters.shipment_id = params.shipment_id
                 if (params.page) parameters.page = params.page
                 if (params.pageSize) parameters.page_size = params.pageSize
+                if (params.available_for_master) parameters.available_for_master = params.available_for_master
 
                 return {
                     url: `/product-shipment`,

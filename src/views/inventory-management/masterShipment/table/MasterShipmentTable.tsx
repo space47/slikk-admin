@@ -25,7 +25,9 @@ const MasterShipmentTable = () => {
     const [globalFilter, setGlobalFilter] = useState('')
     const [debouncedFilter, setDebouncedFilter] = useState('')
 
-    const { masterShipmentDetails, page, pageSize, count } = useAppSelector<MasterShipmentDetailType>((state) => state.shipmentDetails)
+    const { masterShipmentDetails, page, pageSize, count } = useAppSelector<MasterShipmentDetailType>(
+        (state) => state.masterShipmentDetails,
+    )
 
     const selectedCompany = useAppSelector<USER_PROFILE_DATA>((store) => store.company)
 
@@ -50,7 +52,9 @@ const MasterShipmentTable = () => {
             dispatch(setMasterShipmentDetails(shipmentCall?.data?.data?.results || []))
             dispatch(setCount(shipmentCall.data.data.count))
         }
-    }, [dispatch, shipmentCall.isSuccess, shipmentCall.data])
+    }, [dispatch, shipmentCall.isSuccess, shipmentCall?.data?.data])
+
+    console.log('master details', masterShipmentDetails)
 
     const columns = MasterShipmentColumns()
 
@@ -87,7 +91,7 @@ const MasterShipmentTable = () => {
                     <div className="text-center py-10 text-gray-400">No shipments found</div>
                 ) : (
                     <>
-                        <EasyTable overflow columns={columns} mainData={masterShipmentDetails} page={page} pageSize={pageSize} />
+                        <EasyTable overflow columns={columns} mainData={masterShipmentDetails || []} page={page} pageSize={pageSize} />
 
                         <div className="mt-6">
                             <PageCommon

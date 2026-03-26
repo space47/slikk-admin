@@ -62,3 +62,28 @@ export interface ShipmentPickup {
     company_id: number
     drop_box: string
 }
+
+export interface ShipmentLineItems {
+    id: number
+    sku: string
+    barcode: string
+    quantity_sent: number
+    quantity_received: number
+    catalog_available: boolean
+    create_date: string
+    update_date: string
+    shipment: number
+    last_updated_by: string
+    box_number: Record<string, string | number>
+    company: number
+    company_name: string
+}
+
+export interface ShipmentLineItemsResponse {
+    status: string
+    data: {
+        count: number
+        next: boolean
+        results: ShipmentLineItems[]
+    }
+}
