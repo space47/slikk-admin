@@ -25,37 +25,55 @@ const ChildShipmentSelect: React.FC<Props> = ({ setShipmentId, shipmentId }) => 
 
     const { data, isSuccess } = shipmentService.useGetShipmentListQuery(queryParams)
 
+    /**
+     * ✅ Set API Data
+     */
     useEffect(() => {
         if (isSuccess && data?.data?.results) {
             setShipmentData(data.data.results)
         }
     }, [isSuccess, data])
 
-    const formattedData = useMemo(() => {
-        const apiOptions = shipmentData.map((item) => ({
+    /**
+     * ✅ Create formatted API options
+     */
+    const apiOptions = useMemo(() => {
+        return shipmentData.map((item) => ({
             label: `${item.name} (${item.shipment_id})`,
             value: item.id,
         }))
-        const merged = [...selectedOptionsState]
+    }, [shipmentData])
 
-        apiOptions.forEach((opt) => {
-            if (!merged.some((m) => m.value === opt.value)) {
-                merged.push(opt)
-            }
+    /**
+     * ✅ Merge selected + API options (no duplicates)
+     */
+    const formattedData = useMemo(() => {
+        const map = new Map<number, any>()
+
+        ;[...selectedOptionsState, ...apiOptions].forEach((item) => {
+            map.set(item.value, item)
         })
 
-        return merged
-    }, [shipmentData, selectedOptionsState])
+        return Array.from(map.values())
+    }, [apiOptions, selectedOptionsState])
 
+    /**
+     * ✅ Set initial selected options from shipmentId
+     */
     useEffect(() => {
-        if (shipmentId.length && formattedData.length) {
-            const initialSelected = formattedData.filter((option) => shipmentId.includes(option.value))
+        if (shipmentId.length && apiOptions.length) {
+            const initialSelected = apiOptions.filter((option) => shipmentId.includes(option.value))
+
             setSelectedOptionsState(initialSelected)
         }
-    }, [shipmentId, formattedData])
+    }, [shipmentId, apiOptions])
 
+    /**
+     * ✅ Handle Search (debounce can be added later)
+     */
     const handleSearch = useCallback((inputValue: string) => {
         setSearchInput(inputValue)
+
         setQueryParams((prev) => ({
             ...prev,
             shipment_id: inputValue,
@@ -76,13 +94,17 @@ const ChildShipmentSelect: React.FC<Props> = ({ setShipmentId, shipmentId }) => 
                         onInputChange={handleSearch}
                         onChange={(selected) => {
                             const selectedArray = selected || []
-                            const ids = selectedArray.map((item) => item.value)
+                            const ids = selectedArray.map((item: any) => item.value)
 
                             setSelectedOptionsState(selectedArray)
                             setShipmentId(ids)
-                            form.setFieldValue('child_shipment', ids)
+
+                            // ✅ FIXED field name
+                            form.setFieldValue('child_shipments', ids)
                         }}
-                        onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') e.preventDefault()
+                        }}
                     />
                 )}
             </Field>

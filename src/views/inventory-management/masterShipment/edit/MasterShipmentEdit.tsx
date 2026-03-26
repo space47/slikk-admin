@@ -16,6 +16,8 @@ import { Shipment } from '@/store/types/masterShipment.types'
 import { masterShipmentService } from '@/store/services/masterShipmentService'
 import { getApiErrorMessage } from '@/constants/generateErrorMessage'
 
+//TODO: Fix required
+
 const MasterShipmentsEdit = () => {
     const { id } = useParams()
     const navigate = useNavigate()
@@ -49,7 +51,7 @@ const MasterShipmentsEdit = () => {
         received_by: shipmentData?.received_by,
         box_count: shipmentData?.box_count,
         items_count: shipmentData?.items_count,
-        child_shipment: shipmentData?.child_shipment,
+        child_shipments: shipmentData?.child_shipment?.map((item) => item.id),
     }
 
     const textChanger = (value: any) => {

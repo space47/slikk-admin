@@ -33,7 +33,7 @@ const BrandShipmentForm: React.FC<Props> = ({ values, isEdit, noBulk = false }) 
                     <FormContainer className="grid grid-cols-2 gap-2 ">
                         {Shipment_Information?.map((item, key) => {
                             return item?.type === 'dateForm' ? (
-                                <FullDateForm key={key} fieldname="dispatch_date" label="Dispatch Date" name="dispatch_date" />
+                                <FullDateForm key={key} fieldname={item.name} label={item?.label} name={item?.name} />
                             ) : (
                                 <div>
                                     <FormItem key={key} label={item?.label} asterisk={item?.isRequired}>
