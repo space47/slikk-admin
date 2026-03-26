@@ -29,7 +29,7 @@ const BrandShipmentsAdd = () => {
                 name: values?.name,
                 origin_address: originAddress,
                 delivery_address: deliveryAddress,
-                awb_number: values?.awb,
+                awb_number: values?.awb_number,
                 dispatch_date: values?.dispatch_date,
                 delivery_date: values?.delivery_date,
                 document: imageUpload,

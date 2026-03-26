@@ -34,7 +34,7 @@ const AddMasterShipment = () => {
                 name: values?.name,
                 origin_address: originAddress,
                 delivery_address: deliveryAddress,
-                awb_number: values?.awb,
+                awb_number: values?.awb_number,
                 dispatch_date: values?.dispatch_date,
                 delivery_date: values?.delivery_date,
                 document: imageUpload,
@@ -48,29 +48,6 @@ const AddMasterShipment = () => {
             successMessage(response)
             const shipmentId = response?.data?.data?.id
 
-            // if (values?.csvArray?.length > 0) {
-            //     try {
-            //         setShowSpinner(true)
-            //         notification.info({
-            //             message: 'CSV upload is in progress',
-            //         })
-            //         const formData = new FormData()
-            //         formData.append('shipment_items_file', values.csvArray[0])
-            //         formData.append('shipment_id', shipmentId)
-            //         await axioisInstance.post(`/shipment/bulkupload/items`, formData)
-            //         notification.success({
-            //             message: 'CSV uploaded successfully',
-            //         })
-            //         navigate(-1)
-            //     } catch (csvError) {
-            //         notification.error({
-            //             message: 'Failed to upload CSV',
-            //         })
-            //         console.error(csvError)
-            //     } finally {
-            //         setShowSpinner(false)
-            //     }
-            // }
             navigate(-1)
             return { id: shipmentId }
         } catch (error: any) {

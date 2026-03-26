@@ -15,65 +15,59 @@ const ChildShipmentSelect: React.FC<Props> = ({ setShipmentId, shipmentId }) => 
     const [shipmentData, setShipmentData] = useState<ShipmentData[]>([])
     const [searchInput, setSearchInput] = useState('')
     const [selectedOptionsState, setSelectedOptionsState] = useState<MultiValue<any>>([])
+    const [isInitialized, setIsInitialized] = useState(false)
 
     const [queryParams, setQueryParams] = useState({
         page: 1,
         pageSize: 100,
         shipment_id: '',
-        available_for_master: true,
+        // available_for_master: true,
     })
 
     const { data, isSuccess } = shipmentService.useGetShipmentListQuery(queryParams)
 
-    /**
-     * ✅ Set API Data
-     */
     useEffect(() => {
         if (isSuccess && data?.data?.results) {
             setShipmentData(data.data.results)
         }
     }, [isSuccess, data])
 
-    /**
-     * ✅ Create formatted API options
-     */
-    const apiOptions = useMemo(() => {
-        return shipmentData.map((item) => ({
+    const formattedData = useMemo(() => {
+        const apiOptions = shipmentData.map((item) => ({
             label: `${item.name} (${item.shipment_id})`,
             value: item.id,
         }))
-    }, [shipmentData])
+        const merged = [...selectedOptionsState]
 
-    /**
-     * ✅ Merge selected + API options (no duplicates)
-     */
-    const formattedData = useMemo(() => {
-        const map = new Map<number, any>()
-
-        ;[...selectedOptionsState, ...apiOptions].forEach((item) => {
-            map.set(item.value, item)
+        apiOptions.forEach((opt) => {
+            if (!merged.some((m) => m.value === opt.value)) {
+                merged.push(opt)
+            }
         })
 
-        return Array.from(map.values())
-    }, [apiOptions, selectedOptionsState])
+        return merged
+    }, [shipmentData, selectedOptionsState])
 
-    /**
-     * ✅ Set initial selected options from shipmentId
-     */
+    // Initialize selected options when both shipmentId and formattedData are available
     useEffect(() => {
-        if (shipmentId.length && apiOptions.length) {
-            const initialSelected = apiOptions.filter((option) => shipmentId.includes(option.value))
-
-            setSelectedOptionsState(initialSelected)
+        if (shipmentId?.length > 0 && formattedData?.length > 0 && !isInitialized) {
+            const initialSelected = formattedData.filter((option) => shipmentId.includes(option.value))
+            if (initialSelected.length > 0) {
+                setSelectedOptionsState(initialSelected)
+                setIsInitialized(true)
+            }
         }
-    }, [shipmentId, apiOptions])
+    }, [shipmentId, formattedData, isInitialized])
 
-    /**
-     * ✅ Handle Search (debounce can be added later)
-     */
+    // Handle case when shipmentId is empty but we have data (for clearing selection)
+    useEffect(() => {
+        if (isInitialized && shipmentId?.length === 0) {
+            setSelectedOptionsState([])
+        }
+    }, [shipmentId, isInitialized])
+
     const handleSearch = useCallback((inputValue: string) => {
         setSearchInput(inputValue)
-
         setQueryParams((prev) => ({
             ...prev,
             shipment_id: inputValue,
@@ -94,17 +88,13 @@ const ChildShipmentSelect: React.FC<Props> = ({ setShipmentId, shipmentId }) => 
                         onInputChange={handleSearch}
                         onChange={(selected) => {
                             const selectedArray = selected || []
-                            const ids = selectedArray.map((item: any) => item.value)
+                            const ids = selectedArray.map((item) => item.value)
 
                             setSelectedOptionsState(selectedArray)
                             setShipmentId(ids)
-
-                            // ✅ FIXED field name
-                            form.setFieldValue('child_shipments', ids)
+                            form.setFieldValue('child_shipment', ids)
                         }}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter') e.preventDefault()
-                        }}
+                        onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
                     />
                 )}
             </Field>
