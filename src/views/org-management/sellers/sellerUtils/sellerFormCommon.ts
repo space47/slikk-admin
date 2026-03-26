@@ -65,12 +65,17 @@ export const SellerMsMeArray = [
 ]
 
 export const SellerCommercialsArray = [
-    { label: 'Revenue Share Percent (Gross of GST)', name: SellerKeys.REVENUE_SHARE, type: 'number', isRequired: true, visible: true },
+    {
+        label: 'Revenue Share Percent (Gross of GST)/Commission',
+        name: SellerKeys.REVENUE_SHARE,
+        type: 'number',
+        isRequired: true,
+        visible: true,
+    },
     { label: 'Handling Charges Per Sku', name: SellerKeys.HANDLING_CHARGES_PER_ORDER, type: 'number', isRequired: true, visible: true },
     { label: 'Warehouse Charges Per Sku', name: SellerKeys.WAREHOUSE_CHARGE_PER_SKU, type: 'number', isRequired: true, visible: true },
     { label: 'Damages Per Sku', name: SellerKeys.DAMAGES_PER_SKU, type: 'number', isRequired: true, visible: true },
     { label: 'Removal Fee Per Sku', name: SellerKeys.REMOVAL_FEE_PER_SKU, type: 'number', isRequired: true, visible: true },
-    { label: 'Provisional Discount', name: SellerKeys.PROVISIONAL_DISCOUNT, type: 'number', isRequired: true, visible: true },
     { label: 'Approved Payment Terms', name: SellerKeys.APPROVED_PAYMENT_TERM, type: 'text', isRequired: true, visible: true },
 ]
 
@@ -128,7 +133,6 @@ export const simpleFields = [
     SellerKeys.BRANCH_NAME,
     SellerKeys.ACCOUNT_TYPE,
     SellerKeys.SEGMENT,
-    SellerKeys.PROVISIONAL_DISCOUNT,
     SellerKeys.REVENUE_SHARE,
     SellerKeys.HANDLING_CHARGES_PER_ORDER,
     SellerKeys.WAREHOUSE_CHARGE_PER_SKU,

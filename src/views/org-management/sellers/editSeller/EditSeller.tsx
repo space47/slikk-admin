@@ -81,7 +81,6 @@ const EditSeller = () => {
             account_type: sellerData?.account_type || '',
             cancelled_cheque: nullCheck(sellerData?.cancelled_cheque ?? '') ? sellerData?.cancelled_cheque : null, // file
             segment: sellerData?.segment || '',
-            provisional_discount_rate: sellerData?.provisional_discount_rate || 0,
             revenue_share: sellerData?.revenue_share || 0,
             handling_charges_per_order: sellerData?.handling_charges_per_order || 0,
             warehouse_charge_per_sku: sellerData?.warehouse_charge_per_sku || 0,
