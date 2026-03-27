@@ -2,8 +2,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import EasyTable from '@/common/EasyTable'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { Button, Dropdown, Select } from '@/components/ui'
-import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import { Button, Spinner } from '@/components/ui'
 import { MdCancel } from 'react-icons/md'
 import { Modal, notification } from 'antd'
 import MoreDataTable from './MoreDataTable'
@@ -14,17 +13,10 @@ import ImageMODAL from '@/common/ImageModal'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 
-const SEARCHOPTIONS = [
-    { label: 'SKU', value: 'sku' },
-    { label: 'Name', value: 'name' },
-    { label: 'Barcode', value: 'barcode' },
-]
-
 const TransferModule = () => {
     const [skuWiseData, setSkuWiseData] = useState<any[]>([])
     const [globalFilter, setGlobalFilter] = useState('')
     const [locationInput, setLocationInput] = useState('')
-    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(SEARCHOPTIONS[0])
     const [clearStorageModal, setClearStorageModal] = useState(false)
     const [downloadModal, setDownloadModal] = useState(false)
     const [saveAsInput, setSaveAsInput] = useState('')
@@ -34,10 +26,8 @@ const TransferModule = () => {
     const [qrResult, setQrResult] = useState<any>()
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularROwImage] = useState<any>([])
+    const [loader, setLoader] = useState(false)
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
-    const [companyCode, setCompanyCode] = useState<any>()
-
-    console.log('companyList', companyCode)
 
     useEffect(() => {
         const storedData = localStorage.getItem('skuSearchResults')
@@ -48,35 +38,49 @@ const TransferModule = () => {
 
     const handleProductFetch = async () => {
         if (dataForName !== '') return
-        let queryParam = ''
-        if (currentSelectedPage.value === 'barcode') {
-            console.log('Case 1')
-            queryParam = `barcode_exact=${encodeURIComponent(globalFilter?.trim())}`
-        } else if (currentSelectedPage.value === 'sku') {
-            console.log('Case 2')
-            queryParam = `sku_exact=${encodeURIComponent(globalFilter?.trim())}`
-        } else if (currentSelectedPage.value === 'name' && dataForName) {
-            queryParam = `name=${encodeURIComponent(dataForName)}`
+        if (!locationInput) {
+            notification.error({ message: 'Location is required' })
+            return
         }
-        let companyParam = ''
-        if (companyCode) {
-            companyParam = `&company_id=${companyCode}`
+        const searchTypes = [
+            { type: 'barcode_exact', value: globalFilter?.trim() },
+            { type: 'sku_exact', value: globalFilter?.trim() },
+        ]
+        if (dataForName) {
+            searchTypes.push({ type: 'name', value: dataForName })
         }
 
-        try {
-            const response = await axioisInstance.get(`/merchant/products?${queryParam}${companyParam}`)
-            const product = response?.data?.data?.results?.[0]
-            console.log('product is', product?.image?.split(',')[0])
-            if (product?.sku) {
-                handleAddOrUpdateRow(product.sku, product?.brand, product?.image?.split(','), product?.company)
-            } else {
-                console.error('No product found, adding entry with globalFilter.')
-                handleAddOrUpdateRow(globalFilter, '', '', '')
+        let product = null
+        for (const search of searchTypes) {
+            setLoader(true)
+            try {
+                const response = await axioisInstance.get(`/merchant/products`, {
+                    params: {
+                        [search.type]: search.value,
+                    },
+                })
+
+                const result = response?.data?.data?.results?.[0]
+
+                if (result?.sku) {
+                    product = result
+                    break
+                }
+            } catch (error) {
+                console.error(`Error searching by ${search.type}:`, error)
+                continue
+            } finally {
+                setLoader(false)
             }
-        } catch (error) {
-            console.error(error)
+        }
+        if (product?.sku) {
+            console.log('product is', product?.image?.split(',')[0])
+            handleAddOrUpdateRow(product.sku, product?.brand, product?.image?.split(','), product?.company)
+        } else {
+            console.error('No product found, adding entry with globalFilter.')
             handleAddOrUpdateRow(globalFilter, '', '', '')
         }
+
         setQrResult('')
         setGlobalFilter('')
     }
@@ -109,22 +113,8 @@ const TransferModule = () => {
         }
     }
 
-    useEffect(() => {
-        if (currentSelectedPage?.value === 'name' && globalFilter) {
-            setMoreData(true)
-        } else {
-            setMoreData(false)
-        }
-    }, [currentSelectedPage?.value, globalFilter])
-
     const handleAddOrUpdateRow = (sku: string, brand: string, image: string, company: string | number) => {
-        if (!companyCode) {
-            notification.error({ message: 'Company should be added to proceed' })
-            return
-        }
-
         const companyFromApi = companyList?.find((item) => item?.id === company)
-        const companyFromSelect = companyList?.find((item) => item?.id === companyCode)
 
         if (!sku) return
         const existingRowIndex = skuWiseData.findIndex((item) => item.sku?.trim() === sku?.trim())
@@ -136,7 +126,7 @@ const TransferModule = () => {
                 ...existingRow,
                 brand: brand || existingRow.brand,
                 image: image ?? existingRow.image ?? 'N/A',
-                company: companyFromApi?.name || companyFromSelect?.name || existingRow.company || 'N/A',
+                company: companyFromApi?.name || existingRow.company || 'N/A',
                 quantity_returned: (existingRow.quantity_returned || 0) + 1,
                 location: existingRow.location.includes(locationInput) ? existingRow.location : `${existingRow.location}/${locationInput}`,
             }
@@ -149,7 +139,7 @@ const TransferModule = () => {
                 brand: brand || '',
                 quantity_returned: 1,
                 image: image ?? 'N/A',
-                company: companyFromApi?.name || companyFromSelect?.name || 'N/A',
+                company: companyFromApi?.name || 'N/A',
                 location: locationInput,
             }
             const updatedData = [newRow, ...skuWiseData]
@@ -262,15 +252,7 @@ const TransferModule = () => {
         [skuWiseData],
     )
 
-    const handleSelect = (value: string) => {
-        const selected = SEARCHOPTIONS.find((item) => item.value === value)
-        if (selected) {
-            setCurrentSelectedPage(selected)
-        }
-    }
-
     const handleOpenModal = (img: any) => {
-        console.log('img is', img)
         setParticularROwImage(img)
         setShowImageModal(true)
     }
@@ -285,7 +267,6 @@ const TransferModule = () => {
         }
     }
 
-    console.log('camera Details', isCamera)
     useEffect(() => {
         if (qrResult) {
             const handleCamera = async () => {
@@ -362,165 +343,135 @@ const TransferModule = () => {
     }
 
     return (
-        <div className="p-4 flex flex-col gap-6">
-            <div className="flex gap-3 mt-3 xl:mt-0 xl:hidden">
-                <Button
-                    variant="reject"
-                    className="bg-red-500 hover:bg-red-600 text-white font-medium px-5 py-2 rounded-lg transition-all"
-                    onClick={clearStorage}
-                >
-                    Clear
-                </Button>
-                <Button
-                    variant="accept"
-                    className="bg-green-500 hover:bg-green-600 text-white font-medium px-5 py-2 rounded-lg transition-all"
-                    onClick={() => setDownloadModal(true)}
-                >
-                    Download
-                </Button>
+        <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
+            <div className="flex justify-between items-center flex-wrap gap-4">
+                <h1 className="text-2xl font-bold text-gray-800">Inventory Scanner</h1>
+
+                <div className="flex gap-3">
+                    <Button
+                        variant="reject"
+                        className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-xl shadow-sm"
+                        onClick={clearStorage}
+                    >
+                        Clear
+                    </Button>
+
+                    <Button
+                        variant="accept"
+                        className="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-xl shadow-sm"
+                        onClick={() => setDownloadModal(true)}
+                    >
+                        Download
+                    </Button>
+                </div>
             </div>
-            {isCamera && <SkuBarcodeScanner onDetected={setQrResult} setIsCamera={setIsCamera} />}
-            <div className="space-y-6">
-                {/* Location Input */}
-                <div className="flex flex-col xl:flex-row gap-4 items-start xl:items-center">
+
+            <div className="bg-white rounded-2xl shadow-sm p-5 space-y-5">
+                {isCamera && (
+                    <div className="rounded-xl overflow-hidden border">
+                        <SkuBarcodeScanner onDetected={setQrResult} setIsCamera={setIsCamera} />
+                    </div>
+                )}
+
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 items-end">
                     <div>
-                        <label htmlFor="location" className="text-lg font-semibold text-gray-700 block mb-1">
-                            Location:
-                        </label>
+                        <label className="text-sm font-medium text-gray-600 mb-1 block">Location</label>
                         <input
-                            id="location"
-                            name="location"
                             value={locationInput}
                             placeholder="Enter location"
-                            className=" w-full border border-gray-300 p-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            className="w-full border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
                             onChange={(e) => setLocationInput(e.target.value)}
                         />
                     </div>
-
-                    <div className={' w-full'}>
-                        <div className="font-bold">Select Company</div>
-                        <div>
-                            <div className="flex flex-col gap-2 w-full max-w-md mt-3">
-                                <Select
-                                    isClearable
-                                    className=" xl:w-1/2 w-full  rounded-md focus:outline-none focus:ring focus:ring-blue-500"
-                                    options={companyList}
-                                    getOptionLabel={(option) => option.name}
-                                    getOptionValue={(option) => option.id}
-                                    onChange={(newVal) => {
-                                        console.log(newVal)
-                                        setCompanyCode(newVal?.id)
-                                    }}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Search & Filter Section */}
-                <div className="flex flex-col xl:flex-row xl:justify-between gap-5 items-start xl:items-center">
-                    <div className="flex flex-wrap gap-3 items-center">
-                        {/* Global Search */}
+                    <div className="flex gap-3 items-center">
                         <input
-                            name="filter"
                             value={globalFilter}
-                            placeholder="Enter SKU, Name or Barcode"
-                            className="border border-gray-300 p-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            placeholder="Search SKU / Name / Barcode"
+                            className="flex-1 border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
                             onChange={(e) => setGlobalFilter(e.target.value)}
                             onKeyDown={handleInputKeyDown}
                         />
 
-                        {/* Dropdown Filter */}
-                        <div className="bg-gray-100 dark:bg-blue-600 text-sm rounded-lg">
-                            <Dropdown
-                                className="text-black bg-gray-200 dark:text-white font-semibold px-4 py-2 rounded-lg"
-                                title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
-                                onSelect={handleSelect}
-                            >
-                                {SEARCHOPTIONS.map((item, key) => (
-                                    <DropdownItem key={key} eventKey={item.value}>
-                                        <span>{item.label}</span>
-                                    </DropdownItem>
-                                ))}
-                            </Dropdown>
-                        </div>
-
-                        {/* Camera Toggle */}
                         <button
-                            className="bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-full shadow-md transition-all duration-200"
+                            className={`p-3 rounded-xl shadow-sm transition ${
+                                isCamera ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'
+                            } text-white`}
                             onClick={() => {
                                 setIsCamera((prev) => !prev)
                                 setQrResult('')
                             }}
                         >
-                            {isCamera ? <RiCameraOffFill className="text-xl" /> : <FaCamera className="text-xl" />}
+                            {isCamera ? <RiCameraOffFill className="text-lg" /> : <FaCamera className="text-lg" />}
                         </button>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className=" gap-3 mt-3 xl:mt-0 hidden xl:flex">
-                        <Button
-                            variant="reject"
-                            className="bg-red-500 hover:bg-red-600 text-white font-medium px-5 py-2 rounded-lg transition-all"
-                            onClick={clearStorage}
-                        >
-                            Clear
-                        </Button>
-                        <Button
-                            variant="accept"
-                            className="bg-green-500 hover:bg-green-600 text-white font-medium px-5 py-2 rounded-lg transition-all"
-                            onClick={() => setDownloadModal(true)}
-                        >
-                            Download
-                        </Button>
                     </div>
                 </div>
             </div>
 
-            <p>{qrResult}</p>
+            {/* QR Result */}
+            {qrResult && (
+                <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-2 rounded-xl">
+                    Scanned: <span className="font-semibold">{qrResult}</span>
+                </div>
+            )}
 
-            <div className="mb-10">{moreData && <MoreDataTable nameInput={globalFilter} handleActionClick={handleActionClick} />}</div>
+            {/* More Data Section */}
+            {moreData && (
+                <div className="bg-white rounded-2xl shadow-sm p-5">
+                    <MoreDataTable nameInput={globalFilter} handleActionClick={handleActionClick} />
+                </div>
+            )}
 
-            <div className="text-lg font-semibold text-gray-700 mb-4 items-end flex gap-1">
-                Total Quantity:
-                <span className="text-green-600">
-                    {skuWiseData?.map((item) => item?.quantity_returned).reduce((acc, curr) => acc + curr, 0)}
-                </span>
+            {/* Table Section */}
+
+            <div>
+                {loader && (
+                    <div className="flex justify-center items-center mt-5 mb-6">
+                        <Spinner size={30} />
+                    </div>
+                )}
             </div>
-            <EasyTable mainData={skuWiseData} columns={columns} />
 
-            {clearStorageModal && (
-                <>
-                    <Modal
-                        title="Clear Data"
-                        open={clearStorageModal}
-                        okText="Proceed"
-                        okButtonProps={{ style: { backgroundColor: 'red', borderColor: 'red' } }}
-                        onOk={handleClearStorage}
-                        onCancel={() => setClearStorageModal(false)}
-                    >
-                        <p className="text-red-500 text-xl font-semibold">Are you sure you want to clear all the Data in the table ?</p>
-                    </Modal>
-                </>
-            )}
-            {showImageModal && (
-                <ImageMODAL
-                    dialogIsOpen={showImageModal}
-                    setIsOpen={setShowImageModal}
-                    image={(particularRowImage && particularRowImage) || []}
+            <div className="bg-white rounded-2xl shadow-sm p-5 space-y-4">
+                <div className="flex justify-between items-center">
+                    <h2 className="text-lg font-semibold text-gray-700">Inventory Data</h2>
+
+                    <div className="text-md font-medium text-gray-600">
+                        Total Quantity:
+                        <span className="ml-2 text-green-600 font-bold">
+                            {skuWiseData?.map((item) => item?.quantity_returned).reduce((acc, curr) => acc + curr, 0)}
+                        </span>
+                    </div>
+                </div>
+
+                <EasyTable mainData={skuWiseData} columns={columns} />
+            </div>
+
+            {/* Clear Modal */}
+            <Modal
+                title="Clear Data"
+                open={clearStorageModal}
+                okText="Proceed"
+                okButtonProps={{
+                    style: { backgroundColor: 'red', borderColor: 'red' },
+                }}
+                onOk={handleClearStorage}
+                onCancel={() => setClearStorageModal(false)}
+            >
+                <p className="text-red-500 text-lg font-semibold">Are you sure you want to clear all table data?</p>
+            </Modal>
+
+            {/* Image Modal */}
+            <ImageMODAL dialogIsOpen={showImageModal} setIsOpen={setShowImageModal} image={particularRowImage || []} />
+
+            {/* Download Modal */}
+            <Modal title="Save File As" open={downloadModal} onOk={downloadCSV} onCancel={() => setDownloadModal(false)}>
+                <input
+                    value={saveAsInput}
+                    placeholder="Enter file name"
+                    className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+                    onChange={(e) => setSaveAsInput(e.target.value)}
                 />
-            )}
-            {downloadModal && (
-                <>
-                    <Modal title="Save Download File As" open={downloadModal} onOk={downloadCSV} onCancel={() => setDownloadModal(false)}>
-                        <div className="flex flex-col">
-                            <div>
-                                <input value={saveAsInput} placeholder="Save As" onChange={(e) => setSaveAsInput(e.target.value)} />
-                            </div>
-                        </div>
-                    </Modal>
-                </>
-            )}
+            </Modal>
         </div>
     )
 }
