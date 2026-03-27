@@ -87,6 +87,7 @@ const PoEdit = () => {
                 payment_mode: values[PoField.PAYMENT_MODE],
                 po_expiry_date: values[PoField.PO_EXPIRY_DATE],
                 state_code: wareHouseDetails?.gstin?.slice(0, 2) || '',
+                gstin: wareHouseDetails?.gstin || '',
                 discount_sharing_applicable: 'yes',
             }
 

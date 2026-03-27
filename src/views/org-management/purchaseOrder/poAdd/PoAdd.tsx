@@ -19,6 +19,7 @@ const PoAdd = () => {
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const commercial_approval_doc = useMemo(() => selectedCompany?.commercial_approval_doc, [selectedCompany])
     const [stateCode, setStateCode] = useState('')
+    const [gstinValue, setGstinValue] = useState('')
 
     const VendorEntity = selectedCompany?.business_nature_company_details?.map((item) => ({
         label: item?.company_name,
@@ -46,6 +47,7 @@ const PoAdd = () => {
                 expected_delivery_date: values[PoField.EXPECTED_DELIVERY],
                 po_nature: values[PoField.PO_NATURE],
                 state_code: stateCode,
+                gstin: gstinValue || '',
                 company_gst: values[PoField.COMPANY_GST]?.id,
                 payment_mode: values[PoField.PAYMENT_MODE],
                 po_expiry_date: values[PoField.PO_EXPIRY_DATE],
@@ -74,6 +76,7 @@ const PoAdd = () => {
                     const idCheck = typeof values.company_gst === 'string' ? values?.company_gst : values.company_gst?.id
                     const wareHouseDetails = selectedCompany?.gst_details?.find((item) => item?.id === idCheck)
                     setStateCode(wareHouseDetails?.gstin?.slice(0, 2) || '')
+                    setGstinValue(wareHouseDetails?.gstin || '')
                     return (
                         <Form className=" w-full p-5 bg-gray-50 rounded-xl shadow-xl ">
                             <FormContainer>
