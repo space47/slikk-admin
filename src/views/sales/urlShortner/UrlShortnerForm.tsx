@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, Checkbox, FormContainer, FormItem, Input, Select, Spinner } from '@/components/ui'
+import { Button, Checkbox, FormContainer, FormItem, Input, Select, Spinner, Tooltip } from '@/components/ui'
 import { Field, FieldProps, Form } from 'formik'
 import React, { Dispatch, SetStateAction, useMemo } from 'react'
 import { URLARRAY } from './urlShortner.common'
@@ -8,6 +8,7 @@ import { UtmArray } from '../groupNotification/sendNotification/sendNotify.commo
 import { pageNameTypes } from '@/store/types/pageSettings.types'
 import BannerFields from '@/common/BannerFields'
 import { useFetchApi } from '@/commonHooks/useFetchApi'
+import { FaQuestion } from 'react-icons/fa'
 
 interface props {
     values: any
@@ -94,6 +95,25 @@ const UrlShortnerForm = ({ values, pageNamesData, setSelectedPageName, subPageNa
                                             type="text"
                                             name="page_title"
                                             placeholder="Enter Page Title"
+                                            component={Input}
+                                            className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        />
+                                    </FormItem>
+                                )}
+                                {values?.target_page === 'product' && (
+                                    <FormItem label="" className="animate-fadeIn">
+                                        <div className="flex gap-2 items-center mb-2">
+                                            <span>Product Code</span>
+                                            <span className="text">
+                                                <Tooltip title="Enter SKU or Barcode or SKID for the product">
+                                                    <FaQuestion className="text-yellow-500" />
+                                                </Tooltip>
+                                            </span>
+                                        </div>
+                                        <Field
+                                            type="text"
+                                            name="product_code"
+                                            placeholder="Enter unique Product code"
                                             component={Input}
                                             className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                         />

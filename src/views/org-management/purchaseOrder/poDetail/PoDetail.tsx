@@ -13,7 +13,7 @@ import PageCommon from '@/common/PageCommon'
 import LoadingSpinner from '@/common/LoadingSpinner'
 import { usePoDetailUi } from './usePoDetailUi'
 import DialogConfirm from '@/common/DialogConfirm'
-import { FaDownload } from 'react-icons/fa'
+import { FaDownload, FaFilePdf } from 'react-icons/fa'
 import { usePoDetailFunction } from './usePoDetailFunction'
 import { IndianStateCodes } from '../poUtils/poFormCommon'
 import { FiClock, FiFileText, FiMail } from 'react-icons/fi'
@@ -21,6 +21,8 @@ import NotFoundData from '@/views/pages/NotFound/Notfound'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { isValidEmail } from '@/common/allTypesCommon'
+import PoDownloadModal from '../poUtils/PoDownloadModal'
+import { PoStatus } from '../poUtils/poCommon'
 
 const trimmedValue = (value: string) => {
     return value
@@ -38,11 +40,13 @@ const PoDetail = () => {
     const [purchaseDetail, setPurchaseDetail] = useState<PurchaseOrderTable>()
     const [lineItems, setLineItems] = useState<PurchaseOrderItem[]>([])
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((state) => state.company.currCompany)
-    const { data, isSuccess, isError, isLoading, error } = purchaseOrderService.usePurchaseSingleOrdersListQuery({
+    const [showDownloadModal, setShowDownloadModal] = useState(false)
+    const { data, isSuccess, isError, isLoading, error, refetch } = purchaseOrderService.usePurchaseSingleOrdersListQuery({
         order_id: purchase_id,
         company_id: selectedCompany?.id,
     })
     const WaitStatus = purchaseDetail?.status?.toLowerCase() === 'created' || purchaseDetail?.status?.toLowerCase() === 'waiting_approval'
+    const isCancelled = purchaseDetail?.status?.toLowerCase() === 'cancelled'
     const {
         data: itemsData,
         isSuccess: itemSuccess,
@@ -60,6 +64,7 @@ const PoDetail = () => {
     const [isApproveConfirm, setIsConfirmApprove] = useState(false)
     const [verifyPo, verifyResponse] = purchaseOrderService.useVerifyPoMutation()
     const [emailValues, setEmailValues] = useState('')
+    const [cancelPo, setCancelPo] = useState(false)
 
     const { handleDownloadPo } = usePoDetailFunction({ id: Number(purchase_id), setIsDownloading })
 
@@ -84,8 +89,14 @@ const PoDetail = () => {
 
     useEffect(() => {
         if (verifyResponse.isSuccess) {
-            notification.success({ message: verifyResponse?.data?.message || 'Successfully Approved' })
-            setIsConfirmApprove(false)
+            if (verifyResponse.originalArgs?.status === PoStatus.cancelled) {
+                notification.success({ message: 'This PO has been cancelled' })
+                setCancelPo(false)
+                refetch()
+            } else {
+                notification.success({ message: verifyResponse?.data?.message || 'Successfully Approved' })
+                setIsConfirmApprove(false)
+            }
         }
         if (verifyResponse.isError) {
             const message = getApiErrorMessage(verifyResponse.error) || 'Failed to Approve'
@@ -100,8 +111,15 @@ const PoDetail = () => {
 
     const columns = useOrderItemColumns({})
 
+    const handleCancelPO = () => {
+        verifyPo({ id: Number(purchase_id), status: PoStatus.cancelled })
+    }
+
     function handleApprove() {
         setIsConfirmApprove(true)
+    }
+    const handleDownloadPdf = async () => {
+        setShowDownloadModal(true)
     }
 
     function handleApproveConfirm() {
@@ -148,6 +166,13 @@ const PoDetail = () => {
                     {StateFromId && <div className="mt-1 border-t pt-4 text-sm text-gray-700">{StateFromId}</div>}
                 </div>
 
+                {!isCancelled && (
+                    <div>
+                        <Button variant="reject" size="sm" onClick={() => setCancelPo(true)}>
+                            Cancel PO
+                        </Button>
+                    </div>
+                )}
                 {WaitStatus && <div>{ButtonUI()}</div>}
             </div>
             <div>{WarehouseData()}</div>
@@ -159,9 +184,20 @@ const PoDetail = () => {
                     <Spin spinning={itemsLoading || itemsFetching}>
                         <div className="mt-2 mb-5 flex justify-between">
                             <h4>Line Items</h4>
-                            <Button variant="blue" size="sm" icon={<FaDownload />} onClick={handleDownloadPo} loading={isDownloading}>
-                                Download
-                            </Button>
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    variant="twoTone"
+                                    size="sm"
+                                    icon={<FaFilePdf className="text-red-500" />}
+                                    onClick={handleDownloadPdf}
+                                    loading={isDownloading}
+                                >
+                                    Export PDF
+                                </Button>
+                                <Button variant="blue" size="sm" icon={<FaDownload />} onClick={handleDownloadPo} loading={isDownloading}>
+                                    Download
+                                </Button>
+                            </div>
                         </div>
                         <EasyTable overflow columns={columns} mainData={lineItems} page={page} pageSize={pageSize} />
                         <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={count} />
@@ -215,6 +251,19 @@ const PoDetail = () => {
                             </FormItem>
                         </div>
                     </DialogConfirm>
+                )}
+                {showDownloadModal && (
+                    <PoDownloadModal id={purchase_id as string} isOpen={showDownloadModal} setIsOpen={setShowDownloadModal} />
+                )}
+                {cancelPo && (
+                    <DialogConfirm
+                        isProceed
+                        IsOpen={cancelPo}
+                        setIsOpen={setCancelPo}
+                        headingName="CANCEL THIS PO"
+                        label="Are you sure you want to cancel this PO"
+                        onDialogOk={handleCancelPO}
+                    />
                 )}
             </Card>
         </div>
