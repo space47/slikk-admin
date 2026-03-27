@@ -1,5 +1,4 @@
 import { Button, Dialog } from '@/components/ui'
-import { PurchaseOrderTable } from '@/store/types/po.types'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { errorMessage } from '@/utils/responseMessages'
 import { AxiosError } from 'axios'
@@ -8,7 +7,7 @@ import React, { useState } from 'react'
 interface Props {
     isOpen: boolean
     setIsOpen: (x: boolean) => void
-    data: PurchaseOrderTable
+    id: string | number
 }
 
 interface PdfResponse {
@@ -19,14 +18,14 @@ interface PdfResponse {
     status: string
 }
 
-const PoDownloadModal: React.FC<Props> = ({ isOpen, setIsOpen, data }) => {
+const PoDownloadModal: React.FC<Props> = ({ isOpen, setIsOpen, id }) => {
     const [downloadLoading, setDownloadLoading] = useState(false)
     const [regenLoading, setRegenLoading] = useState(false)
 
     const triggerDownload = (pdfUrl: string) => {
         const link = document.createElement('a')
         link.href = pdfUrl
-        link.setAttribute('download', `PO-${data?.id}.pdf`)
+        link.setAttribute('download', `PO-${id}.pdf`)
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
@@ -35,7 +34,7 @@ const PoDownloadModal: React.FC<Props> = ({ isOpen, setIsOpen, data }) => {
     const handleDownload = async () => {
         try {
             setDownloadLoading(true)
-            const response = await axioisInstance.get<PdfResponse>(`/merchant/purchase/order/pdf/${data?.id}`)
+            const response = await axioisInstance.get<PdfResponse>(`/merchant/purchase/order/pdf/${id}`)
             const pdfUrl = response.data?.data?.pdf_url
             if (!pdfUrl) return
             triggerDownload(pdfUrl)
@@ -49,7 +48,7 @@ const PoDownloadModal: React.FC<Props> = ({ isOpen, setIsOpen, data }) => {
     const handleRegenerate = async () => {
         try {
             setRegenLoading(true)
-            const response = await axioisInstance.get<PdfResponse>(`/merchant/purchase/order/pdf/${data?.id}?regenerate=true`)
+            const response = await axioisInstance.get<PdfResponse>(`/merchant/purchase/order/pdf/${id}?regenerate=true`)
             const pdfUrl = response.data?.data?.pdf_url
             if (!pdfUrl) return
             triggerDownload(pdfUrl)
@@ -69,9 +68,9 @@ const PoDownloadModal: React.FC<Props> = ({ isOpen, setIsOpen, data }) => {
                 </div>
                 <div className="bg-gray-50 border flex gap-2 items-center rounded-lg p-3">
                     <p className="text-sm text-gray-600">PO Number:</p>
-                    <p className="font-medium text-gray-900">#PO-{data?.id}</p>
+                    <p className="font-medium text-gray-900">#PO-{id}</p>
                 </div>
-                <div className="text-xs bg-yellow-200 p-3 rounded-lg text-gray-500 leading-relaxed">
+                <div className="text-xs bg-yellow-200 p-3  rounded-lg text-gray-800 leading-relaxed">
                     <span className="font-medium text-gray-700">Note:</span> Regenerating will create a new PDF with the latest updated
                     data. Use this if any changes were made after the last generation.
                 </div>

@@ -408,11 +408,7 @@ const ReportCommonForm = ({ resetForm, values }: Props) => {
                         >
                             Reset Form
                         </Button>
-                        <Button
-                            variant="solid"
-                            type="submit"
-                            className="px-8 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
-                        >
+                        <Button variant="blue" type="submit">
                             Save Changes
                         </Button>
                     </div>
