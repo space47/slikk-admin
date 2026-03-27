@@ -2,18 +2,14 @@
 import { ColumnDef } from '@tanstack/react-table'
 import React, { useMemo } from 'react'
 import { PurchaseOrderTable } from '@/store/types/po.types'
-import { FaEdit, FaFilePdf, FaRegDotCircle } from 'react-icons/fa'
+import { FaEdit, FaRegDotCircle } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import { PoStatusColor } from './poFormCommon'
 import { MdOutlineGridView } from 'react-icons/md'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 
-interface Props {
-    handleDownloadPdf: (x: PurchaseOrderTable) => void
-}
-
-export const usePoListColumns = ({ handleDownloadPdf }: Props) => {
+export const usePoListColumns = () => {
     const navigate = useNavigate()
 
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
@@ -130,7 +126,7 @@ export const usePoListColumns = ({ handleDownloadPdf }: Props) => {
                                         onClick={() => navigate(`/app/po/details/${row?.original?.id}`)}
                                     />
 
-                                    <ActionButton icon={FaFilePdf} onClick={() => handleDownloadPdf(row.original)} label="View PDF" />
+                                    {/* <ActionButton icon={FaFilePdf} onClick={() => handleDownloadPdf(row.original)} label="View PDF" /> */}
                                     <ActionButton icon={FaEdit} label="Edit" onClick={() => navigate(`/app/po/${row?.original?.id}`)} />
                                     {/* <ActionButton icon={FaPaperPlane} label="Send for Approval" /> */}
                                 </>
@@ -141,7 +137,7 @@ export const usePoListColumns = ({ handleDownloadPdf }: Props) => {
                                         label="View Details"
                                         onClick={() => navigate(`/app/po/details/${row?.original?.id}`)}
                                     />
-                                    <ActionButton icon={FaFilePdf} onClick={() => handleDownloadPdf(row.original)} label="View PDF" />
+                                    {/* <ActionButton icon={FaFilePdf} onClick={() => handleDownloadPdf(row.original)} label="View PDF" /> */}
                                 </>
                             )}
                         </div>

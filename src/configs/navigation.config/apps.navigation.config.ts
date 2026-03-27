@@ -536,7 +536,7 @@ const appsNavigationConfig: NavigationTree[] = [
                     {
                         key: 'appsOrgManagement.poCatalogHistory',
                         path: `${APP_PREFIX_PATH}/poCatalogHistory`,
-                        title: 'PO Catalog History',
+                        title: 'PO Upload History',
                         translateKey: 'nav.appsOrgManagement.po',
                         icon: '',
                         type: NAV_ITEM_TYPE_ITEM,

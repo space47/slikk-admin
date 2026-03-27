@@ -13,7 +13,7 @@ import {
 } from '@/store/slices/purchaseOrderSlice/purchaseOrder.slice'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { notification } from 'antd'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { usePoListColumns } from '../poUtils/usePoListColumns'
 import EasyTable from '@/common/EasyTable'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
@@ -25,14 +25,11 @@ import { useNavigate } from 'react-router-dom'
 import { MdOutlineFormatListNumbered } from 'react-icons/md'
 import { FaCheck, FaRupeeSign } from 'react-icons/fa'
 import { CgLock } from 'react-icons/cg'
-import { PurchaseOrderTable } from '@/store/types/po.types'
-import PoDownloadModal from '../poUtils/PoDownloadModal'
 
 const PoTable = () => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
-    const [currentData, setCurrentData] = useState<PurchaseOrderTable | null>(null)
-    const [showDownloadModal, setShowDownloadModal] = useState(false)
+
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const { count, page, pageSize, poList, poStatus, poSummary, poFilter } = useAppSelector<PURCHASE_STATE>((state) => state.purchaseOrder)
     const { debounceFilter } = useDebounceInput({ globalFilter: poFilter, delay: 500 })
@@ -145,12 +142,7 @@ const PoTable = () => {
         )
     }
 
-    const handleDownloadPdf = async (x: PurchaseOrderTable) => {
-        setCurrentData(x)
-        setShowDownloadModal(true)
-    }
-
-    const columns = usePoListColumns({ handleDownloadPdf })
+    const columns = usePoListColumns()
 
     if (isLoading) {
         return (
@@ -192,9 +184,6 @@ const PoTable = () => {
                 <div className="mt-6">
                     <NotFoundData />
                 </div>
-            )}
-            {showDownloadModal && (
-                <PoDownloadModal data={currentData as PurchaseOrderTable} isOpen={showDownloadModal} setIsOpen={setShowDownloadModal} />
             )}
         </div>
     )
