@@ -7,6 +7,7 @@ import ReportCommonForm from '../reportUtils/ReportCommonForm'
 import { textParser } from '@/common/textParser'
 import { AxiosError } from 'axios'
 import { errorMessage, successMessage } from '@/utils/responseMessages'
+import { notification } from 'antd'
 
 const AddReportQuery = () => {
     const navigate = useNavigate()
@@ -27,6 +28,13 @@ const AddReportQuery = () => {
     }
 
     const handleSubmit = async (values: any) => {
+        const requiredFields = values?.cache_config?.cache_time_seconds && values?.display_name && values?.name
+
+        if (!requiredFields) {
+            notification.error({ message: 'Name, Cache and Display name are mandatory' })
+            return
+        }
+
         const isCacheEnableForAField = values?.value?.filter((item: Record<string, any>) => item?.enable_cache) || []
 
         const configForFieldsCached = isCacheEnableForAField.reduce(
