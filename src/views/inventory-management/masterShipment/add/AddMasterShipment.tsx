@@ -28,7 +28,7 @@ const AddMasterShipment = () => {
             const deliveryAddress = values?.delivery_address ? textParser(values?.delivery_address) : ''
             const originAddress = values?.origin_address ? textParser(values?.origin_address) : ''
             const body = {
-                company: selectedCompany?.currCompany?.id,
+                company_id: selectedCompany?.currCompany?.id,
                 store: values?.store?.join(','),
                 shipment_id: values?.shipment_id,
                 name: values?.name,

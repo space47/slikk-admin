@@ -71,7 +71,7 @@ const MasterShipmentsEdit = () => {
             const originAddress = values?.origin_address ? textChanger(values?.origin_address) : ''
             setShowSpinner(true)
             const body = {
-                company: values?.company,
+                company_id: values?.company,
                 store: values?.store?.join(','),
                 shipment_id: values?.shipment_id,
                 name: values?.name,
