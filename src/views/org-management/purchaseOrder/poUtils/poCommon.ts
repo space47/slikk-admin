@@ -7,6 +7,7 @@ export enum PoStatus {
 }
 
 export const PoStatusArray = [
+    { label: 'ALL', value: '' },
     { label: 'Approved', value: PoStatus.approved },
     { label: 'Created', value: PoStatus.created },
     { label: 'Cancelled', value: PoStatus.cancelled },
