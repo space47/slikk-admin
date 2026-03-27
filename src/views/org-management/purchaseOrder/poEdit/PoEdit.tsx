@@ -8,7 +8,7 @@ import { buildFormData } from '@/utils/formDataBuilder'
 import { Button, FormContainer, Spinner } from '@/components/ui'
 import PoFormStepOne from '../poUtils/PoFormStepOne'
 import { purchaseOrderService } from '@/store/services/purchaseOrderService'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { PurchaseOrderTable } from '@/store/types/po.types'
 import { getApiErrorMessage } from '@/constants/generateErrorMessage'
 import { notification } from 'antd'
@@ -21,17 +21,20 @@ import FormUploadFile from '@/common/FormUploadFile'
 import { PoField } from '../poUtils/poFormCommon'
 
 const PoEdit = () => {
-    const { purchase_id } = useParams()
+    const { purchase_id, company_id } = useParams()
     const navigate = useNavigate()
     const [purchaseOrder, setPurchaseOrder] = useState<PurchaseOrderTable>()
     const [stateCode, setStateCode] = useState('')
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
+    const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((store) => store.company.company)
+
+    const selectedCompany = useMemo(() => companyList.find((item) => item.id?.toString() === company_id), [company_id, companyList])
+
     const { data, isSuccess, isError, isLoading, isFetching, error } = purchaseOrderService.usePurchaseSingleOrdersListQuery(
         {
             order_id: purchase_id,
             company_id: selectedCompany?.id,
         },
-        { skip: !selectedCompany.id || !purchase_id },
+        { skip: !selectedCompany?.id || !purchase_id },
     )
     const commercial_approval_doc = selectedCompany?.commercial_approval_doc
 
@@ -141,7 +144,7 @@ const PoEdit = () => {
                         <Form className=" w-full p-5 bg-gray-50 rounded-xl shadow-xl ">
                             <FormContainer>
                                 <PoFormStepOne
-                                    VendorEntity={VendorEntity}
+                                    VendorEntity={VendorEntity!}
                                     wareHouseDetails={wareHouseDetails}
                                     businessNatureCompany={selectedCompany?.business_nature_company_details || []}
                                     values={values}

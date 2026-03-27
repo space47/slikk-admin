@@ -123,11 +123,15 @@ export const usePoListColumns = () => {
                                     <ActionButton
                                         icon={MdOutlineGridView}
                                         label="View Details"
-                                        onClick={() => navigate(`/app/po/details/${row?.original?.id}`)}
+                                        onClick={() => navigate(`/app/po/details/${row?.original?.id}/${row?.original?.company}`)}
                                     />
 
                                     {/* <ActionButton icon={FaFilePdf} onClick={() => handleDownloadPdf(row.original)} label="View PDF" /> */}
-                                    <ActionButton icon={FaEdit} label="Edit" onClick={() => navigate(`/app/po/${row?.original?.id}`)} />
+                                    <ActionButton
+                                        icon={FaEdit}
+                                        label="Edit"
+                                        onClick={() => navigate(`/app/po/${row?.original?.id}/${row?.original?.company}`)}
+                                    />
                                     {/* <ActionButton icon={FaPaperPlane} label="Send for Approval" /> */}
                                 </>
                             ) : (
@@ -135,7 +139,7 @@ export const usePoListColumns = () => {
                                     <ActionButton
                                         icon={MdOutlineGridView}
                                         label="View Details"
-                                        onClick={() => navigate(`/app/po/details/${row?.original?.id}`)}
+                                        onClick={() => navigate(`/app/po/details/${row?.original?.id}/${row?.original?.company}`)}
                                     />
                                     {/* <ActionButton icon={FaFilePdf} onClick={() => handleDownloadPdf(row.original)} label="View PDF" /> */}
                                 </>

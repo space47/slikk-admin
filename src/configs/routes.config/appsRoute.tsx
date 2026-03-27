@@ -229,7 +229,7 @@ const appsRoute: Routes = [
     },
     {
         key: 'appsOrgManagement.po',
-        path: `${APP_PREFIX_PATH}/po/:purchase_id`,
+        path: `${APP_PREFIX_PATH}/po/:purchase_id/:company_id`,
         component: lazy(
             () => import('@/views/org-management/purchaseOrder/poEdit/PoEdit'), //p1
         ),
@@ -245,7 +245,7 @@ const appsRoute: Routes = [
     },
     {
         key: 'appsOrgManagement.po',
-        path: `${APP_PREFIX_PATH}/po/details/:purchase_id`,
+        path: `${APP_PREFIX_PATH}/po/details/:purchase_id/:company_id`,
         component: lazy(
             () => import('@/views/org-management/purchaseOrder/poDetail/PoDetail'), //p1
         ),
