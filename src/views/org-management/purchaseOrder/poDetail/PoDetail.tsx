@@ -166,14 +166,18 @@ const PoDetail = () => {
                     {StateFromId && <div className="mt-1 border-t pt-4 text-sm text-gray-700">{StateFromId}</div>}
                 </div>
 
-                {!isCancelled && (
-                    <div>
-                        <Button variant="reject" size="sm" onClick={() => setCancelPo(true)}>
-                            Cancel PO
-                        </Button>
+                {WaitStatus && (
+                    <div className="flex items-center gap-2">
+                        {!isCancelled && (
+                            <div>
+                                <Button variant="reject" size="sm" onClick={() => setCancelPo(true)}>
+                                    Cancel PO
+                                </Button>
+                            </div>
+                        )}
+                        {ButtonUI()}
                     </div>
                 )}
-                {WaitStatus && <div>{ButtonUI()}</div>}
             </div>
             <div>{WarehouseData()}</div>
             <div className="flex xl:flex-row md:flex-row flex-col  gap-4 w-full items-stretch">
