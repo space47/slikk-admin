@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Form, Formik } from 'formik'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { errorMessage, successMessage } from '@/utils/responseMessages'
 import { AxiosError } from 'axios'
@@ -16,7 +16,11 @@ import { PoField } from '../poUtils/poFormCommon'
 
 const PoAdd = () => {
     const navigate = useNavigate()
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
+    const { company_id } = useParams()
+    const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((store) => store.company.company)
+
+    const selectedCompany = useMemo(() => companyList.find((item) => item.id?.toString() === company_id), [company_id, companyList])
+
     const commercial_approval_doc = useMemo(() => selectedCompany?.commercial_approval_doc, [selectedCompany])
     const [stateCode, setStateCode] = useState('')
     const [gstinValue, setGstinValue] = useState('')
@@ -81,7 +85,7 @@ const PoAdd = () => {
                         <Form className=" w-full p-5 bg-gray-50 rounded-xl shadow-xl ">
                             <FormContainer>
                                 <PoFormStepOne
-                                    VendorEntity={VendorEntity}
+                                    VendorEntity={VendorEntity!}
                                     wareHouseDetails={wareHouseDetails}
                                     businessNatureCompany={selectedCompany?.business_nature_company_details || []}
                                     values={values}

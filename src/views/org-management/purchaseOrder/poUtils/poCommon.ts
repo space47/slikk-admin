@@ -1,6 +1,6 @@
 export enum PoStatus {
     approved = 'APPROVED',
-    reject = 'REJECT',
+    reject = 'REJECTED',
     pending = 'PENDING',
     created = 'CREATED',
     cancelled = 'CANCELLED',

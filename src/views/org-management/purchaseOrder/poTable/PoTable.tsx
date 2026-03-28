@@ -90,6 +90,7 @@ const PoTable = () => {
                             classNamePrefix="react-select"
                             options={companyList}
                             getOptionLabel={(option) => option.name}
+                            value={companyList.find((c) => c.id === companyId) || null}
                             getOptionValue={(option) => option.id?.toString()}
                             onChange={(newVal) => dispatch(setCompanyId(newVal?.id as number))}
                         />
@@ -159,9 +160,11 @@ const PoTable = () => {
         <div className="p-6 bg-white rounded-2xl shadow-md border border-gray-100">
             <div className="flex items-center justify-between mb-6">
                 <h4 className="text-2xl font-semibold text-gray-800">Purchase Order Dashboard</h4>
-                <Button variant="reject" size="sm" onClick={() => navigate(`/app/po/addNew`)}>
-                    + Create New
-                </Button>
+                {companyId && (
+                    <Button variant="reject" size="sm" onClick={() => navigate(`/app/po/addNew/${companyId}`)}>
+                        + Create New
+                    </Button>
+                )}
             </div>
             <div>{poSummary && SummaryUi()}</div>
             {InputUi()}
