@@ -40,7 +40,7 @@ const AssignRiderHomeModal = ({ isOpen, selectedInvoices, setIsOpen }: ModalProp
             name: globalFilter,
             mobile: mobileFilter,
             isActive: 'true',
-            store_id: storeCodes,
+            store_id: storeCodes?.join(','),
         },
         { refetchOnMountOrArgChange: true },
     )
