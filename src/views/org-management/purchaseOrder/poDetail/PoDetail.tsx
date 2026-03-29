@@ -18,8 +18,6 @@ import { usePoDetailFunction } from './usePoDetailFunction'
 import { IndianStateCodes } from '../poUtils/poFormCommon'
 import { FiClock, FiFileText, FiMail } from 'react-icons/fi'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
-import { useAppSelector } from '@/store'
-import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { isValidEmail } from '@/common/allTypesCommon'
 import PoDownloadModal from '../poUtils/PoDownloadModal'
 import { PoStatus } from '../poUtils/poCommon'
@@ -33,19 +31,19 @@ const trimmedValue = (value: string) => {
 }
 
 const PoDetail = () => {
-    const { purchase_id } = useParams()
+    const { purchase_id, company_id } = useParams()
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [count, setCount] = useState(0)
     const [purchaseDetail, setPurchaseDetail] = useState<PurchaseOrderTable>()
     const [lineItems, setLineItems] = useState<PurchaseOrderItem[]>([])
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((state) => state.company.currCompany)
     const [showDownloadModal, setShowDownloadModal] = useState(false)
     const { data, isSuccess, isError, isLoading, error, refetch } = purchaseOrderService.usePurchaseSingleOrdersListQuery({
         order_id: purchase_id,
-        company_id: selectedCompany?.id,
+        company_id: company_id,
     })
-    const WaitStatus = purchaseDetail?.status?.toLowerCase() === 'created' || purchaseDetail?.status?.toLowerCase() === 'waiting_approval'
+    const created = purchaseDetail?.status?.toLowerCase() === 'created'
+    const isWaiting = purchaseDetail?.status?.toLowerCase() === 'waiting_approval'
     const isCancelled = purchaseDetail?.status?.toLowerCase() === 'cancelled'
     const {
         data: itemsData,
@@ -65,6 +63,7 @@ const PoDetail = () => {
     const [verifyPo, verifyResponse] = purchaseOrderService.useVerifyPoMutation()
     const [emailValues, setEmailValues] = useState('')
     const [cancelPo, setCancelPo] = useState(false)
+    const [isWaitingApproval, setIsWaitingApproval] = useState(false)
 
     const { handleDownloadPo } = usePoDetailFunction({ id: Number(purchase_id), setIsDownloading })
 
@@ -97,6 +96,11 @@ const PoDetail = () => {
                 notification.success({ message: verifyResponse?.data?.message || 'Successfully Approved' })
                 setIsConfirmApprove(false)
             }
+            if (verifyResponse.originalArgs?.status === PoStatus.waiting_approval) {
+                notification.success({ message: 'Sent to vendor for approval' })
+                setIsWaitingApproval(false)
+                refetch()
+            }
         }
         if (verifyResponse.isError) {
             const message = getApiErrorMessage(verifyResponse.error) || 'Failed to Approve'
@@ -113,6 +117,9 @@ const PoDetail = () => {
 
     const handleCancelPO = () => {
         verifyPo({ id: Number(purchase_id), status: PoStatus.cancelled })
+    }
+    const handleIsWaitingApproval = () => {
+        verifyPo({ id: Number(purchase_id), status: PoStatus.waiting_approval })
     }
 
     function handleApprove() {
@@ -165,19 +172,23 @@ const PoDetail = () => {
                     </div>
                     {StateFromId && <div className="mt-1 border-t pt-4 text-sm text-gray-700">{StateFromId}</div>}
                 </div>
-
-                {WaitStatus && (
-                    <div className="flex items-center gap-2">
-                        {!isCancelled && (
-                            <div>
-                                <Button variant="reject" size="sm" onClick={() => setCancelPo(true)}>
-                                    Cancel PO
-                                </Button>
-                            </div>
-                        )}
-                        {ButtonUI()}
-                    </div>
-                )}
+                <div className="flex items-center gap-2">
+                    {isWaiting && <>{ButtonUI()}</>}
+                    {!isCancelled && (
+                        <div>
+                            <Button variant="reject" size="sm" onClick={() => setCancelPo(true)}>
+                                Cancel PO
+                            </Button>
+                        </div>
+                    )}
+                    {created && (
+                        <div>
+                            <Button variant="accept" size="sm" onClick={() => setIsWaitingApproval(true)}>
+                                Send for Finance Approval
+                            </Button>
+                        </div>
+                    )}
+                </div>
             </div>
             <div>{WarehouseData()}</div>
             <div className="flex xl:flex-row md:flex-row flex-col  gap-4 w-full items-stretch">
@@ -267,6 +278,16 @@ const PoDetail = () => {
                         headingName="CANCEL THIS PO"
                         label="Are you sure you want to cancel this PO"
                         onDialogOk={handleCancelPO}
+                    />
+                )}
+                {isWaitingApproval && (
+                    <DialogConfirm
+                        isProceed
+                        IsOpen={isWaitingApproval}
+                        setIsOpen={setIsWaitingApproval}
+                        headingName="Send for approval to finance"
+                        label="Are you sure you want to send this PO for finance approval"
+                        onDialogOk={handleIsWaitingApproval}
                     />
                 )}
             </Card>
