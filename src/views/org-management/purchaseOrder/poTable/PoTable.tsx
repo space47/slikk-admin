@@ -10,6 +10,7 @@ import {
     setPoStatus,
     setPoSummary,
     setPoFilter,
+    setCompanyId,
 } from '@/store/slices/purchaseOrderSlice/purchaseOrder.slice'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { notification } from 'antd'
@@ -20,33 +21,37 @@ import NotFoundData from '@/views/pages/NotFound/Notfound'
 import PageCommon from '@/common/PageCommon'
 import { Button, Card, Input, Select, Spinner } from '@/components/ui'
 import { useDebounceInput } from '@/commonHooks/useDebounceInput'
-import { PoStatusArray } from '../poUtils/poCommon'
 import { useNavigate } from 'react-router-dom'
 import { MdOutlineFormatListNumbered } from 'react-icons/md'
 import { FaCheck, FaRupeeSign } from 'react-icons/fa'
 import { CgLock } from 'react-icons/cg'
+import PoTabSelectOrder from '../poUtils/PoTabSelector'
 
 const PoTable = () => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
-
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
-    const { count, page, pageSize, poList, poStatus, poSummary, poFilter } = useAppSelector<PURCHASE_STATE>((state) => state.purchaseOrder)
+    const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
+    const { count, page, pageSize, poList, poStatus, poSummary, poFilter, companyId } = useAppSelector<PURCHASE_STATE>(
+        (state) => state.purchaseOrder,
+    )
     const { debounceFilter } = useDebounceInput({ globalFilter: poFilter, delay: 500 })
+
+    const handleSelectTab = (value: string) => {
+        dispatch(setPoStatus(value))
+        dispatch(setPage(1))
+    }
 
     const queryParams = useMemo(() => {
         return {
             page,
             pageSize,
-            company_id: selectedCompany?.id,
+            company_id: companyId as number,
             order_id: debounceFilter?.split('-')?.at(-1),
             ...(poStatus && poStatus !== 'All Status' && { status: poStatus }),
         }
-    }, [page, pageSize, selectedCompany, debounceFilter, poStatus])
+    }, [page, pageSize, companyId, debounceFilter, poStatus])
 
-    const { data, isSuccess, isFetching, isLoading, isError, error } = purchaseOrderService.usePurchaseOrdersListQuery(queryParams, {
-        skip: !selectedCompany?.id,
-    })
+    const { data, isSuccess, isFetching, isLoading, isError, error } = purchaseOrderService.usePurchaseOrdersListQuery(queryParams)
 
     useEffect(() => {
         if (isSuccess && data?.data) {
@@ -77,19 +82,17 @@ const PoTable = () => {
                             onChange={(e) => dispatch(setPoFilter(e.target.value))}
                         />
                     </div>
-                    <div className="flex flex-col w-full xl:w-[50%] md:w-[50%]">
-                        <label className="text-sm font-semibold text-gray-700 mb-1">Purchase Order Status</label>
+                    <div className="flex flex-col w-full max-w-xs">
+                        <label className="font-semibold text-gray-700 mb-1">Select Company</label>
                         <Select
                             isClearable
-                            options={PoStatusArray}
-                            value={poStatus !== 'All Status' && poStatus ? PoStatusArray.find((item) => item.value === poStatus) : null}
-                            placeholder="All Status"
-                            getOptionLabel={(option) => option.label}
-                            getOptionValue={(option) => option.value?.toString()}
-                            className="rounded-lg"
-                            onChange={(selected) => {
-                                dispatch(setPoStatus(selected?.value || 'All Status'))
-                            }}
+                            className="react-select-container"
+                            classNamePrefix="react-select"
+                            options={companyList}
+                            getOptionLabel={(option) => option.name}
+                            value={companyList.find((c) => c.id === companyId) || null}
+                            getOptionValue={(option) => option.id?.toString()}
+                            onChange={(newVal) => dispatch(setCompanyId(newVal?.id as number))}
                         />
                     </div>
                 </div>
@@ -157,12 +160,21 @@ const PoTable = () => {
         <div className="p-6 bg-white rounded-2xl shadow-md border border-gray-100">
             <div className="flex items-center justify-between mb-6">
                 <h4 className="text-2xl font-semibold text-gray-800">Purchase Order Dashboard</h4>
-                <Button variant="reject" size="sm" onClick={() => navigate(`/app/po/addNew`)}>
-                    + Create New
-                </Button>
+                {companyId && (
+                    <Button variant="reject" size="sm" onClick={() => navigate(`/app/po/addNew/${companyId}`)}>
+                        + Create New
+                    </Button>
+                )}
             </div>
             <div>{poSummary && SummaryUi()}</div>
             {InputUi()}
+            <div>
+                <PoTabSelectOrder
+                    tabSelect={poStatus}
+                    handleSelectTab={handleSelectTab}
+                    orderCount={isLoading || isFetching ? `...` : `${count}`}
+                />
+            </div>
             {isFetching && (
                 <div className="flex items-center justify-center my-4">
                     <Spinner size={30} />
