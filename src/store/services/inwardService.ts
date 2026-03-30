@@ -15,11 +15,37 @@ export const inwardService = RtkQueryService.injectEndpoints({
                 if (params.page) parameters.p = params.page.toString()
                 if (params.pageSize) parameters.page_size = params.pageSize.toString()
                 if (params.store_id) parameters.store_id = params.store_id
+                if (params.from) parameters.from = params.from
+                if (params.to) parameters.to = params.to
 
                 return {
                     url: `goods/received/${params.id}`,
                     method: 'GET',
                     params: parameters,
+                }
+            },
+        }),
+        inwardDataDownload: builder.query<Blob, InwardParamType>({
+            query: (params) => {
+                const parameters: Record<string, string | number> = {
+                    download: 'true',
+                }
+
+                if (params.search_type && params.search_value) {
+                    parameters[params.search_type] = params.search_value
+                }
+                if (params.company) parameters.company_code = params.company
+                if (params.page) parameters.p = params.page.toString()
+                if (params.pageSize) parameters.page_size = params.pageSize.toString()
+                if (params.store_id) parameters.store_id = params.store_id
+                if (params.from) parameters.from = params.from
+                if (params.to) parameters.to = params.to
+
+                return {
+                    url: `goods/received/${params.id}`,
+                    method: 'GET',
+                    params: parameters,
+                    responseHandler: (response) => response.blob(), // ✅ for file
                 }
             },
         }),

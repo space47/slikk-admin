@@ -17,9 +17,12 @@ import { GRNDetails } from '@/store/types/inward.types'
 import { inwardService } from '@/store/services/inwardService'
 import { notification, Spin } from 'antd'
 import PageCommon from '@/common/PageCommon'
-import { FaPlus } from 'react-icons/fa'
+import { FaDownload, FaPlus } from 'react-icons/fa'
 import { InwardFilterSearch } from './inwardCommon'
 import { useDebounceInput } from '@/commonHooks/useDebounceInput'
+import dayjs from 'dayjs'
+import UltimateDateFilter from '@/common/UltimateDateFilter'
+import { commonDownloadFromRtk } from '@/common/commonDownload'
 
 const PaginationTable = () => {
     const navigate = useNavigate()
@@ -27,6 +30,8 @@ const PaginationTable = () => {
     const [count, setCount] = useState(0)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
+    const [from, setFrom] = useState(dayjs().startOf('month').format('YYYY-MM-DD'))
+    const [to, setTo] = useState(dayjs().format('YYYY-MM-DD'))
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const [globalFilter, setGlobalFilter] = useState<any>('')
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
@@ -36,6 +41,9 @@ const PaginationTable = () => {
     const [storeCode, setStoreCode] = useState<any[]>([])
     const [activeTab, setActiveTab] = useState('tab2')
     const { debounceFilter } = useDebounceInput({ globalFilter: globalFilter, delay: 500 })
+    const [downloadInward, downloadResponse] = inwardService.useLazyInwardDataDownloadQuery()
+    const To_Date = dayjs(to).add(1, 'days').format('YYYY-MM-DD')
+
     const inwardApiCall = inwardService.useInwardDataGetQuery(
         {
             id: selectedCompany.id,
@@ -45,9 +53,18 @@ const PaginationTable = () => {
             search_value: debounceFilter || '',
             page,
             pageSize,
+            from,
+            to: To_Date,
         },
         { refetchOnMountOrArgChange: true, skip: !selectedCompany.id },
     )
+
+    const handleDateChange = (dates: [Date | null, Date | null] | null, setFrom: (x: string) => void, setTo: (x: string) => void) => {
+        if (dates && dates[0]) {
+            setFrom(dayjs(dates[0]).format('YYYY-MM-DD'))
+            setTo(dates[1] ? dayjs(dates[1]).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'))
+        }
+    }
 
     useEffect(() => {
         if (inwardApiCall.isSuccess) {
@@ -58,6 +75,40 @@ const PaginationTable = () => {
             notification.error({ message: (inwardApiCall.error as any).data.message })
         }
     }, [inwardApiCall.isSuccess, inwardApiCall?.data?.data, inwardApiCall.isError, inwardApiCall.error])
+
+    useEffect(() => {
+        if (downloadResponse.isSuccess) {
+            const isNoContent =
+                downloadResponse?.data === undefined ||
+                downloadResponse?.data === null ||
+                (typeof downloadResponse.data === 'string' && (downloadResponse as any).data.trim() === '')
+
+            if (isNoContent) {
+                notification.warning({ message: 'No data available to download' })
+                return
+            }
+
+            commonDownloadFromRtk(downloadResponse.data, `INWARD-${dayjs().format('YYYY-MM-DD HH:mm:ss a')}.csv`)
+        }
+
+        if (downloadResponse.isError) {
+            notification.error({ message: 'Failed to download' })
+        }
+    }, [downloadResponse.isSuccess, downloadResponse.isError, downloadResponse.data])
+
+    const handleDownload = () => {
+        downloadInward({
+            id: selectedCompany.id,
+            company: companyCode || '',
+            store_id: storeCode?.join(',') || '',
+            search_type: inwardFilterStore || '',
+            search_value: debounceFilter || '',
+            page,
+            pageSize,
+            from,
+            to: To_Date,
+        })
+    }
 
     const columns = InwardColumns({ companyList, storeList })
 
@@ -119,7 +170,26 @@ const PaginationTable = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div>
+                                <div className="flex items-center gap-2">
+                                    <Button
+                                        variant="new"
+                                        size="sm"
+                                        icon={<FaDownload />}
+                                        loading={downloadResponse.isLoading}
+                                        disabled={downloadResponse.isLoading}
+                                        onClick={handleDownload}
+                                    >
+                                        Export CSV
+                                    </Button>
+                                    <UltimateDateFilter
+                                        customClass="border w-auto rounded-md h-auto font-bold bg-black text-white flex justify-center"
+                                        from={from}
+                                        to={to}
+                                        setFrom={setFrom}
+                                        setTo={setTo}
+                                        handleDateChange={handleDateChange}
+                                    />
+
                                     <Button variant="new" size="sm" icon={<FaPlus />} onClick={() => navigate('/app/goods/received/form')}>
                                         ADD GRN
                                     </Button>
