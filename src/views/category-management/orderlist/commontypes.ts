@@ -182,3 +182,5 @@ export const SEARCHOPTIONS = [
     { label: 'INVOICE', value: 'invoice' },
     { label: 'MOBILE', value: 'mobile' },
 ]
+
+export const SORT_OPTIONS = [{ label: 'CREATE DATE', value: 'create_date' }]
