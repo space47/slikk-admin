@@ -33,14 +33,20 @@ const initialState: OrderState = {
     page: 1,
     from: moment().format('YYYY-MM-DD'),
     to: moment().format('YYYY-MM-DD'),
+    tabSelect: 'all',
 }
 export const fetchOrders = createAsyncThunk('orders/fetchOrders', async (_, { getState }) => {
     try {
         const state = getState() as { order: OrderState }
-        const { page, pageSize, from, to, dropdownStatus, searchInput, currentSelectedPage, deliveryType, paymentType } = state.order
+        const { page, pageSize, from, to, dropdownStatus, searchInput, currentSelectedPage, deliveryType, paymentType, tabSelect } =
+            state.order
 
         const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-        const statusQuery = dropdownStatus.value.length === 0 ? '' : `&status=${dropdownStatus.value}`
+        const statusQuery = dropdownStatus?.value?.length
+            ? `&status=${dropdownStatus.value}`
+            : tabSelect !== 'all'
+              ? `&status=${tabSelect}`
+              : ''
 
         let response
 
@@ -125,6 +131,9 @@ export const orderSlice = createSlice({
         setTo(state, action) {
             state.to = action.payload
         },
+        setTabSelect(state, action) {
+            state.tabSelect = action.payload
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -151,6 +160,7 @@ export const {
     setTo,
     setDeliveryType,
     setPaymentType,
+    setTabSelect,
 } = orderSlice.actions
 
 export default orderSlice.reducer

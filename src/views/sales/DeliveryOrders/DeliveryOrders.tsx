@@ -22,6 +22,7 @@ import {
     setTo,
     setDeliveryType,
     setPaymentType,
+    setTabSelect,
 } from '@/store/slices/orderList/OrderList'
 import { OrderState } from '@/store/types/orderList.types'
 import type { FilterFn } from '@tanstack/react-table'
@@ -37,6 +38,7 @@ import { pageSizeOptions } from '../groupNotification/getGroup/groupComnmon'
 import { ForwardDeliveryColumns } from './forwardDeliveryUtils/ForwardDeliveryColumns'
 import { HiSearch } from 'react-icons/hi'
 import ReduxDateRange from '@/common/ReduxDateRange'
+import TabSelect from './filter/TabSelect'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
@@ -56,7 +58,13 @@ const DeliveryOrders = () => {
         to,
         dropdownStatus,
         paymentType,
+        tabSelect,
     } = useAppSelector<OrderState>((state) => state.order)
+
+    const handleSelectTab = (value: string) => {
+        dispatch(setTabSelect(value))
+        dispatch(setPage(1))
+    }
 
     useEffect(() => {
         dispatch(fetchOrders())
@@ -71,7 +79,7 @@ const DeliveryOrders = () => {
 
             return () => clearInterval(interval)
         }
-    }, [page, pageSize, from, to, dropdownStatus, searchOnEnter, deliveryType, paymentType])
+    }, [page, pageSize, from, to, dropdownStatus, searchOnEnter, deliveryType, paymentType, tabSelect, dispatch])
 
     const [showFilter, setShowFilter] = useState(false)
     const [partner, setPartner] = useState<{ [key: string]: { value: string; label: string } }>({})
@@ -254,6 +262,9 @@ const DeliveryOrders = () => {
                         </div>
                         <ReduxDateRange handleDateChange={handleDateChange} id="delivery_orders" setFrom={setFrom} setTo={setTo} />
                     </div>
+                </div>
+                <div>
+                    <TabSelect handleSelectTab={handleSelectTab} tabSelect={tabSelect} orderCount={loading ? `...` : `${orderCount}`} />
                 </div>
 
                 <div className="border p-2 border-gray-200 rounded-lg">

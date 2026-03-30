@@ -3,22 +3,21 @@ import React, { useMemo, useState, useCallback, useEffect, useRef } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
 import * as L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { FaChartLine, FaCheckCircle, FaInfoCircle, FaMapMarkerAlt, FaRoute } from 'react-icons/fa'
+import { FaCheckCircle, FaInfoCircle, FaMapMarkerAlt, FaRoute } from 'react-icons/fa'
 import axios from 'axios'
 import _ from 'lodash'
 import icon from 'leaflet/dist/images/marker-icon.png'
 import iconShadow from 'leaflet/dist/images/marker-shadow.png'
-import { MdClearAll, MdFullscreen, MdOutlineShowChart } from 'react-icons/md'
+import { MdClearAll, MdFullscreen } from 'react-icons/md'
 import { BsFullscreenExit } from 'react-icons/bs'
 import 'leaflet.heat'
 import { Button, Dropdown, Select } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { companyStore } from '@/store/types/companyStore.types'
-import { useAppDispatch, useAppSelector } from '@/store'
+import store, { useAppDispatch, useAppSelector } from '@/store'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
 import { EOrderStatus } from '@/views/sales/OrderDetails/orderList.common'
 import { IoCloseCircle } from 'react-icons/io5'
-import { BiTrendingUp } from 'react-icons/bi'
 import AssignRiderHomeModal from '@/views/homePage/homes/componentsHomes/AssignRiderHomeModal'
 
 const DefaultIcon = L.icon({
@@ -48,6 +47,12 @@ const blackIcon = L.icon({
 })
 const orangeIcon = L.icon({
     iconUrl: '/img/logo/orangeMarker.png',
+    iconSize: [40, 45],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+})
+const yellowIcon = L.icon({
+    iconUrl: '/img/logo/yellowMaker.png',
     iconSize: [40, 45],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],
@@ -96,8 +101,6 @@ const CurrentLocationButton: React.FC<CenterProps> = ({ currLat, currLong }) => 
     )
 }
 CurrentLocationButton.displayName = 'CurrentLocationButton'
-
-// Marker
 interface MarkerComponentProps {
     markers: any[]
     currLat?: any
@@ -160,11 +163,12 @@ const MarkerComponent: React.FC<MarkerComponentProps> = ({
         const isSelected = selectedInvoices.includes(marker?.invoice_id)
 
         if (isSelected) {
-            return officeIcon
+            return yellowIcon
         }
 
         if (['PENDING', 'ACCEPTED', 'PACKED'].includes(marker?.status)) {
-            return officeIcon
+            const showMarker = isSelected ? '' : officeIcon
+            return showMarker
         } else if (marker?.status === 'EXCHANGE') {
             return orangeIcon
         } else if (['DECLINED', 'CANCELLED'].includes(marker?.status)) {
@@ -353,7 +357,6 @@ const MultipleMap: React.FC<MultipleMapProps> = ({
     const dispatch = useAppDispatch()
     const [currLat, setCurrLat] = useState<number>(12.920216)
     const [currLong, setCurrLong] = useState<number>(77.649326)
-    const R = 6371
     const [location, setLocation] = useState('')
     const [suggestions, setSuggestions] = useState<any>([])
     const [distanceBelowTen, setDistanceBelowTen] = useState<any[]>([])
@@ -362,23 +365,22 @@ const MultipleMap: React.FC<MultipleMapProps> = ({
     const [distanceAboveThirty, setDistanceAboveThirty] = useState<any[]>([])
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(MAP_STYLE_ARRAY[0])
     const { storeResults } = useAppSelector<companyStore>((state) => state.companyStore)
-
-    // New state for selected invoices and markers
     const [selectedInvoices, setSelectedInvoices] = useState<string[]>([])
     const [showAssignRiderModal, setShowAssignRiderModal] = useState(false)
     const [selectedMarkers, setSelectedMarkers] = useState<any[]>([])
+    const storeCodes = store.getState().storeSelect.store_ids
 
     useEffect(() => {
         dispatch(fetchCompanyStore())
     }, [dispatch])
 
-    const formattedData = storeResults?.map((item) => ({
-        label: item?.name,
-        value: {
-            lat: item?.latitude,
-            long: item?.longitude,
-        },
-    }))
+    useEffect(() => {
+        if (storeCodes && storeCodes.length > 0) {
+            const data = storeResults?.find((item) => item.id === storeCodes[0])
+            setCurrLat(data?.latitude || 0)
+            setCurrLong(data?.longitude || 0)
+        }
+    }, [storeCodes, storeResults])
 
     const MAP_KEY = import.meta.env.VITE_OLA_API_KEY
 
@@ -800,20 +802,6 @@ const MultipleMap: React.FC<MultipleMapProps> = ({
                                 </DropdownItem>
                             ))}
                         </Dropdown>
-                    </div>
-                    <div className="flex flex-col gap-3 mt-6">
-                        <Select
-                            isClearable
-                            placeholder="select Warehouse"
-                            options={formattedData}
-                            getOptionLabel={(option) => option.label}
-                            getOptionValue={(option) => option.value as any}
-                            className="w-full"
-                            onChange={(newVal) => {
-                                setCurrLat(newVal?.value?.lat || 0)
-                                setCurrLong(newVal?.value?.long || 0)
-                            }}
-                        />
                     </div>
                 </div>
             </div>
