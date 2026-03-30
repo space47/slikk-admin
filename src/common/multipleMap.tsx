@@ -51,6 +51,12 @@ const orangeIcon = L.icon({
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],
 })
+const yellowIcon = L.icon({
+    iconUrl: '/img/logo/yellowMaker.png',
+    iconSize: [40, 45],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+})
 
 interface MultipleMapProps {
     latitudes: number[]
@@ -157,11 +163,12 @@ const MarkerComponent: React.FC<MarkerComponentProps> = ({
         const isSelected = selectedInvoices.includes(marker?.invoice_id)
 
         if (isSelected) {
-            return officeIcon
+            return yellowIcon
         }
 
         if (['PENDING', 'ACCEPTED', 'PACKED'].includes(marker?.status)) {
-            return officeIcon
+            const showMarker = isSelected ? '' : officeIcon
+            return showMarker
         } else if (marker?.status === 'EXCHANGE') {
             return orangeIcon
         } else if (['DECLINED', 'CANCELLED'].includes(marker?.status)) {
