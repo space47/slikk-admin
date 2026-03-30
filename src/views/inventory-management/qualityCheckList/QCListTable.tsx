@@ -12,6 +12,7 @@ import {
     setQcDetails,
     setTo,
     setSummary,
+    setQcStatus,
 } from '@/store/slices/qualityCheckSlice/qualityCheckList.slice'
 import { Option, pageSizeOptions } from '@/constants/pageUtils.constants'
 import moment from 'moment'
@@ -19,10 +20,14 @@ import { useQcColumns } from './qcUtils/useQcColumns'
 import EasyTable from '@/common/EasyTable'
 import AccessDenied from '@/views/pages/AccessDenied'
 import ReduxDateRange from '@/common/ReduxDateRange'
-import { Spin } from 'antd'
-import { Card } from '@/components/ui'
+import { notification, Spin } from 'antd'
+import { Button, Card } from '@/components/ui'
 import { IoBagCheckSharp } from 'react-icons/io5'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+import { BRAND_STATE } from '@/store/types/brand.types'
+import { getAllBrandsAPI } from '@/store/action/brand.action'
+import { FaDownload } from 'react-icons/fa6'
+import { commonDownloadFromRtk } from '@/common/commonDownload'
 
 //TODO: add company filter
 
@@ -30,10 +35,12 @@ const QCListTable = () => {
     const dispatch = useAppDispatch()
     const [globalFilter, setGlobalFilter] = useState('')
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
-
+    const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
+    const [brandId, setBrandId] = useState<string | null>(null)
     const [companyCode, setCompanyCode] = useState<string>('')
-    const { qcDetails, count, from, page, pageSize, to } = useAppSelector<QcInitialStateTypes>((state) => state.qualityCheck)
+    const { qcDetails, count, from, page, pageSize, to, qcStatus } = useAppSelector<QcInitialStateTypes>((state) => state.qualityCheck)
     const { summary } = useAppSelector((state: { qualityCheck: QcInitialStateTypes }) => state.qualityCheck)
+    const [downloadShipmentCall, downloadResponse] = qualityCheckService.useLazyQcCheckDownloadQuery()
 
     const { data, isLoading, isSuccess, error, isFetching } = qualityCheckService.useQualityCheckDataQuery(
         {
@@ -43,6 +50,9 @@ const QCListTable = () => {
             page: page,
             pageSize: pageSize,
             company_id: companyCode || '',
+            qc_failed: qcStatus === 'failed' ? true : false,
+            qc_passed: qcStatus === 'passed' ? true : false,
+            brand_id: brandId ? brandId : '',
         },
         { refetchOnMountOrArgChange: true },
     )
@@ -56,6 +66,29 @@ const QCListTable = () => {
             dispatch(setSummary(data.summary))
         }
     }, [dispatch, isSuccess, data, page])
+
+    useEffect(() => {
+        dispatch(getAllBrandsAPI())
+    }, [dispatch])
+
+    useEffect(() => {
+        if (downloadResponse.isSuccess) {
+            commonDownloadFromRtk(downloadResponse.data, `QC-DATA-${moment().format('YYYY-MM-DD HH:mm:ss a')}.csv`)
+        }
+        if (downloadResponse.isError) {
+            notification.error({ message: 'Failed to download' })
+        }
+    }, [downloadResponse.isSuccess, downloadResponse.isError, downloadResponse.data])
+
+    const handleCardClick = (key?: string) => {
+        if (!key) return
+        if (qcStatus === key) {
+            dispatch(setQcStatus(''))
+        } else {
+            dispatch(setQcStatus(key))
+        }
+        dispatch(setPage(1))
+    }
 
     const summaryData = useMemo(
         () => ({
@@ -77,13 +110,27 @@ const QCListTable = () => {
 
     const summaryCards = [
         { label: 'Total SKU', value: summaryData?.total_skus },
-        { label: 'QC Failed', value: summaryData?.total_qc_failed, color: 'text-red-600' },
-        { label: 'QC Passed', value: summaryData?.total_qc_passed, color: 'text-green-600' },
+        { label: 'QC Failed', value: summaryData?.total_qc_failed, color: 'text-red-600', key: 'failed' },
+        { label: 'QC Passed', value: summaryData?.total_qc_passed, color: 'text-green-600', key: 'passed' },
         { label: 'Qty Received', value: summaryData?.total_quantity_received },
         { label: 'Qty Sent', value: summaryData?.total_quantity_sent },
         { label: 'Synced Qty', value: summaryData?.total_synced_quantity, color: 'text-blue-600' },
         { label: 'Un-Synced Qty', value: unsyncedCalculation, color: 'text-orange-600' },
     ]
+
+    const handleDownloadQc = () => {
+        downloadShipmentCall({
+            from: from,
+            to: to,
+            grn_id: globalFilter ?? '',
+            page: page,
+            pageSize: pageSize,
+            company_id: companyCode || '',
+            qc_failed: qcStatus === 'failed' ? true : false,
+            qc_passed: qcStatus === 'passed' ? true : false,
+            brand_id: brandId ? brandId : '',
+        })
+    }
 
     const handleDateChange = (dates: [Date | null, Date | null] | null) => {
         if (dates && dates[0]) {
@@ -123,33 +170,66 @@ const QCListTable = () => {
                            focus:border-blue-500 transition"
                             />
                         </div>
-                        <div className="flex flex-col w-80">
-                            <label className="text-sm font-semibold text-gray-600 mb-1">Select Company</label>
-                            <Select
-                                isClearable
-                                className="react-select-container w-full"
-                                classNamePrefix="react-select"
-                                options={companyList}
-                                getOptionLabel={(option) => option.name}
-                                getOptionValue={(option) => option.id?.toString()}
-                                onChange={(newVal) => setCompanyCode(newVal?.id?.toString() || '')}
-                            />
-                        </div>
                     </div>
-
-                    {/* Right Section - Date Range */}
-                    <div className="flex flex-col">
-                        <label className="text-sm font-semibold text-gray-600 mb-1 invisible">Date Range</label>
+                    <div className="flex items-center gap-2 ">
                         <ReduxDateRange id="qcChecklist" handleDateChange={handleDateChange} setFrom={setFrom} setTo={setTo} />
+
+                        <Button
+                            variant="new"
+                            size="sm"
+                            icon={<FaDownload />}
+                            loading={downloadResponse.isLoading}
+                            disabled={downloadResponse.isLoading}
+                            onClick={handleDownloadQc}
+                        >
+                            Download
+                        </Button>
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-2 mb-4">
+                    <div className="flex flex-col w-80">
+                        <label className="text-sm font-semibold text-gray-600 mb-1">Select Company</label>
+                        <Select
+                            isClearable
+                            className="react-select-container w-full"
+                            classNamePrefix="react-select"
+                            options={companyList}
+                            getOptionLabel={(option) => option.name}
+                            getOptionValue={(option) => option.id?.toString()}
+                            onChange={(newVal) => setCompanyCode(newVal?.id?.toString() || '')}
+                        />
+                    </div>
+                    <div className="flex flex-col w-80">
+                        <label className="text-sm font-semibold text-gray-600 mb-1">Select Brand</label>
+                        <Select
+                            isClearable
+                            className="react-select-container w-full"
+                            classNamePrefix="react-select"
+                            options={brands.brands}
+                            getOptionLabel={(option) => option.name}
+                            getOptionValue={(option) => option.id?.toString()}
+                            onChange={(newVal) => setBrandId(newVal?.id?.toString() || '')}
+                        />
                     </div>
                 </div>
                 <div className="grid xl:grid-cols-7 grid-cols-4 gap-2 mb-8">
-                    {summaryCards.map(({ label, value, color }) => (
-                        <Card key={label} className=" rounded-xl border border-gray-200 shadow-sm">
-                            <p className="text-sm text-gray-500 font-medium">{label}</p>
-                            <p className={`text-xl font-semibold ${color ?? 'text-gray-900'}`}>{value ?? 0}</p>
-                        </Card>
-                    ))}
+                    {summaryCards.map(({ label, value, color, key }) => {
+                        const isActive = qcStatus === key
+
+                        return (
+                            <Card
+                                key={label}
+                                onClick={() => handleCardClick(key)}
+                                className={`rounded-xl border cursor-pointer transition-all
+                    ${isActive ? 'border-blue-500 ring-2 ring-blue-300 bg-blue-50' : 'border-gray-200 hover:shadow-md'}
+                `}
+                            >
+                                <p className="text-sm text-gray-500 font-medium">{label}</p>
+                                <p className={`text-xl font-semibold ${color ?? 'text-gray-900'}`}>{value ?? 0}</p>
+                            </Card>
+                        )
+                    })}
                 </div>
                 <EasyTable overflow mainData={qcDetails} columns={columns} page={page} pageSize={pageSize} />
                 <div className="flex items-center justify-between mt-4">
