@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useMemo, useState } from 'react'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
@@ -73,8 +74,19 @@ const QCListTable = () => {
 
     useEffect(() => {
         if (downloadResponse.isSuccess) {
-            commonDownloadFromRtk(downloadResponse.data, `QC-DATA-${moment().format('YYYY-MM-DD HH:mm:ss a')}.csv`)
+            const isNoContent =
+                downloadResponse?.data === undefined ||
+                downloadResponse?.data === null ||
+                (typeof downloadResponse.data === 'string' && (downloadResponse as any).data.trim() === '')
+
+            if (isNoContent) {
+                notification.warning({ message: 'No data available to download' })
+                return
+            }
+
+            commonDownloadFromRtk(downloadResponse.data, `QC_DATA-${moment().format('YYYY-MM-DD HH:mm:ss a')}.csv`)
         }
+
         if (downloadResponse.isError) {
             notification.error({ message: 'Failed to download' })
         }
