@@ -3,17 +3,17 @@ import { SetStateAction, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import moment from 'moment'
-import { CHANGE_DELIVERY_OPTIONS, SEARCHOPTIONS, type DropdownStatus } from './commontypes'
+import { CHANGE_DELIVERY_OPTIONS, SEARCHOPTIONS, SORT_OPTIONS, type DropdownStatus } from './commontypes'
 import { Button, Dropdown, Input } from '@/components/ui'
 import { IoMdDownload } from 'react-icons/io'
 import FilterDialogOrder from './filterDialog/FilterDialog'
 import { CiFilter } from 'react-icons/ci'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import PendingNotification from '@/common/pendingNotification'
-import { notification, Spin } from 'antd'
+import { notification, Select, Spin } from 'antd'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 import RedMarkTable from '@/common/RedMarkTable'
-import { HiSearch } from 'react-icons/hi'
+import { HiOutlineSortAscending, HiOutlineSortDescending, HiSearch } from 'react-icons/hi'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 import TabSelectOrder from './filter'
 import OrderlistMobile from './OrderlistMobile'
@@ -59,6 +59,8 @@ const OrderList = () => {
     const [columnFilter, setColumnFilter] = useState(false)
     const [isCompleteOrder, setIsCompleteOrder] = useState(false)
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
+    const [sortBy, setSortBy] = useState('create_date')
+    const [sortType, setSortType] = useState(true)
 
     const handleSelectTab = (value: string) => {
         setTabSelect(value)
@@ -76,7 +78,13 @@ const OrderList = () => {
         return noFilters
     }
     const buildFilterParams = () => {
-        const params: Record<string, string | number | string[]> = { p: page, page_size: numberStore ? 100 : pageSize }
+        const params: Record<string, string | number | string[]> = {
+            p: page,
+            page_size: numberStore ? 100 : pageSize,
+            sort: sortBy,
+            sort_type: sortType ? 'asc' : 'desc',
+        }
+
         const resolvedStatus =
             dropdownStatus?.value?.length > 0 ? dropdownStatus.value : tabSelect !== 'all' ? getStatusFilter(tabSelect) : undefined
         if (resolvedStatus) params.status = resolvedStatus
@@ -332,6 +340,33 @@ const OrderList = () => {
             <div className="p-4 shadow-lg dark:bg-slate-800 rounded-xl">
                 <div className="overflow-x-auto scrollbar-hide">
                     {filtersAndSearchUI()}
+
+                    <div className="flex mb-8 items-end gap-3">
+                        <div className="space-y-2">
+                            <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                Sort By
+                            </label>
+                            <Select
+                                allowClear
+                                className="w-56"
+                                value={SORT_OPTIONS.find((item) => item.value === sortBy)?.value}
+                                placeholder="Select option"
+                                options={SORT_OPTIONS}
+                                onChange={(value) => {
+                                    setSortBy(value)
+                                }}
+                            />
+                        </div>
+
+                        <Button
+                            variant="new"
+                            size="sm"
+                            icon={sortType === false ? <HiOutlineSortDescending /> : <HiOutlineSortAscending />}
+                            onClick={() => setSortType((prev) => !prev)}
+                        >
+                            Sort
+                        </Button>
+                    </div>
                     <TabSelectOrder
                         handleSelectTab={handleSelectTab}
                         tabSelect={tabSelect}
