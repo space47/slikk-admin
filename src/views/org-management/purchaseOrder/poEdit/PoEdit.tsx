@@ -25,9 +25,10 @@ const PoEdit = () => {
     const navigate = useNavigate()
     const [purchaseOrder, setPurchaseOrder] = useState<PurchaseOrderTable>()
     const [stateCode, setStateCode] = useState('')
+    const [gstin, setGstin] = useState('')
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((store) => store.company.company)
-
     const selectedCompany = useMemo(() => companyList.find((item) => item.id?.toString() === company_id), [company_id, companyList])
+    console.log('company is', selectedCompany)
 
     const { data, isSuccess, isError, isLoading, isFetching, error } = purchaseOrderService.usePurchaseSingleOrdersListQuery(
         {
@@ -72,9 +73,6 @@ const PoEdit = () => {
     }
 
     const handleSubmit = async (values: any) => {
-        const idCheck = typeof values.company_gst === 'string' ? values?.company_gst : values.company_gst?.id
-        const wareHouseDetails = selectedCompany?.gst_details?.find((item) => item?.id === idCheck)
-
         try {
             const payload = {
                 store: values.store,
@@ -89,8 +87,8 @@ const PoEdit = () => {
                 po_nature: values[PoField.PO_NATURE],
                 payment_mode: values[PoField.PAYMENT_MODE],
                 po_expiry_date: values[PoField.PO_EXPIRY_DATE],
-                state_code: wareHouseDetails?.gstin?.slice(0, 2) || '',
-                gstin: wareHouseDetails?.gstin || '',
+                state_code: stateCode || '',
+                gstin: gstin || '',
                 discount_sharing_applicable: 'yes',
             }
 
@@ -139,7 +137,13 @@ const PoEdit = () => {
                 {({ values }) => {
                     const companyGstValue = typeof values.company_gst === 'object' ? (values.company_gst as any)?.id : values?.company_gst
                     const wareHouseDetails = selectedCompany?.gst_details?.find((item) => item?.id === companyGstValue)
-                    setStateCode(wareHouseDetails?.gstin?.slice(0, 2) || '')
+                    const vendorEntityFind = selectedCompany?.business_nature_company_details?.find(
+                        (item) => item.code?.toLowerCase() === values.order_billing_entity?.toLowerCase(),
+                    )
+
+                    setStateCode(vendorEntityFind?.gstin?.slice(0, 2) || '')
+                    setGstin(vendorEntityFind?.gstin || '')
+
                     return (
                         <Form className=" w-full p-5 bg-gray-50 rounded-xl shadow-xl ">
                             <FormContainer>

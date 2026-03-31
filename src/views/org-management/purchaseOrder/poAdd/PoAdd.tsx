@@ -20,7 +20,7 @@ const PoAdd = () => {
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((store) => store.company.company)
 
     const selectedCompany = useMemo(() => companyList.find((item) => item.id?.toString() === company_id), [company_id, companyList])
-
+    console.log('company is', selectedCompany)
     const commercial_approval_doc = useMemo(() => selectedCompany?.commercial_approval_doc, [selectedCompany])
     const [stateCode, setStateCode] = useState('')
     const [gstinValue, setGstinValue] = useState('')
@@ -29,6 +29,8 @@ const PoAdd = () => {
         label: item?.company_name,
         value: item.code,
     }))
+
+    console.log('vendor entity', VendorEntity)
 
     const initialValue = {
         [PoField.ORDER_BILLING_ENTITY]: '',
@@ -79,8 +81,13 @@ const PoAdd = () => {
                 {({ values }) => {
                     const idCheck = typeof values.company_gst === 'string' ? values?.company_gst : values.company_gst?.id
                     const wareHouseDetails = selectedCompany?.gst_details?.find((item) => item?.id === idCheck)
-                    setStateCode(wareHouseDetails?.gstin?.slice(0, 2) || '')
-                    setGstinValue(wareHouseDetails?.gstin || '')
+                    const vendorEntityFind = selectedCompany?.business_nature_company_details?.find(
+                        (item) => item.code?.toLowerCase() === values.order_billing_entity?.toLowerCase(),
+                    )
+
+                    setStateCode(vendorEntityFind?.gstin?.slice(0, 2) || '')
+                    setGstinValue(vendorEntityFind?.gstin || '')
+
                     return (
                         <Form className=" w-full p-5 bg-gray-50 rounded-xl shadow-xl ">
                             <FormContainer>
