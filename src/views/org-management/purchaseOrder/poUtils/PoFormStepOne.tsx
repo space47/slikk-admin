@@ -61,7 +61,8 @@ const PoFormStepOne = ({ VendorEntity, businessNatureCompany, wareHouseDetails, 
                     <FormItem label="Vendor Billing Entity">
                         <Field name={PoField.ORDER_BILLING_ENTITY}>
                             {({ field, form }: FieldProps) => {
-                                const selectedValue = VendorEntity?.find((opt) => opt.value === field.value) || null
+                                console.log('values are', field.value, VendorEntity)
+                                const selectedValue = VendorEntity?.find((opt) => opt.value?.trim() === field.value?.trim()) || null
 
                                 return (
                                     <Select

@@ -20,15 +20,15 @@ import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import FormUploadFile from '@/common/FormUploadFile'
 import { PoField } from '../poUtils/poFormCommon'
 
+const normalize = (val?: string) => val?.trim().toLowerCase()
+
 const PoEdit = () => {
     const { purchase_id, company_id } = useParams()
     const navigate = useNavigate()
     const [purchaseOrder, setPurchaseOrder] = useState<PurchaseOrderTable>()
-    const [stateCode, setStateCode] = useState('')
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((store) => store.company.company)
-
     const selectedCompany = useMemo(() => companyList.find((item) => item.id?.toString() === company_id), [company_id, companyList])
-
+    const [loader, setLoader] = useState(false)
     const { data, isSuccess, isError, isLoading, isFetching, error } = purchaseOrderService.usePurchaseSingleOrdersListQuery(
         {
             order_id: purchase_id,
@@ -36,12 +36,17 @@ const PoEdit = () => {
         },
         { skip: !selectedCompany?.id || !purchase_id },
     )
+
     const commercial_approval_doc = selectedCompany?.commercial_approval_doc
 
-    const VendorEntity = selectedCompany?.business_nature_company_details?.map((item) => ({
-        label: item?.company_name,
-        value: item.code,
-    }))
+    const VendorEntity = useMemo(
+        () =>
+            selectedCompany?.business_nature_company_details?.map((item) => ({
+                label: item?.company_name,
+                value: item.code,
+            })) || [],
+        [selectedCompany],
+    )
 
     useEffect(() => {
         if (isSuccess) {
@@ -53,29 +58,35 @@ const PoEdit = () => {
         }
     }, [isSuccess, isError, error, data?.data])
 
-    const initialValue = {
-        special_terms: purchaseOrder?.special_terms,
-        order_billing_entity: purchaseOrder?.order_billing_entity,
-        order_billing_address: purchaseOrder?.order_billing_address,
-        order_shipping_address: purchaseOrder?.order_shipping_address,
-        commercial_terms: purchaseOrder?.commercial_terms,
-        payment_terms: purchaseOrder?.payment_terms,
-        discount_sharing_applicable: 'true',
-        expected_delivery_date: purchaseOrder?.expected_delivery_date,
-        po_nature: purchaseOrder?.po_nature,
-        store: purchaseOrder?.store,
-        company_gst: purchaseOrder?.company_gst,
-        stateCode: stateCode,
-        payment_mode: purchaseOrder?.payment_mode,
-        vendor_address: purchaseOrder?.vendor_address,
-        po_expiry_date: purchaseOrder?.po_expiry_date,
-    }
+    const initialValue = useMemo(
+        () => ({
+            special_terms: purchaseOrder?.special_terms || '',
+            order_billing_entity: purchaseOrder?.order_billing_entity || '',
+            order_billing_address: purchaseOrder?.order_billing_address || '',
+            order_shipping_address: purchaseOrder?.order_shipping_address || '',
+            commercial_terms: purchaseOrder?.commercial_terms || '',
+            payment_terms: purchaseOrder?.payment_terms || '',
+            discount_sharing_applicable: 'true',
+            expected_delivery_date: purchaseOrder?.expected_delivery_date || '',
+            po_nature: purchaseOrder?.po_nature || '',
+            store: purchaseOrder?.store || '',
+            company_gst: purchaseOrder?.company_gst || '',
+            payment_mode: purchaseOrder?.payment_mode || '',
+            vendor_address: purchaseOrder?.vendor_address || '',
+            po_expiry_date: purchaseOrder?.po_expiry_date || '',
+        }),
+        [purchaseOrder],
+    )
 
     const handleSubmit = async (values: any) => {
-        const idCheck = typeof values.company_gst === 'string' ? values?.company_gst : values.company_gst?.id
-        const wareHouseDetails = selectedCompany?.gst_details?.find((item) => item?.id === idCheck)
-
         try {
+            const vendorEntityFind = selectedCompany?.business_nature_company_details?.find(
+                (item) => normalize(item.code) === normalize(values.order_billing_entity),
+            )
+
+            const stateCode = vendorEntityFind?.gstin?.slice(0, 2) || ''
+            const gstin = vendorEntityFind?.gstin || ''
+
             const payload = {
                 store: values.store,
                 order_billing_entity: values[PoField.ORDER_BILLING_ENTITY],
@@ -84,31 +95,36 @@ const PoEdit = () => {
                 payment_terms: values[PoField.PAYMENT_TERMS],
                 special_terms: values[PoField.SPECIAL_TERMS],
                 company_gst:
-                    typeof values[PoField?.COMPANY_GST] === 'object' ? values[PoField?.COMPANY_GST]?.id : values[PoField?.COMPANY_GST],
+                    typeof values[PoField.COMPANY_GST] === 'object' ? values[PoField.COMPANY_GST]?.id : values[PoField.COMPANY_GST],
                 expected_delivery_date: values[PoField.EXPECTED_DELIVERY],
                 po_nature: values[PoField.PO_NATURE],
                 payment_mode: values[PoField.PAYMENT_MODE],
                 po_expiry_date: values[PoField.PO_EXPIRY_DATE],
-                state_code: wareHouseDetails?.gstin?.slice(0, 2) || '',
-                gstin: wareHouseDetails?.gstin || '',
+                state_code: stateCode,
+                gstin: gstin,
                 discount_sharing_applicable: 'yes',
             }
 
             const formData = buildFormData(payload)
+
             if (!commercial_approval_doc && typeof values?.commercial_terms !== 'string' && values?.commercial_terms?.length > 0) {
                 formData.append('commercial_terms', values.commercial_terms[0])
             }
+
             const filteredBody = getChangedFormData(formData, initialValue)
 
             if (selectedCompany) {
                 filteredBody.append('company', selectedCompany?.id?.toString())
             }
+            setLoader(true)
 
             const res = await axioisInstance.patch(`/merchant/purchase/order/${purchase_id}`, filteredBody)
 
             successMessage(res)
         } catch (error) {
             if (error instanceof AxiosError) errorMessage(error)
+        } finally {
+            setLoader(false)
         }
     }
 
@@ -127,50 +143,51 @@ const PoEdit = () => {
                 </Button>
             </div>
 
-            <div>
-                {isLoading ||
-                    (isFetching && (
-                        <div className="flex items-center justify-center mt-10">
-                            <Spinner size={30} />
-                        </div>
-                    ))}
-            </div>
+            {(isLoading || isFetching) && (
+                <div className="flex items-center justify-center mt-10">
+                    <Spinner size={30} />
+                </div>
+            )}
+
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                 {({ values }) => {
                     const companyGstValue = typeof values.company_gst === 'object' ? (values.company_gst as any)?.id : values?.company_gst
+
                     const wareHouseDetails = selectedCompany?.gst_details?.find((item) => item?.id === companyGstValue)
-                    setStateCode(wareHouseDetails?.gstin?.slice(0, 2) || '')
+
                     return (
-                        <Form className=" w-full p-5 bg-gray-50 rounded-xl shadow-xl ">
+                        <Form className="w-full p-5 bg-gray-50 rounded-xl shadow-xl">
                             <FormContainer>
                                 <PoFormStepOne
-                                    VendorEntity={VendorEntity!}
+                                    VendorEntity={VendorEntity}
                                     wareHouseDetails={wareHouseDetails}
                                     businessNatureCompany={selectedCompany?.business_nature_company_details || []}
                                     values={values}
                                 />
+
                                 {!commercial_approval_doc && (
-                                    <>
-                                        <FormUploadFile
-                                            asterisk
-                                            label="Upload Commercial Doc Copy"
-                                            fileList={(values as any)?.commercialFile}
-                                            name="commercial_terms"
-                                            existingFile={values?.commercial_terms}
-                                        />
-                                    </>
+                                    <FormUploadFile
+                                        asterisk
+                                        label="Upload Commercial Doc Copy"
+                                        fileList={(values as any)?.commercialFile}
+                                        name="commercial_terms"
+                                        existingFile={values?.commercial_terms}
+                                    />
                                 )}
-                                <div className="flex items-center justify-end mt-8">
+
+                                <div className="flex items-center justify-end gap-2 mt-8">
                                     <Button
                                         variant="twoTone"
                                         color="blue"
                                         type="button"
+                                        size="sm"
                                         onClick={() => navigate(`/app/po/orderItems/${purchase_id}`)}
                                         icon={<FaArrowCircleRight />}
                                     >
                                         Go to Order Items
                                     </Button>
-                                    <FormButton value="Submit" />
+
+                                    <FormButton value="Submit" isSpinning={loader} />
                                 </div>
                             </FormContainer>
                         </Form>
