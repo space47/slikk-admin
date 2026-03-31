@@ -12,6 +12,7 @@ interface GetQualityCheckListTypes {
     brand_id?: number | string
     qc_passed?: boolean
     qc_failed?: boolean
+    store_id?: string
 }
 
 export const qualityCheckService = RtkQueryService.injectEndpoints({
@@ -28,6 +29,7 @@ export const qualityCheckService = RtkQueryService.injectEndpoints({
                 if (params.brand_id) parameters.brand_id = params.brand_id
                 if (params.qc_failed) parameters.qc_failed = params.qc_failed
                 if (params.qc_passed) parameters.qc_passed = params.qc_passed
+                if (params.store_id) parameters.store_id = params.store_id
                 return {
                     url: `goods/qualitycheck`,
                     method: 'GET',
@@ -50,6 +52,7 @@ export const qualityCheckService = RtkQueryService.injectEndpoints({
                 if (params.brand_id) parameters.brand_id = params.brand_id
                 if (params.qc_failed) parameters.qc_failed = params.qc_failed
                 if (params.qc_passed) parameters.qc_passed = params.qc_passed
+                if (params.store_id) parameters.store_id = params.store_id
 
                 return {
                     url: `/goods/qualitycheck`,

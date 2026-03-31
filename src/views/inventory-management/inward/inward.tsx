@@ -53,8 +53,8 @@ const PaginationTable = () => {
             search_value: debounceFilter || '',
             page,
             pageSize,
-            from,
-            to: To_Date,
+            from: !debounceFilter ? from : '',
+            to: !debounceFilter ? To_Date : '',
         },
         { refetchOnMountOrArgChange: true, skip: !selectedCompany.id },
     )
