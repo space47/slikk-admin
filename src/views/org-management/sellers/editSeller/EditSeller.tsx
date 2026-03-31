@@ -186,7 +186,7 @@ const EditSeller = () => {
         if (values.int_poc_details && values.int_poc_details?.length > 0) {
             formData.append(SellerKeys.INT_POC_DETAILS, JSON.stringify(values?.int_poc_details))
         }
-
+        formData.append('provisional_discount_rate', '0')
         const changedValue = getChangedFormData(formData, initialValue)
 
         try {
