@@ -24,13 +24,11 @@ import ReduxDateRange from '@/common/ReduxDateRange'
 import { notification, Spin } from 'antd'
 import { Button, Card } from '@/components/ui'
 import { IoBagCheckSharp } from 'react-icons/io5'
-import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+import { SINGLE_COMPANY_DATA, USER_PROFILE_DATA } from '@/store/types/company.types'
 import { BRAND_STATE } from '@/store/types/brand.types'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
 import { FaDownload } from 'react-icons/fa6'
 import { commonDownloadFromRtk } from '@/common/commonDownload'
-
-//TODO: add company filter
 
 const QCListTable = () => {
     const dispatch = useAppDispatch()
@@ -42,6 +40,8 @@ const QCListTable = () => {
     const { qcDetails, count, from, page, pageSize, to, qcStatus } = useAppSelector<QcInitialStateTypes>((state) => state.qualityCheck)
     const { summary } = useAppSelector((state: { qualityCheck: QcInitialStateTypes }) => state.qualityCheck)
     const [downloadShipmentCall, downloadResponse] = qualityCheckService.useLazyQcCheckDownloadQuery()
+    const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
+    const [storeCode, setStoreCode] = useState<any[]>([])
 
     const { data, isLoading, isSuccess, error, isFetching } = qualityCheckService.useQualityCheckDataQuery(
         {
@@ -54,6 +54,7 @@ const QCListTable = () => {
             qc_failed: qcStatus === 'failed' ? true : false,
             qc_passed: qcStatus === 'passed' ? true : false,
             brand_id: brandId ? brandId : '',
+            store_id: storeCode?.join(',') || '',
         },
         { refetchOnMountOrArgChange: true },
     )
@@ -141,6 +142,7 @@ const QCListTable = () => {
             qc_failed: qcStatus === 'failed' ? true : false,
             qc_passed: qcStatus === 'passed' ? true : false,
             brand_id: brandId ? brandId : '',
+            store_id: storeCode?.join(',') || '',
         })
     }
 
@@ -222,6 +224,19 @@ const QCListTable = () => {
                             getOptionLabel={(option) => option.name}
                             getOptionValue={(option) => option.id?.toString()}
                             onChange={(newVal) => setBrandId(newVal?.id?.toString() || '')}
+                        />
+                    </div>
+                    <div className="flex flex-col w-full max-w-[400px]">
+                        <label className="font-semibold text-gray-700 mb-1">Select Store</label>
+                        <Select
+                            isClearable
+                            isMulti
+                            options={storeList}
+                            getOptionLabel={(option) => option.name}
+                            getOptionValue={(option) => option.id?.toString()}
+                            onChange={(selectedOptions) => {
+                                setStoreCode(selectedOptions?.map((opt) => opt.id) || [])
+                            }}
                         />
                     </div>
                 </div>
