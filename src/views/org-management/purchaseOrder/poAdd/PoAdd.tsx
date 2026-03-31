@@ -14,31 +14,48 @@ import { useMemo, useState } from 'react'
 import FormUploadFile from '@/common/FormUploadFile'
 import { PoField } from '../poUtils/poFormCommon'
 
+const normalize = (val?: string) => val?.trim().toLowerCase()
+
 const PoAdd = () => {
     const navigate = useNavigate()
     const { company_id } = useParams()
+
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((store) => store.company.company)
 
     const selectedCompany = useMemo(() => companyList.find((item) => item.id?.toString() === company_id), [company_id, companyList])
 
+    const [loader, setLoader] = useState(false)
+
     const commercial_approval_doc = useMemo(() => selectedCompany?.commercial_approval_doc, [selectedCompany])
-    const [stateCode, setStateCode] = useState('')
-    const [gstinValue, setGstinValue] = useState('')
 
-    const VendorEntity = selectedCompany?.business_nature_company_details?.map((item) => ({
-        label: item?.company_name,
-        value: item.code,
-    }))
+    const VendorEntity = useMemo(
+        () =>
+            selectedCompany?.business_nature_company_details?.map((item) => ({
+                label: item?.company_name,
+                value: item.code,
+            })) || [],
+        [selectedCompany],
+    )
 
-    const initialValue = {
-        [PoField.ORDER_BILLING_ENTITY]: '',
-        [PoField.ORDER_SHIPPING_ADDRESS]: '',
-        [PoField.ORDER_BILLING_ADDRESS]: '',
-        [PoField.PAYMENT_TERMS]: selectedCompany?.approved_payment_term || '',
-    }
+    const initialValue = useMemo(
+        () => ({
+            [PoField.ORDER_BILLING_ENTITY]: '',
+            [PoField.ORDER_SHIPPING_ADDRESS]: '',
+            [PoField.ORDER_BILLING_ADDRESS]: '',
+            [PoField.PAYMENT_TERMS]: selectedCompany?.approved_payment_term || '',
+        }),
+        [selectedCompany],
+    )
 
     const handleSubmit = async (values: any) => {
         try {
+            const vendorEntityFind = selectedCompany?.business_nature_company_details?.find(
+                (item) => normalize(item.code) === normalize(values.order_billing_entity),
+            )
+
+            const stateCode = vendorEntityFind?.gstin?.slice(0, 2) || ''
+            const gstinValue = vendorEntityFind?.gstin || ''
+
             const payload = {
                 store: values.store,
                 company: selectedCompany?.id,
@@ -51,7 +68,7 @@ const PoAdd = () => {
                 expected_delivery_date: values[PoField.EXPECTED_DELIVERY],
                 po_nature: values[PoField.PO_NATURE],
                 state_code: stateCode,
-                gstin: gstinValue || '',
+                gstin: gstinValue,
                 company_gst: values[PoField.COMPANY_GST]?.id,
                 payment_mode: values[PoField.PAYMENT_MODE],
                 po_expiry_date: values[PoField.PO_EXPIRY_DATE],
@@ -59,49 +76,58 @@ const PoAdd = () => {
             }
 
             const formData = buildFormData(payload)
+
             if (!commercial_approval_doc && values?.commercial_terms?.length > 0) {
                 formData.append(PoField.COMMERCIAL_TERMS, values.commercial_terms[0])
             }
+
+            setLoader(true)
+
             const res = await axioisInstance.post(`/merchant/purchase/order`, formData)
+
             if (res?.data) {
                 navigate(`/app/po/orderItems/${res?.data?.data?.id}`)
             }
+
             successMessage(res)
         } catch (error) {
             if (error instanceof AxiosError) errorMessage(error)
+        } finally {
+            setLoader(false)
         }
     }
 
     return (
         <div>
             <h3 className="text-xl font-bold">Create Purchase Order</h3>
+
             <Formik enableReinitialize initialValues={initialValue as any} onSubmit={handleSubmit}>
                 {({ values }) => {
                     const idCheck = typeof values.company_gst === 'string' ? values?.company_gst : values.company_gst?.id
+
                     const wareHouseDetails = selectedCompany?.gst_details?.find((item) => item?.id === idCheck)
-                    setStateCode(wareHouseDetails?.gstin?.slice(0, 2) || '')
-                    setGstinValue(wareHouseDetails?.gstin || '')
+
                     return (
-                        <Form className=" w-full p-5 bg-gray-50 rounded-xl shadow-xl ">
+                        <Form className="w-full p-5 bg-gray-50 rounded-xl shadow-xl">
                             <FormContainer>
                                 <PoFormStepOne
-                                    VendorEntity={VendorEntity!}
+                                    VendorEntity={VendorEntity}
                                     wareHouseDetails={wareHouseDetails}
                                     businessNatureCompany={selectedCompany?.business_nature_company_details || []}
                                     values={values}
                                 />
+
                                 {!commercial_approval_doc && (
-                                    <>
-                                        <FormUploadFile
-                                            asterisk
-                                            label="Upload Commercial Terms"
-                                            fileList={values?.commercialFile}
-                                            name={PoField.COMMERCIAL_TERMS}
-                                            existingFile={values?.commercial_terms}
-                                        />
-                                    </>
+                                    <FormUploadFile
+                                        asterisk
+                                        label="Upload Commercial Terms"
+                                        fileList={values?.commercialFile}
+                                        name={PoField.COMMERCIAL_TERMS}
+                                        existingFile={values?.commercial_terms}
+                                    />
                                 )}
-                                <FormButton value="Create" />
+
+                                <FormButton value="Create" isSpinning={loader} />
                             </FormContainer>
                         </Form>
                     )
