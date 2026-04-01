@@ -1,31 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useMemo, useState, useCallback } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import moment from 'moment'
 import { notification, Spin } from 'antd'
-import { FaBoxOpen, FaMapMarkedAlt, FaShippingFast, FaTimes, FaUpload } from 'react-icons/fa'
-import { Card, Upload } from '@/components/ui'
-import { beforeUpload } from '@/common/beforeUpload'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { shipmentService } from '@/store/services/shipmentService'
 import { ShipmentData } from '@/store/types/shipment.types'
-import InwardMaterialModule from '@/views/inventory-management/inward/inwardModules/InwardMaterialModule'
-import { AxiosError } from 'axios'
-import { errorMessage } from '@/utils/responseMessages'
+import { FiBox, FiCalendar, FiLayers, FiMapPin, FiPackage, FiTruck, FiUpload, FiUser } from 'react-icons/fi'
+import AddShipmentModal from './AddShipmentModal'
 import ShipmentDownload from '../brandShipmentsUtils/ShipmentDownload'
+import InwardMaterialModule from '@/views/inventory-management/inward/inwardModules/InwardMaterialModule'
+import { Button } from '@/components/ui'
+import { FaUpload } from 'react-icons/fa'
 
-const formatDate = (date?: string | null) => {
-    if (!date) return 'N/A'
-    const formatted = moment(date)
-    return formatted.isValid() ? formatted.format('DD-MM-YYYY') : 'N/A'
-}
-
-const BrandShipmentDetails = () => {
+const BrandShipmentDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>()
     const [shipmentDetails, setShipmentDetails] = useState<ShipmentData | null>(null)
     const [showAddCsv, setShowAddCsv] = useState(false)
-    const [csvFileList, setCsvFileList] = useState<File[]>([])
-    const [isUploading, setIsUploading] = useState(false)
     const shipmentDetailCall = shipmentService.useGetShipmentDetailQuery({ id: id as string }, { skip: !id })
 
     useEffect(() => {
@@ -36,158 +25,134 @@ const BrandShipmentDetails = () => {
         if (shipmentDetailCall.isError) notification.error({ message: 'Failed to fetch shipment details' })
     }, [shipmentDetailCall.isSuccess, shipmentDetailCall.isError, shipmentDetailCall.data])
 
-    const handleCsvUpload = useCallback(async () => {
-        if (!id) {
-            notification.error({ message: 'Shipment ID missing' })
-            return
-        }
+    const headerUi = () => {
+        return (
+            <div className="bg-white shadow-lg rounded-2xl p-6 border border-gray-100 hover:shadow-xl transition-all duration-300">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div>
+                        <h4 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                            <FiPackage className="text-blue-500" />
+                            {shipmentDetails?.name || 'Unnamed Shipment'}
+                            {shipmentDetails?.shipment_id && (
+                                <span className="text-gray-400 text-base font-normal">({shipmentDetails?.shipment_id})</span>
+                            )}
+                        </h4>
 
-        if (!csvFileList.length) {
-            notification.warning({ message: 'Please select a file before uploading' })
-            return
-        }
+                        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mt-2">
+                            <span className="flex items-center gap-1">
+                                <FiUser className="text-gray-400" />
+                                {shipmentDetails?.dispatched_by || 'N/A'}
+                            </span>
 
-        try {
-            setIsUploading(true)
-            const formData = new FormData()
-            formData.append('shipment_items_file', csvFileList[0])
-            formData.append('shipment_id', id)
-            await axioisInstance.post('/shipment/bulkupload/items', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
-            notification.success({ message: 'CSV uploaded successfully' })
-            setCsvFileList([])
-            setShowAddCsv(false)
-            shipmentDetailCall.refetch()
-        } catch (error) {
-            if (error instanceof AxiosError) errorMessage(error)
-        } finally {
-            setIsUploading(false)
-        }
-    }, [csvFileList, id, shipmentDetailCall])
-
-    const shipmentInfo = useMemo(
-        () => [
-            { label: 'Document', value: shipmentDetails?.name ?? 'N/A' },
-            { label: 'Shipment Id', value: shipmentDetails?.shipment_id ?? 'N/A' },
-            { label: 'AWB Number', value: shipmentDetails?.awb_number ?? 'N/A' },
-            { label: 'Dispatch Date', value: formatDate(shipmentDetails?.dispatch_date) },
-            { label: 'Origin Address', value: shipmentDetails?.origin_address ?? 'N/A' },
-        ],
-        [shipmentDetails],
-    )
-
-    const deliveryInfo = useMemo(
-        () => [
-            { label: 'Dispatched By', value: shipmentDetails?.dispatched_by ?? 'N/A' },
-            { label: 'Received By', value: shipmentDetails?.received_by ?? 'N/A' },
-            { label: 'Delivery Address', value: shipmentDetails?.delivery_address ?? 'N/A' },
-            { label: 'Delivery Date', value: formatDate(shipmentDetails?.delivery_date) },
-        ],
-        [shipmentDetails],
-    )
-    const itemStats = useMemo(
-        () => [
-            { label: 'Box Count', value: shipmentDetails?.total_box_count ?? 0 },
-            { label: 'Items Count', value: shipmentDetails?.upload_count ?? 0 },
-            { label: 'Total Quantity', value: shipmentDetails?.total_quantity ?? 0 },
-        ],
-        [shipmentDetails],
-    )
-
-    return (
-        <Spin spinning={shipmentDetailCall.isLoading || isUploading}>
-            <div className="p-6">
-                <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                    <Card className="p-6 shadow-xl rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-gray-100">
-                        <div className="flex items-center gap-2">
-                            <div className="p-2 bg-blue-100 rounded-lg">
-                                <FaShippingFast className="text-2xl text-green-500" />
-                            </div>
-                            <h2 className="text-xl font-bold">Shipment Details</h2>
-                        </div>
-
-                        <div className="mt-4 space-y-2 text-sm">
-                            {shipmentInfo.map((item, index) => (
-                                <div key={index} className="flex justify-between">
-                                    <span className="font-semibold text-gray-600">{item.label}:</span>
-                                    <span>{item.value}</span>
+                            <span className="flex items-center gap-1">
+                                <FiCalendar className="text-gray-400" />
+                                {shipmentDetails?.dispatch_date || 'No Date Found'}
+                            </span>
+                            {shipmentDetails?.brand && (
+                                <div className="flex items-center gap-2 bg-blue-50 text-blue-600 px-4 py-1.5 rounded-full text-sm font-medium">
+                                    <FiTruck />
+                                    {shipmentDetails.brand}
                                 </div>
-                            ))}
-                        </div>
-                    </Card>
-                    <Card className="p-6 shadow-xl rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-gray-100">
-                        <div className="flex items-center gap-2">
-                            <div className="p-2 bg-blue-100 rounded-lg">
-                                <FaMapMarkedAlt className="text-2xl text-red-600" />
-                            </div>
-                            <h2 className="text-xl font-bold">Delivery Info</h2>
-                        </div>
-
-                        <div className="mt-4 space-y-2 text-sm">
-                            {deliveryInfo.map((item, index) => (
-                                <div key={index} className="flex justify-between">
-                                    <span className="font-semibold text-gray-600">{item.label}:</span>
-                                    <span>{item.value}</span>
+                            )}
+                            {shipmentDetails?.awb_number && (
+                                <div className="flex items-center gap-2 bg-blue-50 text-blue-600 px-4 py-1.5 rounded-full text-sm font-medium">
+                                    AWB: {shipmentDetails.awb_number}
                                 </div>
-                            ))}
-                        </div>
-                    </Card>
-                    <Card className="p-6 shadow-xl rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-gray-100">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="p-2 bg-blue-100 rounded-lg">
-                                <FaBoxOpen className="text-2xl text-blue-600" />
-                            </div>
-                            <h2 className="text-xl font-semibold text-gray-800">Items Information</h2>
-                        </div>
-
-                        <div className="space-y-3 text-sm">
-                            {itemStats.map((item) => (
-                                <div key={item.label} className="flex justify-between border-b pb-2 last:border-none">
-                                    <span className="font-semibold text-gray-600">{item.label}</span>
-                                    <span className="font-medium text-gray-800">{item.value}</span>
-                                </div>
-                            ))}
-                        </div>
-
-                        <div className="pt-6">
-                            {showAddCsv ? (
-                                <div className="space-y-4">
-                                    <button
-                                        className="w-full py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white"
-                                        onClick={() => setShowAddCsv(false)}
-                                    >
-                                        <FaTimes className="inline mr-2" />
-                                        Close Upload
-                                    </button>
-
-                                    <div className="p-4 bg-white rounded-lg border border-dashed">
-                                        <Upload
-                                            beforeUpload={beforeUpload}
-                                            fileList={csvFileList}
-                                            onChange={(files) => setCsvFileList(files)}
-                                            onFileRemove={(files) => setCsvFileList(files)}
-                                        />
-
-                                        <button
-                                            className="w-full mt-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50"
-                                            onClick={handleCsvUpload}
-                                            disabled={!csvFileList.length || isUploading}
-                                        >
-                                            Upload File
-                                        </button>
-                                    </div>
-                                </div>
-                            ) : (
-                                <button
-                                    className="w-full py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white"
-                                    onClick={() => setShowAddCsv(true)}
-                                >
-                                    <FaUpload className="inline mr-2" />
-                                    Upload Shipping Items File
-                                </button>
                             )}
                         </div>
-                    </Card>
+                    </div>
+
+                    <div>
+                        <Button variant="new" size="sm" icon={<FaUpload />} onClick={() => setShowAddCsv(true)}>
+                            Upload Shipping Items
+                        </Button>
+                    </div>
                 </div>
+                <div className="my-5 border-t border-gray-100" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-gray-50 p-4 rounded-xl hover:bg-gray-100 transition">
+                        <p className="text-xs text-gray-400 uppercase tracking-wide mb-1 flex items-center gap-1">
+                            <FiMapPin />
+                            Origin
+                        </p>
+                        <p className="text-gray-700 font-medium">{shipmentDetails?.origin_address || 'N/A'}</p>
+                    </div>
+                    <div className="bg-gray-50 p-4 rounded-xl hover:bg-gray-100 transition">
+                        <p className="text-xs text-gray-400 uppercase tracking-wide mb-1 flex items-center gap-1">
+                            <FiMapPin />
+                            Destination
+                        </p>
+                        <p className="text-gray-700 font-medium">{shipmentDetails?.delivery_address || 'N/A'}</p>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+    const QuantityBoxes = () => {
+        const stats = [
+            {
+                label: 'Total Quantity',
+                value: shipmentDetails?.total_quantity,
+                icon: <FiLayers className="text-xl" />,
+                color: 'bg-blue-50 text-blue-600',
+            },
+            {
+                label: 'Items Count',
+                value: shipmentDetails?.items_count,
+                icon: <FiPackage className="text-xl" />,
+                color: 'bg-green-50 text-green-600',
+            },
+            {
+                label: 'Upload Count',
+                value: shipmentDetails?.upload_count,
+                icon: <FiUpload className="text-xl" />,
+                color: 'bg-purple-50 text-purple-600',
+            },
+            {
+                label: 'Total Box Count',
+                value: shipmentDetails?.total_box_count,
+                icon: <FiBox className="text-xl" />,
+                color: 'bg-orange-50 text-orange-600',
+            },
+            {
+                label: 'Total Boxes',
+                value: shipmentDetails?.box_count,
+                icon: <FiBox className="text-xl" />,
+                color: 'bg-pink-50 text-pink-600',
+            },
+            {
+                label: 'Total Invoice Value',
+                value: shipmentDetails?.total_invoice_value,
+                icon: <FiBox className="text-xl" />,
+                color: 'bg-pink-50 text-pink-600',
+            },
+        ]
+        return (
+            <div className="grid grid-cols-2 md:grid-cols-3 mt-6 lg:grid-cols-6 gap-4">
+                {stats.map((stat, index) => (
+                    <div
+                        key={index}
+                        className="bg-gray-50 border border-gray-100 rounded-2xl p-4 shadow-lg hover:shadow-md transition-all duration-300"
+                    >
+                        <div className="flex justify-between">
+                            <span>
+                                <p className="text-sm text-gray-500 mt-1">{stat.label}</p>
+                                <h3 className="text-xl font-semibold text-gray-800">{stat.value ?? 0}</h3>
+                            </span>
+                            <div className={`w-10 h-10 flex items-center justify-center rounded-lg mb-3 ${stat.color}`}>{stat.icon}</div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        )
+    }
+
+    return (
+        <Spin spinning={shipmentDetailCall.isLoading}>
+            <div className="p-6">
+                <div>{headerUi()}</div>
+                <div>{QuantityBoxes()}</div>
                 <div>
                     <ShipmentDownload id={id as string} />
                 </div>
@@ -196,6 +161,9 @@ const BrandShipmentDetails = () => {
                     <InwardMaterialModule />
                 </div>
             </div>
+            {showAddCsv && (
+                <AddShipmentModal id={id as string} isOpen={showAddCsv} setIsOpen={setShowAddCsv} shipmentDetailCall={shipmentDetailCall} />
+            )}
         </Spin>
     )
 }

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import RtkQueryService from '@/services/RtkQueryService'
-import { ShipmentDownloadResponse, ShipmentResponse } from '../types/shipment.types'
+import { ShipmentDownloadResponse, ShipmentItemsResponse, ShipmentResponse } from '../types/shipment.types'
 
 export const shipmentService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
@@ -31,6 +31,22 @@ export const shipmentService = RtkQueryService.injectEndpoints({
 
                 return {
                     url: `/product-shipment`,
+                    method: 'GET',
+                    params: parameters,
+                }
+            },
+        }),
+        getShipmentItems: builder.query<ShipmentItemsResponse, { shipment_id: number | string; pageSize: number; page: number }>({
+            query: (params) => {
+                const parameters: Record<string, string | number | boolean> = {
+                    download: true,
+                }
+                if (params.shipment_id) parameters.shipment_id = params.shipment_id
+                if (params.page) parameters.page = params.page
+                if (params.pageSize) parameters.pageSize = params.pageSize
+
+                return {
+                    url: `/shipment/item`,
                     method: 'GET',
                     params: parameters,
                 }
