@@ -112,19 +112,13 @@ const AssignRiderHomeModal = ({ isOpen, selectedInvoices, setIsOpen }: ModalProp
 
     const riderDataArray = riderDetails && riderDetails?.filter((item) => item?.profile?.checked_in_status === true)
 
-    // if (storeCodes && storeCodes?.length > 1) {
-    //     notification.error({ message: 'Select only one store' })
-    //     return null
-    // }
-
     return (
         <div>
             <Modal
                 title=""
                 open={isOpen}
-                okText="Assign"
+                okText={!selectedRiderMobile ? 'AUTO ASSIGN' : 'ASSIGN RIDER'}
                 okButtonProps={{
-                    disabled: !selectedRiderMobile,
                     style: {
                         backgroundColor: 'green',
                         borderColor: 'darkgreen',
@@ -197,7 +191,6 @@ const AssignRiderHomeModal = ({ isOpen, selectedInvoices, setIsOpen }: ModalProp
                             />
                         </div>
 
-                        {/* Rider List */}
                         {riderDetails && (
                             <div className="flex-1 overflow-scroll">
                                 <div className="overflow-y-auto h-[300px] pr-2">
