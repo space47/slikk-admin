@@ -57,6 +57,7 @@ import dateRangeReducer from './slices/dateRange/dateRange.slice'
 import vendorReducer from './slices/vendorsSlice/vendors.slice'
 import purchaseOrderReducer from './slices/purchaseOrderSlice/purchaseOrder.slice'
 import riderZoneReducer from './slices/riderZoneSlice/riderZoneSlice'
+import masterShipmentDetailsReducer from './slices/masterShipmentSlice/masterShipment.slice'
 
 export type RootState = CombinedState<{
     authorization: CombinedState<Authorization>
@@ -112,6 +113,7 @@ const staticReducers = {
     datePicker: datePickerReducer,
     picker: pickerReducer,
     shipmentDetails: shipmentDetailsReducer,
+    masterShipmentDetails: masterShipmentDetailsReducer,
     riderAttendanceReport: riderAttendanceReportReducer,
     pageSettings: pageSettingsReducer,
     pageNames: pageNamesReducer,

@@ -10,21 +10,24 @@ interface props {
     name: string
     fieldname: string
     customCss?: string
+    noTime?: boolean
 }
 
-const FullDateForm = ({ label, name, fieldname, customCss }: props) => {
+const FullDateForm = ({ label, name, fieldname, customCss, noTime }: props) => {
+    const format = noTime ? 'YYYY-MM-DD' : 'YYYY-MM-DD HH:mm:ss'
+
     return (
         <div>
             <FormItem label={label}>
                 <Field name={name}>
                     {({ field, form }: FieldProps) => (
                         <DatePicker
-                            showTime
+                            showTime={!noTime}
                             placeholder=""
                             className={customCss ? customCss : 'w-full max-w-md'}
-                            value={field.value ? dayjs(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
+                            value={field.value ? dayjs(field.value, format) : null}
                             onChange={(value) => {
-                                form.setFieldValue(fieldname, value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
+                                form.setFieldValue(fieldname, value ? value.format(format) : '')
                             }}
                         />
                     )}
