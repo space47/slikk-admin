@@ -130,7 +130,7 @@ const FrameTemplatePage = () => {
         }
 
         try {
-            const res = await axioisInstance.post('/product/frame-style-templates/', payload)
+            const res = await axioisInstance.post('/frame-style-templates', payload)
 
             notification.success({
                 message: 'Success',

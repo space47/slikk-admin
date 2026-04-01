@@ -23,7 +23,7 @@ const AddFrameModal = ({ isOpen, setIsOpen }: props) => {
     const navigate = useNavigate()
     const fetchTemplates = async () => {
         try {
-            const res = await axioisInstance.get('/product/frame-style-templates/?is_active=true')
+            const res = await axioisInstance.get('/frame-style-templates?is_active=true')
             setTemplates(res?.data?.results || res?.data || [])
         } catch (e) {
             console.log(e)
@@ -38,7 +38,7 @@ const AddFrameModal = ({ isOpen, setIsOpen }: props) => {
 
     const handleDeleteTemplate = async (id: string) => {
         try {
-            await axioisInstance.delete(`/product/frame-style-templates/${id}/`)
+            await axioisInstance.delete(`/frame-style-templates/${id}`)
             notification.success({ message: 'Template Deleted', description: 'Template has been successfully removed.' })
             fetchTemplates()
         } catch (e: any) {
