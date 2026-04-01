@@ -719,15 +719,14 @@ const MultipleMap: React.FC<MultipleMapProps> = ({
                     )}
 
                     {/* Optional: Quick stats */}
-                    {selectedMarkers.length > 1 && (
-                        <div className="flex-shrink-0 mt-3 pt-2">
-                            <div className="flex justify-end">
-                                <Button variant="new" size="sm" onClick={() => setShowAssignRiderModal(true)}>
-                                    Assign Rider
-                                </Button>
-                            </div>
+
+                    <div className="flex-shrink-0 mt-3 pt-2">
+                        <div className="flex justify-end">
+                            <Button variant="new" size="sm" onClick={() => setShowAssignRiderModal(true)}>
+                                Assign Rider
+                            </Button>
                         </div>
-                    )}
+                    </div>
                 </div>
             )}
 
