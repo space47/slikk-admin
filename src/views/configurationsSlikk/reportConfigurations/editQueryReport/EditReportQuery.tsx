@@ -97,6 +97,13 @@ const EditReportQuery = () => {
     }, [id])
 
     const handleSubmit = async (values: any) => {
+        const requiredFields = values?.cache_config?.cache_time_seconds && values?.display_name && values?.name
+
+        if (!requiredFields) {
+            notification.error({ message: 'Name, Cache and Display name are mandatory' })
+            return
+        }
+
         const isCacheEnableForAField = values?.value?.filter((item: Record<string, any>) => item?.enable_cache) || []
 
         const configForFieldsCached = isCacheEnableForAField.reduce(

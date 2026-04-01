@@ -18,6 +18,7 @@ const QcActionArray = [
 const QCUploader = () => {
     const [file, setFile] = useState(null)
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(QcActionArray[0])
+    const [loader, setLoader] = useState(false)
 
     const handleSelect = (value: any) => {
         const selected = QcActionArray.find((item) => item.value === value)
@@ -57,6 +58,7 @@ const QCUploader = () => {
         }
 
         try {
+            setLoader(true)
             const response = await axioisInstance(config)
             console.log('File uploaded successfully:', JSON.stringify(response.data))
 
@@ -71,6 +73,8 @@ const QCUploader = () => {
                 message: 'failure',
                 description: 'File upload failed',
             })
+        } finally {
+            setLoader(false)
         }
     }
 
@@ -105,8 +109,9 @@ const QCUploader = () => {
                     </Dropdown>
                 </div>
 
-                <Button onClick={handleSave}>Save</Button>
-                <Button>Download</Button>
+                <Button variant="twoTone" size="sm" loading={loader} disabled={loader} onClick={handleSave}>
+                    Save
+                </Button>
             </div>
         </div>
     )

@@ -200,4 +200,5 @@ export interface OrderState {
     page: number
     from: string
     to: string
+    tabSelect: string
 }

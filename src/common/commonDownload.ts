@@ -50,3 +50,15 @@ export const commonPresignedDownload = async (fileUrl: string, fileName: string)
         console.log(error)
     }
 }
+
+export const commonDownloadFromRtk = <T>(responseData: T, title: string) => {
+    const url = window.URL.createObjectURL(responseData as Blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', title)
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+
+    window.URL.revokeObjectURL(url)
+}

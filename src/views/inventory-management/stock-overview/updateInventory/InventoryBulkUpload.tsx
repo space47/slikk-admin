@@ -7,11 +7,12 @@ import { useState } from 'react'
 import FormData from 'form-data'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
+import { FaSave } from 'react-icons/fa'
 
 const InventoryBulkUpload = () => {
     const [file, setFile] = useState(null)
     const [appendLocation, setAppendLocation] = useState(false)
-
+    const [loader, setLoader] = useState(false)
     console.log('append location', appendLocation)
 
     const onFileUpload = (fileList: any) => {
@@ -41,6 +42,7 @@ const InventoryBulkUpload = () => {
         }
 
         try {
+            setLoader(true)
             const response = await axioisInstance(config)
             console.log('File uploaded successfully:', JSON.stringify(response.data))
 
@@ -55,6 +57,8 @@ const InventoryBulkUpload = () => {
                 message: 'failure',
                 description: 'File upload failed',
             })
+        } finally {
+            setLoader(false)
         }
     }
 
@@ -73,8 +77,9 @@ const InventoryBulkUpload = () => {
                 </div>
             </Upload>
             <div className="flex flex-row w-full space-x-[2%] items-center justify-center">
-                <Button onClick={handleSave}>Save</Button>
-                <Button>Download</Button>
+                <Button variant="twoTone" color="gray" icon={<FaSave />} loading={loader} disabled={loader} size="sm" onClick={handleSave}>
+                    Save
+                </Button>
                 <div className="flex gap-2 items-center">
                     <input type="checkbox" onChange={() => setAppendLocation((prev) => !prev)} />
                     <span className="font-bold">Append Location</span>

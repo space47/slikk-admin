@@ -87,6 +87,7 @@ export const initialValuesEdit = (urlFieldDatas: any, baseUrl: string) => {
         page_title: urlFieldDatas?.extra_attributes?.page_title,
         is_banner: urlFieldDatas?.extra_attributes?.is_banner,
         banners: urlFieldDatas?.extra_attributes?.banner_id,
+        product_code: urlFieldDatas?.extra_attributes?.product_code,
     }
 
     return initialValues

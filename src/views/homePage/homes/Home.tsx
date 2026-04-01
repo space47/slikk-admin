@@ -91,7 +91,8 @@ const Home = () => {
     }
 
     const handleInvoiceFunction = (inputName: string) => {
-        navigate(`/app/orders/${inputName}`)
+        const url = inputName?.[0]?.toLowerCase() === 'r' ? `/app/returnOrders/${inputName}` : `/app/orders/${inputName}`
+        navigate(url)
     }
     const handleReceived = (from: string, to: string) => {
         navigate(`/app/orders`, { state: { var1: from, var2: to } })
@@ -203,7 +204,7 @@ const Home = () => {
                                 ref={(el) => (inputRefs.current['customerInvoice'] = el)}
                                 type="text"
                                 name="invoice_id"
-                                placeholder="Search by Invoice ID"
+                                placeholder="Search Order/ Return Orders"
                                 className="flex-1 p-2 border rounded-md focus:outline-none focus:ring-2 dark:bg-gray-900"
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter' && inputRefs.current['customerInvoice']) {

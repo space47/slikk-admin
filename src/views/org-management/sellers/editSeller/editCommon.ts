@@ -56,7 +56,7 @@ export const SELLING_FORM = [
         status: 'address',
     },
     {
-        label: 'Revenue Share Percent',
+        label: 'Revenue Share Percent/Commission',
         classname: 'col-span-1 w-full',
         type: 'text',
         name: 'revenue_share',

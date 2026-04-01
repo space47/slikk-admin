@@ -34,6 +34,9 @@ const PoOrderItemsDialog = ({ isOpen, setIsOpen, handleSubmit, edit, currentRow 
         supplier_mrp: item?.supplier_mrp ?? 0,
         sku: item?.sku,
         quantity: item?.quantity ?? 0,
+        selling_price: item?.selling_price,
+        tax: item?.tax_percentage,
+        commission_rate: item?.commission_rate,
     }
 
     return (
@@ -52,6 +55,16 @@ const PoOrderItemsDialog = ({ isOpen, setIsOpen, handleSubmit, edit, currentRow 
                                 </p>
                             </div>
                         </div>
+                        {PoOrderItemsArray?.length > 0 && (
+                            <div className="mt-6 p-4 bg-blue-50/50 rounded-xl border border-blue-100">
+                                <div className="flex items-center space-x-3 text-blue-700">
+                                    <HiOutlineDocumentText className="w-5 h-5" />
+                                    <span className="text-sm font-medium">
+                                        {PoOrderItemsArray.length} field{PoOrderItemsArray.length !== 1 ? 's' : ''} to configure
+                                    </span>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -64,7 +77,7 @@ const PoOrderItemsDialog = ({ isOpen, setIsOpen, handleSubmit, edit, currentRow 
                 >
                     {(formik) => (
                         <>
-                            <div className="flex-1 overflow-y-auto px-6 py-6">
+                            <div className="flex-1 overflow-y-auto px- py-2">
                                 <Form className="space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         {PoOrderItemsArray?.map((field, idx) => (
@@ -88,20 +101,9 @@ const PoOrderItemsDialog = ({ isOpen, setIsOpen, handleSubmit, edit, currentRow 
                                                         />
                                                     </div>
                                                 </FormItem>
-                                                <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-blue-600 group-hover:w-full transition-all duration-300 rounded-b-xl"></div>
                                             </div>
                                         ))}
                                     </div>
-                                    {PoOrderItemsArray?.length > 0 && (
-                                        <div className="mt-6 p-4 bg-blue-50/50 rounded-xl border border-blue-100">
-                                            <div className="flex items-center space-x-3 text-blue-700">
-                                                <HiOutlineDocumentText className="w-5 h-5" />
-                                                <span className="text-sm font-medium">
-                                                    {PoOrderItemsArray.length} field{PoOrderItemsArray.length !== 1 ? 's' : ''} to configure
-                                                </span>
-                                            </div>
-                                        </div>
-                                    )}
                                 </Form>
                             </div>
                             <div className="px-6 py-4 bg-white border-t border-gray-200 shadow-lg">

@@ -47,6 +47,8 @@ export type InwardParamType = {
     store_id: string
     page: number
     pageSize: number
+    from?: string
+    to?: string
 }
 
 export type GrnResponseType = ApiResponse<GRNDetails>

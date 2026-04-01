@@ -153,7 +153,6 @@ export enum SellerKeys {
     BUSINESS_NATURE_COMPANY_DETAILS = 'business_nature_company_details',
     AUTHORIZED_PERSON = 'authorized_person',
     SP_TYPE = 'sp_type',
-    PROVISIONAL_DISCOUNT = 'provisional_discount_rate',
     COMMENTS = 'comments',
 
     DAMAGES_PER_SKU = 'damages_per_sku',

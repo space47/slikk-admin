@@ -59,6 +59,7 @@ const AddUrlShortner = () => {
             page_title: values?.page_title,
             is_banner: values?.is_banner,
             banner_id: values?.banners && values.banners[0]?.id,
+            product_code: values?.product_code,
         }
         const filters = [
             ...(values.filters || []),
@@ -79,10 +80,11 @@ const AddUrlShortner = () => {
         if (values?.is_custom) utmFilters = noSelectFilters ? `?${noSelectFilters}` : ''
         if (values?.is_custom) filterSelect = values?.select_filter ? `?filters=${filters}` : `?${noSelectFilters}` || ''
 
-        const { page_title, ...rest } = values
+        const { page_title, product_code, ...rest } = values
         console.log(page_title)
         let pageTitle = ''
         if (values.page_title && values?.target_page === 'products') pageTitle = `/${values?.page_title}`
+        if (product_code && values?.target_page === 'product') pageTitle = `/${values?.product_code}`
         let appOnly = ''
         if (values?.app) appOnly = `&app=${values?.app}`
         let target_page = ''

@@ -11,6 +11,7 @@ export type QcInitialStateTypes = {
     from: string
     to: string
     summary: Record<string, number>
+    qcStatus?: string
 }
 
 const initialState: QcInitialStateTypes = {
@@ -28,6 +29,7 @@ const initialState: QcInitialStateTypes = {
         total_skus: 0,
         total_synced_quantity: 0,
     },
+    qcStatus: '',
 }
 
 const qualityCheck = createSlice({
@@ -55,8 +57,11 @@ const qualityCheck = createSlice({
         setTo: (state, action: PayloadAction<string>) => {
             state.to = action.payload
         },
+        setQcStatus: (state, action: PayloadAction<string>) => {
+            state.qcStatus = action.payload
+        },
     },
 })
 
-export const { setQcDetails, setCount, setPage, setPageSize, setFrom, setTo, setSummary } = qualityCheck.actions
+export const { setQcDetails, setCount, setPage, setPageSize, setFrom, setTo, setSummary, setQcStatus } = qualityCheck.actions
 export default qualityCheck.reducer

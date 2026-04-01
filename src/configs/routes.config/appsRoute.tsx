@@ -191,7 +191,7 @@ const appsRoute: Routes = [
     },
     {
         key: 'appsOrgManagement.po',
-        path: `${APP_PREFIX_PATH}/po/addNew`,
+        path: `${APP_PREFIX_PATH}/po/addNew/:company_id`,
         component: lazy(
             () => import('@/views/org-management/purchaseOrder/poAdd/PoAdd'), //p1
         ),
@@ -229,7 +229,7 @@ const appsRoute: Routes = [
     },
     {
         key: 'appsOrgManagement.po',
-        path: `${APP_PREFIX_PATH}/po/:purchase_id`,
+        path: `${APP_PREFIX_PATH}/po/:purchase_id/:company_id`,
         component: lazy(
             () => import('@/views/org-management/purchaseOrder/poEdit/PoEdit'), //p1
         ),
@@ -245,7 +245,7 @@ const appsRoute: Routes = [
     },
     {
         key: 'appsOrgManagement.po',
-        path: `${APP_PREFIX_PATH}/po/details/:purchase_id`,
+        path: `${APP_PREFIX_PATH}/po/details/:purchase_id/:company_id`,
         component: lazy(
             () => import('@/views/org-management/purchaseOrder/poDetail/PoDetail'), //p1
         ),
@@ -487,6 +487,12 @@ const appsRoute: Routes = [
         key: 'appsCategory.products',
         path: `${APP_PREFIX_PATH}/catalog/products`,
         component: lazy(() => import('@/views/category-management/catalog/Products')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCategory.frameTemplate',
+        path: `${APP_PREFIX_PATH}/catalog/frame-template`,
+        component: lazy(() => import('@/views/category-management/catalog/FrameTemplatePage')),
         authority: [ADMIN, USER],
     },
     {

@@ -30,6 +30,7 @@ const customBaseQuery: typeof baseQuery = async (args, api, extraOptions) => {
         'merchant/purchase/order',
         'merchant/purchase/orderitem',
         'merchant/purchase/bulkupload/orderitem',
+        'goods/qualitycheck',
     ]
     const method = (modifiedArgs.method || 'GET').toUpperCase()
 

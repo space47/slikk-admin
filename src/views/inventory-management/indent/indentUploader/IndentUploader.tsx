@@ -9,12 +9,14 @@ import { USER_PROFILE_DATA } from '@/store/types/company.types'
 import { useAppSelector } from '@/store'
 import { AxiosError } from 'axios'
 import { Select } from '@/components/ui'
+import { BsCloudUploadFill } from 'react-icons/bs'
 
 const IndentUploader = () => {
     // const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const [file, setFile] = useState<File | null>(null)
     const [storeCode, setStoreCode] = useState('')
     const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
+    const [loader, setLoader] = useState(false)
 
     const onFileUpload = (fileList: File[]) => {
         setFile(fileList[0])
@@ -32,6 +34,7 @@ const IndentUploader = () => {
         const formData = new FormData()
         formData.append('indent_file', file)
         formData.append('target_store', storeCode)
+        setLoader(true)
 
         try {
             const response = await axioisInstance.post('/indent/bulkupload', formData, {
@@ -47,6 +50,8 @@ const IndentUploader = () => {
                     description: error?.response?.data?.message || error?.message || 'File upload failed',
                 })
             }
+        } finally {
+            setLoader(false)
         }
     }
 
@@ -85,7 +90,15 @@ const IndentUploader = () => {
                         }}
                     />
                 </div>
-                <Button onClick={handleSave} className="mt-5">
+                <Button
+                    variant="new"
+                    size="sm"
+                    icon={<BsCloudUploadFill />}
+                    onClick={handleSave}
+                    className="mt-5"
+                    loading={loader}
+                    disabled={loader}
+                >
                     Upload
                 </Button>
             </div>

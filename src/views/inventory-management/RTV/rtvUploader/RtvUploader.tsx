@@ -9,11 +9,13 @@ import { AxiosError } from 'axios'
 import { Select } from '@/components/ui'
 import { useAppSelector } from '@/store'
 import { USER_PROFILE_DATA } from '@/store/types/company.types'
+import { BsCloudUploadFill } from 'react-icons/bs'
 
-const IndentUploader = () => {
+const RtvUploader = () => {
     const [file, setFile] = useState<File | null>(null)
     const [company, setCompany] = useState<number | null>(null)
     const companyList = useAppSelector<USER_PROFILE_DATA['company']>((state) => state.company.company)
+    const [loader, setLoader] = useState(false)
 
     console.log('company is', company)
 
@@ -31,6 +33,7 @@ const IndentUploader = () => {
         formData.append('rtv_products_file', file)
         formData.append('company', company)
         try {
+            setLoader(true)
             const response = await axioisInstance.post('/rtv-products/bulkupload', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             })
@@ -44,6 +47,8 @@ const IndentUploader = () => {
                     description: error?.response?.data?.message || error?.message || 'File upload failed',
                 })
             }
+        } finally {
+            setLoader(false)
         }
     }
 
@@ -82,7 +87,14 @@ const IndentUploader = () => {
                         }}
                     />
                 </div>
-                <Button onClick={handleSave} variant="twoTone" className="mt-5">
+                <Button
+                    loading={loader}
+                    disabled={loader}
+                    icon={<BsCloudUploadFill />}
+                    onClick={handleSave}
+                    variant="twoTone"
+                    className="mt-5"
+                >
                     Upload
                 </Button>
             </div>
@@ -90,4 +102,4 @@ const IndentUploader = () => {
     )
 }
 
-export default IndentUploader
+export default RtvUploader
