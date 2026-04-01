@@ -33,6 +33,7 @@ const BrandShipmentsEdit = () => {
     const initialValue = {
         name: shipmentData?.name,
         awb_number: shipmentData?.awb_number,
+        shipment_id: shipmentData?.shipment_id,
         dispatch_date: shipmentData?.dispatch_date,
         delivery_date: shipmentData?.delivery_date,
         document: shipmentData?.document,
@@ -47,14 +48,6 @@ const BrandShipmentsEdit = () => {
         invoice_number: shipmentData?.invoice_number,
     }
 
-    const textChanger = (value: any) => {
-        const parser = new DOMParser()
-        const htmlDoc = parser.parseFromString(value, 'text/html')
-        const plainTextValue = htmlDoc.body.textContent || ''
-
-        return plainTextValue
-    }
-
     const handleSubmitEdit = async (values: any) => {
         try {
             setShowSpinner(true)
@@ -63,7 +56,7 @@ const BrandShipmentsEdit = () => {
                 values,
                 selectedCompany,
                 isEdit: true,
-                textChanger,
+                initialValues: initialValue,
             })
 
             const response = await axioisInstance.patch(`/product-shipment/${id}`, filteredBody)

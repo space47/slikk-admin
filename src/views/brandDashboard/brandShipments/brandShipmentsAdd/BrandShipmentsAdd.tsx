@@ -6,7 +6,6 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import { useAppSelector } from '@/store'
 import { USER_PROFILE_DATA } from '@/store/types/company.types'
-import { textParser } from '@/common/textParser'
 import BrandShipmentForm from '../brandShipmentsUtils/BrandShipmentForm'
 import { buildShipmentPayload, ShipmentItemsUpload } from '../brandShipmentsUtils/brandShipmentFunctions'
 
@@ -22,7 +21,6 @@ const BrandShipmentsAdd = () => {
                 values,
                 selectedCompany,
                 isEdit: false,
-                textParser,
             })
 
             const response = await axioisInstance.post(`/product-shipment`, body)

@@ -1,10 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { handleimage } from '@/common/handleImage'
+import { textParser } from '@/common/textParser'
+import { getChangedValues } from '@/utils/apiBodyUtility'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 
-export const buildShipmentPayload = async ({ values, selectedCompany, isEdit = false, textParser, textChanger }: any) => {
-    // 🔹 KEEPING YOUR ORIGINAL PROMISE STRUCTURE
+interface Props {
+    values: any
+    selectedCompany: any
+    isEdit: boolean
+    initialValues?: any
+}
+
+export const buildShipmentPayload = async ({ values, selectedCompany, isEdit = false, initialValues }: Props) => {
     const [supportingDocumentResult, invoiceResult, awbResult, deliveryChalanResult] = await Promise.allSettled([
         values?.[isEdit ? 'document' : 'itemsArray']?.length > 0
             ? handleimage('product', values[isEdit ? 'document' : 'itemsArray'])
@@ -16,8 +24,6 @@ export const buildShipmentPayload = async ({ values, selectedCompany, isEdit = f
 
         values?.delivery_chalan?.length > 0 ? handleimage('product', values.delivery_chalan) : Promise.resolve(''),
     ])
-
-    // 🔹 Extract uploads
     const supportingDocumentUpload = supportingDocumentResult.status === 'fulfilled' ? supportingDocumentResult.value : ''
 
     const invoiceUpload = invoiceResult.status === 'fulfilled' ? invoiceResult.value : ''
@@ -26,14 +32,10 @@ export const buildShipmentPayload = async ({ values, selectedCompany, isEdit = f
 
     const deliveryChalanUpload = deliveryChalanResult.status === 'fulfilled' ? deliveryChalanResult.value : ''
 
-    // 🔹 Address handling
-    const parseFn = isEdit ? textChanger : textParser
+    const deliveryAddress = values?.delivery_address ? textParser(values.delivery_address) : ''
 
-    const deliveryAddress = values?.delivery_address ? parseFn(values.delivery_address) : ''
+    const originAddress = values?.origin_address ? textParser(values.origin_address) : ''
 
-    const originAddress = values?.origin_address ? parseFn(values.origin_address) : ''
-
-    // 🔹 Final body
     const body = {
         company: selectedCompany?.currCompany?.id,
         name: values?.name,
@@ -58,8 +60,15 @@ export const buildShipmentPayload = async ({ values, selectedCompany, isEdit = f
     }
 
     // 🔹 Edit case → filter empty
+
     if (isEdit) {
-        return Object.fromEntries(Object.entries(body).filter(([, value]) => value !== '' && value !== null && value !== undefined))
+        const changedValues = getChangedValues(initialValues, body as any)
+        const filterToExclude = ['awb_url', 'invoice_url', 'delivery_chalan']
+        return Object.fromEntries(
+            Object.entries(changedValues)
+                .filter(([, value]) => !filterToExclude?.includes(value))
+                .filter(([, value]) => value !== '' && value !== null && value !== undefined),
+        )
     }
 
     return body
