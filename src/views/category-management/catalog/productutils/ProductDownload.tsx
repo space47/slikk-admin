@@ -1,5 +1,5 @@
 import { Button, Dialog, Input } from '@/components/ui'
-import { ProductTableField } from '../ProductCommon'
+import { ProductDownloadFields, ProductTableField } from '../ProductCommon'
 import { FiInfo } from 'react-icons/fi'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { successMessage } from '@/utils/responseMessages'
@@ -17,11 +17,11 @@ interface props {
 }
 
 const ProductDownload = ({ isOpen, setIsOpen, currentSelectedPage, globalFilter, typeFetch }: props) => {
-    const filteredFields = [ProductTableField.SKU, ProductTableField.SKID, ProductTableField.BARCODE]
+    const filteredFields = [ProductDownloadFields.SKU, ProductDownloadFields.SKID, ProductDownloadFields.BARCODE]
     const [selectedFields, setSelectedFields] = useState<string[]>([])
     const [isDownloading, setIsDownloading] = useState(false)
 
-    const productTableFieldOptions = Object.values(ProductTableField)
+    const productTableFieldOptions = Object.values(ProductDownloadFields)
         ?.filter((item) => !filteredFields.includes(item))
         .map((value) => ({
             value,
