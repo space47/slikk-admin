@@ -33,7 +33,14 @@ const BrandShipmentForm: React.FC<Props> = ({ values, isEdit, noBulk = false }) 
                     <FormContainer className="grid grid-cols-2 gap-2 ">
                         {Shipment_Information?.map((item, key) => {
                             return item?.type === 'dateForm' ? (
-                                <FullDateForm noTime key={key} fieldname={item.name} label={item?.label} name={item?.name} />
+                                <FullDateForm
+                                    noTime
+                                    key={key}
+                                    fieldname={item.name}
+                                    label={item.label}
+                                    name={item.name}
+                                    customCss="w-full h-[40px]"
+                                />
                             ) : (
                                 <div>
                                     <FormItem key={key} label={item?.label} asterisk={item?.isRequired}>
@@ -43,22 +50,8 @@ const BrandShipmentForm: React.FC<Props> = ({ values, isEdit, noBulk = false }) 
                             )
                         })}
                     </FormContainer>
-                    <div>
-                        <FormItem label="Upload Supporting Document"></FormItem>
-                        <FormContainer className=" mt-5 w-full p-4 rounded-xl border  border-dotted border-blue-500 ">
-                            <FormUploadFile
-                                fileList={values.itemsArray || []}
-                                label=""
-                                name="itemsArray"
-                                isEdit={isEdit}
-                                existingFile={values.document}
-                            />
-                            <br />
-                        </FormContainer>
-                    </div>
                 </CommonAccordion>
             </div>
-
             <div className="shadow-xl p-3 mt-5 rounded-2xl border-l-4 border-green-600">
                 <CommonAccordion
                     header={
@@ -85,7 +78,7 @@ const BrandShipmentForm: React.FC<Props> = ({ values, isEdit, noBulk = false }) 
                     </FormContainer>
                 </CommonAccordion>
             </div>
-            <div className="shadow-xl p-3 rounded-2xl border-l-4 mt-5 border-yellow-600">
+            <div className="shadow-xl p-3 rounded-2xl border-l-4 border-yellow-600">
                 <CommonAccordion
                     header={
                         <div className="mb-5 flex gap-3 items-center">
@@ -107,19 +100,65 @@ const BrandShipmentForm: React.FC<Props> = ({ values, isEdit, noBulk = false }) 
                     </FormContainer>
                     {!noBulk && (
                         <>
-                            <div className="flex  justify-between mb-2">
-                                <h5>Upload Shipment Items File</h5>
-                                <a
-                                    className="p-2 rounded-xl bg-green-500 hover:bg-green-600 text-white no-underline"
-                                    href="https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/shipment+items/sample_shipment_items.csv"
-                                >
-                                    Download Sample File
-                                </a>
-                            </div>
-
-                            <FormUploadFile fileList={values.csvArray} label="" name="csvArray" isEdit={isEdit} existingFile={''} />
+                            <FormUploadFile
+                                sampleFile='"https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/shipment+items/sample_shipment_items.csv"'
+                                fileList={values.csvArray}
+                                label="Upload Shipment Items File"
+                                name="csvArray"
+                                isEdit={isEdit}
+                                existingFile={''}
+                            />
                         </>
                     )}
+                </CommonAccordion>
+            </div>
+
+            <div className="shadow-xl p-3 rounded-2xl border-l-4 border-yellow-600">
+                <CommonAccordion
+                    header={
+                        <div className="mb-5 flex gap-3 items-center">
+                            <span className="p-2 bg-yellow-100 rounded-xl">
+                                <FaBox className=" text-2xl text-yellow-600" />
+                            </span>
+                            <h5>Other Files</h5>
+                        </div>
+                    }
+                >
+                    {/* Invoice url */}
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 ">
+                        <FormUploadFile
+                            isEdit
+                            fileList={values.invoiceDoc}
+                            label="Invoice Document"
+                            name="invoice_url"
+                            existingFile={isEdit && values.invoice_url}
+                            // sampleFile="https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/shipment+items/sample_shipment_items.csv"
+                        />
+                        <FormUploadFile
+                            isEdit
+                            fileList={values.itemsArray}
+                            label="Upload Supporting Doc"
+                            name="document"
+                            existingFile={isEdit && values.document}
+                            // sampleFile="https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/shipment+items/sample_shipment_items.csv"
+                        />
+                        <FormUploadFile
+                            isEdit
+                            fileList={values.awbDoc}
+                            label="AWB Document"
+                            name="awb_url"
+                            existingFile={isEdit && values.awb_url}
+                            // sampleFile="https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/shipment+items/sample_shipment_items.csv"
+                        />
+                        <FormUploadFile
+                            isEdit
+                            fileList={values.deliveryChalanDOc}
+                            label="Delivery Chalan"
+                            name="delivery_chalan"
+                            existingFile={isEdit && values.delivery_chalan}
+                            // sampleFile="https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/shipment+items/sample_shipment_items.csv"
+                        />
+                    </div>
                 </CommonAccordion>
             </div>
         </>

@@ -41,19 +41,25 @@ const MasterShipmentsEdit = () => {
     }, [masterShipmentCall.isSuccess, masterShipmentCall.isError, masterShipmentCall?.data?.data, masterShipmentCall.error])
 
     const initialValue = {
-        company: selectedCompany?.currCompany?.id,
-        shipment_id: shipmentData?.shipment_id,
         name: shipmentData?.name,
-        origin_address: shipmentData?.origin_address,
-        delivery_address: shipmentData?.delivery_address,
         awb_number: shipmentData?.awb_number,
         dispatch_date: shipmentData?.dispatch_date,
         delivery_date: shipmentData?.delivery_date,
         document: shipmentData?.document,
+        invoice_url: shipmentData?.invoice_url,
+        awb_url: shipmentData?.awb_url,
+        delivery_chalan: shipmentData?.delivery_chalan,
         dispatched_by: shipmentData?.dispatched_by,
-        received_by: shipmentData?.received_by,
         box_count: shipmentData?.box_count,
         items_count: shipmentData?.items_count,
+        total_quantity: shipmentData?.total_quantity,
+        total_invoice_value: shipmentData?.total_invoice_value,
+        invoice_number: shipmentData?.invoice_number,
+        company: selectedCompany?.currCompany?.id,
+        shipment_id: shipmentData?.shipment_id,
+        origin_address: shipmentData?.origin_address,
+        delivery_address: shipmentData?.delivery_address,
+        received_by: shipmentData?.received_by,
         child_shipments: shipmentData?.child_shipment?.map((item) => item.id) || [],
     }
 
@@ -66,25 +72,42 @@ const MasterShipmentsEdit = () => {
 
     const handleSubmit = async (values: any) => {
         try {
-            const imageUpload = values?.itemsArray && values?.itemsArray.length > 0 ? await handleimage('product', values?.itemsArray) : ''
+            const [supportingDocumentResult, invoiceResult, awbResult, deliveryChalanResult] = await Promise.allSettled([
+                values?.document?.length > 0 ? handleimage('product', values.document) : Promise.resolve(''),
+                values?.invoice_url?.length > 0 ? handleimage('product', values.invoice_url) : Promise.resolve(''),
+                values?.awb_url?.length > 0 ? handleimage('product', values.awb_url) : Promise.resolve(''),
+                values?.delivery_chalan?.length > 0 ? handleimage('product', values.delivery_chalan) : Promise.resolve(''),
+            ])
+
+            const supportingDocumentUpload = supportingDocumentResult.status === 'fulfilled' ? supportingDocumentResult.value : ''
+            const invoiceUpload = invoiceResult.status === 'fulfilled' ? invoiceResult.value : ''
+            const awbUpload = awbResult.status === 'fulfilled' ? awbResult.value : ''
+            const deliveryChalanUpload = deliveryChalanResult.status === 'fulfilled' ? deliveryChalanResult.value : ''
             const deliveryAddress = values?.delivery_address ? textChanger(values?.delivery_address) : ''
             const originAddress = values?.origin_address ? textChanger(values?.origin_address) : ''
             setShowSpinner(true)
             const body = {
-                company_id: values?.company,
-                store: values?.store?.join(','),
-                shipment_id: values?.shipment_id,
+                company: selectedCompany?.currCompany?.id,
                 name: values?.name,
-                origin_address: originAddress,
-                delivery_address: deliveryAddress,
                 awb_number: values?.awb_number,
                 dispatch_date: values?.dispatch_date,
                 delivery_date: values?.delivery_date,
-                document: imageUpload ?? values?.document,
+                document: supportingDocumentUpload,
+                invoice_url: invoiceUpload,
+                awb_url: awbUpload,
+                delivery_chalan: deliveryChalanUpload,
                 dispatched_by: values?.dispatched_by,
-                received_by: values?.received_by?.mobile,
                 box_count: values?.box_count,
                 items_count: values?.items_count,
+                total_quantity: values.total_quantity,
+                total_invoice_value: values?.total_invoice_value,
+                invoice_number: values?.invoice_number,
+                company_id: values?.company,
+                store: values?.store?.join(','),
+                shipment_id: values?.shipment_id,
+                origin_address: originAddress,
+                delivery_address: deliveryAddress,
+                received_by: values?.received_by?.mobile,
                 child_shipment_ids: childShipmentId,
             }
             const filteredBody = Object.fromEntries(

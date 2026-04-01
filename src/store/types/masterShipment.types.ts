@@ -29,20 +29,20 @@ export interface Shipment extends BaseShipment {
     items_count: number | null
 
     shipment_documents: any | null
-
+    delivery_chalan: string
     create_date: string
     update_date: string
-
+    awb_url: string
     company: number
     brand: number | null
     store: number
     source_store: number
-
+    invoice_url: string
     gdn: number | null
-
+    invoice_number?: string | number
     received_by: string | null
     last_updated_by: string | null
-
+    total_invoice_value?: number
     parent_shipment: number | null
 }
 
