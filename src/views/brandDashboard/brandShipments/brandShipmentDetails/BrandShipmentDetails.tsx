@@ -109,12 +109,12 @@ const BrandShipmentDetails: React.FC = () => {
                 icon: <FiUpload className="text-xl" />,
                 color: 'bg-purple-50 text-purple-600',
             },
-            {
-                label: 'Total Box Count',
-                value: shipmentDetails?.total_box_count,
-                icon: <FiBox className="text-xl" />,
-                color: 'bg-orange-50 text-orange-600',
-            },
+            // {
+            //     label: 'Total Box Count',
+            //     value: shipmentDetails?.total_box_count,
+            //     icon: <FiBox className="text-xl" />,
+            //     color: 'bg-orange-50 text-orange-600',
+            // },
             {
                 label: 'Total Boxes',
                 value: shipmentDetails?.box_count,
@@ -122,7 +122,7 @@ const BrandShipmentDetails: React.FC = () => {
                 color: 'bg-pink-50 text-pink-600',
             },
             {
-                label: 'Total Invoice Value',
+                label: 'Total Invoice',
                 value: shipmentDetails?.total_invoice_value,
                 icon: <FiBox className="text-xl" />,
                 color: 'bg-pink-50 text-pink-600',
