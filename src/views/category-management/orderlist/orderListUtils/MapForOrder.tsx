@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useMemo, useState, useCallback, useEffect, useRef } from 'react'
+import React, { useMemo, useState, useCallback, useEffect } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
 import * as L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -8,15 +8,12 @@ import axios from 'axios'
 import _ from 'lodash'
 import icon from 'leaflet/dist/images/marker-icon.png'
 import iconShadow from 'leaflet/dist/images/marker-shadow.png'
-import { MdClearAll, MdFullscreen } from 'react-icons/md'
-import { BsFullscreenExit } from 'react-icons/bs'
+import { MdClearAll } from 'react-icons/md'
 import 'leaflet.heat'
-import { Button, Dropdown, Select } from '@/components/ui'
-import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import { Button } from '@/components/ui'
 import { companyStore } from '@/store/types/companyStore.types'
 import store, { useAppDispatch, useAppSelector } from '@/store'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
-import { EOrderStatus } from '@/views/sales/OrderDetails/orderList.common'
 import { IoCloseCircle } from 'react-icons/io5'
 import AssignRiderHomeModal from '@/views/homePage/homes/componentsHomes/AssignRiderHomeModal'
 
@@ -64,8 +61,8 @@ interface MultipleMapProps {
     amount: any[]
     currentStatus: string[]
     currentInvoice: string[]
-    setSelectedStatus: (status: string[]) => void
     currentDistance: number[]
+    createTime: string[]
 }
 
 interface CenterProps {
@@ -73,6 +70,39 @@ interface CenterProps {
     currLat: any
     currLong: any
 }
+
+const createBoxIcon = (elapsedTime: string, isSelected: boolean) =>
+    L.divIcon({
+        className: '',
+        html: `
+        <div style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        ">
+            <div style="
+                background: ${isSelected ? '#22c55e' : '#2563eb'};
+                color: white;
+                padding: 6px 10px;
+                border-radius: 8px;
+                font-size: 12px;
+                font-weight: 600;
+                white-space: nowrap;
+            ">
+                📦 ${elapsedTime}
+            </div>
+            <div style="
+                width: 0;
+                height: 0;
+                border-left: 6px solid transparent;
+                border-right: 6px solid transparent;
+                border-top: 8px solid ${isSelected ? '#22c55e' : '#2563eb'};
+            "></div>
+        </div>
+        `,
+        iconSize: [80, 30],
+        iconAnchor: [40, 30],
+    })
 
 const CurrentLocationButton: React.FC<CenterProps> = ({ currLat, currLong }) => {
     const map = useMap()
@@ -90,7 +120,6 @@ const CurrentLocationButton: React.FC<CenterProps> = ({ currLat, currLong }) => 
                 border: 'none',
                 borderRadius: '20%',
                 padding: '10px',
-                boxShadow: '0 0 5px rgba(0,0,0,0.3)',
                 cursor: 'pointer',
                 zIndex: 1000,
             }}
@@ -127,6 +156,19 @@ const MarkerComponent: React.FC<MarkerComponentProps> = ({
 }: MarkerComponentProps) => {
     const map = useMap()
 
+    const getElapsedTime = (time: string) => {
+        const created = new Date(time).getTime()
+        const now = Date.now()
+
+        const diff = Math.floor((now - created) / 1000)
+
+        const mins = Math.floor(diff / 60)
+        const hrs = Math.floor(mins / 60)
+
+        if (hrs > 0) return `${hrs}h ${mins % 60}m`
+        return `${mins || '0'} mins`
+    }
+
     useEffect(() => {
         let currPos = 13
 
@@ -162,18 +204,25 @@ const MarkerComponent: React.FC<MarkerComponentProps> = ({
     const getMarkerIcon = (marker: any) => {
         const isSelected = selectedInvoices.includes(marker?.invoice_id)
 
+        // 👇 NEW CONDITION
+        if (['PACKED', 'DELIVERY_CREATED'].includes(marker?.status)) {
+            const elapsed = getElapsedTime(marker?.createdAt)
+            return createBoxIcon(elapsed, isSelected)
+        }
+
+        // OLD LOGIC BELOW (unchanged)
         if (isSelected) {
             return yellowIcon
         }
 
-        if (['PENDING', 'ACCEPTED', 'PACKED'].includes(marker?.status)) {
-            const showMarker = isSelected ? '' : officeIcon
-            return showMarker
+        if (['PENDING', 'ACCEPTED'].includes(marker?.status)) {
+            return officeIcon
         } else if (marker?.status === 'EXCHANGE') {
             return orangeIcon
         } else if (['DECLINED', 'CANCELLED'].includes(marker?.status)) {
             return blackIcon
         }
+
         return DefaultIcon
     }
 
@@ -188,7 +237,7 @@ const MarkerComponent: React.FC<MarkerComponentProps> = ({
                     <Marker
                         key={index}
                         position={[marker.lat, marker.lon]}
-                        icon={getMarkerIcon(marker)}
+                        icon={getMarkerIcon(marker) as any}
                         eventHandlers={{
                             mouseover: (e) => {
                                 e.target.openPopup()
@@ -243,116 +292,14 @@ const MarkerComponent: React.FC<MarkerComponentProps> = ({
 }
 MarkerComponent.displayName = 'MarkerComponent'
 
-const HeatMapComponent: React.FC<{ markers: any[] }> = ({ markers }) => {
-    const map = useMap()
-    useEffect(() => {
-        const heatLayer = L.heatLayer(
-            markers.map((marker) => [marker.lat, marker.lon, marker.amount || 1]),
-            { radius: 25, blur: 15, maxZoom: 17 },
-        )
-        heatLayer.addTo(map)
-
-        return () => {
-            map.removeLayer(heatLayer)
-        }
-    }, [markers, map])
-
-    return null
-}
-HeatMapComponent.displayName = 'HeatMapComponent'
-
-interface FullScreenMapProps {
-    currLat: number
-    currLong: number
-    markers?: any[]
-    style?: React.CSSProperties
-    currentPage: string
-}
-
-const FullScreenMap: React.FC<FullScreenMapProps> = ({
-    currLat,
-    currLong,
-    markers,
-    style = { height: '70vh', width: '100%' },
-    currentPage,
-}) => {
-    const mapContainerRef = useRef<HTMLDivElement>(null)
-    const [isFullScreen, setIsFullScreen] = useState(false)
-
-    const toggleFullScreen = () => {
-        if (mapContainerRef.current) {
-            if (!document.fullscreenElement) {
-                mapContainerRef.current
-                    .requestFullscreen()
-                    .then(() => {
-                        setIsFullScreen(true)
-                    })
-                    .catch((err) => {
-                        console.error('Error attempting to enable fullscreen mode:', err)
-                    })
-            } else {
-                document
-                    .exitFullscreen()
-                    .then(() => {
-                        setIsFullScreen(false)
-                    })
-                    .catch((err) => {
-                        console.error('Error attempting to exit fullscreen mode:', err)
-                    })
-            }
-        }
-    }
-
-    return (
-        <div ref={mapContainerRef} style={{ position: 'relative', ...style }}>
-            <button
-                onClick={toggleFullScreen}
-                style={{
-                    position: 'absolute',
-                    top: 10,
-                    right: 10,
-                    zIndex: 1000,
-                    padding: '8px 12px',
-                    backgroundColor: 'white',
-                    border: '1px solid #ccc',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                }}
-            >
-                {isFullScreen ? <BsFullscreenExit className="text-2xl font-bold" /> : <MdFullscreen className="text-2xl font-bold" />}
-            </button>
-            {isFullScreen && (
-                <MapContainer center={[currLat, currLong]} zoom={13} style={{ height: '100%', width: '100%' }}>
-                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                    {currentPage === 'marker' && <MarkerComponent currLat={currLat} currLong={currLong} markers={markers as any} />}
-                    {currentPage === 'heat_map' && <HeatMapComponent markers={markers as any} />}
-                </MapContainer>
-            )}
-        </div>
-    )
-}
-FullScreenMap.displayName = 'FullScreenMap'
-
-const MAP_STYLE_ARRAY = [
-    { name: 'Marker', value: 'marker' },
-    { name: 'HeatMap', value: 'heat_map' },
-]
-const STATUS_ARRAY = [
-    { name: 'ACCEPTED', value: EOrderStatus.accepted },
-    { name: 'PACKED', value: EOrderStatus.packed },
-    { name: 'PICKING', value: EOrderStatus.picking },
-    { name: 'DELIVERY_CREATED', value: EOrderStatus.delivery_created },
-    { name: 'PACKED+DC', value: `${EOrderStatus.packed},${EOrderStatus.delivery_created}` },
-]
-
-const MultipleMap: React.FC<MultipleMapProps> = ({
+const MapForOrder: React.FC<MultipleMapProps> = ({
     latitudes,
     longitudes,
     amount,
     currentStatus,
     currentInvoice,
     currentDistance,
-    setSelectedStatus,
+    createTime,
 }) => {
     const dispatch = useAppDispatch()
     const [currLat, setCurrLat] = useState<number>(12.920216)
@@ -363,7 +310,6 @@ const MultipleMap: React.FC<MultipleMapProps> = ({
     const [distanceBelowTentoFifteen, setDistanceBelowTentoFifteen] = useState<any[]>([])
     const [distanceBelowFifteenToThirty, setDistanceBelowFifteenToThirty] = useState<any[]>([])
     const [distanceAboveThirty, setDistanceAboveThirty] = useState<any[]>([])
-    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(MAP_STYLE_ARRAY[0])
     const { storeResults } = useAppSelector<companyStore>((state) => state.companyStore)
     const [selectedInvoices, setSelectedInvoices] = useState<string[]>([])
     const [showAssignRiderModal, setShowAssignRiderModal] = useState(false)
@@ -496,6 +442,7 @@ const MultipleMap: React.FC<MultipleMapProps> = ({
             const status = currentStatus[index]
             const invoice_id = currentInvoice[index] ?? ''
             const distance = currentDistance[index] || 0
+            const createdAt = createTime[index]
 
             if (distance <= 10) {
                 belowTen.push({ lat, lon, amount: amount[index], distance, status, invoice_id })
@@ -506,7 +453,7 @@ const MultipleMap: React.FC<MultipleMapProps> = ({
             } else {
                 aboveThirty.push({ lat, lon, amount: amount[index], distance, status, invoice_id })
             }
-            return { lat, lon, amount: amount[index], distance, status, invoice_id }
+            return { lat, lon, amount: amount[index], distance, status, invoice_id, createdAt }
         })
 
         setDistanceBelowTen(belowTen)
@@ -515,11 +462,6 @@ const MultipleMap: React.FC<MultipleMapProps> = ({
         setDistanceAboveThirty(aboveThirty)
         return result
     }, [latitudes, longitudes, amount, currentStatus, currentInvoice, currentDistance])
-
-    const handleSelectPage = (value: string) => {
-        const selectedPage = MAP_STYLE_ARRAY.find((page) => page.value === value)
-        if (selectedPage) setCurrentSelectedPage(selectedPage)
-    }
 
     const allDistances = calculateAllDistances()
 
@@ -680,56 +622,19 @@ const MultipleMap: React.FC<MultipleMapProps> = ({
             <div className="flex flex-col gap-10 xl:flex-row">
                 <MapContainer center={[currLat, currLong]} zoom={13} style={{ height: '70vh', width: '100%' }}>
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                    {currentSelectedPage?.value === 'marker' && (
-                        <MarkerComponent
-                            currLat={currLat}
-                            currLong={currLong}
-                            markers={markers}
-                            distanceAboveThirty={distanceAboveThirty?.length}
-                            distanceBetweenFifteenToThirty={distanceBelowFifteenToThirty?.length}
-                            distanceBelowTen={distanceBelowTen?.length}
-                            distanceBelowTentoFifteen={distanceBelowTentoFifteen?.length}
-                            CurrentStatus={currentStatus}
-                            selectedInvoices={selectedInvoices}
-                            onMarkerClick={handleMarkerClick}
-                        />
-                    )}
-                    {currentSelectedPage?.value === 'heat_map' && <HeatMapComponent markers={markers} />}
-                    <FullScreenMap currLat={currLat} currLong={currLong} markers={markers} currentPage={currentSelectedPage?.value} />
+                    <MarkerComponent
+                        currLat={currLat}
+                        currLong={currLong}
+                        markers={markers}
+                        distanceAboveThirty={distanceAboveThirty?.length}
+                        distanceBetweenFifteenToThirty={distanceBelowFifteenToThirty?.length}
+                        distanceBelowTen={distanceBelowTen?.length}
+                        distanceBelowTentoFifteen={distanceBelowTentoFifteen?.length}
+                        CurrentStatus={currentStatus}
+                        selectedInvoices={selectedInvoices}
+                        onMarkerClick={handleMarkerClick}
+                    />
                 </MapContainer>
-                <div className="space-y-2 xl:w-[300px]">
-                    <div>
-                        <div className="flex flex-col gap-3 mt-6 mb-10">
-                            <div>Select Status</div>
-                            <Select
-                                isMulti
-                                isClearable
-                                placeholder="select status"
-                                options={STATUS_ARRAY}
-                                getOptionLabel={(option) => option.name}
-                                getOptionValue={(option) => option.value}
-                                className="w-full"
-                                onChange={(newVal) => {
-                                    console.log('newVal', newVal)
-                                    setSelectedStatus(newVal ? newVal.map((item) => item.value) : [])
-                                }}
-                            />
-                        </div>
-                    </div>
-                    <div className="bg-gray-200 px-2 rounded-lg font-bold text-[17px] items-center flex justify-center">
-                        <Dropdown
-                            className="border bg-gray-200 text-black text-lg font-semibold"
-                            title={currentSelectedPage.name}
-                            onSelect={handleSelectPage}
-                        >
-                            {MAP_STYLE_ARRAY.map((item) => (
-                                <DropdownItem key={item.value} eventKey={item.value}>
-                                    {item.name}
-                                </DropdownItem>
-                            ))}
-                        </Dropdown>
-                    </div>
-                </div>
             </div>
             {showAssignRiderModal && (
                 <AssignRiderHomeModal
@@ -742,6 +647,6 @@ const MultipleMap: React.FC<MultipleMapProps> = ({
     )
 }
 
-MultipleMap.displayName = 'MultipleMap'
+MapForOrder.displayName = 'MultipleMap'
 
-export default MultipleMap
+export default MapForOrder
