@@ -61,7 +61,9 @@ interface MultipleMapProps {
     amount: any[]
     currentStatus: string[]
     currentInvoice: string[]
+    logisticPartner: string[]
     currentDistance: number[]
+    logisticDetails: any
     createTime: string[]
     refetch?: any
     mapRefetch: any
@@ -73,38 +75,122 @@ interface CenterProps {
     currLong: any
 }
 
-const createBoxIcon = (elapsedTime: string, isSelected: boolean) =>
-    L.divIcon({
-        className: '',
-        html: `
-        <div style="
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        ">
+const createBoxIcon = (elapsedTime: string, isSelected: boolean, logistic_partner: string | null, logistic_details: any) => {
+    const hasLogisticPartner = logistic_partner && logistic_partner.trim() !== '' && logistic_partner?.trim() !== null
+    const partnerName = hasLogisticPartner ? logistic_partner : ''
+    const runnerName = logistic_details?.runner_name || ''
+
+    let backgroundColor = '#2563eb'
+    if (isSelected) {
+        backgroundColor = '#22c55e'
+    } else if (hasLogisticPartner) {
+        backgroundColor = '#d97706'
+    }
+
+    let contentHtml = ''
+
+    if (hasLogisticPartner) {
+        console.log('faa')
+        contentHtml = `
             <div style="
-                background: ${isSelected ? '#22c55e' : '#2563eb'};
-                color: white;
-                padding: 6px 10px;
-                border-radius: 8px;
-                font-size: 12px;
-                font-weight: 600;
-                white-space: nowrap;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 3px;
             ">
-                📦 ${elapsedTime}
+                <div style="
+                    background: ${backgroundColor};
+                    color: white;
+                    padding: 6px 12px;
+                    border-radius: 8px;
+                    font-size: 12px;
+                    font-weight: 600;
+                    white-space: nowrap;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+                ">
+                    ${elapsedTime}
+                </div>
+                <div style="
+                    background: ${backgroundColor};
+                    color: white;
+                    padding: 4px 10px;
+                    border-radius: 6px;
+                    font-size: 10px;
+                    font-weight: 500;
+                    white-space: nowrap;
+                    max-width: 160px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+                ">
+                     ${partnerName.substring(0, 20)}${partnerName.length > 20 ? '...' : ''}
+                </div>
+                ${
+                    runnerName
+                        ? `
+                <div style="
+                    background: ${backgroundColor};
+                    color: white;
+                    padding: 3px 8px;
+                    border-radius: 5px;
+                    font-size: 9px;
+                    font-weight: 400;
+                    white-space: nowrap;
+                    max-width: 140px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+                ">
+                     ${runnerName.substring(0, 15)}${runnerName.length > 15 ? '...' : ''}
+                </div>
+                `
+                        : ''
+                }
+                <div style="
+                    width: 0;
+                    height: 0;
+                    border-left: 6px solid transparent;
+                    border-right: 6px solid transparent;
+                    border-top: 8px solid ${backgroundColor};
+                "></div>
             </div>
+        `
+    } else {
+        contentHtml = `
             <div style="
-                width: 0;
-                height: 0;
-                border-left: 6px solid transparent;
-                border-right: 6px solid transparent;
-                border-top: 8px solid ${isSelected ? '#22c55e' : '#2563eb'};
-            "></div>
-        </div>
-        `,
-        iconSize: [80, 30],
-        iconAnchor: [40, 30],
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            ">
+                <div style="
+                    background: ${backgroundColor};
+                    color: white;
+                    padding: 6px 10px;
+                    border-radius: 8px;
+                    font-size: 12px;
+                    font-weight: 600;
+                    white-space: nowrap;
+                ">
+                    📦 ${elapsedTime}
+                </div>
+                <div style="
+                    width: 0;
+                    height: 0;
+                    border-left: 6px solid transparent;
+                    border-right: 6px solid transparent;
+                    border-top: 8px solid ${backgroundColor};
+                "></div>
+            </div>
+        `
+    }
+
+    return L.divIcon({
+        className: '',
+        html: contentHtml,
+        iconSize: hasLogisticPartner ? [160, 70] : [80, 30],
+        iconAnchor: hasLogisticPartner ? [80, 70] : [40, 30],
     })
+}
 
 const CurrentLocationButton: React.FC<CenterProps> = ({ currLat, currLong }) => {
     const map = useMap()
@@ -205,14 +291,16 @@ const MarkerComponent: React.FC<MarkerComponentProps> = ({
 
     const getMarkerIcon = (marker: any) => {
         const isSelected = selectedInvoices.includes(marker?.invoice_id)
+        const hasLogisticPartner = marker?.logisticPartnerName && marker?.logisticPartnerName.trim() !== ''
 
-        // 👇 NEW CONDITION
-        if (['PACKED', 'DELIVERY_CREATED'].includes(marker?.status)) {
+        if (hasLogisticPartner) {
             const elapsed = getElapsedTime(marker?.createdAt)
-            return createBoxIcon(elapsed, isSelected)
+            return createBoxIcon(elapsed, isSelected, marker?.logisticPartnerName, marker?.logistic_details_data)
         }
-
-        // OLD LOGIC BELOW (unchanged)
+        if (['PACKED', 'DELIVERY_CREATED'].includes(marker?.status) && !hasLogisticPartner) {
+            const elapsed = getElapsedTime(marker?.createdAt)
+            return createBoxIcon(elapsed, isSelected, null, null)
+        }
         if (isSelected) {
             return yellowIcon
         }
@@ -304,6 +392,8 @@ const MapForOrder: React.FC<MultipleMapProps> = ({
     createTime,
     refetch,
     mapRefetch,
+    logisticDetails,
+    logisticPartner,
 }) => {
     const dispatch = useAppDispatch()
     const [currLat, setCurrLat] = useState<number>(12.920216)
@@ -454,17 +544,59 @@ const MapForOrder: React.FC<MultipleMapProps> = ({
             const invoice_id = currentInvoice[index] ?? ''
             const distance = currentDistance[index] || 0
             const createdAt = createTime[index]
+            const logisticPartnerName = logisticPartner[index] || ''
+            const logistic_details_data = logisticDetails[index] || null
 
             if (distance <= 10) {
-                belowTen.push({ lat, lon, amount: amount[index], distance, status, invoice_id })
+                belowTen.push({
+                    lat,
+                    lon,
+                    amount: amount[index],
+                    distance,
+                    status,
+                    invoice_id,
+                    createdAt,
+                    logisticPartnerName,
+                    logistic_details_data,
+                })
             } else if (distance > 10 && distance <= 15) {
-                tenToFifteen.push({ lat, lon, amount: amount[index], distance, status, invoice_id })
+                tenToFifteen.push({
+                    lat,
+                    lon,
+                    amount: amount[index],
+                    distance,
+                    status,
+                    invoice_id,
+                    createdAt,
+                    logisticPartnerName,
+                    logistic_details_data,
+                })
             } else if (distance > 15 && distance <= 20) {
-                fifteenToThirty.push({ lat, lon, amount: amount[index], distance, status, invoice_id })
+                fifteenToThirty.push({
+                    lat,
+                    lon,
+                    amount: amount[index],
+                    distance,
+                    status,
+                    invoice_id,
+                    createdAt,
+                    logisticPartnerName,
+                    logistic_details_data,
+                })
             } else {
-                aboveThirty.push({ lat, lon, amount: amount[index], distance, status, invoice_id })
+                aboveThirty.push({
+                    lat,
+                    lon,
+                    amount: amount[index],
+                    distance,
+                    status,
+                    invoice_id,
+                    createdAt,
+                    logisticPartnerName,
+                    logistic_details_data,
+                })
             }
-            return { lat, lon, amount: amount[index], distance, status, invoice_id, createdAt }
+            return { lat, lon, amount: amount[index], distance, status, invoice_id, createdAt, logisticPartnerName, logistic_details_data }
         })
 
         setDistanceBelowTen(belowTen)
@@ -472,7 +604,7 @@ const MapForOrder: React.FC<MultipleMapProps> = ({
         setDistanceBelowFifteenToThirty(fifteenToThirty)
         setDistanceAboveThirty(aboveThirty)
         return result
-    }, [latitudes, longitudes, amount, currentStatus, currentInvoice, currentDistance])
+    }, [latitudes, longitudes, amount, currentStatus, currentInvoice, currentDistance, createTime, logisticPartner, logisticDetails])
 
     const allDistances = calculateAllDistances()
 

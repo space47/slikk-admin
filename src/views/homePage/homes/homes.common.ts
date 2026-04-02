@@ -64,4 +64,21 @@ export type OrderMapType = {
     longitude: number
     status: string
     create_date: string
+    logistic_partner: string | null
+    logistic_details: {
+        state: string
+        distance: string
+        partner: number
+        runner_name: string
+        runner_phone_number: string
+        tracking_url: string
+        price: string | null
+        estimate_delivery_time: string | null
+        awb_code: string
+        eta_dropoff_time: string | null
+        actual_pickup_time: string | null
+        actual_drop_time: string | null
+        is_delayed: boolean | null
+        attempt_number: number
+    }
 }

@@ -180,7 +180,7 @@ const DeliveryOrders = () => {
     }
 
     useEffect(() => {
-        const allowedStatuses = ['delivery_created', 'packed']
+        const allowedStatuses = ['delivery_created']
         const dropdownValue = dropdownStatus?.value?.[0]?.toLowerCase()
         const tabValue = tabSelect?.toLowerCase()
         const shouldEnableMap = allowedStatuses.includes(dropdownValue) || allowedStatuses.includes(tabValue)
