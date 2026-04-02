@@ -52,16 +52,16 @@ const AddFrameModal = ({ isOpen, setIsOpen }: props) => {
     }
 
     const handleSubmit = async (values: any) => {
-        if (!values?.is_delete) {
-            if (!values?.template_id) {
-                notification.error({ message: 'Select a template before submitting.' })
-                return
-            }
-            if (!values?.frame_array?.length) {
-                notification.error({ message: 'Upload a frame image before submitting.' })
-                return
-            }
-        }
+        // if (!values?.is_delete) {
+        //     if (!values?.template_id) {
+        //         notification.error({ message: 'Select a template before submitting.' })
+        //         return
+        //     }
+        //     if (!values?.frame_array?.length) {
+        //         notification.error({ message: 'Upload a frame image before submitting.' })
+        //         return
+        //     }
+        // }
 
         notification.info({
             message: 'Processing',
@@ -86,7 +86,7 @@ const AddFrameModal = ({ isOpen, setIsOpen }: props) => {
         try {
             const res = values?.is_delete
                 ? await axioisInstance.delete('/product/framed/task ', { data: body })
-                : await axioisInstance.post('/product/product/framed/task', body)
+                : await axioisInstance.post('/product/framed/task', body)
             notification.success({
                 message: 'Success',
                 description: res?.data?.message || 'Frame added successfully',
