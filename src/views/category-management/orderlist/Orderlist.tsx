@@ -10,7 +10,7 @@ import FilterDialogOrder from './filterDialog/FilterDialog'
 import { CiFilter } from 'react-icons/ci'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import PendingNotification from '@/common/pendingNotification'
-import { notification, Select, Spin } from 'antd'
+import { notification, Select, Spin, Switch } from 'antd'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 import RedMarkTable from '@/common/RedMarkTable'
 import { HiOutlineSortAscending, HiOutlineSortDescending, HiSearch } from 'react-icons/hi'
@@ -29,6 +29,7 @@ import { FiCheckCircle, FiClipboard } from 'react-icons/fi'
 import { MdAssignmentAdd } from 'react-icons/md'
 import OrderColumnFilter from './orderListUtils/OrderColumnFilter'
 import PageCommon from '@/common/PageCommon'
+import OrderMapToAssign from './orderListUtils/OrderMapToAssign'
 
 const OrderList = () => {
     const location = useLocation()
@@ -61,6 +62,7 @@ const OrderList = () => {
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
     const [sortBy, setSortBy] = useState('create_date')
     const [sortType, setSortType] = useState(true)
+    const [isMapView, setIsMapView] = useState(false)
 
     const handleSelectTab = (value: string) => {
         setTabSelect(value)
@@ -78,9 +80,14 @@ const OrderList = () => {
         return noFilters
     }
     const buildFilterParams = () => {
+        let pageSizeValue = 10
+        if (numberStore || isMapView) {
+            pageSizeValue = 100
+        }
+
         const params: Record<string, string | number | string[]> = {
             p: page,
-            page_size: numberStore ? 100 : pageSize,
+            page_size: pageSizeValue,
             sort: sortBy,
             sort_type: sortType ? 'asc' : 'desc',
         }
@@ -127,6 +134,14 @@ const OrderList = () => {
             notification.error({ message: 'Failed to load orders Data' })
         }
     }, [ordersApiResponse.data, ordersApiResponse.isSuccess, ordersApiResponse.isError])
+
+    useEffect(() => {
+        const allowedStatuses = ['delivery_created', 'packed']
+        const dropdownValue = dropdownStatus?.value?.[0]?.toLowerCase()
+        const tabValue = tabSelect?.toLowerCase()
+        const shouldEnableMap = allowedStatuses.includes(dropdownValue) || allowedStatuses.includes(tabValue)
+        setIsMapView(shouldEnableMap)
+    }, [dropdownStatus, tabSelect])
 
     useEffect(() => {
         if (pendingSound) {
@@ -341,59 +356,86 @@ const OrderList = () => {
                 <div className="overflow-x-auto scrollbar-hide">
                     {filtersAndSearchUI()}
 
-                    <div className="flex mb-8 items-end gap-3">
-                        <div className="space-y-2">
-                            <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                Sort By
-                            </label>
-                            <Select
-                                allowClear
-                                className="w-56"
-                                value={SORT_OPTIONS.find((item) => item.value === sortBy)?.value}
-                                placeholder="Select option"
-                                options={SORT_OPTIONS}
-                                onChange={(value) => {
-                                    setSortBy(value)
-                                }}
-                            />
+                    <div className="flex items-center justify-between">
+                        <div className="flex mb-8 items-end gap-3">
+                            <div className="space-y-2">
+                                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                    Sort By
+                                </label>
+                                <Select
+                                    allowClear
+                                    className="w-56"
+                                    value={SORT_OPTIONS.find((item) => item.value === sortBy)?.value}
+                                    placeholder="Select option"
+                                    options={SORT_OPTIONS}
+                                    onChange={(value) => {
+                                        setSortBy(value)
+                                    }}
+                                />
+                            </div>
+
+                            <Button
+                                variant="new"
+                                size="sm"
+                                icon={sortType === false ? <HiOutlineSortDescending /> : <HiOutlineSortAscending />}
+                                onClick={() => setSortType((prev) => !prev)}
+                            >
+                                Sort
+                            </Button>
                         </div>
 
-                        <Button
-                            variant="new"
-                            size="sm"
-                            icon={sortType === false ? <HiOutlineSortDescending /> : <HiOutlineSortAscending />}
-                            onClick={() => setSortType((prev) => !prev)}
-                        >
-                            Sort
-                        </Button>
+                        <div className="flex items-center gap-3 bg-gray-100 p-2 rounded-xl w-fit">
+                            <span className={`text-sm font-medium ${!isMapView ? 'text-blue-600' : 'text-gray-500'}`}>Table</span>
+
+                            <Switch checked={isMapView} onChange={(val: boolean) => setIsMapView(val)} />
+
+                            <span className={`text-sm font-medium ${isMapView ? 'text-blue-600' : 'text-gray-500'}`}>Map</span>
+                        </div>
                     </div>
                     <TabSelectOrder
                         handleSelectTab={handleSelectTab}
                         tabSelect={tabSelect}
                         orderCount={ordersApiResponse.isLoading || ordersApiResponse.isFetching ? `...` : `${totalData}`}
                     />
-                    {ordersApiResponse.error || !ordersApiResponse.data?.data.results.length ? (
-                        <NotFoundData />
+                    {isMapView ? (
+                        <>
+                            <OrderMapToAssign refetch={ordersApiResponse.refetch} tabSelect={tabSelect} from={from} to={to} />
+                        </>
                     ) : (
-                        <div className="border border-gray-300 p-2 rounded-xl hidden xl:block mt-6">
-                            <RedMarkTable
-                                mainData={orders}
-                                page={page}
-                                pageSize={pageSize}
-                                columns={columns}
-                                isDelayedStatus={isDelayedStatus}
-                            />
-                        </div>
+                        <>
+                            {ordersApiResponse.error || !ordersApiResponse.data?.data.results.length ? (
+                                <NotFoundData />
+                            ) : (
+                                <div className="border border-gray-300 p-2 rounded-xl hidden xl:block mt-6">
+                                    <RedMarkTable
+                                        mainData={orders}
+                                        page={page}
+                                        pageSize={pageSize}
+                                        columns={columns}
+                                        isDelayedStatus={isDelayedStatus}
+                                    />
+                                </div>
+                            )}
+
+                            <div className="xl:hidden">
+                                <OrderlistMobile
+                                    orders={orders}
+                                    handleNumberClick={handleNumberClick}
+                                    handleSyncDistance={handleSyncDistance}
+                                />
+                            </div>
+                            {numberClick !== true && (
+                                <PageCommon
+                                    page={page}
+                                    pageSize={pageSize}
+                                    setPage={setPage}
+                                    setPageSize={setPageSize}
+                                    totalData={totalData}
+                                />
+                            )}
+                        </>
                     )}
-
-                    <div className="xl:hidden">
-                        <OrderlistMobile orders={orders} handleNumberClick={handleNumberClick} handleSyncDistance={handleSyncDistance} />
-                    </div>
                 </div>
-
-                {numberClick !== true && (
-                    <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={totalData} />
-                )}
 
                 {showFilter && (
                     <FilterDialogOrder
