@@ -47,6 +47,8 @@ const OrderMapToAssign = ({ from, to, tabSelect, refetch }: props) => {
                     currentInvoice={orders.map((item) => item.invoice_id || []) as string[]}
                     currentDistance={orders.map((item) => item?.distance || 0)}
                     createTime={orders.map((item) => item?.create_date || []) as string[]}
+                    logisticPartner={orders.map((item) => item.logistic_partner || '') as string[]}
+                    logisticDetails={orders.map((item) => item.logistic_details || {}) as any}
                 />
             </div>
         </div>
