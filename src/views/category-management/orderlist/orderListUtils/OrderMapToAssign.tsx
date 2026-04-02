@@ -1,41 +1,45 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { OrderMapType } from '@/views/homePage/homes/homes.common'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 import MapForOrder from './MapForOrder'
+import { newOrderService } from '@/store/services/newOrderaService'
+import { getApiErrorMessage } from '@/constants/generateErrorMessage'
+import { notification } from 'antd'
 
 interface props {
     from: string
     to: string
     tabSelect: string
+    refetch?: any
 }
 
-const OrderMapToAssign = ({ from, to, tabSelect }: props) => {
+const OrderMapToAssign = ({ from, to, tabSelect, refetch }: props) => {
     const [orders, setOrders] = useState<OrderMapType[]>([])
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
 
+    const locationCall = newOrderService.useGetOrderLocationsQuery({
+        from,
+        to: To_Date,
+        status: tabSelect ? tabSelect?.toUpperCase() : '',
+    })
+
     useEffect(() => {
-        const fetchOrderForLocation = async () => {
-            let statusData = ''
-            if (tabSelect) {
-                statusData = `&status=${tabSelect?.toUpperCase()}`
-            }
-            try {
-                const response = await axioisInstance.get(`/merchant/orders?location_data=true&from=${from}&to=${To_Date}${statusData}`)
-                const ordersData = response.data?.data
-                setOrders(ordersData)
-            } catch (error: any) {
-                console.log(error)
-            }
+        if (locationCall?.isSuccess && locationCall?.data?.data) {
+            setOrders(locationCall?.data?.data)
         }
-        fetchOrderForLocation()
-    }, [from, to, tabSelect])
+        if (locationCall.isError) {
+            const errorData = getApiErrorMessage(locationCall.error)
+            notification.error({ message: errorData })
+        }
+    }, [locationCall.isSuccess, locationCall.isError, locationCall.data?.data, locationCall.error])
 
     return (
         <div>
             <div className="bg-white p-6 rounded-xl shadow-md">
                 <MapForOrder
+                    refetch={refetch}
+                    mapRefetch={locationCall.refetch}
                     latitudes={orders?.map((item) => item.latitude || []) as number[]}
                     longitudes={orders.map((item) => item.longitude || []) as number[]}
                     amount={orders.map((item) => item.amount || [])}

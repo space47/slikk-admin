@@ -80,9 +80,14 @@ const OrderList = () => {
         return noFilters
     }
     const buildFilterParams = () => {
+        let pageSizeValue = 10
+        if (numberStore || isMapView) {
+            pageSizeValue = 100
+        }
+
         const params: Record<string, string | number | string[]> = {
             p: page,
-            page_size: numberStore ? 100 : pageSize,
+            page_size: pageSizeValue,
             sort: sortBy,
             sort_type: sortType ? 'asc' : 'desc',
         }
@@ -394,7 +399,7 @@ const OrderList = () => {
                     />
                     {isMapView ? (
                         <>
-                            <OrderMapToAssign tabSelect={tabSelect} from={from} to={to} />
+                            <OrderMapToAssign refetch={ordersApiResponse.refetch} tabSelect={tabSelect} from={from} to={to} />
                         </>
                     ) : (
                         <>

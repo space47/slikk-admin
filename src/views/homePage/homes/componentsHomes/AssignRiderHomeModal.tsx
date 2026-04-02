@@ -16,11 +16,13 @@ type ModalProps = {
     isOpen: boolean
     setIsOpen: (x: boolean) => void
     selectedInvoices: number[] | string[]
+    isOrder?: boolean
+    isModalSuccessCallback: () => void
 }
 
-const AssignRiderHomeModal = ({ isOpen, selectedInvoices, setIsOpen }: ModalProps) => {
+const AssignRiderHomeModal = ({ isOpen, selectedInvoices, setIsOpen, isOrder, isModalSuccessCallback }: ModalProps) => {
     const dispatch = useAppDispatch()
-
+    const [loading, setIsLoading] = useState(false)
     const [selectedRiderMobile, setSelectedRiderMobile] = useState<string>('')
 
     const [globalFilter, setGlobalFilter] = useState<string | undefined>('')
@@ -70,7 +72,7 @@ const AssignRiderHomeModal = ({ isOpen, selectedInvoices, setIsOpen }: ModalProp
                 delivery_partner: 'slikk',
                 rider_mobile: selectedRiderMobile,
             }
-
+            setIsLoading(true)
             return axioisInstance
                 .patch(`/merchant/order/${invoice}`, body)
                 .then((res) => ({
@@ -83,6 +85,9 @@ const AssignRiderHomeModal = ({ isOpen, selectedInvoices, setIsOpen }: ModalProp
                     invoice,
                     error,
                 }))
+                .finally(() => {
+                    setIsLoading(false)
+                })
         })
 
         const results = await Promise.allSettled(promises)
@@ -95,6 +100,10 @@ const AssignRiderHomeModal = ({ isOpen, selectedInvoices, setIsOpen }: ModalProp
 
                 if (value.status === 'fulfilled') {
                     updatedStatus[String(value.invoice)] = 'success'
+                    if (isOrder) {
+                        setIsOpen(false)
+                        isModalSuccessCallback()
+                    }
                     successMessage(value.res)
                 } else {
                     updatedStatus[String(value.invoice)] = 'failed'
@@ -113,46 +122,46 @@ const AssignRiderHomeModal = ({ isOpen, selectedInvoices, setIsOpen }: ModalProp
     const riderDataArray = riderDetails && riderDetails?.filter((item) => item?.profile?.checked_in_status === true)
 
     return (
-        <div>
-            <Modal
-                title=""
-                open={isOpen}
-                okText={!selectedRiderMobile ? 'AUTO ASSIGN' : 'ASSIGN RIDER'}
-                okButtonProps={{
-                    style: {
-                        backgroundColor: 'green',
-                        borderColor: 'darkgreen',
-                    },
-                }}
-                width={650}
-                onOk={assignTask}
-                onCancel={() => setIsOpen(false)}
-            >
-                {storeCodes && storeCodes?.length > 1 ? (
-                    <>
-                        <div className="flex mt-9 items-center gap-3 bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-xl shadow-sm">
-                            <span className="text-xl">⚠️</span>
-                            <div className="flex flex-col">
-                                <span className="font-semibold">Multiple Stores Selected</span>
-                                <span className="text-sm">Please select only one store to assign a rider.</span>
-                            </div>
+        <Modal
+            title=""
+            open={isOpen}
+            okText={!selectedRiderMobile ? 'AUTO ASSIGN' : 'ASSIGN RIDER'}
+            okButtonProps={{
+                style: {
+                    backgroundColor: 'green',
+                    borderColor: 'darkgreen',
+                },
+            }}
+            width={650}
+            onOk={assignTask}
+            confirmLoading={loading}
+            onCancel={() => setIsOpen(false)}
+        >
+            {storeCodes && storeCodes?.length > 1 ? (
+                <>
+                    <div className="flex mt-9 items-center gap-3 bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-xl shadow-sm">
+                        <span className="text-xl">⚠️</span>
+                        <div className="flex flex-col">
+                            <span className="font-semibold">Multiple Stores Selected</span>
+                            <span className="text-sm">Please select only one store to assign a rider.</span>
                         </div>
-                    </>
-                ) : (
-                    <div className="flex flex-col h-[60vh]">
-                        <div className="text-xl font-bold text-red-700 mb-6 text-center">ASSIGN RIDER</div>
+                    </div>
+                </>
+            ) : (
+                <div className="flex flex-col h-[60vh]">
+                    <div className="text-xl font-bold text-red-700 mb-6 text-center">ASSIGN RIDER</div>
 
-                        {/* ✅ Invoice List */}
-                        <div className="mb-4">
-                            <div className="font-semibold mb-2">Selected Invoices</div>
-                            <div className="flex flex-wrap gap-2">
-                                {selectedInvoices.map((inv) => {
-                                    const status = invoiceStatus[String(inv)]
+                    {/* ✅ Invoice List */}
+                    <div className="mb-4">
+                        <div className="font-semibold mb-2">Selected Invoices</div>
+                        <div className="flex flex-wrap gap-2">
+                            {selectedInvoices.map((inv) => {
+                                const status = invoiceStatus[String(inv)]
 
-                                    return (
-                                        <div
-                                            key={inv}
-                                            className={`px-3 py-1 rounded-lg flex items-center gap-2 text-sm
+                                return (
+                                    <div
+                                        key={inv}
+                                        className={`px-3 py-1 rounded-lg flex items-center gap-2 text-sm
                                         ${
                                             status === 'success'
                                                 ? 'bg-green-200 text-green-800'
@@ -161,82 +170,79 @@ const AssignRiderHomeModal = ({ isOpen, selectedInvoices, setIsOpen }: ModalProp
                                                   : 'bg-gray-200'
                                         }
                                     `}
-                                        >
-                                            <span>{inv}</span>
+                                    >
+                                        <span>{inv}</span>
 
-                                            {status === 'success' && <FaCheckCircle className="text-green-700" />}
-                                            {status === 'failed' && <FaTimesCircle className="text-red-700" />}
-                                        </div>
-                                    )
-                                })}
-                            </div>
+                                        {status === 'success' && <FaCheckCircle className="text-green-700" />}
+                                        {status === 'failed' && <FaTimesCircle className="text-red-700" />}
+                                    </div>
+                                )
+                            })}
                         </div>
+                    </div>
 
-                        {/* Filters */}
-                        <div className="flex flex-col gap-1 mb-4">
-                            <input
-                                type="search"
-                                placeholder="Enter Rider name"
-                                value={globalFilter}
-                                className="rounded-xl p-2 border border-gray-300 w-full focus:outline-none focus:ring-2 focus:ring-green-500"
-                                onChange={(e) => setGlobalFilter(e.target.value)}
-                            />
+                    {/* Filters */}
+                    <div className="flex flex-col gap-1 mb-4">
+                        <input
+                            type="search"
+                            placeholder="Enter Rider name"
+                            value={globalFilter}
+                            className="rounded-xl p-2 border border-gray-300 w-full focus:outline-none focus:ring-2 focus:ring-green-500"
+                            onChange={(e) => setGlobalFilter(e.target.value)}
+                        />
 
-                            <input
-                                type="search"
-                                placeholder="Enter Rider Mobile"
-                                value={mobileFilter}
-                                className="rounded-xl p-2 border border-gray-300 w-full focus:outline-none focus:ring-2 focus:ring-green-500"
-                                onChange={(e) => setMobileFilter(e.target.value)}
-                            />
-                        </div>
+                        <input
+                            type="search"
+                            placeholder="Enter Rider Mobile"
+                            value={mobileFilter}
+                            className="rounded-xl p-2 border border-gray-300 w-full focus:outline-none focus:ring-2 focus:ring-green-500"
+                            onChange={(e) => setMobileFilter(e.target.value)}
+                        />
+                    </div>
 
-                        {riderDetails && (
-                            <div className="flex-1 overflow-scroll">
-                                <div className="overflow-y-auto h-[300px] pr-2">
-                                    <Radio.Group value={selectedRiderMobile} className="w-full" onChange={handleRiderSelection}>
-                                        <div className="space-y-3">
-                                            {riderDataArray?.map((item, key) => {
-                                                const isFree = item?.rider_status == false
+                    {riderDetails && (
+                        <div className="flex-1 overflow-scroll">
+                            <div className="overflow-y-auto h-[300px] pr-2">
+                                <Radio.Group value={selectedRiderMobile} className="w-full" onChange={handleRiderSelection}>
+                                    <div className="space-y-3">
+                                        {riderDataArray?.map((item, key) => {
+                                            const isFree = item?.rider_status == false
 
-                                                return (
-                                                    <Card
-                                                        key={key}
-                                                        className={`${
-                                                            isFree ? 'bg-green-100 hover:bg-green-200' : 'bg-red-100 hover:bg-red-200'
-                                                        } w-full transition cursor-pointer`}
-                                                    >
-                                                        <div className="flex items-center gap-3 p-3">
-                                                            <Radio value={item?.profile?.mobile} />
+                                            return (
+                                                <Card
+                                                    key={key}
+                                                    className={`${
+                                                        isFree ? 'bg-green-100 hover:bg-green-200' : 'bg-red-100 hover:bg-red-200'
+                                                    } w-full transition cursor-pointer`}
+                                                >
+                                                    <div className="flex items-center gap-3 p-3">
+                                                        <Radio value={item?.profile?.mobile} />
 
-                                                            <div className="flex items-center gap-3 flex-1">
-                                                                <RiMotorbikeFill className="text-2xl text-gray-700" />
+                                                        <div className="flex items-center gap-3 flex-1">
+                                                            <RiMotorbikeFill className="text-2xl text-gray-700" />
 
-                                                                <div className="flex flex-col flex-1">
-                                                                    <span className="text-lg font-semibold">
-                                                                        {item?.profile?.first_name} {item?.profile?.last_name}
-                                                                    </span>
+                                                            <div className="flex flex-col flex-1">
+                                                                <span className="text-lg font-semibold">
+                                                                    {item?.profile?.first_name} {item?.profile?.last_name}
+                                                                </span>
 
-                                                                    <span className="text-sm text-gray-600">{item?.profile?.mobile}</span>
+                                                                <span className="text-sm text-gray-600">{item?.profile?.mobile}</span>
 
-                                                                    <span className="text-sm text-gray-600">
-                                                                        {item?.profile?.rider_type}
-                                                                    </span>
-                                                                </div>
+                                                                <span className="text-sm text-gray-600">{item?.profile?.rider_type}</span>
                                                             </div>
                                                         </div>
-                                                    </Card>
-                                                )
-                                            })}
-                                        </div>
-                                    </Radio.Group>
-                                </div>
+                                                    </div>
+                                                </Card>
+                                            )
+                                        })}
+                                    </div>
+                                </Radio.Group>
                             </div>
-                        )}
-                    </div>
-                )}
-            </Modal>
-        </div>
+                        </div>
+                    )}
+                </div>
+            )}
+        </Modal>
     )
 }
 

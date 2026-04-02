@@ -63,6 +63,8 @@ interface MultipleMapProps {
     currentInvoice: string[]
     currentDistance: number[]
     createTime: string[]
+    refetch?: any
+    mapRefetch: any
 }
 
 interface CenterProps {
@@ -300,6 +302,8 @@ const MapForOrder: React.FC<MultipleMapProps> = ({
     currentInvoice,
     currentDistance,
     createTime,
+    refetch,
+    mapRefetch,
 }) => {
     const dispatch = useAppDispatch()
     const [currLat, setCurrLat] = useState<number>(12.920216)
@@ -315,6 +319,13 @@ const MapForOrder: React.FC<MultipleMapProps> = ({
     const [showAssignRiderModal, setShowAssignRiderModal] = useState(false)
     const [selectedMarkers, setSelectedMarkers] = useState<any[]>([])
     const storeCodes = store.getState().storeSelect.store_ids
+
+    const isModalSuccessCallback = () => {
+        setSelectedMarkers([])
+        setSelectedInvoices([])
+        refetch()
+        mapRefetch()
+    }
 
     useEffect(() => {
         dispatch(fetchCompanyStore())
@@ -620,7 +631,11 @@ const MapForOrder: React.FC<MultipleMapProps> = ({
             )}
 
             <div className="flex flex-col gap-10 xl:flex-row">
-                <MapContainer center={[currLat, currLong]} zoom={13} style={{ height: '70vh', width: '100%' }}>
+                <MapContainer
+                    center={[currLat, currLong]}
+                    zoom={13}
+                    style={{ height: '70vh', width: '100%', position: 'relative', zIndex: 1 }}
+                >
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                     <MarkerComponent
                         currLat={currLat}
@@ -638,9 +653,11 @@ const MapForOrder: React.FC<MultipleMapProps> = ({
             </div>
             {showAssignRiderModal && (
                 <AssignRiderHomeModal
+                    isOrder
                     isOpen={showAssignRiderModal}
                     setIsOpen={setShowAssignRiderModal}
                     selectedInvoices={selectedInvoices}
+                    isModalSuccessCallback={isModalSuccessCallback}
                 />
             )}
         </div>
