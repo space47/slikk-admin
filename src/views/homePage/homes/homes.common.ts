@@ -63,4 +63,5 @@ export type OrderMapType = {
     latitude: number
     longitude: number
     status: string
+    create_date: string
 }

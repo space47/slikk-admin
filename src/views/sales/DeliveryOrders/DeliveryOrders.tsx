@@ -10,7 +10,7 @@ import {
 } from '@tanstack/react-table'
 import moment from 'moment'
 import Button from '@/components/ui/Button'
-import { Table, Pagination, Select, Dropdown, Input, Spinner } from '@/components/ui'
+import { Table, Pagination, Select, Dropdown, Input } from '@/components/ui'
 import {
     fetchOrders,
     setDropdownStatus,
@@ -29,7 +29,7 @@ import type { FilterFn } from '@tanstack/react-table'
 import { rankItem } from '@tanstack/match-sorter-utils'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { useAppDispatch, useAppSelector } from '@/store'
-import { notification, Spin } from 'antd'
+import { notification, Spin, Switch } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { CiFilter } from 'react-icons/ci'
 import FilterForwardDelivery from './filter/FilterForwardDelivery'
@@ -39,6 +39,7 @@ import { ForwardDeliveryColumns } from './forwardDeliveryUtils/ForwardDeliveryCo
 import { HiSearch } from 'react-icons/hi'
 import ReduxDateRange from '@/common/ReduxDateRange'
 import TabSelect from './filter/TabSelect'
+import OrderMapToAssign from '@/views/category-management/orderlist/orderListUtils/OrderMapToAssign'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
@@ -84,6 +85,7 @@ const DeliveryOrders = () => {
     const [showFilter, setShowFilter] = useState(false)
     const [partner, setPartner] = useState<{ [key: string]: { value: string; label: string } }>({})
     const [deliveryChangeType, setDeliveryChangeType] = useState<{ [key: string]: { value: string; label: string } }>({})
+    const [isMapView, setIsMapView] = useState(false)
 
     const handleCancelTask = async (invoce_id: any) => {
         try {
@@ -177,6 +179,14 @@ const DeliveryOrders = () => {
         }
     }
 
+    useEffect(() => {
+        const allowedStatuses = ['delivery_created', 'packed']
+        const dropdownValue = dropdownStatus?.value?.[0]?.toLowerCase()
+        const tabValue = tabSelect?.toLowerCase()
+        const shouldEnableMap = allowedStatuses.includes(dropdownValue) || allowedStatuses.includes(tabValue)
+        setIsMapView(shouldEnableMap)
+    }, [dropdownStatus, tabSelect])
+
     const columns = ForwardDeliveryColumns(
         handleCreateTask,
         handleCancelTask,
@@ -250,6 +260,13 @@ const DeliveryOrders = () => {
                     </div>
 
                     <div className="flex gap-3 items-center">
+                        <div className="flex items-center gap-3 bg-gray-100 p-2 rounded-xl w-fit">
+                            <span className={`text-sm font-medium ${!isMapView ? 'text-blue-600' : 'text-gray-500'}`}>Table</span>
+
+                            <Switch checked={isMapView} onChange={(val: boolean) => setIsMapView(val)} />
+
+                            <span className={`text-sm font-medium ${isMapView ? 'text-blue-600' : 'text-gray-500'}`}>Map</span>
+                        </div>
                         <div className="">
                             <Button
                                 variant="new"
@@ -267,57 +284,71 @@ const DeliveryOrders = () => {
                     <TabSelect handleSelectTab={handleSelectTab} tabSelect={tabSelect} orderCount={loading ? `...` : `${orderCount}`} />
                 </div>
 
-                <div className="border p-2 border-gray-200 rounded-lg">
-                    <Table overflow>
-                        <THead>
-                            {table.getHeaderGroups().map((headerGroup) => (
-                                <Tr key={headerGroup.id}>
-                                    {headerGroup.headers.map((header) => (
-                                        <Th key={header.id} colSpan={header.colSpan}>
-                                            {header.isPlaceholder ? null : (
-                                                <div
-                                                    className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
-                                                    onClick={header.column.getToggleSortingHandler()}
-                                                >
-                                                    {flexRender(header.column.columnDef.header, header.getContext())}
-                                                    <Sorter sort={header.column.getIsSorted()} />
-                                                </div>
-                                            )}
-                                        </Th>
+                {isMapView ? (
+                    <>
+                        <OrderMapToAssign refetch={() => dispatch(fetchOrders())} tabSelect={tabSelect} from={from} to={to} />
+                    </>
+                ) : (
+                    <>
+                        <div className="border p-2 border-gray-200 rounded-lg">
+                            <Table overflow>
+                                <THead>
+                                    {table.getHeaderGroups().map((headerGroup) => (
+                                        <Tr key={headerGroup.id}>
+                                            {headerGroup.headers.map((header) => (
+                                                <Th key={header.id} colSpan={header.colSpan}>
+                                                    {header.isPlaceholder ? null : (
+                                                        <div
+                                                            className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
+                                                            onClick={header.column.getToggleSortingHandler()}
+                                                        >
+                                                            {flexRender(header.column.columnDef.header, header.getContext())}
+                                                            <Sorter sort={header.column.getIsSorted()} />
+                                                        </div>
+                                                    )}
+                                                </Th>
+                                            ))}
+                                        </Tr>
                                     ))}
-                                </Tr>
-                            ))}
-                        </THead>
-                        <TBody>
-                            {table.getRowModel().rows.map((row) => (
-                                <Tr key={row.id}>
-                                    {row.getVisibleCells().map((cell) => (
-                                        <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
+                                </THead>
+                                <TBody>
+                                    {table.getRowModel().rows.map((row) => (
+                                        <Tr key={row.id}>
+                                            {row.getVisibleCells().map((cell) => (
+                                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
+                                            ))}
+                                        </Tr>
                                     ))}
-                                </Tr>
-                            ))}
-                        </TBody>
-                    </Table>
-                </div>
+                                </TBody>
+                            </Table>
+                        </div>
 
-                <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-4">
-                    <Pagination pageSize={pageSize} currentPage={page} total={orderCount} onChange={(page) => dispatch(setPage(page))} />
-                    <div className="w-full sm:w-auto min-w-[130px]">
-                        <Select
-                            size="sm"
-                            isSearchable={false}
-                            value={pageSizeOptions.find((option) => option.value === pageSize)}
-                            options={pageSizeOptions}
-                            className="w-full flex justify-end"
-                            onChange={(option) => {
-                                if (option) {
-                                    dispatch(setPageSize(option.value))
-                                    dispatch(setPage(1))
-                                }
-                            }}
-                        />
-                    </div>
-                </div>
+                        <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-4">
+                            <Pagination
+                                pageSize={pageSize}
+                                currentPage={page}
+                                total={orderCount}
+                                onChange={(page) => dispatch(setPage(page))}
+                            />
+                            <div className="w-full sm:w-auto min-w-[130px]">
+                                <Select
+                                    size="sm"
+                                    isSearchable={false}
+                                    value={pageSizeOptions.find((option) => option.value === pageSize)}
+                                    options={pageSizeOptions}
+                                    className="w-full flex justify-end"
+                                    onChange={(option) => {
+                                        if (option) {
+                                            dispatch(setPageSize(option.value))
+                                            dispatch(setPage(1))
+                                        }
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    </>
+                )}
+
                 {showFilter && (
                     <FilterForwardDelivery
                         showFilter={showFilter}
