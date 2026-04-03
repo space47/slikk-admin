@@ -414,7 +414,7 @@ const appsNavigationConfig: NavigationTree[] = [
                     {
                         key: 'appsCategory.frameTemplates',
                         path: `${APP_PREFIX_PATH}/category/frameTemplates`,
-                        title: 'Frame Templates',
+                        title: 'Ads Config',
                         translateKey: 'nav.appsCategory.frameTemplates',
                         icon: '',
                         type: NAV_ITEM_TYPE_ITEM,
