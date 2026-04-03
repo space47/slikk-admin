@@ -61,6 +61,7 @@ const GoogleFilter = () => {
     const [existingFilters, setExistingFilters] = useState([])
     const inputRefs = useRef<any>({})
     const [activeInputIndex, setActiveInputIndex] = useState(null)
+    const [showTags, setShowTags] = useState(false)
 
     useEffect(() => {
         fetchProductApi()
@@ -145,6 +146,7 @@ const GoogleFilter = () => {
 
     return (
         <div className="flex gap-5 p-5 flex-col bg-gray-50 rounded-lg">
+            const [showTags, setShowTags] = useState(false)
             <Formik enableReinitialize initialValues={initialValues} onSubmit={handleSubmit}>
                 {({ values, setFieldValue, handleSubmit, isSubmitting }) => (
                     <Form onSubmit={handleSubmit} className="">
@@ -164,39 +166,51 @@ const GoogleFilter = () => {
                                     ))}
 
                                     <Button
-                                        variant="solid"
+                                        variant="blue"
                                         size="sm"
                                         type="button"
                                         className="mb-7"
                                         onClick={() => push({ filter_id: '', title: '' })}
                                     >
-                                        Add New Filters
+                                        + Add New Filter
                                     </Button>
                                 </>
                             )}
                         </FieldArray>
+                        {/* FLOATING ACTION PANEL */}
+                        <div className="fixed bottom-32 right-4 z-50 flex flex-col items-end gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setShowTags((prev) => !prev)}
+                                className="bg-black text-white px-4 py-2 rounded-full shadow-lg hover:bg-gray-800 transition-all"
+                            >
+                                {showTags ? 'Hide Tags ✖' : 'Show Product Tags ⚡'}
+                            </button>
+                            <div
+                                className={`w-[320px] bg-white border border-gray-200 rounded-2xl shadow-xl transition-all duration-300 overflow-hidden ${
+                                    showTags ? 'max-h-[300px] p-4 opacity-100' : 'max-h-0 opacity-0 p-0'
+                                }`}
+                            >
+                                <h3 className="text-md font-semibold mb-3 text-gray-700">Product Data Tags</h3>
 
-                        <div className="fixed bottom-3 p-4 rounded-xl bg-gray-100 pt-3 pb-5 z-50">
-                            <div className="flex flex-wrap gap-2 border border-gray-300 p-4 rounded-md max-h-[200px] overflow-y-auto mt-5">
-                                <h3 className="w-full text-lg font-semibold mb-3">Product Data Tags</h3>
-
-                                {productData &&
-                                    Object.entries(productData).map(([key, value]) => (
-                                        <div
-                                            key={key}
-                                            onClick={() => handleProductDataClick(key, value, values, setFieldValue)} // 👈
-                                            className="px-2 py-1 bg-gray-500 border text-white border-gray-300 rounded cursor-pointer font-mono hover:bg-gray-400 transition-colors"
-                                        >
-                                            {`{${key}}`}
-                                        </div>
-                                    ))}
+                                <div className="flex flex-wrap gap-2 max-h-[180px] overflow-y-auto pr-1">
+                                    {productData &&
+                                        Object.entries(productData).map(([key, value]) => (
+                                            <span
+                                                key={key}
+                                                onClick={() => handleProductDataClick(key, value, values, setFieldValue)}
+                                                className="px-3 py-1 text-sm bg-gray-100 hover:bg-black hover:text-white border border-gray-300 rounded-full cursor-pointer font-mono transition-all"
+                                            >
+                                                {`{${key}}`}
+                                            </span>
+                                        ))}
+                                </div>
                             </div>
-
-                            <div className="flex items-center justify-center mt-10">
-                                <Button type="submit" variant="solid" disabled={isSubmitting}>
-                                    {isSubmitting ? 'Saving...' : 'Save Filters'}
-                                </Button>
-                            </div>
+                        </div>
+                        <div className=" flex items-center justify-center">
+                            <Button type="submit" variant="solid" disabled={isSubmitting}>
+                                {isSubmitting ? 'Saving...' : '💾 Save Filters'}
+                            </Button>
                         </div>
                     </Form>
                 )}
