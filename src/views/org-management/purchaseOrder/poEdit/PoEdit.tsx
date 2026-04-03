@@ -86,6 +86,7 @@ const PoEdit = () => {
 
             const stateCode = vendorEntityFind?.gstin?.slice(0, 2) || ''
             const gstin = vendorEntityFind?.gstin || ''
+            const business_nature_company = vendorEntityFind?.code || ''
 
             const payload = {
                 store: values.store,
@@ -102,6 +103,7 @@ const PoEdit = () => {
                 po_expiry_date: values[PoField.PO_EXPIRY_DATE],
                 state_code: stateCode,
                 gstin: gstin,
+                business_nature_company: business_nature_company,
                 discount_sharing_applicable: 'yes',
             }
 

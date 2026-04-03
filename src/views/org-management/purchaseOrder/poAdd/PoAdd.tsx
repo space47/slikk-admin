@@ -55,6 +55,7 @@ const PoAdd = () => {
 
             const stateCode = vendorEntityFind?.gstin?.slice(0, 2) || ''
             const gstinValue = vendorEntityFind?.gstin || ''
+            const business_nature_company = vendorEntityFind?.code || ''
 
             const payload = {
                 store: values.store,
@@ -69,6 +70,7 @@ const PoAdd = () => {
                 po_nature: values[PoField.PO_NATURE],
                 state_code: stateCode,
                 gstin: gstinValue,
+                business_nature_company: business_nature_company,
                 company_gst: values[PoField.COMPANY_GST]?.id,
                 payment_mode: values[PoField.PAYMENT_MODE],
                 po_expiry_date: values[PoField.PO_EXPIRY_DATE],
