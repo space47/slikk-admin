@@ -80,14 +80,9 @@ const OrderList = () => {
         return noFilters
     }
     const buildFilterParams = () => {
-        let pageSizeValue = 10
-        if (numberStore || isMapView) {
-            pageSizeValue = 100
-        }
-
         const params: Record<string, string | number | string[]> = {
             p: page,
-            page_size: pageSizeValue,
+            page_size: numberStore ? 100 : pageSize,
             sort: sortBy,
             sort_type: sortType ? 'asc' : 'desc',
         }
@@ -424,18 +419,13 @@ const OrderList = () => {
                                     handleSyncDistance={handleSyncDistance}
                                 />
                             </div>
-                            {numberClick !== true && (
-                                <PageCommon
-                                    page={page}
-                                    pageSize={pageSize}
-                                    setPage={setPage}
-                                    setPageSize={setPageSize}
-                                    totalData={totalData}
-                                />
-                            )}
                         </>
                     )}
                 </div>
+
+                {numberClick !== true && !isMapView && (
+                    <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={totalData} />
+                )}
 
                 {showFilter && (
                     <FilterDialogOrder
