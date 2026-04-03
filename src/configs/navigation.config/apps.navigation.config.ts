@@ -412,6 +412,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         subMenu: [],
                     },
                     {
+                        key: 'appsCategory.frameTemplates',
+                        path: `${APP_PREFIX_PATH}/category/frameTemplates`,
+                        title: 'Frame Templates',
+                        translateKey: 'nav.appsCategory.frameTemplates',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
                         key: 'appsCategory.division',
                         path: `${APP_PREFIX_PATH}/category/division`,
                         title: 'Division',

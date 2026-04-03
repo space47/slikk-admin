@@ -398,6 +398,30 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/category-management/filterList/FilterTable')),
         authority: [ADMIN, USER],
     },
+    {
+        key: 'appsCategory.frameTemplates',
+        path: `${APP_PREFIX_PATH}/category/frameTemplates`,
+        component: lazy(() => import('@/views/category-management/frameTemplates/frameTable/FrameTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCategory.frameTemplates',
+        path: `${APP_PREFIX_PATH}/category/frameTemplates`,
+        component: lazy(() => import('@/views/category-management/frameTemplates/frameTable/FrameTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCategory.frameTemplates',
+        path: `${APP_PREFIX_PATH}/category/frameTemplates/add`,
+        component: lazy(() => import('@/views/category-management/frameTemplates/frameAdd/FrameAdd')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCategory.frameTemplates',
+        path: `${APP_PREFIX_PATH}/category/frameTemplates/edit/:id`,
+        component: lazy(() => import('@/views/category-management/frameTemplates/frameEdit/FrameEdit')),
+        authority: [ADMIN, USER],
+    },
 
     // ......................................
     {
