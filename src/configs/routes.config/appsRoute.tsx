@@ -399,6 +399,12 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsCategory.filters',
+        path: `${APP_PREFIX_PATH}/category/filters/google`,
+        component: lazy(() => import('@/views/category-management/filterList/filterListUtils/GoogleFilter')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsCategory.frameTemplates',
         path: `${APP_PREFIX_PATH}/category/frameTemplates`,
         component: lazy(() => import('@/views/category-management/frameTemplates/frameTable/FrameTable')),
