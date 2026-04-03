@@ -7,6 +7,7 @@ import { AxiosError } from 'axios'
 import { Formik, FieldArray, Form, Formik as IsolatedFormik, Form as IsolatedForm } from 'formik'
 import React, { useState, useEffect, useRef } from 'react'
 import { FaTrash } from 'react-icons/fa'
+import { uniqBy } from 'lodash'
 
 const IndividualFilterRow = ({ filter, index, setFieldValue, onFocus, onRemove, inputRefs }: any) => {
     const [selectedFilterId, setSelectedFilterId] = useState(filter.filter_id)
@@ -21,21 +22,21 @@ const IndividualFilterRow = ({ filter, index, setFieldValue, onFocus, onRemove, 
             <button
                 type="button"
                 onClick={onRemove}
-                className="absolute top-2 right-2 bg-red-500 text-white border-none rounded cursor-pointer px-2 py-1 text-sm hover:bg-red-600 z-10"
+                className="absolute top-2 right-2 bg-red-500 text-white rounded px-2 py-1 hover:bg-red-600"
             >
-                <FaTrash className="text-xl" />
+                <FaTrash />
             </button>
 
             <div className="mb-3">
                 <label className="block mb-1 text-sm font-medium">Filter ID:</label>
-                <IsolatedFormik initialValues={{ filtersAdd: [], filtersRemove: [] }} onSubmit={() => {}}>
+                <IsolatedFormik initialValues={{}} onSubmit={() => {}}>
                     <IsolatedForm>
                         <CommonFilterSelect setFilterId={handleFilterChange} filterId={selectedFilterId} isCsv={false} noExtra={true} />
                     </IsolatedForm>
                 </IsolatedFormik>
             </div>
 
-            <div className="mb-3">
+            <div>
                 <label className="block mb-1 text-sm font-medium">Title Template:</label>
                 <input
                     type="text"
@@ -45,23 +46,20 @@ const IndividualFilterRow = ({ filter, index, setFieldValue, onFocus, onRemove, 
                     value={filter.title}
                     onChange={(e) => setFieldValue(`filters.${index}.title`, e.target.value)}
                     onFocus={() => onFocus(index)}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 font-mono"
                     placeholder="Enter title template with {tags}"
                 />
-                <div className="text-xs text-gray-500 mt-1">
-                    Tip: Click on this input field first, then click on any tag from the below panel to insert it at cursor position
-                </div>
             </div>
         </div>
     )
 }
 
 const GoogleFilter = () => {
-    const [productData, setProductData] = useState(null)
-    const [existingFilters, setExistingFilters] = useState([])
+    const [productData, setProductData] = useState<any>(null)
+    const [existingFilters, setExistingFilters] = useState<any[]>([])
+    const [activeInputIndex, setActiveInputIndex] = useState<any>(null)
     const inputRefs = useRef<any>({})
-    const [activeInputIndex, setActiveInputIndex] = useState(null)
-    const [showTags, setShowTags] = useState(false)
+    const [tagSearch, setTagSearch] = useState('')
 
     useEffect(() => {
         fetchProductApi()
@@ -70,147 +68,140 @@ const GoogleFilter = () => {
 
     const fetchProductApi = async () => {
         try {
-            const response = await axiosInstance.get(`/app/configuration?config_name=tagsConfiguration`)
-            setProductData(response.data?.config?.value || null)
-        } catch (error) {
-            console.error('Error fetching configuration:', error)
+            const res = await axiosInstance.get(`/app/configuration?config_name=tagsConfiguration`)
+            setProductData(res.data?.config?.value || {})
+        } catch (e) {
+            console.error(e)
         }
     }
 
     const fetchGoogleFiltersApi = async () => {
         try {
-            const response = await axiosInstance.get(`/app/configuration?config_name=googleCatalogueProductTitleConfiguration`)
-            const filters = response.data?.config?.value || []
-            setExistingFilters(filters)
-        } catch (error) {
-            console.error('Error fetching configuration:', error)
+            const res = await axiosInstance.get(`/app/configuration?config_name=googleCatalogueProductTitleConfiguration`)
+            setExistingFilters(res.data?.config?.value || [])
+        } catch (e) {
+            console.error(e)
         }
     }
 
-    // Replace insertTextAtCursor and handleProductDataClick with this:
+    const insertTextAtCursor = (input: any, text: string, value: string, index: number, setFieldValue: any) => {
+        const start = input.selectionStart
+        const end = input.selectionEnd
 
-    const insertTextAtCursor = (inputElement: any, textToInsert: any, currentValue: string, index: number, setFieldValue: any) => {
-        if (!inputElement) return
+        const newValue = value.slice(0, start) + text + value.slice(end)
 
-        const startPos = inputElement.selectionStart
-        const endPos = inputElement.selectionEnd
-        const newText = currentValue.substring(0, startPos) + textToInsert + currentValue.substring(endPos)
+        setFieldValue(`filters.${index}.title`, newValue)
 
-        // ✅ Update Formik state directly — this is the source of truth
-        setFieldValue(`filters.${index}.title`, newText)
-
-        // Restore cursor position after React re-renders
         requestAnimationFrame(() => {
-            const newCursorPos = startPos + textToInsert.length
-            inputElement.setSelectionRange(newCursorPos, newCursorPos)
-            inputElement.focus()
+            const pos = start + text.length
+            input.setSelectionRange(pos, pos)
+            input.focus()
         })
     }
 
-    const handleProductDataClick = (key: any, value: any, values: any, setFieldValue: any) => {
-        if (activeInputIndex !== null) {
-            const inputElement = inputRefs.current[activeInputIndex]
-            if (inputElement) {
-                const currentValue = values.filters[activeInputIndex]?.title || ''
-                insertTextAtCursor(inputElement, `{${key}}`, currentValue, activeInputIndex, setFieldValue)
-            }
-        } else {
-            alert('Please click on a title input field first')
+    const handleTagClick = (value: string, values: any, setFieldValue: any) => {
+        if (activeInputIndex === null) {
+            alert('Select an input first')
+            return
         }
+
+        const input = inputRefs.current[activeInputIndex]
+        const currentValue = values.filters[activeInputIndex]?.title || ''
+
+        insertTextAtCursor(input, `{${value}}`, currentValue, activeInputIndex, setFieldValue)
     }
 
     const handleSubmit = async (values: any, { setSubmitting }: any) => {
-        const payload = values.filters.map((filter: any) => ({
-            filter_id: filter.filter_id,
-            title: filter.title,
+        const payload = values.filters.map((f: any) => ({
+            filter_id: f.filter_id,
+            title: f.title,
         }))
 
-        const body = {
-            config_name: 'googleCatalogueProductTitleConfiguration',
-            config_value: payload,
-            is_active: true,
-        }
         try {
-            const res = await axiosInstance.post(`/app/configuration`, body)
+            const res = await axiosInstance.post(`/app/configuration`, {
+                config_name: 'googleCatalogueProductTitleConfiguration',
+                config_value: payload,
+                is_active: true,
+            })
             successMessage(res)
-        } catch (error) {
-            if (error instanceof AxiosError) errorMessage(error)
+        } catch (err) {
+            if (err instanceof AxiosError) errorMessage(err)
         } finally {
             setSubmitting(false)
         }
     }
 
     const initialValues = {
-        filters: existingFilters.length > 0 ? existingFilters : [{ filter_id: '', title: '' }],
+        filters: existingFilters.length ? existingFilters : [{ filter_id: '', title: '' }],
     }
 
     return (
-        <div className="flex gap-5 p-5 flex-col bg-gray-50 rounded-lg">
-            const [showTags, setShowTags] = useState(false)
+        <div className="flex gap-5 p-5 bg-gray-50 rounded-lg">
             <Formik enableReinitialize initialValues={initialValues} onSubmit={handleSubmit}>
                 {({ values, setFieldValue, handleSubmit, isSubmitting }) => (
-                    <Form onSubmit={handleSubmit} className="">
-                        <FieldArray name="filters">
-                            {({ push, remove }) => (
-                                <>
-                                    {values.filters.map((filter, index) => (
-                                        <IndividualFilterRow
-                                            key={`filter-row-${index}-${filter.filter_id || 'new'}`}
-                                            filter={filter}
-                                            index={index}
-                                            setFieldValue={setFieldValue}
-                                            onFocus={setActiveInputIndex}
-                                            onRemove={() => remove(index)}
-                                            inputRefs={inputRefs}
-                                        />
-                                    ))}
-
-                                    <Button
-                                        variant="blue"
-                                        size="sm"
-                                        type="button"
-                                        className="mb-7"
-                                        onClick={() => push({ filter_id: '', title: '' })}
-                                    >
-                                        + Add New Filter
-                                    </Button>
-                                </>
-                            )}
-                        </FieldArray>
-                        {/* FLOATING ACTION PANEL */}
-                        <div className="fixed bottom-32 right-4 z-50 flex flex-col items-end gap-3">
-                            <button
-                                type="button"
-                                onClick={() => setShowTags((prev) => !prev)}
-                                className="bg-black text-white px-4 py-2 rounded-full shadow-lg hover:bg-gray-800 transition-all"
-                            >
-                                {showTags ? 'Hide Tags ✖' : 'Show Product Tags ⚡'}
-                            </button>
-                            <div
-                                className={`w-[320px] bg-white border border-gray-200 rounded-2xl shadow-xl transition-all duration-300 overflow-hidden ${
-                                    showTags ? 'max-h-[300px] p-4 opacity-100' : 'max-h-0 opacity-0 p-0'
-                                }`}
-                            >
-                                <h3 className="text-md font-semibold mb-3 text-gray-700">Product Data Tags</h3>
-
-                                <div className="flex flex-wrap gap-2 max-h-[180px] overflow-y-auto pr-1">
-                                    {productData &&
-                                        Object.entries(productData).map(([key, value]) => (
-                                            <span
-                                                key={key}
-                                                onClick={() => handleProductDataClick(key, value, values, setFieldValue)}
-                                                className="px-3 py-1 text-sm bg-gray-100 hover:bg-black hover:text-white border border-gray-300 rounded-full cursor-pointer font-mono transition-all"
-                                            >
-                                                {`{${key}}`}
-                                            </span>
+                    <Form onSubmit={handleSubmit} className="flex w-full gap-5">
+                        {/* LEFT */}
+                        <div className="flex-1">
+                            <FieldArray name="filters">
+                                {({ push, remove }) => (
+                                    <>
+                                        {values.filters.map((filter: any, index: number) => (
+                                            <IndividualFilterRow
+                                                key={index}
+                                                filter={filter}
+                                                index={index}
+                                                setFieldValue={setFieldValue}
+                                                onFocus={setActiveInputIndex}
+                                                onRemove={() => remove(index)}
+                                                inputRefs={inputRefs}
+                                            />
                                         ))}
-                                </div>
+
+                                        <Button variant="blue" type="button" onClick={() => push({ filter_id: '', title: '' })}>
+                                            + Add Filter
+                                        </Button>
+                                    </>
+                                )}
+                            </FieldArray>
+
+                            <div className="mt-5 text-center">
+                                <Button variant="accept" loading={isSubmitting} type="submit" disabled={isSubmitting}>
+                                    Save
+                                </Button>
                             </div>
                         </div>
-                        <div className=" flex items-center justify-center">
-                            <Button type="submit" variant="solid" disabled={isSubmitting}>
-                                {isSubmitting ? 'Saving...' : '💾 Save Filters'}
-                            </Button>
+
+                        {/* RIGHT PANEL */}
+                        <div className="w-[320px] sticky top-5 h-fit bg-white border rounded-xl p-4 shadow">
+                            <h3 className="font-semibold mb-3">Product Tags</h3>
+
+                            <input
+                                placeholder="Search tags..."
+                                value={tagSearch}
+                                onChange={(e) => setTagSearch(e.target.value)}
+                                className="w-full mb-3 px-3 py-2 border rounded"
+                            />
+
+                            <div className="flex flex-wrap gap-2 max-h-[700px] overflow-y-auto">
+                                {productData &&
+                                    uniqBy(
+                                        Object.entries(productData).map(([key, val]: any) => ({
+                                            key,
+                                            val,
+                                        })),
+                                        'val',
+                                    )
+                                        .filter(({ val }: any) => val.toLowerCase().includes(tagSearch.toLowerCase()))
+                                        .map(({ key, val }: any) => (
+                                            <span
+                                                key={key}
+                                                onClick={() => handleTagClick(val, values, setFieldValue)}
+                                                className="px-2 py-1 bg-gray-100 border rounded cursor-pointer hover:bg-blue-50 hover:text-black text-sm font-mono"
+                                            >
+                                                {`{${val}}`}
+                                            </span>
+                                        ))}
+                            </div>
                         </div>
                     </Form>
                 )}
