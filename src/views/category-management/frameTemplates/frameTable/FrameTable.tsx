@@ -9,6 +9,7 @@ import { AxiosError } from 'axios'
 import dayjs from 'dayjs'
 import React, { useEffect, useMemo, useState, useCallback } from 'react'
 import { FaEdit, FaPlus, FaTrash } from 'react-icons/fa'
+import { FcGoogle } from 'react-icons/fc'
 import { PiFrameCornersBold } from 'react-icons/pi'
 import { useNavigate } from 'react-router-dom'
 
@@ -102,9 +103,13 @@ const FrameTable = () => {
             </div>
 
             {/* Add Button */}
-            <div className="mb-4 flex justify-end">
-                <Button variant="new" size="sm" icon={<FaPlus />} onClick={() => navigate(`/category/frameTemplates/add`)}>
-                    Add New Frame
+            <div className="mb-4 flex justify-end gap-2">
+                <Button variant="accept" size="sm" icon={<FcGoogle />} onClick={() => navigate(`/app/category/filters/google`)}>
+                    Google Title Config
+                </Button>
+
+                <Button variant="new" size="sm" icon={<FaPlus />} onClick={() => navigate(`/app/category/frameTemplates/add`)}>
+                    Add Frame Template
                 </Button>
             </div>
 

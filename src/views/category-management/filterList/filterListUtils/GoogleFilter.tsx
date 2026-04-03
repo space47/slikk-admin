@@ -185,7 +185,7 @@ const GoogleFilter = () => {
                                         <div
                                             key={key}
                                             onClick={() => handleProductDataClick(key, value, values, setFieldValue)} // 👈
-                                            className="px-3 py-1 bg-gray-100 border border-gray-300 rounded cursor-pointer font-mono hover:bg-gray-200 transition-colors"
+                                            className="px-2 py-1 bg-gray-500 border text-white border-gray-300 rounded cursor-pointer font-mono hover:bg-gray-400 transition-colors"
                                         >
                                             {`{${key}}`}
                                         </div>
