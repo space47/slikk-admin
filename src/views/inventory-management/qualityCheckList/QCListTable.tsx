@@ -29,6 +29,8 @@ import { BRAND_STATE } from '@/store/types/brand.types'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
 import { FaDownload } from 'react-icons/fa6'
 import { commonDownloadFromRtk } from '@/common/commonDownload'
+import { useDebounceInput } from '@/commonHooks/useDebounceInput'
+import dayjs from 'dayjs'
 
 const QCListTable = () => {
     const dispatch = useAppDispatch()
@@ -43,10 +45,13 @@ const QCListTable = () => {
     const storeList = useAppSelector<USER_PROFILE_DATA['store']>((state) => state.company.store)
     const [storeCode, setStoreCode] = useState<any[]>([])
 
+    const { debounceFilter } = useDebounceInput({ globalFilter: globalFilter, delay: 500 })
+    const To_Date = dayjs(to).add(1, 'days').format('YYYY-MM-DD')
+
     const { data, isLoading, isSuccess, error, isFetching } = qualityCheckService.useQualityCheckDataQuery(
         {
-            from: from,
-            to: to,
+            from: !debounceFilter ? from : '',
+            to: !debounceFilter ? To_Date : '',
             grn_id: globalFilter ?? '',
             page: page,
             pageSize: pageSize,
