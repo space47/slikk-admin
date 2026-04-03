@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import CommonFilterSelect from '@/common/ComonFilterSelect'
-import { Card, Input, Spinner } from '@/components/ui'
+import { Button, Card, Input, Spinner } from '@/components/ui'
 import { Form, Formik } from 'formik'
 import React, { useEffect, useMemo, useState } from 'react'
 import { FaCopy, FaSearch, FaFilter, FaSync } from 'react-icons/fa'
@@ -10,8 +10,10 @@ import { notification } from 'antd'
 import { AxiosError } from 'axios'
 import { errorMessage, successMessage } from '@/utils/responseMessages'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { useNavigate } from 'react-router-dom'
 
 const FilterTable = () => {
+    const navigate = useNavigate()
     const [filterId, setFilterId] = useState<string | undefined>('')
     const [data, setData] = useState<FilterDataType | null>(null)
     const [runningTask, setRunningTask] = useState(false)
@@ -65,9 +67,16 @@ const FilterTable = () => {
 
     return (
         <div className="">
-            <div className="mb-8">
-                <h1 className="text-2xl font-bold text-gray-800 mb-2">Filter Management</h1>
-                <p className="text-gray-600">Search and view filter configurations</p>
+            <div className="flex justify-between items-center">
+                <div className="mb-8">
+                    <h1 className="text-2xl font-bold text-gray-800 mb-2">Filter Management</h1>
+                    <p className="text-gray-600">Search and view filter configurations</p>
+                </div>
+                <div>
+                    <Button variant="new" size="sm" onClick={() => navigate(`/app/category/filters/google`)}>
+                        Google Filters
+                    </Button>
+                </div>
             </div>
             <div className="mb-6">
                 <div className="relative">
