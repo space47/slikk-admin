@@ -2,8 +2,8 @@
 import { Order } from '@/store/types/newOrderTypes'
 
 export const LOGISTIC_PARTNER = [
-    { value: 'porter', label: 'PORTER' },
     { value: 'slikk', label: 'SLIKK' },
+    { value: 'porter', label: 'PORTER' },
     { value: 'pico', label: 'PICO' },
 ]
 
