@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useMemo, useState, useCallback, useEffect } from 'react'
+import React, { useMemo, useState, useCallback, useEffect, useRef } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
 import * as L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -16,6 +16,7 @@ import store, { useAppDispatch, useAppSelector } from '@/store'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
 import { IoCloseCircle } from 'react-icons/io5'
 import AssignRiderHomeModal from '@/views/homePage/homes/componentsHomes/AssignRiderHomeModal'
+import { createBoxIcon } from './OrderListUtils'
 
 const DefaultIcon = L.icon({
     iconUrl: icon,
@@ -67,129 +68,14 @@ interface MultipleMapProps {
     createTime: string[]
     refetch?: any
     mapRefetch: any
+    deliveryType: string[]
+    paymentMode: string[]
 }
 
 interface CenterProps {
     setCenter?: any
     currLat: any
     currLong: any
-}
-
-const createBoxIcon = (elapsedTime: string, isSelected: boolean, logistic_partner: string | null, logistic_details: any) => {
-    const hasLogisticPartner = logistic_partner && logistic_partner.trim() !== '' && logistic_partner?.trim() !== null
-    const partnerName = hasLogisticPartner ? logistic_partner : ''
-    const runnerName = logistic_details?.runner_name || ''
-
-    let backgroundColor = '#2563eb'
-    if (isSelected) {
-        backgroundColor = '#22c55e'
-    } else if (hasLogisticPartner) {
-        backgroundColor = '#d97706'
-    }
-
-    let contentHtml = ''
-
-    if (hasLogisticPartner) {
-        console.log('faa')
-        contentHtml = `
-            <div style="
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 3px;
-            ">
-                <div style="
-                    background: ${backgroundColor};
-                    color: white;
-                    padding: 6px 12px;
-                    border-radius: 8px;
-                    font-size: 12px;
-                    font-weight: 600;
-                    white-space: nowrap;
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-                ">
-                    ${elapsedTime}
-                </div>
-                <div style="
-                    background: ${backgroundColor};
-                    color: white;
-                    padding: 4px 10px;
-                    border-radius: 6px;
-                    font-size: 10px;
-                    font-weight: 500;
-                    white-space: nowrap;
-                    max-width: 160px;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-                ">
-                     ${partnerName.substring(0, 20)}${partnerName.length > 20 ? '...' : ''}
-                </div>
-                ${
-                    runnerName
-                        ? `
-                <div style="
-                    background: ${backgroundColor};
-                    color: white;
-                    padding: 3px 8px;
-                    border-radius: 5px;
-                    font-size: 9px;
-                    font-weight: 400;
-                    white-space: nowrap;
-                    max-width: 140px;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-                ">
-                     ${runnerName.substring(0, 15)}${runnerName.length > 15 ? '...' : ''}
-                </div>
-                `
-                        : ''
-                }
-                <div style="
-                    width: 0;
-                    height: 0;
-                    border-left: 6px solid transparent;
-                    border-right: 6px solid transparent;
-                    border-top: 8px solid ${backgroundColor};
-                "></div>
-            </div>
-        `
-    } else {
-        contentHtml = `
-            <div style="
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            ">
-                <div style="
-                    background: ${backgroundColor};
-                    color: white;
-                    padding: 6px 10px;
-                    border-radius: 8px;
-                    font-size: 12px;
-                    font-weight: 600;
-                    white-space: nowrap;
-                ">
-                    📦 ${elapsedTime}
-                </div>
-                <div style="
-                    width: 0;
-                    height: 0;
-                    border-left: 6px solid transparent;
-                    border-right: 6px solid transparent;
-                    border-top: 8px solid ${backgroundColor};
-                "></div>
-            </div>
-        `
-    }
-
-    return L.divIcon({
-        className: '',
-        html: contentHtml,
-        iconSize: hasLogisticPartner ? [160, 70] : [80, 30],
-        iconAnchor: hasLogisticPartner ? [80, 70] : [40, 30],
-    })
 }
 
 const CurrentLocationButton: React.FC<CenterProps> = ({ currLat, currLong }) => {
@@ -218,6 +104,7 @@ const CurrentLocationButton: React.FC<CenterProps> = ({ currLat, currLong }) => 
     )
 }
 CurrentLocationButton.displayName = 'CurrentLocationButton'
+
 interface MarkerComponentProps {
     markers: any[]
     currLat?: any
@@ -243,18 +130,26 @@ const MarkerComponent: React.FC<MarkerComponentProps> = ({
     onMarkerClick,
 }: MarkerComponentProps) => {
     const map = useMap()
+    // Use ref to store marker instances to prevent flickering
+    const markerRefs = useRef<{ [key: string]: L.Marker }>({})
 
     const getElapsedTime = (time: string) => {
         const created = new Date(time).getTime()
         const now = Date.now()
 
-        const diff = Math.floor((now - created) / 1000)
+        const diffSec = Math.floor((now - created) / 1000)
 
-        const mins = Math.floor(diff / 60)
+        const mins = Math.floor(diffSec / 60)
         const hrs = Math.floor(mins / 60)
+        const days = Math.floor(hrs / 24)
+        const months = Math.floor(days / 30)
+        const years = Math.floor(days / 365)
 
-        if (hrs > 0) return `${hrs}h ${mins % 60}m`
-        return `${mins || '0'} mins`
+        if (years > 0) return `${years}Y`
+        if (months > 0) return `${months}M`
+        if (days > 0) return `${days}D`
+        if (hrs > 0) return `${hrs}h`
+        return `${mins || 0}m`
     }
 
     useEffect(() => {
@@ -289,32 +184,42 @@ const MarkerComponent: React.FC<MarkerComponentProps> = ({
         }
     }
 
-    const getMarkerIcon = (marker: any) => {
-        const isSelected = selectedInvoices.includes(marker?.invoice_id)
-        const hasLogisticPartner = marker?.logisticPartnerName && marker?.logisticPartnerName.trim() !== ''
+    const getMarkerIcon = useCallback(
+        (marker: any) => {
+            const isSelected = selectedInvoices.includes(marker?.invoice_id)
+            const hasLogisticPartner = marker?.logisticPartnerName && marker?.logisticPartnerName.trim() !== ''
 
-        if (hasLogisticPartner) {
-            const elapsed = getElapsedTime(marker?.createdAt)
-            return createBoxIcon(elapsed, isSelected, marker?.logisticPartnerName, marker?.logistic_details_data)
-        }
-        if (['PACKED', 'DELIVERY_CREATED'].includes(marker?.status) && !hasLogisticPartner) {
-            const elapsed = getElapsedTime(marker?.createdAt)
-            return createBoxIcon(elapsed, isSelected, null, null)
-        }
-        if (isSelected) {
-            return yellowIcon
-        }
+            if (hasLogisticPartner) {
+                const elapsed = getElapsedTime(marker?.createdAt)
+                return createBoxIcon(
+                    elapsed,
+                    isSelected,
+                    marker?.logisticPartnerName,
+                    marker?.logistic_details_data,
+                    marker?.delivery_type,
+                    marker?.payment_mode,
+                )
+            }
+            if (['PACKED', 'DELIVERY_CREATED'].includes(marker?.status) && !hasLogisticPartner) {
+                const elapsed = getElapsedTime(marker?.createdAt)
+                return createBoxIcon(elapsed, isSelected, null, null, marker?.delivery_type, marker?.payment_mode)
+            }
+            if (isSelected) {
+                return yellowIcon
+            }
 
-        if (['PENDING', 'ACCEPTED'].includes(marker?.status)) {
-            return officeIcon
-        } else if (marker?.status === 'EXCHANGE') {
-            return orangeIcon
-        } else if (['DECLINED', 'CANCELLED'].includes(marker?.status)) {
-            return blackIcon
-        }
+            if (['PENDING', 'ACCEPTED'].includes(marker?.status)) {
+                return officeIcon
+            } else if (marker?.status === 'EXCHANGE') {
+                return orangeIcon
+            } else if (['DECLINED', 'CANCELLED'].includes(marker?.status)) {
+                return blackIcon
+            }
 
-        return DefaultIcon
-    }
+            return DefaultIcon
+        },
+        [selectedInvoices],
+    )
 
     return (
         <div>
@@ -325,9 +230,14 @@ const MarkerComponent: React.FC<MarkerComponentProps> = ({
 
                 return (
                     <Marker
-                        key={index}
+                        key={`${marker.invoice_id}-${index}`}
                         position={[marker.lat, marker.lon]}
                         icon={getMarkerIcon(marker) as any}
+                        ref={(instance) => {
+                            if (instance) {
+                                markerRefs.current[marker.invoice_id] = instance
+                            }
+                        }}
                         eventHandlers={{
                             mouseover: (e) => {
                                 e.target.openPopup()
@@ -337,12 +247,18 @@ const MarkerComponent: React.FC<MarkerComponentProps> = ({
                                     e.target.openPopup()
                                     handleMarkerClick(marker, e)
                                 } else {
-                                    e.target.openPopup()
                                     window.open(`/app/orders/${marker?.invoice_id}`, '_blank', 'noopener,noreferrer')
                                 }
                             },
                             mouseout: (e) => {
                                 e.target.closePopup()
+                            },
+                            keydown: (e: any) => {
+                                e.originalEvent?.stopPropagation?.()
+                                if (e.originalEvent.key === '1') {
+                                    e.originalEvent.preventDefault()
+                                    window.open(`/app/orders/${marker?.invoice_id}`, '_blank', 'noopener,noreferrer')
+                                }
                             },
                         }}
                     >
@@ -394,6 +310,8 @@ const MapForOrder: React.FC<MultipleMapProps> = ({
     mapRefetch,
     logisticDetails,
     logisticPartner,
+    deliveryType,
+    paymentMode,
 }) => {
     const dispatch = useAppDispatch()
     const [currLat, setCurrLat] = useState<number>(12.920216)
@@ -473,6 +391,7 @@ const MapForOrder: React.FC<MultipleMapProps> = ({
         setSuggestions([])
         setLocation(suggestion.name)
     }
+
     const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
         const R = 6371
         const dLat = ((lat2 - lat1) * Math.PI) / 180
@@ -517,7 +436,7 @@ const MapForOrder: React.FC<MultipleMapProps> = ({
     }
 
     // Handle marker click for selection - allows unlimited selections
-    const handleMarkerClick = (invoiceId: string, lat: number, lon: number) => {
+    const handleMarkerClick = useCallback((invoiceId: string, lat: number, lon: number) => {
         setSelectedInvoices((prev) => {
             const isSelected = prev.includes(invoiceId)
 
@@ -531,7 +450,7 @@ const MapForOrder: React.FC<MultipleMapProps> = ({
                 return [...prev, invoiceId]
             }
         })
-    }
+    }, [])
 
     const markers = useMemo(() => {
         const belowTen: any[] = []
@@ -546,6 +465,8 @@ const MapForOrder: React.FC<MultipleMapProps> = ({
             const createdAt = createTime[index]
             const logisticPartnerName = logisticPartner[index] || ''
             const logistic_details_data = logisticDetails[index] || null
+            const delivery_type = deliveryType[index] || ''
+            const payment_mode = paymentMode[index] || ''
 
             if (distance <= 10) {
                 belowTen.push({
@@ -558,6 +479,8 @@ const MapForOrder: React.FC<MultipleMapProps> = ({
                     createdAt,
                     logisticPartnerName,
                     logistic_details_data,
+                    delivery_type,
+                    payment_mode,
                 })
             } else if (distance > 10 && distance <= 15) {
                 tenToFifteen.push({
@@ -570,6 +493,8 @@ const MapForOrder: React.FC<MultipleMapProps> = ({
                     createdAt,
                     logisticPartnerName,
                     logistic_details_data,
+                    delivery_type,
+                    payment_mode,
                 })
             } else if (distance > 15 && distance <= 20) {
                 fifteenToThirty.push({
@@ -582,6 +507,8 @@ const MapForOrder: React.FC<MultipleMapProps> = ({
                     createdAt,
                     logisticPartnerName,
                     logistic_details_data,
+                    delivery_type,
+                    payment_mode,
                 })
             } else {
                 aboveThirty.push({
@@ -594,9 +521,23 @@ const MapForOrder: React.FC<MultipleMapProps> = ({
                     createdAt,
                     logisticPartnerName,
                     logistic_details_data,
+                    delivery_type,
+                    payment_mode,
                 })
             }
-            return { lat, lon, amount: amount[index], distance, status, invoice_id, createdAt, logisticPartnerName, logistic_details_data }
+            return {
+                lat,
+                lon,
+                amount: amount[index],
+                distance,
+                status,
+                invoice_id,
+                createdAt,
+                logisticPartnerName,
+                logistic_details_data,
+                delivery_type,
+                payment_mode,
+            }
         })
 
         setDistanceBelowTen(belowTen)
@@ -604,9 +545,21 @@ const MapForOrder: React.FC<MultipleMapProps> = ({
         setDistanceBelowFifteenToThirty(fifteenToThirty)
         setDistanceAboveThirty(aboveThirty)
         return result
-    }, [latitudes, longitudes, amount, currentStatus, currentInvoice, currentDistance, createTime, logisticPartner, logisticDetails])
+    }, [
+        latitudes,
+        longitudes,
+        amount,
+        currentStatus,
+        currentInvoice,
+        currentDistance,
+        createTime,
+        logisticPartner,
+        logisticDetails,
+        deliveryType,
+        paymentMode,
+    ])
 
-    const allDistances = calculateAllDistances()
+    const allDistances = useMemo(() => calculateAllDistances(), [selectedMarkers])
 
     return (
         <div className="flex flex-col gap-4">
@@ -630,11 +583,8 @@ const MapForOrder: React.FC<MultipleMapProps> = ({
                     </div>
                 </div>
             </div>
-
-            {/* Display selected markers and distances */}
             {selectedMarkers.length > 0 && (
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-xl border border-blue-200 shadow-sm max-h-[500px] flex flex-col">
-                    {/* Header with icon and count - Fixed at top */}
                     <div className="flex-shrink-0">
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-2">
@@ -665,7 +615,7 @@ const MapForOrder: React.FC<MultipleMapProps> = ({
                     <div className="space-y-2 max-h-40 overflow-y-auto mb-4 pr-1 flex-shrink-0 custom-scrollbar">
                         {selectedMarkers.map((marker, idx) => (
                             <div
-                                key={idx}
+                                key={marker.invoice_id}
                                 className="group flex items-center justify-between bg-white rounded-lg p-3 border border-gray-200 hover:shadow-md transition-all duration-200"
                             >
                                 <div className="flex items-center gap-3">
@@ -709,9 +659,9 @@ const MapForOrder: React.FC<MultipleMapProps> = ({
 
                             {/* Scrollable distance list */}
                             <div className="flex-1 overflow-y-auto space-y-2 pr-1 min-h-0 custom-scrollbar">
-                                {allDistances.map((dist, idx) => (
+                                {allDistances.map((dist) => (
                                     <div
-                                        key={idx}
+                                        key={`${dist.marker1}-${dist.marker2}`}
                                         className="flex justify-between items-center bg-white rounded-lg p-3 border border-gray-100 hover:border-indigo-200 transition-all duration-200"
                                     >
                                         <div className="flex items-center gap-2">
