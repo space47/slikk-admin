@@ -65,6 +65,8 @@ export type OrderMapType = {
     status: string
     create_date: string
     logistic_partner: string | null
+    delivery_type: string | null
+    payment_mode: string | null
     logistic_details: {
         state: string
         distance: string

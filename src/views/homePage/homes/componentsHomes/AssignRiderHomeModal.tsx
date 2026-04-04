@@ -11,6 +11,8 @@ import { RiMotorbikeFill } from 'react-icons/ri'
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa'
 import { AxiosError } from 'axios'
 import { errorMessage, successMessage } from '@/utils/responseMessages'
+import { Select } from '@/components/ui'
+import { FiInfo } from 'react-icons/fi'
 
 type ModalProps = {
     isOpen: boolean
@@ -20,15 +22,20 @@ type ModalProps = {
     isModalSuccessCallback: () => void
 }
 
+const LOGISTIC_PARTNER = [
+    { value: 'slikk', label: 'SLIKK' },
+    { value: 'porter', label: 'PORTER' },
+    { value: 'pico', label: 'PICO' },
+]
+
 const AssignRiderHomeModal = ({ isOpen, selectedInvoices, setIsOpen, isOrder, isModalSuccessCallback }: ModalProps) => {
     const dispatch = useAppDispatch()
     const [loading, setIsLoading] = useState(false)
     const [selectedRiderMobile, setSelectedRiderMobile] = useState<string>('')
-
+    const [deliveryPartner, setDeliveryPartner] = useState(LOGISTIC_PARTNER[0].value)
     const [globalFilter, setGlobalFilter] = useState<string | undefined>('')
     const [mobileFilter, setMobileFilter] = useState<string | undefined>('')
 
-    // ✅ Track invoice status
     const [invoiceStatus, setInvoiceStatus] = useState<Record<string, 'pending' | 'success' | 'failed'>>({})
 
     const { riderDetails } = useAppSelector<RiderDetailType>((state) => state.riderDetails)
@@ -47,14 +54,12 @@ const AssignRiderHomeModal = ({ isOpen, selectedInvoices, setIsOpen, isOrder, is
         { refetchOnMountOrArgChange: true },
     )
 
-    // ✅ Set rider data
     useEffect(() => {
         if (isSuccess) {
             dispatch(setRiderDetails(riders.data?.results || []))
         }
     }, [riders, isSuccess, dispatch])
 
-    // ✅ Initialize invoice state when modal opens
     useEffect(() => {
         if (isOpen && selectedInvoices?.length) {
             const initialState: Record<string, 'pending'> = {}
@@ -69,7 +74,7 @@ const AssignRiderHomeModal = ({ isOpen, selectedInvoices, setIsOpen, isOrder, is
         const promises = selectedInvoices.map((invoice) => {
             const body = {
                 action: 'CREATE_DELIVERY',
-                delivery_partner: 'slikk',
+                delivery_partner: deliveryPartner,
                 rider_mobile: selectedRiderMobile,
             }
             setIsLoading(true)
@@ -150,8 +155,6 @@ const AssignRiderHomeModal = ({ isOpen, selectedInvoices, setIsOpen, isOrder, is
             ) : (
                 <div className="flex flex-col h-[60vh]">
                     <div className="text-xl font-bold text-red-700 mb-6 text-center">ASSIGN RIDER</div>
-
-                    {/* ✅ Invoice List */}
                     <div className="mb-4">
                         <div className="font-semibold mb-2">Selected Invoices</div>
                         <div className="flex flex-wrap gap-2">
@@ -181,63 +184,96 @@ const AssignRiderHomeModal = ({ isOpen, selectedInvoices, setIsOpen, isOrder, is
                         </div>
                     </div>
 
-                    {/* Filters */}
-                    <div className="flex flex-col gap-1 mb-4">
-                        <input
-                            type="search"
-                            placeholder="Enter Rider name"
-                            value={globalFilter}
-                            className="rounded-xl p-2 border border-gray-300 w-full focus:outline-none focus:ring-2 focus:ring-green-500"
-                            onChange={(e) => setGlobalFilter(e.target.value)}
-                        />
+                    {/* Rider Dropdown */}
 
-                        <input
-                            type="search"
-                            placeholder="Enter Rider Mobile"
-                            value={mobileFilter}
-                            className="rounded-xl p-2 border border-gray-300 w-full focus:outline-none focus:ring-2 focus:ring-green-500"
-                            onChange={(e) => setMobileFilter(e.target.value)}
+                    <div className="mb-3">
+                        <label htmlFor="">Select Delivery Type</label>
+                        <Select
+                            isClearable
+                            classNamePrefix="react-select"
+                            options={LOGISTIC_PARTNER}
+                            value={LOGISTIC_PARTNER.find((item) => item.value === deliveryPartner)}
+                            getOptionLabel={(option) => option.label}
+                            getOptionValue={(option) => option.value}
+                            onChange={(newVal) => {
+                                setDeliveryPartner(newVal?.value as string)
+                                setSelectedRiderMobile('')
+                            }}
                         />
                     </div>
 
-                    {riderDetails && (
-                        <div className="flex-1 overflow-scroll">
-                            <div className="overflow-y-auto h-[300px] pr-2">
-                                <Radio.Group value={selectedRiderMobile} className="w-full" onChange={handleRiderSelection}>
-                                    <div className="space-y-3">
-                                        {riderDataArray?.map((item, key) => {
-                                            const isFree = item?.rider_status == false
+                    {/* Filters */}
+                    {deliveryPartner?.toLowerCase() === 'slikk' ? (
+                        <>
+                            <div className="flex flex-col gap-1 mb-4">
+                                <input
+                                    type="search"
+                                    placeholder="Enter Rider name"
+                                    value={globalFilter}
+                                    className="rounded-xl p-2 border border-gray-300 w-full focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    onChange={(e) => setGlobalFilter(e.target.value)}
+                                />
 
-                                            return (
-                                                <Card
-                                                    key={key}
-                                                    className={`${
-                                                        isFree ? 'bg-green-100 hover:bg-green-200' : 'bg-red-100 hover:bg-red-200'
-                                                    } w-full transition cursor-pointer`}
-                                                >
-                                                    <div className="flex items-center gap-3 p-3">
-                                                        <Radio value={item?.profile?.mobile} />
-
-                                                        <div className="flex items-center gap-3 flex-1">
-                                                            <RiMotorbikeFill className="text-2xl text-gray-700" />
-
-                                                            <div className="flex flex-col flex-1">
-                                                                <span className="text-lg font-semibold">
-                                                                    {item?.profile?.first_name} {item?.profile?.last_name}
-                                                                </span>
-
-                                                                <span className="text-sm text-gray-600">{item?.profile?.mobile}</span>
-
-                                                                <span className="text-sm text-gray-600">{item?.profile?.rider_type}</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </Card>
-                                            )
-                                        })}
-                                    </div>
-                                </Radio.Group>
+                                <input
+                                    type="search"
+                                    placeholder="Enter Rider Mobile"
+                                    value={mobileFilter}
+                                    className="rounded-xl p-2 border border-gray-300 w-full focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    onChange={(e) => setMobileFilter(e.target.value)}
+                                />
                             </div>
+
+                            {riderDetails && (
+                                <div className="flex-1 overflow-scroll">
+                                    <div className="overflow-y-auto h-[300px] pr-2">
+                                        <Radio.Group value={selectedRiderMobile} className="w-full" onChange={handleRiderSelection}>
+                                            <div className="space-y-3">
+                                                {riderDataArray?.map((item, key) => {
+                                                    const isFree = item?.rider_status == false
+
+                                                    return (
+                                                        <Card
+                                                            key={key}
+                                                            className={`${
+                                                                isFree ? 'bg-green-100 hover:bg-green-200' : 'bg-red-100 hover:bg-red-200'
+                                                            } w-full transition cursor-pointer`}
+                                                        >
+                                                            <div className="flex items-center gap-3 p-3">
+                                                                <Radio value={item?.profile?.mobile} />
+
+                                                                <div className="flex items-center gap-3 flex-1">
+                                                                    <RiMotorbikeFill className="text-2xl text-gray-700" />
+
+                                                                    <div className="flex flex-col flex-1">
+                                                                        <span className="text-lg font-semibold">
+                                                                            {item?.profile?.first_name} {item?.profile?.last_name}
+                                                                        </span>
+
+                                                                        <span className="text-sm text-gray-600">
+                                                                            {item?.profile?.mobile}
+                                                                        </span>
+
+                                                                        <span className="text-sm text-gray-600">
+                                                                            {item?.profile?.rider_type}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </Card>
+                                                    )
+                                                })}
+                                            </div>
+                                        </Radio.Group>
+                                    </div>
+                                </div>
+                            )}
+                        </>
+                    ) : (
+                        <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 text-blue-800 px-3 py-2 rounded-md">
+                            <FiInfo className="text-blue-600 text-lg" />
+                            <h5 className="text-sm font-medium">
+                                Selected delivery partner for <span className="font-semibold">{deliveryPartner?.toUpperCase()}</span>
+                            </h5>
                         </div>
                     )}
                 </div>
