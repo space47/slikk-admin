@@ -3,8 +3,6 @@ import { Button, FormItem, Input } from '@/components/ui'
 import { Formik, Field, FormikProps, Form } from 'formik'
 import React, { useEffect, useState } from 'react'
 import { HiOutlineInformationCircle } from 'react-icons/hi'
-import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
 import RenderPayout from '../components/RenderPayout'
 import { notification } from 'antd'
 import { getApiErrorMessage } from '@/constants/generateErrorMessage'
@@ -64,8 +62,6 @@ const RiderPayoutAdd = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-            <ToastContainer />
-
             <div className=" px-4 sm:px-6 lg:px-8 py-8">
                 <div className="mb-8">
                     <div className="flex items-center justify-between">
