@@ -27,6 +27,16 @@ export interface TemplateConfig {
     slash_x: number
     slash_y: number
 
+    rect_x: number
+    rect_y: number
+    rect_width: number
+    rect_height: number
+    rect_border: string
+    rect_border_alpha: number
+    rect_fill: string
+    rect_fill_alpha: number
+    rect_thickness: number
+
     is_price_tag_required: boolean
     selling_price: string
     mrp_price: string
@@ -114,6 +124,40 @@ export const generatePreviewCanvas = async (values: TemplateConfig): Promise<str
         const sp_color = values.sp_color || '#000000'
         const mrp_color = values.mrp_color || '#FED06F'
         const slash_color = values.slash_color || '#FED06F'
+
+        // 3.1 Draw Price Rectangle
+        const rect_x_pct = Number(values.rect_x || 0)
+        const rect_y_pct = Number(values.rect_y || 0)
+        const rect_width = Number(values.rect_width || 0)
+        const rect_height = Number(values.rect_height || 0)
+        
+        if (rect_width > 0 && rect_height > 0) {
+            const rect_cx = (rect_x_pct / 100.0) * final_width
+            const rect_cy = final_height - ((rect_y_pct / 100.0) * final_height)
+            const rx0 = rect_cx - rect_width / 2
+            const ry0 = rect_cy - rect_height / 2
+            
+            const hexToRgba = (hex: string, alpha: number) => {
+                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex || '#000000')
+                const r = result ? parseInt(result[1], 16) : 0
+                const g = result ? parseInt(result[2], 16) : 0
+                const b = result ? parseInt(result[3], 16) : 0
+                return `rgba(${r}, ${g}, ${b}, ${(alpha / 255).toFixed(3)})`
+            }
+
+            ctx.beginPath()
+            ctx.rect(rx0, ry0, rect_width, rect_height)
+            
+            ctx.fillStyle = hexToRgba(values.rect_fill || '#ffffff', Number(values.rect_fill_alpha ?? 255))
+            ctx.fill()
+            
+            const rect_thickness = Number(values.rect_thickness || 0)
+            if (rect_thickness > 0) {
+                ctx.lineWidth = rect_thickness
+                ctx.strokeStyle = hexToRgba(values.rect_border || '#000000', Number(values.rect_border_alpha ?? 255))
+                ctx.stroke()
+            }
+        }
 
         // SP (Selling Price)
         ctx.textAlign = 'center'
