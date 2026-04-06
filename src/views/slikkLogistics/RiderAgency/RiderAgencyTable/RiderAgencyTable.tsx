@@ -11,14 +11,20 @@ import debounce from 'lodash/debounce'
 import { deliveryAgency } from '@/store/services/deliveryAgencyService'
 import { DeliveryAgency } from '@/store/types/deliveryAgencyTypes'
 import { useRiderAgencyColumn } from '../RiderAgencyUtils/useRiderAgencyColumn'
-import RiderAgencyAction from '../RiderAgencyUtils/RiderAgencyAction'
+import PageCommon from '@/common/PageCommon'
+import { useLocation, useNavigate } from 'react-router-dom'
+import CommonPageHeader from '@/common/CommonPageHeader'
 
 const RiderAgencyTable = () => {
+    const navigate = useNavigate()
     const [search, setSearch] = useState('')
+    const location = useLocation()
+    const { agency_search } = location.state || {}
     const [agencies, setAgencies] = useState<DeliveryAgency[]>([])
+    const [count, setCount] = useState(0)
+    const [page, setPage] = useState(1)
+    const [pageSize, setPageSize] = useState(10)
     const [isActive, setIsActive] = useState<'true' | 'false'>('true')
-    const [agencyAction, setAgencyAction] = useState<'add' | 'edit' | null>(null)
-    const [agencyId, setAgencyId] = useState<number | null>(null)
 
     const debouncedResults = useMemo(
         () =>
@@ -29,42 +35,49 @@ const RiderAgencyTable = () => {
     )
 
     useEffect(() => {
+        if (agency_search) {
+            setSearch(agency_search)
+        }
+    }, [agency_search])
+
+    useEffect(() => {
         return () => {
             debouncedResults.cancel()
         }
     }, [debouncedResults])
 
-    const riderAgencyCall = deliveryAgency.useGetDeliveryAgencyQuery({ name: search ?? '', is_active: isActive })
+    const riderAgencyCall = deliveryAgency.useGetDeliveryAgencyQuery({ name: search ?? '', is_active: isActive, page, page_size: pageSize })
 
     useEffect(() => {
-        if (riderAgencyCall.isSuccess) setAgencies(riderAgencyCall.data.data)
+        if (riderAgencyCall.isSuccess) {
+            setAgencies(riderAgencyCall.data.data?.results)
+            setCount(riderAgencyCall.data.data.count)
+        }
         if (riderAgencyCall.isError) {
             notification.error({ message: (riderAgencyCall.error as any)?.data?.message || 'Something went wrong' })
         }
     }, [riderAgencyCall.isSuccess, riderAgencyCall.isError, riderAgencyCall.data?.data])
 
-    const columns = useRiderAgencyColumn({ setAgencyAction, setStoreId: setAgencyId })
+    const columns = useRiderAgencyColumn()
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center gap-4">
-                <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg">
-                    <TbTruckDelivery className="text-3xl text-white" />
-                </div>
-                <div>
-                    <h1 className="text-xl font-bold text-gray-900 dark:text-white">Rider Agencies</h1>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Manage, monitor and control delivery partners</p>
-                </div>
-            </div>
+            <CommonPageHeader
+                desc="Manage, monitor and control delivery partners"
+                icon={TbTruckDelivery}
+                label="Rider Agencies"
+                iconClassName="text-3xl text-white"
+            />
             <div className="flex flex-wrap items-center justify-between gap-4">
                 <Input
+                    value={search}
                     type="search"
                     placeholder="Search agency by name..."
                     className="max-w-xs"
                     onChange={(e) => debouncedResults(e.target.value)}
                 />
 
-                <Button variant="new" size="sm" icon={<FaPlus />} onClick={() => setAgencyAction('add')}>
+                <Button variant="new" size="sm" icon={<FaPlus />} onClick={() => navigate(`/app/riderAgency/add`)}>
                     Add New Agency
                 </Button>
             </div>
@@ -95,12 +108,9 @@ const RiderAgencyTable = () => {
             </div>
 
             <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-slate-900 p-4">
-                <EasyTable mainData={agencies} columns={columns} />
+                <EasyTable overflow mainData={agencies} columns={columns} page={page} pageSize={pageSize} />
             </div>
-            {agencyAction === 'add' && <RiderAgencyAction isOpen={!!agencyAction} setIsOpen={() => setAgencyAction(null)} />}
-            {agencyAction === 'edit' && agencyId && (
-                <RiderAgencyAction isEdit agencyId={agencyId} isOpen={!!agencyAction} setIsOpen={() => setAgencyAction(null)} />
-            )}
+            <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={count} />
         </div>
     )
 }

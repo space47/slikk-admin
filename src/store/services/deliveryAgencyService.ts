@@ -1,31 +1,49 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import RtkQueryService from '@/services/RtkQueryService'
-import { DeliveryAgency, DeliveryAgencyResponse } from '../types/deliveryAgencyTypes'
+import { CreateAgencyRequest, CreateAgencyResponse, DeliveryAgencyResponse } from '../types/deliveryAgencyTypes'
 
 export const deliveryAgency = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
         getDeliveryAgency: builder.query<
             DeliveryAgencyResponse,
-            { name?: string; is_active?: string; delivery_type?: string; id?: number; view_type?: string }
+            { name?: string; is_active?: string; page?: number; id?: number; page_size?: number }
         >({
             query: (params) => {
                 const parameters: Record<string, string | number | boolean> = {}
                 if (params.name) parameters.name = params.name
                 if (params.is_active) parameters.is_active = params.is_active
-                if (params.delivery_type) parameters.delivery_type = params.delivery_type
+                if (params.page_size) parameters.page_size = params.page_size
                 if (params.id) parameters.id = params.id
-                if (params.view_type) parameters.view_type = params.view_type
+                if (params.page) parameters.p = params.page
                 return {
-                    url: `/delivery_partner`,
+                    url: `/logistic/agency`,
                     method: 'GET',
                     params: parameters,
                 }
             },
         }),
-        addDeliveryAgency: builder.mutation<{ status: string; data: DeliveryAgency }, { name?: string; delivery_type?: string }>({
+        getSingleAgency: builder.query<
+            DeliveryAgencyResponse,
+            { name?: string; is_active?: string; page?: number; id: number | string; page_size?: number }
+        >({
+            query: (params) => {
+                const parameters: Record<string, string | number | boolean> = {}
+                if (params.name) parameters.name = params.name
+                if (params.is_active) parameters.is_active = params.is_active
+                if (params.page_size) parameters.page_size = params.page_size
+                if (params.id) parameters.agency_id = params.id
+                if (params.page) parameters.p = params.page
+                return {
+                    url: `/logistic/agency`,
+                    method: 'GET',
+                    params: parameters,
+                }
+            },
+        }),
+        addDeliveryAgency: builder.mutation<CreateAgencyResponse, CreateAgencyRequest>({
             query: (params) => {
                 return {
-                    url: `/delivery_partner`,
+                    url: `/logistic/agency`,
                     method: 'POST',
                     body: {
                         ...params,
@@ -33,10 +51,21 @@ export const deliveryAgency = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        updateDeliveryAgency: builder.mutation<{ status: string; data: DeliveryAgency }, Record<string, string | number | boolean>>({
+        assignAgencyToRider: builder.mutation<{ status: string; message: string }, { rider_mobile: string; agency_id: string }>({
             query: (params) => {
                 return {
-                    url: `/delivery_partner/${params.id}`,
+                    url: `/logistic/rider/agency`,
+                    method: 'POST',
+                    body: {
+                        ...params,
+                    },
+                }
+            },
+        }),
+        updateDeliveryAgency: builder.mutation<CreateAgencyResponse, Record<string, string | number | boolean>>({
+            query: (params) => {
+                return {
+                    url: `/logistic/agency`,
                     method: 'PATCH',
                     body: {
                         ...params,
