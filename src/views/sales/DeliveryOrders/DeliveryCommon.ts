@@ -1,6 +1,7 @@
 export const LOGISTIC_PARTNER = [
     { value: 'porter', label: 'PORTER' },
     { value: 'slikk', label: 'SLIKK' },
+    { value: 'pico', label: 'PICO' },
 ]
 
 export const SEARCHOPTIONS = [

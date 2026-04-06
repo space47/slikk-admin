@@ -264,6 +264,6 @@ export const ForwardDeliveryColumns = (
                 ),
             },
         ],
-        [],
+        [partner],
     )
 }

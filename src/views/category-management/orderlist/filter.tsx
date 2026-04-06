@@ -11,6 +11,7 @@ const tabs = [
     { label: 'PICKING', key: 'picking' },
     { label: 'PACKED', key: 'packed' },
     { label: 'DEL. CREATED', key: 'delivery_created' },
+    { label: 'PICKED UP', key: 'picked_up' },
     { label: 'OUT FOR DELIVERY', key: 'out_for_delivery' },
     { label: 'REACHED_AT_LOCATION', key: 'reached_at_location' },
     { label: 'DELIVERED', key: 'delivered' },
