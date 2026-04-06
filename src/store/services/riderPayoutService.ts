@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import RtkQueryService from '@/services/RtkQueryService'
-import { PayoutCommercialRequestType, PayoutCommercialResponse, RiderPayoutResponse } from '../types/riderPayout.types'
+import {
+    PayoutCommercialGetResponse,
+    PayoutCommercialRequestType,
+    PayoutCommercialResponse,
+    RiderPayoutResponse,
+} from '../types/riderPayout.types'
 
 export const riderPayoutService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
@@ -43,6 +48,19 @@ export const riderPayoutService = RtkQueryService.injectEndpoints({
                     url: `/logistic/agency/commercials`,
                     method: 'POST',
                     body,
+                }
+            },
+        }),
+        getPayoutCommercial: builder.query<PayoutCommercialGetResponse, { page: number; pageSize: number; name?: string }>({
+            query: (params) => {
+                const parameters: Record<string, string | number> = {}
+                if (params.page) parameters.p = params.page
+                if (params.pageSize) parameters.page_size = params.pageSize
+                if (params.name) parameters.name = params.name
+                return {
+                    url: `/logistic/agency/commercials`,
+                    method: 'GET',
+                    params: parameters,
                 }
             },
         }),

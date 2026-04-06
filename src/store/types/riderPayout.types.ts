@@ -33,9 +33,19 @@ export interface PayoutCommercialRequestType {
 }
 
 export interface PayoutCommercialResponse {
+    id?: string
     agency: string
     store: string
     start_date: string
     end_date: string
     commercials: RiderPayout
+}
+
+export interface PayoutCommercialGetResponse {
+    status: string
+    data: {
+        count: number
+        next: boolean
+        results: PayoutCommercialResponse[]
+    }
 }

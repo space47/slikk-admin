@@ -12,12 +12,14 @@ import { deliveryAgency } from '@/store/services/deliveryAgencyService'
 import { DeliveryAgency } from '@/store/types/deliveryAgencyTypes'
 import { useRiderAgencyColumn } from '../RiderAgencyUtils/useRiderAgencyColumn'
 import PageCommon from '@/common/PageCommon'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import CommonPageHeader from '@/common/CommonPageHeader'
 
 const RiderAgencyTable = () => {
     const navigate = useNavigate()
     const [search, setSearch] = useState('')
+    const location = useLocation()
+    const { agency_search } = location.state || {}
     const [agencies, setAgencies] = useState<DeliveryAgency[]>([])
     const [count, setCount] = useState(0)
     const [page, setPage] = useState(1)
@@ -31,6 +33,12 @@ const RiderAgencyTable = () => {
             }, 500),
         [],
     )
+
+    useEffect(() => {
+        if (agency_search) {
+            setSearch(agency_search)
+        }
+    }, [agency_search])
 
     useEffect(() => {
         return () => {
@@ -62,6 +70,7 @@ const RiderAgencyTable = () => {
             />
             <div className="flex flex-wrap items-center justify-between gap-4">
                 <Input
+                    value={search}
                     type="search"
                     placeholder="Search agency by name..."
                     className="max-w-xs"
