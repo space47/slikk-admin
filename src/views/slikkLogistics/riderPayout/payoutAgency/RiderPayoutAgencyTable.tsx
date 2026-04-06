@@ -56,7 +56,7 @@ const RiderPayoutAgencyTable = () => {
                 <Spin spinning={commercialCall.isLoading || commercialCall.isFetching}>
                     {commercialCall.isError ? (
                         <div className="flex justify-center items-center h-60 text-red-500">
-                            Failed to load payout data. Please try again.
+                            Failed to load payout data. Please try again later.
                         </div>
                     ) : payoutCommercial.length === 0 ? (
                         <div className="flex justify-center items-center h-60">
