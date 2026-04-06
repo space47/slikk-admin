@@ -37,7 +37,7 @@ const AddRider = () => {
     const [isBulkAdd, setIsBulkAdd] = useState(false)
     const [activeTab, setActiveTab] = useState<'edit' | 'add' | 'bulk-add'>('edit')
     const [queryParams, setQueryParams] = useState({ page: 1, pageSize: 10, name: '' })
-    const [assignAgency] = deliveryAgency.useAssignAgencyToRiderMutation()
+    const [assignAgency, assignResponse] = deliveryAgency.useAssignAgencyToRiderMutation()
     const riderAgencyCall = deliveryAgency.useGetDeliveryAgencyQuery({ page: 1, page_size: 100 })
 
     useEffect(() => {
@@ -131,10 +131,22 @@ const AddRider = () => {
     useEffect(() => {
         if (riderAddResponse?.isSuccess) {
             notification.success({ message: riderAddResponse?.data?.success || 'Successfully Added Rider' })
+            if (riderAddResponse?.originalArgs?.agency && riderAddResponse?.originalArgs?.mobile) {
+                assignAgency({
+                    agency_id: riderAddResponse?.originalArgs?.agency,
+                    rider_mobile: riderAddResponse?.originalArgs?.mobile,
+                })
+            }
             refetch()
         }
         if (riderEditResponse?.isSuccess) {
             notification.success({ message: riderEditResponse?.data?.success || 'Successfully Updated Rider' })
+            if (riderAddResponse?.originalArgs?.agency && riderAddResponse?.originalArgs?.mobile) {
+                assignAgency({
+                    agency_id: riderAddResponse?.originalArgs?.agency,
+                    rider_mobile: riderAddResponse?.originalArgs?.mobile,
+                })
+            }
             refetch()
         }
         if (riderEditResponse?.isError) {
@@ -145,6 +157,15 @@ const AddRider = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [riderAddResponse.isSuccess, riderEditResponse.isSuccess, riderAddResponse.isError, riderEditResponse.isError])
+
+    useEffect(() => {
+        if (assignResponse?.isSuccess) {
+            notification.success({ message: 'Successfully Assigned Agency' })
+        }
+        if (assignResponse?.isError) {
+            notification.error({ message: (assignResponse?.error as any)?.data?.message })
+        }
+    }, [assignResponse.isSuccess, assignResponse.isError, assignResponse.error])
 
     const uploadIfNew = async (file: any, initialFile: any) => {
         if (file === initialFile) {
@@ -205,22 +226,6 @@ const AddRider = () => {
                 aadhar_number: values?.aadhar_number,
                 pan_number: values?.pan_number,
                 driving_license_number: values?.driving_license_number,
-            }
-            if (values?.agency) {
-                try {
-                    await assignAgency({
-                        agency_id: values?.agency,
-                        rider_mobile: values?.mobile,
-                    }).unwrap()
-
-                    notification.success({
-                        message: 'Agency assigned successfully',
-                    })
-                } catch (error: any) {
-                    notification.error({
-                        message: error?.data?.message || error?.error || 'Failed to assign agency',
-                    })
-                }
             }
             if (isAddRider) {
                 ridersAdd(payload as any)
