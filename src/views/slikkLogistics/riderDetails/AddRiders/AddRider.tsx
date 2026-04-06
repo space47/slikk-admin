@@ -37,15 +37,15 @@ const AddRider = () => {
     const [isBulkAdd, setIsBulkAdd] = useState(false)
     const [activeTab, setActiveTab] = useState<'edit' | 'add' | 'bulk-add'>('edit')
     const [queryParams, setQueryParams] = useState({ page: 1, pageSize: 10, name: '' })
-
-    const riderAgencyCall = deliveryAgency.useGetDeliveryAgencyQuery({ view_type: 'minimal' })
+    const [assignAgency] = deliveryAgency.useAssignAgencyToRiderMutation()
+    const riderAgencyCall = deliveryAgency.useGetDeliveryAgencyQuery({ page: 1, page_size: 100 })
 
     useEffect(() => {
         if (riderAgencyCall.isSuccess) {
             setRiderAgencyArray(
-                (riderAgencyCall.data as any)?.data?.map((item: any) => ({
-                    label: item || 'Slikk',
-                    value: item || 'slikk',
+                riderAgencyCall.data?.data?.results?.map((item) => ({
+                    label: item.name || 'Slikk',
+                    value: item.id || 0,
                 })),
             )
         }
@@ -101,7 +101,7 @@ const AddRider = () => {
                 is_active: riderProfile[0]?.is_active || false,
                 lat: riderProfile[0]?.service_latitude,
                 long: riderProfile[0]?.service_longitude,
-                agency: riderProfile[0]?.agency?.toLowerCase(),
+                agency: typeof riderProfile[0]?.agency === 'string' ? Number(riderProfile[0]?.agency) : riderProfile[0]?.agency,
                 rider_delivery_type: riderProfile[0]?.rider_delivery_type,
                 store: riderProfile[0]?.store?.map((item: any) => item?.id)?.join(','),
                 rider_zone: riderProfile[0]?.zone,
@@ -205,6 +205,22 @@ const AddRider = () => {
                 aadhar_number: values?.aadhar_number,
                 pan_number: values?.pan_number,
                 driving_license_number: values?.driving_license_number,
+            }
+            if (values?.agency) {
+                try {
+                    await assignAgency({
+                        agency_id: values?.agency,
+                        rider_mobile: values?.mobile,
+                    }).unwrap()
+
+                    notification.success({
+                        message: 'Agency assigned successfully',
+                    })
+                } catch (error: any) {
+                    notification.error({
+                        message: error?.data?.message || error?.error || 'Failed to assign agency',
+                    })
+                }
             }
             if (isAddRider) {
                 ridersAdd(payload as any)
@@ -373,10 +389,8 @@ const AddRider = () => {
                                                     isClearable
                                                     isSearchable
                                                     options={riderAgencyArray}
-                                                    value={riderAgencyArray.find(
-                                                        (o) => o.value?.toLowerCase() === field.value?.toLowerCase(),
-                                                    )}
-                                                    onChange={(opt) => form.setFieldValue(field.name, opt?.value || '')}
+                                                    value={riderAgencyArray.find((o) => o.value === field.value) || null}
+                                                    onChange={(opt) => form.setFieldValue(field.name, opt?.value ?? null)}
                                                 />
                                             )}
                                         </Field>
