@@ -52,21 +52,6 @@ export const FrameFields = [
         ],
     },
     {
-        title: 'Price Rectangle',
-        grid: 'grid-cols-4',
-        fields: [
-            { label: 'X %', name: 'rect_x', type: 'number', min: 0, max: 100 },
-            { label: 'Y %', name: 'rect_y', type: 'number', min: 0, max: 100 },
-            { label: 'Width', name: 'rect_width', type: 'number', min: 0 },
-            { label: 'Height', name: 'rect_height', type: 'number', min: 0 },
-            { label: 'Border Color', name: 'rect_border', type: 'color' },
-            { label: 'Border Alpha', name: 'rect_border_alpha', type: 'number', min: 0, max: 255 },
-            { label: 'Fill Color', name: 'rect_fill', type: 'color' },
-            { label: 'Fill Alpha', name: 'rect_fill_alpha', type: 'number', min: 0, max: 255 },
-            { label: 'Thickness', name: 'rect_thickness', type: 'number', min: 0 },
-        ],
-    },
-    {
         title: 'Live Preview Text Injection',
         grid: 'grid-cols-3',
         wrapperClass: 'bg-gray-100 p-4 rounded-xl border border-gray-200',

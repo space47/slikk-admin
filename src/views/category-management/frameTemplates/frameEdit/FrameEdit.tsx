@@ -33,16 +33,6 @@ const rgbTupleToHex = (rgb: number[]): string => {
             .join('')
     )
 }
-// Helper function to convert RGBA tuple to hex color string & alpha value
-const hexToRgbaTuple = (hex: string, alpha: number) => {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-    return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16), alpha] : [0, 0, 0, alpha]
-}
-
-const rgbaTupleToAlpha = (rgba: number[]): number => {
-    if (!rgba || rgba.length < 4) return 255
-    return rgba[3]
-}
 
 interface AutoPreviewProps {
     values: TemplateConfig
@@ -124,17 +114,6 @@ const FrameEdit = () => {
             slash_length_scale: parseFloat(apiData.slash_length_scale) || 1,
             slash_x: parseFloat(apiData.slash_x) || 0,
             slash_y: parseFloat(apiData.slash_y) || 0,
-            
-            rect_x: parseFloat(apiData.rect_x) || 0,
-            rect_y: parseFloat(apiData.rect_y) || 0,
-            rect_width: parseFloat(apiData.rect_width) || 0,
-            rect_height: parseFloat(apiData.rect_height) || 0,
-            rect_border: rgbTupleToHex(apiData.rect_border),
-            rect_border_alpha: rgbaTupleToAlpha(apiData.rect_border),
-            rect_fill: rgbTupleToHex(apiData.rect_fill),
-            rect_fill_alpha: rgbaTupleToAlpha(apiData.rect_fill),
-            rect_thickness: parseFloat(apiData.rect_thickness) || 0,
-
             is_price_tag_required: true, // You might want to add this field to your API response
             selling_price: '99', // These might need to come from the API as well
             mrp_price: '149',
@@ -173,17 +152,6 @@ const FrameEdit = () => {
             slash_length_scale: 1,
             slash_x: 0,
             slash_y: 0,
-
-            rect_x: 0,
-            rect_y: 0,
-            rect_width: 100,
-            rect_height: 50,
-            rect_border: '#000000',
-            rect_border_alpha: 255,
-            rect_fill: '#c8c8c8',
-            rect_fill_alpha: 100,
-            rect_thickness: 0,
-
             is_price_tag_required: true,
             selling_price: '99',
             mrp_price: '149',
@@ -227,14 +195,6 @@ const FrameEdit = () => {
             slash_length_scale: Number(values.slash_length_scale),
             slash_x: Number(values.slash_x),
             slash_y: Number(values.slash_y),
-
-            rect_x: Number(values.rect_x),
-            rect_y: Number(values.rect_y),
-            rect_width: Number(values.rect_width),
-            rect_height: Number(values.rect_height),
-            rect_border: hexToRgbaTuple(values.rect_border, Number(values.rect_border_alpha)),
-            rect_fill: hexToRgbaTuple(values.rect_fill, Number(values.rect_fill_alpha)),
-            rect_thickness: Number(values.rect_thickness),
         }
 
         try {
