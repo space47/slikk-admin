@@ -1354,6 +1354,12 @@ const appsRoute: Routes = [
     },
     {
         key: 'appstryAndBuy.riderPayout',
+        path: `${APP_PREFIX_PATH}/riderPayout/add/v2`,
+        component: lazy(() => import('@/views/slikkLogistics/riderPayout/riderPayoutAdd/AddV2')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appstryAndBuy.riderPayout',
         path: `${APP_PREFIX_PATH}/riderPayout/edit/:id`,
         component: lazy(() => import('@/views/slikkLogistics/riderPayout/riderPayoutEdit/RiderPayoutEdit')),
         authority: [ADMIN, USER],

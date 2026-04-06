@@ -547,7 +547,7 @@ const DynamicSection: React.FC<DynamicSectionProps> = ({ baseName, title, color,
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-const RiderPayoutAdd: React.FC = () => {
+const RiderPayoutAdd = () => {
     const [preview, setPreview] = useState<string | null>(null)
 
     const handleSubmit = (values: FormValues) => {
