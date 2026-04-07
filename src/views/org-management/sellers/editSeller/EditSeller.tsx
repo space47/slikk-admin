@@ -135,10 +135,34 @@ const EditSeller = () => {
             }
         }
 
+        const pocGroup = [SellerKeys.POC, SellerKeys.POC_EMAIL, SellerKeys.CONTACT_NUMBER]
+        const financeGroup = [SellerKeys.FINANCE_NAME, SellerKeys.FINANCE_EMAIL, SellerKeys.FINANCE_CONTACT_NUMBER]
+        const headGroup = [SellerKeys.HEAD_NAME, SellerKeys.HEAD_EMAIL, SellerKeys.HEAD_CONTACT]
+        const allGroupKeys = [...pocGroup, ...financeGroup, ...headGroup]
+
         appendIfChanged(SellerKeys.ADDRESS, values.address ? textParser(values.address) : null, initialValue?.address)
+
         simpleFields.forEach((key) => {
+            if (allGroupKeys.includes(key)) return
             appendIfChanged(key, values?.[key], (initialValue as any)?.[key])
         })
+
+        // Append all group fields directly to formData
+        const handleGroup = (group: string[]) => {
+            const anyChanged = group.some((key) => values?.[key] !== (initialValue as any)?.[key])
+            if (anyChanged) {
+                group.forEach((key) => {
+                    const val = values?.[key]
+                    if (val !== undefined && val !== null && val !== '') {
+                        formData.append(key, val)
+                    }
+                })
+            }
+        }
+
+        handleGroup(pocGroup)
+        handleGroup(financeGroup)
+        handleGroup(headGroup)
 
         fileFields.forEach((key) => {
             const newFile = values?.[key]?.[0]
@@ -147,21 +171,17 @@ const EditSeller = () => {
                 formData.append(key, newFile)
                 return
             }
-
             if (!newFile && oldFile) {
                 formData.append(key, 'null')
             }
         })
-        const existingDetails = initialValue?.gst_details || []
 
+        const existingDetails = initialValue?.gst_details || []
         const updatedDetails = (values?.gst_details || []).map((warehouse: any, index: number) => {
             const cleanGstin = warehouse?.gstin?.replace(/\s+/g, '') || ''
-
             if (warehouse?.gst_certificate?.[0] instanceof File) {
                 const certKey = `cert${index + 1}`
-
                 formData.append(certKey, warehouse.gst_certificate[0])
-
                 return {
                     ...warehouse,
                     gst_certificate: certKey,
@@ -169,7 +189,6 @@ const EditSeller = () => {
                     warehouse_address: textParser(warehouse.warehouse_address),
                 }
             }
-
             return {
                 ...warehouse,
                 state_code: cleanGstin.slice(0, 2),
@@ -178,7 +197,6 @@ const EditSeller = () => {
         })
 
         const gstChanged = JSON.stringify(existingDetails) !== JSON.stringify(updatedDetails)
-
         if (gstChanged) {
             formData.append('gst_details', JSON.stringify(updatedDetails))
         }
@@ -186,12 +204,26 @@ const EditSeller = () => {
         if (values.int_poc_details && values.int_poc_details?.length > 0) {
             formData.append(SellerKeys.INT_POC_DETAILS, JSON.stringify(values?.int_poc_details))
         }
+
         formData.append('provisional_discount_rate', '0')
-        const changedValue = getChangedFormData(formData, initialValue)
+        const overriddenInitialValue = { ...initialValue }
+
+        const forceIncludedKeys: string[] = []
+        ;[pocGroup, financeGroup, headGroup].forEach((group) => {
+            const anyChanged = group.some((key) => values?.[key] !== (initialValue as any)?.[key])
+            if (anyChanged) {
+                group.forEach((key) => forceIncludedKeys.push(key))
+            }
+        })
+
+        forceIncludedKeys.forEach((key) => {
+            overriddenInitialValue[key] = `__force_include__`
+        })
+
+        const changedValue = getChangedFormData(formData, overriddenInitialValue)
 
         try {
             setIsSubmitting(true)
-
             const res = await axioisInstance.patch(`/merchant/company/${id}`, changedValue)
             refetch()
             successMessage(res)
