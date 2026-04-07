@@ -37,15 +37,15 @@ const AddRider = () => {
     const [isBulkAdd, setIsBulkAdd] = useState(false)
     const [activeTab, setActiveTab] = useState<'edit' | 'add' | 'bulk-add'>('edit')
     const [queryParams, setQueryParams] = useState({ page: 1, pageSize: 10, name: '' })
-
-    const riderAgencyCall = deliveryAgency.useGetDeliveryAgencyQuery({ view_type: 'minimal' })
+    const [assignAgency, assignResponse] = deliveryAgency.useAssignAgencyToRiderMutation()
+    const riderAgencyCall = deliveryAgency.useGetDeliveryAgencyQuery({ page: 1, page_size: 100 })
 
     useEffect(() => {
         if (riderAgencyCall.isSuccess) {
             setRiderAgencyArray(
-                (riderAgencyCall.data as any)?.data?.map((item: any) => ({
-                    label: item || 'Slikk',
-                    value: item || 'slikk',
+                riderAgencyCall.data?.data?.results?.map((item) => ({
+                    label: item.name || 'Slikk',
+                    value: item.id || 0,
                 })),
             )
         }
@@ -101,7 +101,7 @@ const AddRider = () => {
                 is_active: riderProfile[0]?.is_active || false,
                 lat: riderProfile[0]?.service_latitude,
                 long: riderProfile[0]?.service_longitude,
-                agency: riderProfile[0]?.agency?.toLowerCase(),
+                agency: typeof riderProfile[0]?.agency === 'string' ? Number(riderProfile[0]?.agency) : riderProfile[0]?.agency,
                 rider_delivery_type: riderProfile[0]?.rider_delivery_type,
                 store: riderProfile[0]?.store?.map((item: any) => item?.id)?.join(','),
                 rider_zone: riderProfile[0]?.zone,
@@ -131,10 +131,22 @@ const AddRider = () => {
     useEffect(() => {
         if (riderAddResponse?.isSuccess) {
             notification.success({ message: riderAddResponse?.data?.success || 'Successfully Added Rider' })
+            if (riderAddResponse?.originalArgs?.agency && riderAddResponse?.originalArgs?.mobile) {
+                assignAgency({
+                    agency_id: riderAddResponse?.originalArgs?.agency,
+                    rider_mobile: riderAddResponse?.originalArgs?.mobile,
+                })
+            }
             refetch()
         }
         if (riderEditResponse?.isSuccess) {
             notification.success({ message: riderEditResponse?.data?.success || 'Successfully Updated Rider' })
+            if (riderAddResponse?.originalArgs?.agency && riderAddResponse?.originalArgs?.mobile) {
+                assignAgency({
+                    agency_id: riderAddResponse?.originalArgs?.agency,
+                    rider_mobile: riderAddResponse?.originalArgs?.mobile,
+                })
+            }
             refetch()
         }
         if (riderEditResponse?.isError) {
@@ -145,6 +157,15 @@ const AddRider = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [riderAddResponse.isSuccess, riderEditResponse.isSuccess, riderAddResponse.isError, riderEditResponse.isError])
+
+    useEffect(() => {
+        if (assignResponse?.isSuccess) {
+            notification.success({ message: 'Successfully Assigned Agency' })
+        }
+        if (assignResponse?.isError) {
+            notification.error({ message: (assignResponse?.error as any)?.data?.message })
+        }
+    }, [assignResponse.isSuccess, assignResponse.isError, assignResponse.error])
 
     const uploadIfNew = async (file: any, initialFile: any) => {
         if (file === initialFile) {
@@ -373,10 +394,8 @@ const AddRider = () => {
                                                     isClearable
                                                     isSearchable
                                                     options={riderAgencyArray}
-                                                    value={riderAgencyArray.find(
-                                                        (o) => o.value?.toLowerCase() === field.value?.toLowerCase(),
-                                                    )}
-                                                    onChange={(opt) => form.setFieldValue(field.name, opt?.value || '')}
+                                                    value={riderAgencyArray.find((o) => o.value === field.value) || null}
+                                                    onChange={(opt) => form.setFieldValue(field.name, opt?.value ?? null)}
                                                 />
                                             )}
                                         </Field>

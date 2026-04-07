@@ -38,14 +38,14 @@ const FilterRiderTableDrawer = ({
 }: props) => {
     const [riderAgencyArray, setRiderAgencyArray] = useState<DeliveryType[]>([])
 
-    const riderAgencyCall = deliveryAgency.useGetDeliveryAgencyQuery({ view_type: 'minimal' })
+    const riderAgencyCall = deliveryAgency.useGetDeliveryAgencyQuery({ page: 1, page_size: 100 })
 
     useEffect(() => {
         if (riderAgencyCall.isSuccess) {
             setRiderAgencyArray(
-                (riderAgencyCall.data as any)?.data?.map((item: any) => ({
-                    label: item || 'Slikk',
-                    value: item || 'slikk',
+                riderAgencyCall.data?.data?.results?.map((item) => ({
+                    label: item.name || 'Slikk',
+                    value: item.id || 'slikk',
                 })),
             )
         }
@@ -87,10 +87,10 @@ const FilterRiderTableDrawer = ({
                         isSearchable
                         className="mt-5"
                         options={riderAgencyArray}
-                        value={riderAgencyArray.find((o) => o.value?.toLowerCase() === currentAgency?.toLowerCase())}
+                        value={riderAgencyArray.find((o) => o.value === currentAgency?.toLowerCase())}
                         onChange={(val) => {
                             if (val) {
-                                setCurrentAgency(val?.value as string)
+                                setCurrentAgency(val?.label as string)
                             } else {
                                 setCurrentAgency('')
                             }

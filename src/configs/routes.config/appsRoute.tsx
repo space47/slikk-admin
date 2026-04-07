@@ -1341,6 +1341,37 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appstryAndBuy.riderAgency',
+        path: `${APP_PREFIX_PATH}/riderAgency/add`,
+        component: lazy(() => import('@/views/slikkLogistics/RiderAgency/riderAgencyAdd/RiderAgencyAdd')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appstryAndBuy.riderAgency',
+        path: `${APP_PREFIX_PATH}/riderAgency/edit/:id`,
+        component: lazy(() => import('@/views/slikkLogistics/RiderAgency/riderAgencyEdit/RiderAgencyEdit')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appstryAndBuy.riderPayout',
+        path: `${APP_PREFIX_PATH}/riderPayout`,
+        component: lazy(() => import('@/views/slikkLogistics/riderPayout/riderPayoutTable/RiderPayoutTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appstryAndBuy.riderPayout',
+        path: `${APP_PREFIX_PATH}/riderPayout/add`,
+        component: lazy(() => import('@/views/slikkLogistics/riderPayout/riderPayoutAdd/RiderPayoutAdd')),
+        authority: [ADMIN, USER],
+    },
+
+    {
+        key: 'appstryAndBuy.riderPayout',
+        path: `${APP_PREFIX_PATH}/riderPayout/edit/:id`,
+        component: lazy(() => import('@/views/slikkLogistics/riderPayout/riderPayoutEdit/RiderPayoutEdit')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appstryAndBuy.riderZone',
         path: `${APP_PREFIX_PATH}/riderZone`,
         component: lazy(() => import('@/views/slikkLogistics/riderZone/riderZoneTable/RiderZoneTable')),

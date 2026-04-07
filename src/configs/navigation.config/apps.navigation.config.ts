@@ -934,6 +934,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         subMenu: [],
                     },
                     {
+                        key: 'appstryAndBuy.riderPayout',
+                        path: `${APP_PREFIX_PATH}/riderPayout`,
+                        title: 'Rider PayOut',
+                        translateKey: 'nav.appstryAndBuy.tryAndBuy',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
                         key: 'appstryAndBuy.taskTracking',
                         path: `${APP_PREFIX_PATH}/tryAndBuy/taskTracking`,
                         title: 'Forward Task ',

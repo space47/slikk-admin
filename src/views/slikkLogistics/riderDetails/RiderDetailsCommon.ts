@@ -65,7 +65,7 @@ export interface StoreOption {
 
 export interface DeliveryType {
     label: string | undefined
-    value: string | undefined
+    value: string | number | undefined
 }
 
 export const RiderDownloadOptions = [
