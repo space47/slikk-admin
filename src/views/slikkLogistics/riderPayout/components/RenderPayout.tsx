@@ -149,6 +149,11 @@ const RenderPayout = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
                         <span className="flex items-center gap-1.5">
                             <span>Properties</span>
                             <span className="text-xs text-gray-500">({Object.keys(obj).length})</span>
+                            {isExpanded ? (
+                                <span className="text-xs text-white bg-red-500 px-2 rounded-lg">Click to Close</span>
+                            ) : (
+                                <span className="text-xs text-white bg-green-500 px-2 rounded-lg">Click to Open</span>
+                            )}
                         </span>
                         {isExpanded ? <IoIosArrowUp className="text-sm" /> : <IoIosArrowDown className="text-sm" />}
                     </button>
