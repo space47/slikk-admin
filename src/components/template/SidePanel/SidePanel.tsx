@@ -48,7 +48,6 @@ const _SidePanel = (props: SidePanelProps) => {
                     <SidePanelContent callBackClose={closePanel} />
                 </div>
                 <div className="w-full mt-1 p-4">
-                    <h5>Select Store</h5>
                     <StoreSelect />
                 </div>
             </Drawer>
