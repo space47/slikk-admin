@@ -168,7 +168,7 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
                                     )}
                                 </Field>
 
-                                {key.toLowerCase().includes('filters') ? (
+                                {key.toLowerCase() === 'filter_id' ? (
                                     <div>
                                         <Field name={fieldName}>
                                             {({ field, form }: FieldProps<any>) => {
