@@ -17,6 +17,16 @@ interface Props {
     refetch: any
 }
 
+export const WEEKDAY_ARRAY = [
+    { label: 'Monday', value: '1' },
+    { label: 'Tuesday', value: '2' },
+    { label: 'Wednesday', value: '3' },
+    { label: 'Thursday', value: '4' },
+    { label: 'Friday', value: '5' },
+    { label: 'Saturday', value: '6' },
+    { label: 'Sunday', value: '7' },
+]
+
 const PayoutMappingModal: React.FC<Props> = ({ isOpen, setIsOpen, refetch }) => {
     const [riderAgencyArray, setRiderAgencyArray] = useState<DeliveryType[]>([])
     const [payoutData, setPayoutData] = useState<RiderPayout[]>([])
@@ -75,6 +85,7 @@ const PayoutMappingModal: React.FC<Props> = ({ isOpen, setIsOpen, refetch }) => 
             store: values?.store?.id,
             payout_model: values?.payout_model,
             management_fees: values?.management_fees,
+            days_of_week: values?.week_day_number?.join(',') || '',
         }
 
         mappingCall(body)
@@ -125,6 +136,37 @@ const PayoutMappingModal: React.FC<Props> = ({ isOpen, setIsOpen, refetch }) => 
                                     }}
                                 </Field>
                             </FormItem>
+                            {/* Daywise data value */}
+                            {/*  */}
+                            <FormItem label="WeekDays" className="">
+                                <Field name="week_day_number">
+                                    {({ form, field }: FieldProps) => {
+                                        const selectedOptions = Array.isArray(field.value)
+                                            ? WEEKDAY_ARRAY.filter((option) => field.value.includes(option.value))
+                                            : []
+
+                                        return (
+                                            <div className="w-full max-w-md">
+                                                <Select
+                                                    isMulti
+                                                    className="w-full"
+                                                    options={WEEKDAY_ARRAY}
+                                                    getOptionLabel={(option) => option?.label}
+                                                    getOptionValue={(option) => String(option?.value)}
+                                                    value={selectedOptions}
+                                                    onChange={(newVal) => {
+                                                        form.setFieldValue(
+                                                            'week_day_number',
+                                                            newVal.map((option: any) => option.value),
+                                                        )
+                                                    }}
+                                                />
+                                            </div>
+                                        )
+                                    }}
+                                </Field>
+                            </FormItem>
+
                             <StoreSelectForm isSingle label="Select Store" name="store" />
                             <FormItem label="Management Fees">
                                 <Field name="management_fees" type="number" component={Input} placeholder="Enter Management Fees" />

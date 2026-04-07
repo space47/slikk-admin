@@ -28,8 +28,50 @@ const initialValues: FormValues = {
         payout_model: 'day-wise',
         base_payout: 0,
         currency: 'INR',
-        incentives: {},
-        penalties: {},
+        incentives: {
+            order_count_incentive: {
+                thresholds: [
+                    { min_orders: 0, max_orders: 7, incentive_amount: 0, type: 'flat' },
+                    { min_orders: 8, max_orders: 9, incentive_amount: 50, type: 'flat' },
+                    { min_orders: 10, max_orders: 11, incentive_amount: 75, type: 'flat' },
+                    { min_orders: 12, max_orders: 13, incentive_amount: 100, type: 'flat' },
+                    { min_orders: 14, max_orders: 15, incentive_amount: 125, type: 'flat' },
+                    { min_orders: 16, max_orders: 100, incentive_amount: 150, type: 'flat' },
+                ],
+            },
+            time_incentive: {
+                thresholds: [
+                    { min_hours: 0, max_hours: 11, incentive_amount: 0, type: 'flat' },
+                    { min_hours: 12, max_hours: 15, incentive_amount: 90, type: 'hourly' },
+                ],
+            },
+            days_worked_in_month_incentive: {
+                thresholds: [
+                    { min_days: 0, max_days: 26, incentive_amount: 0, type: 'flat' },
+                    { min_days: 27, max_days: 31, incentive_amount: 1000, type: 'daily' },
+                ],
+            },
+            on_time_delivery_incentive: {
+                thresholds: [{ min_orders: 1, max_orders: 100, incentive_amount: 10, type: 'order-wise' }],
+            },
+        },
+        penalties: {
+            time_penalty: {
+                thresholds: [{ min_hours: 0, max_hours: 10, penalty_amount: 90, type: 'hourly' }],
+            },
+            weekend_penalty: {
+                thresholds: [{ is_weekend: true, penalty_amount: 150, type: 'daily', penalty_amount_type: 'percentage' }],
+            },
+            order_rejection_penalty: {
+                thresholds: [{ min_rejections: 0, max_rejections: 100, penalty_amount: 25, type: 'order-wise' }],
+            },
+            late_checkin_penalty: {
+                thresholds: [
+                    { min_minutes: 0, max_minutes: 15, penalty_amount: 0, type: 'flat' },
+                    { min_minutes: 15, max_minutes: 600, penalty_amount: 25, type: 'flat' },
+                ],
+            },
+        },
     },
 }
 
