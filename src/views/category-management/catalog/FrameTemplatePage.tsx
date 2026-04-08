@@ -11,11 +11,7 @@ import { generatePreviewCanvas, TemplateConfig } from './generatePreviewCanvas'
 import { useNavigate } from 'react-router-dom'
 import debounce from 'lodash/debounce'
 import { FrameFields } from './frameCommon'
-
-const hexToRgbTuple = (hex: string) => {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-    return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : [0, 0, 0]
-}
+import { hexToRgbTuple, hexToRgbaTuple } from '@/utils/colors'
 
 interface AutoPreviewProps {
     values: TemplateConfig
@@ -85,6 +81,17 @@ const FrameTemplatePage = () => {
         slash_length_scale: 1,
         slash_x: 0,
         slash_y: 0,
+
+        rect_x: 0,
+        rect_y: 0,
+        rect_width: 100,
+        rect_height: 50,
+        rect_border: '#000000',
+        rect_border_alpha: 255,
+        rect_fill: '#c8c8c8',
+        rect_fill_alpha: 100,
+        rect_thickness: 0,
+
         is_price_tag_required: true,
         selling_price: '99',
         mrp_price: '149',
@@ -127,6 +134,14 @@ const FrameTemplatePage = () => {
             slash_length_scale: Number(values.slash_length_scale),
             slash_x: Number(values.slash_x),
             slash_y: Number(values.slash_y),
+
+            rect_x: Number(values.rect_x),
+            rect_y: Number(values.rect_y),
+            rect_width: Number(values.rect_width),
+            rect_height: Number(values.rect_height),
+            rect_border: hexToRgbaTuple(values.rect_border, Number(values.rect_border_alpha)),
+            rect_fill: hexToRgbaTuple(values.rect_fill, Number(values.rect_fill_alpha)),
+            rect_thickness: Number(values.rect_thickness),
         }
 
         try {
