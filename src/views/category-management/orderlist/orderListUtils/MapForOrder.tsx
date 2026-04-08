@@ -140,15 +140,13 @@ const MarkerComponent: React.FC<MarkerComponentProps> = ({
         const diffSec = Math.floor((now - created) / 1000)
 
         const mins = Math.floor(diffSec / 60)
-        const hrs = Math.floor(mins / 60)
-        const days = Math.floor(hrs / 24)
+        const days = Math.floor(mins / (60 * 24))
         const months = Math.floor(days / 30)
         const years = Math.floor(days / 365)
 
         if (years > 0) return `${years}Y`
         if (months > 0) return `${months}M`
         if (days > 0) return `${days}D`
-        if (hrs > 0) return `${hrs}h`
         return `${mins || 0}m`
     }
 
