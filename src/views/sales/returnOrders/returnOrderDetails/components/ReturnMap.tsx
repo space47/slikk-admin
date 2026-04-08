@@ -4,8 +4,6 @@ import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap, Tooltip } fro
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { FaMapMarkerAlt } from 'react-icons/fa'
-import { BsFullscreenExit } from 'react-icons/bs'
-import { MdFullscreen } from 'react-icons/md'
 import axios, { AxiosError } from 'axios'
 import polyline from '@mapbox/polyline'
 import dayjs from 'dayjs'
@@ -25,10 +23,11 @@ interface Props {
 }
 
 interface Rider {
-    lat: number
-    long: number
-    mobile: string
-    name: string
+    lat?: number
+    long?: number
+    mobile?: string
+    name?: string
+    type?: boolean
 }
 
 const createCustomIcon = (iconUrl: string) =>
@@ -53,6 +52,11 @@ const ICONS = {
         iconSize: [20, 40],
         iconAnchor: [12, 41],
     }),
+    runnerBusy: L.icon({
+        iconUrl: '/img/logo/riderOffline-logo.png',
+        iconSize: [20, 40],
+        iconAnchor: [12, 41],
+    }),
 }
 
 const CurrentLocationButton: React.FC = () => {
@@ -69,48 +73,6 @@ const CurrentLocationButton: React.FC = () => {
         >
             <FaMapMarkerAlt size={24} />
         </button>
-    )
-}
-
-const FullScreenButton: React.FC<{ onClick: () => void; isFullScreen?: boolean }> = ({ onClick, isFullScreen = false }) => (
-    <button
-        onClick={onClick}
-        style={{
-            position: 'absolute',
-            top: 10,
-            right: 10,
-            zIndex: 1000,
-            padding: '8px 12px',
-            backgroundColor: 'white',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            cursor: 'pointer',
-        }}
-    >
-        {isFullScreen ? <BsFullscreenExit className="text-2xl font-bold" /> : <MdFullscreen className="text-2xl font-bold" />}
-    </button>
-)
-
-const FullScreenMap: React.FC<{ mapCenter: [number, number]; taskData: any; decodedPolyline: any[] }> = ({
-    mapCenter,
-    taskData,
-    decodedPolyline,
-}) => {
-    const [isFullScreen, setIsFullScreen] = useState(false)
-
-    if (!isFullScreen) {
-        return <FullScreenButton onClick={() => setIsFullScreen(true)} />
-    }
-
-    return (
-        <div style={{ position: 'fixed', background: '#fff' }}>
-            <FullScreenButton onClick={() => setIsFullScreen(false)} isFullScreen />
-            <MapContainer center={mapCenter} zoom={DEFAULT_ZOOM}>
-                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                <MapMarkers taskData={taskData} />
-                <Polyline positions={decodedPolyline} color="blue" />
-            </MapContainer>
-        </div>
     )
 }
 
@@ -133,11 +95,11 @@ const MapMarkers: React.FC<{ taskData: any; riders?: Rider[]; onRiderClick?: (mo
                 </Marker>
             )}
 
-            {taskData?.runner_latitude && taskData?.runner_longitude && (
+            {/* {taskData?.runner_latitude && taskData?.runner_longitude && (
                 <Marker position={[taskData.runner_latitude, taskData.runner_longitude]} icon={ICONS.runner}>
                     <Popup>{taskData?.runner_detail?.name}</Popup>
                 </Marker>
-            )}
+            )} */}
 
             {riders.map(
                 (rider, index) =>
@@ -146,8 +108,8 @@ const MapMarkers: React.FC<{ taskData: any; riders?: Rider[]; onRiderClick?: (mo
                         <Marker
                             key={index}
                             position={[rider.lat, rider.long]}
-                            icon={ICONS.runner}
-                            eventHandlers={onRiderClick ? { click: () => onRiderClick(rider.mobile) } : undefined}
+                            icon={rider.type === true ? ICONS.runnerBusy : ICONS.runner}
+                            eventHandlers={onRiderClick ? { click: () => onRiderClick(rider?.mobile || '') } : undefined}
                         >
                             <Tooltip>
                                 {rider.name} ({rider.mobile})
@@ -231,13 +193,14 @@ const ReturnMap: React.FC<Props> = ({ taskData, task_id, refetchAllData }) => {
 
     useEffect(() => {
         if (ridersCall?.isSuccess && ridersCall?.data?.data?.results) {
-            const riders = ridersCall.data.data.results.map((item: any) => ({
+            const riders = ridersCall.data.data.results.map((item) => ({
                 lat: item?.profile?.current_location?.latitude,
                 long: item?.profile?.current_location?.longitude,
                 mobile: item?.profile?.mobile,
-                name: `${item?.profile?.first_name} ${item?.profile?.last_name}`,
+                name: `${item?.profile?.first_name} ${item?.profile?.last_name} || '`,
+                type: item?.rider_status,
             }))
-            setRidersDataStore(riders)
+            setRidersDataStore(riders as any)
         }
     }, [ridersCall?.isSuccess, ridersCall?.data])
 
