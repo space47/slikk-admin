@@ -1,10 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Switcher } from '@/components/ui'
 import { DeliveryAgency } from '@/store/types/deliveryAgencyTypes'
 import { ColumnDef } from '@tanstack/react-table'
 import moment from 'moment'
 import React, { useMemo } from 'react'
 import { FaEdit } from 'react-icons/fa'
 
-export const useRiderAgencyColumn = () => {
+interface Props {
+    handleChangeStatus: (id: number, checked: boolean) => void
+}
+
+export const useRiderAgencyColumn = ({ handleChangeStatus }: Props) => {
     return useMemo<ColumnDef<DeliveryAgency>[]>(
         () => [
             {
@@ -21,6 +27,22 @@ export const useRiderAgencyColumn = () => {
                     </a>
                 ),
                 size: 60,
+            },
+            {
+                header: 'Active',
+                accessorKey: 'id',
+                cell: ({ row }) => {
+                    const isStatusTrue = row?.original?.is_active
+                    return (
+                        <div>
+                            <Switcher
+                                className={isStatusTrue ? 'bg-blue-500' : 'bg-gray-500'}
+                                checked={isStatusTrue}
+                                onChange={() => handleChangeStatus(row.original.id, isStatusTrue)}
+                            />
+                        </div>
+                    )
+                },
             },
             {
                 header: 'Agency Name',

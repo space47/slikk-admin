@@ -14,6 +14,8 @@ import { useRiderAgencyColumn } from '../RiderAgencyUtils/useRiderAgencyColumn'
 import PageCommon from '@/common/PageCommon'
 import { useLocation, useNavigate } from 'react-router-dom'
 import CommonPageHeader from '@/common/CommonPageHeader'
+import DialogConfirm from '@/common/DialogConfirm'
+import { getApiErrorMessage } from '@/constants/generateErrorMessage'
 
 const RiderAgencyTable = () => {
     const navigate = useNavigate()
@@ -25,6 +27,10 @@ const RiderAgencyTable = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [isActive, setIsActive] = useState<'true' | 'false'>('true')
+    const [storeForActive, setStoreForActive] = useState<number | null>(null)
+    const [showModalForActive, setShowModalForActive] = useState(false)
+    const [checkActive, setCheckActive] = useState(false)
+    const [updateRiderAgency, updateResponse] = deliveryAgency.useUpdateDeliveryAgencyMutation()
 
     const debouncedResults = useMemo(
         () =>
@@ -58,7 +64,37 @@ const RiderAgencyTable = () => {
         }
     }, [riderAgencyCall.isSuccess, riderAgencyCall.isError, riderAgencyCall.data?.data])
 
-    const columns = useRiderAgencyColumn()
+    useEffect(() => {
+        if (updateResponse.isSuccess) {
+            notification.success({
+                message: `Rider Agency- ${updateResponse?.data?.data?.name} has been created with POC - ${updateResponse?.data?.data?.poc_name || ''} `,
+            })
+            setShowModalForActive(false)
+            riderAgencyCall.refetch()
+        }
+        if (updateResponse.isError) {
+            const errorMessage = getApiErrorMessage(updateResponse.error)
+            notification.error({ message: errorMessage })
+        }
+    }, [updateResponse.isError, updateResponse.isSuccess, updateResponse.data?.data, updateResponse.error])
+
+    const handleChangeStatus = (id: number, checked: boolean) => {
+        setStoreForActive(id)
+        setShowModalForActive(true)
+        setCheckActive(checked)
+    }
+
+    const handleStatus = async () => {
+        console.log(storeForActive)
+        const body = {
+            agency_id: storeForActive,
+            is_active: !checkActive,
+        }
+
+        updateRiderAgency(body as any)
+    }
+
+    const columns = useRiderAgencyColumn({ handleChangeStatus })
 
     return (
         <div className="space-y-6">
@@ -111,6 +147,17 @@ const RiderAgencyTable = () => {
                 <EasyTable overflow mainData={agencies} columns={columns} page={page} pageSize={pageSize} />
             </div>
             <PageCommon page={page} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} totalData={count} />
+            {showModalForActive && (
+                <DialogConfirm
+                    isProceed
+                    IsOpen={showModalForActive}
+                    setIsOpen={setShowModalForActive}
+                    headingName={`${checkActive ? 'InActivate' : 'Activate'} This rider agency`}
+                    label={`Are you sure you want to ${checkActive ? 'InActivate' : 'Activate'} this agency `}
+                    onDialogOk={handleStatus}
+                    spinner={updateResponse.isLoading}
+                />
+            )}
         </div>
     )
 }
