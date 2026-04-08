@@ -186,32 +186,28 @@ const ReturnOrderDrawer = ({ isOpen, setIsOpen, product, invoice_id, delivery_ty
                                                     <div className="font-semibold text-gray-600 text-center sm:text-left sm:col-span-1">
                                                         RETURN QTY
                                                         <div className="sm:col-span-1 text-center sm:text-left">
-                                                            {pdts?.returnable_quantity > 0 ? (
-                                                                <Select
-                                                                    value={returnQuantities[pdts?.id] || 0}
-                                                                    className="w-1/4 border border-gray-300 rounded-lg"
-                                                                    onChange={(value) => handleSelectChange(pdts?.id, value)}
-                                                                >
-                                                                    {Array.from(
-                                                                        {
-                                                                            length:
-                                                                                parseInt(
-                                                                                    typeof pdts?.quantity === 'string'
-                                                                                        ? pdts?.quantity
-                                                                                        : pdts?.quantity.toString(),
-                                                                                    10,
-                                                                                ) + 1,
-                                                                        },
-                                                                        (_, i) => (
-                                                                            <Option key={i} value={i}>
-                                                                                {i}
-                                                                            </Option>
-                                                                        ),
-                                                                    )}
-                                                                </Select>
-                                                            ) : (
-                                                                <span className="text-sm text-red-500">NOT RETURNABLE</span>
-                                                            )}
+                                                            <Select
+                                                                value={returnQuantities[pdts?.id] || 0}
+                                                                className="w-1/4 border border-gray-300 rounded-lg"
+                                                                onChange={(value) => handleSelectChange(pdts?.id, value)}
+                                                            >
+                                                                {Array.from(
+                                                                    {
+                                                                        length:
+                                                                            parseInt(
+                                                                                typeof pdts?.quantity === 'string'
+                                                                                    ? pdts?.quantity
+                                                                                    : pdts?.quantity.toString(),
+                                                                                10,
+                                                                            ) + 1,
+                                                                    },
+                                                                    (_, i) => (
+                                                                        <Option key={i} value={i}>
+                                                                            {i}
+                                                                        </Option>
+                                                                    ),
+                                                                )}
+                                                            </Select>
                                                         </div>
                                                     </div>
                                                 </div>
