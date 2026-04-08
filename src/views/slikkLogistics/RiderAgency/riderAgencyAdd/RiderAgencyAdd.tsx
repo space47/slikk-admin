@@ -55,7 +55,14 @@ const RiderAgencyAdd = () => {
                                     <span>All changes are auto-saved in the form</span>
                                 </div>
 
-                                <Button type="submit" variant="accept" size="sm" icon={<FaSave />}>
+                                <Button
+                                    type="submit"
+                                    variant="accept"
+                                    size="sm"
+                                    icon={<FaSave />}
+                                    loading={createResponse.isLoading}
+                                    disabled={createResponse.isLoading}
+                                >
                                     Add Agency
                                 </Button>
                             </div>
