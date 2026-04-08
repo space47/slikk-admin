@@ -42,22 +42,30 @@ const initialValues: FormValues = {
             time_incentive: {
                 thresholds: [
                     { min_hours: 0, max_hours: 11, incentive_amount: 0, type: 'flat' },
-                    { min_hours: 12, max_hours: 15, incentive_amount: 90, type: 'hourly' },
+                    { min_hours: 12, max_hours: 15, incentive_amount: 90, type: 'hour-wise' },
                 ],
             },
             days_worked_in_month_incentive: {
                 thresholds: [
                     { min_days: 0, max_days: 26, incentive_amount: 0, type: 'flat' },
-                    { min_days: 27, max_days: 31, incentive_amount: 1000, type: 'daily' },
+                    { min_days: 27, max_days: 31, incentive_amount: 1000, type: 'day-wise' },
                 ],
             },
             on_time_delivery_incentive: {
                 thresholds: [{ min_orders: 1, max_orders: 100, incentive_amount: 10, type: 'order-wise' }],
             },
+            days_worked_in_week_incentive: {
+                minimum_days: 6,
+                mandatory_days: [3, 4, 5, 6],
+                incentive_amount: 100,
+            },
+            distance_incentive: {
+                thresholds: [{ min_distance: 0, max_distance: 15, incentive_amount: 0, type: 'flat' }],
+            },
         },
         penalties: {
             time_penalty: {
-                thresholds: [{ min_hours: 0, max_hours: 10, penalty_amount: 90, type: 'hourly' }],
+                thresholds: [{ min_hours: 0, max_hours: 10, penalty_amount: 90, type: 'hour-wise' }],
             },
             weekend_penalty: {
                 thresholds: [{ is_weekend: true, penalty_amount: 150, type: 'daily', penalty_amount_type: 'percentage' }],
