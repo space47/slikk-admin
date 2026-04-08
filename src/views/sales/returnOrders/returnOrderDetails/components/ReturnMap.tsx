@@ -1,23 +1,37 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap, CircleMarker } from 'react-leaflet'
+import React, { useEffect, useState, useMemo, useCallback } from 'react'
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap, Tooltip } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import 'leaflet-rotatedmarker'
-import { FaClock, FaMapMarkerAlt } from 'react-icons/fa'
-import polyline from '@mapbox/polyline'
-import axios from 'axios'
+import { FaMapMarkerAlt } from 'react-icons/fa'
 import { BsFullscreenExit } from 'react-icons/bs'
 import { MdFullscreen } from 'react-icons/md'
-import { calculateBearing } from '@/utils/common'
+import axios, { AxiosError } from 'axios'
+import polyline from '@mapbox/polyline'
+import dayjs from 'dayjs'
+import { ridersService } from '@/store/services/riderServices'
+import DialogConfirm from '@/common/DialogConfirm'
+import { errorMessage, successMessage } from '@/utils/responseMessages'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+
+const MAP_KEY = import.meta.env.VITE_OLA_API_KEY
+const DEFAULT_CENTER: [number, number] = [12.9014, 77.65122]
+const DEFAULT_ZOOM = 16
 
 interface Props {
-    task_id?: string
+    task_id: string
     taskData: any
-    isRiderMoving?: boolean
+    refetchAllData: () => void
 }
 
-const customIcon = (iconUrl: string) =>
+interface Rider {
+    lat: number
+    long: number
+    mobile: string
+    name: string
+}
+
+const createCustomIcon = (iconUrl: string) =>
     new L.Icon({
         iconUrl,
         iconSize: [25, 41],
@@ -26,162 +40,157 @@ const customIcon = (iconUrl: string) =>
         shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.4/images/marker-shadow.png',
     })
 
-const officeIcon = L.icon({
-    iconUrl: '/img/logo/slikkWare.png',
-    iconSize: [30, 45],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-})
-
-const icons = {
-    pickup: customIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png'),
-    drop: customIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png'),
+const ICONS = {
+    pickup: createCustomIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png'),
+    drop: createCustomIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png'),
+    office: L.icon({
+        iconUrl: '/img/logo/slikkWare.png',
+        iconSize: [30, 45],
+        iconAnchor: [12, 41],
+    }),
+    runner: L.icon({
+        iconUrl: '/img/logo/riderOnline-logo.png',
+        iconSize: [20, 40],
+        iconAnchor: [12, 41],
+    }),
 }
 
-const riderDivIcon = L.divIcon({
-    html: `<img src="/img/logo/riderOnline-logo.png" style="width: 28px; transform-origin: center center;" />`,
-    className: '',
-    iconSize: [30, 30],
-    iconAnchor: [15, 15],
-})
-
-const CurrentLocationButton = () => {
+const CurrentLocationButton: React.FC = () => {
     const map = useMap()
     return (
         <button
-            onClick={() => map.setView([12.9014, 77.65122], 13)}
+            onClick={() => map.setView(DEFAULT_CENTER, DEFAULT_ZOOM)}
             style={{
                 position: 'absolute',
-                bottom: 8,
-                right: 10,
-                backgroundColor: 'white',
-                border: 'none',
-                borderRadius: 8,
-                padding: 8,
-                boxShadow: '0 0 5px rgba(0,0,0,0.3)',
-                cursor: 'pointer',
+                bottom: '3px',
+                right: '10px',
+                zIndex: 1000,
             }}
-            aria-label="Center map"
         >
-            <FaMapMarkerAlt size={20} />
+            <FaMapMarkerAlt size={24} />
         </button>
     )
 }
 
-const ReturnMap: React.FC<Props> = ({ taskData, isRiderMoving }) => {
-    const MAP_KEY = import.meta.env.VITE_OLA_API_KEY
-    const containerRef = useRef<HTMLDivElement | null>(null)
-    const mapContainerRef = useRef<any>(null)
-    const riderMarkerRef = useRef<Leaflet.Marker | null>(null)
-    const [riderEstimateTime, setRiderEstimateTime] = useState('')
-    const [showOnlyRiderPath, setShowOnlyRiderPath] = useState(false)
+const FullScreenButton: React.FC<{ onClick: () => void; isFullScreen?: boolean }> = ({ onClick, isFullScreen = false }) => (
+    <button
+        onClick={onClick}
+        style={{
+            position: 'absolute',
+            top: 10,
+            right: 10,
+            zIndex: 1000,
+            padding: '8px 12px',
+            backgroundColor: 'white',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+            cursor: 'pointer',
+        }}
+    >
+        {isFullScreen ? <BsFullscreenExit className="text-2xl font-bold" /> : <MdFullscreen className="text-2xl font-bold" />}
+    </button>
+)
+
+const FullScreenMap: React.FC<{ mapCenter: [number, number]; taskData: any; decodedPolyline: any[] }> = ({
+    mapCenter,
+    taskData,
+    decodedPolyline,
+}) => {
     const [isFullScreen, setIsFullScreen] = useState(false)
-    const [polyLine, setPolyLine] = useState('')
-    const [riderRoutePolyline, setRiderRoutePolyline] = useState('')
+
+    if (!isFullScreen) {
+        return <FullScreenButton onClick={() => setIsFullScreen(true)} />
+    }
+
+    return (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: '#fff' }}>
+            <FullScreenButton onClick={() => setIsFullScreen(false)} isFullScreen />
+            <MapContainer center={mapCenter} zoom={DEFAULT_ZOOM} style={{ width: '100%', height: '100%' }}>
+                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                <MapMarkers taskData={taskData} />
+                <Polyline positions={decodedPolyline} color="blue" />
+            </MapContainer>
+        </div>
+    )
+}
+
+const MapMarkers: React.FC<{ taskData: any; riders?: Rider[]; onRiderClick?: (mobile: string) => void }> = ({
+    taskData,
+    riders = [],
+    onRiderClick,
+}) => {
+    return (
+        <>
+            {taskData?.pickup_details && (
+                <Marker position={[taskData.pickup_details.latitude, taskData.pickup_details.longitude]} icon={ICONS.office}>
+                    <Popup>{taskData.pickup_details.name}</Popup>
+                </Marker>
+            )}
+
+            {taskData?.drop_details && (
+                <Marker position={[taskData.drop_details.latitude, taskData.drop_details.longitude]} icon={ICONS.drop}>
+                    <Popup>{taskData.drop_details.name}</Popup>
+                </Marker>
+            )}
+
+            {taskData?.runner_latitude && taskData?.runner_longitude && (
+                <Marker position={[taskData.runner_latitude, taskData.runner_longitude]} icon={ICONS.runner}>
+                    <Popup>{taskData?.runner_detail?.name}</Popup>
+                </Marker>
+            )}
+
+            {riders.map(
+                (rider, index) =>
+                    rider.lat &&
+                    rider.long && (
+                        <Marker
+                            key={index}
+                            position={[rider.lat, rider.long]}
+                            icon={ICONS.runner}
+                            eventHandlers={onRiderClick ? { click: () => onRiderClick(rider.mobile) } : undefined}
+                        >
+                            <Tooltip>
+                                {rider.name} ({rider.mobile})
+                            </Tooltip>
+                        </Marker>
+                    ),
+            )}
+        </>
+    )
+}
+
+const ReturnMap: React.FC<Props> = ({ taskData, task_id, refetchAllData }) => {
     const [mapCenter, setMapCenter] = useState<[number, number] | null>(null)
+    const [polyLine, setPolyLine] = useState('')
     const [sourceLatLong, setSourceLatLong] = useState<[number, number]>([0, 0])
     const [destinationLatLong, setDestinationLatLong] = useState<[number, number]>([0, 0])
+    const [ridersDataStore, setRidersDataStore] = useState<Rider[]>([])
+    const [isAssignRider, setIsAssignRider] = useState(false)
+    const [currentRiderMobile, setCurrentRiderMobile] = useState('')
+    const [taskLoader, setTaskLoader] = useState(false)
 
-    const [selectedPointCheckpoints, setSelectedPointCheckpoints] = useState<any>(null)
-    const [currentAngle, setCurrentAngle] = useState(0)
-
-    const rawCheckpoints = useMemo(() => {
-        if (!taskData?.location_data) return []
-        const arr = Object.entries(taskData.location_data).map(([timestamp, coords]) => ({
-            lat: Number(coords?.[0]),
-            lng: Number(coords?.[1]),
-            timestamp,
-            ts: new Date(timestamp).getTime(),
-        }))
-        //Previous checkpoint details
-        return arr.map((pt, i, all) => {
-            if (i === 0) return { ...pt, prev: null, timeDiffMs: 0, distanceMeters: 0 }
-
-            const prev = all[i - 1]
-            const timeDiffMs = pt.ts - prev.ts
-            const distanceDiffMeters: number = L.latLng(pt.lat, pt.lng).distanceTo(L.latLng(prev.lat, prev.lng))
-            return { ...pt, prev, timeDiffMs, distanceDiffMeters }
-        })
-    }, [JSON.stringify(taskData?.location_data)])
-
-    //Deduping consecutive identical points
-    const filteredCheckpoints = useMemo(() => {
-        if (!rawCheckpoints || rawCheckpoints.length === 0) return []
-        return rawCheckpoints.filter((pt, i, arr) => {
-            if (i === 0) return true
-            const prev = arr[i - 1]
-            return !(pt.lat === prev.lat && pt.lng === prev.lng)
-        })
-    }, [rawCheckpoints])
-
-    const checkpointCounts = useMemo(() => {
-        const map = new Map<string, number>()
-        rawCheckpoints.forEach((pt) => {
-            const key = `${pt.lat},${pt.lng}`
-            map.set(key, (map.get(key) || 0) + 1)
-        })
-        return map
-    }, [rawCheckpoints])
-
-    const handleCheckpointClick = useCallback(
-        (pt) => {
-            const checkpointsHere = rawCheckpoints.filter((c) => c.lat === pt.lat && c.lng === pt.lng)
-
-            if (checkpointsHere.length === 0) return
-
-            checkpointsHere.sort((a, b) => a.ts - b.ts)
-
-            const waitMs = checkpointsHere[checkpointsHere.length - 1].ts - checkpointsHere[0].ts
-            const waitMin = Math.ceil(waitMs / 60000)
-
-            setSelectedPointCheckpoints({
-                coords: pt,
-                list: checkpointsHere,
-                waitMinutes: waitMin,
-                prev: checkpointsHere[0].prev,
-                prevTimeDiff: checkpointsHere[0].timeDiffMs,
-                prevDistance: checkpointsHere[0].distanceDiffMeters,
-            })
+    const ridersCall = ridersService.useRiderDetailsQuery(
+        {
+            from: dayjs().format('YYYY-MM-DD'),
+            to: dayjs().add(1, 'days').format('YYYY-MM-DD'),
+            page: 1,
+            pageSize: 1000,
+            isActive: 'true',
+            rider_type: 'RETURN',
+            user_type: 'rider',
         },
-        [rawCheckpoints],
+        { refetchOnMountOrArgChange: true, pollingInterval: 60000 },
     )
 
+    const isValidCoordinates = useMemo(() => sourceLatLong[0] > 0 && sourceLatLong[1] > 0, [sourceLatLong])
     const decodedPolyline = useMemo(() => polyline.decode(polyLine), [polyLine])
-    const decodedRiderPolyline = useMemo(() => polyline.decode(riderRoutePolyline), [riderRoutePolyline])
 
-    const fetchRouteDetails = useCallback(
-        async (origin: [number, number], destinationPoint: [number, number]) => {
-            if (!MAP_KEY) return
-            try {
-                const response = await axios.post(`https://api.olamaps.io/routing/v1/directions/basic`, null, {
-                    params: {
-                        origin: origin.join(','),
-                        destination: destinationPoint.join(','),
-                        alternatives: false,
-                        steps: true,
-                        overview: 'full',
-                        language: 'en',
-                        api_key: MAP_KEY,
-                    },
-                })
-                setPolyLine(response.data.routes[0]?.overview_polyline || '')
-            } catch (err) {
-                console.error('Error fetching route details:', err)
-            }
-        },
-        [MAP_KEY],
-    )
-
-    const fetchRiderRoute = useCallback(async () => {
-        if (!MAP_KEY) return
-        if (!taskData?.runner_latitude > 0 || !taskData?.runner_longitude > 0) return
-        const destinationStr = destinationLatLong.join(',')
-
+    const fetchRouteDetails = useCallback(async () => {
         try {
             const response = await axios.post(`https://api.olamaps.io/routing/v1/directions/basic`, null, {
                 params: {
-                    origin: [taskData?.runner_latitude, taskData?.runner_longitude].join(','),
-                    destination: destinationStr,
+                    origin: sourceLatLong.join(','),
+                    destination: destinationLatLong.join(','),
                     alternatives: false,
                     steps: true,
                     overview: 'full',
@@ -189,239 +198,88 @@ const ReturnMap: React.FC<Props> = ({ taskData, isRiderMoving }) => {
                     api_key: MAP_KEY,
                 },
             })
-            setRiderRoutePolyline(response.data.routes[0]?.overview_polyline || '')
-            setRiderEstimateTime(response.data.routes[0]?.legs[0]?.readable_duration || '')
-        } catch (err) {
-            console.error('Error fetching rider route:', err)
+            setPolyLine(response.data.routes[0]?.overview_polyline || '')
+        } catch (error) {
+            console.error('Error fetching route details:', error)
         }
-    }, [MAP_KEY, destinationLatLong, taskData?.runner_latitude, taskData?.runner_longitude])
+    }, [sourceLatLong, destinationLatLong])
 
-    useEffect(() => {
-        const marker = riderMarkerRef.current
-        marker?.setRotationOrigin('center center')
-        marker?.setRotationAngle(currentAngle)
-    }, [currentAngle, showOnlyRiderPath])
-
-    // Initialize map center + source/destination when pickup/drop available
-    useEffect(() => {
-        const pickup = taskData?.pickup_details
-        const drop = taskData?.drop_details
-        if (!pickup || !drop) return
-
-        const origin: [number, number] = [pickup.latitude, pickup.longitude]
-        const dest: [number, number] = [drop.latitude, drop.longitude]
-
-        setMapCenter((prev) => prev || origin)
-        setSourceLatLong((prev) => (prev[0] !== origin[0] || prev[1] !== origin[1] ? origin : prev))
-        setDestinationLatLong((prev) => (prev[0] !== dest[0] || prev[1] !== dest[1] ? dest : prev))
-    }, [
-        taskData?.pickup_details?.latitude,
-        taskData?.pickup_details?.longitude,
-        taskData?.drop_details?.latitude,
-        taskData?.drop_details?.longitude,
-    ])
-
-    // fetch the main route when source/destination ready
-    useEffect(() => {
-        if (sourceLatLong[0] > 0 && destinationLatLong[0] > 0) {
-            fetchRouteDetails(sourceLatLong, destinationLatLong)
-        }
-    }, [sourceLatLong, destinationLatLong, fetchRouteDetails])
-
-    // Update rotation & rider route when location_data or runner coords change
-    useEffect(() => {
-        const lat = taskData?.runner_latitude
-        const lng = taskData?.runner_longitude
-        if (!lat || !lng) return
-
-        if (filteredCheckpoints.length >= 2) {
-            const prev = filteredCheckpoints[filteredCheckpoints.length - 2]
-            const curr = filteredCheckpoints[filteredCheckpoints.length - 1]
-            const angle = calculateBearing(prev.lat, prev.lng, curr.lat, curr.lng)
-
-            setCurrentAngle(angle)
-        }
-        if (sourceLatLong[0] > 0 && destinationLatLong[0] > 0) {
-            fetchRiderRoute()
-        }
-    }, [JSON.stringify(taskData?.location_data), taskData?.runner_latitude, taskData?.runner_longitude, fetchRiderRoute])
-
-    const toggleFullScreen = async () => {
-        const el = mapContainerRef.current
-        if (!el) return
-        try {
-            if (!document.fullscreenElement) {
-                await el.requestFullscreen()
-                setIsFullScreen(true)
-            } else {
-                await document.exitFullscreen()
-                setIsFullScreen(false)
+    const handleAssignRider = useCallback(
+        async (mobile: string) => {
+            setTaskLoader(true)
+            try {
+                const res = await axioisInstance.patch(`/logistic/slikk/task/${task_id}`, {
+                    action: 'assign_rider',
+                    rider_mobile: mobile,
+                })
+                successMessage(res)
+                setIsAssignRider(false)
+                refetchAllData()
+            } catch (error) {
+                if (error instanceof AxiosError) errorMessage(error)
+            } finally {
+                setTaskLoader(false)
             }
-        } catch (err) {
-            console.error('Fullscreen error', err)
-        }
-    }
-    if (!mapCenter) return null
-
-    const renderRiderDelivery = () => (
-        <div className="mt-2 max-w-[400px] px-[8px] py-[12px] rounded-lg shadow-lg ">
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span>
-                    <FaClock />
-                </span>
-                <span className="text-amber-900">Rider Delivers In </span>: {riderEstimateTime}
-            </div>
-        </div>
+        },
+        [task_id, refetchAllData],
     )
 
+    const handleRiderClick = useCallback((mobile: string) => {
+        setIsAssignRider(true)
+        setCurrentRiderMobile(mobile)
+    }, [])
+
+    useEffect(() => {
+        if (ridersCall?.isSuccess && ridersCall?.data?.data?.results) {
+            const riders = ridersCall.data.data.results.map((item: any) => ({
+                lat: item?.profile?.current_location?.latitude,
+                long: item?.profile?.current_location?.longitude,
+                mobile: item?.profile?.mobile,
+                name: `${item?.profile?.first_name} ${item?.profile?.last_name}`,
+            }))
+            setRidersDataStore(riders)
+        }
+    }, [ridersCall?.isSuccess, ridersCall?.data])
+
+    useEffect(() => {
+        if (taskData?.pickup_details && taskData?.drop_details) {
+            const origin: [number, number] = [taskData.pickup_details.latitude, taskData.pickup_details.longitude]
+            const destination: [number, number] = [taskData.drop_details.latitude, taskData.drop_details.longitude]
+            setMapCenter(origin)
+            setSourceLatLong(origin)
+            setDestinationLatLong(destination)
+        }
+    }, [taskData])
+
+    useEffect(() => {
+        if (isValidCoordinates) {
+            fetchRouteDetails()
+        }
+    }, [isValidCoordinates, fetchRouteDetails])
+
+    if (!mapCenter) return null
+
     return (
-        <div ref={containerRef}>
-            <div
-                ref={mapContainerRef}
-                style={{
-                    zIndex: 0,
-                    width: '100%',
-                    height: isFullScreen ? '100vh' : 500,
-                    maxWidth: 900,
-                    margin: '0 auto',
-                    position: 'relative',
-                }}
-            >
-                <MapContainer center={mapCenter} zoom={16} style={{ width: '100%', height: '100%' }}>
-                    <div className="leaflet-control" style={{ position: 'absolute', top: 10, right: 10 }}>
-                        <button
-                            className="p-2 bg-white border-gray-300 border cursor-pointer rounded-md text-xs"
-                            onClick={() => setShowOnlyRiderPath((prev) => !prev)}
-                        >
-                            {showOnlyRiderPath ? 'Show All' : 'Rider Path Only'}
-                        </button>
-                        <button
-                            className="p-2 ml-1 bg-white border-gray-300 border-solid border cursor-pointer rounded-md"
-                            onClick={toggleFullScreen}
-                        >
-                            {isFullScreen ? <BsFullscreenExit /> : <MdFullscreen />}
-                        </button>
-                    </div>
+        <div className="relative flex flex-col gap-10">
+            <div className="relative w-full" style={{ height: '500px' }}>
+                <MapContainer center={mapCenter} zoom={DEFAULT_ZOOM} style={{ width: '100%', height: '100%' }}>
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                    {taskData?.pickup_details && (
-                        <Marker position={[taskData.pickup_details.latitude, taskData.pickup_details.longitude]} icon={officeIcon}>
-                            <Popup>{taskData.pickup_details.name}</Popup>
-                        </Marker>
-                    )}
-                    {taskData?.drop_details && (
-                        <Marker position={[taskData.drop_details.latitude, taskData.drop_details.longitude]} icon={icons.drop}>
-                            <Popup>
-                                <div>
-                                    {taskData.drop_details.name}
-                                    <span>{isRiderMoving && renderRiderDelivery()}</span>
-                                </div>
-                            </Popup>
-                        </Marker>
-                    )}
-                    {taskData?.runner_latitude && taskData?.runner_longitude && !showOnlyRiderPath && (
-                        <Marker ref={riderMarkerRef} position={[taskData.runner_latitude, taskData.runner_longitude]} icon={riderDivIcon}>
-                            <Popup>{taskData?.runner_detail?.name}</Popup>
-                        </Marker>
-                    )}
-                    {filteredCheckpoints.length > 1 && (
-                        <Polyline positions={filteredCheckpoints} color="black" weight={3} dashArray="4 4" />
-                    )}
-                    {decodedRiderPolyline.length > 0 && !showOnlyRiderPath && (
-                        <Polyline positions={decodedRiderPolyline} color="#FF0000AA" dashArray="8 8" weight={4} />
-                    )}
-                    {decodedPolyline.length > 0 && !showOnlyRiderPath && <Polyline positions={decodedPolyline} color="#0000FFCC" />}
-
-                    {rawCheckpoints.map((pt, index) => {
-                        const key = `${pt.lat},${pt.lng}`
-                        const count = checkpointCounts.get(key) || 1
-                        const isHeavy = count > 2 // more than 2 checkpoints at same location
-
-                        return (
-                            <CircleMarker
-                                key={`raw-${index}`}
-                                center={[pt.lat, pt.lng]}
-                                radius={isHeavy ? 8 : 6}
-                                pathOptions={{
-                                    color: 'black',
-                                    fillColor: isHeavy ? '#FF0000AA' : '#fff',
-
-                                    fillOpacity: 1,
-                                }}
-                                eventHandlers={{
-                                    click: () => {
-                                        handleCheckpointClick(pt)
-                                    },
-                                }}
-                            />
-                        )
-                    })}
-                    {selectedPointCheckpoints?.coords && (
-                        <Popup
-                            position={[selectedPointCheckpoints.coords.lat, selectedPointCheckpoints.coords.lng]}
-                            eventHandlers={{
-                                remove: () => {
-                                    setSelectedPointCheckpoints(null)
-                                },
-                            }}
-                        >
-                            <div>
-                                <h4 className="font-bold mb-2">Timestamps</h4>
-                                {selectedPointCheckpoints.waitMinutes > 0 && (
-                                    <p className="text-sm mb-2">
-                                        <b>Min. time elapsed:</b> {selectedPointCheckpoints.waitMinutes} min
-                                    </p>
-                                )}
-                                <ul className="text-sm overflow-y-scroll max-h-[150px]">
-                                    {selectedPointCheckpoints.list.map((c, i) => (
-                                        <li key={i}>
-                                            #{i + 1}: <b>{c.timestamp.toLocaleString()}</b>
-                                        </li>
-                                    ))}
-                                </ul>
-
-                                {selectedPointCheckpoints.prev && (
-                                    <div className="mb-3 text-sm">
-                                        <br />
-                                        <b>Previous checkpoint:</b>
-                                        <br />
-                                        Time taken: {Math.round(selectedPointCheckpoints.prevTimeDiff / 1000)} sec
-                                        <br />
-                                        Distance: {selectedPointCheckpoints.prevDistance.toFixed(1)} m
-                                        <hr className="my-2" />
-                                    </div>
-                                )}
-                            </div>
-                        </Popup>
-                    )}
+                    <MapMarkers taskData={taskData} riders={ridersDataStore} onRiderClick={handleRiderClick} />
+                    <Polyline positions={decodedPolyline} color="blue" />
                     <CurrentLocationButton />
                 </MapContainer>
-                <div className="flex items-center gap-5">
-                    <div
-                        style={{
-                            marginTop: 10,
-                            maxWidth: 400,
-                            background: 'white',
-                            padding: '8px 12px',
-                            borderRadius: 6,
-                            fontSize: 12,
-                            boxShadow: '0 0 6px rgba(0,0,0,0.3)',
-                            lineHeight: '16px',
-                        }}
-                    >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                            <div className="w-5 h-1 bg-black" /> Actual Rider Path
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
-                            <div className="w-5 h-1 bg-red-500" />
-                            Recommended Rider Path
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
-                            <div className="w-5 h-1 bg-blue-500" /> Warehouse → Delivery Address Shortest Path
-                        </div>
-                    </div>
-                    {isRiderMoving && renderRiderDelivery()}
-                </div>
+                <FullScreenMap mapCenter={mapCenter} taskData={taskData} decodedPolyline={decodedPolyline} />
             </div>
+
+            <DialogConfirm
+                IsOpen={isAssignRider}
+                setIsOpen={setIsAssignRider}
+                onDialogOk={() => handleAssignRider(currentRiderMobile)}
+                headingName="Assign Rider"
+                label={`Assign rider with mobile - ${currentRiderMobile}?`}
+                isProceed
+                spinner={taskLoader}
+            />
         </div>
     )
 }

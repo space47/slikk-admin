@@ -32,8 +32,6 @@ const RiderLocationMap = ({ taskData, runnerLat, runnerLong }: props) => {
     console.log('runner lat and lond', runnerLat, runnerLong)
     const [mapCenter, setMapCenter] = useState<[number, number]>([runnerLat, runnerLong])
 
-    const [waypoints, setWaypoints] = useState<[number, number][]>([])
-
     const [polyLine, setPolyLine] = useState('')
     const [sourceLatLong, setSourceLatLong] = useState<[number, number]>([0, 0])
     const [destinationLatLong, setDestinationLatLong] = useState<[number, number]>([0, 0])
@@ -77,7 +75,6 @@ const RiderLocationMap = ({ taskData, runnerLat, runnerLong }: props) => {
             const origin: [number, number] = [taskData.pickup_details.latitude, taskData.pickup_details.longitude]
             const destination: [number, number] = [taskData.drop_details.latitude, taskData.drop_details.longitude]
             // setMapCenter(destination)
-            setWaypoints([origin, destination])
 
             setSourceLatLong(origin)
             setDestinationLatLong(destination)
