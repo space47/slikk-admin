@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const PAYOUT_MODELS = [
     { value: 'day-wise', label: 'Day Wise', description: 'Payout calculated per day' },
-    { value: 'month-wise', label: 'Month Wise', description: 'Payout calculated per order' },
+    { value: 'order-wise', label: 'Order Wise', description: 'Payout calculated per order' },
 ]
 
 export const CURRENCIES = [

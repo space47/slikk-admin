@@ -10,6 +10,15 @@ import _ from 'lodash'
 import { beforeUpload } from '@/common/beforeUpload'
 import { FaCode } from 'react-icons/fa'
 
+const Type_List = [
+    { value: 'flat', label: 'Flat' },
+    { value: 'day-wise', label: 'Day Wise' },
+    { value: 'order-wise', label: 'Order Wise' },
+    { value: 'km-wise', label: 'Kilometer Wise' },
+    { value: 'hour-wise', label: 'Hour Wise' },
+    { value: 'percentage', label: 'Percentage' },
+]
+
 const RenderPayout = ({ obj, parentKey, setFieldValue, editableKeys, setEditableKeys, depth = 0 }: any) => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false)
     const [currentArrayHelpers, setCurrentArrayHelpers] = useState<any>(null)
@@ -215,32 +224,25 @@ const RenderPayout = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
                                                 <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-0.5">
                                                     Value
                                                 </label>
-                                                {key.toLowerCase() === 'message' && obj?.messages_list?.length > 0 ? (
+                                                {key.toLowerCase() === 'type' ? (
                                                     <Field name={fieldName}>
-                                                        {({ field, form }: FieldProps<any>) => {
-                                                            const messagesList = obj.messages_list || []
-                                                            const options = Array.isArray(messagesList)
-                                                                ? messagesList.map((message) => ({
-                                                                      label: message,
-                                                                      value: message,
-                                                                  }))
-                                                                : []
-
-                                                            return (
-                                                                <Select
-                                                                    isClearable
-                                                                    placeholder="Select Message"
-                                                                    options={options}
-                                                                    className="text-xs"
-                                                                    value={field.value ? { label: field.value, value: field.value } : null}
-                                                                    onChange={(newVal) => {
-                                                                        form.setFieldValue(field.name, newVal ? newVal.value : '')
-                                                                    }}
-                                                                />
-                                                            )
-                                                        }}
+                                                        {({ field }: FieldProps<any>) => (
+                                                            <div>
+                                                                <select
+                                                                    value={field.value}
+                                                                    onChange={(e) => setFieldValue(fieldName, e.target.value)}
+                                                                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white transition-all"
+                                                                >
+                                                                    {Type_List.map((m) => (
+                                                                        <option key={m.value} value={m.value}>
+                                                                            {m.label}
+                                                                        </option>
+                                                                    ))}
+                                                                </select>
+                                                            </div>
+                                                        )}
                                                     </Field>
-                                                ) : key.toLowerCase().includes('image') ? (
+                                                ) : key.toLowerCase() === 'type' ? (
                                                     <div className="space-y-2">
                                                         <FormItem className="mb-0">
                                                             <Field name={fieldName}>
