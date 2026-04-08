@@ -193,7 +193,15 @@ const ReturnOrderDrawer = ({ isOpen, setIsOpen, product, invoice_id, delivery_ty
                                                                     onChange={(value) => handleSelectChange(pdts?.id, value)}
                                                                 >
                                                                     {Array.from(
-                                                                        { length: parseInt(pdts?.returnable_quantity.toString(), 10) + 1 },
+                                                                        {
+                                                                            length:
+                                                                                parseInt(
+                                                                                    typeof pdts?.quantity === 'string'
+                                                                                        ? pdts?.quantity
+                                                                                        : pdts?.quantity.toString(),
+                                                                                    10,
+                                                                                ) + 1,
+                                                                        },
                                                                         (_, i) => (
                                                                             <Option key={i} value={i}>
                                                                                 {i}
