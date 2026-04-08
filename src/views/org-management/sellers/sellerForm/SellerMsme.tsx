@@ -16,7 +16,7 @@ interface props {
 const SellerMsme = ({ isEdit, values }: props) => {
     return (
         <div className="w-full">
-            <h4>MsMe Details</h4>
+            <h4>MSME Details</h4>
             <p>Provide essential details about vendor entity. All field marked with * are mandatory</p>
             <FormContainer className="mt-10">
                 <CommonSelect name="msme_category" options={MSMEOptions()} label="MSME Category" />

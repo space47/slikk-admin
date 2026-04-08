@@ -103,9 +103,9 @@ const FullScreenMap: React.FC<{ mapCenter: [number, number]; taskData: any; deco
     }
 
     return (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: '#fff' }}>
+        <div style={{ position: 'fixed', background: '#fff' }}>
             <FullScreenButton onClick={() => setIsFullScreen(false)} isFullScreen />
-            <MapContainer center={mapCenter} zoom={DEFAULT_ZOOM} style={{ width: '100%', height: '100%' }}>
+            <MapContainer center={mapCenter} zoom={DEFAULT_ZOOM}>
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 <MapMarkers taskData={taskData} />
                 <Polyline positions={decodedPolyline} color="blue" />
@@ -262,13 +262,13 @@ const ReturnMap: React.FC<Props> = ({ taskData, task_id, refetchAllData }) => {
     return (
         <div className="relative flex flex-col gap-10">
             <div className="relative w-full" style={{ height: '500px' }}>
-                <MapContainer center={mapCenter} zoom={DEFAULT_ZOOM} style={{ width: '100%', height: '100%' }}>
+                <MapContainer center={mapCenter} zoom={DEFAULT_ZOOM} style={{ height: '70vh', width: '100%', zIndex: 1 }}>
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                     <MapMarkers taskData={taskData} riders={ridersDataStore} onRiderClick={handleRiderClick} />
                     <Polyline positions={decodedPolyline} color="blue" />
                     <CurrentLocationButton />
                 </MapContainer>
-                <FullScreenMap mapCenter={mapCenter} taskData={taskData} decodedPolyline={decodedPolyline} />
+                {/* <FullScreenMap mapCenter={mapCenter} taskData={taskData} decodedPolyline={decodedPolyline} /> */}
             </div>
 
             <DialogConfirm

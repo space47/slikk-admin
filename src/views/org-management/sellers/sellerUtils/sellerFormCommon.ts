@@ -85,7 +85,7 @@ export const SellerDeclarationArray = [
 ]
 
 export const MSMEOptions = () => {
-    return ['small', 'medium', 'large'].map((msme) => ({
+    return ['micro', 'small', 'medium'].map((msme) => ({
         label: msme,
         value: msme,
     }))
