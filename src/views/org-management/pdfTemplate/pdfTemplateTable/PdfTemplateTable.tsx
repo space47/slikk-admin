@@ -5,13 +5,13 @@ import PageCommon from '@/common/PageCommon'
 import { Button } from '@/components/ui'
 import { notificationConfigService } from '@/store/services/sellerTemplateService'
 import { NotificationConfigData } from '@/store/types/sellerTemplate.types'
-import { useTemplateColumns } from '../templateUtils/useTemplateColumns'
 import { Spin, Empty, notification } from 'antd'
 import { getApiErrorMessage } from '@/constants/generateErrorMessage'
-import TemplateViewDialog from '../sellerTemplateComponent/TemplateViewDialog'
-import { FaFilePdf } from 'react-icons/fa'
+import TemplateViewDialog from '../../sellerTemplates/sellerTemplateComponent/TemplateViewDialog'
+import { PdfTemplateColumns } from '../pdfTemplateUtils/PdfTemplateColumns'
+import { IoIosMail } from 'react-icons/io'
 
-const SellerTemplateList = () => {
+const PdfTemplateTable = () => {
     const navigate = useNavigate()
 
     const [page, setPage] = useState(1)
@@ -22,12 +22,11 @@ const SellerTemplateList = () => {
     const [preview, setPreview] = useState(false)
     const [count, setCount] = useState(0)
 
-    const templateApi = notificationConfigService.useGetTemplateListQuery(
+    const templateApi = notificationConfigService.useGetPdfTemplateListQuery(
         {
-            event_name: globalFilter || '',
+            name: globalFilter || '',
             page,
             pageSize,
-            notification_type: 'email',
         },
         {
             refetchOnMountOrArgChange: true,
@@ -52,7 +51,7 @@ const SellerTemplateList = () => {
         setCurrentHtml(x)
     }
 
-    const columns = useTemplateColumns({ handleViewTemplate })
+    const columns = PdfTemplateColumns({ handleViewTemplate })
 
     const isLoading = templateApi.isLoading || templateApi.isFetching
 
@@ -68,13 +67,15 @@ const SellerTemplateList = () => {
                         onChange={(e) => setGlobalFilter(e.target.value)}
                     />
                 </div>
-                <div className="flex items-end justify-end mb-4 order-first xl:order-none gap-2">
-                    <Button variant="new" size="sm" onClick={() => navigate('/app/sellerTemplate/addNew')}>
-                        ADD NEW
-                    </Button>
-                    <Button variant="new" size="sm" icon={<FaFilePdf />} onClick={() => navigate('/app/pdfTemplate')}>
-                        Go To Pdf Template
-                    </Button>
+                <div className="flex items-end justify-end mb-4 order-first xl:order-none">
+                    <div className="flex items-end justify-end mb-4 order-first xl:order-none gap-2">
+                        <Button variant="new" size="sm" onClick={() => navigate('/app/pdfTemplate/addNew')}>
+                            ADD NEW
+                        </Button>
+                        <Button variant="new" size="sm" icon={<IoIosMail />} onClick={() => navigate('/app/sellerTemplate')}>
+                            Go To Mail Template
+                        </Button>
+                    </div>
                 </div>
             </div>
 
@@ -93,4 +94,4 @@ const SellerTemplateList = () => {
     )
 }
 
-export default SellerTemplateList
+export default PdfTemplateTable
