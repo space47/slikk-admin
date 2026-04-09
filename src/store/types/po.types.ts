@@ -37,6 +37,8 @@ export type PurchaseOrderTable = {
     updated_at: string
     company_gst: string | number
     po_expiry_date: string
+    with_gst?: boolean
+    with_sp?: boolean
     gst_details: {
         company: number
         create_date: string
