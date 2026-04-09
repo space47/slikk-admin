@@ -23,7 +23,6 @@ interface JsonEditorProps {
     onChange: (raw: string, field: 'incentives' | 'penalties', setter: (v: string) => void) => void
 }
 
-// ✅ Defined outside — stable component reference, no remount on parent re-render
 const JsonEditor = ({ label, value, field, setter, accentClass, jsonError, onChange }: JsonEditorProps) => {
     const hasError = jsonError.toLowerCase().includes(field)
     return (

@@ -11,6 +11,8 @@ export enum PoField {
     EXPECTED_DELIVERY = 'expected_delivery_date',
     PO_NATURE = 'po_nature',
     PO_EXPIRY_DATE = 'po_expiry_date',
+    WITH_GST = 'with_gst',
+    WITH_SP = 'with_sp',
 }
 
 export const PoFormFieldArray = [
@@ -18,7 +20,7 @@ export const PoFormFieldArray = [
     { label: 'Order Shipping Address(Ship-to)', type: 'text', name: PoField.ORDER_SHIPPING_ADDRESS },
     { label: 'Payment Terms', type: 'text', name: PoField.PAYMENT_TERMS },
     { label: 'Payment Mode', type: 'text', name: PoField.PAYMENT_MODE },
-    { label: 'special_terms', type: 'text', name: PoField.SPECIAL_TERMS },
+    { label: 'Special Terms', type: 'text', name: PoField.SPECIAL_TERMS },
 ]
 
 export const PoOrderItemsArray = [
