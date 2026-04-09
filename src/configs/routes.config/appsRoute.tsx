@@ -212,6 +212,12 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsOrgManagement.pdfTemplate',
+        path: `${APP_PREFIX_PATH}/pdfTemplate`,
+        component: lazy(() => import('@/views/org-management/pdfTemplate/pdfTemplateTable/PdfTemplateTable')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsOrgManagement.sellerTemplate',
         path: `${APP_PREFIX_PATH}/sellerTemplate/addNew`,
         component: lazy(
@@ -220,10 +226,26 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsOrgManagement.pdfTemplate',
+        path: `${APP_PREFIX_PATH}/pdfTemplate/addNew`,
+        component: lazy(
+            () => import('@/views/org-management/pdfTemplate/pdfAdd/PdfTemplateAdd'), //p1
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsOrgManagement.sellerTemplate',
         path: `${APP_PREFIX_PATH}/sellerTemplate/:id`,
         component: lazy(
             () => import('@/views/org-management/sellerTemplates/templateEdit/TemplateEdit'), //p1
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOrgManagement.pdfTemplate',
+        path: `${APP_PREFIX_PATH}/pdfTemplate/:id`,
+        component: lazy(
+            () => import('@/views/org-management/pdfTemplate/pdfEdit/PdfEdit'), //p1
         ),
         authority: [ADMIN, USER],
     },
