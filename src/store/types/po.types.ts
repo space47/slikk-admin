@@ -106,6 +106,9 @@ export type PurchaseOrderItem = {
     updated_at: string
     order: number
     tax_amount: number | string
+    selling_price: string
+    comission_rate: string | number
+    provisional_discount_rate: number
 }
 
 export type PurchaseOrderItemSingleResponse = {
