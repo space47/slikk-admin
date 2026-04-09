@@ -27,7 +27,7 @@ export const PoOrderItemsArray = [
     { label: 'Quantity', type: 'number', name: 'quantity', is_required: true },
     { label: 'Selling Price', type: 'number', name: 'selling_price', is_required: true },
     { label: 'Tax', type: 'number', name: 'tax', is_required: true },
-    { label: 'Discount Sharing/Commission Percentage', type: 'number', name: 'commission_rate', is_required: true },
+    { label: 'Discount Sharing/Commission Percentage', type: 'text', name: 'comission_rate', is_required: false },
 ]
 
 export const IndianStateCodes = [
