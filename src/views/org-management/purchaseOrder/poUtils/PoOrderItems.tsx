@@ -15,6 +15,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 import PageCommon from '@/common/PageCommon'
 import { FaEye } from 'react-icons/fa'
+import { filterEmptyValues } from '@/utils/apiBodyUtility'
 
 const PoOrderItems = () => {
     const { purchase_id } = useParams()
@@ -78,15 +79,32 @@ const PoOrderItems = () => {
     const columns = useOrderItemColumns({ handleEditRow })
 
     const handleAdd = async (val: PurchaseOrderItem) => {
+        const { comission_rate, ...rest } = val
+        const commissionRate = typeof comission_rate === 'string' ? Number(comission_rate) : comission_rate
         const body = {
-            purchase_order_id: parseInt(purchase_id as any),
-            ...val,
+            purchase_order_id: Number(purchase_id),
+            comission_rate: commissionRate ?? undefined,
+            ...rest,
         }
-        addOrderItems(body)
+
+        const filteredValue = filterEmptyValues(body)
+        addOrderItems(filteredValue)
     }
+
     const handleEdit = async (val: Partial<PurchaseOrderItem>) => {
-        const body = { id: currentRow?.id, ...val }
-        updateOrderItems(body)
+        const { comission_rate, ...rest } = val
+
+        const commissionRate = typeof comission_rate === 'string' ? Number(comission_rate) || undefined : comission_rate
+
+        const body = {
+            id: currentRow?.id,
+            comission_rate: commissionRate ?? undefined,
+            ...rest,
+        }
+
+        const filteredValue = filterEmptyValues(body)
+
+        updateOrderItems(filteredValue)
     }
 
     if (!purchase_id) {

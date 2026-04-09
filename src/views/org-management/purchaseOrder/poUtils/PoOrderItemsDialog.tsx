@@ -36,7 +36,7 @@ const PoOrderItemsDialog = ({ isOpen, setIsOpen, handleSubmit, edit, currentRow 
         quantity: item?.quantity ?? 0,
         selling_price: item?.selling_price,
         tax: item?.tax_percentage,
-        commission_rate: item?.commission_rate,
+        comission_rate: item?.provisional_discount_rate,
     }
 
     return (
