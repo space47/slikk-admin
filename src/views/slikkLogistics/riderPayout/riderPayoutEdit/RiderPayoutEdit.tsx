@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, FormItem, Input } from '@/components/ui'
-import { Formik, Field, FormikProps, Form } from 'formik'
+import { Button, Tabs } from '@/components/ui'
+import { Formik, FormikProps, Form } from 'formik'
 import React, { useEffect, useState } from 'react'
 import { HiOutlineInformationCircle } from 'react-icons/hi'
 import RenderPayout from '../components/RenderPayout'
@@ -9,7 +9,13 @@ import { RiderPayout } from '@/store/types/riderPayout.types'
 import { riderPayoutService } from '@/store/services/riderPayoutService'
 import { notification } from 'antd'
 import { getApiErrorMessage } from '@/constants/generateErrorMessage'
-import { CURRENCIES, PAYOUT_MODELS, removeEmptyKeys } from '../utils/riderPayoutCommon'
+import { removeEmptyKeys } from '../utils/riderPayoutCommon'
+import TabList from '@/components/ui/Tabs/TabList'
+import TabNav from '@/components/ui/Tabs/TabNav'
+import { CiTextAlignCenter } from 'react-icons/ci'
+import { VscJson } from 'react-icons/vsc'
+import PayoutFormFields from '../utils/PayoutFormFields'
+import PayoutJson from '../utils/PayoutJson'
 
 interface FormValues {
     name: string
@@ -27,6 +33,8 @@ const RiderPayoutEdit = () => {
     const { id } = useParams()
     const [payoutData, setPayoutData] = useState<RiderPayout | null>(null)
     const [editableKeys, setEditableKeys] = useState<Record<string, string>>({})
+    const [tabValue, setTabValue] = useState('field')
+    const [jsonError, setJsonError] = useState('')
     const payoutCall = riderPayoutService.useSinglePayoutListQuery({ id }, { skip: !id })
     const [createPayout, createResponse] = riderPayoutService.useCreatePayoutMutation()
 
@@ -147,195 +155,98 @@ const RiderPayoutEdit = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-            <div className=" px-4 sm:px-6 lg:px-8 py-8">
+            <div className="px-4 sm:px-6 lg:px-8 py-8">
                 <div className="mb-8">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm font-semibold uppercase tracking-wider text-indigo-600 mb-2 flex items-center gap-2">
-                                <span className="w-1 h-4 bg-indigo-600 rounded-full"></span>
-                                Configuration
-                            </p>
-                            <h1 className="text-3xl font-bold text-gray-900 mb-2">Update Rider Payout Model</h1>
-                        </div>
-                    </div>
+                    <p className="text-sm font-semibold uppercase tracking-wider text-indigo-600 mb-2 flex items-center gap-2">
+                        <span className="w-1 h-4 bg-indigo-600 rounded-full" />
+                        Configuration
+                    </p>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Add Rider Payout Model</h1>
                 </div>
 
+                <Tabs defaultValue="field" className="flex flex-col" value={tabValue} onChange={setTabValue}>
+                    <TabList className="flex gap-8 border-b border-gray-200 dark:border-gray-700 mb-6">
+                        <TabNav
+                            value="field"
+                            icon={<CiTextAlignCenter className="text-green-500 text-xl" />}
+                            className="px-4 py-2 text-gray-600 hover:text-blue-600 border-b-2 border-transparent data-[state=active]:text-blue-600 data-[state=active]:border-blue-600 transition-colors duration-200"
+                        >
+                            <span className="text-xl">Field Data</span>
+                        </TabNav>
+                        <TabNav
+                            value="jsonData"
+                            icon={<VscJson className="text-orange-400 text-xl" />}
+                            className="px-4 py-2 text-gray-600 hover:text-blue-600 border-b-2 border-transparent data-[state=active]:text-blue-600 data-[state=active]:border-blue-600 transition-colors duration-200"
+                        >
+                            <span className="text-xl">JSON Data</span>
+                        </TabNav>
+                    </TabList>
+                </Tabs>
+
                 <Formik enableReinitialize initialValues={initialValues} onSubmit={handleSubmit}>
-                    {({ values, setFieldValue }: FormikProps<FormValues>) => (
-                        <Form className="space-y-6">
-                            {/* Basic Info Section */}
-                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300">
-                                <div className="bg-gradient-to-r from-gray-50 to-white px-6 py-4 border-b border-gray-200">
-                                    <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                                        <span className="text-indigo-600">📋</span>
-                                        Basic Information
-                                    </h2>
-                                    <p className="text-sm text-gray-500 mt-1">General details about the payout model</p>
-                                </div>
-
-                                <div className="p-6 space-y-5">
-                                    <FormItem
-                                        asterisk
-                                        label={
-                                            <span className="flex items-center gap-1">
-                                                Name
-                                                <span className="text-xs text-gray-400 font-normal">(required)</span>
-                                            </span>
-                                        }
-                                    >
-                                        <Field
-                                            type="text"
-                                            name="name"
-                                            component={Input}
-                                            placeholder="e.g., Premium Payout Model - April 2026"
-                                            className="w-full focus:ring-2 focus:ring-indigo-300 transition-all"
+                    {({ values, setFieldValue }: FormikProps<FormValues>) =>
+                        tabValue === 'field' ? (
+                            <Form className="space-y-6">
+                                <PayoutFormFields values={values} setFieldValue={setFieldValue} />
+                                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300">
+                                    <div className="bg-gradient-to-r from-indigo-50 to-white px-6 py-4 border-b border-indigo-100">
+                                        <h2 className="text-lg font-semibold text-gray-900">Incentives</h2>
+                                    </div>
+                                    <div className="p-6">
+                                        <RenderPayout
+                                            obj={values.commercial_details.incentives}
+                                            parentKey="commercial_details.incentives"
+                                            setFieldValue={setFieldValue}
+                                            editableKeys={editableKeys}
+                                            setEditableKeys={setEditableKeys}
                                         />
-                                    </FormItem>
-
-                                    <FormItem
-                                        label={
-                                            <span className="flex items-center gap-1">
-                                                Description
-                                                <span className="text-xs text-gray-400 font-normal">(optional)</span>
-                                            </span>
-                                        }
-                                    >
-                                        <Field
-                                            type="text"
-                                            name="description"
-                                            component={Input}
-                                            placeholder="Brief description of this payout model"
-                                            className="w-full focus:ring-2 focus:ring-indigo-300 transition-all"
-                                        />
-                                    </FormItem>
-                                </div>
-                            </div>
-
-                            {/* Commercial Details */}
-                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300">
-                                <div className="bg-gradient-to-r from-gray-50 to-white px-6 py-4 border-b border-gray-200">
-                                    <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">Commercial Details</h2>
-                                    <p className="text-sm text-gray-500 mt-1">Payout structure and financial parameters</p>
-                                </div>
-
-                                <div className="p-6">
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                        <FormItem asterisk label="Payout Model">
-                                            <select
-                                                value={values.commercial_details.payout_model}
-                                                onChange={(e) => setFieldValue('commercial_details.payout_model', e.target.value)}
-                                                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white transition-all"
-                                            >
-                                                {PAYOUT_MODELS.map((m) => (
-                                                    <option key={m.value} value={m.value}>
-                                                        {m.label} - {m.description}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                            <p className="text-xs text-gray-500 mt-1">
-                                                {PAYOUT_MODELS.find((m) => m.value === values.commercial_details.payout_model)?.description}
-                                            </p>
-                                        </FormItem>
-
-                                        <FormItem asterisk label="Base Payout">
-                                            <div className="relative">
-                                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-                                                    {CURRENCIES.find((c) => c.value === values.commercial_details.currency)?.symbol}
-                                                </span>
-                                                <input
-                                                    type="number"
-                                                    value={values.commercial_details.base_payout}
-                                                    onChange={(e) =>
-                                                        setFieldValue('commercial_details.base_payout', Number(e.target.value))
-                                                    }
-                                                    className="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                                                    placeholder="0.00"
-                                                    step="0.01"
-                                                />
-                                            </div>
-                                        </FormItem>
-
-                                        <FormItem asterisk label="Currency">
-                                            <select
-                                                value={values.commercial_details.currency}
-                                                onChange={(e) => setFieldValue('commercial_details.currency', e.target.value)}
-                                                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white transition-all"
-                                            >
-                                                {CURRENCIES.map((c) => (
-                                                    <option key={c.value} value={c.value}>
-                                                        {c.label} - {c.country}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </FormItem>
                                     </div>
                                 </div>
-                            </div>
+                                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300">
+                                    <div className="bg-gradient-to-r from-rose-50 to-white px-6 py-4 border-b border-rose-100">
+                                        <h2 className="text-lg font-semibold text-gray-900">Penalties</h2>
+                                    </div>
+                                    <div className="p-6">
+                                        <RenderPayout
+                                            obj={values.commercial_details.penalties}
+                                            parentKey="commercial_details.penalties"
+                                            setFieldValue={setFieldValue}
+                                            editableKeys={editableKeys}
+                                            setEditableKeys={setEditableKeys}
+                                        />
+                                    </div>
+                                </div>
 
-                            {/* Incentives Section */}
-                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300">
-                                <div className="bg-gradient-to-r from-indigo-50 to-white px-6 py-4 border-b border-indigo-100">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">Incentives</h2>
+                                {/* Actions */}
+                                <div className="sticky bottom-0 bg-white/95 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200 p-4">
+                                    <div className="flex items-center justify-between gap-4">
+                                        <p className="hidden md:flex items-center gap-2 text-xs text-gray-500">
+                                            <HiOutlineInformationCircle className="w-4 h-4" />
+                                            All changes are auto-saved in the form
+                                        </p>
+                                        <div className="flex items-center gap-3 ml-auto">
+                                            <Button
+                                                variant="blue"
+                                                size="sm"
+                                                loading={createResponse.isLoading}
+                                                disabled={createResponse.isLoading}
+                                            >
+                                                Save Payout Model
+                                            </Button>
                                         </div>
                                     </div>
                                 </div>
-
-                                <div className="p-6">
-                                    <RenderPayout
-                                        obj={values.commercial_details.incentives}
-                                        parentKey="commercial_details.incentives"
-                                        setFieldValue={setFieldValue}
-                                        editableKeys={editableKeys}
-                                        setEditableKeys={setEditableKeys}
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Penalties Section */}
-                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300">
-                                <div className="bg-gradient-to-r from-rose-50 to-white px-6 py-4 border-b border-rose-100">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">Penalties</h2>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="p-6">
-                                    <RenderPayout
-                                        obj={values.commercial_details.penalties}
-                                        parentKey="commercial_details.penalties"
-                                        setFieldValue={setFieldValue}
-                                        editableKeys={editableKeys}
-                                        setEditableKeys={setEditableKeys}
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Actions */}
-                            <div className="sticky bottom-0 bg-white/95 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200 p-4 mt-8 transition-all">
-                                <div className="flex items-center justify-between gap-4">
-                                    <div className="hidden md:flex items-center gap-2 text-xs text-gray-500">
-                                        <HiOutlineInformationCircle className="w-4 h-4" />
-                                        <span>All changes are auto-saved in the form</span>
-                                    </div>
-
-                                    <div className="flex items-center gap-3 ml-auto">
-                                        <Button
-                                            variant="blue"
-                                            size="sm"
-                                            loading={createResponse.isLoading}
-                                            disabled={createResponse.isLoading}
-                                        >
-                                            Save Payout Model
-                                        </Button>
-                                    </div>
-                                </div>
-                            </div>
-                        </Form>
-                    )}
+                            </Form>
+                        ) : (
+                            <PayoutJson
+                                values={values}
+                                setFieldValue={setFieldValue}
+                                jsonError={jsonError}
+                                setJsonError={setJsonError}
+                                isLoading={createResponse.isLoading}
+                            />
+                        )
+                    }
                 </Formik>
             </div>
         </div>
