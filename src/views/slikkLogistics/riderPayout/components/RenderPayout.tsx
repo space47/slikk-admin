@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { Modal, message } from 'antd'
-import { FormItem, Select, Upload } from '@/components/ui'
+import { FormItem, Upload } from '@/components/ui'
 import { Field, FieldArray, FieldProps } from 'formik'
 import { IoIosAddCircle, IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
 import { MdCancel, MdDragHandle } from 'react-icons/md'
@@ -13,6 +13,7 @@ import { FaCode } from 'react-icons/fa'
 const Type_List = [
     { value: 'flat', label: 'Flat' },
     { value: 'day-wise', label: 'Day Wise' },
+    { value: 'minute-wise', label: 'Minute Wise' },
     { value: 'order-wise', label: 'Order Wise' },
     { value: 'km-wise', label: 'Kilometer Wise' },
     { value: 'hour-wise', label: 'Hour Wise' },

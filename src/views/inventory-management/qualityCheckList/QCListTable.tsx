@@ -138,8 +138,8 @@ const QCListTable = () => {
 
     const handleDownloadQc = () => {
         downloadShipmentCall({
-            from: from,
-            to: to,
+            from: !debounceFilter ? from : '',
+            to: !debounceFilter ? To_Date : '',
             grn_id: globalFilter ?? '',
             page: page,
             pageSize: pageSize,
