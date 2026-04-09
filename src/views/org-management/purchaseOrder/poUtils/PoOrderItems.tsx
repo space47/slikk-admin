@@ -52,6 +52,7 @@ const PoOrderItems = () => {
             notification.success({ message: 'Successfully Added' })
             refetch()
             setAddModal(false)
+            navigate(0)
         }
         if (addResponse?.isError) {
             const errorMessage = getApiErrorMessage(addResponse?.error) || 'Failed to Add'
@@ -64,6 +65,7 @@ const PoOrderItems = () => {
             notification.success({ message: 'Successfully Updated' })
             refetch()
             setEditModal(false)
+            navigate(0)
         }
         if (updateResponse?.isError) {
             const errorMessage = getApiErrorMessage(updateResponse?.error) || 'Failed to Update'
