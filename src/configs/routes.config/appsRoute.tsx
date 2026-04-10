@@ -1363,6 +1363,12 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appstryAndBuy.riderPerformance',
+        path: `${APP_PREFIX_PATH}/riderPerformance/:mobile`,
+        component: lazy(() => import('@/views/slikkLogistics/riderDetails/RiderComponents/RiderPerformance')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appstryAndBuy.riderAgency',
         path: `${APP_PREFIX_PATH}/riderAgency/add`,
         component: lazy(() => import('@/views/slikkLogistics/RiderAgency/riderAgencyAdd/RiderAgencyAdd')),
