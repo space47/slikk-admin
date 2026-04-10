@@ -38,7 +38,7 @@ const AddRider = () => {
     const [activeTab, setActiveTab] = useState<'edit' | 'add' | 'bulk-add'>('edit')
     const [queryParams, setQueryParams] = useState({ page: 1, pageSize: 10, name: '' })
     const [assignAgency, assignResponse] = deliveryAgency.useAssignAgencyToRiderMutation()
-    const riderAgencyCall = deliveryAgency.useGetDeliveryAgencyQuery({ page: 1, page_size: 100 })
+    const riderAgencyCall = deliveryAgency.useGetDeliveryAgencyQuery({ page: 1, page_size: 100, is_active: true })
 
     useEffect(() => {
         if (riderAgencyCall.isSuccess) {
