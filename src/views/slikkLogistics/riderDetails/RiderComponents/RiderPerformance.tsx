@@ -13,6 +13,35 @@ import { getApiErrorMessage } from '@/constants/generateErrorMessage'
 import { Spin } from 'antd'
 import { Badge } from '@/components/ui'
 
+const statusData = (overallPerformance: RiderPerformanceList['over_all_performance'] | null) => {
+    return [
+        {
+            label: 'Completed Tasks',
+            value: overallPerformance?.completed_tasks ?? 0,
+            icon: <FiCheckCircle />,
+            color: 'bg-green-50 text-green-600',
+        },
+        {
+            label: 'Total Earnings',
+            value: overallPerformance?.total_earnings ?? 0,
+            icon: <FiDollarSign />,
+            color: 'bg-emerald-50 text-emerald-600',
+        },
+        {
+            label: 'Total Tasks',
+            value: overallPerformance?.total_tasks ?? 0,
+            icon: <FiList />,
+            color: 'bg-blue-50 text-blue-600',
+        },
+        {
+            label: 'Cancelled Tasks',
+            value: overallPerformance?.cancelled_tasks ?? 0,
+            icon: <FiXCircle />,
+            color: 'bg-red-50 text-red-600',
+        },
+    ]
+}
+
 const RiderPerformance = () => {
     const { mobile } = useParams()
     const [from, setFrom] = useState(dayjs().format('YYYY-MM-DD'))
@@ -33,37 +62,9 @@ const RiderPerformance = () => {
         setDayWisePerformance(formatted)
     }, [isSuccess, data])
 
-    const stats = useMemo(
-        () => [
-            {
-                label: 'Completed Tasks',
-                value: overallPerformance?.completed_tasks ?? 0,
-                icon: <FiCheckCircle />,
-                color: 'bg-green-50 text-green-600',
-            },
-            {
-                label: 'Total Earnings',
-                value: overallPerformance?.total_earnings ?? 0,
-                icon: <FiDollarSign />,
-                color: 'bg-emerald-50 text-emerald-600',
-            },
-            {
-                label: 'Total Tasks',
-                value: overallPerformance?.total_tasks ?? 0,
-                icon: <FiList />,
-                color: 'bg-blue-50 text-blue-600',
-            },
-            {
-                label: 'Cancelled Tasks',
-                value: overallPerformance?.cancelled_tasks ?? 0,
-                icon: <FiXCircle />,
-                color: 'bg-red-50 text-red-600',
-            },
-        ],
-        [overallPerformance],
-    )
+    const stats = useMemo(() => statusData(overallPerformance), [overallPerformance])
 
-    const columns = RiderPerformanceColumns()
+    const columns = RiderPerformanceColumns
 
     const handleDateChange = (dates: [Date | null, Date | null] | null) => {
         if (!dates || !dates[0]) return

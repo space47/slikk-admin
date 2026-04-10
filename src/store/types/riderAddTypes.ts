@@ -220,6 +220,12 @@ export interface RiderPerformanceList {
         [date: string]: DayWiseData
     }
 }
+
+export interface RiderPerformanceParams {
+    from?: string
+    to?: string
+    mobile: string
+}
 export interface RiderPerformanceResponse {
     status: string
     data: RiderPerformanceList

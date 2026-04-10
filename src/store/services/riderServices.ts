@@ -5,6 +5,7 @@ import {
     RiderAttendanceResponseType,
     RiderDetailResponseType,
     RiderDownloadResponse,
+    RiderPerformanceParams,
     RiderPerformanceResponse,
     RiderProfileResponseType,
 } from '../types/riderAddTypes'
@@ -262,22 +263,18 @@ export const ridersService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        riderPerformanceData: builder.query<RiderPerformanceResponse, { from?: string; to?: string; report_type?: string; mobile: string }>(
-            {
-                query: ({ mobile, ...rest }) => {
-                    const parameters: Record<string, string | string[]> = {}
-
-                    if (rest.from) parameters.from = rest.from
-                    if (rest.to) parameters.to = rest.to
-                    if (rest.report_type) parameters.report_type = rest.report_type
-
-                    return {
-                        url: `logistic/rider/performance/${mobile}`,
-                        method: 'GET',
-                        params: parameters,
-                    }
-                },
+        riderPerformanceData: builder.query<RiderPerformanceResponse, RiderPerformanceParams>({
+            query: ({ mobile, ...rest }) => {
+                const parameters = {
+                    from: rest.from || undefined,
+                    to: rest.to || undefined,
+                }
+                return {
+                    url: `logistic/rider/performance/${mobile}`,
+                    method: 'GET',
+                    params: parameters,
+                }
             },
-        ),
+        }),
     }),
 })

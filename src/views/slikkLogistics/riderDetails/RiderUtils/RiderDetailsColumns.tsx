@@ -2,7 +2,7 @@
 import { Switch } from 'antd'
 import moment from 'moment'
 import { FaShareSquare, FaTrash } from 'react-icons/fa'
-import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 interface RiderColumnsProps {
     sortedRiderDetails: any
@@ -36,7 +36,6 @@ export const RiderColumns = ({
     handleSelectRiderMobile,
     handleDelete,
 }: RiderColumnsProps) => {
-    const navigate = useNavigate()
     return [
         {
             header: (
@@ -122,10 +121,10 @@ export const RiderColumns = ({
             cell: ({ row }: any) => {
                 const mobile = row?.original?.profile.mobile
                 return (
-                    <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate(`/app/riderPerformance/${mobile}`)}>
+                    <Link to={`/app/riderPerformance/${mobile}`} className="flex items-center gap-2 cursor-pointer">
                         <span className="hover:underline hover:text-blue-500">Performance</span>
                         <FaShareSquare className="text-xl" />
-                    </div>
+                    </Link>
                 )
             },
         },
