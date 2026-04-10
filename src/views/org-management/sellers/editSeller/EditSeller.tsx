@@ -217,7 +217,7 @@ const EditSeller = () => {
         })
 
         forceIncludedKeys.forEach((key) => {
-            overriddenInitialValue[key] = `__force_include__`
+            ;(overriddenInitialValue as any)[key] = `__force_include__`
         })
 
         const changedValue = getChangedFormData(formData, overriddenInitialValue)

@@ -178,6 +178,18 @@ export const usePoDetailUi = ({ purchaseDetail, handleApprove }: Props) => {
             { label: 'Payment Mode', value: purchaseDetail?.payment_mode || '-' },
             { label: 'Payment Summary', value: purchaseDetail?.payment_terms || '-' },
             { label: 'PO Nature', value: purchaseDetail?.po_nature || '-' },
+            {
+                label: 'Purchase With GST',
+                value: purchaseDetail?.with_gst ? 'Yes' : 'NO',
+                highlight: true,
+                highlightColor: `${purchaseDetail?.with_gst ? 'text-green-500' : 'text-red-500'}`,
+            },
+            {
+                label: 'Calculation on Price Tag',
+                value: purchaseDetail?.with_sp ? 'SP' : 'MRP',
+                highlight: true,
+                highlightColor: `text-blue-500`,
+            },
             { label: 'Total Items', value: purchaseDetail?.total_count ?? 0, highlight: true },
             {
                 label: 'Total Amount',
@@ -199,7 +211,9 @@ export const usePoDetailUi = ({ purchaseDetail, handleApprove }: Props) => {
 
                                 <span
                                     className={`text-sm text-right break-words max-w-[60%] ${
-                                        item.highlight ? 'font-semibold text-gray-900 text-base' : 'font-medium text-gray-700'
+                                        item.highlight
+                                            ? `font-semibold  ${item.highlightColor ? item.highlightColor : 'text-gray-900'} text-base`
+                                            : 'font-medium text-gray-700'
                                     }`}
                                 >
                                     {item.value}
