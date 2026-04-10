@@ -196,3 +196,31 @@ export type RiderDownloadResponse = {
     status: string
     message: string
 }
+
+export interface DayWiseData {
+    report_date: string
+    total_orders: number
+    completed_orders: number
+    cancelled_orders: number
+    on_time_delivery: number
+    total_checked_in_time: number
+    time_spent_on_orders: number
+    expected_total_distance: number
+    earnings: number
+}
+
+export interface RiderPerformanceList {
+    over_all_performance: {
+        total_tasks: number
+        completed_tasks: number
+        cancelled_tasks: number
+        total_earnings: number
+    }
+    day_wise_performance: {
+        [date: string]: DayWiseData
+    }
+}
+export interface RiderPerformanceResponse {
+    status: string
+    data: RiderPerformanceList
+}

@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Switch } from 'antd'
 import moment from 'moment'
-import { FaTrash } from 'react-icons/fa'
+import { FaShareSquare, FaTrash } from 'react-icons/fa'
+import { useNavigate } from 'react-router-dom'
 
 interface RiderColumnsProps {
     sortedRiderDetails: any
@@ -35,6 +36,7 @@ export const RiderColumns = ({
     handleSelectRiderMobile,
     handleDelete,
 }: RiderColumnsProps) => {
+    const navigate = useNavigate()
     return [
         {
             header: (
@@ -112,6 +114,19 @@ export const RiderColumns = ({
             cell: ({ row }: any) => {
                 const version = row?.original?.app_version[0]
                 return <div>{version || 'N/A'}</div>
+            },
+        },
+        {
+            header: 'See Rider Performance',
+            accessorKey: 'profile.mobile',
+            cell: ({ row }: any) => {
+                const mobile = row?.original?.profile.mobile
+                return (
+                    <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate(`/app/riderPerformance/${mobile}`)}>
+                        <span className="hover:underline hover:text-blue-500">Performance</span>
+                        <FaShareSquare className="text-xl" />
+                    </div>
+                )
             },
         },
         {
