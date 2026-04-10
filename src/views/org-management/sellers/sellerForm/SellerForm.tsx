@@ -97,7 +97,7 @@ const SellerForm = ({ values, isSubmitting, isAdd }: props) => {
 
                     {currentStep === maxStep && (
                         <Button type="submit" variant="blue" loading={isSubmitting} disabled={isSubmitting}>
-                            Send To Vendor
+                            {isAdd ? 'Send To Vendor' : 'Update Details'}
                         </Button>
                     )}
                 </FormContainer>
