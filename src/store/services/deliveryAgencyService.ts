@@ -6,7 +6,7 @@ export const deliveryAgency = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
         getDeliveryAgency: builder.query<
             DeliveryAgencyResponse,
-            { name?: string; is_active?: string; page?: number; id?: number; page_size?: number }
+            { name?: string; is_active?: boolean; page?: number; id?: number; page_size?: number }
         >({
             query: (params) => {
                 const parameters: Record<string, string | number | boolean> = {}
