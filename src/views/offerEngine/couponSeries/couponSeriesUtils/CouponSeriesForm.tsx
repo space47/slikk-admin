@@ -29,6 +29,7 @@ const DiscountType = [
 ]
 const SeriesType = [
     { name: 'PROMOTION', value: 'promotion' },
+    { name: 'COUPON', value: 'coupon' },
     { name: 'EVENT', value: 'event' },
 ]
 
