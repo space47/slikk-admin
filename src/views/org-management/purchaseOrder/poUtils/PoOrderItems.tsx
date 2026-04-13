@@ -6,7 +6,6 @@ import { PurchaseOrderItem } from '@/store/types/po.types'
 import { notification } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { FiInbox, FiUpload } from 'react-icons/fi'
-import { IoMdAdd } from 'react-icons/io'
 import { useOrderItemColumns } from './useOrderItemColumns'
 import EasyTable from '@/common/EasyTable'
 import PoOrderItemsDialog from './PoOrderItemsDialog'
@@ -122,13 +121,13 @@ const PoOrderItems = () => {
                 </div>
 
                 <div className="flex gap-2 items-center">
-                    <Button variant="default" size="sm" type="button" icon={<FiUpload />} onClick={() => setUploadModal(true)}>
+                    <Button variant="twoTone" size="sm" type="button" icon={<FiUpload />} onClick={() => setUploadModal(true)}>
                         Upload Excel
                     </Button>
 
-                    <Button variant="blue" size="sm" type="button" icon={<IoMdAdd />} onClick={() => setAddModal(true)}>
+                    {/* <Button variant="blue" size="sm" type="button" icon={<IoMdAdd />} onClick={() => setAddModal(true)}>
                         Add Item
-                    </Button>
+                    </Button> */}
                     <Button variant="gray" size="sm" type="button" icon={<FaEye />} onClick={() => navigate(`/app/poCatalogHistory`)}>
                         View Catalog History
                     </Button>
