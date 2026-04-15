@@ -160,7 +160,7 @@ export enum SellerKeys {
     REMOVAL_FEE_PER_SKU = 'removal_fee_per_sku',
     WAREHOUSE_CHARGE_PER_SKU = 'warehouse_charge_per_sku',
     REVENUE_SHARE = 'revenue_share',
-
+    PROVISIONAL_DISCOUNT = 'provisional_discount_rate',
     CREATE_DATE = 'create_date',
     UPDATE_DATE = 'update_date',
 }

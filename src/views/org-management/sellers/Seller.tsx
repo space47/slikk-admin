@@ -52,7 +52,7 @@ const Seller = () => {
                 notification.error({ message: errorMessage || 'Failed to load' })
             }
         }
-    }, [dispatch, isSuccess, data?.data])
+    }, [dispatch, isSuccess, data?.data, isError, error])
 
     const columns = useSellerColumns()
 
