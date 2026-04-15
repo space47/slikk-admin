@@ -91,7 +91,6 @@ const AddSeller = () => {
         if (values.int_poc_details && values.int_poc_details?.length > 0) {
             appendIfValid(SellerKeys.INT_POC_DETAILS, JSON.stringify(values?.int_poc_details))
         }
-        appendIfValid('provisional_discount_rate', '0')
 
         try {
             setIsSubmitting(true)

@@ -55,6 +55,7 @@ export interface VendorDetails {
     int_poc_name: string
     is_active: boolean
     is_msme: boolean
+    provisional_discount_rate: string
     msme_category: string
     msme_certificate: string | null
     name: string

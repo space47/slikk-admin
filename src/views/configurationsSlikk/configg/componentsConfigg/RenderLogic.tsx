@@ -1,16 +1,30 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
-import { Modal } from 'antd'
-import { FormItem, Input, Select, Upload } from '@/components/ui'
+import { Modal, message } from 'antd'
+import { FormItem, Select, Upload } from '@/components/ui'
 import { Field, FieldArray, FieldProps } from 'formik'
-import { IoIosAddCircle } from 'react-icons/io'
-import { MdCancel } from 'react-icons/md'
+import { IoIosAddCircle, IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
+import { MdCancel, MdDragHandle } from 'react-icons/md'
 import _ from 'lodash'
-import { useConfigFunctions } from './useConfigFunctions'
 import { beforeUpload } from '@/common/beforeUpload'
+import { FaCode } from 'react-icons/fa'
 
-const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditableKeys, filters }: any) => {
+const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditableKeys, filters, depth = 0 }: any) => {
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+    const [currentArrayHelpers, setCurrentArrayHelpers] = useState<any>(null)
+    const [expandedObjects, setExpandedObjects] = useState<Set<string>>(new Set())
+
+    const toggleExpand = (key: string) => {
+        const newExpanded = new Set(expandedObjects)
+        if (newExpanded.has(key)) {
+            newExpanded.delete(key)
+        } else {
+            newExpanded.add(key)
+        }
+        setExpandedObjects(newExpanded)
+    }
+
     const handleDragEnd = (result: any) => {
         if (!result.destination) return
         const sourceIdx = result.source.index
@@ -20,23 +34,28 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
             const [removed] = newArr.splice(sourceIdx, 1)
             newArr.splice(destIdx, 0, removed)
             setFieldValue(parentKey, newArr)
+            message.success('Item reordered successfully')
         }
     }
-    const [isAddModalOpen, setIsAddModalOpen] = useState(false)
 
     const handleAddField = () => {
         setIsAddModalOpen(true)
     }
 
-    const handleTypeSelection = (type: 'string' | 'array' | 'object') => {
+    const handleTypeSelection = (type: 'string' | 'array' | 'object' | 'number' | 'boolean') => {
         setIsAddModalOpen(false)
-
         const newKey = `new_key_${Date.now()}`
         let newValue
 
         switch (type) {
             case 'string':
                 newValue = ''
+                break
+            case 'number':
+                newValue = 0
+                break
+            case 'boolean':
+                newValue = false
                 break
             case 'array':
                 newValue = []
@@ -49,6 +68,7 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
         }
 
         setFieldValue(parentKey, { ...obj, [newKey]: newValue })
+        message.success(`${type} field added successfully`)
     }
 
     // Handle primitive types (string, number, boolean)
@@ -56,427 +76,589 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
         return (
             <Field name={parentKey}>
                 {({ field }: FieldProps) => {
-                    // Determine input type based on the value
                     let inputType = 'text'
                     if (typeof obj === 'number') inputType = 'number'
-                    if (typeof obj === 'boolean') inputType = 'text'
 
                     return (
-                        <div className="flex gap-4 items-center mb-2">
-                            <Input
-                                {...field}
-                                type={inputType}
-                                placeholder={`Enter value`}
-                                className="w-full"
-                                checked={typeof obj === 'boolean' ? field.value : undefined}
-                                onChange={(e) => {
-                                    let value: string | number | boolean = e.target.value
-                                    if (typeof obj === 'number') value = Number(value)
-                                    if (typeof obj === 'boolean') value = e.target.checked
-                                    setFieldValue(parentKey, value)
-                                }}
-                            />
-                            <button
-                                type="button"
-                                className="text-red-500"
-                                onClick={() => setFieldValue(parentKey, typeof obj === 'string' ? '' : typeof obj === 'number' ? 0 : false)}
-                            >
-                                <MdCancel className="text-xl" />
-                            </button>
-                        </div>
-                    )
-                }}
-            </Field>
-        )
-    }
-
-    if (typeof obj === 'string' || typeof obj === 'number' || typeof obj === 'boolean') {
-        return (
-            <Field name={parentKey}>
-                {({ field }: FieldProps) => {
-                    let inputType = 'text'
-                    if (typeof obj === 'number') inputType = 'number'
-                    if (typeof obj === 'boolean') inputType = 'text'
-
-                    return (
-                        <div className="flex gap-4 items-center mb-2">
-                            <Input
-                                {...field}
-                                type={inputType}
-                                placeholder={`Enter value`}
-                                className="w-full"
-                                checked={typeof obj === 'boolean' ? field.value : undefined}
-                                onChange={(e) => {
-                                    let value: string | number | boolean = e.target.value
-                                    if (typeof obj === 'number') value = Number(value)
-                                    if (typeof obj === 'boolean') value = e.target.checked
-                                    setFieldValue(parentKey, value)
-                                }}
-                            />
-                            <button
-                                type="button"
-                                className="text-red-500"
-                                onClick={() => setFieldValue(parentKey, typeof obj === 'string' ? '' : typeof obj === 'number' ? 0 : false)}
-                            >
-                                <MdCancel className="text-xl" />
-                            </button>
-                        </div>
-                    )
-                }}
-            </Field>
-        )
-    }
-
-    return (
-        <div className="w-full">
-            {_.isPlainObject(obj) && (
-                <div>
-                    {Object.entries(obj).map(([key, val]) => {
-                        const fieldName = parentKey ? `${parentKey}.${key}` : key
-                        const tempKey = editableKeys[key] ?? key
-                        return (
-                            <div
-                                key={fieldName}
-                                className="flex w-full overflow-full gap-4 items-center mb-2 shadow-xl bg-gray-50 dark:bg-gray-900 p-3 rounded-lg"
-                            >
-                                {/* Editable key */}
-                                <Field name={fieldName}>
-                                    {() => (
-                                        <Input
-                                            placeholder="Key"
-                                            value={tempKey}
-                                            className="w-1/3"
-                                            onChange={(e) => {
-                                                const newKey = e.target.value
-                                                setEditableKeys((prev: any) => ({ ...prev, [key]: newKey }))
-                                            }}
-                                            onBlur={() => {
-                                                if (tempKey && tempKey !== key) {
-                                                    const updatedEntries = Object.entries(obj).map(([k, v]) =>
-                                                        k === key ? [tempKey, v] : [k, v],
-                                                    )
-                                                    const updatedObj = Object.fromEntries(updatedEntries)
-                                                    setFieldValue(parentKey, updatedObj)
-                                                }
-                                                setEditableKeys((prev: any) => {
-                                                    const { [key]: _, ...rest } = prev
-                                                    console.log('rest', _)
-                                                    return rest
-                                                })
-                                            }}
-                                        />
-                                    )}
-                                </Field>
-
-                                {key.toLowerCase() === 'filter_id' ? (
-                                    <div>
-                                        <Field name={fieldName}>
-                                            {({ field, form }: FieldProps<any>) => {
-                                                const selectedTags = Array.isArray(field.value)
-                                                    ? field.value.flatMap((tag: any) => {
-                                                          return tag?.map((item: any) => {
-                                                              const matchedData = filters.filters.find(
-                                                                  (option: any) => option.value === item,
-                                                              )
-                                                              return (
-                                                                  matchedData || {
-                                                                      value: item,
-                                                                      label: item,
-                                                                  }
-                                                              )
-                                                          })
-                                                      })
-                                                    : []
-
-                                                return (
-                                                    <Select
-                                                        isMulti
-                                                        placeholder="Select Filter Tags"
-                                                        options={filters.filters}
-                                                        value={selectedTags ?? []}
-                                                        getOptionLabel={(option) => option.label}
-                                                        getOptionValue={(option) => option.value}
-                                                        onChange={(newVal) => {
-                                                            const newValues = newVal ? newVal.map((val) => val.value) : []
-                                                            form.setFieldValue(field.name, [newValues])
-                                                        }}
-                                                    />
-                                                )
-                                            }}
-                                        </Field>
-                                    </div>
-                                ) : key.toLowerCase() === 'message' && obj?.messages_list?.length > 0 ? (
-                                    <Field name={fieldName}>
-                                        {({ field, form }: FieldProps<any>) => {
-                                            const messagesList = obj.messages_list || []
-                                            const options = Array.isArray(messagesList)
-                                                ? messagesList.map((message) => ({
-                                                      label: message,
-                                                      value: message,
-                                                  }))
-                                                : []
-
-                                            return (
-                                                <Select
-                                                    isClearable
-                                                    placeholder="Select Message"
-                                                    options={options}
-                                                    value={field.value ? { label: field.value, value: field.value } : null}
-                                                    onChange={(newVal) => {
-                                                        form.setFieldValue(field.name, newVal ? newVal.value : '')
-                                                    }}
-                                                />
-                                            )
-                                        }}
-                                    </Field>
-                                ) : key.toLowerCase().includes('image') ? (
-                                    <FormItem className="xl:mt-6 ">
-                                        <Field name={fieldName}>
-                                            {() => (
-                                                <Field name={fieldName}>
-                                                    {({ form }: FieldProps) => (
-                                                        <Upload
-                                                            beforeUpload={beforeUpload}
-                                                            className="flex justify-center"
-                                                            onChange={(files) => {
-                                                                console.log('files to be upload', fieldName)
-                                                                return form.setFieldValue(fieldName, files)
-                                                            }}
-                                                            onFileRemove={(files) => form.setFieldValue(fieldName, files)}
-                                                        />
-                                                    )}
-                                                </Field>
-                                            )}
-                                        </Field>
-                                        <Field
-                                            component={Input}
-                                            type="text"
-                                            placeholder={`Enter ${key}`}
-                                            name={fieldName}
-                                            value={val}
-                                            className="w-full"
-                                            onChange={(e: any) => setFieldValue(fieldName, e.target.value)}
-                                        />
-                                    </FormItem>
-                                ) : key.toLowerCase().includes('lottie') ? (
-                                    <FormItem className="xl:mt-6 ">
-                                        <Field name={fieldName}>
-                                            {() => (
-                                                <Field name={fieldName}>
-                                                    {({ form }: FieldProps) => (
-                                                        <Upload
-                                                            beforeUpload={beforeUpload}
-                                                            className="flex justify-center"
-                                                            onChange={(files) => {
-                                                                console.log('files to be upload', fieldName)
-                                                                return form.setFieldValue(fieldName, files)
-                                                            }}
-                                                            onFileRemove={(files) => form.setFieldValue(fieldName, files)}
-                                                        />
-                                                    )}
-                                                </Field>
-                                            )}
-                                        </Field>
-                                        <Field
-                                            component={Input}
-                                            type="text"
-                                            placeholder={`Enter ${key}`}
-                                            name={fieldName}
-                                            value={val}
-                                            className="w-full"
-                                            onChange={(e: any) => setFieldValue(fieldName, e.target.value)}
-                                        />
-                                    </FormItem>
-                                ) : _.isPlainObject(val) || _.isArray(val) ? (
-                                    <div className="w-full">
-                                        <RenderFields
-                                            obj={val}
-                                            parentKey={fieldName}
-                                            setFieldValue={setFieldValue}
-                                            editableKeys={editableKeys}
-                                            setEditableKeys={setEditableKeys}
-                                            filters={filters}
-                                        />
+                        <div className="flex items-center gap-2 mb-2 w-full group">
+                            <div className="flex-1">
+                                {typeof obj === 'boolean' ? (
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-xs text-gray-600 dark:text-gray-400">{field.value ? 'Yes' : 'No'}</span>
+                                        <button
+                                            type="button"
+                                            onClick={() => setFieldValue(parentKey, !field.value)}
+                                            className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                                                field.value ? 'bg-blue-600' : 'bg-gray-300'
+                                            }`}
+                                        >
+                                            <span
+                                                className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
+                                                    field.value ? 'translate-x-5' : 'translate-x-1'
+                                                }`}
+                                            />
+                                        </button>
                                     </div>
                                 ) : (
-                                    <Field
-                                        name={fieldName}
-                                        render={({ field }: any) => {
-                                            const isPureNumber = /^[0-9]+$/.test(field.value)
-                                            return (
-                                                <Input
-                                                    {...field}
-                                                    type={isPureNumber ? 'number' : 'text'}
-                                                    placeholder="Value"
-                                                    className="w-full"
-                                                    onChange={(e) => setFieldValue(fieldName, e.target.value)}
-                                                />
-                                            )
+                                    <input
+                                        {...field}
+                                        type={inputType}
+                                        placeholder={`Enter ${typeof obj} value...`}
+                                        className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                        onChange={(e) => {
+                                            let value: string | number = e.target.value
+                                            if (typeof obj === 'number') value = Number(value)
+                                            setFieldValue(parentKey, value)
                                         }}
                                     />
                                 )}
-
-                                {/* Remove buttn */}
-                                <button
-                                    type="button"
-                                    className="text-red-500"
-                                    onClick={() => {
-                                        const updatedObj = { ...obj }
-                                        delete updatedObj[key]
-                                        setFieldValue(parentKey, updatedObj)
-                                    }}
-                                >
-                                    <MdCancel className="text-xl" />
-                                </button>
                             </div>
-                        )
-                    })}
-
-                    <button type="button" className=" text-green-600 px-4 py-2 rounded" onClick={handleAddField}>
-                        <IoIosAddCircle className="text-xl" />
-                    </button>
-
-                    <Modal title="Select Field Type" open={isAddModalOpen} footer={null} onCancel={() => setIsAddModalOpen(false)}>
-                        <div className="flex flex-col gap-2">
                             <button
-                                className="p-2 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-lg "
-                                onClick={() => handleTypeSelection('string')}
+                                type="button"
+                                className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 transition-opacity"
+                                onClick={() => setFieldValue(parentKey, typeof obj === 'string' ? '' : typeof obj === 'number' ? 0 : false)}
                             >
-                                String
-                            </button>
-                            <button
-                                className="p-2 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-lg "
-                                onClick={() => handleTypeSelection('array')}
-                            >
-                                Array
-                            </button>
-                            <button
-                                className="p-2 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-lg "
-                                onClick={() => handleTypeSelection('object')}
-                            >
-                                Object
+                                <MdCancel className="text-sm" />
                             </button>
                         </div>
-                    </Modal>
-                </div>
-            )}
+                    )
+                }}
+            </Field>
+        )
+    }
 
-            {_.isArray(obj) && (
-                <DragDropContext onDragEnd={handleDragEnd}>
-                    <Droppable droppableId={parentKey || 'droppable-array'}>
-                        {(dropProvided) => (
-                            <FieldArray
-                                name={parentKey}
-                                render={(arrayHelpers) => (
-                                    <div ref={dropProvided.innerRef} {...dropProvided.droppableProps}>
-                                        {obj.map((item, index) => {
-                                            const arrayKey = parentKey ? `${parentKey}[${index}]` : `${index}`
-                                            return (
-                                                <Draggable key={arrayKey} draggableId={arrayKey} index={index}>
-                                                    {(provided) => (
-                                                        <div
-                                                            ref={provided.innerRef}
-                                                            {...provided.draggableProps}
-                                                            className="flex gap-4 items-center mb-2"
-                                                        >
-                                                            <span
-                                                                {...provided.dragHandleProps}
-                                                                className="cursor-grab px-2 text-xl select-none"
-                                                                title="Drag to reorder"
-                                                            >
-                                                                ::
-                                                            </span>
-                                                            {_.isPlainObject(item) || _.isArray(item) ? (
-                                                                <div className="w-full">
-                                                                    <RenderFields
-                                                                        obj={item}
-                                                                        parentKey={arrayKey}
-                                                                        setFieldValue={setFieldValue}
-                                                                        editableKeys={editableKeys}
-                                                                        setEditableKeys={setEditableKeys}
-                                                                        filters={filters}
+    // Handle object type
+    if (_.isPlainObject(obj)) {
+        const isEmpty = Object.keys(obj).length === 0
+        const isExpanded = expandedObjects.has(parentKey)
+        const nextDepth = depth + 1
+
+        return (
+            <div className="w-full relative">
+                {depth > 0 && (
+                    <div className="absolute left-0 top-0 bottom-0 w-px bg-gray-300 dark:bg-gray-600" style={{ left: '-12px' }} />
+                )}
+
+                {!isEmpty && (
+                    <button
+                        type="button"
+                        onClick={() => toggleExpand(parentKey)}
+                        className="w-full flex items-center justify-between px-2 py-1.5 mb-2 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    >
+                        <span className="flex items-center gap-1.5">
+                            <span>Properties</span>
+                            <span className="text-xs text-gray-500">({Object.keys(obj).length})</span>
+                            {isExpanded ? (
+                                <span className="text-xs text-white bg-red-500 px-2 rounded-lg">Click to Close</span>
+                            ) : (
+                                <span className="text-xs text-white bg-green-500 px-2 rounded-lg">Click to Open</span>
+                            )}
+                        </span>
+                        {isExpanded ? <IoIosArrowUp className="text-sm" /> : <IoIosArrowDown className="text-sm" />}
+                    </button>
+                )}
+
+                {(isExpanded || isEmpty) && (
+                    <div className="space-y-2 relative pl-4">
+                        {/* Vertical line for nested structure */}
+                        <div className="absolute left-0 top-0 bottom-0 w-px bg-gray-300 dark:bg-gray-600" />
+
+                        {Object.entries(obj).map(([key, val]) => {
+                            const fieldName = parentKey ? `${parentKey}.${key}` : key
+                            const tempKey = editableKeys?.[key] ?? key
+                            return (
+                                <div
+                                    key={fieldName}
+                                    className="group relative bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-200"
+                                >
+                                    <div className="p-2">
+                                        <div className="flex flex-col lg:flex-row gap-2">
+                                            {/* Editable key section */}
+                                            <div className="lg:w-1/4">
+                                                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-0.5">
+                                                    Property
+                                                </label>
+                                                <div className="flex items-center gap-1.5">
+                                                    <div className="flex-1">
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Key"
+                                                            value={tempKey}
+                                                            className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                                            onChange={(e) => {
+                                                                const newKey = e.target.value
+                                                                setEditableKeys?.((prev: any) => ({ ...prev, [key]: newKey }))
+                                                            }}
+                                                            onBlur={() => {
+                                                                if (tempKey && tempKey !== key) {
+                                                                    const updatedEntries = Object.entries(obj).map(([k, v]) =>
+                                                                        k === key ? [tempKey, v] : [k, v],
+                                                                    )
+                                                                    const updatedObj = Object.fromEntries(updatedEntries)
+                                                                    setFieldValue(parentKey, updatedObj)
+                                                                    message.success('Property renamed')
+                                                                }
+                                                                setEditableKeys?.((prev: any) => {
+                                                                    const { [key]: _, ...rest } = prev
+                                                                    console.log('rest', _)
+                                                                    return rest
+                                                                })
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Value section */}
+                                            <div className="flex-1">
+                                                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-0.5">
+                                                    Value
+                                                </label>
+                                                {key.toLowerCase() === 'filter_id' ? (
+                                                    <div>
+                                                        <Field name={fieldName}>
+                                                            {({ field, form }: FieldProps<any>) => {
+                                                                const selectedTags = Array.isArray(field.value)
+                                                                    ? field.value.flatMap((tag: any) => {
+                                                                          return tag?.map((item: any) => {
+                                                                              const matchedData = filters.filters.find(
+                                                                                  (option: any) => option.value === item,
+                                                                              )
+                                                                              return (
+                                                                                  matchedData || {
+                                                                                      value: item,
+                                                                                      label: item,
+                                                                                  }
+                                                                              )
+                                                                          })
+                                                                      })
+                                                                    : []
+
+                                                                return (
+                                                                    <Select
+                                                                        isMulti
+                                                                        placeholder="Select Filter Tags"
+                                                                        options={filters.filters}
+                                                                        value={selectedTags ?? []}
+                                                                        getOptionLabel={(option) => option.label}
+                                                                        getOptionValue={(option) => option.value}
+                                                                        onChange={(newVal) => {
+                                                                            const newValues = newVal ? newVal.map((val) => val.value) : []
+                                                                            form.setFieldValue(field.name, [newValues])
+                                                                        }}
                                                                     />
-                                                                </div>
-                                                            ) : (
-                                                                <Field
-                                                                    name={arrayKey}
-                                                                    render={({ field }: any) => {
-                                                                        const inputType =
-                                                                            typeof item === 'number'
-                                                                                ? 'number'
-                                                                                : typeof item === 'boolean'
-                                                                                  ? 'checkbox'
-                                                                                  : 'text'
-                                                                        return (
-                                                                            <Input
-                                                                                {...field}
-                                                                                type={inputType}
-                                                                                placeholder={`Enter value`}
-                                                                                className="w-full"
-                                                                                checked={
-                                                                                    typeof item === 'boolean' ? field.value : undefined
-                                                                                }
-                                                                                onChange={(e) => {
-                                                                                    let value: any = e.target.value
-                                                                                    if (typeof item === 'number') value = Number(value)
-                                                                                    if (typeof item === 'boolean') value = e.target.checked
-                                                                                    setFieldValue(arrayKey, value)
-                                                                                }}
-                                                                            />
-                                                                        )
+                                                                )
+                                                            }}
+                                                        </Field>
+                                                    </div>
+                                                ) : key.toLowerCase() === 'message' && obj?.messages_list?.length > 0 ? (
+                                                    <Field name={fieldName}>
+                                                        {({ field, form }: FieldProps<any>) => {
+                                                            const messagesList = obj.messages_list || []
+                                                            const options = Array.isArray(messagesList)
+                                                                ? messagesList.map((message) => ({
+                                                                      label: message,
+                                                                      value: message,
+                                                                  }))
+                                                                : []
+
+                                                            return (
+                                                                <Select
+                                                                    isClearable
+                                                                    placeholder="Select Message"
+                                                                    options={options}
+                                                                    value={field.value ? { label: field.value, value: field.value } : null}
+                                                                    onChange={(newVal) => {
+                                                                        form.setFieldValue(field.name, newVal ? newVal.value : '')
                                                                     }}
                                                                 />
-                                                            )}
-                                                            <button
-                                                                type="button"
-                                                                className="text-red-500"
-                                                                onClick={() => arrayHelpers.remove(index)}
+                                                            )
+                                                        }}
+                                                    </Field>
+                                                ) : key.toLowerCase().includes('image') ? (
+                                                    <div className="space-y-2">
+                                                        <FormItem className="mb-0">
+                                                            <Field name={fieldName}>
+                                                                {({ form }: FieldProps) => (
+                                                                    <Upload
+                                                                        beforeUpload={beforeUpload}
+                                                                        className="flex justify-center"
+                                                                        onChange={(files) => {
+                                                                            console.log('files to be upload', fieldName)
+                                                                            return form.setFieldValue(fieldName, files)
+                                                                        }}
+                                                                        onFileRemove={(files) => form.setFieldValue(fieldName, files)}
+                                                                    />
+                                                                )}
+                                                            </Field>
+                                                        </FormItem>
+                                                        <input
+                                                            type="text"
+                                                            placeholder={`Or enter ${key} URL...`}
+                                                            value={val as any}
+                                                            className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                                            onChange={(e: any) => setFieldValue(fieldName, e.target.value)}
+                                                        />
+                                                    </div>
+                                                ) : key.toLowerCase().includes('lottie') ? (
+                                                    <div className="space-y-2">
+                                                        <FormItem className="mb-0">
+                                                            <Field name={fieldName}>
+                                                                {({ form }: FieldProps) => (
+                                                                    <Upload
+                                                                        beforeUpload={beforeUpload}
+                                                                        className="flex justify-center"
+                                                                        onChange={(files) => {
+                                                                            console.log('files to be upload', fieldName)
+                                                                            return form.setFieldValue(fieldName, files)
+                                                                        }}
+                                                                        onFileRemove={(files) => form.setFieldValue(fieldName, files)}
+                                                                    />
+                                                                )}
+                                                            </Field>
+                                                        </FormItem>
+                                                        <input
+                                                            type="text"
+                                                            placeholder={`Or enter ${key} URL...`}
+                                                            value={val as any}
+                                                            className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                                            onChange={(e: any) => setFieldValue(fieldName, e.target.value)}
+                                                        />
+                                                    </div>
+                                                ) : _.isPlainObject(val) || _.isArray(val) ? (
+                                                    <div className="w-full">
+                                                        <RenderFields
+                                                            obj={val}
+                                                            parentKey={fieldName}
+                                                            setFieldValue={setFieldValue}
+                                                            editableKeys={editableKeys}
+                                                            setEditableKeys={setEditableKeys}
+                                                            filters={filters}
+                                                            depth={nextDepth}
+                                                        />
+                                                    </div>
+                                                ) : (
+                                                    <Field name={fieldName}>
+                                                        {({ field }: FieldProps) => {
+                                                            const isNumber = typeof val === 'number'
+                                                            const isBoolean = typeof val === 'boolean'
+                                                            const isPureNumber = /^[0-9]+$/.test(field.value)
+
+                                                            if (isBoolean) {
+                                                                return (
+                                                                    <div className="flex items-center gap-2">
+                                                                        <span className="text-xs text-gray-600 dark:text-gray-400">
+                                                                            {field.value ? 'Yes' : 'No'}
+                                                                        </span>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => setFieldValue(fieldName, !field.value)}
+                                                                            className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-1 focus:ring-blue-500 focus:ring-offset-2 ${
+                                                                                field.value ? 'bg-blue-600' : 'bg-gray-300'
+                                                                            }`}
+                                                                        >
+                                                                            <span
+                                                                                className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
+                                                                                    field.value ? 'translate-x-5' : 'translate-x-1'
+                                                                                }`}
+                                                                            />
+                                                                        </button>
+                                                                    </div>
+                                                                )
+                                                            }
+
+                                                            return (
+                                                                <input
+                                                                    {...field}
+                                                                    type={isNumber || isPureNumber ? 'number' : 'text'}
+                                                                    placeholder="Enter value..."
+                                                                    className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                                                    onChange={(e) => {
+                                                                        let value: any = e.target.value
+                                                                        if (isNumber || isPureNumber) value = Number(value)
+                                                                        setFieldValue(fieldName, value)
+                                                                    }}
+                                                                />
+                                                            )
+                                                        }}
+                                                    </Field>
+                                                )}
+                                            </div>
+
+                                            {/* Remove button */}
+                                            <div className="lg:w-auto">
+                                                <button
+                                                    type="button"
+                                                    className="mt-4 text-red-500 hover:text-red-700 transition-colors"
+                                                    onClick={() => {
+                                                        const updatedObj = { ...obj }
+                                                        delete updatedObj[key]
+                                                        setFieldValue(parentKey, updatedObj)
+                                                        message.success('Property removed')
+                                                    }}
+                                                >
+                                                    <MdCancel className="text-sm" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
+                )}
+
+                <button
+                    type="button"
+                    className="mt-2 flex items-center gap-1.5 px-2 py-1 text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all duration-200"
+                    onClick={handleAddField}
+                >
+                    <IoIosAddCircle className="text-sm" /> Add Property
+                </button>
+
+                <Modal title="Add New Property" open={isAddModalOpen} footer={null} onCancel={() => setIsAddModalOpen(false)} width={400}>
+                    <div className="py-4">
+                        <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">Select the type of property to add:</p>
+                        <div className="grid grid-cols-2 gap-2">
+                            {[
+                                { type: 'string', label: 'String' },
+                                { type: 'number', label: 'Number' },
+                                { type: 'boolean', label: 'Boolean' },
+                                { type: 'array', label: 'Array' },
+                                { type: 'object', label: 'Object' },
+                            ].map((item) => (
+                                <button
+                                    key={item.type}
+                                    className="px-3 py-2 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-all duration-200"
+                                    onClick={() => handleTypeSelection(item.type as any)}
+                                >
+                                    {item.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </Modal>
+            </div>
+        )
+    }
+
+    // Handle array type
+    if (_.isArray(obj)) {
+        const isEmpty = obj.length === 0
+        const nextDepth = depth + 1
+
+        return (
+            <DragDropContext onDragEnd={handleDragEnd}>
+                <Droppable droppableId={parentKey || 'droppable-array'}>
+                    {(dropProvided, snapshot) => (
+                        <FieldArray
+                            name={parentKey}
+                            render={(arrayHelpers) => (
+                                <div className="relative">
+                                    {depth > 0 && (
+                                        <div
+                                            className="absolute left-0 top-0 bottom-0 w-px bg-gray-300 dark:bg-gray-600"
+                                            style={{ left: '-12px' }}
+                                        />
+                                    )}
+
+                                    <div
+                                        ref={dropProvided.innerRef}
+                                        {...dropProvided.droppableProps}
+                                        className={`space-y-2 p-2 rounded border-2 border-dashed transition-colors ${
+                                            snapshot.isDraggingOver
+                                                ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/20'
+                                                : 'border-gray-300 dark:border-gray-600'
+                                        }`}
+                                    >
+                                        <div className="flex items-center justify-between mb-2">
+                                            <div className="flex items-center gap-1.5">
+                                                <span className="text-xs font-medium text-gray-700 dark:text-gray-300">Array</span>
+                                                <span className="text-xs text-gray-500">({obj.length})</span>
+                                            </div>
+                                        </div>
+
+                                        {isEmpty && (
+                                            <div className="text-center py-4 text-gray-400 dark:text-gray-500">
+                                                <FaCode className="text-2xl mx-auto mb-1" />
+                                                <p className="text-xs">No items in array</p>
+                                            </div>
+                                        )}
+
+                                        <div className="space-y-2 relative pl-3">
+                                            {/* Vertical line for array items */}
+                                            <div className="absolute left-0 top-0 bottom-0 w-px bg-gray-300 dark:bg-gray-600" />
+
+                                            {obj.map((item, index) => {
+                                                const arrayKey = parentKey ? `${parentKey}[${index}]` : `${index}`
+                                                return (
+                                                    <Draggable key={arrayKey} draggableId={arrayKey} index={index}>
+                                                        {(provided, snapshot) => (
+                                                            <div
+                                                                ref={provided.innerRef}
+                                                                {...provided.draggableProps}
+                                                                className={`group bg-white dark:bg-gray-800 rounded border transition-all duration-200 ${
+                                                                    snapshot.isDragging
+                                                                        ? 'border-blue-400 shadow-md'
+                                                                        : 'border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md'
+                                                                }`}
                                                             >
-                                                                X
-                                                            </button>
-                                                        </div>
-                                                    )}
-                                                </Draggable>
-                                            )
-                                        })}
+                                                                <div className="p-2">
+                                                                    <div className="flex items-start gap-2">
+                                                                        <div
+                                                                            {...provided.dragHandleProps}
+                                                                            className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 select-none mt-0.5"
+                                                                        >
+                                                                            <MdDragHandle className="text-base" />
+                                                                        </div>
+
+                                                                        <div className="flex-1">
+                                                                            {_.isPlainObject(item) || _.isArray(item) ? (
+                                                                                <RenderFields
+                                                                                    obj={item}
+                                                                                    parentKey={arrayKey}
+                                                                                    setFieldValue={setFieldValue}
+                                                                                    editableKeys={editableKeys}
+                                                                                    setEditableKeys={setEditableKeys}
+                                                                                    filters={filters}
+                                                                                    depth={nextDepth}
+                                                                                />
+                                                                            ) : (
+                                                                                <Field name={arrayKey}>
+                                                                                    {({ field }: FieldProps) => {
+                                                                                        const isNumber = typeof item === 'number'
+                                                                                        const isBoolean = typeof item === 'boolean'
+
+                                                                                        if (isBoolean) {
+                                                                                            return (
+                                                                                                <div className="flex items-center gap-2">
+                                                                                                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                                                                                                        {field.value ? 'True' : 'False'}
+                                                                                                    </span>
+                                                                                                    <button
+                                                                                                        type="button"
+                                                                                                        onClick={() =>
+                                                                                                            setFieldValue(
+                                                                                                                arrayKey,
+                                                                                                                !field.value,
+                                                                                                            )
+                                                                                                        }
+                                                                                                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                                                                                                            field.value
+                                                                                                                ? 'bg-blue-600'
+                                                                                                                : 'bg-gray-300'
+                                                                                                        }`}
+                                                                                                    >
+                                                                                                        <span
+                                                                                                            className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
+                                                                                                                field.value
+                                                                                                                    ? 'translate-x-5'
+                                                                                                                    : 'translate-x-1'
+                                                                                                            }`}
+                                                                                                        />
+                                                                                                    </button>
+                                                                                                </div>
+                                                                                            )
+                                                                                        }
+
+                                                                                        return (
+                                                                                            <input
+                                                                                                {...field}
+                                                                                                type={isNumber ? 'number' : 'text'}
+                                                                                                placeholder={`Item ${index + 1} value...`}
+                                                                                                className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                                                                                onChange={(e) => {
+                                                                                                    let value: any = e.target.value
+                                                                                                    if (isNumber) value = Number(value)
+                                                                                                    setFieldValue(arrayKey, value)
+                                                                                                }}
+                                                                                            />
+                                                                                        )
+                                                                                    }}
+                                                                                </Field>
+                                                                            )}
+                                                                        </div>
+
+                                                                        <button
+                                                                            type="button"
+                                                                            className="text-red-500 hover:text-red-700 transition-colors mt-0.5"
+                                                                            onClick={() => {
+                                                                                arrayHelpers.remove(index)
+                                                                                message.success('Item removed')
+                                                                            }}
+                                                                        >
+                                                                            <MdCancel className="text-sm" />
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </Draggable>
+                                                )
+                                            })}
+                                        </div>
                                         {dropProvided.placeholder}
+
                                         <button
                                             type="button"
-                                            className="bg-black text-white px-2 py-2 rounded-xl flex gap-2"
-                                            onClick={() => setIsAddModalOpen(true)}
+                                            className="w-full flex items-center justify-center gap-1.5 px-2 py-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all duration-200"
+                                            onClick={() => {
+                                                setCurrentArrayHelpers(arrayHelpers)
+                                                setIsAddModalOpen(true)
+                                            }}
                                         >
-                                            <IoIosAddCircle className="text-xl" /> Add Item
+                                            <IoIosAddCircle className="text-sm" /> Add Item
                                         </button>
+
                                         <Modal
-                                            title="Select Field Type"
+                                            title="Add Array Item"
                                             open={isAddModalOpen}
                                             footer={null}
-                                            onCancel={() => setIsAddModalOpen(false)}
+                                            onCancel={() => {
+                                                setIsAddModalOpen(false)
+                                                setCurrentArrayHelpers(null)
+                                            }}
+                                            width={400}
                                         >
-                                            <div className="flex flex-col gap-2">
-                                                {['string', 'array', 'object'].map((type) => (
-                                                    <button
-                                                        key={type}
-                                                        className="p-2 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-lg"
-                                                        onClick={() => {
-                                                            setIsAddModalOpen(false)
-                                                            arrayHelpers.push(type === 'string' ? '' : type === 'array' ? [] : {})
-                                                        }}
-                                                    >
-                                                        {type.charAt(0).toUpperCase() + type.slice(1)}
-                                                    </button>
-                                                ))}
+                                            <div className="py-4">
+                                                <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
+                                                    Select the type of item to add:
+                                                </p>
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    {[
+                                                        { type: 'string', label: 'String', value: '' },
+                                                        { type: 'number', label: 'Number', value: 0 },
+                                                        { type: 'boolean', label: 'Boolean', value: false },
+                                                        { type: 'array', label: 'Array', value: [] },
+                                                        { type: 'object', label: 'Object', value: {} },
+                                                    ].map((item) => (
+                                                        <button
+                                                            key={item.type}
+                                                            className="px-3 py-2 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-all duration-200"
+                                                            onClick={() => {
+                                                                setIsAddModalOpen(false)
+                                                                currentArrayHelpers?.push(item.value)
+                                                                setCurrentArrayHelpers(null)
+                                                                message.success(`${item.type} item added`)
+                                                            }}
+                                                        >
+                                                            {item.label}
+                                                        </button>
+                                                    ))}
+                                                </div>
                                             </div>
                                         </Modal>
                                     </div>
-                                )}
-                            />
-                        )}
-                    </Droppable>
-                </DragDropContext>
-            )}
-        </div>
-    )
+                                </div>
+                            )}
+                        />
+                    )}
+                </Droppable>
+            </DragDropContext>
+        )
+    }
+
+    return null
 }
 
 export default RenderFields
