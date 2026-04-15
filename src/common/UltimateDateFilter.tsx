@@ -25,12 +25,13 @@ interface DATEPROPS {
     to: any
     setFrom: any
     setTo: any
+    isStrict?: boolean
     handleDateChange: any
     dispatch?: any
     customClass?: string
 }
 
-const UltimateDatePicker = ({ setFrom, setTo, handleDateChange, dispatch, customClass }: DATEPROPS) => {
+const UltimateDatePicker = ({ setFrom, setTo, handleDateChange, dispatch, customClass, isStrict }: DATEPROPS) => {
     const [selectedOption, setSelectedOption] = useState('TODAY')
     const [showingDatePicker, setShowingDatePicker] = useState(false)
     const [tempRange, setTempRange] = useState<any>(null)
@@ -45,6 +46,10 @@ const UltimateDatePicker = ({ setFrom, setTo, handleDateChange, dispatch, custom
             )),
         [],
     )
+
+    const getEndDate = (date: moment.Moment) => {
+        return isStrict ? moment.min(date, moment()) : date
+    }
 
     const handleSelect = useCallback(
         (value: string) => {
@@ -66,7 +71,7 @@ const UltimateDatePicker = ({ setFrom, setTo, handleDateChange, dispatch, custom
                     break
                 case 'CURRENT WEEK':
                     startDate = moment().startOf('isoWeek').format('YYYY-MM-DD')
-                    endDate = moment().endOf('isoWeek').format('YYYY-MM-DD')
+                    endDate = getEndDate(moment().endOf('isoWeek')).format('YYYY-MM-DD')
                     setShowingDatePicker(false)
                     break
                 case 'LAST WEEK':
@@ -76,7 +81,7 @@ const UltimateDatePicker = ({ setFrom, setTo, handleDateChange, dispatch, custom
                     break
                 case 'CURRENT MONTH':
                     startDate = moment().startOf('month').format('YYYY-MM-DD')
-                    endDate = moment().endOf('month').format('YYYY-MM-DD')
+                    endDate = getEndDate(moment().endOf('month')).format('YYYY-MM-DD')
                     setShowingDatePicker(false)
                     break
                 case 'LAST MONTH':
@@ -99,7 +104,7 @@ const UltimateDatePicker = ({ setFrom, setTo, handleDateChange, dispatch, custom
                     break
                 case 'YEARLY':
                     startDate = moment().startOf('year').format('YYYY-MM-DD')
-                    endDate = moment().format('YYYY-MM-DD')
+                    endDate = getEndDate(moment()).format('YYYY-MM-DD')
                     setShowingDatePicker(false)
                     break
                 case 'CUSTOM':
