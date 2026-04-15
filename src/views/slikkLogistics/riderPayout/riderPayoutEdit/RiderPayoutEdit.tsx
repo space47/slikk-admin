@@ -2,7 +2,6 @@
 import { Button, Tabs } from '@/components/ui'
 import { Formik, FormikProps, Form } from 'formik'
 import React, { useEffect, useState } from 'react'
-import { HiOutlineInformationCircle } from 'react-icons/hi'
 import RenderPayout from '../components/RenderPayout'
 import { useParams } from 'react-router-dom'
 import { RiderPayout } from '@/store/types/riderPayout.types'
@@ -35,8 +34,14 @@ const RiderPayoutEdit = () => {
     const [editableKeys, setEditableKeys] = useState<Record<string, string>>({})
     const [tabValue, setTabValue] = useState('field')
     const [jsonError, setJsonError] = useState('')
+
     const payoutCall = riderPayoutService.useSinglePayoutListQuery({ id }, { skip: !id })
+    const payoutModelCall = riderPayoutService.useGetPayoutModelDataQuery({})
+
     const [createPayout, createResponse] = riderPayoutService.useCreatePayoutMutation()
+
+    const incentiveOptions = payoutModelCall?.data?.config?.value?.incentives || {}
+    const penaltyOptions = payoutModelCall?.data?.config?.value?.penalties || {}
 
     useEffect(() => {
         if (payoutCall.isSuccess) {
@@ -72,73 +77,74 @@ const RiderPayoutEdit = () => {
         }
     }
 
-    const cleanEmptyValues = (obj: any): any => {
-        if (!obj) return obj
-        if (Array.isArray(obj)) {
-            return obj
-                .map((item) => cleanEmptyValues(item))
-                .filter(
-                    (item) =>
-                        item !== undefined && item !== null && item !== '' && !(typeof item === 'object' && Object.keys(item).length === 0),
-                )
-        }
-        if (typeof obj === 'object') {
-            const cleaned: any = {}
-            for (const [key, value] of Object.entries(obj)) {
-                if (key && key.trim() !== '' && value !== undefined && value !== null && value !== '') {
-                    const cleanedValue = cleanEmptyValues(value)
-                    if (
-                        cleanedValue !== undefined &&
-                        cleanedValue !== null &&
-                        (typeof cleanedValue !== 'object' || Object.keys(cleanedValue).length > 0)
-                    ) {
-                        cleaned[key] = cleanedValue
-                    }
-                }
-            }
-            return cleaned
-        }
-        return obj
-    }
-
-    console.log(cleanEmptyValues)
-
-    const extractEditableKeys = (obj: any, prefix = ''): Record<string, string> => {
-        const keys: Record<string, string> = {}
-
-        if (!obj || typeof obj !== 'object') return keys
-
-        Object.keys(obj).forEach((key) => {
-            const fullPath = prefix ? `${prefix}.${key}` : key
-            keys[key] = key
-
-            if (typeof obj[key] === 'object' && !Array.isArray(obj[key])) {
-                Object.assign(keys, extractEditableKeys(obj[key], fullPath))
-            }
-        })
-
-        return keys
-    }
-
     const initialValues = convertApiToFormValues(payoutData)
 
     useEffect(() => {
         if (payoutData?.commercial_details) {
-            const incentivesKeys = extractEditableKeys(payoutData.commercial_details.incentives || {})
-            const penaltiesKeys = extractEditableKeys(payoutData.commercial_details.penalties || {})
-            setEditableKeys({ ...incentivesKeys, ...penaltiesKeys })
+            setEditableKeys({
+                ...payoutData.commercial_details.incentives,
+                ...payoutData.commercial_details.penalties,
+            })
         }
     }, [payoutData])
 
     useEffect(() => {
         if (createResponse.isSuccess) {
-            notification.success({ message: 'successfully created rider payout' })
+            notification.success({ message: 'Successfully updated rider payout' })
         }
         if (createResponse.isError) {
-            const errorMessage = getApiErrorMessage(createResponse.error)
-            notification.error({ message: errorMessage })
+            notification.error({ message: getApiErrorMessage(createResponse.error) })
         }
     }, [createResponse.isSuccess, createResponse.isError, createResponse.error])
+
+    const handleToggle = (type: 'incentives' | 'penalties', key: string, values: FormValues, setFieldValue: any, defaultData: any) => {
+        const path = `commercial_details.${type}`
+        const exists = values.commercial_details[type]?.[key]
+
+        if (exists) {
+            const updated = { ...values.commercial_details[type] }
+            delete updated[key]
+            setFieldValue(path, updated)
+        } else {
+            setFieldValue(`${path}.${key}`, defaultData)
+        }
+    }
+
+    const formatLabel = (key: string) => key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+
+    const renderToggleButtons = (
+        type: 'incentives' | 'penalties',
+        options: Record<string, any>,
+        values: FormValues,
+        setFieldValue: any,
+    ) => {
+        return (
+            <div className="flex flex-wrap gap-2 mb-4">
+                {payoutCall?.isLoading || payoutCall?.isFetching ? (
+                    <p>Loading Model Data</p>
+                ) : (
+                    <>
+                        {Object.keys(options).map((key) => {
+                            const isActive = !!values.commercial_details[type]?.[key]
+
+                            return (
+                                <Button
+                                    key={key}
+                                    type="button"
+                                    size="sm"
+                                    variant={isActive ? 'solid' : 'default'}
+                                    className={isActive ? 'bg-green-500 text-white' : ''}
+                                    onClick={() => handleToggle(type, key, values, setFieldValue, options[key])}
+                                >
+                                    {isActive ? `Remove ${formatLabel(key)}` : `Add ${formatLabel(key)}`}
+                                </Button>
+                            )
+                        })}
+                    </>
+                )}
+            </div>
+        )
+    }
 
     const handleSubmit = async (values: FormValues) => {
         const cleanedValues = {
@@ -161,24 +167,16 @@ const RiderPayoutEdit = () => {
                         <span className="w-1 h-4 bg-indigo-600 rounded-full" />
                         Configuration
                     </p>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Add Rider Payout Model</h1>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Edit Rider Payout Model</h1>
                 </div>
 
-                <Tabs defaultValue="field" className="flex flex-col" value={tabValue} onChange={setTabValue}>
-                    <TabList className="flex gap-8 border-b border-gray-200 dark:border-gray-700 mb-6">
-                        <TabNav
-                            value="field"
-                            icon={<CiTextAlignCenter className="text-green-500 text-xl" />}
-                            className="px-4 py-2 text-gray-600 hover:text-blue-600 border-b-2 border-transparent data-[state=active]:text-blue-600 data-[state=active]:border-blue-600 transition-colors duration-200"
-                        >
-                            <span className="text-xl">Field Data</span>
+                <Tabs value={tabValue} onChange={setTabValue}>
+                    <TabList className="flex gap-8 border-b mb-6">
+                        <TabNav value="field" icon={<CiTextAlignCenter />}>
+                            Field Data
                         </TabNav>
-                        <TabNav
-                            value="jsonData"
-                            icon={<VscJson className="text-orange-400 text-xl" />}
-                            className="px-4 py-2 text-gray-600 hover:text-blue-600 border-b-2 border-transparent data-[state=active]:text-blue-600 data-[state=active]:border-blue-600 transition-colors duration-200"
-                        >
-                            <span className="text-xl">JSON Data</span>
+                        <TabNav value="jsonData" icon={<VscJson />}>
+                            JSON Data
                         </TabNav>
                     </TabList>
                 </Tabs>
@@ -188,53 +186,33 @@ const RiderPayoutEdit = () => {
                         tabValue === 'field' ? (
                             <Form className="space-y-6">
                                 <PayoutFormFields values={values} setFieldValue={setFieldValue} />
-                                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300">
-                                    <div className="bg-gradient-to-r from-indigo-50 to-white px-6 py-4 border-b border-indigo-100">
-                                        <h2 className="text-lg font-semibold text-gray-900">Incentives</h2>
-                                    </div>
-                                    <div className="p-6">
-                                        <RenderPayout
-                                            obj={values.commercial_details.incentives}
-                                            parentKey="commercial_details.incentives"
-                                            setFieldValue={setFieldValue}
-                                            editableKeys={editableKeys}
-                                            setEditableKeys={setEditableKeys}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300">
-                                    <div className="bg-gradient-to-r from-rose-50 to-white px-6 py-4 border-b border-rose-100">
-                                        <h2 className="text-lg font-semibold text-gray-900">Penalties</h2>
-                                    </div>
-                                    <div className="p-6">
-                                        <RenderPayout
-                                            obj={values.commercial_details.penalties}
-                                            parentKey="commercial_details.penalties"
-                                            setFieldValue={setFieldValue}
-                                            editableKeys={editableKeys}
-                                            setEditableKeys={setEditableKeys}
-                                        />
-                                    </div>
+                                <div className="bg-white rounded-xl border p-6">
+                                    <h2 className="text-lg font-semibold mb-4">Incentives</h2>
+                                    {renderToggleButtons('incentives', incentiveOptions, values, setFieldValue)}
+                                    <RenderPayout
+                                        obj={values.commercial_details.incentives}
+                                        parentKey="commercial_details.incentives"
+                                        setFieldValue={setFieldValue}
+                                        editableKeys={editableKeys}
+                                        setEditableKeys={setEditableKeys}
+                                    />
                                 </div>
 
-                                {/* Actions */}
-                                <div className="sticky bottom-0 bg-white/95 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200 p-4">
-                                    <div className="flex items-center justify-between gap-4">
-                                        <p className="hidden md:flex items-center gap-2 text-xs text-gray-500">
-                                            <HiOutlineInformationCircle className="w-4 h-4" />
-                                            All changes are auto-saved in the form
-                                        </p>
-                                        <div className="flex items-center gap-3 ml-auto">
-                                            <Button
-                                                variant="blue"
-                                                size="sm"
-                                                loading={createResponse.isLoading}
-                                                disabled={createResponse.isLoading}
-                                            >
-                                                Save Payout Model
-                                            </Button>
-                                        </div>
-                                    </div>
+                                <div className="bg-white rounded-xl border p-6">
+                                    <h2 className="text-lg font-semibold mb-4">Penalties</h2>
+                                    {renderToggleButtons('penalties', penaltyOptions, values, setFieldValue)}
+
+                                    <RenderPayout
+                                        obj={values.commercial_details.penalties}
+                                        parentKey="commercial_details.penalties"
+                                        setFieldValue={setFieldValue}
+                                        editableKeys={editableKeys}
+                                        setEditableKeys={setEditableKeys}
+                                    />
+                                </div>
+
+                                <div className="flex justify-end">
+                                    <Button loading={createResponse.isLoading}>Save Changes</Button>
                                 </div>
                             </Form>
                         ) : (
