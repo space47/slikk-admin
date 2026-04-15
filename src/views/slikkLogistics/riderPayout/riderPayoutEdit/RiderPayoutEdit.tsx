@@ -40,6 +40,7 @@ const RiderPayoutEdit = () => {
 
     const [createPayout, createResponse] = riderPayoutService.useCreatePayoutMutation()
 
+    // ✅ Safe API extraction
     const incentiveOptions = payoutModelCall?.data?.config?.value?.incentives || {}
     const penaltyOptions = payoutModelCall?.data?.config?.value?.penalties || {}
 
@@ -79,11 +80,18 @@ const RiderPayoutEdit = () => {
 
     const initialValues = convertApiToFormValues(payoutData)
 
+    // ✅ FIXED: Only store string keys (not objects)
+    const extractKeys = (obj: any = {}) =>
+        Object.keys(obj).reduce((acc: Record<string, string>, key: string) => {
+            acc[key] = key
+            return acc
+        }, {})
+
     useEffect(() => {
         if (payoutData?.commercial_details) {
             setEditableKeys({
-                ...payoutData.commercial_details.incentives,
-                ...payoutData.commercial_details.penalties,
+                ...extractKeys(payoutData.commercial_details.incentives),
+                ...extractKeys(payoutData.commercial_details.penalties),
             })
         }
     }, [payoutData])
@@ -97,6 +105,7 @@ const RiderPayoutEdit = () => {
         }
     }, [createResponse.isSuccess, createResponse.isError, createResponse.error])
 
+    // 🔥 Toggle Logic
     const handleToggle = (type: 'incentives' | 'penalties', key: string, values: FormValues, setFieldValue: any, defaultData: any) => {
         const path = `commercial_details.${type}`
         const exists = values.commercial_details[type]?.[key]
@@ -120,27 +129,25 @@ const RiderPayoutEdit = () => {
     ) => {
         return (
             <div className="flex flex-wrap gap-2 mb-4">
-                {payoutCall?.isLoading || payoutCall?.isFetching ? (
-                    <p>Loading Model Data</p>
+                {payoutModelCall?.isLoading ? (
+                    <p className="text-sm text-gray-400">Loading Model Data...</p>
                 ) : (
-                    <>
-                        {Object.keys(options).map((key) => {
-                            const isActive = !!values.commercial_details[type]?.[key]
+                    Object.keys(options).map((key) => {
+                        const isActive = !!values.commercial_details[type]?.[key]
 
-                            return (
-                                <Button
-                                    key={key}
-                                    type="button"
-                                    size="sm"
-                                    variant={isActive ? 'solid' : 'default'}
-                                    className={isActive ? 'bg-green-500 text-white' : ''}
-                                    onClick={() => handleToggle(type, key, values, setFieldValue, options[key])}
-                                >
-                                    {isActive ? `Remove ${formatLabel(key)}` : `Add ${formatLabel(key)}`}
-                                </Button>
-                            )
-                        })}
-                    </>
+                        return (
+                            <Button
+                                key={key}
+                                type="button"
+                                size="sm"
+                                variant={isActive ? 'solid' : 'default'}
+                                className={isActive ? 'bg-green-500 text-white' : ''}
+                                onClick={() => handleToggle(type, key, values, setFieldValue, options[key])}
+                            >
+                                {isActive ? `Remove ${formatLabel(key)}` : `Add ${formatLabel(key)}`}
+                            </Button>
+                        )
+                    })
                 )}
             </div>
         )
@@ -186,9 +193,13 @@ const RiderPayoutEdit = () => {
                         tabValue === 'field' ? (
                             <Form className="space-y-6">
                                 <PayoutFormFields values={values} setFieldValue={setFieldValue} />
+
+                                {/* Incentives */}
                                 <div className="bg-white rounded-xl border p-6">
                                     <h2 className="text-lg font-semibold mb-4">Incentives</h2>
+
                                     {renderToggleButtons('incentives', incentiveOptions, values, setFieldValue)}
+
                                     <RenderPayout
                                         obj={values.commercial_details.incentives}
                                         parentKey="commercial_details.incentives"
@@ -198,8 +209,10 @@ const RiderPayoutEdit = () => {
                                     />
                                 </div>
 
+                                {/* Penalties */}
                                 <div className="bg-white rounded-xl border p-6">
                                     <h2 className="text-lg font-semibold mb-4">Penalties</h2>
+
                                     {renderToggleButtons('penalties', penaltyOptions, values, setFieldValue)}
 
                                     <RenderPayout
