@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface RiderPayoutResponse {
     status: string
     data: {
@@ -48,4 +49,21 @@ export interface PayoutCommercialGetResponse {
         next: boolean
         results: PayoutCommercialResponse[]
     }
+}
+
+export type PayoutConfigResponse = {
+    config: PayoutConfig
+}
+export type PayoutConfig = {
+    id: number
+    name: string
+    value: {
+        incentives: Record<string, Record<string, any>>
+        penalties: Record<string, Record<string, any>>
+    }
+    is_active: boolean
+    previous_configurations: unknown[]
+    create_date: string
+    update_date: string
+    last_updated_by: string
 }

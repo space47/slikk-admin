@@ -4,6 +4,7 @@ import {
     PayoutCommercialGetResponse,
     PayoutCommercialRequestType,
     PayoutCommercialResponse,
+    PayoutConfigResponse,
     RiderPayoutResponse,
 } from '../types/riderPayout.types'
 
@@ -61,6 +62,14 @@ export const riderPayoutService = RtkQueryService.injectEndpoints({
                     url: `/logistic/agency/commercials`,
                     method: 'GET',
                     params: parameters,
+                }
+            },
+        }),
+        getPayoutModelData: builder.query<PayoutConfigResponse, { name?: string }>({
+            query: () => {
+                return {
+                    url: `/app/configuration?config_name=payoutModelData`,
+                    method: 'GET',
                 }
             },
         }),

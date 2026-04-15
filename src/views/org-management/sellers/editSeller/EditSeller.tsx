@@ -108,6 +108,7 @@ const EditSeller = () => {
             date: dayjs().format('YYYY-MM-DD HH:mm:ss a'),
             declaration_statement: sellerData?.declaration_statement || '',
             business_nature_company_details: sellerData?.business_nature_company_details || '',
+            provisional_discount_rate: sellerData?.provisional_discount_rate || '',
             business_nature_company: sellerData?.business_nature_company_details?.map((item) => item.code)?.join(',') || '',
             int_poc_details:
                 sellerData?.int_poc_details && typeof sellerData?.int_poc_details === 'string'
@@ -205,7 +206,6 @@ const EditSeller = () => {
             formData.append(SellerKeys.INT_POC_DETAILS, JSON.stringify(values?.int_poc_details))
         }
 
-        formData.append('provisional_discount_rate', '0')
         const overriddenInitialValue = { ...initialValue }
 
         const forceIncludedKeys: string[] = []

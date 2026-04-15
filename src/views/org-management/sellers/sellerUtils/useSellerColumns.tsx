@@ -4,9 +4,19 @@ import { FaEdit } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
 import { VendorDetails } from '@/store/types/vendor.type'
+import { Tooltip } from '@/components/ui'
+import { notification } from 'antd'
 
 export const useSellerColumns = () => {
     const navigate = useNavigate()
+
+    const handleCopy = (text: string) => {
+        navigator.clipboard.writeText(text)
+        notification.success({
+            message: 'Copied to clipboard',
+            placement: 'topRight',
+        })
+    }
 
     return useMemo<ColumnDef<VendorDetails>[]>(
         () => [
@@ -36,8 +46,10 @@ export const useSellerColumns = () => {
                         <p>
                             <span className="font-semibold">Code:</span> {row?.original?.code}
                         </p>
-                        <p className="line-clamp-2">
-                            <span className="font-semibold">Address:</span> {row?.original?.address}
+                        <p className="line-clamp-2 cursor-pointer hover:text-blue-500" onClick={() => handleCopy(row?.original?.address)}>
+                            <Tooltip title={`${row?.original?.address ? `Address: ${row?.original?.address}` : 'No Address'}`}>
+                                <span className="font-semibold">Address:</span> {row?.original?.address}
+                            </Tooltip>
                         </p>
                         <p>
                             <span className="font-semibold">Segment:</span> {row?.original?.segment}

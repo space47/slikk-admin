@@ -2,7 +2,6 @@
 import { Button, Tabs } from '@/components/ui'
 import { Formik, FormikProps, Form } from 'formik'
 import React, { useEffect, useState } from 'react'
-import { HiOutlineInformationCircle } from 'react-icons/hi'
 import RenderPayout from '../components/RenderPayout'
 import { notification } from 'antd'
 import { getApiErrorMessage } from '@/constants/generateErrorMessage'
@@ -34,58 +33,8 @@ const initialValues: FormValues = {
         payout_model: 'day-wise',
         base_payout: 0,
         currency: 'INR',
-        incentives: {
-            order_count_incentive: {
-                thresholds: [
-                    { min_orders: 0, max_orders: 7, incentive_amount: 0, type: 'flat' },
-                    { min_orders: 8, max_orders: 9, incentive_amount: 50, type: 'flat' },
-                    { min_orders: 10, max_orders: 11, incentive_amount: 75, type: 'flat' },
-                    { min_orders: 12, max_orders: 13, incentive_amount: 100, type: 'flat' },
-                    { min_orders: 14, max_orders: 15, incentive_amount: 125, type: 'flat' },
-                    { min_orders: 16, max_orders: 100, incentive_amount: 150, type: 'flat' },
-                ],
-            },
-            time_incentive: {
-                thresholds: [
-                    { min_hours: 0, max_hours: 11, incentive_amount: 0, type: 'flat' },
-                    { min_hours: 12, max_hours: 15, incentive_amount: 90, type: 'hour-wise' },
-                ],
-            },
-            days_worked_in_month_incentive: {
-                thresholds: [
-                    { min_days: 0, max_days: 26, incentive_amount: 0, type: 'flat' },
-                    { min_days: 27, max_days: 31, incentive_amount: 1000, type: 'day-wise' },
-                ],
-            },
-            on_time_delivery_incentive: {
-                thresholds: [{ min_orders: 1, max_orders: 100, incentive_amount: 10, type: 'order-wise' }],
-            },
-            days_worked_in_week_incentive: {
-                minimum_days: 6,
-                mandatory_days: [3, 4, 5, 6],
-                incentive_amount: 100,
-            },
-            distance_incentive: {
-                thresholds: [{ min_distance: 0, max_distance: 15, incentive_amount: 0, type: 'flat' }],
-            },
-        },
-        penalties: {
-            time_penalty: {
-                thresholds: [{ min_hours: 0, max_hours: 10, penalty_amount: 90, type: 'hour-wise' }],
-            },
-            weekend_penalty: {
-                thresholds: [{ is_weekend: true, penalty_amount: 150, type: 'daily', penalty_amount_type: 'percentage' }],
-            },
-            order_rejection_penalty: {
-                thresholds: [{ min_rejections: 0, max_rejections: 100, penalty_amount: 25, type: 'order-wise' }],
-            },
-            late_checkin_penalty: {
-                thresholds: [
-                    { min_minutes: 0, max_minutes: 15, penalty_amount: 0, type: 'flat' },
-                    { min_minutes: 15, max_minutes: 600, penalty_amount: 25, type: 'flat' },
-                ],
-            },
-        },
+        incentives: {},
+        penalties: {},
     },
 }
 
@@ -94,11 +43,68 @@ const RiderPayoutAdd = () => {
     const [tabValue, setTabValue] = useState('field')
     const [jsonError, setJsonError] = useState('')
     const [createPayout, createResponse] = riderPayoutService.useCreatePayoutMutation()
+    const payoutModelCall = riderPayoutService.useGetPayoutModelDataQuery({})
+
+    const incentiveOptions = payoutModelCall?.data?.config?.value?.incentives || {}
+    const penaltyOptions = payoutModelCall?.data?.config?.value?.penalties || {}
 
     useEffect(() => {
-        if (createResponse.isSuccess) notification.success({ message: 'Successfully created rider payout' })
-        if (createResponse.isError) notification.error({ message: getApiErrorMessage(createResponse.error) })
+        if (createResponse.isSuccess) {
+            notification.success({ message: 'Successfully created rider payout' })
+        }
+        if (createResponse.isError) {
+            notification.error({ message: getApiErrorMessage(createResponse.error) })
+        }
     }, [createResponse.isSuccess, createResponse.isError, createResponse.error])
+
+    const handleToggle = (type: 'incentives' | 'penalties', key: string, values: FormValues, setFieldValue: any, defaultData: any) => {
+        const path = `commercial_details.${type}`
+        const exists = values.commercial_details[type]?.[key]
+
+        if (exists) {
+            const updated = { ...values.commercial_details[type] }
+            delete updated[key]
+            setFieldValue(path, updated)
+        } else {
+            setFieldValue(`${path}.${key}`, defaultData)
+        }
+    }
+
+    const formatLabel = (key: string) => key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+
+    const renderToggleButtons = (
+        type: 'incentives' | 'penalties',
+        options: Record<string, any>,
+        values: FormValues,
+        setFieldValue: any,
+    ) => {
+        return (
+            <div className="flex flex-wrap gap-2 mb-4">
+                {payoutModelCall?.isLoading ? (
+                    <p>Loading Model Data .....</p>
+                ) : (
+                    <>
+                        {Object.keys(options).map((key) => {
+                            const isActive = !!values.commercial_details[type]?.[key]
+
+                            return (
+                                <Button
+                                    key={key}
+                                    type="button"
+                                    size="sm"
+                                    variant={isActive ? 'solid' : 'default'}
+                                    className={`capitalize ${isActive ? 'bg-green-500 text-white' : ''}`}
+                                    onClick={() => handleToggle(type, key, values, setFieldValue, options[key])}
+                                >
+                                    {isActive ? `Remove ${formatLabel(key)}` : `Add ${formatLabel(key)}`}
+                                </Button>
+                            )
+                        })}
+                    </>
+                )}
+            </div>
+        )
+    }
 
     const handleSubmit = async (values: FormValues) => {
         createPayout({
@@ -124,18 +130,10 @@ const RiderPayoutAdd = () => {
 
                 <Tabs defaultValue="field" className="flex flex-col" value={tabValue} onChange={setTabValue}>
                     <TabList className="flex gap-8 border-b border-gray-200 dark:border-gray-700 mb-6">
-                        <TabNav
-                            value="field"
-                            icon={<CiTextAlignCenter className="text-green-500 text-xl" />}
-                            className="px-4 py-2 text-gray-600 hover:text-blue-600 border-b-2 border-transparent data-[state=active]:text-blue-600 data-[state=active]:border-blue-600 transition-colors duration-200"
-                        >
+                        <TabNav value="field" icon={<CiTextAlignCenter className="text-green-500 text-xl" />}>
                             <span className="text-xl">Field Data</span>
                         </TabNav>
-                        <TabNav
-                            value="jsonData"
-                            icon={<VscJson className="text-orange-400 text-xl" />}
-                            className="px-4 py-2 text-gray-600 hover:text-blue-600 border-b-2 border-transparent data-[state=active]:text-blue-600 data-[state=active]:border-blue-600 transition-colors duration-200"
-                        >
+                        <TabNav value="jsonData" icon={<VscJson className="text-orange-400 text-xl" />}>
                             <span className="text-xl">JSON Data</span>
                         </TabNav>
                     </TabList>
@@ -146,11 +144,13 @@ const RiderPayoutAdd = () => {
                         tabValue === 'field' ? (
                             <Form className="space-y-6">
                                 <PayoutFormFields values={values} setFieldValue={setFieldValue} />
-                                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300">
+                                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                                     <div className="bg-gradient-to-r from-indigo-50 to-white px-6 py-4 border-b border-indigo-100">
                                         <h2 className="text-lg font-semibold text-gray-900">Incentives</h2>
                                     </div>
                                     <div className="p-6">
+                                        {renderToggleButtons('incentives', incentiveOptions, values, setFieldValue)}
+
                                         <RenderPayout
                                             obj={values.commercial_details.incentives}
                                             parentKey="commercial_details.incentives"
@@ -160,11 +160,13 @@ const RiderPayoutAdd = () => {
                                         />
                                     </div>
                                 </div>
-                                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300">
+                                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                                     <div className="bg-gradient-to-r from-rose-50 to-white px-6 py-4 border-b border-rose-100">
                                         <h2 className="text-lg font-semibold text-gray-900">Penalties</h2>
                                     </div>
                                     <div className="p-6">
+                                        {renderToggleButtons('penalties', penaltyOptions, values, setFieldValue)}
+
                                         <RenderPayout
                                             obj={values.commercial_details.penalties}
                                             parentKey="commercial_details.penalties"
@@ -174,24 +176,16 @@ const RiderPayoutAdd = () => {
                                         />
                                     </div>
                                 </div>
-
-                                {/* Actions */}
                                 <div className="sticky bottom-0 bg-white/95 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200 p-4">
-                                    <div className="flex items-center justify-between gap-4">
-                                        <p className="hidden md:flex items-center gap-2 text-xs text-gray-500">
-                                            <HiOutlineInformationCircle className="w-4 h-4" />
-                                            All changes are auto-saved in the form
-                                        </p>
-                                        <div className="flex items-center gap-3 ml-auto">
-                                            <Button
-                                                variant="blue"
-                                                size="sm"
-                                                loading={createResponse.isLoading}
-                                                disabled={createResponse.isLoading}
-                                            >
-                                                Save Payout Model
-                                            </Button>
-                                        </div>
+                                    <div className="flex justify-end">
+                                        <Button
+                                            variant="blue"
+                                            size="sm"
+                                            loading={createResponse.isLoading}
+                                            disabled={createResponse.isLoading}
+                                        >
+                                            Save Payout Model
+                                        </Button>
                                     </div>
                                 </div>
                             </Form>
