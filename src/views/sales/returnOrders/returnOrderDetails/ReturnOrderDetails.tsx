@@ -8,7 +8,6 @@ import ReturnSummary from './components/ReturnSummary'
 import ReturnUserInfo from './components/ReturnUserInfo'
 import ReturnRunnerDetails from './components/ReturnRunnerDetails'
 import RefundActivity from './components/RefundActivity'
-import OrderMap from '../../OrderDetails/OrderMap'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 import OrdersRiderActivity from '../../OrderDetails/components/OrdersRiderActivity'
 import { Card } from '@/components/ui'
@@ -17,6 +16,7 @@ import { ReturnOrder } from '@/store/types/returnOrderData.types'
 import LoadingSpinner from '@/common/LoadingSpinner'
 import AccessDenied from '@/views/pages/AccessDenied'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
+import ReturnMap from './components/ReturnMap'
 
 const ReturnOrderDetails = () => {
     const { return_order_id } = useParams()
@@ -45,6 +45,10 @@ const ReturnOrderDetails = () => {
         }
     }, [returnApi.currentData])
 
+    const refetchAllData = () => {
+        returnApi.refetch()
+        refetchTask()
+    }
     if (returnApi.isLoading) {
         return <LoadingSpinner />
     }
@@ -154,7 +158,11 @@ const ReturnOrderDetails = () => {
                                     )}
                                     {returnDetails?.return_order_delivery[0]?.partner === 'Slikk' && (
                                         <div className="xl:w-[800px]">
-                                            <OrderMap task_id={returnDetails?.return_order_delivery[0]?.task_id} taskData={taskData} />
+                                            <ReturnMap
+                                                task_id={returnDetails?.return_order_delivery[0]?.task_id as string}
+                                                taskData={taskData}
+                                                refetchAllData={refetchAllData}
+                                            />
                                         </div>
                                     )}
                                     {returnDetails?.return_order_delivery[0]?.partner !== 'Slikk' && (

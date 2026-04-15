@@ -5,6 +5,8 @@ import {
     RiderAttendanceResponseType,
     RiderDetailResponseType,
     RiderDownloadResponse,
+    RiderPerformanceParams,
+    RiderPerformanceResponse,
     RiderProfileResponseType,
 } from '../types/riderAddTypes'
 
@@ -256,6 +258,19 @@ export const ridersService = RtkQueryService.injectEndpoints({
 
                 return {
                     url: `rider/performance/report`,
+                    method: 'GET',
+                    params: parameters,
+                }
+            },
+        }),
+        riderPerformanceData: builder.query<RiderPerformanceResponse, RiderPerformanceParams>({
+            query: ({ mobile, ...rest }) => {
+                const parameters = {
+                    from: rest.from || undefined,
+                    to: rest.to || undefined,
+                }
+                return {
+                    url: `logistic/rider/performance/${mobile}`,
                     method: 'GET',
                     params: parameters,
                 }

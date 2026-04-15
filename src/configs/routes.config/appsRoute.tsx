@@ -212,6 +212,12 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsOrgManagement.pdfTemplate',
+        path: `${APP_PREFIX_PATH}/pdfTemplate`,
+        component: lazy(() => import('@/views/org-management/pdfTemplate/pdfTemplateTable/PdfTemplateTable')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsOrgManagement.sellerTemplate',
         path: `${APP_PREFIX_PATH}/sellerTemplate/addNew`,
         component: lazy(
@@ -220,10 +226,26 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsOrgManagement.pdfTemplate',
+        path: `${APP_PREFIX_PATH}/pdfTemplate/addNew`,
+        component: lazy(
+            () => import('@/views/org-management/pdfTemplate/pdfAdd/PdfTemplateAdd'), //p1
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsOrgManagement.sellerTemplate',
         path: `${APP_PREFIX_PATH}/sellerTemplate/:id`,
         component: lazy(
             () => import('@/views/org-management/sellerTemplates/templateEdit/TemplateEdit'), //p1
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOrgManagement.pdfTemplate',
+        path: `${APP_PREFIX_PATH}/pdfTemplate/:id`,
+        component: lazy(
+            () => import('@/views/org-management/pdfTemplate/pdfEdit/PdfEdit'), //p1
         ),
         authority: [ADMIN, USER],
     },
@@ -1362,6 +1384,43 @@ const appsRoute: Routes = [
         key: 'appstryAndBuy.riderAgency',
         path: `${APP_PREFIX_PATH}/riderAgency`,
         component: lazy(() => import('@/views/slikkLogistics/RiderAgency/RiderAgencyTable/RiderAgencyTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appstryAndBuy.riderPerformance',
+        path: `${APP_PREFIX_PATH}/riderPerformance/:mobile`,
+        component: lazy(() => import('@/views/slikkLogistics/riderDetails/RiderComponents/RiderPerformance')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appstryAndBuy.riderAgency',
+        path: `${APP_PREFIX_PATH}/riderAgency/add`,
+        component: lazy(() => import('@/views/slikkLogistics/RiderAgency/riderAgencyAdd/RiderAgencyAdd')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appstryAndBuy.riderAgency',
+        path: `${APP_PREFIX_PATH}/riderAgency/edit/:id`,
+        component: lazy(() => import('@/views/slikkLogistics/RiderAgency/riderAgencyEdit/RiderAgencyEdit')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appstryAndBuy.riderPayout',
+        path: `${APP_PREFIX_PATH}/riderPayout`,
+        component: lazy(() => import('@/views/slikkLogistics/riderPayout/riderPayoutTable/RiderPayoutTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appstryAndBuy.riderPayout',
+        path: `${APP_PREFIX_PATH}/riderPayout/add`,
+        component: lazy(() => import('@/views/slikkLogistics/riderPayout/riderPayoutAdd/RiderPayoutAdd')),
+        authority: [ADMIN, USER],
+    },
+
+    {
+        key: 'appstryAndBuy.riderPayout',
+        path: `${APP_PREFIX_PATH}/riderPayout/edit/:id`,
+        component: lazy(() => import('@/views/slikkLogistics/riderPayout/riderPayoutEdit/RiderPayoutEdit')),
         authority: [ADMIN, USER],
     },
     {

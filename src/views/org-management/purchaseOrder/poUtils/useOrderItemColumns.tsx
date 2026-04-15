@@ -2,7 +2,6 @@
 import { PurchaseOrderItem } from '@/store/types/po.types'
 import { ColumnDef } from '@tanstack/react-table'
 import React, { useMemo } from 'react'
-import { FaEdit } from 'react-icons/fa'
 
 interface Props {
     handleEditRow?: (x: PurchaseOrderItem) => void
@@ -19,7 +18,7 @@ export const useOrderItemColumns = ({ handleEditRow }: Props) => {
             {
                 header: 'name',
                 accessorKey: 'name',
-                cell: ({ row }) => <div>{row.original.name || '-'}</div>,
+                cell: ({ row }) => <div className="max-w-[300px] line-clamp-3">{row.original.name || '-'}</div>,
             },
             {
                 header: 'Quantity',
@@ -68,14 +67,14 @@ export const useOrderItemColumns = ({ handleEditRow }: Props) => {
             },
         ]
 
-        if (handleEditRow) {
-            baseColumns.unshift({
-                header: 'Edit',
-                accessorKey: 'id',
-                cell: ({ row }) => <FaEdit className="text-xl text-blue-500 cursor-pointer" onClick={() => handleEditRow(row.original)} />,
-            })
-        }
+        // if (handleEditRow) {
+        //     baseColumns.unshift({
+        //         header: 'Edit',
+        //         accessorKey: 'id',
+        //         cell: ({ row }) => <FaEdit className="text-xl text-blue-500 cursor-pointer" onClick={() => handleEditRow(row.original)} />,
+        //     })
+        // }
 
         return baseColumns
-    }, [handleEditRow])
+    }, [])
 }

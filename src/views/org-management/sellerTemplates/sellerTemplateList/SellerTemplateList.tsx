@@ -9,6 +9,7 @@ import { useTemplateColumns } from '../templateUtils/useTemplateColumns'
 import { Spin, Empty, notification } from 'antd'
 import { getApiErrorMessage } from '@/constants/generateErrorMessage'
 import TemplateViewDialog from '../sellerTemplateComponent/TemplateViewDialog'
+import { FaFilePdf } from 'react-icons/fa'
 
 const SellerTemplateList = () => {
     const navigate = useNavigate()
@@ -67,9 +68,12 @@ const SellerTemplateList = () => {
                         onChange={(e) => setGlobalFilter(e.target.value)}
                     />
                 </div>
-                <div className="flex items-end justify-end mb-4 order-first xl:order-none">
+                <div className="flex items-end justify-end mb-4 order-first xl:order-none gap-2">
                     <Button variant="new" size="sm" onClick={() => navigate('/app/sellerTemplate/addNew')}>
                         ADD NEW
+                    </Button>
+                    <Button variant="new" size="sm" icon={<FaFilePdf />} onClick={() => navigate('/app/pdfTemplate')}>
+                        Go To Pdf Template
                     </Button>
                 </div>
             </div>

@@ -74,6 +74,8 @@ const PoEdit = () => {
             payment_mode: purchaseOrder?.payment_mode || '',
             vendor_address: purchaseOrder?.vendor_address || '',
             po_expiry_date: purchaseOrder?.po_expiry_date || '',
+            with_gst: purchaseOrder?.with_gst || false,
+            with_sp: purchaseOrder?.with_sp || false,
         }),
         [purchaseOrder],
     )
@@ -104,6 +106,8 @@ const PoEdit = () => {
                 state_code: stateCode,
                 gstin: gstin,
                 business_nature_company: business_nature_company,
+                with_gst: values[PoField.WITH_GST] || false,
+                with_sp: values[PoField.WITH_SP] || false,
                 discount_sharing_applicable: 'yes',
             }
 

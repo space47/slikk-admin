@@ -14,6 +14,7 @@ interface ConfirmationDialogProps extends React.PropsWithChildren {
     label?: string
     closeDialog?: () => void
     isProceed?: boolean
+    spinner?: boolean
 }
 
 const DialogConfirm = ({
@@ -28,6 +29,7 @@ const DialogConfirm = ({
     label,
     isProceed,
     children,
+    spinner,
 }: ConfirmationDialogProps) => {
     const onDialogClose = () => {
         if (checkBox) {
@@ -77,13 +79,13 @@ const DialogConfirm = ({
                         </Button>
 
                         {(IsConfirm || isProceed) && (
-                            <Button variant="solid" onClick={onDialogOk}>
+                            <Button variant="solid" onClick={onDialogOk} loading={spinner}>
                                 Confirm
                             </Button>
                         )}
 
                         {IsDelete && (
-                            <Button variant="reject" onClick={onDialogOk}>
+                            <Button variant="reject" onClick={onDialogOk} loading={spinner}>
                                 Delete
                             </Button>
                         )}

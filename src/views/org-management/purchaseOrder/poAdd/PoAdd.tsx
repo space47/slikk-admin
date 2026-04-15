@@ -43,6 +43,7 @@ const PoAdd = () => {
             [PoField.ORDER_SHIPPING_ADDRESS]: '',
             [PoField.ORDER_BILLING_ADDRESS]: '',
             [PoField.PAYMENT_TERMS]: selectedCompany?.approved_payment_term || '',
+            [PoField.WITH_SP]: true,
         }),
         [selectedCompany],
     )
@@ -75,6 +76,8 @@ const PoAdd = () => {
                 payment_mode: values[PoField.PAYMENT_MODE],
                 po_expiry_date: values[PoField.PO_EXPIRY_DATE],
                 discount_sharing_applicable: 'true',
+                with_gst: values[PoField.WITH_GST] || false,
+                with_sp: values[PoField.WITH_SP] || false,
             }
 
             const formData = buildFormData(payload)

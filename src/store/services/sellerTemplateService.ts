@@ -51,5 +51,48 @@ export const notificationConfigService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
+        getPdfTemplateList: builder.query<any, { page: number; pageSize: number; name: string }>({
+            query: (params) => {
+                const parameters: Record<string, string | string[] | number> = {}
+                if (params.page) parameters.p = params.page
+                if (params.pageSize) parameters.page_size = params.pageSize
+                if (params.name) parameters.name = params.name
+
+                return {
+                    url: `/pdf-config`,
+                    method: 'GET',
+                    params: parameters,
+                }
+            },
+        }),
+        getSingleNotificationPdfData: builder.query<{ status: string; data: any }, { id: string | number }>({
+            query: (params) => {
+                const parameters: Record<string, string | string[] | number> = {}
+                if (params.id) parameters.id = params.id
+                return {
+                    url: `/pdf-config`,
+                    method: 'GET',
+                    params: parameters,
+                }
+            },
+        }),
+        addPdfTemplate: builder.mutation<{ status: string; message: string }, Record<string, string | number | boolean>>({
+            query: (formData) => {
+                return {
+                    url: `/pdf-config`,
+                    method: 'POST',
+                    body: formData,
+                }
+            },
+        }),
+        updatePdfTemplate: builder.mutation<{ status: string; message: string }, Record<string, string | number | boolean>>({
+            query: ({ id, ...rest }) => {
+                return {
+                    url: `/pdf-config/${id}`,
+                    method: 'PATCH',
+                    body: rest,
+                }
+            },
+        }),
     }),
 })
