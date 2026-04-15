@@ -6,12 +6,12 @@ import { useParams } from 'react-router-dom'
 import { FiCheckCircle, FiDollarSign, FiList, FiXCircle } from 'react-icons/fi'
 import CommonPageHeader from '@/common/CommonPageHeader'
 import UltimateDateFilter from '@/common/UltimateDateFilter'
-import { RiderPerformanceColumns } from '../RiderUtils/RiderPerformanceColumns'
 import EasyTable from '@/common/EasyTable'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 import { getApiErrorMessage } from '@/constants/generateErrorMessage'
 import { Spin } from 'antd'
 import { Badge } from '@/components/ui'
+import { generateDynamicColumns } from '../RiderUtils/RiderPerformanceColumns'
 
 const statusData = (overallPerformance: RiderPerformanceList['over_all_performance'] | null) => {
     return [
@@ -64,7 +64,7 @@ const RiderPerformance = () => {
 
     const stats = useMemo(() => statusData(overallPerformance), [overallPerformance])
 
-    const columns = RiderPerformanceColumns
+    const columns = useMemo(() => generateDynamicColumns(dayWisePerformance), [dayWisePerformance])
 
     const handleDateChange = (dates: [Date | null, Date | null] | null) => {
         if (!dates || !dates[0]) return
@@ -79,6 +79,7 @@ const RiderPerformance = () => {
             <CommonPageHeader desc="See Rider Performance with overall as well as day wise performance" label="Rider Performance" />
             <div className="flex justify-end">
                 <UltimateDateFilter
+                    isStrict
                     from={from}
                     to={to}
                     setFrom={setFrom}
