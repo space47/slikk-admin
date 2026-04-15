@@ -1,22 +1,29 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import FullDateForm from '@/common/FullDateForm'
 import RichTextCommon from '@/common/RichTextCommon'
-import { FormContainer, FormItem, Input } from '@/components/ui'
+import { Button, FormContainer, FormItem, Input } from '@/components/ui'
 import { Field } from 'formik'
-import React from 'react'
+import React, { useMemo } from 'react'
 import { FaBox, FaFileAlt } from 'react-icons/fa'
 import { IoLocation } from 'react-icons/io5'
 import { Address_Detail, Package_Detail, Shipment_Information } from './brandShipmentsCommon'
 import FormUploadFile from '@/common/FormUploadFile'
 import CommonAccordion from '@/common/CommonAccordion'
+import { ShipmentItems } from '@/store/types/shipment.types'
 
 interface Props {
     values: any
     isEdit?: boolean
     noBulk?: boolean
+    shipmentData?: ShipmentItems[] | undefined
+    handleDeleteItems?: () => void
 }
 
-const BrandShipmentForm: React.FC<Props> = ({ values, isEdit, noBulk = false }) => {
+const BrandShipmentForm: React.FC<Props> = ({ values, isEdit, noBulk = false, shipmentData, handleDeleteItems }) => {
+    const isShipmentItemsAvailable = useMemo(() => {
+        return isEdit && !noBulk && (shipmentData?.length ?? 0) > 0
+    }, [shipmentData, isEdit, noBulk])
+
     return (
         <>
             <div className="shadow-xl p-3 rounded-2xl border-l-4 border-blue-600">
@@ -98,17 +105,26 @@ const BrandShipmentForm: React.FC<Props> = ({ values, isEdit, noBulk = false }) 
                             )
                         })}
                     </FormContainer>
-                    {!noBulk && (
-                        <>
+
+                    {isShipmentItemsAvailable ? (
+                        <div className="flex flex-col items-center justify-center gap-2">
+                            <h5>Shipment Item Already Exists</h5>
+                            <p>You need to clear the items to upload new items</p>
+                            <Button type="button" variant="reject" size="sm" onClick={handleDeleteItems}>
+                                Clear Shipments
+                            </Button>
+                        </div>
+                    ) : (
+                        !noBulk && (
                             <FormUploadFile
-                                sampleFile='"https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/shipment+items/sample_shipment_items.csv"'
+                                sampleFile="https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/shipment+items/sample_shipment_items.csv"
                                 fileList={values.csvArray}
                                 label="Upload Shipment Items File"
                                 name="csvArray"
                                 isEdit={isEdit}
-                                existingFile={''}
+                                existingFile=""
                             />
-                        </>
+                        )
                     )}
                 </CommonAccordion>
             </div>

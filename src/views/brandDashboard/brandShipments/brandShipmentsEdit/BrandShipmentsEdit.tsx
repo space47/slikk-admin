@@ -10,26 +10,38 @@ import BrandShipmentForm from '../brandShipmentsUtils/BrandShipmentForm'
 import { buildShipmentPayload, ShipmentItemsUpload } from '../brandShipmentsUtils/brandShipmentFunctions'
 import { errorMessage, successMessage } from '@/utils/responseMessages'
 import { AxiosError } from 'axios'
+import { shipmentService } from '@/store/services/shipmentService'
+import { notification } from 'antd'
+import { getApiErrorMessage } from '@/constants/generateErrorMessage'
 
 const BrandShipmentsEdit = () => {
     const { id } = useParams()
     const [shipmentData, setShipmentData] = useState<any>()
     const selectedCompany = useAppSelector<USER_PROFILE_DATA>((store) => store.company)
+    const shipmentCall = shipmentService.useGetShipmentDetailQuery({ id: id as string }, { skip: !id })
+    const shipmentItemsCall = shipmentService.useGetShipmentItemsQuery({ page: 1, pageSize: 10, shipment_id: id as string }, { skip: !id })
+    const [resetItems, resetResponse] = shipmentService.useResetShipmentItemsMutation()
     const [showSpinner, setShowSpinner] = useState(false)
 
     useEffect(() => {
-        const fetchShipmentDetails = async () => {
-            try {
-                const response = await axioisInstance.get(`/product-shipment?id=${id}`)
-                const data = response?.data?.data?.results || []
-                setShipmentData(data[0])
-            } catch (error) {
-                console.error('Error fetching shipment details:', error)
-            }
+        if (shipmentCall.isSuccess && shipmentCall.data) {
+            setShipmentData(shipmentCall?.data?.data?.results[0])
         }
+    }, [shipmentCall.isSuccess, shipmentCall.data])
 
-        fetchShipmentDetails()
-    }, [id])
+    // useEffect(() => {
+    //     const fetchShipmentDetails = async () => {
+    //         try {
+    //             const response = await axioisInstance.get(`/product-shipment?id=${id}`)
+    //             const data = response?.data?.data?.results || []
+    //             setShipmentData(data[0])
+    //         } catch (error) {
+    //             console.error('Error fetching shipment details:', error)
+    //         }
+    //     }
+
+    //     fetchShipmentDetails()
+    // }, [id])
 
     const initialValue = useMemo(
         () => ({
@@ -51,6 +63,22 @@ const BrandShipmentsEdit = () => {
         }),
         [shipmentData],
     )
+
+    useEffect(() => {
+        if (resetResponse.isSuccess) {
+            notification.success({ message: 'successfully cleared the shipment items' })
+            shipmentCall.refetch()
+            shipmentItemsCall.refetch()
+        }
+        if (resetResponse.isError) {
+            const errorMessage = getApiErrorMessage(resetResponse.error)
+            notification.error({ message: errorMessage || 'Failed to clear' })
+        }
+    }, [resetResponse.isSuccess, resetResponse.isError, resetResponse.error])
+
+    const handleDeleteItems = () => {
+        resetItems({ id: id as string })
+    }
 
     const handleSubmitEdit = async (values: any) => {
         try {
@@ -82,7 +110,7 @@ const BrandShipmentsEdit = () => {
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmitEdit}>
                 {({ values }: any) => (
                     <Form className="w-full shadow-xl p-3 rounded-2xl ">
-                        <BrandShipmentForm values={values} isEdit />
+                        <BrandShipmentForm values={values} isEdit handleDeleteItems={handleDeleteItems} />
                         <FormContainer className="flex justify-end">
                             <Button variant="blue" type="submit" loading={showSpinner}>
                                 Update

@@ -39,7 +39,7 @@ export const shipmentService = RtkQueryService.injectEndpoints({
         getShipmentItems: builder.query<ShipmentItemsResponse, { shipment_id: number | string; pageSize: number; page: number }>({
             query: (params) => {
                 const parameters: Record<string, string | number | boolean> = {
-                    download: true,
+                    dashboard: true,
                 }
                 if (params.shipment_id) parameters.shipment_id = params.shipment_id
                 if (params.page) parameters.page = params.page
@@ -71,17 +71,14 @@ export const shipmentService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        // addDeliveryAgency: builder.mutation<{ status: string; data: DeliveryAgency }, { name?: string; delivery_type?: string }>({
-        //     query: (params) => {
-        //         return {
-        //             url: `/delivery_partner`,
-        //             method: 'POST',
-        //             body: {
-        //                 ...params,
-        //             },
-        //         }
-        //     },
-        // }),
+        resetShipmentItems: builder.mutation<{ status: string; message: string }, { id: string | number }>({
+            query: (params) => {
+                return {
+                    url: `/shipment/reset-items/${params.id}`,
+                    method: 'PATCH',
+                }
+            },
+        }),
         // updateDeliveryAgency: builder.mutation<{ status: string; data: DeliveryAgency }, Record<string, string | number | boolean>>({
         //     query: (params) => {
         //         return {
