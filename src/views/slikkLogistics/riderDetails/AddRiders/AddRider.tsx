@@ -91,6 +91,10 @@ const AddRider = () => {
     const initialValue = useMemo(() => {
         if (selectedRider && !isAddRider && riderProfile && riderProfile.length > 0) {
             const user = riderProfile[0]?.user || {}
+            const agencyValue =
+                typeof riderProfile[0]?.agency === 'string'
+                    ? riderAgencyArray.find((a) => a.label?.toLowerCase().trim() === riderProfile[0]?.agency?.toLowerCase().trim())?.value
+                    : riderProfile[0]?.agency
             return {
                 first_name: user.first_name || '',
                 last_name: user.last_name || '',
@@ -101,7 +105,7 @@ const AddRider = () => {
                 is_active: riderProfile[0]?.is_active || false,
                 lat: riderProfile[0]?.service_latitude,
                 long: riderProfile[0]?.service_longitude,
-                agency: typeof riderProfile[0]?.agency === 'string' ? Number(riderProfile[0]?.agency) : riderProfile[0]?.agency,
+                agency: agencyValue || null,
                 rider_delivery_type: riderProfile[0]?.rider_delivery_type,
                 store: riderProfile[0]?.store?.map((item: any) => item?.id)?.join(','),
                 rider_zone: riderProfile[0]?.zone,
@@ -389,15 +393,18 @@ const AddRider = () => {
 
                                     <FormItem label="Rider Agency">
                                         <Field name="agency">
-                                            {({ field, form }: FieldProps<any>) => (
-                                                <Select
-                                                    isClearable
-                                                    isSearchable
-                                                    options={riderAgencyArray}
-                                                    value={riderAgencyArray.find((o) => o.value === field.value) || null}
-                                                    onChange={(opt) => form.setFieldValue(field.name, opt?.value ?? null)}
-                                                />
-                                            )}
+                                            {({ field, form }: FieldProps<any>) => {
+                                                console.log('agenys field', field.value)
+                                                return (
+                                                    <Select
+                                                        isClearable
+                                                        isSearchable
+                                                        options={riderAgencyArray}
+                                                        value={riderAgencyArray.find((o) => o.value === field.value) || null}
+                                                        onChange={(opt) => form.setFieldValue(field.name, opt?.value ?? null)}
+                                                    />
+                                                )
+                                            }}
                                         </Field>
                                     </FormItem>
                                     <CommonSelect name="delivery_type" options={RIDER_TYPES} label="Delivery Type" />
