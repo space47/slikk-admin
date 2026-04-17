@@ -2,16 +2,26 @@ name: Azure Static Web Apps CI/CD
 on:
   push:
     branches:
-      - master
+      - develop     # development
+      - staging     # staging
+      - master      # production
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
+      - develop
+      - staging
       - master
+
 jobs:
   build_and_deploy_job:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     name: Build and Deploy Job
+    environment: ${{ 
+      github.ref == 'refs/heads/master' && 'production' || 
+      github.ref == 'refs/heads/staging' && 'staging' || 
+      'development' 
+      }}                          # ✅ auto picks environment based on branch
     permissions:
        id-token: write
        contents: read
@@ -36,13 +46,12 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
 
-      - name: Debug env vars
+      - name: Debug env                 # ✅ remove this after confirming it works
         run: |
+          echo "Branch: ${{ github.ref }}"
+          echo "Environment: ${{ github.ref == 'refs/heads/master' && 'production' || github.ref == 'refs/heads/staging' && 'staging' || 'development' }}"
           echo "VITE_BACKEND_URI is set: ${{ secrets.VITE_BACKEND_URI != '' }}"
-          echo "Length: ${#VITE_BACKEND_URI}"
-        env:
-          VITE_BACKEND_URI: ${{ secrets.VITE_BACKEND_URI }}
-  
+
       - name: Build
         run: npm run build
         env:
@@ -74,8 +83,8 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_LIVELY_BAY_037B15000 }}
           action: "upload"
-          app_location: "build"   # ✅ fixed — was "/" 
-          api_location: ""        # ✅ fixed — was "build"
+          app_location: "build"
+          api_location: ""
           output_location: ""
           skip_app_build: true
           github_id_token: ${{ steps.idtoken.outputs.result }}
