@@ -1,5 +1,4 @@
 name: Azure Static Web Apps CI/CD
-
 on:
   push:
     branches:
@@ -22,7 +21,6 @@ jobs:
           submodules: true
           lfs: false
 
-      # ✅ Cache node_modules directly — fastest possible restore
       - name: Cache node_modules
         id: cache-node-modules
         uses: actions/cache@v3
@@ -34,7 +32,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      # ✅ Only runs if cache miss
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
@@ -44,7 +41,6 @@ jobs:
         env:
           VITE_BACKEND_URI: ${{ secrets.VITE_BACKEND_URI }}
 
-      # ✅ Cache OIDC packages too
       - name: Cache OIDC packages
         id: cache-oidc
         uses: actions/cache@v3
@@ -71,9 +67,9 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_LIVELY_BAY_037B15000 }}
           action: "upload"
-          app_location: "/"
-          api_location: "build"
-          output_location: ""       # ✅ Vite outputs to dist
+          app_location: "build"   # ✅ fixed — was "/" 
+          api_location: ""        # ✅ fixed — was "build"
+          output_location: ""
           skip_app_build: true
           github_id_token: ${{ steps.idtoken.outputs.result }}
 
