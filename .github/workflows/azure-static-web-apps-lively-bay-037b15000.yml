@@ -36,6 +36,13 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
 
+      - name: Debug env vars
+        run: |
+          echo "VITE_BACKEND_URI is set: ${{ secrets.VITE_BACKEND_URI != '' }}"
+          echo "Length: ${#VITE_BACKEND_URI}"
+        env:
+          VITE_BACKEND_URI: ${{ secrets.VITE_BACKEND_URI }}
+  
       - name: Build
         run: npm run build
         env:
