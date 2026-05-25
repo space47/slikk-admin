@@ -1,14 +1,13 @@
+import { DevBackendSwitcher } from '@/components/DevBackendSwitcher'
+import Layout from '@/components/layouts'
+import Theme from '@/components/template/Theme'
+import appConfig from '@/configs/app.config'
+import store, { persistor } from '@/store'
 import { Provider } from 'react-redux'
 import { BrowserRouter } from 'react-router-dom'
 import { PersistGate } from 'redux-persist/integration/react'
-import store, { persistor, useAppDispatch } from '@/store'
-import Theme from '@/components/template/Theme'
-import Layout from '@/components/layouts'
-import mockServer from './mock'
-import appConfig from '@/configs/app.config'
 import './locales'
-import { useEffect } from 'react'
-import { getUserProfileAPI } from './store/action/company.action'
+import mockServer from './mock'
 
 const environment = process.env.NODE_ENV
 
@@ -25,6 +24,7 @@ function App() {
                         <Layout />
                     </Theme>
                 </BrowserRouter>
+                <DevBackendSwitcher />
             </PersistGate>
         </Provider>
     )

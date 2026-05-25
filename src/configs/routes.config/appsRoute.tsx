@@ -326,14 +326,38 @@ const appsRoute: Routes = [
 
     {
         key: 'appsVendorManagement.shipments',
-        path: `${APP_PREFIX_PATH}/vendor/shipments`,
+        path: `${APP_PREFIX_PATH}/shipments`,
         component: lazy(() => import('@/views/brandDashboard/brandShipments/brandShipmentsTable/BrandShipmentsTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsVendorManagement.masterShipments',
+        path: `${APP_PREFIX_PATH}/masterShipments`,
+        component: lazy(() => import('@/views/inventory-management/masterShipment/table/MasterShipmentTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsVendorManagement.masterShipments',
+        path: `${APP_PREFIX_PATH}/masterShipments/add`,
+        component: lazy(() => import('@/views/inventory-management/masterShipment/add/AddMasterShipment')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsVendorManagement.masterShipments/details',
+        path: `${APP_PREFIX_PATH}/masterShipments/:id`,
+        component: lazy(() => import('@/views/inventory-management/masterShipment/details/MasterShipmentDetails')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsVendorManagement.shipments',
         path: `${APP_PREFIX_PATH}/vendor/shipments/update/:id`,
         component: lazy(() => import('@/views/brandDashboard/brandShipments/brandShipmentsEdit/BrandShipmentsEdit')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsVendorManagement.shipments',
+        path: `${APP_PREFIX_PATH}/masterShipments/update/:id`,
+        component: lazy(() => import('@/views/inventory-management/masterShipment/edit/MasterShipmentEdit')),
         authority: [ADMIN, USER],
     },
     {

@@ -8,3 +8,10 @@
 // interface ImportMeta {
 //     readonly env: ImportMetaEnv
 // }
+
+// Development runtime config utilities
+interface Window {
+    setBackendURI?: (uri: string) => void
+    resetBackendURI?: () => void
+    getBackendInfo?: () => { current: string; default: string; source: string }
+}

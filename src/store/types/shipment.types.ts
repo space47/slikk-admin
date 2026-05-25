@@ -27,6 +27,7 @@ export interface ShipmentData {
     total_box_count: number
     total_quantity: number
     shipment_type?: string
+    total_invoice_value: string
 }
 
 export interface ShipmentResponse {

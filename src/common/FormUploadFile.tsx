@@ -13,9 +13,10 @@ interface Props {
     isEdit?: boolean
     existingFile?: string | File | File[] | null
     asterisk?: boolean
+    sampleFile?: string
 }
 
-const FormUploadFile = ({ label, name, fileList, isEdit, existingFile, asterisk }: Props) => {
+const FormUploadFile = ({ label, name, fileList, isEdit, existingFile, asterisk, sampleFile }: Props) => {
     const getFileUrl = (file: string | File): string | null => {
         if (typeof file === 'string') return file
         if (file instanceof File) return URL.createObjectURL(file)
@@ -101,13 +102,22 @@ const FormUploadFile = ({ label, name, fileList, isEdit, existingFile, asterisk 
                                     <button
                                         type="button"
                                         className="flex items-center text-red-500 text-sm mt-1 hover:text-red-600"
-                                        onClick={() => form.setFieldValue(name, null)}
+                                        onClick={() => {
+                                            console.log('field value', name)
+                                            form.setFieldValue(name, null)
+                                        }}
                                     >
                                         <MdCancel className="text-lg mr-1" /> Remove
                                     </button>
                                 </div>
                             )}
-
+                            {sampleFile && (
+                                <div>
+                                    <a className="p-2 rounded-xl font-md text-blue-500  no-underline" href={sampleFile}>
+                                        <strong>Click Here</strong> to download the sample file
+                                    </a>
+                                </div>
+                            )}
                             <FormContainer className="mt-4 w-full flex justify-center">
                                 <FormItem label="">
                                     {/* <Upload

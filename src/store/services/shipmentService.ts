@@ -1,15 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import RtkQueryService from '@/services/RtkQueryService'
-import { ShipmentDownloadResponse, ShipmentResponse } from '../types/shipment.types'
+import { ShipmentDownloadResponse, ShipmentItemsResponse, ShipmentResponse } from '../types/shipment.types'
 
 export const shipmentService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
-        getShipmentList: builder.query<ShipmentResponse, { shipment_id?: string; page?: number; pageSize?: number }>({
+        getShipmentList: builder.query<
+            ShipmentResponse,
+            { shipment_id?: string; page?: number; pageSize?: number; available_for_master?: boolean }
+        >({
             query: (params) => {
                 const parameters: Record<string, string | number | boolean> = {}
                 if (params.shipment_id) parameters.shipment_id = params.shipment_id
-                if (params.page) parameters.page = params.page
+                if (params.page) parameters.p = params.page
                 if (params.pageSize) parameters.page_size = params.pageSize
+                if (params.available_for_master) parameters.available_for_master = params.available_for_master
 
                 return {
                     url: `/product-shipment`,
@@ -27,6 +31,22 @@ export const shipmentService = RtkQueryService.injectEndpoints({
 
                 return {
                     url: `/product-shipment`,
+                    method: 'GET',
+                    params: parameters,
+                }
+            },
+        }),
+        getShipmentItems: builder.query<ShipmentItemsResponse, { shipment_id: number | string; pageSize: number; page: number }>({
+            query: (params) => {
+                const parameters: Record<string, string | number | boolean> = {
+                    dashboard: true,
+                }
+                if (params.shipment_id) parameters.shipment_id = params.shipment_id
+                if (params.page) parameters.page = params.page
+                if (params.pageSize) parameters.pageSize = params.pageSize
+
+                return {
+                    url: `/shipment/item`,
                     method: 'GET',
                     params: parameters,
                 }
@@ -51,17 +71,14 @@ export const shipmentService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        // addDeliveryAgency: builder.mutation<{ status: string; data: DeliveryAgency }, { name?: string; delivery_type?: string }>({
-        //     query: (params) => {
-        //         return {
-        //             url: `/delivery_partner`,
-        //             method: 'POST',
-        //             body: {
-        //                 ...params,
-        //             },
-        //         }
-        //     },
-        // }),
+        resetShipmentItems: builder.mutation<{ status: string; message: string }, { id: string | number }>({
+            query: (params) => {
+                return {
+                    url: `/shipment/reset-items/${params.id}`,
+                    method: 'PATCH',
+                }
+            },
+        }),
         // updateDeliveryAgency: builder.mutation<{ status: string; data: DeliveryAgency }, Record<string, string | number | boolean>>({
         //     query: (params) => {
         //         return {

@@ -1,8 +1,9 @@
 import { RootState } from '@/store'
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { getRuntimeBackendURI } from '@/utils/runtimeConfig'
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_BACKEND_URI,
+    baseUrl: getRuntimeBackendURI(),
     prepareHeaders: (headers, api) => {
         const token = (api.getState() as RootState).auth.session.token
         if (token) {

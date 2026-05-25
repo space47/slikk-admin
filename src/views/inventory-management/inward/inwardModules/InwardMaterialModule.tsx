@@ -261,22 +261,22 @@ const InwardMaterialModule = () => {
 
     const columns2 = useMemo(
         () => [
-            {
-                header: 'Barcode',
-                accessorKey: 'barcode',
-                cell: ({ row }: any) => {
-                    if (editingRow === row.original.id) {
-                        return renderEditableCell(
-                            editFormDataRef.current.barcode,
-                            'barcode',
-                            handleEditChange,
-                            handleEditKeyDown,
-                            barcodeInputRef,
-                        )
-                    }
-                    return row.original.barcode
-                },
-            },
+            // {
+            //     header: 'Barcode',
+            //     accessorKey: 'barcode',
+            //     cell: ({ row }: any) => {
+            //         if (editingRow === row.original.id) {
+            //             return renderEditableCell(
+            //                 editFormDataRef.current.barcode,
+            //                 'barcode',
+            //                 handleEditChange,
+            //                 handleEditKeyDown,
+            //                 barcodeInputRef,
+            //             )
+            //         }
+            //         return row.original.barcode
+            //     },
+            // },
             {
                 header: 'SKU',
                 accessorKey: 'sku',
