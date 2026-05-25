@@ -1,6 +1,8 @@
 import { setupInterceptorsTo } from './Interceptors'
 import axios from 'axios'
-const BASE_URL = import.meta.env.VITE_BACKEND_URI
+import { getRuntimeBackendURI } from '@/utils/runtimeConfig'
+
+const BASE_URL = getRuntimeBackendURI()
 console.log(BASE_URL)
 
 axios.defaults.baseURL = BASE_URL

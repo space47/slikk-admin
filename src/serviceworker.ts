@@ -1,6 +1,8 @@
+import { getRuntimeBackendURI } from '@/utils/runtimeConfig'
+
 export default function serviceworker() {
     // Define the correct URL for the service worker
-    const swUrl = `${import.meta.env.VITE_BACKEND_URI}/sw.js`
+    const swUrl = `${getRuntimeBackendURI()}/sw.js`
 
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', function () {
