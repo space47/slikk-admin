@@ -51,6 +51,7 @@ jobs:
           echo "Branch: ${{ github.ref }}"
           echo "Environment: ${{ github.ref == 'refs/heads/master' && 'production' || github.ref == 'refs/heads/staging' && 'staging' || 'development' }}"
           echo "VITE_BACKEND_URI is set: ${{ secrets.VITE_BACKEND_URI != '' }}"
+          echo "VITE_DEV is set: ${{secrets.VITE_DEV}}"
 
       - name: Build
         run: npm run build
